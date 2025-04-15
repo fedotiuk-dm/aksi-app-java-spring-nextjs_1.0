@@ -1,0 +1,136 @@
+spring:
+  application:
+    name: aksi-backend
+  main:
+    allow-circular-references: true
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: public
+    contexts: default
+    clear-checksums: true
+    parameters:
+      create-uuid-extension: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  datasource:
+    url: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5?schema=public
+    username: aksi_user
+    password: 1911
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/changelog
+    baseline-on-migrate: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          auto: update
+        javax:
+          persistence:
+            schema-generation:
+              create-source: metadata
+              scripts:
+                action: create
+                create-target: create.sql
+        globally_quoted_identifiers: true
+  web:
+    cors:
+      allowed-origins: 'http://localhost:3000,http://127.0.0.1:3000'
+      allowed-methods: 'GET,POST,PUT,DELETE,OPTIONS,PATCH'
+      allowed-headers: '*'
+      allow-credentials: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# Налаштування JWT
+jwt:
+  secret: 7Jl7CMvDgZaYWEr3ZsRMRi1CJG3vjYXm0QFrDHB3z1WGMhsQ+yWgYMwzM6MqkVEM3J40TxOFsYyyvmFkh76WDQ==
+  expiration: 86400000 # 24 години у мілісекундах
+  refresh:
+    expiration: 604800000 # 7 днів у мілісекундах
+
+# Налаштування адміністратора за замовчуванням
+admin:
+  username: admin
+  password: Aksi1911
+  email: admin@aksi.com
+
+# Налаштування Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    loggers:
+      enabled: true
+  server:
+    port: 8080
+    servlet:
+      context-path: ${server.servlet.context-path}
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.springframework.web: DEBUG
+    com.aksi: DEBUG
+    # Розширені налаштування для логування Swagger/OpenAPI
+    springdoc: TRACE
+    org.springdoc: TRACE
+    io.swagger.v3: TRACE
+    com.aksi.config: TRACE
+    org.springframework.security: DEBUG
+  file:
+    name: logs/aksi-app.log
+  pattern:
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+    console: '%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %cyan(%logger{15}) - %msg%n'
+
+# Налаштування OpenAPI/Swagger
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    displayRequestDuration: true
+    filter: true
+    deepLinking: true
+    syntaxHighlight:
+      activated: true
+    doc-expansion: none
+    disable-swagger-default-url: true
+    display-request-duration: true
+    csrf:
+      enabled: true
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  show-actuator: true
+  packages-to-scan: com.aksi
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  paths-to-match: /**
+  model-converters:
+    deprecating-converter:
+      enabled: true
+  writer-with-order-by-keys: true
+  group-configs:
+    - group: auth
+      paths-to-match: /auth/**, /api/auth/**, /api/v1/auth/**, /v1/auth/**
+      packages-to-scan: com.aksi.api
+    - group: clients
+      paths-to-match: /v1/clients/**
+      packages-to-scan: com.aksi.api.v1
+

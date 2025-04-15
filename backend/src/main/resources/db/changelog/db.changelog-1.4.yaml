@@ -1,0 +1,100 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.4.0
+      author: aksi-developer
+      changes:
+        # Перейменування поля name -> full_name
+        - renameColumn:
+            tableName: clients
+            oldColumnName: name
+            newColumnName: full_name
+            columnDataType: varchar(100)
+
+        # Додавання унікальності для телефону та email
+        - addUniqueConstraint:
+            tableName: clients
+            columnNames: phone
+            constraintName: uk_clients_phone
+
+        - addUniqueConstraint:
+            tableName: clients
+            columnNames: email
+            constraintName: uk_clients_email
+
+        # Видалення поля additional_phone, якщо воно існує
+        - preConditions:
+            - columnExists:
+                tableName: clients
+                columnName: additional_phone
+          changes:
+            - dropColumn:
+                tableName: clients
+                columnName: additional_phone
+
+        # Зміна is_active на status зі статусом перелічення
+        - dropColumn:
+            tableName: clients
+            columnName: is_active
+
+        - addColumn:
+            tableName: clients
+            columns:
+              - column:
+                  name: status
+                  type: varchar(20)
+                  defaultValue: 'ACTIVE'
+                  constraints:
+                    nullable: false
+
+        # Зміна типу поля loyalty_level на enum
+        - modifyDataType:
+            tableName: clients
+            columnName: loyalty_level
+            newDataType: varchar(20)
+
+        # Оновлення loyalty_level для всіх записів
+        - update:
+            tableName: clients
+            columns:
+              - column:
+                  name: loyalty_level
+                  valueComputed: "'STANDARD'"
+
+        # Зміна типу поля birth_date на date (без часу)
+        - modifyDataType:
+            tableName: clients
+            columnName: birth_date
+            newDataType: date
+
+        # Зміна типу поля source на enum
+        - modifyDataType:
+            tableName: clients
+            columnName: source
+            newDataType: varchar(20)
+
+        # Створення таблиці для тегів клієнта
+        - createTable:
+            tableName: client_tags
+            columns:
+              - column:
+                  name: client_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_client_tags_client
+                    references: clients(id)
+              - column:
+                  name: tag
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+        # Додавання індексу для швидкого пошуку за тегами
+        - createIndex:
+            tableName: client_tags
+            columns:
+              - column:
+                  name: client_id
+              - column:
+                  name: tag
+            indexName: idx_client_tags

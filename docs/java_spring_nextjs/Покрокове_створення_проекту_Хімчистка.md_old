@@ -1,0 +1,1001 @@
+# Покрокове створення проекту "Хімчистка"
+
+## Принципи організації монорепозиторію
+
+Для проекту "Хімчистка" рекомендується використання монорепозиторію, який дозволить ефективно керувати розробкою бекенду та фронтенду в рамках одного проекту.
+
+### Ключові принципи:
+
+1. **Базовий поділ**:
+
+   - Розділіть проект на директорії `backend` (Java/Spring) та `frontend` (Next.js)
+   - Кожна частина має власну конфігурацію та залежності
+
+2. **Організація спільних ресурсів**:
+
+   - Створіть папку `docker` для контейнеризації
+   - Організуйте документацію в папці `docs`
+   - Використовуйте `scripts` для спільних скриптів автоматизації
+
+3. **Узгодженість розробки**:
+
+   - Створюйте гілки для фіч, що містять зміни як у бекенді, так і у фронтенді
+   - Використовуйте спільну систему версіонування для всього проекту
+
+4. **Інструменти спільної розробки**:
+   - Налаштуйте CI/CD для автоматизації тестування та деплою
+   - Використовуйте спільні лінтери та форматери коду
+
+### Переваги монорепозиторію:
+
+- Єдина точка для всіх змін
+- Узгодженість API між фронтендом і бекендом
+- Спрощене тестування інтеграції
+- Зручність для невеликих команд
+
+## Зміст
+
+1. [Етап 1: Налаштування середовища розробки](#етап-1-налаштування-середовища-розробки)
+2. [Етап 2: Налаштування Docker і бази даних](#етап-2-налаштування-docker-і-бази-даних)
+3. [Етап 3: Створення базового Spring Boot проекту](#етап-3-створення-базового-spring-boot-проекту)
+4. [Етап 4: Створення базової структури бекенду](#етап-4-створення-базової-структури-бекенду)
+5. [Етап 5: Налаштування Next.js фронтенду](#етап-5-налаштування-nextjs-фронтенду)
+6. [Етап 6: Інтеграція бекенду і фронтенду](#етап-6-інтеграція-бекенду-і-фронтенду)
+7. [Етап 7: Розширення функціоналу](#етап-7-розширення-функціоналу)
+
+## Етап 1: Налаштування середовища розробки
+
+### Необхідне програмне забезпечення
+
+1. **JDK** (Java 21 або новіше):
+
+   ```bash
+   sudo pacman -S jdk-openjdk
+   java -version
+   ```
+
+2. **Maven** (для управління залежностями Java):
+
+   ```bash
+   sudo pacman -S maven
+   mvn -version
+   ```
+
+3. **Node.js** і **npm** (для фронтенду):
+
+   ```bash
+   sudo pacman -S nodejs npm
+   node -v
+   npm -v
+   ```
+
+4. **Docker** і **Docker Compose** (для контейнеризації):
+
+   ```bash
+   sudo pacman -S docker docker-compose
+   sudo systemctl start docker
+   sudo systemctl enable docker
+   sudo usermod -aG docker $USER
+   # Необхідно перелогінитись після цієї команди
+   ```
+
+5. **IDE**:
+   - [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) для Java
+   - [Visual Studio Code](https://code.visualstudio.com/download) для Next.js
+
+## Етап 2: Налаштування Docker і бази даних
+
+### Створення Docker Compose файлу
+
+1. Створіть файл `docker-compose.yml` в папці `docker` проекту:
+
+```yaml
+version: '3.8'
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: aksi-pgadmin
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aksi.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+      PGADMIN_SERVER_JSON_FILE: '/pgadmin4/servers.json'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
+    restart: unless-stopped
+    network_mode: 'host'
+
+volumes:
+  pgadmin_data:
+```
+
+2. Запустіть Docker Compose:
+
+```bash
+cd docker
+docker-compose up -d
+```
+
+3. Перевірте, що контейнери запущені:
+
+```bash
+docker ps
+```
+
+## Етап 3: Створення базового Spring Boot проекту
+
+### Використання Spring Initializr
+
+1. Перейдіть на [Spring Initializr](https://start.spring.io/)
+
+2. Налаштуйте проект:
+
+   - **Project**: Maven
+   - **Language**: Java
+   - **Spring Boot**: 3.x
+   - **Group**: com.aksi
+   - **Artifact**: aksi-app
+   - **Name**: aksi-app
+   - **Description**: Dry Cleaning Management System
+   - **Package Name**: com.aksi
+   - **Packaging**: Jar
+   - **Java**: 21
+
+3. Додайте залежності:
+
+   - Spring Web
+   - Spring Data JPA
+   - PostgreSQL Driver
+   - Spring Security
+   - Validation
+   - Lombok
+   - Spring Boot DevTools
+
+4. Завантажте проект і розпакуйте його в директорію `/backend`
+
+### Налаштування Spring Boot проекту
+
+1. Відкрийте проект в IntelliJ IDEA
+
+2. Додайте додаткові залежності в `pom.xml`:
+
+```xml
+<!-- Додаткові залежності -->
+<dependencies>
+    <!-- MapStruct для маппінгу DTO <-> Entity -->
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>1.5.5.Final</version>
+    </dependency>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>1.5.5.Final</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- JWT для автентифікації -->
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.11.5</version>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+
+    <!-- Springdoc OpenAPI для документації API -->
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.2.0</version>
+    </dependency>
+</dependencies>
+```
+
+3. Створіть `application.yml` в `src/main/resources`:
+
+```yaml
+spring:
+  application:
+    name: aksi-app
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aksi
+    username: aksi
+    password: aksi
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+jwt:
+  secret: ваш_секретний_ключ_який_повинен_бути_достатньо_довгим_для_безпеки
+  expiration: 86400000 # 24 години
+```
+
+## Етап 4: Створення базової структури бекенду
+
+### Базова структура пакетів
+
+Створіть наступну структуру пакетів відповідно до DDD:
+
+```
+com.aksi
+├── config
+│   ├── SecurityConfig.java
+│   └── JwtConfig.java
+├── domain
+│   ├── client
+│   │   ├── Client.java
+│   │   └── ClientRepository.java
+│   ├── order
+│   │   ├── Order.java
+│   │   ├── OrderItem.java
+│   │   └── OrderRepository.java
+│   └── common
+│       └── AuditableEntity.java
+├── service
+│   ├── client
+│   │   ├── ClientService.java
+│   │   └── ClientServiceImpl.java
+│   └── order
+│       ├── OrderService.java
+│       └── OrderServiceImpl.java
+├── api
+│   ├── v1
+│   │   ├── ClientController.java
+│   │   └── OrderController.java
+│   └── advice
+│       └── GlobalExceptionHandler.java
+├── dto
+│   ├── client
+│   │   ├── ClientDTO.java
+│   │   └── ClientResponse.java
+│   └── order
+│       ├── OrderDTO.java
+│       └── OrderResponse.java
+├── mapper
+│   ├── ClientMapper.java
+│   └── OrderMapper.java
+└── exception
+    ├── EntityNotFoundException.java
+    └── BusinessException.java
+```
+
+### Приклади базових класів
+
+#### 1. Спільний базовий клас для сутностей
+
+```java
+// com.aksi.domain.common.AuditableEntity.java
+package com.aksi.domain.common;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+public abstract class AuditableEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @CreatedBy
+    @Column(updatable = false)
+    private String createdBy;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @LastModifiedBy
+    private String updatedBy;
+}
+```
+
+#### 2. Приклад сутності клієнта
+
+```java
+// com.aksi.domain.client.Client.java
+package com.aksi.domain.client;
+
+import com.aksi.domain.common.AuditableEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.*;
+
+@Entity
+@Table(name = "clients")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Client extends AuditableEntity {
+
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
+
+    @Column(nullable = false, unique = true)
+    private String phone;
+
+    private String email;
+
+    private String address;
+
+    private String contactMethod;
+
+    private String referralSource;
+}
+```
+
+#### 3. Репозиторій для клієнта
+
+```java
+// com.aksi.domain.client.ClientRepository.java
+package com.aksi.domain.client;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface ClientRepository extends JpaRepository<Client, Long> {
+    Optional<Client> findByPhone(String phone);
+    List<Client> findByLastNameContainingIgnoreCaseOrPhoneContaining(String lastName, String phone);
+}
+```
+
+#### 4. Приклад DTO
+
+```java
+// com.aksi.dto.client.ClientDTO.java
+package com.aksi.dto.client;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClientDTO {
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private String email;
+    private String address;
+    private String contactMethod;
+    private String referralSource;
+}
+```
+
+#### 5. Приклад маппера
+
+```java
+// com.aksi.mapper.ClientMapper.java
+package com.aksi.mapper;
+
+import com.aksi.domain.client.Client;
+import com.aksi.dto.client.ClientDTO;
+import com.aksi.dto.client.ClientResponse;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+@Mapper(componentModel = "spring")
+public interface ClientMapper {
+    ClientDTO toDto(Client client);
+    Client toEntity(ClientDTO clientDTO);
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "fullName", expression = "java(client.getFirstName() + \" \" + client.getLastName())")
+    ClientResponse toResponse(Client client);
+}
+```
+
+#### 6. Приклад сервісу
+
+```java
+// com.aksi.service.client.ClientService.java
+package com.aksi.service.client;
+
+import com.aksi.dto.client.ClientDTO;
+import com.aksi.dto.client.ClientResponse;
+
+import java.util.List;
+
+public interface ClientService {
+    ClientResponse createClient(ClientDTO clientDTO);
+    ClientResponse getClientById(Long id);
+    List<ClientResponse> searchClients(String query);
+    ClientResponse updateClient(Long id, ClientDTO clientDTO);
+    void deleteClient(Long id);
+}
+```
+
+```java
+// com.aksi.service.client.ClientServiceImpl.java
+package com.aksi.service.client;
+
+import com.aksi.domain.client.Client;
+import com.aksi.domain.client.ClientRepository;
+import com.aksi.dto.client.ClientDTO;
+import com.aksi.dto.client.ClientResponse;
+import com.aksi.exception.EntityNotFoundException;
+import com.aksi.mapper.ClientMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class ClientServiceImpl implements ClientService {
+
+    private final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
+
+    @Override
+    @Transactional
+    public ClientResponse createClient(ClientDTO clientDTO) {
+        Client client = clientMapper.toEntity(clientDTO);
+        Client savedClient = clientRepository.save(client);
+        return clientMapper.toResponse(savedClient);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ClientResponse getClientById(Long id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + id));
+        return clientMapper.toResponse(client);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ClientResponse> searchClients(String query) {
+        List<Client> clients = clientRepository.findByLastNameContainingIgnoreCaseOrPhoneContaining(query, query);
+        return clients.stream()
+                .map(clientMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public ClientResponse updateClient(Long id, ClientDTO clientDTO) {
+        Client existingClient = clientRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + id));
+
+        Client updatedClient = clientMapper.toEntity(clientDTO);
+        updatedClient.setId(id);
+        updatedClient = clientRepository.save(updatedClient);
+
+        return clientMapper.toResponse(updatedClient);
+    }
+
+    @Override
+    @Transactional
+    public void deleteClient(Long id) {
+        if (!clientRepository.existsById(id)) {
+            throw new EntityNotFoundException("Client not found with id: " + id);
+        }
+        clientRepository.deleteById(id);
+    }
+}
+```
+
+#### 7. Приклад контролера
+
+```java
+// com.aksi.api.v1.ClientController.java
+package com.aksi.api.v1;
+
+import com.aksi.dto.client.ClientDTO;
+import com.aksi.dto.client.ClientResponse;
+import com.aksi.service.client.ClientService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/v1/clients")
+@RequiredArgsConstructor
+public class ClientController {
+
+    private final ClientService clientService;
+
+    @PostMapping
+    public ResponseEntity<ClientResponse> createClient(@Valid @RequestBody ClientDTO clientDTO) {
+        return new ResponseEntity<>(clientService.createClient(clientDTO), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id) {
+        return ResponseEntity.ok(clientService.getClientById(id));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ClientResponse>> searchClients(@RequestParam String query) {
+        return ResponseEntity.ok(clientService.searchClients(query));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ClientResponse> updateClient(
+            @PathVariable Long id,
+            @Valid @RequestBody ClientDTO clientDTO) {
+        return ResponseEntity.ok(clientService.updateClient(id, clientDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
+        clientService.deleteClient(id);
+        return ResponseEntity.noContent().build();
+    }
+}
+```
+
+## Етап 5: Налаштування Next.js фронтенду
+
+### Створення Next.js проекту
+
+1. Створіть Next.js проект:
+
+```bash
+npx create-next-app@latest frontend
+```
+
+Параметри налаштування:
+
+- TypeScript: Yes
+- ESLint: Yes
+- Tailwind CSS: No
+- src/ directory: Yes
+- App Router: Yes
+- Import alias: Yes (@/\*)
+
+2. Перейдіть в директорію проекту і встановіть необхідні залежності:
+
+```bash
+cd frontend
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material axios @tanstack/react-query zustand react-hook-form zod @hookform/resolvers dayjs
+```
+
+3. Налаштуйте axios для роботи з API:
+
+```typescript
+// src/lib/axios.ts
+import axios from 'axios';
+
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+
+const axiosInstance = axios.create({
+  baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Інтерцептор для додавання JWT токену
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Інтерцептор для обробки помилок
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Логіка обробки помилок
+    if (error.response?.status === 401) {
+      // Якщо токен недійсний - перенаправити на сторінку логіну
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default axiosInstance;
+```
+
+4. Налаштуйте React Query:
+
+```typescript
+// src/lib/reactQuery.ts
+import { QueryClient } from '@tanstack/react-query';
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 30000,
+    },
+  },
+});
+```
+
+5. Налаштуйте Material UI тему:
+
+```typescript
+// src/lib/theme.ts
+import { createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+  typography: {
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+    ].join(','),
+  },
+});
+
+export default theme;
+```
+
+### Створення базової структури фронтенду
+
+Створіть наступну структуру файлів:
+
+```
+src/
+├── app/
+│   ├── (app)/
+│   │   ├── dashboard/
+│   │   │   └── page.tsx
+│   │   ├── clients/
+│   │   │   ├── page.tsx
+│   │   │   └── [id]/
+│   │   │       └── page.tsx
+│   │   ├── orders/
+│   │   │   ├── page.tsx
+│   │   │   └── [id]/
+│   │   │       └── page.tsx
+│   │   └── layout.tsx
+│   ├── login/
+│   │   └── page.tsx
+│   ├── globals.css
+│   └── layout.tsx
+├── components/
+│   └── ui/
+│       ├── AppBar.tsx
+│       ├── Sidebar.tsx
+│       └── PageLoader.tsx
+├── features/
+│   ├── auth/
+│   │   ├── components/
+│   │   │   └── LoginForm.tsx
+│   │   └── api/
+│   │       └── authApi.ts
+│   └── clients/
+│       ├── components/
+│       │   ├── ClientList.tsx
+│       │   └── ClientForm.tsx
+│   │   ├── api/
+│   │   │   └── clientApi.ts
+│   │   └── types/
+│   │   └── index.ts
+│   ├── hooks/
+│   │   └── useAuth.ts
+│   ├── lib/
+│   │   ├── axios.ts
+│   │   ├── reactQuery.ts
+│   │   └── theme.ts
+│   └── types/
+│       └── index.ts
+```
+
+### Приклади базових компонентів
+
+#### 1. Базовий Layout
+
+```tsx
+// src/app/(app)/layout.tsx
+'use client';
+
+import { ReactNode } from 'react';
+import { AppBar } from '@/components/ui/AppBar';
+import { Sidebar } from '@/components/ui/Sidebar';
+import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material';
+import theme from '@/lib/theme';
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ display: 'flex' }}>
+        <AppBar />
+        <Sidebar />
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            mt: 8,
+            height: '100vh',
+            overflow: 'auto',
+          }}
+        >
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            {children}
+          </Container>
+        </Box>
+      </Box>
+    </ThemeProvider>
+  );
+}
+```
+
+#### 2. Приклад API клієнта
+
+```typescript
+// src/features/clients/api/clientApi.ts
+import axios from '@/lib/axios';
+import { ClientDTO, ClientResponse } from '@/features/clients/types';
+
+export const getClients = async (): Promise<ClientResponse[]> => {
+  const { data } = await axios.get('/v1/clients');
+  return data;
+};
+
+export const getClientById = async (id: number): Promise<ClientResponse> => {
+  const { data } = await axios.get(`/v1/clients/${id}`);
+  return data;
+};
+
+export const searchClients = async (
+  query: string
+): Promise<ClientResponse[]> => {
+  const { data } = await axios.get(`/v1/clients/search?query=${query}`);
+  return data;
+};
+
+export const createClient = async (
+  client: ClientDTO
+): Promise<ClientResponse> => {
+  const { data } = await axios.post('/v1/clients', client);
+  return data;
+};
+
+export const updateClient = async (
+  id: number,
+  client: ClientDTO
+): Promise<ClientResponse> => {
+  const { data } = await axios.put(`/v1/clients/${id}`, client);
+  return data;
+};
+
+export const deleteClient = async (id: number): Promise<void> => {
+  await axios.delete(`/v1/clients/${id}`);
+};
+```
+
+#### 3. Приклад сторінки клієнтів
+
+```tsx
+// src/app/(app)/clients/page.tsx
+'use client';
+
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { searchClients } from '@/features/clients/api/clientApi';
+import ClientList from '@/features/clients/components/ClientList';
+import { Box, Button, TextField, Typography } from '@mui/material';
+import { Add } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
+
+export default function ClientsPage() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const { data: clients, isLoading } = useQuery({
+    queryKey: ['clients', searchQuery],
+    queryFn: () => searchClients(searchQuery),
+    enabled: searchQuery.length > 0,
+  });
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleCreateClick = () => {
+    router.push('/clients/new');
+  };
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h4">Клієнти</Typography>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={handleCreateClick}
+        >
+          Створити
+        </Button>
+      </Box>
+
+      <TextField
+        fullWidth
+        label="Пошук клієнтів"
+        variant="outlined"
+        margin="normal"
+        value={searchQuery}
+        onChange={handleSearch}
+        placeholder="Введіть прізвище або телефон"
+      />
+
+      <ClientList clients={clients || []} isLoading={isLoading} />
+    </Box>
+  );
+}
+```
+
+## Етап 6: Інтеграція бекенду і фронтенду
+
+### Налаштування CORS на бекенді
+
+1. Додайте CORS конфігурацію в Spring Boot проект:
+
+```java
+// com.aksi.config.WebConfig.java
+package com.aksi.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
+}
+```
+
+### Запуск проекту
+
+1. Запустіть бекенд:
+
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+2. Запустіть фронтенд:
+
+```bash
+cd frontend
+npm run dev
+```
+
+3. Відкрийте браузер і перейдіть за адресою http://localhost:3000
+
+## Етап 7: Розширення функціоналу
+
+Після створення базового кістяка проекту, ви можете почати поступово розширювати його, додаючи нові можливості:
+
+1. **Реалізуйте обробку замовлень**
+
+   - Додайте сутності для замовлень
+   - Розробіть API для роботи з замовленнями
+   - Створіть компоненти інтерфейсу для управління замовленнями
+
+2. **Впровадіть Order Wizard**
+
+   - Додайте покрокову форму для створення замовлень
+   - Реалізуйте логіку розрахунку цін
+   - Додайте валідацію даних
+
+3. **Налаштуйте автентифікацію та авторизацію**
+
+   - Реалізуйте JWT автентифікацію на бекенді
+   - Створіть форму входу на фронтенді
+   - Додайте захист маршрутів
+
+4. **Розробіть функціонал звітів**
+
+   - Додайте API для генерації звітів
+   - Створіть компоненти для відображення статистики
+
+5. **Додайте функціонал друку квитанцій**
+   - Реалізуйте генерацію PDF на бекенді
+   - Додайте компонент попереднього перегляду та друку на фронтенді
+
+### Поради для подальшого розвитку
+
+- **Використовуйте поступовий підхід**: додавайте по одній функції за раз
+- **Пишіть тести**: додавайте тести разом з новим функціоналом
+- **Документуйте API**: використовуйте Swagger для документації
+- **Використовуйте Git**: регулярно комітьте зміни та використовуйте гілки для нових функцій
+- **Автоматизуйте процеси**: налаштуйте CI/CD для автоматичного тестування та розгортання
+
+Дотримуючись цих кроків, ви поступово розвинете базовий кістяк проекту в повноцінну систему управління хімчисткою.

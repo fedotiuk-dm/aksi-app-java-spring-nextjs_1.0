@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.5.0
+      author: aksi-developer
+      changes:
+        # Додаємо поле additionalPhone до таблиці clients, якщо воно не існує
+        - preConditions:
+            - tableExists:
+                tableName: clients
+            - not:
+                columnExists:
+                  tableName: clients
+                  columnName: additional_phone
+            onFail: MARK_RAN
+        - addColumn:
+            tableName: clients
+            columns:
+              - column:
+                  name: additional_phone
+                  type: varchar(50)
+                  constraints:
+                    nullable: true 

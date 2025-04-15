@@ -1,0 +1,76 @@
+# IDE та редактори
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+.cursor/
+
+# Бекенд
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/logs/
+backend/*.log
+# Не виключати основну конфігурацію, але виключити специфічні для середовищ
+backend/src/main/resources/application-dev.yml
+backend/src/main/resources/application-prod.yml
+backend/src/main/resources/application-staging.yml
+
+# Фронтенд
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/dist/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.eslintcache
+frontend/*.tsbuildinfo
+
+# Docker
+docker/pgadmin/servers.json
+docker/pgadmin/pgpass
+docker/pgadmin/data/
+docker/volumes/
+docker/postgres_data/
+docker-compose.override.yml 
+
+# Завантажені файли
+uploads/
+storage/
+temp/
+
+# Бази даних
+*.db
+*.sqlite
+*.sqlite3
+
+# Секретні файли
+*.pem
+*.key
+*.env
+*secrets*
+*credentials*
+
+# Інше
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.swp
+*~
+.DS_Store
+Thumbs.db
+logs/
+*.log 

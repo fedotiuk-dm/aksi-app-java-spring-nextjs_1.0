@@ -1,0 +1,13 @@
+# Ігнорувати файли з паролями та приватною інформацією
+pgadmin/pgpass
+pgadmin/servers.json
+*.env
+
+# Ігнорувати об'єми даних Docker
+data/
+postgres-data/
+pgadmin-data/
+
+# Але зберігати структуру
+!pgadmin/config/
+!pgadmin/config/.gitkeep 

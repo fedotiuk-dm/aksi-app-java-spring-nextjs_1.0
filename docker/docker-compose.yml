@@ -1,0 +1,88 @@
+services:
+  # PostgreSQL
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: aksi_user
+      POSTGRES_PASSWORD: 1911
+      POSTGRES_DB: aksi_cleaners_db_v5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U aksi_user -d aksi_cleaners_db_v5']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aksi-network
+
+  # PgAdmin
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: aksi-pgadmin
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aksi.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin/config/servers.json:/pgadmin4/servers.json
+      - ./pgadmin/pgpass:/pgpass
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - aksi-network
+
+  # Backend (Spring Boot)
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - '8080:8080'
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5?schema=public
+      SPRING_DATASOURCE_USERNAME: aksi_user
+      SPRING_DATASOURCE_PASSWORD: 1911
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - aksi-network
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - '3000:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080/api
+      NEXT_TELEMETRY_DISABLED: 1
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - aksi-network
+
+networks:
+  aksi-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  pgadmin_data:

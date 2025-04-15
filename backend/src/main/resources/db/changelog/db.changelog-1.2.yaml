@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: aksi
+      changes:
+        - dropTable:
+            tableName: password_reset_tokens
