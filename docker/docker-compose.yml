@@ -9,6 +9,7 @@ services:
       POSTGRES_USER: aksi_user
       POSTGRES_PASSWORD: 1911
       POSTGRES_DB: aksi_cleaners_db_v5
+      POSTGRES_SCHEMA: public
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -51,7 +52,7 @@ services:
     ports:
       - '8080:8080'
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5?schema=public
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5
       SPRING_DATASOURCE_USERNAME: aksi_user
       SPRING_DATASOURCE_PASSWORD: 1911
       SPRING_PROFILES_ACTIVE: prod

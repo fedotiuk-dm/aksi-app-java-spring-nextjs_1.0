@@ -12,14 +12,11 @@ spring:
     parameters:
       create-uuid-extension: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
   datasource:
-    url: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5?schema=public
+    url: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5
     username: aksi_user
     password: 1911
     driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
-    locations: classpath:db/changelog
-    baseline-on-migrate: true
+    schema: public
   jpa:
     hibernate:
       ddl-auto: update

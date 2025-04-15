@@ -23,7 +23,7 @@
         <jjwt.version>0.12.6</jjwt.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <springdoc.version>2.8.6</springdoc.version>
-        <flyway.version>11.7.0</flyway.version>
+        <liquibase.version>4.31.1</liquibase.version>
         <postgresql.version>42.7.5</postgresql.version>
         <micrometer.version>1.14.5</micrometer.version>
         <junit-jupiter.version>5.12.1</junit-jupiter.version>
@@ -64,14 +64,10 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- Flyway -->
+        <!-- Liquibase -->
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-postgresql</artifactId>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
         </dependency>
         <!-- PostgreSQL -->
         <dependency>
@@ -203,15 +199,13 @@
                 <version>${maven-surefire-plugin.version}</version>
             </plugin>
 
-            <!-- Flyway Maven Plugin -->
+            <!-- Liquibase Maven Plugin -->
             <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
                 <configuration>
-                    <url>jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5</url>
-                    <user>aksi_user</user>
-                    <password>1911</password>
-                    <schemas>public</schemas>
+                    <propertyFile>src/main/resources/liquibase.properties</propertyFile>
+                    <changeLogFile>src/main/resources/db/changelog/db.changelog-master.yaml</changeLogFile>
                 </configuration>
             </plugin>
 

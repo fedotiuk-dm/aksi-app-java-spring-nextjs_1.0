@@ -50,7 +50,7 @@ case $container_option in
     docker compose rm -f backend
     
     echo "Перевірка статусу бази даних..."
-    if ! docker compose ps | grep -q "aksi-postgres.*healthy"; then
+    if ! docker compose ps | grep -q "docker-postgres.*healthy"; then
       echo "PostgreSQL не запущений або не в стані healthy. Запускаємо..."
       docker compose up -d postgres
       echo "Очікування готовності PostgreSQL..."
@@ -90,7 +90,7 @@ if [ "$container_option" = "5" ]; then
   echo ""
   echo "Перевірка логів міграції Liquibase..."
   sleep 5
-  docker logs aksi-backend | grep -i "liquibase\|migration\|changelog" | tail -15
+  docker logs docker-backend | grep -i "liquibase\|migration\|changelog" | tail -15
   
   echo ""
   echo "Бажаєте перевірити структуру таблиць? (y/n): "
@@ -125,9 +125,9 @@ echo "  • Користувач: aksi_user"
 echo "  • Пароль: 1911"
 echo ""
 echo "Перегляд логів:"
-echo "- Фронтенд: docker logs -f aksi-frontend"
-echo "- Бекенд: docker logs -f aksi-backend"
-echo "- PostgreSQL: docker logs -f aksi-postgres"
+echo "- Фронтенд: docker logs -f docker-frontend"
+echo "- Бекенд: docker logs -f docker-backend"
+echo "- PostgreSQL: docker logs -f docker-postgres"
 echo ""
 echo "Обслуговування бази даних:"
 echo "- Вхід в консоль PostgreSQL: docker compose exec postgres psql -U aksi_user -d aksi_cleaners_db_v5"
