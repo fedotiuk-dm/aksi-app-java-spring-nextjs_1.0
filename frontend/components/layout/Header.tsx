@@ -45,7 +45,7 @@ export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pathname = usePathname();
-  const { handleLogout, isLoading } = useLogout();
+  const { logout, isLoading } = useLogout();
 
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -119,7 +119,7 @@ export default function Header() {
               <MenuItem 
                 onClick={() => {
                   handleUserMenuClose();
-                  handleLogout();
+                  logout();
                 }}
                 disabled={isLoading}
               >
