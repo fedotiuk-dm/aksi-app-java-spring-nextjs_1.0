@@ -19,7 +19,7 @@
 
 - **Next.js**: 15.3.0 (з App Router)
 - **React**: 19.0.0
-- **Node.js**: 23.9.0
+- **Node.js**: 22.14.0-alpine3.20
 - **Material UI**: 7.0.x
 - **TypeScript**: 5.x
 

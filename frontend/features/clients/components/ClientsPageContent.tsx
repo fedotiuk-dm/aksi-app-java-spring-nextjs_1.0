@@ -187,7 +187,7 @@ export default function ClientsPageContent() {
               Помилка завантаження даних клієнтів
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }}>
-              {error instanceof Error ? error.message : 'Невідома помилка'}
+              {error.message || 'Невідома помилка'}
             </Typography>
           </Alert>
         )}
@@ -238,7 +238,7 @@ export default function ClientsPageContent() {
                         Фільтри
                       </Button>
 
-                      {filters.status && filters.status !== 'ALL' && (
+                      {filters.status && (
                         <Chip
                           label={`Статус: ${
                             filters.status === ClientStatus.ACTIVE
@@ -253,28 +253,27 @@ export default function ClientsPageContent() {
                         />
                       )}
 
-                      {filters.loyaltyLevel &&
-                        filters.loyaltyLevel !== 'ALL' && (
-                          <Chip
-                            label={`Лояльність: ${
-                              filters.loyaltyLevel === LoyaltyLevel.VIP
-                                ? 'VIP'
-                                : filters.loyaltyLevel === LoyaltyLevel.PLATINUM
-                                ? 'Платиновий'
-                                : filters.loyaltyLevel === LoyaltyLevel.GOLD
-                                ? 'Золотий'
-                                : filters.loyaltyLevel === LoyaltyLevel.SILVER
-                                ? 'Срібний'
-                                : 'Стандарт'
-                            }`}
-                            onDelete={() =>
-                              setFilters({
-                                ...filters,
-                                loyaltyLevel: undefined,
-                              })
-                            }
-                          />
-                        )}
+                      {filters.loyaltyLevel && (
+                        <Chip
+                          label={`Лояльність: ${
+                            filters.loyaltyLevel === LoyaltyLevel.VIP
+                              ? 'VIP'
+                              : filters.loyaltyLevel === LoyaltyLevel.PLATINUM
+                              ? 'Платиновий'
+                              : filters.loyaltyLevel === LoyaltyLevel.GOLD
+                              ? 'Золотий'
+                              : filters.loyaltyLevel === LoyaltyLevel.SILVER
+                              ? 'Срібний'
+                              : 'Стандарт'
+                          }`}
+                          onDelete={() =>
+                            setFilters({
+                              ...filters,
+                              loyaltyLevel: undefined,
+                            })
+                          }
+                        />
+                      )}
 
                       {filters.source && (
                         <Chip

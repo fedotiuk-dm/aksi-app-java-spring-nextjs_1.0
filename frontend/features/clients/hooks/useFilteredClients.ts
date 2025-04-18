@@ -1,109 +1,121 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useClients } from './useClients';
+import { useSearchClients } from './useClients';
 import {
   ClientResponse,
   ClientStatus,
   LoyaltyLevel,
   ClientSource,
 } from '../types';
+import { ClientSearchRequest } from '../api/clientsApi';
 
 interface FilterOptions {
-  status?: ClientStatus | 'ALL';
-  loyaltyLevel?: LoyaltyLevel | 'ALL';
-  source?: ClientSource | 'ALL';
+  status?: ClientStatus;
+  loyaltyLevel?: LoyaltyLevel;
+  source?: ClientSource;
   search?: string;
   tags?: string[];
   daysAgo?: number;
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDirection?: 'ASC' | 'DESC';
 }
 
 interface UseFilteredClientsResult {
   filteredClients: ClientResponse[];
   isLoading: boolean;
-  error: unknown;
+  error: Error | null;
   totalClients: number;
   setFilters: (filters: FilterOptions) => void;
   filters: FilterOptions;
+  pageInfo: {
+    currentPage: number;
+    totalPages: number;
+    totalElements: number;
+  };
 }
 
 export const useFilteredClients = (
   initialFilters: FilterOptions = {}
 ): UseFilteredClientsResult => {
-  const [filters, setFilters] = useState<FilterOptions>(initialFilters);
-  const { data: clients = [], isLoading, error } = useClients();
+  const [filters, setFilters] = useState<FilterOptions>({
+    page: 0,
+    size: 10,
+    sortBy: 'updatedAt',
+    sortDirection: 'DESC',
+    ...initialFilters,
+  });
 
-  const filteredClients = useMemo(() => {
-    return clients.filter((client) => {
-      // Фільтр за статусом
-      if (
-        filters.status &&
-        filters.status !== 'ALL' &&
-        client.status !== filters.status
-      ) {
-        return false;
-      }
+  const [searchRequest, setSearchRequest] = useState<ClientSearchRequest>({
+    pageNumber: filters.page,
+    pageSize: filters.size,
+    sortBy: filters.sortBy,
+    sortDirection: filters.sortDirection as 'ASC' | 'DESC',
+  });
 
-      // Фільтр за рівнем лояльності
-      if (
-        filters.loyaltyLevel &&
-        filters.loyaltyLevel !== 'ALL' &&
-        client.loyaltyLevel !== filters.loyaltyLevel
-      ) {
-        return false;
-      }
+  // Оновлюємо searchRequest при зміні фільтрів
+  useEffect(() => {
+    const newSearchRequest: ClientSearchRequest = {
+      pageNumber: filters.page,
+      pageSize: filters.size,
+      sortBy: filters.sortBy,
+      sortDirection: filters.sortDirection as 'ASC' | 'DESC',
+      status: filters.status,
+      loyaltyLevel: filters.loyaltyLevel,
+      source: filters.source,
+      searchTerm: filters.search,
+    };
 
-      // Фільтр за джерелом
-      if (
-        filters.source &&
-        filters.source !== 'ALL' &&
-        client.source !== filters.source
-      ) {
-        return false;
-      }
+    // Додаємо fromDate якщо вказано daysAgo
+    if (filters.daysAgo) {
+      const fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - filters.daysAgo);
+      newSearchRequest.fromDate = fromDate.toISOString().split('T')[0];
+    }
 
-      // Фільтр за пошуком
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        const nameMatch = client.fullName?.toLowerCase().includes(searchLower);
-        const phoneMatch = client.phone?.toLowerCase().includes(searchLower);
-        const emailMatch = client.email?.toLowerCase().includes(searchLower);
+    // Додаємо теги, якщо вони є
+    if (filters.tags && filters.tags.length > 0) {
+      newSearchRequest.tags = filters.tags;
+    }
 
-        if (!nameMatch && !phoneMatch && !emailMatch) {
-          return false;
-        }
-      }
+    setSearchRequest(newSearchRequest);
+  }, [filters]);
 
-      // Фільтр за тегами
-      if (filters.tags && filters.tags.length > 0) {
-        if (!client.tags) return false;
-
-        for (const tag of filters.tags) {
-          if (!client.tags.includes(tag)) {
-            return false;
-          }
-        }
-      }
-
-      // Фільтр за к-стю днів (нові клієнти)
-      if (filters.daysAgo && client.createdAt) {
-        const daysAgoDate = new Date();
-        daysAgoDate.setDate(daysAgoDate.getDate() - filters.daysAgo);
-        if (new Date(client.createdAt) < daysAgoDate) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [clients, filters]);
-
-  return {
-    filteredClients,
+  // Використовуємо новий хук для пошуку клієнтів з бекенду
+  const {
+    data: searchResults,
     isLoading,
     error,
-    totalClients: clients.length,
+  } = useSearchClients(searchRequest);
+
+  // Резервний варіант - отримуємо всіх клієнтів без фільтрів
+  const { data: allClients = [] } = useClients();
+
+  // Клієнти з пошуку або всі клієнти, якщо пошук не працює
+  const clients = useMemo(() => {
+    return searchResults?.content || allClients;
+  }, [searchResults, allClients]);
+
+  // Інформація про пагінацію
+  const pageInfo = useMemo(
+    () => ({
+      currentPage: searchResults?.number || 0,
+      totalPages: searchResults?.totalPages || 1,
+      totalElements: searchResults?.totalElements || clients.length,
+    }),
+    [searchResults, clients.length]
+  );
+
+  return {
+    filteredClients: clients,
+    isLoading,
+    error,
+    totalClients: pageInfo.totalElements,
     setFilters,
     filters,
+    pageInfo,
   };
 };

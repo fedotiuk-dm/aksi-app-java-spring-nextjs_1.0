@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -19,6 +19,8 @@ import {
   Select,
   TextField,
   Typography,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -32,6 +34,8 @@ import { ClientSource, ClientStatus, LoyaltyLevel } from '../types';
 import { useCreateClient } from '../hooks/useCreateClient';
 import { useUpdateClient } from '../hooks/useUpdateClient';
 import { ClientCreateRequest, ClientUpdateRequest } from '../api/clientsApi';
+import { authTokens } from '@/features/auth/api/authApi';
+import axios from '@/lib/axios';
 
 // Схема валідації для форми
 const clientFormSchema = z.object({
@@ -86,10 +90,24 @@ export default function ClientForm({
 }: ClientFormProps) {
   const router = useRouter();
   const [tagInput, setTagInput] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<boolean>(false);
   const createClient = useCreateClient();
   const updateClient = useUpdateClient();
 
   const isSubmitting = createClient.isPending || updateClient.isPending;
+
+  // Перевірка автентифікації при завантаженні компонента
+  useEffect(() => {
+    const token = authTokens.getToken();
+    if (!token) {
+      setAuthError(true);
+      const timer = setTimeout(() => {
+        router.push('/login');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [router]);
 
   const {
     register,
@@ -134,6 +152,20 @@ export default function ClientForm({
   };
 
   const onSubmit = async (data: ClientFormValues) => {
+    console.log('Submitting form with data:', data);
+    setFormError(null);
+
+    // Перевірка автентифікації перед відправкою
+    const token = authTokens.getToken();
+    if (!token) {
+      setAuthError(true);
+      setTimeout(() => router.push('/login'), 2000);
+      return;
+    }
+
+    // Додавання токена до заголовка запиту
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
     const formattedData: ClientCreateRequest = {
       fullName: data.fullName,
       phone: data.phone,
@@ -152,20 +184,66 @@ export default function ClientForm({
 
     try {
       if (isEdit && initialData?.id) {
+        console.log('Updating client with ID:', initialData.id);
         const updateData: ClientUpdateRequest = formattedData;
         await updateClient.mutateAsync({
           id: initialData.id,
           data: updateData,
         });
       } else {
+        console.log('Creating new client');
         await createClient.mutateAsync(formattedData);
       }
 
+      console.log('Operation successful, redirecting to clients list');
       router.push('/clients');
     } catch (error) {
       console.error('Помилка при збереженні клієнта:', error);
+
+      // Перевірка помилки авторизації
+      if (
+        error instanceof Error &&
+        (error.message.includes('403') || error.message.includes('401'))
+      ) {
+        setAuthError(true);
+        setTimeout(() => router.push('/login'), 2000);
+        return;
+      }
+
+      setFormError(
+        error instanceof Error
+          ? error.message
+          : 'Виникла помилка при збереженні клієнта'
+      );
     }
   };
+
+  // Якщо не авторизований, показуємо повідомлення і перенаправляємо
+  if (authError) {
+    return (
+      <Container>
+        <Alert
+          severity="error"
+          sx={{ mt: 4 }}
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={() => router.push('/login')}
+            >
+              Увійти
+            </Button>
+          }
+        >
+          Для створення клієнта необхідно авторизуватися. Перенаправлення на
+          сторінку входу...
+        </Alert>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -179,6 +257,12 @@ export default function ClientForm({
               ? 'Оновлення інформації про існуючого клієнта'
               : 'Введіть інформацію для створення нового клієнта'}
           </Typography>
+
+          {formError && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {formError}
+            </Alert>
+          )}
 
           <Card sx={{ mb: 3 }}>
             <CardContent>
@@ -399,7 +483,12 @@ export default function ClientForm({
                       size="small"
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddTag();
+                        }
+                      }}
                     />
                     <Button
                       variant="outlined"
@@ -429,7 +518,12 @@ export default function ClientForm({
             >
               Скасувати
             </Button>
-            <Button type="submit" variant="contained" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSubmitting}
+              startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
+            >
               {isSubmitting
                 ? 'Збереження...'
                 : isEdit

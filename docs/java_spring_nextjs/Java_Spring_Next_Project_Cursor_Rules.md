@@ -42,7 +42,7 @@ alwaysApply: true
 
 - **Фреймворк:** Next.js 15.3.0 (App Router)
 - **Мова:** TypeScript 5
-- **Node.js:** 23.9.0
+- **Node.js:** 22.14.0-alpine3.20
 - **UI:** Material UI 7.0.x
 - **Керування станом:** React Context API (локально) + Zustand 5.0.x (глобально)
 - **API/Бекенд взаємодія:** React Query 5.72.x + Axios 1.8.x
