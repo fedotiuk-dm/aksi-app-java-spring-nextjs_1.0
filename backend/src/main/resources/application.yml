@@ -19,21 +19,15 @@ spring:
     schema: public
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
         hbm2ddl:
-          auto: update
-        javax:
-          persistence:
-            schema-generation:
-              create-source: metadata
-              scripts:
-                action: create
-                create-target: create.sql
+          auto: validate
+        # Видалено налаштування автоматичної генерації схеми
         globally_quoted_identifiers: true
   web:
     cors:
@@ -130,4 +124,3 @@ springdoc:
     - group: clients
       paths-to-match: /v1/clients/**
       packages-to-scan: com.aksi.api.v1
-

@@ -1,4 +1,4 @@
-import { ClientDetail } from '@/features/client/components/ClientDetail';
+import { ClientDetail } from '@/features/clients/components/ClientDetail';
 
 export default function ClientDetailPage() {
   return <ClientDetail />;

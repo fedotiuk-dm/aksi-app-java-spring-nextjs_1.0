@@ -3,6 +3,7 @@ package com.aksi.dto.client;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import java.math.BigDecimal;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -70,7 +71,7 @@ public class ClientDTO {
     /**
      * Загальна сума замовлень
      */
-    private Double totalSpent;
+    private BigDecimal totalSpent;
     
     /**
      * Кількість замовлень

@@ -5,7 +5,7 @@ package com.aksi.domain.client.entity;
  */
 public enum ClientSource {
     /**
-     * Рекомендація від іншого клієнта
+     * За рекомендацією
      */
     REFERRAL,
     

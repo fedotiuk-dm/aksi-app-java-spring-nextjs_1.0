@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -86,7 +87,7 @@ public class Client {
      * Загальна сума замовлень клієнта
      */
     @Column(name = "total_spent")
-    private Double totalSpent;
+    private BigDecimal totalSpent;
     
     /**
      * Кількість замовлень клієнта
@@ -117,6 +118,72 @@ public class Client {
     @Column(name = "loyalty_level", nullable = false)
     @Builder.Default
     private LoyaltyLevel loyaltyLevel = LoyaltyLevel.STANDARD;
+    
+    /**
+     * Стать клієнта
+     */
+    @Column(name = "gender")
+    private String gender;
+    
+    /**
+     * Дозвіл на SMS-повідомлення
+     */
+    @Column(name = "allow_sms")
+    @Builder.Default
+    private Boolean allowSMS = true;
+    
+    /**
+     * Дозвіл на Email-повідомлення
+     */
+    @Column(name = "allow_email")
+    @Builder.Default
+    private Boolean allowEmail = true;
+    
+    /**
+     * Дозвіл на телефонні дзвінки
+     */
+    @Column(name = "allow_calls")
+    @Builder.Default
+    private Boolean allowCalls = true;
+    
+    /**
+     * Дата наступного контакту з клієнтом
+     */
+    @Column(name = "next_contact_at")
+    private LocalDateTime nextContactAt;
+    
+    /**
+     * Дата останнього контакту з клієнтом
+     */
+    @Column(name = "last_contact_at")
+    private LocalDateTime lastContactAt;
+    
+    /**
+     * Показник частоти замовлень (RFM аналіз)
+     */
+    @Column(name = "frequency_score")
+    @Builder.Default
+    private Integer frequencyScore = 0;
+    
+    /**
+     * Показник суми замовлень (RFM аналіз)
+     */
+    @Column(name = "monetary_score")
+    @Builder.Default
+    private Integer monetaryScore = 0;
+    
+    /**
+     * Показник недавності замовлень (RFM аналіз)
+     */
+    @Column(name = "recency_score")
+    @Builder.Default
+    private Integer recencyScore = 0;
+    
+    /**
+     * Дата м'якого видалення запису
+     */
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
     
     /**
      * Теги клієнта

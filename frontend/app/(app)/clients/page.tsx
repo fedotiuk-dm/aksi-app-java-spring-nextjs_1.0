@@ -1,5 +1,5 @@
-import { ClientList } from '@/features/client/components/ClientList';
+import { ClientsList } from '@/features/clients/components/ClientsList';
 
 export default function ClientsPage() {
-  return <ClientList />;
+  return <ClientsList />;
 }

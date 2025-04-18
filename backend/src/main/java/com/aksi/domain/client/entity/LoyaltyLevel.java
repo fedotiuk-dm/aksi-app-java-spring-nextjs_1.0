@@ -10,6 +10,11 @@ public enum LoyaltyLevel {
     STANDARD,
     
     /**
+     * Бронзовий рівень
+     */
+    BRONZE,
+    
+    /**
      * Срібний рівень
      */
     SILVER,

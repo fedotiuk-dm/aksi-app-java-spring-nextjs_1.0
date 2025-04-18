@@ -79,7 +79,7 @@ public class ClientServiceImpl implements ClientService {
         
         // Встановлюємо початкові значення
         client.setOrderCount(0);
-        client.setTotalSpent(0.0);
+        client.setTotalSpent(new java.math.BigDecimal("0.00"));
         
         // Зберігаємо клієнта
         Client savedClient = clientRepository.save(client);

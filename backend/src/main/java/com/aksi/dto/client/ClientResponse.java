@@ -3,6 +3,8 @@ package com.aksi.dto.client;
 import com.aksi.domain.client.entity.ClientSource;
 import com.aksi.domain.client.entity.ClientStatus;
 import com.aksi.domain.client.entity.LoyaltyLevel;
+
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -70,7 +72,7 @@ public class ClientResponse {
     /**
      * Загальна сума замовлень
      */
-    private Double totalSpent;
+    private BigDecimal totalSpent;
     
     /**
      * Кількість замовлень
