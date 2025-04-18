@@ -1,120 +1,124 @@
 'use client';
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '../hooks/useAuth';
-import { loginSchema, LoginDto } from '../types';
+import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  TextField,
-  Button,
-  CircularProgress,
-  Alert,
   Box,
-  InputAdornment,
-  IconButton,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useLogin } from '../hooks/useLogin';
+import { LoginRequest } from '../types/authTypes';
 
-type LoginFormData = z.infer<typeof loginSchema>;
+// Схема валідації для форми логіну
+const loginSchema = z.object({
+  username: z.string().min(1, "Логін є обов'язковим"),
+  password: z.string().min(1, "Пароль є обов'язковим"),
+});
 
-export default function LoginForm() {
-  const { login, isLoading, error } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
+interface LoginFormProps {
+  redirectTo?: string;
+}
+
+export const LoginForm = ({ redirectTo = '/dashboard' }: LoginFormProps) => {
+  const { login, isLoading, error, clearError } = useLogin();
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({
+  } = useForm<LoginRequest>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      username: '',
+      password: '',
+    },
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    login(data as LoginDto);
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword((prev) => !prev);
+  const onSubmit = async (data: LoginRequest) => {
+    await login(data, redirectTo);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Paper
+      elevation={3}
+      sx={{
+        maxWidth: 400,
+        mx: 'auto',
+        p: 4,
+        borderRadius: 2,
+      }}
+    >
+      <Typography variant="h4" component="h1" gutterBottom align="center">
+        Вхід у систему
+      </Typography>
+
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error instanceof Error ? error.message : 'Помилка автентифікації'}
+        <Alert severity="error" onClose={clearError} sx={{ mb: 2 }}>
+          {error}
         </Alert>
       )}
 
-      <TextField
-        {...register('username')}
-        id="username"
-        label="Логін"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        error={!!errors.username}
-        helperText={errors.username?.message}
-        InputProps={{
-          sx: { borderRadius: 1 },
-        }}
-      />
+      <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Controller
+          name="username"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Логін"
+              autoComplete="username"
+              autoFocus
+              error={!!errors.username}
+              helperText={errors.username?.message}
+              disabled={isLoading}
+            />
+          )}
+        />
 
-      <TextField
-        {...register('password')}
-        id="password"
-        label="Пароль"
-        type={showPassword ? 'text' : 'password'}
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        error={!!errors.password}
-        helperText={errors.password?.message}
-        InputProps={{
-          sx: { borderRadius: 1 },
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                onClick={toggleShowPassword}
-                edge="end"
-                aria-label={showPassword ? 'сховати пароль' : 'показати пароль'}
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
+        <Controller
+          name="password"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              margin="normal"
+              required
+              fullWidth
+              id="password"
+              label="Пароль"
+              type="password"
+              autoComplete="current-password"
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              disabled={isLoading}
+            />
+          )}
+        />
 
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        color="primary"
-        size="large"
-        disabled={isLoading}
-        sx={{
-          mt: 3,
-          mb: 2,
-          py: 1.5,
-          boxShadow: 2,
-          transition: 'all 0.2s',
-          '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: 3,
-          },
-        }}
-      >
-        {isLoading ? (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
-            Вхід...
-          </Box>
-        ) : (
-          'Увійти'
-        )}
-      </Button>
-    </form>
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2, py: 1.5 }}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <CircularProgress size={24} sx={{ color: 'common.white' }} />
+          ) : (
+            'Увійти'
+          )}
+        </Button>
+      </Box>
+    </Paper>
   );
-}
+};

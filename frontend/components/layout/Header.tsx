@@ -30,6 +30,7 @@ import {
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLogout } from '@/features/auth/hooks/useLogout';
 
 const navigationItems = [
   { name: 'Головна', path: '/', icon: <HomeIcon /> },
@@ -44,6 +45,7 @@ export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pathname = usePathname();
+  const { handleLogout, isLoading } = useLogout();
 
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -114,11 +116,17 @@ export default function Header() {
                 <ListItemText>Налаштування</ListItemText>
               </MenuItem>
               <Divider />
-              <MenuItem onClick={handleUserMenuClose}>
+              <MenuItem 
+                onClick={() => {
+                  handleUserMenuClose();
+                  handleLogout();
+                }}
+                disabled={isLoading}
+              >
                 <ListItemIcon>
                   <LogoutIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>Вийти</ListItemText>
+                <ListItemText>{isLoading ? 'Виходимо...' : 'Вийти'}</ListItemText>
               </MenuItem>
             </Menu>
           </Box>

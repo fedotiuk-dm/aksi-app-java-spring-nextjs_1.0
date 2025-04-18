@@ -28,7 +28,7 @@ RUN addgroup --system nextjs && \
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV NEXT_PUBLIC_API_URL=http://backend:8080/api
+ENV NEXT_PUBLIC_API_URL=http://localhost:8080/api
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy built files and dependencies from build stage

@@ -1,9 +1,14 @@
 package com.aksi.api.advice;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,19 +20,29 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.aksi.dto.common.ErrorResponse;
 import com.aksi.exception.AuthenticationException;
+import com.aksi.exception.BadRequestException;
 import com.aksi.exception.EntityNotFoundException;
+import com.aksi.exception.ResourceNotFoundException;
 import com.aksi.exception.UserAlreadyExistsException;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Глобальний обробник винятків для API
+ * Забезпечує уніфікований формат відповіді на помилки для фронтенду
  */
 @RestControllerAdvice
 @Slf4j
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private final Environment environment;
+    private final HttpServletRequest request;
+    
+    @Value("${spring.profiles.active:production}")
+    private String activeProfile;
     
     /**
      * Обробка помилок валідації полів
@@ -44,11 +59,15 @@ public class GlobalExceptionHandler {
         
         log.warn("Помилка валідації: {}", errors);
         
-        return new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Помилка валідації даних",
-                errors
-        );
+        return ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("Помилка валідації даних")
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(generateErrorId())
+                .errors(errors)
+                .build();
     }
     
     /**
@@ -66,11 +85,15 @@ public class GlobalExceptionHandler {
         
         log.warn("Помилка валідації: {}", errors);
         
-        return new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Помилка валідації даних",
-                errors
-        );
+        return ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("Помилка валідації даних")
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(generateErrorId())
+                .errors(errors)
+                .build();
     }
     
     private String getPath(ConstraintViolation<?> violation) {
@@ -84,10 +107,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleEntityNotFoundException(EntityNotFoundException ex) {
         log.warn("Сутність не знайдено: {}", ex.getMessage());
-        return new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage()
-        );
+        return ErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(generateErrorId())
+                .build();
     }
     
     /**
@@ -97,10 +124,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
         log.warn("Спроба створити дублікат користувача: {}", ex.getMessage());
-        return new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                ex.getMessage()
-        );
+        return ErrorResponse.builder()
+                .status(HttpStatus.CONFLICT.value())
+                .message(ex.getMessage())
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(generateErrorId())
+                .build();
     }
     
     /**
@@ -110,10 +141,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleAuthenticationException(AuthenticationException ex) {
         log.warn("Помилка автентифікації: {}", ex.getMessage());
-        return new ErrorResponse(
-                HttpStatus.UNAUTHORIZED.value(),
-                ex.getMessage()
-        );
+        return ErrorResponse.builder()
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .message(ex.getMessage())
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(generateErrorId())
+                .build();
     }
     
     /**
@@ -123,10 +158,48 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("Доступ заборонено: {}", ex.getMessage());
-        return new ErrorResponse(
-                HttpStatus.FORBIDDEN.value(),
-                "Доступ заборонено"
-        );
+        return ErrorResponse.builder()
+                .status(HttpStatus.FORBIDDEN.value())
+                .message("Доступ заборонено")
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(generateErrorId())
+                .build();
+    }
+    
+    /**
+     * Обробка Resource Not Found помилок
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.warn("Ресурс не знайдено: {}", ex.getMessage());
+        return ErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(generateErrorId())
+                .build();
+    }
+    
+    /**
+     * Обробка Bad Request помилок
+     */
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(BadRequestException ex) {
+        log.warn("Некоректний запит: {}", ex.getMessage());
+        return ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(generateErrorId())
+                .build();
     }
     
     /**
@@ -135,31 +208,44 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        String errorId = generateErrorId();
         
         // Розширене логування для діагностики 500 помилок
-        log.error("Внутрішня помилка сервера: {}", ex.getMessage(), ex);
-        log.error("Стек помилки: ", ex);
+        log.error("Внутрішня помилка сервера [{}]: {}", errorId, ex.getMessage(), ex);
+        log.error("Стек помилки [{}]: ", errorId, ex);
         
         if (ex.getCause() != null) {
-            log.error("Причина помилки: {}", ex.getCause().getMessage());
+            log.error("Причина помилки [{}]: {}", errorId, ex.getCause().getMessage());
         }
         
         // Додатковий логування класу, що викликав помилку
         StackTraceElement[] stackTrace = ex.getStackTrace();
         if (stackTrace.length > 0) {
-            log.error("Викликано з: {}.{}({}:{})", 
+            log.error("Викликано з [{}]: {}.{}({}:{})", 
+                errorId,
                 stackTrace[0].getClassName(), 
                 stackTrace[0].getMethodName(),
                 stackTrace[0].getFileName(),
                 stackTrace[0].getLineNumber());
         }
         
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(status.value())
+                .message("Внутрішня помилка сервера: " + ex.getMessage())
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(errorId)
+                .build();
+                
+        // Додаємо стек трейс тільки для dev середовища
+        if (isDevelopmentEnvironment()) {
+            addStackTraceToResponse(ex, errorResponse);
+        }
+        
         return ResponseEntity
                 .status(status)
-                .body(new ErrorResponse(
-                        status.value(),
-                        "Внутрішня помилка сервера: " + ex.getMessage()
-                ));
+                .body(errorResponse);
     }
     
     /**
@@ -169,9 +255,56 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("Помилка некоректних даних: {}", ex.getMessage());
-        return new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage()
-        );
+        return ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .errorType(ex.getClass().getSimpleName())
+                .path(request.getRequestURI())
+                .method(request.getMethod())
+                .errorId(generateErrorId())
+                .build();
+    }
+    
+    /**
+     * Перевірка, чи це середовище розробки
+     */
+    private boolean isDevelopmentEnvironment() {
+        return Arrays.asList(environment.getActiveProfiles()).contains("dev") || 
+               "dev".equals(activeProfile) ||
+               Arrays.asList(environment.getActiveProfiles()).contains("development") ||
+               "development".equals(activeProfile) ||
+               Arrays.asList(environment.getActiveProfiles()).contains("local") ||
+               "local".equals(activeProfile);
+    }
+    
+    /**
+     * Генерація унікального ідентифікатора помилки
+     */
+    private String generateErrorId() {
+        return UUID.randomUUID().toString().substring(0, 8);
+    }
+    
+    /**
+     * Додавання стеку помилки до відповіді (тільки для dev середовища)
+     */
+    private void addStackTraceToResponse(Exception ex, ErrorResponse errorResponse) {
+        StackTraceElement[] stackTrace = ex.getStackTrace();
+        // Обмежуємо до перших 10 рядків стеку, щоб не перевантажувати відповідь
+        int maxStackTraceLines = Math.min(stackTrace.length, 10);
+        
+        for (int i = 0; i < maxStackTraceLines; i++) {
+            StackTraceElement element = stackTrace[i];
+            String line = String.format("%s.%s(%s:%d)", 
+                element.getClassName(),
+                element.getMethodName(),
+                element.getFileName(),
+                element.getLineNumber());
+            errorResponse.addStackTraceLine(line);
+        }
+        
+        // Якщо є причина помилки, додаємо її також
+        if (ex.getCause() != null) {
+            errorResponse.addStackTraceLine("Caused by: " + ex.getCause().toString());
+        }
     }
 } 

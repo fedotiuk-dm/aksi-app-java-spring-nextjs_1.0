@@ -3,16 +3,19 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   env: {
-    API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
   },
   async rewrites() {
     return [
       {
-        // Проксіювання запитів до API для уникнення CORS
+        // Проксіювання запитів до API автентифікації
+        source: '/api/auth/:path*',
+        destination: 'http://localhost:8080/auth/:path*',
+      },
+      {
+        // Загальні API запити
         source: '/api/:path*',
-        destination: `${
-          process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'
-        }/:path*`,
+        destination: 'http://localhost:8080/:path*',
       },
     ];
   },

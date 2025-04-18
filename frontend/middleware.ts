@@ -1,82 +1,89 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { jwtDecode } from 'jwt-decode';
-import { UserRole } from '@/features/auth/types';
+import { JwtPayload, UserRole } from './features/auth/types/authTypes';
 
-// Публічні маршрути, які не потребують автентифікації
-const publicRoutes = ['/login', '/api/auth/login'];
+// Публічні шляхи, які не потребують автентифікації
+const publicPaths = [
+  '/login', 
+  '/register', 
+  '/api/auth/login', 
+  '/api/auth/register',
+  '/api/auth/refresh-token'
+];
 
-// Маршрути доступні тільки для адміністратора
-const adminRoutes = ['/admin', '/settings'];
-
-// Маршрути для менеджерів та адміністраторів
-const managerRoutes = ['/analytics', '/reports', '/pricelist'];
-
-interface JwtPayload {
-  sub: string;
-  exp: number;
-  roles: UserRole[];
-}
-
-export function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname;
-
-  // Перевірка чи маршрут публічний
-  if (publicRoutes.some((route) => path.startsWith(route))) {
-    return NextResponse.next();
+// Перевірка, чи шлях є публічним
+const isPublic = (path: string) => {
+  // Перевіряємо точний збіг або чи починається з публічного шляху
+  if (publicPaths.some(publicPath => path === publicPath || path.startsWith(`${publicPath}/`))) {
+    return true;
   }
-
-  // Отримання токена з cookies
-  const token = request.cookies.get('token')?.value;
-
-  // Якщо токен відсутній, перенаправляємо на логін
-  if (!token) {
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  try {
-    // Декодування JWT та перевірка терміну дії
-    const decoded = jwtDecode<JwtPayload>(token);
-    const currentTime = Date.now() / 1000;
-
-    if (decoded.exp < currentTime) {
-      // Токен протермінований, перенаправляємо на логін
-      const loginUrl = new URL('/login', request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    // Перевірка прав доступу для адмін-маршрутів
-    if (
-      adminRoutes.some((route) => path.startsWith(route)) &&
-      !decoded.roles.includes(UserRole.ADMIN)
-    ) {
-      // Користувач намагається отримати доступ до адмін-маршруту без відповідних прав
-      const dashboardUrl = new URL('/dashboard', request.url);
-      return NextResponse.redirect(dashboardUrl);
-    }
-
-    // Перевірка прав доступу для менеджер-маршрутів
-    if (
-      managerRoutes.some((route) => path.startsWith(route)) &&
-      !decoded.roles.includes(UserRole.MANAGER) &&
-      !decoded.roles.includes(UserRole.ADMIN)
-    ) {
-      // Користувач намагається отримати доступ до маршруту менеджера без відповідних прав
-      const dashboardUrl = new URL('/dashboard', request.url);
-      return NextResponse.redirect(dashboardUrl);
-    }
-
-    return NextResponse.next();
-  } catch (error) {
-    // Помилка декодування токена
-    console.error('Помилка декодування токена:', error);
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
-  }
-}
-
-// Вказуємо для яких маршрутів застосовувати middleware
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.png$).*)'],
+  
+  // Додаткова перевірка для API аутентифікації
+  return path.startsWith('/api/auth/');
 };
+
+// Перевірка, чи токен є валідним
+const isTokenValid = (token: string): boolean => {
+  try {
+    const payload = jwtDecode<JwtPayload>(token);
+    // Перевіряємо, чи токен не прострочений
+    const currentTime = Math.floor(Date.now() / 1000);
+    return payload.exp > currentTime;
+  } catch (error) {
+    console.error('Error decoding token:', error instanceof Error ? error.message : 'Unknown error');
+    return false;
+  }
+};
+
+export async function middleware(request: NextRequest) {
+  // Отримуємо шлях
+  const path = request.nextUrl.pathname;
+  
+  // Якщо шлях публічний, пропускаємо без перевірки
+  if (isPublic(path)) {
+    return NextResponse.next();
+  }
+
+  // Статичні файли пропускаємо без перевірки
+  if (path.startsWith('/_next') || 
+      path.includes('/static/') || 
+      path.match(/\.(ico|png|jpg|jpeg|svg|css|js)$/)) {
+    return NextResponse.next();
+  }
+  
+  // Отримуємо токен з cookies
+  const authToken = request.cookies.get('auth_token')?.value;
+
+  // Якщо токен відсутній або невалідний, перенаправляємо на сторінку логіну
+  if (!authToken || !isTokenValid(authToken)) {
+    // Якщо це API запит, повертаємо помилку "Unauthorized"
+    if (path.startsWith('/api/')) {
+      return NextResponse.json(
+        { message: 'Необхідно авторизуватися' },
+        { status: 401 }
+      );
+    }
+    
+    // Інакше, перенаправляємо на сторінку логіну з вказанням callback URL
+    const url = new URL('/login', request.url);
+    url.searchParams.set('callbackUrl', path);
+    return NextResponse.redirect(url);
+  }
+  
+  // Отримуємо інформацію про користувача з токена
+  try {
+    const payload = jwtDecode<JwtPayload>(authToken);
+    const userRole = payload.role || UserRole.USER; // Використовуємо імпортований UserRole
+    
+    // Можна додати додаткові перевірки доступу за роллю
+    // Наприклад, перевірити, чи має користувач доступ до адмін. розділу
+    if (path.startsWith('/admin') && userRole !== UserRole.ADMIN) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+  } catch (error) {
+    console.error('Error processing token in middleware:', error instanceof Error ? error.message : 'Unknown error');
+  }
+
+  // Якщо користувач автентифікований, продовжуємо
+  return NextResponse.next();
+}

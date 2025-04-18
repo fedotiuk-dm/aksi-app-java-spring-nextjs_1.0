@@ -1,206 +1,133 @@
-'use client';
-
-import { api } from '@/lib/axios';
-import axios from '@/lib/axios';
-import { API_ROUTES } from '@/constants';
-import { removeClientToken, setClientToken } from '@/lib/auth';
-import type {
-  AuthResponse,
+import axios from 'axios';
+import {
   LoginRequest,
-  RefreshTokenRequest,
+  AuthResponse,
   RegisterRequest,
-  LoginDto,
-} from '../types';
+} from '../types/authTypes';
+import { SERVER_API_URL } from '@/constants/urls';
 
-// Тип для користувача
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-}
-
-// Інтерфейс відповіді авторизації
-export interface LoginResponse {
-  token: string;
-  refreshToken: string;
-  user: User;
-}
-
-// Інтерфейс для зміни паролю
-export interface ChangePasswordRequest {
-  currentPassword: string;
-  newPassword: string;
-}
-
-/**
- * API клієнт для автентифікації
- */
-const authApi = {
+// API методи для роботи з бекендом, які будуть викликатися тільки з серверних функцій
+export const authApi = {
   /**
-   * Виконує вхід користувача - версія з API_ROUTES
-   * @param credentials дані для входу
-   * @returns відповідь з токеном та інформацією користувача
+   * Реєстрація нового користувача
+   * @param registerData - дані для реєстрації
+   * @returns об'єкт відповіді з токенами та інформацією про користувача
    */
-  login: async (credentials: LoginRequest) => {
-    const response = await api.post<AuthResponse>(
-      API_ROUTES.AUTH.LOGIN,
-      credentials as unknown as Record<string, unknown>
-    );
-    return response;
-  },
-
-  /**
-   * Виконує вхід користувача - версія з прямим шляхом для зворотної сумісності
-   * @param data дані для входу
-   * @returns відповідь з токеном та інформацією користувача
-   */
-  loginWithPath: async (data: LoginDto): Promise<AuthResponse> => {
-    console.log('Відправляємо запит на логін (authApi.ts):', data);
-
+  async register(registerData: RegisterRequest): Promise<AuthResponse> {
     try {
-      // Спроба використати API роут NextJS
-      const response = await axios.post<AuthResponse>('/api/auth/login', data);
-      console.log(
-        'Отримано відповідь від сервера (authApi.ts):',
-        response.data
-      );
-
-      // Отримуємо токен з відповіді
-      const token = response.data.accessToken || response.data.token;
-
-      // Якщо токен отримано - зберігаємо його в cookie
-      if (token) {
-        console.log('Зберігаємо токен в cookie на клієнті');
-        setClientToken(token);
-      }
-
+      const apiUrl = `${SERVER_API_URL}/api/auth/register`;
+      console.log(`Виконуємо запит до ${apiUrl}`);
+      const response = await axios.post<AuthResponse>(apiUrl, registerData);
+      console.log('Успішна відповідь від API:', { status: response.status });
       return response.data;
     } catch (error) {
-      console.error('Помилка при логіні через API роут:', error);
-
-      // Спроба прямого запиту до бекенду як fallback
-      console.log('Спроба прямого запиту до бекенду');
-      const baseUrl =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
-      const directResponse = await axios.post<AuthResponse>(
-        `${baseUrl}/auth/login`,
-        data
-      );
-      console.log(
-        'Отримано відповідь від прямого запиту:',
-        directResponse.data
-      );
-
-      // Отримуємо токен з прямої відповіді
-      const token =
-        directResponse.data.accessToken || directResponse.data.token;
-
-      // Якщо токен отримано - зберігаємо його в cookie
-      if (token) {
-        console.log('Зберігаємо токен в cookie на клієнті (прямий запит)');
-        setClientToken(token);
+      console.error('Помилка при виконанні register API запиту:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Деталі Axios помилки:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          config: {
+            url: error.config?.url,
+            method: error.config?.method,
+            headers: error.config?.headers,
+          },
+        });
       }
-
-      return directResponse.data;
+      throw error;
     }
   },
 
   /**
-   * Реєструє нового користувача
-   * @param userData дані для реєстрації
-   * @returns відповідь з токеном та інформацією користувача
+   * Логін користувача
+   * @param credentials - облікові дані користувача (username і password)
+   * @returns об'єкт відповіді з токенами та інформацією про користувача
    */
-  register: async (userData: RegisterRequest) => {
-    const response = await api.post<AuthResponse>(
-      API_ROUTES.AUTH.REGISTER,
-      userData as unknown as Record<string, unknown>
-    );
-    return response;
-  },
-
-  /**
-   * Виконує вихід користувача (видаляє токени)
-   */
-  logout: async (): Promise<void> => {
+  async login(credentials: LoginRequest): Promise<AuthResponse> {
     try {
-      // Спроба викликати API для логаута
-      await axios.post('/api/auth/logout');
+      const apiUrl = `${SERVER_API_URL}/api/auth/login`;
+      console.log(`Виконуємо запит до ${apiUrl}`);
+      const response = await axios.post<AuthResponse>(apiUrl, credentials);
+      console.log('Успішна відповідь від API:', { status: response.status });
+      return response.data;
     } catch (error) {
-      console.error('Помилка при виході:', error);
-    } finally {
-      // Видаляємо токени з localStorage у будь-якому випадку
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-
-        // Також видаляємо з cookies
-        removeClientToken();
+      console.error('Помилка при виконанні login API запиту:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Деталі Axios помилки:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          config: {
+            url: error.config?.url,
+            method: error.config?.method,
+            headers: error.config?.headers,
+          },
+        });
       }
+      throw error;
     }
   },
 
   /**
-   * Оновлює access token за допомогою refresh token
-   * @param request запит з refresh token
-   * @returns нова пара токенів
+   * Оновлення JWT токену
+   * @param refreshToken - поточний refresh токен
+   * @returns об'єкт з новими токенами та інформацією про користувача
    */
-  refreshToken: async (request: RefreshTokenRequest) => {
-    const response = await api.post<AuthResponse>(
-      API_ROUTES.AUTH.REFRESH,
-      request as unknown as Record<string, unknown>
-    );
-    return response;
-  },
-};
-
-// Функції для роботи з токенами у localStorage
-export const authTokens = {
-  // Збереження токенів
-  setTokens: (token: string, refreshToken: string) => {
-    if (typeof window !== 'undefined') {
-      console.log('Зберігаємо токени в localStorage:', {
-        tokenLength: token.length,
+  async refreshToken(refreshToken: string): Promise<AuthResponse> {
+    try {
+      const apiUrl = `${SERVER_API_URL}/api/auth/refresh-token`;
+      console.log(`Виконуємо запит до ${apiUrl}`);
+      const response = await axios.post<AuthResponse>(apiUrl, refreshToken, {
+        headers: {
+          'Content-Type': 'text/plain',
+        },
       });
-      localStorage.setItem('token', token);
-      localStorage.setItem('refreshToken', refreshToken);
+      console.log('Успішна відповідь від API:', { status: response.status });
+      return response.data;
+    } catch (error) {
+      console.error('Помилка при виконанні refreshToken API запиту:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Деталі Axios помилки:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          config: {
+            url: error.config?.url,
+            method: error.config?.method,
+            headers: error.config?.headers,
+          },
+        });
+      }
+      throw error;
     }
   },
 
-  // Отримання токена
-  getToken: (): string | null => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('token') || localStorage.getItem('authToken');
-    }
-    return null;
-  },
-
-  // Отримання refresh токена
-  getRefreshToken: (): string | null => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('refreshToken');
-    }
-    return null;
-  },
-
-  // Видалення токенів
-  clearTokens: () => {
-    if (typeof window !== 'undefined') {
-      console.log('Видаляємо токени з localStorage');
-      localStorage.removeItem('token');
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
+  /**
+   * Перевірка доступності API авторизації
+   * @returns текстове повідомлення про статус
+   */
+  async testAuth(): Promise<string> {
+    try {
+      const apiUrl = `${SERVER_API_URL}/api/auth/test`;
+      console.log(`Виконуємо запит до ${apiUrl}`);
+      const response = await axios.get(apiUrl);
+      console.log('Успішна відповідь від API:', { status: response.status });
+      return response.data;
+    } catch (error) {
+      console.error('Помилка при виконанні testAuth API запиту:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Деталі Axios помилки:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          config: {
+            url: error.config?.url,
+            method: error.config?.method,
+            headers: error.config?.headers,
+          },
+        });
+      }
+      throw error;
     }
   },
 };
-
-// Експортуємо функції окремо (для сумісності з попереднім кодом)
-export const login = authApi.loginWithPath;
-export const logout = authApi.logout;
-
-export default authApi;
