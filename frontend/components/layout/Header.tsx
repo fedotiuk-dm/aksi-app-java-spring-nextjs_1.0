@@ -37,7 +37,7 @@ const navigationItems = [
   { name: 'Клієнти', path: '/clients', icon: <PeopleIcon /> },
   { name: 'Замовлення', path: '/orders', icon: <ReceiptIcon /> },
   { name: 'Створити замовлення', path: '/order', icon: <LaundryIcon /> },
-  { name: 'Прайс-лист', path: '/pricelist', icon: <PriceIcon /> },
+  { name: 'Прайс-лист', path: '/price-list', icon: <PriceIcon /> },
   { name: 'Налаштування', path: '/settings', icon: <SettingsIcon /> },
 ];
 

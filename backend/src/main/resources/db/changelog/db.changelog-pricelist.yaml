@@ -1,0 +1,155 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-service-categories
+      author: cascade
+      changes:
+        - createTable:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(1000)
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValue: 0
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueDate: now()
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueDate: now()
+
+  - changeSet:
+      id: 1.1-add-active-to-service-categories
+      author: cascade
+      changes:
+        - addColumn:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+                    
+  - changeSet:
+      id: 2-create-price-list-items
+      author: cascade
+      changes:
+        - createTable:
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_price_list_item_category
+                    references: service_categories(id)
+              - column:
+                  name: catalog_number
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_of_measure
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: base_price
+                  type: decimal(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price_black
+                  type: decimal(10, 2)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: price_color
+                  type: decimal(10, 2)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueDate: now()
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueDate: now()
+
+  - changeSet:
+      id: 3-add-indexes-to-price-list-tables
+      author: cascade
+      changes:
+        - createIndex:
+            indexName: idx_service_category_code
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+        - createIndex:
+            indexName: idx_service_category_sort_order
+            tableName: service_categories
+            columns:
+              - column:
+                  name: sort_order
+        - createIndex:
+            indexName: idx_price_list_item_category_id
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: category_id
+        - createIndex:
+            indexName: idx_price_list_item_active
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: active
+
+  - changeSet:
+      id: 4-add-unique-constraints-to-price-list-items
+      author: cascade
+      changes:
+        - addUniqueConstraint:
+            constraintName: uk_price_list_item_category_id_catalog_number_name
+            tableName: price_list_items
+            columnNames: category_id, catalog_number, name

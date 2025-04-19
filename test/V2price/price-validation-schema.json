@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Прайс-лист хімчистки",
+  "type": "object",
+  "required": ["version", "lastUpdated", "services"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Версія прайс-листа"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "description": "Дата останнього оновлення прайс-листа",
+      "format": "date"
+    },
+    "services": {
+      "type": "array",
+      "description": "Категорії послуг з їх позиціями",
+      "items": {
+        "type": "object",
+        "required": ["categoryId", "categoryName", "items"],
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "description": "Ідентифікатор категорії"
+          },
+          "categoryName": {
+            "type": "string",
+            "description": "Назва категорії"
+          },
+          "items": {
+            "type": "array",
+            "description": "Послуги в категорії",
+            "items": {
+              "type": "object",
+              "required": ["id", "name", "unit", "basePrice"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Унікальний ідентифікатор послуги"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Назва послуги або виробу"
+                },
+                "unit": {
+                  "type": "string",
+                  "description": "Одиниця виміру (шт, кг, пара, кв.м)"
+                },
+                "basePrice": {
+                  "type": "number",
+                  "description": "Базова ціна"
+                },
+                "detailsPrice": {
+                  "type": "number",
+                  "description": "Ціна з деталями (якщо є)"
+                },
+                "colorVariants": {
+                  "type": "object",
+                  "description": "Варіанти цін залежно від кольору",
+                  "properties": {
+                    "black": {
+                      "type": "number",
+                      "description": "Ціна для чорного кольору"
+                    },
+                    "other": {
+                      "type": "number",
+                      "description": "Ціна для інших кольорів"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

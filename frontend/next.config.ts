@@ -22,6 +22,13 @@ const nextConfig: NextConfig = {
         basePath: false,
       },
       {
+        // Проксіювання запитів для роботи з прайс-листом
+        source: '/api/price-list/:path*',
+        destination: 'http://localhost:8080/price-list/:path*',
+        // Налаштування для повної передачі headers та cookies
+        basePath: false,
+      },
+      {
         // Загальні API запити
         source: '/api/:path*',
         destination: 'http://localhost:8080/:path*',
