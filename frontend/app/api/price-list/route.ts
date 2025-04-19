@@ -48,6 +48,9 @@ export async function GET() {
       }
     });
     
+    // Детальне логування всіх запитів/відповідей для дебагу
+    console.log(`Відповідь від бекенду отримана, статус: ${response.status}`);
+    
     // Перевіряємо відповідь
     if (!response.ok) {
       console.error(`Помилка від бекенду при отриманні прайс-листа: ${response.status}`);
@@ -69,11 +72,29 @@ export async function GET() {
     }
     
     // Отримуємо дані відповіді
-    const priceListData = await response.json();
-    console.log(`Отримано ${priceListData.length || 0} категорій прайс-листа`);
-    
-    // Повертаємо успішну відповідь
-    return NextResponse.json(priceListData);
+    const data = await response.json();
+    console.log('\u041f\u0440\u0430\u0439\u0441-\u043b\u0438\u0441\u0442 \u0443\u0441\u043f\u0456\u0448\u043d\u043e \u043e\u0442\u0440\u0438\u043c\u0430\u043d\u043e');
+      
+    // Логуємо структуру даних для розуміння проблеми
+    try {
+      const dataStr = JSON.stringify(data, null, 2);
+      console.log('Структура даних прайс-листа:', dataStr.substring(0, 500) + '...');
+      
+      // Перевіряємо, чи є категорії та їх елементи
+      if (data && Array.isArray(data)) {
+        for (const category of data) {
+          if (category.items && Array.isArray(category.items) && category.items.length > 0) {
+            const item = category.items[0];
+            console.log('Приклад елемента прайс-листа:', JSON.stringify(item, null, 2));
+            break;
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Помилка при логуванні даних:', err);
+    }
+      
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Помилка при отриманні прайс-листа:', error);
     return NextResponse.json(

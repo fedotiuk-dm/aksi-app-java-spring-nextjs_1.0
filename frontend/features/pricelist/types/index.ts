@@ -5,13 +5,14 @@
 export interface PriceListItem {
   id: string;
   categoryId: string;
-  catalogNumber: number;
+  catalogNumber?: number;
   name: string;
   unitOfMeasure: string; // Змінено з unit
   basePrice: number;
-  priceBlack?: number; // Змінено з blackColorPrice
-  priceColor?: number; // Змінено з otherColorPrice
-  isActive: boolean; // У бекенді це поле називається active
+  priceBlack: number | null; // Змінено з blackColorPrice
+  priceColor: number | null; // Змінено з otherColorPrice
+  isActive?: boolean;  // Використовуємо наше стандартне поле
+  active?: boolean;     // Додаємо поле з бекенду
 }
 
 export interface ServiceCategory {
@@ -21,4 +22,5 @@ export interface ServiceCategory {
   description?: string;
   sortOrder: number;
   items: PriceListItem[];
+  isActive?: boolean; // Перейменовано з active на isActive для сумісності з бекендом
 }
