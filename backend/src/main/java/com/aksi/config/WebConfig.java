@@ -69,7 +69,6 @@ public class WebConfig implements WebMvcConfigurer {
         // Реєструємо конфігурацію для всіх URL-шляхів
         source.registerCorsConfiguration("/**", config);
         source.registerCorsConfiguration("/auth/**", config);
-        source.registerCorsConfiguration("/api/v1/auth/**", config);
         source.registerCorsConfiguration("/swagger-ui/**", config);
         source.registerCorsConfiguration("/v3/api-docs/**", config);
         

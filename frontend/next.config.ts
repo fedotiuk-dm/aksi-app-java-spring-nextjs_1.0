@@ -10,12 +10,16 @@ const nextConfig: NextConfig = {
       {
         // Проксіювання запитів до API автентифікації
         source: '/api/auth/:path*',
-        destination: 'http://localhost:8080/auth/:path*',
+        destination: 'http://localhost:8080/api/auth/:path*',
+        // Налаштування для повної передачі headers та cookies
+        basePath: false,
       },
       {
         // Загальні API запити
         source: '/api/:path*',
         destination: 'http://localhost:8080/:path*',
+        // Налаштування для повної передачі headers та cookies
+        basePath: false,
       },
     ];
   },

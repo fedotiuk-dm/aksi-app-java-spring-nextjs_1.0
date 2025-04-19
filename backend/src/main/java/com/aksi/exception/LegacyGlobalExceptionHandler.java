@@ -17,7 +17,7 @@ import jakarta.validation.ConstraintViolationException;
 
 /**
  * Глобальний обробник винятків для всіх API контролерів.
- * @deprecated Використовуйте {@link com.aksi.api.advice.GlobalExceptionHandler} замість цього класу
+ * @deprecated Використовуйте {@link com.aksi.api.GlobalExceptionHandler} замість цього класу
  */
 @RestControllerAdvice
 @Deprecated

@@ -129,29 +129,28 @@ console.log('[axios.ts] Ініціалізація з API URL:', baseURL); // Л
 
 /**
  * Допоміжні функції для роботи з токеном у non-React контексті
- * Напряму доступаємося до стору без використання хуків
+ * При використанні HttpOnly cookies - токени недоступні клієнтському JS
+ * тому залишаємо цей клас для сумісності, але токени будуть автоматично
+ * передаватися з браузера з withCredentials: true
  */
 const authTokenManager = {
+  // Токени зберігаються в HttpOnly cookies, тому JS не може їх прочитати
+  // Ці методи залишені для сумісності
   getToken: (): string | undefined => {
-    return useAuthStore.getState().user?.token;
+    // Реальний токен зберігається в HttpOnly cookies і недоступний для JS
+    return undefined;
   },
   getRefreshToken: (): string | undefined => {
-    return useAuthStore.getState().user?.refreshToken;
+    // Реальний refreshToken зберігається в HttpOnly cookies і недоступний для JS
+    return undefined;
   },
-  setTokens: (token: string, refreshToken: string, expiresAt: string): void => {
-    const currentUser = useAuthStore.getState().user;
-    if (currentUser) {
-      useAuthStore.setState({
-        user: {
-          ...currentUser,
-          token,
-          refreshToken,
-          expiresAt,
-        },
-      });
-    }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setTokens: (..._args: string[]): void => {
+    // У новій архітектурі токени встановлюються через API маршрути
+    console.log('Token management handled by server-side API routes');
   },
   clearTokens: (): void => {
+    // Викликаємо logout для очищення стану авторизації
     useAuthStore.getState().logout();
   },
 };
@@ -160,8 +159,10 @@ export const apiClient = axios.create({
   baseURL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
   timeout: 10000, // Таймаут запиту 10 секунд
+  withCredentials: true, // Завжди передавати cookies в запитах
 });
 
 // Додаємо логування запитів та відповідей
@@ -176,10 +177,10 @@ apiClient.interceptors.request.use(
       config.data
     );
 
-    const token = authTokenManager.getToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // Не додаємо Authorization заголовок з JS,
+    // оскільки використовуємо HttpOnly cookies, які
+    // автоматично передаються з браузера при withCredentials: true
+    // Цей токен буде порожнім, тому що він у HttpOnly cookies
     return config;
   },
   (error) => Promise.reject(error)

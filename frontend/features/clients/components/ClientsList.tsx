@@ -1,28 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Typography, 
-  Container, 
-  Paper, 
-  Box, 
+import {
+  Typography,
+  Container,
+  Paper,
+  Box,
   Button,
   TextField,
   CircularProgress,
   Chip,
   IconButton,
-  Tooltip 
+  Tooltip,
 } from '@mui/material';
-import { 
+import {
   Add as AddIcon,
   Search as SearchIcon,
-  Visibility as VisibilityIcon
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
-import { 
-  DataGrid, 
-  GridColDef, 
-  GridRenderCellParams, 
-  GridToolbar 
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridToolbar,
+  GridValueFormatterParams,
 } from '@mui/x-data-grid';
 import { clientsApi, ClientSearchRequest } from '../api/clientsApi';
 import { Client, ClientStatus, LoyaltyLevel } from '../types';
@@ -32,7 +33,7 @@ import { useRouter } from 'next/navigation';
 export const StatusChip = ({ status }: { status: ClientStatus }) => {
   let color: 'success' | 'warning' | 'error' = 'success';
   let label = 'Активний';
-  
+
   switch (status) {
     case ClientStatus.ACTIVE:
       color = 'success';
@@ -47,14 +48,15 @@ export const StatusChip = ({ status }: { status: ClientStatus }) => {
       label = 'Заблокований';
       break;
   }
-  
+
   return <Chip label={label} color={color} size="small" />;
 };
 
 // Компонент для відображення рівня лояльності
 export const LoyaltyChip = ({ level }: { level: LoyaltyLevel }) => {
-  let color: 'default' | 'primary' | 'secondary' | 'info' | 'success' = 'default';
-  
+  let color: 'default' | 'primary' | 'secondary' | 'info' | 'success' =
+    'default';
+
   switch (level) {
     case LoyaltyLevel.STANDARD:
       color = 'default';
@@ -72,8 +74,8 @@ export const LoyaltyChip = ({ level }: { level: LoyaltyLevel }) => {
       color = 'success';
       break;
   }
-  
-  return <Chip label={level} color={color} size="small" />;  
+
+  return <Chip label={level} color={color} size="small" />;
 };
 
 export function ClientsList() {
@@ -84,68 +86,80 @@ export function ClientsList() {
   const [totalElements, setTotalElements] = useState(0);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 10,
-    page: 0
+    page: 0,
   });
   const [searchKeyword, setSearchKeyword] = useState('');
-  
+
   const columns: GridColDef[] = [
-    { 
-      field: 'fullName', 
-      headerName: 'Ім&apos;я', 
-      flex: 1, 
-      minWidth: 150 
+    {
+      field: 'fullName',
+      headerName: 'Ім&apos;я',
+      flex: 1,
+      minWidth: 150,
     },
-    { 
-      field: 'phone', 
-      headerName: 'Телефон', 
-      width: 130 
+    {
+      field: 'phone',
+      headerName: 'Телефон',
+      width: 130,
     },
-    { 
-      field: 'email', 
-      headerName: 'Email', 
+    {
+      field: 'email',
+      headerName: 'Email',
       width: 200,
-      valueFormatter: ({ value }) => value || '-'
+      valueFormatter: (params: GridValueFormatterParams) => {
+        if (params?.value === null || params?.value === undefined) return '-';
+        return params.value;
+      },
     },
-    { 
-      field: 'status', 
-      headerName: 'Статус', 
+    {
+      field: 'status',
+      headerName: 'Статус',
       width: 130,
       renderCell: (params: GridRenderCellParams<Client>) => (
         <StatusChip status={params.row.status} />
-      )
+      ),
     },
-    { 
-      field: 'loyaltyLevel', 
-      headerName: 'Рівень лояльності', 
+    {
+      field: 'loyaltyLevel',
+      headerName: 'Рівень лояльності',
       width: 160,
       renderCell: (params: GridRenderCellParams<Client>) => (
         <LoyaltyChip level={params.row.loyaltyLevel} />
-      )
+      ),
     },
-    { 
-      field: 'orderCount', 
-      headerName: 'Замовлень', 
+    {
+      field: 'orderCount',
+      headerName: 'Замовлень',
       type: 'number',
-      width: 120 
+      width: 120,
     },
-    { 
-      field: 'totalSpent', 
-      headerName: 'Сума замовлень', 
+    {
+      field: 'totalSpent',
+      headerName: 'Сума замовлень',
       type: 'number',
       width: 150,
-      valueFormatter: ({ value }: { value: number | null }) => {
-        if (value == null) return '-';
-        return `${value.toFixed(2)} ₴`;
-      }
+      valueFormatter: (params: GridValueFormatterParams) => {
+        if (params?.value === null || params?.value === undefined) return '-';
+        try {
+          return `${Number(params.value).toFixed(2)} ₴`;
+        } catch {
+          return '-';
+        }
+      },
     },
-    { 
-      field: 'lastOrderDate', 
-      headerName: 'Останнє замовлення', 
+    {
+      field: 'lastOrderDate',
+      headerName: 'Останнє замовлення',
       width: 180,
-      valueFormatter: ({ value }: { value: string | null }) => {
-        if (!value) return '-';
-        return new Date(value).toLocaleDateString('uk-UA');
-      }
+      valueFormatter: (params: GridValueFormatterParams) => {
+        if (!params?.value) return '-';
+        try {
+          return new Date(String(params.value)).toLocaleDateString('uk-UA');
+        } catch (error) {
+          console.error('Помилка форматування дати:', error);
+          return '-';
+        }
+      },
     },
     {
       field: 'actions',
@@ -155,8 +169,8 @@ export function ClientsList() {
       filterable: false,
       renderCell: (params: GridRenderCellParams<Client>) => (
         <Tooltip title="Переглянути деталі">
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={(e) => {
               e.stopPropagation();
               navigateToClientDetails(params.row.id);
@@ -165,14 +179,14 @@ export function ClientsList() {
             <VisibilityIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-      )
-    }
+      ),
+    },
   ];
-  
+
   const loadClients = async (params: ClientSearchRequest) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await clientsApi.getClients(params);
       setClients(response.content);
@@ -184,52 +198,55 @@ export function ClientsList() {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     loadClients({
       page: paginationModel.page,
       size: paginationModel.pageSize,
-      keyword: searchKeyword || undefined
+      keyword: searchKeyword || undefined,
     });
   }, [paginationModel.page, paginationModel.pageSize, searchKeyword]);
-  
+
   const handleSearch = () => {
     setPaginationModel({
       ...paginationModel,
-      page: 0
+      page: 0,
     });
     loadClients({
       page: 0,
       size: paginationModel.pageSize,
-      keyword: searchKeyword || undefined
+      keyword: searchKeyword || undefined,
     });
   };
-  
+
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
   };
-  
+
   const navigateToClientDetails = (id: string) => {
     router.push(`/clients/${id}`);
   };
-  
+
   return (
     <Container maxWidth="lg">
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box
+        sx={{
+          mb: 4,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <Typography variant="h4" component="h1">
           Клієнти
         </Typography>
-        <Button 
-          variant="contained" 
-          startIcon={<AddIcon />}
-          href="/clients/new"
-        >
+        <Button variant="contained" startIcon={<AddIcon />} href="/clients/new">
           Новий клієнт
         </Button>
       </Box>
-      
+
       <Box sx={{ mt: 3 }}>
         <Paper sx={{ p: 3 }}>
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
@@ -249,7 +266,7 @@ export function ClientsList() {
               Пошук
             </Button>
           </Box>
-          
+
           {loading && clients.length === 0 ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
               <CircularProgress />
@@ -271,11 +288,18 @@ export function ClientsList() {
                 disableColumnSelector
                 localeText={{
                   noRowsLabel: 'Клієнтів не знайдено',
-                  footerRowSelected: (count) => 
-                    `${count} рядок обрано`,
+                  footerRowSelected: (count) => `${count} рядок обрано`,
                   paginationRowsPerPage: 'Рядків на сторінці:',
-                  paginationDisplayedRows: ({ from, to, count }: { from: number; to: number; count: number }) => 
-                    `${from}-${to} з ${count !== -1 ? count : 'понад ' + to}`
+                  paginationDisplayedRows: ({
+                    from,
+                    to,
+                    count,
+                  }: {
+                    from: number;
+                    to: number;
+                    count: number;
+                  }) =>
+                    `${from}-${to} з ${count !== -1 ? count : 'понад ' + to}`,
                 }}
                 slots={{ toolbar: GridToolbar }}
               />

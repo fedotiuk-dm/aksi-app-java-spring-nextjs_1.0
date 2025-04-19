@@ -119,8 +119,8 @@ springdoc:
   writer-with-order-by-keys: true
   group-configs:
     - group: auth
-      paths-to-match: /auth/**, /api/auth/**, /api/v1/auth/**, /v1/auth/**
+      paths-to-match: /auth/**
       packages-to-scan: com.aksi.api
     - group: clients
-      paths-to-match: /v1/clients/**
-      packages-to-scan: com.aksi.api.v1
+      paths-to-match: /clients/**
+      packages-to-scan: com.aksi.api

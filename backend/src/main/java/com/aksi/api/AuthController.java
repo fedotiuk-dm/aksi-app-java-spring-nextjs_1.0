@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  * Контролер для операцій автентифікації та реєстрації
  */
 @RestController
-@RequestMapping({"/auth", "/api/auth", "/api/v1/auth", "/v1/auth"})
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Authentication", description = "API для автентифікації та реєстрації користувачів")

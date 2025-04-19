@@ -1,4 +1,4 @@
-package com.aksi.api.advice;
+package com.aksi.api;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -25,6 +24,7 @@ import com.aksi.exception.EntityNotFoundException;
 import com.aksi.exception.ResourceNotFoundException;
 import com.aksi.exception.UserAlreadyExistsException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
