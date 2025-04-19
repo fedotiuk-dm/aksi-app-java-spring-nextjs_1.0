@@ -28,30 +28,30 @@ const PriceListTable: React.FC<PriceListTableProps> = ({ categoryName, items, on
   });
 
   // Форматування ціни у гривнях
-  const formatCurrency = (value: number | null) => {
+  const formatCurrency = (value: number | string | null) => {
     if (value === null || value === undefined) return '';
-    return `${value.toFixed(2)} ₴`;
-  };
-  
-  // Безпечний форматтер для ціни - гарантуємо, що це буде число
-  const safePriceFormatter = (params: { value?: number | null | string }) => {
-    if (params == null) return '';
     
-    let numberValue: number | null = null;
-    if (typeof params.value === 'number') {
-      numberValue = params.value;
-    } else if (typeof params.value === 'string') {
+    let numValue: number;
+    
+    if (typeof value === 'string') {
       try {
-        numberValue = parseFloat(params.value);
-      } catch (error) {
-        console.error('Error parsing string to number:', error);
+        numValue = parseFloat(value);
+      } catch (e) {
+        console.error('Failed to parse price value:', value, e);
+        return '';
       }
+    } else if (typeof value === 'number') {
+      numValue = value;
+    } else {
+      return '';
     }
     
-    if (numberValue === null || isNaN(numberValue)) return '';
+    if (isNaN(numValue)) return '';
     
-    return formatCurrency(numberValue);
+    return `${numValue.toFixed(2)} ₴`;
   };
+  
+  // Видалили невикористану функцію safePriceFormatter, оскільки ми використовуємо кастомний renderCell для всіх колонок з цінами
 
   const handleEditItem = (item: PriceListItem) => {
     setEditingItem(item);
@@ -91,7 +91,11 @@ const PriceListTable: React.FC<PriceListTableProps> = ({ categoryName, items, on
       width: 120,
       align: 'right',
       headerAlign: 'right',
-      valueFormatter: safePriceFormatter,
+      renderCell: (params) => {
+        // Дебуг параметрів комірки та вивід значення
+        console.log('basePrice cell', params.row.basePrice, typeof params.row.basePrice);
+        return <span>{formatCurrency(params.row.basePrice)}</span>;
+      },
     },
     { 
       field: 'priceBlack',
@@ -99,7 +103,10 @@ const PriceListTable: React.FC<PriceListTableProps> = ({ categoryName, items, on
       width: 130,
       align: 'right',
       headerAlign: 'right',
-      valueFormatter: safePriceFormatter,
+      renderCell: (params) => {
+        console.log('priceBlack cell', params.row.priceBlack, typeof params.row.priceBlack);
+        return <span>{formatCurrency(params.row.priceBlack)}</span>;
+      },
     },
     { 
       field: 'priceColor',
@@ -107,7 +114,10 @@ const PriceListTable: React.FC<PriceListTableProps> = ({ categoryName, items, on
       width: 150,
       align: 'right',
       headerAlign: 'right',
-      valueFormatter: safePriceFormatter,
+      renderCell: (params) => {
+        console.log('priceColor cell', params.row.priceColor, typeof params.row.priceColor);
+        return <span>{formatCurrency(params.row.priceColor)}</span>;
+      },
     },
     { 
       field: 'active',
@@ -150,23 +160,49 @@ const PriceListTable: React.FC<PriceListTableProps> = ({ categoryName, items, on
   ];
 
   // Підготовка рядків даних
+  console.log('Original items:', items);
+  
   const rows = items.map((item) => {
-    // Дебугування: виводимо повний об'єкт в консоль
-    console.log('PriceListItem from backend:', JSON.stringify(item, null, 2));
+    // Детальне логування кожного елемента для діагностики
+    console.log('Item before transform:', item);
+    console.log('Price fields:', {
+      basePrice: item.basePrice,
+      basePrice_type: typeof item.basePrice,
+      priceBlack: item.priceBlack,
+      priceBlack_type: typeof item.priceBlack,
+      priceColor: item.priceColor,
+      priceColor_type: typeof item.priceColor
+    });
     
-    // Застосовуємо всі можливі назви полів для сумісності
-    // З бази даних ми отримуємо 'active', але в деяких компонентах використовується 'isActive'
-    return {
+    // Перетворюємо всі ціни на числа, обробляємо всі можливі випадки
+    let basePrice = 0;
+    if (item.basePrice !== undefined && item.basePrice !== null) {
+      basePrice = typeof item.basePrice === 'string' ? parseFloat(item.basePrice) : Number(item.basePrice);
+    }
+    
+    let priceBlack = null;
+    if (item.priceBlack !== undefined && item.priceBlack !== null) {
+      priceBlack = typeof item.priceBlack === 'string' ? parseFloat(item.priceBlack) : Number(item.priceBlack);
+    }
+    
+    let priceColor = null;
+    if (item.priceColor !== undefined && item.priceColor !== null) {
+      priceColor = typeof item.priceColor === 'string' ? parseFloat(item.priceColor) : Number(item.priceColor);
+    }
+    
+    const result = {
       id: item.id,
       catalogNumber: item.catalogNumber,
       name: item.name,
       unitOfMeasure: item.unitOfMeasure,
-      basePrice: parseFloat(String(item.basePrice || 0)),  // Гарантуємо числове значення
-      priceBlack: item.priceBlack ? parseFloat(String(item.priceBlack)) : null,
-      priceColor: item.priceColor ? parseFloat(String(item.priceColor)) : null,
-      // Завжди встановлюємо поле active для DataGrid, незалежно від того, яке поле прийшло з API
+      basePrice: basePrice,
+      priceBlack: priceBlack,
+      priceColor: priceColor,
       active: item.active === true || item.isActive === true,
     };
+    
+    console.log('Transformed item:', result);
+    return result;
   });
 
   return (
