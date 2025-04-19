@@ -23,10 +23,10 @@ import {
   GridColDef,
   GridRenderCellParams,
   GridToolbar,
-  GridValueFormatterParams,
 } from '@mui/x-data-grid';
 import { clientsApi, ClientSearchRequest } from '../api/clientsApi';
-import { Client, ClientStatus, LoyaltyLevel } from '../types';
+import { ClientStatus, LoyaltyLevel } from '../types';
+import { Client } from '../types/client.types';
 import { useRouter } from 'next/navigation';
 
 // Компонент для відображення статусу клієнта
@@ -106,7 +106,7 @@ export function ClientsList() {
       field: 'email',
       headerName: 'Email',
       width: 200,
-      valueFormatter: (params: GridValueFormatterParams) => {
+      valueFormatter: (params: { value: string | null | undefined }) => {
         if (params?.value === null || params?.value === undefined) return '-';
         return params.value;
       },
@@ -138,7 +138,7 @@ export function ClientsList() {
       headerName: 'Сума замовлень',
       type: 'number',
       width: 150,
-      valueFormatter: (params: GridValueFormatterParams) => {
+      valueFormatter: (params: { value: number | null | undefined }) => {
         if (params?.value === null || params?.value === undefined) return '-';
         try {
           return `${Number(params.value).toFixed(2)} ₴`;
@@ -151,7 +151,7 @@ export function ClientsList() {
       field: 'lastOrderDate',
       headerName: 'Останнє замовлення',
       width: 180,
-      valueFormatter: (params: GridValueFormatterParams) => {
+      valueFormatter: (params: { value: string | Date | null | undefined }) => {
         if (!params?.value) return '-';
         try {
           return new Date(String(params.value)).toLocaleDateString('uk-UA');

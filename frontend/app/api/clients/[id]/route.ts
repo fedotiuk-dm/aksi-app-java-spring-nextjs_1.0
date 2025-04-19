@@ -38,7 +38,7 @@ export async function GET(
     const clientId = params.id;
     console.log(`Отримання даних клієнта з ID: ${clientId}`);
     
-    const response = await fetch(`${SERVER_API_URL}/clients/${clientId}`, {
+    const response = await fetch(`${SERVER_API_URL}/api/clients/${clientId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export async function PUT(
     const updateData = await request.json();
     console.log('Дані для оновлення клієнта:', updateData);
     
-    const response = await fetch(`${SERVER_API_URL}/clients/${clientId}`, {
+    const response = await fetch(`${SERVER_API_URL}/api/clients/${clientId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -177,7 +177,7 @@ export async function DELETE(
     const clientId = params.id;
     console.log(`Видалення клієнта з ID: ${clientId}`);
     
-    const response = await fetch(`${SERVER_API_URL}/clients/${clientId}`, {
+    const response = await fetch(`${SERVER_API_URL}/api/clients/${clientId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

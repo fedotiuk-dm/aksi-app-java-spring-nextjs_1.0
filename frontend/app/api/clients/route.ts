@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
     console.log('Дані нового клієнта:', clientData);
 
     // Виконуємо запит до бекенду
-    console.log(`Надсилаємо запит на створення клієнта до ${SERVER_API_URL}/api/v1/clients`);
+    console.log(`Надсилаємо запит на створення клієнта до ${SERVER_API_URL}/api/clients`);
     
-    const response = await fetch(`${SERVER_API_URL}/api/v1/clients`, {
+    const response = await fetch(`${SERVER_API_URL}/api/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
