@@ -10,7 +10,7 @@ databaseChangeLog:
   - include:
       file: db/changelog/db.changelog-orders-base.yaml
   - include:
-      file: db/changelog/db.changelog-orders-fields.yaml
+      file: db/changelog/db.changelog-orders-extended.yaml
   - include:
       file: db/changelog/db.changelog-orders-constraints.yaml
   - include:

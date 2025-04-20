@@ -12,11 +12,17 @@ import {
   Chip,
   IconButton,
   Tooltip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Search as SearchIcon,
   Visibility as VisibilityIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
 import {
   DataGrid,
@@ -89,6 +95,9 @@ export function ClientsList() {
     page: 0,
   });
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<string | null>(null);
 
   const columns: GridColDef[] = [
     {
@@ -170,21 +179,36 @@ export function ClientsList() {
     {
       field: 'actions',
       headerName: 'Дії',
-      width: 100,
+      width: 120,
       sortable: false,
       filterable: false,
       renderCell: (params: GridRenderCellParams<Client>) => (
-        <Tooltip title="Переглянути деталі">
-          <IconButton
-            size="small"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigateToClientDetails(params.row.id);
-            }}
-          >
-            <VisibilityIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+        <Box>
+          <Tooltip title="Переглянути деталі">
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigateToClientDetails(params.row.id);
+              }}
+              sx={{ mr: 1 }}
+            >
+              <VisibilityIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Видалити клієнта">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteClick(params.row.id);
+              }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
       ),
     },
   ];
@@ -231,8 +255,46 @@ export function ClientsList() {
     }
   };
 
-  const navigateToClientDetails = (id: string) => {
-    router.push(`/clients/${id}`);
+  const navigateToClientDetails = (clientId: string) => {
+    router.push(`/clients/${clientId}`);
+  };
+
+  // Функція для відкриття діалогу видалення
+  const handleDeleteClick = (clientId: string) => {
+    setClientToDelete(clientId);
+    setDeleteDialogOpen(true);
+  };
+
+  // Функція для закриття діалогу видалення
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setClientToDelete(null);
+  };
+
+  // Функція для видалення клієнта
+  const handleDeleteClient = async () => {
+    if (!clientToDelete) return;
+    
+    try {
+      setDeleteLoading(true);
+      await clientsApi.deleteClient(clientToDelete);
+      
+      // Оновлюємо список після видалення
+      loadClients({
+        keyword: searchKeyword,
+        page: paginationModel.page,
+        size: paginationModel.pageSize,
+      });
+      
+      // Закриваємо діалог
+      setDeleteDialogOpen(false);
+      setClientToDelete(null);
+    } catch (error: unknown) {
+      console.error('Помилка при видаленні клієнта:', error);
+      setError('Не вдалося видалити клієнта. Спробуйте пізніше.');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   return (
@@ -313,6 +375,31 @@ export function ClientsList() {
           )}
         </Paper>
       </Box>
+
+      {/* Діалог підтвердження видалення */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Видалення клієнта
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Ви дійсно хочете видалити цього клієнта? Ця дія незворотна.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} disabled={deleteLoading}>
+            Скасувати
+          </Button>
+          <Button onClick={handleDeleteClient} color="error" autoFocus disabled={deleteLoading}>
+            {deleteLoading ? 'Видалення...' : 'Видалити'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

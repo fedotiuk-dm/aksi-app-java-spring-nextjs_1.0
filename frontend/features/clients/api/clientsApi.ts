@@ -172,5 +172,27 @@ export const clientsApi = {
       console.error('Помилка при створенні клієнта:', error);
       throw error;
     }
+  },
+
+  /**
+   * Видалення клієнта за ID
+   */
+  async deleteClient(id: string): Promise<void> {
+    try {
+      console.log(`Видалення клієнта з ID: ${id}`);
+      // Використовуємо відносний URL, який буде проксіюватися Next.js
+      const apiUrl = `${CLIENT_API_URL}/clients/${id}`;
+      await axios.delete(apiUrl, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      console.log(`Клієнта успішно видалено: ${id}`);
+    } catch (error) {
+      console.error(`Помилка при видаленні клієнта ${id}:`, error);
+      throw error;
+    }
   }
 };

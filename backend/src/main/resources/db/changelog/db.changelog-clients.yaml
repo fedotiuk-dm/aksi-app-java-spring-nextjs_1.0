@@ -246,3 +246,38 @@ databaseChangeLog:
                 RETURN TRIM(last_name || ' ' || first_name);
               END
               $$ LANGUAGE plpgsql;
+
+  - changeSet:
+      id: '5'
+      author: 'fedotiuk-dm'
+      comment: 'Create client_communication_channels table'
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: client_communication_channels
+      changes:
+        - createTable:
+            tableName: client_communication_channels
+            columns:
+              - column:
+                  name: client_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: channel
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: client_communication_channels
+            columnNames: client_id, channel
+            constraintName: pk_client_communication_channels
+        - addForeignKeyConstraint:
+            constraintName: fk_client_communication_channel
+            baseTableName: client_communication_channels
+            baseColumnNames: client_id
+            referencedTableName: clients
+            referencedColumnNames: id
+            onDelete: CASCADE

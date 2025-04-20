@@ -15,6 +15,11 @@ public enum ClientSource {
     SOCIAL_MEDIA,
     
     /**
+     * Інстаграм
+     */
+    INSTAGRAM,
+    
+    /**
      * Пошук в Google
      */
     GOOGLE,

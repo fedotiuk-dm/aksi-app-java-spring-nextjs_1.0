@@ -30,15 +30,22 @@ public class OrderCreateRequest {
     private UUID clientId;
     
     /**
-     * Optional unique tag for the order.
+     * Receipt number for the order (manually entered).
      */
+    @NotBlank(message = "Receipt number is required")
+    private String receiptNumber;
+    
+    /**
+     * Unique tag for the order.
+     */
+    @NotBlank(message = "Unique tag is required")
     private String uniqueTag;
     
     /**
-     * Reception point or branch where the order was received.
+     * Reception point ID where the order was received.
      */
-    @NotBlank(message = "Reception point is required")
-    private String receptionPoint;
+    @NotNull(message = "Reception point ID is required")
+    private UUID receptionPointId;
     
     /**
      * Expected completion date for the order.

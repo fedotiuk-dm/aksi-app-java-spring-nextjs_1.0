@@ -6,41 +6,73 @@ import {
   Typography,
   Paper,
   Grid,
+  Alert,
   Divider,
   Button,
-  Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
 } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { Client } from '@/features/clients/types';
+import { Client } from '@/features/clients/types/client.types';
 import {
   StatusChip,
   LoyaltyChip,
 } from '@/features/clients/components/ClientsList';
+import { clientsApi } from '@/features/clients/api/clientsApi';
 
 export function ClientDetail() {
   const params = useParams();
   const clientId = params.clientId as string;
+  const router = useRouter();
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Функція для відкриття діалогу підтвердження видалення
+  const handleOpenDeleteDialog = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  // Функція для закриття діалогу підтвердження видалення
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  // Функція для видалення клієнта
+  const handleDeleteClient = async () => {
+    try {
+      setDeleteLoading(true);
+      await clientsApi.deleteClient(clientId);
+      // Закриваємо діалог
+      setDeleteDialogOpen(false);
+      // Перенаправляємо на сторінку зі списком клієнтів
+      router.push('/clients');
+    } catch (error: unknown) {
+      console.error('Помилка при видаленні клієнта:', error);
+      setError('Не вдалося видалити клієнта. Спробуйте пізніше.');
+      setDeleteDialogOpen(false);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchClient = async () => {
-      setLoading(true);
-      setError(null);
-
       try {
-        const response = await fetch(`/api/clients/${clientId}`);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        setLoading(true);
+        setError(null);
+        const data = await clientsApi.getClientById(clientId);
         setClient(data);
-      } catch (err) {
-        console.error('Помилка при отриманні даних клієнта:', err);
-        setError('Не вдалося завантажити дані клієнта. Спробуйте пізніше.');
+      } catch (error: unknown) {
+        console.error('Помилка при отриманні даних клієнта:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Не вдалося завантажити дані клієнта. Спробуйте пізніше.';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -49,7 +81,7 @@ export function ClientDetail() {
     if (clientId) {
       fetchClient();
     }
-  }, [clientId]);
+  }, [clientId, router]);
 
   if (loading) {
     return (
@@ -164,6 +196,43 @@ export function ClientDetail() {
           Історія замовлень буде доступна в наступних версіях
         </Typography>
       </Paper>
+
+      {/* Кнопка видалення клієнта */}
+      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+        <Button 
+          variant="contained" 
+          color="error" 
+          onClick={handleOpenDeleteDialog}
+        >
+          Видалити клієнта
+        </Button>
+      </Box>
+      
+      {/* Діалог підтвердження видалення */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Видалення клієнта
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Ви дійсно хочете видалити клієнта {client?.firstName} {client?.lastName}? 
+            Ця дія незворотна.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} disabled={deleteLoading}>
+            Скасувати
+          </Button>
+          <Button onClick={handleDeleteClient} color="error" autoFocus disabled={deleteLoading}>
+            {deleteLoading ? 'Видалення...' : 'Видалити'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

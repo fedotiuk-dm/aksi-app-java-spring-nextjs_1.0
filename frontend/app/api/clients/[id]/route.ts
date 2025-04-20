@@ -74,7 +74,14 @@ export async function GET(
     const clientData = await response.json();
     console.log(`Успішно отримано дані клієнта: ${clientId}`);
     
-    return NextResponse.json(clientData);
+    // Перевіряємо наявність поля tags та додаємо його, якщо відсутнє
+    const processedClientData = {
+      ...clientData,
+      tags: clientData.tags || []
+    };
+    console.log(`Дані клієнта після обробки:`, processedClientData);
+    
+    return NextResponse.json(processedClientData);
   } catch (error) {
     console.error('Помилка при отриманні даних клієнта:', error);
     return NextResponse.json(

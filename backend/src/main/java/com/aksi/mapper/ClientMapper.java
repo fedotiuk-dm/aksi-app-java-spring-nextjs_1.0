@@ -46,7 +46,7 @@ public interface ClientMapper {
     @Mapping(target = "status", expression = "java(request.getStatus() != null ? request.getStatus() : com.aksi.domain.client.entity.ClientStatus.ACTIVE)")
     @Mapping(target = "loyaltyPoints", constant = "0")
     @Mapping(target = "loyaltyLevel", expression = "java(request.getLoyaltyLevel() != null ? request.getLoyaltyLevel() : com.aksi.domain.client.entity.LoyaltyLevel.STANDARD)")
-    @Mapping(target = "tags", ignore = true)
+    @Mapping(target = "tags", source = "tags")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Client toEntity(ClientCreateRequest request);

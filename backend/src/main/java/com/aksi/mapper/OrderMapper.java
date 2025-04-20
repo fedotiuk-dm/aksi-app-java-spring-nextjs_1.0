@@ -74,6 +74,7 @@ public interface OrderMapper extends BaseMapper {
     @Mapping(target = "amountDue", expression = "java(request != null && request.getAmountPaid() != null ? request.getAmountPaid().negate() : java.math.BigDecimal.ZERO)")    @Mapping(target = "items", ignore = true)
     @Mapping(target = "clientSignature", ignore = true)
     @Mapping(target = "notes", source = "request.notes", defaultValue = "")
+    @Mapping(target = "receptionPoint", expression = "java(request != null && request.getReceptionPointId() != null ? request.getReceptionPointId().toString() : null)")
     Order toEntity(@Nullable OrderCreateRequest request, Client client);
     
     /**
@@ -95,6 +96,7 @@ public interface OrderMapper extends BaseMapper {
     @Mapping(target = "items", ignore = true)
     @Mapping(target = "clientSignature", ignore = true)
     @Mapping(target = "notes", source = "request.notes", defaultValue = "")
+    @Mapping(target = "receptionPoint", expression = "java(request != null && request.getReceptionPointId() != null ? request.getReceptionPointId().toString() : order.getReceptionPoint())")
     Order updateOrderFromRequest(@Nullable OrderCreateRequest request, @MappingTarget Order order, Client client);
     
     /**

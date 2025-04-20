@@ -2,6 +2,7 @@ package com.aksi.dto.client;
 
 import com.aksi.domain.client.entity.ClientSource;
 import com.aksi.domain.client.entity.ClientStatus;
+import com.aksi.domain.client.entity.CommunicationChannel;
 import com.aksi.domain.client.entity.LoyaltyLevel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -102,4 +103,9 @@ public class ClientCreateRequest {
      * Теги клієнта
      */
     private Set<String> tags;
+    
+    /**
+     * Канали комунікації з клієнтом
+     */
+    private Set<CommunicationChannel> communicationChannels;
 } 

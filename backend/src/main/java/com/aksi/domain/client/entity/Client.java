@@ -165,6 +165,16 @@ public class Client {
     private Boolean allowCalls = true;
     
     /**
+     * Канали комунікації з клієнтом
+     */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "client_communication_channels", joinColumns = @JoinColumn(name = "client_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "channel")
+    @Builder.Default
+    private Set<CommunicationChannel> communicationChannels = new HashSet<>();
+    
+    /**
      * Дата наступного контакту з клієнтом
      */
     @Column(name = "next_contact_at")

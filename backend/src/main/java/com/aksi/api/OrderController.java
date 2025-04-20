@@ -6,7 +6,10 @@ import com.aksi.domain.order.entity.UrgencyType;
 import com.aksi.dto.order.OrderCreateRequest;
 import com.aksi.dto.order.OrderDto;
 import com.aksi.dto.order.OrderItemCreateRequest;
+import com.aksi.dto.order.ReceptionPointDTO;
 import com.aksi.service.order.OrderService;
+import com.aksi.service.order.ReceiptNumberGenerator;
+import com.aksi.service.order.ReceptionPointService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
@@ -35,11 +40,13 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orderService;
+    private final ReceiptNumberGenerator receiptNumberGenerator;
+    private final ReceptionPointService receptionPointService;
 
     @PostMapping
     @Operation(summary = "Create a new order", description = "Creates a new order with the given details")
     public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody OrderCreateRequest request) {
-        log.info("REST request to create a new order for client ID: {}", request.getClientId());
+        log.info("REST request to create a new order for client");
         OrderDto result = orderService.createOrder(request);
         return ResponseEntity.ok(result);
     }
@@ -101,6 +108,32 @@ public class OrderController {
             Pageable pageable) {
         log.info("REST request to get orders for client ID: {}", clientId);
         Page<OrderDto> result = orderService.getOrdersByClient(clientId, pageable);
+        return ResponseEntity.ok(result);
+    }
+    
+    /**
+     * Генерувати новий номер квитанції
+     * @return номер квитанції у форматі YYMMDD-XXXX
+     */
+    @GetMapping("/generate-receipt-number")
+    @Operation(summary = "Генерувати номер квитанції", 
+              description = "Генерує унікальний номер квитанції у форматі YYMMDD-XXXX")
+    public ResponseEntity<String> generateReceiptNumber() {
+        log.info("REST запит на генерацію номера квитанції");
+        String receiptNumber = receiptNumberGenerator.generateReceiptNumber();
+        return ResponseEntity.ok(receiptNumber);
+    }
+    
+    /**
+     * Отримати всі активні пункти прийому замовлень
+     * @return список активних пунктів прийому
+     */
+    @GetMapping("/reception-points")
+    @Operation(summary = "Отримати активні пункти прийому", 
+              description = "Повертає список активних пунктів прийому замовлень")
+    public ResponseEntity<List<ReceptionPointDTO>> getActiveReceptionPoints() {
+        log.info("REST запит на отримання активних пунктів прийому");
+        List<ReceptionPointDTO> result = receptionPointService.getActiveReceptionPoints();
         return ResponseEntity.ok(result);
     }
 
@@ -269,13 +302,5 @@ public class OrderController {
         log.info("REST request to delete order with ID: {}", id);
         orderService.deleteOrder(id);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/generate-receipt-number")
-    @Operation(summary = "Generate receipt number", description = "Generates a new receipt number for an order")
-    public ResponseEntity<String> generateReceiptNumber() {
-        log.info("REST request to generate a new receipt number");
-        String receiptNumber = orderService.generateReceiptNumber();
-        return ResponseEntity.ok(receiptNumber);
     }
 }
