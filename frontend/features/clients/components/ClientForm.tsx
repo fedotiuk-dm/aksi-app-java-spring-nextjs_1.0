@@ -30,7 +30,8 @@ import {
 } from '../types/client.types';
 
 interface FormErrors {
-  fullName?: string;
+  firstName?: string;
+  lastName?: string;
   phone?: string;
   email?: string;
   [key: string]: string | undefined;
@@ -39,7 +40,8 @@ interface FormErrors {
 export default function ClientForm() {
   const router = useRouter();
   const [formData, setFormData] = useState<ClientCreateRequest>({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     phone: '',
     additionalPhone: '',
     email: '',
@@ -85,11 +87,11 @@ export default function ClientForm() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    // Validate fullName
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Ім'я клієнта є обов'язковим";
-    } else if (formData.fullName.length < 2 || formData.fullName.length > 100) {
-      newErrors.fullName = "Ім'я повинно бути від 2 до 100 символів";
+    // Validate firstName
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "Ім'я клієнта є обов'язковим";
+    } else if (formData.firstName.length < 2 || formData.firstName.length > 100) {
+      newErrors.firstName = "Ім'я повинно бути від 2 до 100 символів";
     }
 
     // Validate phone
@@ -130,7 +132,7 @@ export default function ClientForm() {
       const newClient = await clientsApi.createClient(formData);
       setAlertInfo({
         type: 'success',
-        message: `Клієнта "${newClient.fullName}" успішно створено!`,
+        message: `Клієнта "${newClient.firstName} ${newClient.lastName}" успішно створено!`,
       });
 
       // Redirect to client list after a short delay
@@ -175,14 +177,14 @@ export default function ClientForm() {
         <Grid container spacing={3}>
           <Grid size={12}>
             <TextField
-              label="Повне ім'я"
-              name="fullName"
-              value={formData.fullName}
+              label="Ім'я"
+              name="firstName"
+              value={formData.firstName}
               onChange={handleTextChange}
               fullWidth
               required
-              error={!!errors.fullName}
-              helperText={errors.fullName}
+              error={!!errors.firstName}
+              helperText={errors.firstName}
             />
           </Grid>
 

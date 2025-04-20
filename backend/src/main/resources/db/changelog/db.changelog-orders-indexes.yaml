@@ -1,0 +1,136 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-orders-client-id-index
+      author: cascade
+      changes:
+        - createIndex:
+            indexName: idx_orders_client_id
+            tableName: orders
+            columns:
+              - column:
+                  name: client_id
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            indexExists:
+              tableName: orders
+              indexName: idx_orders_client_id
+              
+  - changeSet:
+      id: create-orders-status-index
+      author: cascade
+      changes:
+        - createIndex:
+            indexName: idx_orders_status
+            tableName: orders
+            columns:
+              - column:
+                  name: status
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            indexExists:
+              tableName: orders
+              indexName: idx_orders_status
+              
+  - changeSet:
+      id: create-orders-expected-completion-date-index
+      author: cascade
+      changes:
+        - createIndex:
+            indexName: idx_orders_expected_completion_date
+            tableName: orders
+            columns:
+              - column:
+                  name: expected_completion_date
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            indexExists:
+              tableName: orders
+              indexName: idx_orders_expected_completion_date
+              
+  - changeSet:
+      id: create-order-items-order-id-index
+      author: cascade
+      changes:
+        - createIndex:
+            indexName: idx_order_items_order_id
+            tableName: order_items
+            columns:
+              - column:
+                  name: order_id
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            indexExists:
+              tableName: order_items
+              indexName: idx_order_items_order_id
+              
+  - changeSet:
+      id: create-order-item-defects-order-item-id-index
+      author: cascade
+      changes:
+        - createIndex:
+            indexName: idx_order_item_defects_order_item_id
+            tableName: order_item_defects
+            columns:
+              - column:
+                  name: order_item_id
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            indexExists:
+              tableName: order_item_defects
+              indexName: idx_order_item_defects_order_item_id
+              
+  - changeSet:
+      id: create-order-item-stains-order-item-id-index
+      author: cascade
+      changes:
+        - createIndex:
+            indexName: idx_order_item_stains_order_item_id
+            tableName: order_item_stains
+            columns:
+              - column:
+                  name: order_item_id
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            indexExists:
+              tableName: order_item_stains
+              indexName: idx_order_item_stains_order_item_id
+              
+  - changeSet:
+      id: create-order-item-modifiers-order-item-id-index
+      author: cascade
+      changes:
+        - createIndex:
+            indexName: idx_order_item_modifiers_order_item_id
+            tableName: order_item_modifiers
+            columns:
+              - column:
+                  name: order_item_id
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            indexExists:
+              tableName: order_item_modifiers
+              indexName: idx_order_item_modifiers_order_item_id
+
+  - changeSet:
+      id: create-order-item-photos-order-item-id-index
+      author: cascade
+      changes:
+        - createIndex:
+            indexName: idx_order_item_photos_order_item_id
+            tableName: order_item_photos
+            columns:
+              - column:
+                  name: order_item_id
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            indexExists:
+              tableName: order_item_photos
+              indexName: idx_order_item_photos_order_item_id

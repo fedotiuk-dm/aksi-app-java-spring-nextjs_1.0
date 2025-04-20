@@ -98,7 +98,8 @@ interface Order {
 // Клієнт
 interface Client {
   id?: string; // UUID
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone: string;
   email?: string;
   address?: string;
@@ -418,7 +419,8 @@ const useCreateOrder = () => {
 ```typescript
 // Схема валідації клієнта
 const clientSchema = z.object({
-  fullName: z.string().min(3, "Ім'я має містити щонайменше 3 символи"),
+  firstName: z.string().min(3, "Ім'я має містити щонайменше 3 символи"),
+  lastName: z.string().min(3, "Прізвище має містити щонайменше 3 символи"),
   phone: z
     .string()
     .regex(/^\+380\d{9}$/, 'Телефон має бути у форматі +380XXXXXXXXX'),
@@ -493,9 +495,9 @@ const ClientCreate: React.FC = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <TextField
         label="Повне ім'я"
-        {...register('fullName')}
-        error={!!errors.fullName}
-        helperText={errors.fullName?.message}
+        {...register('firstName')}
+        error={!!errors.firstName}
+        helperText={errors.firstName?.message}
         fullWidth
         margin="normal"
       />

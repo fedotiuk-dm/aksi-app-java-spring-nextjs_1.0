@@ -143,7 +143,8 @@
 ### Client (Клієнт)
 
 - `id`: UUID
-- `fullName`: String
+- `firstName`: String
+- `lastName`: String
 - `phone`: String (unique)
 - `email`: String (unique, optional)
 - `address`: String (optional)

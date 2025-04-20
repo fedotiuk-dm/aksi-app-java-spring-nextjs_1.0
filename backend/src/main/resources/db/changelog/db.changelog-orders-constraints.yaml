@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-add-orders-foreign-keys
+      author: cascade
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_order_client
+            baseColumnNames: client_id
+            baseTableName: orders
+            referencedColumnNames: id
+            referencedTableName: clients
+            validate: true
+
+  - changeSet:
+      id: 2-add-order-items-foreign-keys
+      author: cascade
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_order
+            baseColumnNames: order_id
+            baseTableName: order_items
+            referencedColumnNames: id
+            referencedTableName: orders
+            validate: true
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_service_category
+            baseColumnNames: service_category_id
+            baseTableName: order_items
+            referencedColumnNames: id
+            referencedTableName: service_categories
+            validate: true
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_price_list_item
+            baseColumnNames: price_list_item_id
+            baseTableName: order_items
+            referencedColumnNames: id
+            referencedTableName: price_list_items
+            validate: true
+
+  - changeSet:
+      id: 3-add-order-items-related-foreign-keys
+      author: cascade
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_defect_order_item
+            baseColumnNames: order_item_id
+            baseTableName: order_item_defects
+            referencedColumnNames: id
+            referencedTableName: order_items
+            validate: true
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_stain_order_item
+            baseColumnNames: order_item_id
+            baseTableName: order_item_stains
+            referencedColumnNames: id
+            referencedTableName: order_items
+            validate: true
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_modifier_order_item
+            baseColumnNames: order_item_id
+            baseTableName: order_item_modifiers
+            referencedColumnNames: id
+            referencedTableName: order_items
+            validate: true
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_photo_order_item
+            baseColumnNames: order_item_id
+            baseTableName: order_item_photos
+            referencedColumnNames: id
+            referencedTableName: order_items
+            validate: true

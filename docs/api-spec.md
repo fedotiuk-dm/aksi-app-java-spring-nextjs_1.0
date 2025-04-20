@@ -108,7 +108,7 @@ POST /auth/register
 ### Отримання списку клієнтів
 
 ```
-GET /clients?page=0&size=10&sort=fullName,asc&status=ACTIVE
+GET /clients?page=0&size=10&sort=firstName,asc&status=ACTIVE
 ```
 
 **Параметри:**
@@ -128,7 +128,8 @@ GET /clients?page=0&size=10&sort=fullName,asc&status=ACTIVE
     "content": [
       {
         "id": "123e4567-e89b-12d3-a456-426614174002",
-        "fullName": "Андрій Петренко",
+        "firstName": "Андрій",
+        "lastName": "Петренко",
         "phone": "+380501234567",
         "email": "andriy@example.com",
         "address": "м. Київ, вул. Хрещатик, 1",
@@ -175,7 +176,8 @@ GET /clients/{id}
   "success": true,
   "data": {
     "id": "123e4567-e89b-12d3-a456-426614174002",
-    "fullName": "Андрій Петренко",
+    "firstName": "Андрій",
+    "lastName": "Петренко",
     "phone": "+380501234567",
     "email": "andriy@example.com",
     "address": "м. Київ, вул. Хрещатик, 1",
@@ -214,7 +216,8 @@ POST /clients
 
 ```json
 {
-  "fullName": "Марія Іваненко",
+  "firstName": "Марія",
+  "lastName": "Іваненко",
   "phone": "+380671234567",
   "email": "maria@example.com",
   "address": "м. Львів, пл. Ринок, 10",
@@ -235,7 +238,8 @@ POST /clients
   "success": true,
   "data": {
     "id": "123e4567-e89b-12d3-a456-426614174003",
-    "fullName": "Марія Іваненко",
+    "firstName": "Марія",
+    "lastName": "Іваненко",
     "phone": "+380671234567",
     "email": "maria@example.com",
     "status": "ACTIVE",
@@ -257,7 +261,8 @@ PUT /clients/{id}
 
 ```json
 {
-  "fullName": "Марія Іваненко-Петренко",
+  "firstName": "Марія",
+  "lastName": "Іваненко-Петренко",
   "phone": "+380671234567",
   "email": "maria.new@example.com",
   "address": "м. Львів, пл. Ринок, 10, кв. 5",
@@ -272,7 +277,8 @@ PUT /clients/{id}
   "success": true,
   "data": {
     "id": "123e4567-e89b-12d3-a456-426614174003",
-    "fullName": "Марія Іваненко-Петренко",
+    "firstName": "Марія",
+    "lastName": "Іваненко-Петренко",
     "phone": "+380671234567",
     "email": "maria.new@example.com",
     "updatedAt": "2023-10-10T12:25:00Z"
@@ -368,7 +374,8 @@ GET /orders/{id}
     "notes": "Терміново",
     "client": {
       "id": "123e4567-e89b-12d3-a456-426614174002",
-      "fullName": "Андрій Петренко",
+      "firstName": "Андрій",
+      "lastName": "Петренко",
       "phone": "+380501234567",
       "email": "andriy@example.com"
     },

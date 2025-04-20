@@ -70,7 +70,7 @@ export function ClientDetail() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
             <Typography variant="h4" gutterBottom>
-              {client.fullName}
+              {client.firstName} {client.lastName}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
               <StatusChip status={client.status} />

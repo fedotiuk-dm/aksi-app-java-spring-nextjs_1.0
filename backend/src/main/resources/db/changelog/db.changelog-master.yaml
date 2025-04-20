@@ -7,3 +7,11 @@ databaseChangeLog:
       file: db/changelog/db.changelog-clients.yaml
   - include:
       file: db/changelog/db.changelog-pricelist.yaml
+  - include:
+      file: db/changelog/db.changelog-orders-base.yaml
+  - include:
+      file: db/changelog/db.changelog-orders-fields.yaml
+  - include:
+      file: db/changelog/db.changelog-orders-constraints.yaml
+  - include:
+      file: db/changelog/db.changelog-orders-indexes.yaml

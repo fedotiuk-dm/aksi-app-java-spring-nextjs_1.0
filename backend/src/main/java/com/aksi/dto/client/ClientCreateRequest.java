@@ -25,11 +25,29 @@ import java.util.Set;
 public class ClientCreateRequest {
     
     /**
-     * Повне ім'я клієнта
+     * Ім'я клієнта
      */
     @NotBlank(message = "Ім'я не може бути пустим")
     @Size(min = 2, max = 100, message = "Ім'я повинно бути від 2 до 100 символів")
-    private String fullName;
+    private String firstName;
+    
+    /**
+     * Прізвище клієнта
+     */
+    @NotBlank(message = "Прізвище не може бути пустим")
+    @Size(min = 2, max = 100, message = "Прізвище повинно бути від 2 до 100 символів")
+    private String lastName;
+    
+    /**
+     * Отримати повне ім'я клієнта (прізвище + ім'я)
+     * @return Повне ім'я клієнта
+     */
+    public String getFullName() {
+        if (lastName == null && firstName == null) return "";
+        if (lastName == null) return firstName;
+        if (firstName == null) return lastName;
+        return lastName + " " + firstName;
+    }
     
     /**
      * Основний телефон

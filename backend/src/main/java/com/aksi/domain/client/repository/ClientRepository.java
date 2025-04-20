@@ -26,7 +26,8 @@ public interface ClientRepository extends JpaRepository<Client, UUID> {
      * @return сторінка з клієнтами
      */
     @Query("SELECT c FROM Client c WHERE " +
-           "LOWER(c.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(c.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(c.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "c.phone LIKE CONCAT('%', :keyword, '%') OR " +
            "LOWER(c.email) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Client> findByKeyword(@Param("keyword") String keyword, Pageable pageable);

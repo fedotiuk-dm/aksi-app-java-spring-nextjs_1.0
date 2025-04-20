@@ -29,10 +29,28 @@ public class Client {
     private UUID id;
     
     /**
-     * Повне ім'я клієнта
+     * Ім'я клієнта
      */
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+    
+    /**
+     * Прізвище клієнта
+     */
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+    
+    /**
+     * Отримати повне ім'я клієнта (прізвище + ім'я)
+     * @return Повне ім'я клієнта
+     */
+    @Transient
+    public String getFullName() {
+        if (lastName == null && firstName == null) return "";
+        if (lastName == null) return firstName;
+        if (firstName == null) return lastName;
+        return lastName + " " + firstName;
+    }
     
     /**
      * Основний телефон клієнта

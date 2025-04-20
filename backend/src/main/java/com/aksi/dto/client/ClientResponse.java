@@ -32,7 +32,20 @@ public class ClientResponse {
     /**
      * Повне ім'я клієнта
      */
-    private String fullName;
+    private String firstName;
+    
+    private String lastName;
+    
+    /**
+     * Отримати повне ім'я клієнта (прізвище + ім'я)
+     * @return Повне ім'я клієнта
+     */
+    public String getFullName() {
+        if (lastName == null && firstName == null) return "";
+        if (lastName == null) return firstName;
+        if (firstName == null) return lastName;
+        return lastName + " " + firstName;
+    }
     
     /**
      * Основний телефон

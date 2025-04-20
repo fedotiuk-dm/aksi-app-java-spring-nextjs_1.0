@@ -38,7 +38,8 @@ Authorization: Bearer {your_jwt_token}
   "username": "newuser",
   "password": "password123",
   "email": "newuser@example.com",
-  "fullName": "Новий Користувач",
+  "firstName": "Новий",
+  "lastName": "Користувач",
   "phone": "+380501234567"
 }
 ```

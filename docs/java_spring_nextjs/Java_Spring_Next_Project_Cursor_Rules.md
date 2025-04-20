@@ -586,7 +586,7 @@ public class OrderWizardController {
     }
 
     @GetMapping("/pricelist/items")
-    public List<PriceItemResponse> getPriceItems(@RequestParam Long categoryId) {
+    public List<PriceItemResponse> getPriceItems(@RequestParam UUID categoryId) {
         return priceCalculationService.getPriceItemsByCategoryId(categoryId);
     }
 }

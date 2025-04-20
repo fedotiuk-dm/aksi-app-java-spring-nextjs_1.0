@@ -24,11 +24,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # Діалект PostgreSQL автоматично визначається Hibernate
         hbm2ddl:
           auto: validate
-        # Видалено налаштування автоматичної генерації схеми
-        globally_quoted_identifiers: true
+    open-in-view: false
+    # Видалено налаштування автоматичної генерації схеми
+    properties.hibernate.globally_quoted_identifiers: true
   web:
     cors:
       allowed-origins: 'http://localhost:3000,http://127.0.0.1:3000'
@@ -83,6 +84,7 @@ logging:
     io.swagger.v3: TRACE
     com.aksi.config: TRACE
     org.springframework.security: DEBUG
+    org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR
   file:
     name: logs/aksi-app.log
   pattern:

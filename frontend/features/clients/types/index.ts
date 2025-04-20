@@ -25,7 +25,8 @@ export enum LoyaltyLevel {
 
 export interface Client {
   id: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone: string;
   additionalPhone?: string;
   email?: string;
@@ -55,7 +56,8 @@ export interface Client {
 }
 
 export interface CreateClientDto {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone: string;
   additionalPhone?: string;
   email?: string;
@@ -71,7 +73,8 @@ export interface CreateClientDto {
 }
 
 export interface UpdateClientDto {
-  fullName?: string;
+  firstName?: string;
+  lastName?: string;
   phone?: string;
   additionalPhone?: string;
   email?: string;

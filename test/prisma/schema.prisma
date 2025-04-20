@@ -38,7 +38,8 @@ model User {
 
 model Client {
   id             String       @id @default(uuid()) @db.Uuid
-  fullName       String
+  firstName      String
+  lastName       String
   phone          String       @unique
   email          String?      @unique
   address        String?

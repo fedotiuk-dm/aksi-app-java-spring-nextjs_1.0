@@ -22,7 +22,8 @@ export enum ClientSource {
 
 export interface Client {
   id: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone: string;
   additionalPhone?: string;
   email?: string;

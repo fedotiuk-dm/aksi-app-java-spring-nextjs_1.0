@@ -324,7 +324,7 @@ public abstract class AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -395,7 +395,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ClientRepository extends JpaRepository<Client, Long> {
+public interface ClientRepository extends JpaRepository<Client, UUID
     Optional<Client> findByPhone(String phone);
     List<Client> findByLastNameContainingIgnoreCaseOrPhoneContaining(String lastName, String phone);
 }
@@ -417,7 +417,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientDTO {
-    private Long id;
+    private UUID;
     private String firstName;
     private String lastName;
     private String phone;
@@ -446,7 +446,8 @@ public interface ClientMapper {
     Client toEntity(ClientDTO clientDTO);
 
     @Mapping(target = "id", source = "id")
-    @Mapping(target = "fullName", expression = "java(client.getFirstName() + \" \" + client.getLastName())")
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
     ClientResponse toResponse(Client client);
 }
 ```
@@ -464,10 +465,10 @@ import java.util.List;
 
 public interface ClientService {
     ClientResponse createClient(ClientDTO clientDTO);
-    ClientResponse getClientById(Long id);
+    ClientResponse getClientById(UUID);
     List<ClientResponse> searchClients(String query);
-    ClientResponse updateClient(Long id, ClientDTO clientDTO);
-    void deleteClient(Long id);
+    ClientResponse updateClient(UUID, ClientDTO clientDTO);
+    void deleteClient(UUID);
 }
 ```
 
@@ -505,7 +506,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional(readOnly = true)
-    public ClientResponse getClientById(Long id) {
+    public ClientResponse getClientById(UUID) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + id));
         return clientMapper.toResponse(client);
@@ -522,7 +523,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    public ClientResponse updateClient(Long id, ClientDTO clientDTO) {
+    public ClientResponse updateClient(UUID, ClientDTO clientDTO) {
         Client existingClient = clientRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + id));
 
@@ -535,7 +536,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    public void deleteClient(Long id) {
+    public void deleteClient(UUID) {
         if (!clientRepository.existsById(id)) {
             throw new EntityNotFoundException("Client not found with id: " + id);
         }
@@ -574,7 +575,7 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id) {
+    public ResponseEntity<ClientResponse> getClientById(@PathVariable UUID) {
         return ResponseEntity.ok(clientService.getClientById(id));
     }
 
@@ -585,13 +586,13 @@ public class ClientController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ClientResponse> updateClient(
-            @PathVariable Long id,
+            @PathVariable UUID,
             @Valid @RequestBody ClientDTO clientDTO) {
         return ResponseEntity.ok(clientService.updateClient(id, clientDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteClient(@PathVariable UUID) {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
     }

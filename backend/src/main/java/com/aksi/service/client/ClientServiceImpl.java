@@ -61,7 +61,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     public ClientResponse createClient(ClientCreateRequest request) {
-        log.debug("Створення нового клієнта: {}", request.getFullName());
+        log.debug("Створення нового клієнта: {} {}", request.getFirstName(), request.getLastName());
         
         // Перевіряємо, чи не існує клієнт з таким телефоном
         if (clientRepository.existsByPhone(request.getPhone())) {

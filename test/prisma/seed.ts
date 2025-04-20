@@ -157,29 +157,29 @@ async function main() {
   console.log('Seeding test clients...');
   const testClients = [
     {
-      fullName: 'Тест Клієнт Один',
+      firstName: 'Тест Клієнт Один',
       phone: '+380501112233',
       email: 'test1@example.com',
       address: 'вул. Тестова, 1',
     },
     {
-      fullName: 'Тест Клієнт Два',
+      firstName: 'Тест Клієнт Два',
       phone: '+380502223344',
       email: 'test2@example.com',
     },
     {
-      fullName: 'Тест Клієнт Три',
+      firstName: 'Тест Клієнт Три',
       phone: '+380503334455',
       // email: null, // Можна без email
       address: 'вул. Тестова, 3',
     },
     {
-      fullName: 'Іван Франко',
+      firstName: 'Іван Франко',
       phone: '+380504445566',
       email: 'franko@example.com',
     },
     {
-      fullName: 'Леся Українка',
+      firstName: 'Леся Українка',
       phone: '+380505556677',
       email: 'lesya@example.com',
       address: 'м. Київ',
@@ -193,11 +193,11 @@ async function main() {
         update: clientData, // Якщо знайдено, оновлюємо дані (можна залишити порожнім, якщо не потрібно оновлювати)
         create: clientData, // Якщо не знайдено, створюємо
       });
-      console.log(`  Client ${clientData.fullName} seeded successfully.`);
+      console.log(`  Client ${clientData.firstName} seeded successfully.`);
     } catch (error) {
       // Обробка можливих помилок (наприклад, якщо телефон не унікальний з якоїсь причини)
       console.error(
-        `  Error seeding client ${clientData.fullName} (Phone: ${clientData.phone}):`,
+        `  Error seeding client ${clientData.firstName} (Phone: ${clientData.phone}):`,
         error
       );
     }

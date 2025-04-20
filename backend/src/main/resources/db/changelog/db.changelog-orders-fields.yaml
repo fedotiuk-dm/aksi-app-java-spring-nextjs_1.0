@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-add-missing-fields-to-order-items
+      author: cascade
+      changes:
+        - addColumn:
+            tableName: order_items
+            columns:
+              - column:
+                  name: no_warranty
+                  type: boolean
+              - column:
+                  name: no_warranty_reason
+                  type: text
+              - column:
+                  name: manual_cleaning
+                  type: boolean
+              - column:
+                  name: heavily_soiled
+                  type: boolean
+              - column:
+                  name: heavily_soiled_percentage
+                  type: int
+              - column:
+                  name: child_sized
+                  type: boolean
+
+  - changeSet:
+      id: 2-add-base-price-to-orders
+      author: cascade
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: base_price
+                  type: decimal(10,2)
+                  defaultValue: 0.00
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 3-add-client-requirements-to-orders
+      author: cascade
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: client_requirements
+                  type: text
+                  constraints:
+                    nullable: true

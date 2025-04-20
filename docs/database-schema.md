@@ -7,12 +7,12 @@
 |     clients       |          |      orders        |          |     order_items     |
 +-------------------+          +--------------------+          +---------------------+
 | id (UUID) PK      |<-----+   | id (UUID) PK       |<-----+   | id (UUID) PK        |
-| fullName          |      |   | number (unique)    |      |   | orderId (FK)        |
-| phone (unique)    |      |   | clientId (FK)      |      |   | priceListItemId(FK) |
-| email (unique)    |      |   | userId (FK)        |      |   | quantity            |
-| address           |      +---| totalAmount        |      +---| name                |
-| birthdate         |          | prepaidAmount      |          | unitPrice           |
-| notes             |          | createdAt          |          | totalPrice          |
+| firstName         |      |   | number (unique)    |      |   | orderId (FK)        |
+| lastName          |      |   | clientId (FK)      |      |   | priceListItemId(FK) |
+| phone (unique)    |      |   | userId (FK)        |      |   | quantity            |
+| email (unique)    |      +---| totalAmount        |      +---| name                |
+| address           |          | prepaidAmount      |          | unitPrice           |
+| birthdate         |          | createdAt          |          | totalPrice          |
 | loyaltyLevel      |          | completedAt        |          | category            |
 | gender            |          | estimatedReleaseDate|         | itemType            |
 | totalSpent        |          | paymentMethod      |          | fabric              |

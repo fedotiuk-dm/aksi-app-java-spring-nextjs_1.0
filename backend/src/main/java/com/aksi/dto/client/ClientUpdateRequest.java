@@ -24,10 +24,16 @@ import java.util.Set;
 public class ClientUpdateRequest {
     
     /**
-     * Повне ім'я клієнта
+     * Ім'я клієнта
      */
     @Size(min = 2, max = 100, message = "Ім'я повинно бути від 2 до 100 символів")
-    private String fullName;
+    private String firstName;
+    
+    /**
+     * Прізвище клієнта
+     */
+    @Size(min = 2, max = 100, message = "Прізвище повинно бути від 2 до 100 символів")
+    private String lastName;
     
     /**
      * Основний телефон

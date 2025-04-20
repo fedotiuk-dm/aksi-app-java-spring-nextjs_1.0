@@ -33,7 +33,7 @@ Authorization: Bearer {your_jwt_token}
 {
   "page": 0,
   "size": 10,
-  "sortField": "fullName",
+  "sortField": "firstName",
   "sortDirection": "ASC",
   "filterCriteria": [
     {
@@ -57,7 +57,8 @@ Authorization: Bearer {your_jwt_token}
   "content": [
     {
       "id": "123e4567-e89b-12d3-a456-426614174002",
-      "fullName": "Петро Іванов",
+      "firstName": "Петро",
+      "lastName": "Іванов",
       "phone": "+380501234567",
       "email": "petro@example.com",
       "address": "м. Київ, вул. Хрещатик, 1",
@@ -91,7 +92,8 @@ Authorization: Bearer {your_jwt_token}
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174002",
-  "fullName": "Андрій Петренко",
+  "firstName": "Андрій",
+  "lastName": "Петренко",
   "phone": "+380501234567",
   "email": "andriy@example.com",
   "address": "м. Київ, вул. Хрещатик, 1",
@@ -116,7 +118,8 @@ Authorization: Bearer {your_jwt_token}
 **Запит:**
 ```json
 {
-  "fullName": "Ірина Коваленко",
+  "firstName": "Ірина",
+  "lastName": "Коваленко",
   "phone": "+380671234567",
   "email": "iryna@example.com",
   "address": "м. Львів, вул. Франка, 15",
@@ -132,7 +135,8 @@ Authorization: Bearer {your_jwt_token}
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174003",
-  "fullName": "Ірина Коваленко",
+  "firstName": "Ірина",
+  "lastName": "Коваленко",
   "phone": "+380671234567",
   "email": "iryna@example.com",
   "address": "м. Львів, вул. Франка, 15",
@@ -164,7 +168,8 @@ Authorization: Bearer {your_jwt_token}
 **Запит:**
 ```json
 {
-  "fullName": "Ірина Коваленко-Шевченко",
+  "firstName": "Ірина",
+  "lastName": "Коваленко-Шевченко",
   "phone": "+380671234567",
   "email": "iryna.new@example.com",
   "address": "м. Львів, вул. Франка, 17",
@@ -177,7 +182,8 @@ Authorization: Bearer {your_jwt_token}
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174003",
-  "fullName": "Ірина Коваленко-Шевченко",
+  "firstName": "Ірина",
+  "lastName": "Коваленко-Шевченко",
   "phone": "+380671234567",
   "email": "iryna.new@example.com",
   "address": "м. Львів, вул. Франка, 17",
@@ -225,7 +231,8 @@ Authorization: Bearer {your_jwt_token}
 [
   {
     "id": "123e4567-e89b-12d3-a456-426614174002",
-    "fullName": "Андрій Петренко",
+    "firstName": "Андрій",
+    "lastName": "Петренко",
     "phone": "+380501234567",
     "email": "andriy@example.com",
     "address": "м. Київ, вул. Хрещатик, 1",
@@ -255,7 +262,8 @@ Authorization: Bearer {your_jwt_token}
 [
   {
     "id": "123e4567-e89b-12d3-a456-426614174004",
-    "fullName": "Олександр Сидоренко",
+    "firstName": "Олександр",
+    "lastName": "Сидоренко",
     "phone": "+380671234567",
     "email": "olexandr@example.com",
     "address": "м. Одеса, вул. Дерибасівська, 10",

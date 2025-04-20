@@ -25,7 +25,8 @@ export interface ClientsResponse {
 }
 
 export interface ClientCreateRequest {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone: string;
   additionalPhone?: string;
   email?: string;
@@ -74,7 +75,7 @@ export const clientsApi = {
         loyaltyLevel: params.loyaltyLevel,
         page: params.page || 0,
         size: params.size || 10,
-        sortBy: params.sortBy || 'fullName',
+        sortBy: params.sortBy || 'firstName',
         sortDir: params.sortDir || 'asc'
       }, {
         // Важливо передавати cookies з браузера до бекенду

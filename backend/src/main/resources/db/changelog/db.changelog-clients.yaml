@@ -214,3 +214,101 @@ databaseChangeLog:
             columns:
               - column:
                   name: deleted_at
+
+  # Нові міграції для зміни структури зберігання імені клієнта
+  - changeSet:
+      id: '4'
+      author: 'cascade'
+      comment: 'Add first_name and last_name columns to clients table'
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: clients
+      changes:
+        - addColumn:
+            tableName: clients
+            columns:
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+                    
+  - changeSet:
+      id: '5'
+      author: 'cascade'
+      comment: 'Migrate data from full_name to first_name and last_name'
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: clients
+      changes:
+        - sql:
+            sql: |
+              -- Розділити на прізвище (перше слово) та ім'я (решта)
+              UPDATE clients
+              SET last_name = SPLIT_PART(full_name, ' ', 1),
+                  first_name = SUBSTRING(full_name FROM POSITION(' ' IN full_name) + 1)
+              WHERE POSITION(' ' IN full_name) > 0;
+              
+              -- Для записів, де немає пробілу, встановлюємо все як last_name
+              UPDATE clients
+              SET last_name = full_name,
+                  first_name = ''
+              WHERE POSITION(' ' IN full_name) = 0 OR POSITION(' ' IN full_name) IS NULL;
+
+  - changeSet:
+      id: '6'
+      author: 'cascade'
+      comment: 'Make first_name and last_name not nullable'
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: clients
+      changes:
+        - addNotNullConstraint:
+            tableName: clients
+            columnName: first_name
+            columnDataType: VARCHAR(255)
+            defaultNullValue: ''
+        - addNotNullConstraint:
+            tableName: clients
+            columnName: last_name
+            columnDataType: VARCHAR(255)
+            defaultNullValue: ''
+            
+  - changeSet:
+      id: '7'
+      author: 'cascade'
+      comment: 'Add getFullName function to PostgreSQL'
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: clients
+      changes:
+        - sql:
+            sql: |
+              CREATE OR REPLACE FUNCTION get_full_name(last_name VARCHAR, first_name VARCHAR)
+              RETURNS VARCHAR AS $$
+              BEGIN
+                RETURN TRIM(last_name || ' ' || first_name);
+              END
+              $$ LANGUAGE plpgsql;
+              
+  - changeSet:
+      id: '8'
+      author: 'cascade'
+      comment: 'Remove full_name column after migration'
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: clients
+      changes:
+        - dropColumn:
+            tableName: clients
+            columnName: full_name

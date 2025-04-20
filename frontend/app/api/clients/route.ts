@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const page = url.searchParams.get('page') || '0';
     const size = url.searchParams.get('size') || '10';
-    const sortBy = url.searchParams.get('sortBy') || 'fullName';
+    const sortBy = url.searchParams.get('sortBy') || 'firstName';
     const sortDir = url.searchParams.get('sortDir') || 'asc';
     
     console.log(`Отримання списку клієнтів: page=${page}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}`);
