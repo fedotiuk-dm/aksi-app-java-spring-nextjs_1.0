@@ -1,16 +1,24 @@
 package com.aksi.mapper;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import jakarta.annotation.Nullable;
+
 import com.aksi.domain.client.entity.Client;
 import com.aksi.domain.order.entity.Order;
 import com.aksi.dto.client.ClientDTO;
 import com.aksi.dto.order.OrderCreateRequest;
 import com.aksi.dto.order.OrderDto;
 import com.aksi.dto.order.OrderItemDto;
-import org.mapstruct.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Mapper for converting between Order entity and DTOs.
@@ -63,11 +71,10 @@ public interface OrderMapper extends BaseMapper {
     @Mapping(target = "status", constant = "CREATED")
     @Mapping(target = "basePrice", constant = "0")
     @Mapping(target = "totalPrice", constant = "0")
-    @Mapping(target = "amountDue", expression = "java(request.getAmountPaid().negate())")
-    @Mapping(target = "items", ignore = true)
+    @Mapping(target = "amountDue", expression = "java(request != null && request.getAmountPaid() != null ? request.getAmountPaid().negate() : java.math.BigDecimal.ZERO)")    @Mapping(target = "items", ignore = true)
     @Mapping(target = "clientSignature", ignore = true)
-    @Mapping(target = "notes", source = "request.notes")
-    Order toEntity(OrderCreateRequest request, Client client);
+    @Mapping(target = "notes", source = "request.notes", defaultValue = "")
+    Order toEntity(@Nullable OrderCreateRequest request, Client client);
     
     /**
      * Update an existing Order entity from OrderCreateRequest.
@@ -84,11 +91,11 @@ public interface OrderMapper extends BaseMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "basePrice", ignore = true)
     @Mapping(target = "totalPrice", ignore = true)
-    @Mapping(target = "amountDue", expression = "java(calculateAmountDue(order.getTotalPrice(), request.getAmountPaid()))")
+    @Mapping(target = "amountDue", expression = "java(calculateAmountDue(order.getTotalPrice(), request != null ? request.getAmountPaid() : java.math.BigDecimal.ZERO))")
     @Mapping(target = "items", ignore = true)
     @Mapping(target = "clientSignature", ignore = true)
-    @Mapping(target = "notes", source = "request.notes")
-    Order updateOrderFromRequest(OrderCreateRequest request, @MappingTarget Order order, Client client);
+    @Mapping(target = "notes", source = "request.notes", defaultValue = "")
+    Order updateOrderFromRequest(@Nullable OrderCreateRequest request, @MappingTarget Order order, Client client);
     
     /**
      * Convert Order entity to OrderDto with client and order items.
@@ -124,7 +131,13 @@ public interface OrderMapper extends BaseMapper {
      * @param amountPaid The amount paid
      * @return The amount due
      */
-    default java.math.BigDecimal calculateAmountDue(java.math.BigDecimal totalPrice, java.math.BigDecimal amountPaid) {
+    default BigDecimal calculateAmountDue(BigDecimal totalPrice, BigDecimal amountPaid) {
+        if (totalPrice == null) {
+            totalPrice = BigDecimal.ZERO;
+        }
+        if (amountPaid == null) {
+            amountPaid = BigDecimal.ZERO;
+        }
         return totalPrice.subtract(amountPaid);
     }
 }

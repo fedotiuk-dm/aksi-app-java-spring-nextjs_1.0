@@ -181,6 +181,8 @@
                     </annotationProcessorPaths>
                     <compilerArgs>
                         <arg>-Amapstruct.verbose=true</arg>
+                        <arg>-Amapstruct.defaultComponentModel=spring</arg>
+                        <arg>-Amapstruct.copyableAnnotations=org.springframework.lang.Nullable</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
