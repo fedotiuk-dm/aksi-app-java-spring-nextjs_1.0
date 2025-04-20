@@ -31,7 +31,7 @@ odiah,1,Брюки,шт,380.00,,,true
 ### 1. Копіювання CSV-файлу в контейнер PostgreSQL
 
 ```bash
-docker cp /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/scripts/price_list.csv postgres:/price_list.csv
+docker cp /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/scripts/price_list/price_list.csv postgres:/price_list.csv
 ```
 
 ### 2. Виконання SQL-скрипта імпорту через pgAdmin

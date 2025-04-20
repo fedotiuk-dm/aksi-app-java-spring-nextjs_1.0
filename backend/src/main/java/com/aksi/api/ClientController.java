@@ -84,7 +84,7 @@ public class ClientController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
     public ResponseEntity<ClientResponse> createClient(
             @Valid @RequestBody ClientCreateRequest request) {
-        log.info("Отримано запит на створення клієнта: {}", request.getFullName());
+        log.info("Отримано запит на створення клієнта: {} {}", request.getFirstName(), request.getLastName());
         return new ResponseEntity<>(clientService.createClient(request), HttpStatus.CREATED);
     }
     

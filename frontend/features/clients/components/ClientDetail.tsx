@@ -1,10 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Typography, Paper, Grid, Divider, Button, Alert } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Grid,
+  Divider,
+  Button,
+  Alert,
+} from '@mui/material';
 import { useParams } from 'next/navigation';
 import { Client } from '@/features/clients/types';
-import { StatusChip, LoyaltyChip } from '@/features/clients/components/ClientsList';
+import {
+  StatusChip,
+  LoyaltyChip,
+} from '@/features/clients/components/ClientsList';
 
 export function ClientDetail() {
   const params = useParams();
@@ -17,14 +28,14 @@ export function ClientDetail() {
     const fetchClient = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         const response = await fetch(`/api/clients/${clientId}`);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
         setClient(data);
       } catch (err) {
@@ -67,7 +78,14 @@ export function ClientDetail() {
   return (
     <Box sx={{ py: 4 }}>
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            mb: 2,
+          }}
+        >
           <Box>
             <Typography variant="h4" gutterBottom>
               {client.firstName} {client.lastName}
@@ -93,21 +111,29 @@ export function ClientDetail() {
               {client.email}
             </Typography>
 
-            <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 2 }}>
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              sx={{ mt: 2 }}
+            >
               Телефон
             </Typography>
             <Typography variant="body1" gutterBottom>
               {client.phone}
             </Typography>
 
-            <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 2 }}>
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              sx={{ mt: 2 }}
+            >
               Адреса
             </Typography>
             <Typography variant="body1" gutterBottom>
               {client.address}
             </Typography>
           </Grid>
-          
+
           <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="subtitle2" color="text.secondary">
               Дата реєстрації
@@ -116,7 +142,11 @@ export function ClientDetail() {
               {new Date(client.createdAt).toLocaleDateString('uk-UA')}
             </Typography>
 
-            <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 2 }}>
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              sx={{ mt: 2 }}
+            >
               Примітки
             </Typography>
             <Typography variant="body1" gutterBottom>
@@ -125,7 +155,7 @@ export function ClientDetail() {
           </Grid>
         </Grid>
       </Paper>
-      
+
       <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
           Історія замовлень

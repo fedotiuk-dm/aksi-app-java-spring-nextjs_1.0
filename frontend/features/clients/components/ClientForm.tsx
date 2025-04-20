@@ -13,9 +13,10 @@ import {
   InputLabel,
   Select,
   Alert,
-  CircularProgress,
   SelectChangeEvent,
   Paper,
+  Chip,
+  Stack,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -60,6 +61,8 @@ export default function ClientForm() {
     message: string;
   } | null>(null);
 
+  const [newTag, setNewTag] = useState('');
+
   const handleTextChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -72,9 +75,36 @@ export default function ClientForm() {
     }
   };
 
-  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+  const handleSelectChange = (e: SelectChangeEvent) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleAddTag = () => {
+    if (newTag && !formData.tags?.includes(newTag)) {
+      setFormData({
+        ...formData,
+        tags: [...(formData.tags ?? []), newTag]
+      });
+      setNewTag('');
+    }
+  };
+
+  const handleDeleteTag = (tagToDelete: string) => {
+    setFormData({
+      ...formData,
+      tags: (formData.tags ?? []).filter(tag => tag !== tagToDelete)
+    });
+  };
+
+  const handleTagKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && newTag) {
+      e.preventDefault();
+      handleAddTag();
+    }
   };
 
   const handleDateChange = (date: dayjs.Dayjs | null) => {
@@ -87,6 +117,13 @@ export default function ClientForm() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
+    // Validate lastName
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Прізвище клієнта є обов'язковим";
+    } else if (formData.lastName.length < 2 || formData.lastName.length > 100) {
+      newErrors.lastName = "Прізвище повинно бути від 2 до 100 символів";
+    }
+    
     // Validate firstName
     if (!formData.firstName.trim()) {
       newErrors.firstName = "Ім'я клієнта є обов'язковим";
@@ -135,9 +172,9 @@ export default function ClientForm() {
         message: `Клієнта "${newClient.firstName} ${newClient.lastName}" успішно створено!`,
       });
 
-      // Redirect to client list after a short delay
+      // Redirect to client detail page after a short delay
       setTimeout(() => {
-        router.push('/clients');
+        router.push(`/clients/${newClient.id}`);
       }, 1500);
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
@@ -175,7 +212,20 @@ export default function ClientForm() {
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
         <Grid container spacing={3}>
-          <Grid size={12}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              label="Прізвище"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleTextChange}
+              fullWidth
+              required
+              error={!!errors.lastName}
+              helperText={errors.lastName}
+            />
+          </Grid>
+          
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Ім'я"
               name="firstName"
@@ -331,27 +381,56 @@ export default function ClientForm() {
             />
           </Grid>
 
-          <Grid size={12}>
-            <Box
-              sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}
-            >
-              <Button
-                variant="outlined"
-                onClick={() => router.push('/clients')}
-                disabled={isSubmitting}
-              >
-                Скасувати
-              </Button>
-
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={isSubmitting}
-                startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
-              >
-                {isSubmitting ? 'Створення...' : 'Створити клієнта'}
-              </Button>
+          <Grid size={{ xs: 12 }}>
+            <Typography variant="subtitle2" gutterBottom>
+              Теги
+            </Typography>
+            <Box sx={{ mb: 2 }}>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                {(formData.tags ?? []).map((tag) => (
+                  <Chip
+                    key={tag}
+                    label={tag}
+                    onDelete={() => handleDeleteTag(tag)}
+                    color="primary"
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+              </Stack>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Додати тег"
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyPress={handleTagKeyPress}
+                  sx={{ mr: 1 }}
+                />
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={handleAddTag}
+                  disabled={!newTag}
+                >
+                  Додати
+                </Button>
+              </Box>
             </Box>
+          </Grid>
+
+          <Grid size={{ xs: 12 }} sx={{ mt: 3 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={isSubmitting}
+              sx={{ py: 1.5 }}
+            >
+              {isSubmitting ? 'Збереження...' : 'Створити клієнта'}
+            </Button>
           </Grid>
         </Grid>
       </Box>

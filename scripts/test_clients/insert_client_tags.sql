@@ -2,48 +2,48 @@
 
 -- Спочатку отримаємо ID створених клієнтів
 WITH client_ids AS (
-    SELECT id, full_name FROM clients 
+    SELECT id, last_name, first_name FROM clients 
     WHERE phone IN (
-        '+380971234567', -- Іванов Іван Іванович
-        '+380661234567', -- Петренко Марія Олексіївна
-        '+380501234567', -- Коваленко Олег Петрович
-        '+380931234567', -- Сидоренко Анна Василівна
-        '+380951234567', -- Мельник Степан Богданович
-        '+380681234567'  -- Ковальчук Наталія Ігорівна
+        '+380971234567', -- Іванов Іван
+        '+380661234567', -- Петренко Марія
+        '+380501234567', -- Коваленко Олег
+        '+380931234567', -- Сидоренко Анна
+        '+380951234567', -- Мельник Степан
+        '+380681234567'  -- Ковальчук Наталія
     )
     AND deleted_at IS NULL
 )
 
 -- Додаємо теги для клієнтів
 INSERT INTO client_tags (client_id, tag)
-SELECT id, 'постійний клієнт' FROM client_ids WHERE full_name = 'Іванов Іван Іванович'
+SELECT id, 'постійний клієнт' FROM client_ids WHERE last_name = 'Іванов' AND first_name = 'Іван'
 UNION ALL
-SELECT id, 'vip' FROM client_ids WHERE full_name = 'Іванов Іван Іванович'
+SELECT id, 'vip' FROM client_ids WHERE last_name = 'Іванов' AND first_name = 'Іван'
 UNION ALL
-SELECT id, 'знижка' FROM client_ids WHERE full_name = 'Іванов Іван Іванович'
+SELECT id, 'знижка' FROM client_ids WHERE last_name = 'Іванов' AND first_name = 'Іван'
 UNION ALL
-SELECT id, 'vip' FROM client_ids WHERE full_name = 'Петренко Марія Олексіївна'
+SELECT id, 'vip' FROM client_ids WHERE last_name = 'Петренко' AND first_name = 'Марія'
 UNION ALL
-SELECT id, 'пральня' FROM client_ids WHERE full_name = 'Петренко Марія Олексіївна' 
+SELECT id, 'пральня' FROM client_ids WHERE last_name = 'Петренко' AND first_name = 'Марія' 
 UNION ALL
-SELECT id, 'корпоративний' FROM client_ids WHERE full_name = 'Коваленко Олег Петрович'
+SELECT id, 'корпоративний' FROM client_ids WHERE last_name = 'Коваленко' AND first_name = 'Олег'
 UNION ALL
-SELECT id, 'доставка' FROM client_ids WHERE full_name = 'Коваленко Олег Петрович'
+SELECT id, 'доставка' FROM client_ids WHERE last_name = 'Коваленко' AND first_name = 'Олег'
 UNION ALL
-SELECT id, 'vip' FROM client_ids WHERE full_name = 'Сидоренко Анна Василівна'
+SELECT id, 'vip' FROM client_ids WHERE last_name = 'Сидоренко' AND first_name = 'Анна'
 UNION ALL
-SELECT id, 'улюблений клієнт' FROM client_ids WHERE full_name = 'Сидоренко Анна Василівна'
+SELECT id, 'улюблений клієнт' FROM client_ids WHERE last_name = 'Сидоренко' AND first_name = 'Анна'
 UNION ALL
-SELECT id, 'хімчистка' FROM client_ids WHERE full_name = 'Сидоренко Анна Василівна'
+SELECT id, 'хімчистка' FROM client_ids WHERE last_name = 'Сидоренко' AND first_name = 'Анна'
 UNION ALL
-SELECT id, 'потенційний' FROM client_ids WHERE full_name = 'Мельник Степан Богданович'
+SELECT id, 'потенційний' FROM client_ids WHERE last_name = 'Мельник' AND first_name = 'Степан'
 UNION ALL
-SELECT id, 'повернувся' FROM client_ids WHERE full_name = 'Ковальчук Наталія Ігорівна'
+SELECT id, 'повернувся' FROM client_ids WHERE last_name = 'Ковальчук' AND first_name = 'Наталія'
 UNION ALL
-SELECT id, 'потребує знижку' FROM client_ids WHERE full_name = 'Ковальчук Наталія Ігорівна';
+SELECT id, 'потребує знижку' FROM client_ids WHERE last_name = 'Ковальчук' AND first_name = 'Наталія';
 
 -- Перевірка додавання тегів
-SELECT c.full_name, ct.tag
+SELECT CONCAT(c.last_name, ' ', c.first_name) AS full_name, ct.tag
 FROM clients c
 JOIN client_tags ct ON c.id = ct.client_id
 WHERE c.phone IN (
@@ -54,4 +54,4 @@ WHERE c.phone IN (
     '+380951234567',
     '+380681234567'
 )
-ORDER BY c.full_name, ct.tag;
+ORDER BY c.last_name, c.first_name, ct.tag;

@@ -4,7 +4,8 @@
 INSERT INTO clients 
 (
     id, 
-    full_name, 
+    last_name,
+    first_name, 
     phone, 
     additional_phone, 
     email, 
@@ -34,7 +35,8 @@ INSERT INTO clients
 -- Клієнт 1
 (
     gen_random_uuid(), -- id
-    'Іванов Іван Іванович', -- full_name
+    'Іванов', -- last_name
+    'Іван', -- first_name
     '+380971234567', -- phone
     '+380991234567', -- additional_phone
     'ivan@example.com', -- email
@@ -64,7 +66,8 @@ INSERT INTO clients
 -- Клієнт 2
 (
     gen_random_uuid(), -- id
-    'Петренко Марія Олексіївна', -- full_name
+    'Петренко', -- last_name
+    'Марія', -- first_name
     '+380661234567', -- phone
     NULL, -- additional_phone
     'maria@example.com', -- email
@@ -85,8 +88,8 @@ INSERT INTO clients
     CURRENT_TIMESTAMP + INTERVAL '14 days', -- next_contact_at
     CURRENT_TIMESTAMP - INTERVAL '2 days', -- last_contact_at
     5, -- frequency_score
-    5, -- frequency_score
-    4, -- monetary_score
+    5, -- monetary_score
+    4, -- recency_score
     NULL, -- deleted_at
     CURRENT_TIMESTAMP, -- created_at
     CURRENT_TIMESTAMP -- updated_at
@@ -94,7 +97,8 @@ INSERT INTO clients
 -- Клієнт 3
 (
     gen_random_uuid(), -- id
-    'Коваленко Олег Петрович', -- full_name
+    'Коваленко', -- last_name
+    'Олег', -- first_name
     '+380501234567', -- phone
     NULL, -- additional_phone
     NULL, -- email
@@ -124,7 +128,8 @@ INSERT INTO clients
 -- Клієнт 4
 (
     gen_random_uuid(), -- id
-    'Сидоренко Анна Василівна', -- full_name
+    'Сидоренко', -- last_name
+    'Анна', -- first_name
     '+380931234567', -- phone
     '+380671234567', -- additional_phone
     'anna@example.com', -- email
@@ -145,8 +150,8 @@ INSERT INTO clients
     CURRENT_TIMESTAMP + INTERVAL '7 days', -- next_contact_at
     CURRENT_TIMESTAMP - INTERVAL '1 day', -- last_contact_at
     5, -- frequency_score
-    5, -- frequency_score
     5, -- monetary_score
+    5, -- recency_score
     NULL, -- deleted_at
     CURRENT_TIMESTAMP, -- created_at
     CURRENT_TIMESTAMP -- updated_at
@@ -154,7 +159,8 @@ INSERT INTO clients
 -- Клієнт 5
 (
     gen_random_uuid(), -- id
-    'Мельник Степан Богданович', -- full_name
+    'Мельник', -- last_name
+    'Степан', -- first_name
     '+380951234567', -- phone
     NULL, -- additional_phone
     'stepan@example.com', -- email
@@ -175,8 +181,8 @@ INSERT INTO clients
     NULL, -- next_contact_at
     CURRENT_TIMESTAMP - INTERVAL '120 days', -- last_contact_at
     1, -- frequency_score
-    1, -- frequency_score
-    2, -- monetary_score
+    1, -- monetary_score
+    2, -- recency_score
     NULL, -- deleted_at
     CURRENT_TIMESTAMP, -- created_at
     CURRENT_TIMESTAMP -- updated_at
@@ -184,7 +190,8 @@ INSERT INTO clients
 -- Клієнт 6 (додатковий, з джерелом RETURNING)
 (
     gen_random_uuid(), -- id
-    'Ковальчук Наталія Ігорівна', -- full_name
+    'Ковальчук', -- last_name
+    'Наталія', -- first_name
     '+380681234567', -- phone
     NULL, -- additional_phone
     'natalia@example.com', -- email
@@ -205,8 +212,8 @@ INSERT INTO clients
     CURRENT_TIMESTAMP + INTERVAL '20 days', -- next_contact_at
     CURRENT_TIMESTAMP - INTERVAL '5 days', -- last_contact_at
     4, -- frequency_score
-    3, -- frequency_score
-    4, -- monetary_score
+    3, -- monetary_score
+    4, -- recency_score
     NULL, -- deleted_at
     CURRENT_TIMESTAMP, -- created_at
     CURRENT_TIMESTAMP -- updated_at

@@ -206,7 +206,7 @@ public class Client {
     /**
      * Теги клієнта
      */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "client_tags", joinColumns = @JoinColumn(name = "client_id"))
     @Column(name = "tag")
     @Builder.Default

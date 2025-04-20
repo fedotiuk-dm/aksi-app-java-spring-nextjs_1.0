@@ -29,7 +29,7 @@ spring:
           auto: validate
     open-in-view: false
     # Видалено налаштування автоматичної генерації схеми
-    properties.hibernate.globally_quoted_identifiers: true
+    # Вимкнено globally_quoted_identifiers, бо це може спричиняти проблеми з валідацією
   web:
     cors:
       allowed-origins: 'http://localhost:3000,http://127.0.0.1:3000'

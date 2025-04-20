@@ -92,10 +92,16 @@ export function ClientsList() {
 
   const columns: GridColDef[] = [
     {
+      field: 'lastName',
+      headerName: 'Прізвище',
+      flex: 1,
+      minWidth: 150,
+    },
+    {
       field: 'firstName',
       headerName: 'Ім\'я',
       flex: 1,
-      minWidth: 150,
+      minWidth: 120,
     },
     {
       field: 'phone',
