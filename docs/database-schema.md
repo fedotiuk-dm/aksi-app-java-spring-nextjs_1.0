@@ -33,10 +33,10 @@
 | updatedAt         |                   |                      | url                 |
 | deletedAt         |                   |                      | description         |
 +-------------------+                   |                      | orderItemId (FK)    |
-                                       |                      | createdAt           |
-                                       |                      +---------------------+
-                                       |
-                                       v
+                                        |                      | createdAt           |
+                                        |                      +---------------------+
+                                        |
+                                        v
 +-------------------+          +--------------------+
 |service_categories |          |  price_list_items  |
 +-------------------+          +--------------------+
