@@ -1,0 +1,243 @@
+databaseChangeLog:
+  - property:
+      name: app.version
+      value: "1.0"
+      
+  - changeSet:
+      id: 1-create-clients-table
+      author: aksi-app
+      comment: 'Створення таблиці клієнтів'
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: clients
+      changes:
+        - createTable:
+            tableName: clients
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: additional_phone
+                  type: VARCHAR(50)
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+              - column:
+                  name: address
+                  type: VARCHAR(255)
+              - column:
+                  name: notes
+                  type: TEXT
+              - column:
+                  name: source
+                  type: VARCHAR(50)
+              - column:
+                  name: birth_date
+                  type: DATE
+              - column:
+                  name: last_order_date
+                  type: TIMESTAMP
+              - column:
+                  name: total_spent
+                  type: DECIMAL(10, 2)
+                  defaultValue: 0
+              - column:
+                  name: order_count
+                  type: INT
+                  defaultValue: 0
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  defaultValue: 'ACTIVE'
+              - column:
+                  name: loyalty_points
+                  type: INT
+                  defaultValue: 0
+              - column:
+                  name: loyalty_level
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  defaultValue: 'STANDARD'
+              - column:
+                  name: gender
+                  type: VARCHAR(50)
+              - column:
+                  name: allow_sms
+                  type: BOOLEAN
+                  defaultValue: true
+              - column:
+                  name: allow_email
+                  type: BOOLEAN
+                  defaultValue: true
+              - column:
+                  name: allow_calls
+                  type: BOOLEAN
+                  defaultValue: true
+              - column:
+                  name: next_contact_at
+                  type: TIMESTAMP
+              - column:
+                  name: last_contact_at
+                  type: TIMESTAMP
+              - column:
+                  name: frequency_score
+                  type: INT
+                  defaultValue: 0
+              - column:
+                  name: monetary_score
+                  type: INT
+                  defaultValue: 0
+              - column:
+                  name: recency_score
+                  type: INT
+                  defaultValue: 0
+              - column:
+                  name: deleted_at
+                  type: TIMESTAMP
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - setTableRemarks:
+            tableName: clients
+            remarks: "Клієнти хімчистки"
+        - createIndex:
+            indexName: idx_clients_phone
+            tableName: clients
+            columns:
+              - column:
+                  name: phone
+        - createIndex:
+            indexName: idx_clients_email
+            tableName: clients
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            indexName: idx_clients_status
+            tableName: clients
+            columns:
+              - column:
+                  name: status
+
+  - changeSet:
+      id: 2-create-client-tags-table
+      author: aksi-app
+      comment: 'Створення таблиці тегів клієнтів'
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: client_tags
+      changes:
+        - createTable:
+            tableName: client_tags
+            columns:
+              - column:
+                  name: client_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tag
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: client_tags
+            columnNames: client_id, tag
+            constraintName: pk_client_tags
+        - addForeignKeyConstraint:
+            constraintName: fk_client_tags_client
+            baseTableName: client_tags
+            baseColumnNames: client_id
+            referencedTableName: clients
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - setTableRemarks:
+            tableName: client_tags
+            remarks: "Теги для клієнтів (для групування та пошуку)"
+
+  # Тимчасово відключаємо цей changeSet, оскільки він викликає помилки
+  - changeSet:
+      id: 3-create-generate-client-initials-function-simple
+      author: aksi-app
+      comment: 'Спрощена версія функції для генерації ініціалів клієнта'
+      changes:
+        - sql:
+            sql: CREATE OR REPLACE FUNCTION generate_client_initials(first_name varchar, last_name varchar) RETURNS varchar AS 'SELECT UPPER(SUBSTRING(COALESCE(first_name, ''''), 1, 1)) || UPPER(SUBSTRING(COALESCE(last_name, ''''), 1, 1))' LANGUAGE SQL IMMUTABLE;
+
+  - changeSet:
+      id: 4-create-client-communication-channels-table
+      author: fedotiuk-dm
+      comment: 'Створення таблиці каналів комунікації клієнтів'
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: client_communication_channels
+      changes:
+        - createTable:
+            tableName: client_communication_channels
+            columns:
+              - column:
+                  name: client_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: channel
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: client_communication_channels
+            columnNames: client_id, channel
+            constraintName: pk_client_communication_channels
+        - addForeignKeyConstraint:
+            constraintName: fk_client_communication_channel
+            baseTableName: client_communication_channels
+            baseColumnNames: client_id
+            referencedTableName: clients
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - setTableRemarks:
+            tableName: client_communication_channels
+            remarks: "Канали комунікації з клієнтами (EMAIL, SMS, VIBER, тощо)"

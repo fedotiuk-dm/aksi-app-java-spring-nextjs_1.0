@@ -15,3 +15,5 @@ databaseChangeLog:
       file: db/changelog/db.changelog-orders-constraints.yaml
   - include:
       file: db/changelog/db.changelog-orders-indexes.yaml
+  - include:
+      file: db/changelog/domains/catalog/db.changelog-materials-categories-1.0.yaml

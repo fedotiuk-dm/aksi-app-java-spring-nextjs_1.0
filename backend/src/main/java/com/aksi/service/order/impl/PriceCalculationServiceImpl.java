@@ -36,8 +36,25 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
             return BigDecimal.ZERO;
         }
 
-        // Start with base price * quantity
-        BigDecimal price = orderItem.getBasePrice().multiply(orderItem.getQuantity());
+        // Вибір ціни залежно від кольору
+        BigDecimal itemBasePrice;
+        PriceListItem priceListItem = orderItem.getPriceListItem();
+        String color = orderItem.getColor();
+        
+        if (priceListItem != null) {
+            if ("black".equalsIgnoreCase(color) && priceListItem.getPriceBlack() != null) {
+                itemBasePrice = priceListItem.getPriceBlack();
+            } else if (color != null && !"black".equalsIgnoreCase(color) && priceListItem.getPriceColor() != null) {
+                itemBasePrice = priceListItem.getPriceColor();
+            } else {
+                itemBasePrice = orderItem.getBasePrice();
+            }
+        } else {
+            itemBasePrice = orderItem.getBasePrice();
+        }
+        
+        // Start with adjusted base price * quantity
+        BigDecimal price = itemBasePrice.multiply(orderItem.getQuantity());
 
         // Get all modifiers and sort them by application order
         List<OrderItemModifier> sortedModifiers = new ArrayList<>(orderItem.getModifiers());
@@ -113,8 +130,38 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
         // Initialize the calculation DTO
         OrderItemCalculationDto calculationDto = new OrderItemCalculationDto();
         
-        // Base price from price list
-        BigDecimal basePrice = priceListItem.getBasePrice();
+        // Вибір ціни на основі кольору виробу
+        BigDecimal basePrice;
+        
+        // Вибір відповідної ціни залежно від кольору
+        if ("black".equalsIgnoreCase(color) && priceListItem.getPriceBlack() != null) {
+            basePrice = priceListItem.getPriceBlack();
+            calculationDto.addCalculationStep(CalculationStepDto.builder()
+                    .name("Чорний колір")
+                    .description("Спеціальна ціна для чорного кольору")
+                    .type("BASE_PRICE_ADJUSTMENT")
+                    .value(basePrice)
+                    .priceBefore(priceListItem.getBasePrice())
+                    .priceImpact(basePrice.subtract(priceListItem.getBasePrice()))
+                    .priceAfter(basePrice)
+                    .replacesBasePrice(true)
+                    .build());
+        } else if (color != null && !"black".equalsIgnoreCase(color) && priceListItem.getPriceColor() != null) {
+            basePrice = priceListItem.getPriceColor();
+            calculationDto.addCalculationStep(CalculationStepDto.builder()
+                    .name("Кольоровий виріб")
+                    .description("Спеціальна ціна для кольорового виробу - " + color)
+                    .type("BASE_PRICE_ADJUSTMENT")
+                    .value(basePrice)
+                    .priceBefore(priceListItem.getBasePrice())
+                    .priceImpact(basePrice.subtract(priceListItem.getBasePrice()))
+                    .priceAfter(basePrice)
+                    .replacesBasePrice(true)
+                    .build());
+        } else {
+            basePrice = priceListItem.getBasePrice();
+        }
+        
         calculationDto.setBasePrice(basePrice);
         calculationDto.setQuantity(quantity);
         

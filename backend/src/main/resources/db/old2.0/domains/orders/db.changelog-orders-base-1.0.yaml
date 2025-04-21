@@ -1,0 +1,424 @@
+databaseChangeLog:
+  - property:
+      name: app.version
+      value: "1.0"
+      
+  - changeSet:
+      id: 1-create-orders-table
+      author: cascade
+      comment: "Створення базової таблиці замовлень"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: orders
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: receipt_number
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: unique_tag
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+              - column:
+                  name: reception_point
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client_id
+                  type: uuid
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_method
+                  type: varchar(50)
+              - column:
+                  name: subtotal
+                  type: decimal(10, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_amount
+                  type: decimal(10, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_percentage
+                  type: decimal(5, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_reason
+                  type: varchar(255)
+              - column:
+                  name: tax_amount
+                  type: decimal(10, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_amount
+                  type: decimal(10, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: estimated_completion_date
+                  type: timestamp
+              - column:
+                  name: actual_completion_date
+                  type: timestamp
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - setTableRemarks:
+            tableName: orders
+            remarks: "Замовлення клієнтів на хімчистку"
+        - createIndex:
+            indexName: idx_orders_receipt_number
+            tableName: orders
+            columns:
+              - column:
+                  name: receipt_number
+
+  - changeSet:
+      id: 2-create-order-items-table
+      author: cascade
+      comment: "Створення таблиці позицій замовлення"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: order_items
+      changes:
+        - createTable:
+            tableName: order_items
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: item_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: quantity
+                  type: int
+                  defaultValue: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: base_price
+                  type: decimal(10, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_price
+                  type: decimal(10, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_category_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  defaultValue: 'NEW'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: color
+                  type: varchar(50)
+              - column:
+                  name: material
+                  type: varchar(50)
+              - column:
+                  name: brand
+                  type: varchar(50)
+              - column:
+                  name: size
+                  type: varchar(50)
+              - column:
+                  name: barcode
+                  type: varchar(50)
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - setTableRemarks:
+            tableName: order_items
+            remarks: "Позиції замовлення (окремі речі клієнта на послуги)"
+
+  - changeSet:
+      id: 3-create-order-item-damages-table
+      author: cascade
+      comment: "Створення таблиці пошкоджень речей"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: order_item_damages
+      changes:
+        - createTable:
+            tableName: order_item_damages
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: damage_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: severity
+                  type: varchar(50)
+              - column:
+                  name: location
+                  type: varchar(50)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - setTableRemarks:
+            tableName: order_item_damages
+            remarks: "Пошкодження речей клієнта, виявлені при прийомі"
+
+  - changeSet:
+      id: 4-create-order-item-images-table
+      author: cascade
+      comment: "Створення таблиці зображень речей"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: order_item_images
+      changes:
+        - createTable:
+            tableName: order_item_images
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image_path
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: annotation_data
+                  type: text
+              - column:
+                  name: uploaded_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - setTableRemarks:
+            tableName: order_item_images
+            remarks: "Зображення речей клієнта (до/після хімчистки, пошкодження)"
+
+  - changeSet:
+      id: 5-create-order-item-modifiers-table
+      author: cascade
+      comment: "Створення таблиці модифікаторів послуг"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: order_item_modifiers
+      changes:
+        - createTable:
+            tableName: order_item_modifiers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price_adjustment
+                  type: decimal(10, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: adjustment_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - setTableRemarks:
+            tableName: order_item_modifiers
+            remarks: "Модифікатори послуг (додаткові опції, що впливають на ціну)"
+
+  - changeSet:
+      id: 6-create-reception-points-table
+      author: fedotiuk-dm
+      comment: "Створення таблиці пунктів прийому (філій)"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: reception_points
+      changes:
+        - createTable:
+            tableName: reception_points
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: varchar(255)
+              - column:
+                  name: phone
+                  type: varchar(50)
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - setTableRemarks:
+            tableName: reception_points
+            remarks: "Пункти прийому замовлень (філії)"

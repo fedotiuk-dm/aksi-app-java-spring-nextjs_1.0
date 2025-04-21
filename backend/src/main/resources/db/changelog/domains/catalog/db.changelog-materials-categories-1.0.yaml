@@ -1,0 +1,114 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-category-materials-table
+      author: aksi-app
+      changes:
+        - createTable:
+            tableName: category_material_mappings
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_category_material_mapping_category
+                    references: service_categories(id)
+              - column:
+                  name: material
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2-create-stain-recommendations-table
+      author: aksi-app
+      changes:
+        - createTable:
+            tableName: stain_modifier_recommendations
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: stain_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_value
+                  type: decimal(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(500)
+              - column:
+                  name: priority
+                  type: int
+                  defaultValue: 10
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 3-create-material-stain-warnings-table
+      author: aksi-app
+      changes:
+        - createTable:
+            tableName: material_stain_warnings
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: material
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stain_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: warning_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: warning_message
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: severity
+                  type: varchar(20)
+                  constraints:
+                    nullable: false

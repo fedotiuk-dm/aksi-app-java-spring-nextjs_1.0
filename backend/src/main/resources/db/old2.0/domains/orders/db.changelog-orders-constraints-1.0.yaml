@@ -1,0 +1,169 @@
+databaseChangeLog:
+  - property:
+      name: app.version
+      value: "1.0"
+      
+  - changeSet:
+      id: 1-add-orders-foreign-keys
+      author: cascade
+      comment: "Додавання зовнішніх ключів для замовлень"
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_order_client
+            baseColumnNames: client_id
+            baseTableName: orders
+            referencedColumnNames: id
+            referencedTableName: clients
+            onDelete: SET NULL
+            onUpdate: CASCADE
+            validate: true
+        - addForeignKeyConstraint:
+            constraintName: fk_orders_reception_point
+            baseTableName: orders
+            baseColumnNames: reception_point_id
+            referencedTableName: reception_points
+            referencedColumnNames: id
+            onDelete: SET NULL
+            onUpdate: CASCADE
+            validate: true
+
+  - changeSet:
+      id: 2-add-order-items-foreign-keys
+      author: cascade
+      comment: "Додавання зовнішніх ключів для позицій замовлення"
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_order
+            baseColumnNames: order_id
+            baseTableName: order_items
+            referencedColumnNames: id
+            referencedTableName: orders
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            validate: true
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_service_category
+            baseColumnNames: service_category_id
+            baseTableName: order_items
+            referencedColumnNames: id
+            referencedTableName: service_categories
+            onDelete: RESTRICT
+            onUpdate: CASCADE
+            validate: true
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_service
+            baseColumnNames: service_id
+            baseTableName: order_items
+            referencedColumnNames: id
+            referencedTableName: services
+            onDelete: RESTRICT
+            onUpdate: CASCADE
+            validate: true
+
+  - changeSet:
+      id: 3-add-order-item-damages-foreign-keys
+      author: cascade
+      comment: "Додавання зовнішніх ключів для пошкоджень речей"
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_damage_order_item
+            baseColumnNames: order_item_id
+            baseTableName: order_item_damages
+            referencedColumnNames: id
+            referencedTableName: order_items
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            validate: true
+
+  - changeSet:
+      id: 4-add-order-item-images-foreign-keys
+      author: cascade
+      comment: "Додавання зовнішніх ключів для зображень речей"
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_image_order_item
+            baseColumnNames: order_item_id
+            baseTableName: order_item_images
+            referencedColumnNames: id
+            referencedTableName: order_items
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            validate: true
+
+  - changeSet:
+      id: 5-add-order-item-modifiers-foreign-keys
+      author: cascade
+      comment: "Додавання зовнішніх ключів для модифікаторів послуг"
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_modifier_order_item
+            baseColumnNames: order_item_id
+            baseTableName: order_item_modifiers
+            referencedColumnNames: id
+            referencedTableName: order_items
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            validate: true
+        - addForeignKeyConstraint:
+            constraintName: fk_order_item_modifier_modifier
+            baseColumnNames: modifier_id
+            baseTableName: order_item_modifiers
+            referencedColumnNames: id
+            referencedTableName: service_modifiers
+            onDelete: RESTRICT
+            onUpdate: CASCADE
+            validate: true
+            
+  - changeSet:
+      id: 6-create-orders-indexes
+      author: cascade
+      comment: "Створення індексів для ефективного пошуку замовлень"
+      changes:
+        - createIndex:
+            indexName: idx_orders_client_id
+            tableName: orders
+            columns:
+              - column:
+                  name: client_id
+        - createIndex:
+            indexName: idx_orders_status
+            tableName: orders
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            indexName: idx_orders_payment_status
+            tableName: orders
+            columns:
+              - column:
+                  name: payment_status
+        - createIndex:
+            indexName: idx_orders_created_at
+            tableName: orders
+            columns:
+              - column:
+                  name: created_at
+        - createIndex:
+            indexName: idx_orders_estimated_completion_date
+            tableName: orders
+            columns:
+              - column:
+                  name: estimated_completion_date
+        - createIndex:
+            indexName: idx_order_items_order_id
+            tableName: order_items
+            columns:
+              - column:
+                  name: order_id
+        - createIndex:
+            indexName: idx_order_items_barcode
+            tableName: order_items
+            columns:
+              - column:
+                  name: barcode
+        - createIndex:
+            indexName: idx_order_items_status
+            tableName: order_items
+            columns:
+              - column:
+                  name: status

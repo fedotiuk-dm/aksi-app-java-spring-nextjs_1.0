@@ -1,0 +1,101 @@
+databaseChangeLog:
+  - property:
+      name: app.version
+      value: "1.0"
+      
+  - changeSet:
+      id: 1-add-application-order-to-order-item-modifiers
+      author: fedotiuk-dm
+      comment: "Додавання поля порядку застосування до таблиці модифікаторів замовлення"
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: order_item_modifiers
+        not:
+          columnExists:
+            tableName: order_item_modifiers
+            columnName: application_order
+      changes:
+        - addColumn:
+            tableName: order_item_modifiers
+            columns:
+              - column:
+                  name: application_order
+                  type: int
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+        - setColumnRemarks:
+            tableName: order_item_modifiers
+            columnName: application_order
+            remarks: "Порядок застосування модифікатора (для послідовного застосування)"
+            
+  - changeSet:
+      id: 2-update-missing-columns-order-item-modifiers
+      author: fedotiuk-dm
+      comment: "Оновлення структури таблиці модифікаторів замовлення"
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: order_item_modifiers
+        and:
+          not:
+            columnExists:
+              tableName: order_item_modifiers
+              columnName: name
+        and:
+          not:
+            columnExists:
+              tableName: order_item_modifiers
+              columnName: description
+        and:
+          not:
+            columnExists:
+              tableName: order_item_modifiers
+              columnName: type
+        and:
+          not:
+            columnExists:
+              tableName: order_item_modifiers
+              columnName: value
+        and:
+          not:
+            columnExists:
+              tableName: order_item_modifiers
+              columnName: price_impact
+        and:
+          not:
+            columnExists:
+              tableName: order_item_modifiers
+              columnName: replaces_base_price
+      changes:
+        - addColumn:
+            tableName: order_item_modifiers
+            columns:
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: decimal(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price_impact
+                  type: decimal(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: replaces_base_price
+                  type: boolean
+                  defaultValueBoolean: false

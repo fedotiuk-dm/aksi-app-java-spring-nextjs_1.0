@@ -1,5 +1,6 @@
 package com.aksi.service.pricing;
 
+import com.aksi.config.CacheConfig;
 import com.aksi.domain.pricing.entity.PriceListItem;
 import com.aksi.domain.pricing.entity.ServiceCategory;
 import com.aksi.domain.pricing.repository.PriceListItemRepository;
@@ -10,6 +11,8 @@ import com.aksi.exception.ResourceNotFoundException;
 import com.aksi.mapper.PriceListMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,7 @@ public class PriceListService {
      * Отримати всі категорії послуг з відсортованими позиціями
      */
     @Transactional(readOnly = true)
+    @Cacheable(CacheConfig.PRICE_LIST_CACHE)
     public List<ServiceCategoryDto> getAllCategories() {
         log.info("Отримання всіх категорій послуг");
         List<ServiceCategory> categories = serviceCategoryRepository.findAllByOrderBySortOrderAsc();
@@ -39,6 +43,7 @@ public class PriceListService {
      * Отримати категорію послуг за ідентифікатором
      */
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheConfig.PRICE_LIST_CACHE, key = "#categoryId")
     public ServiceCategoryDto getCategoryById(UUID categoryId) {
         log.info("Отримання категорії послуг за ID: {}", categoryId);
         ServiceCategory category = serviceCategoryRepository.findById(categoryId)
@@ -61,7 +66,8 @@ public class PriceListService {
      * Створити нову категорію послуг
      */
     @Transactional
-    public ServiceCategoryDto createCategory(ServiceCategoryDto categoryDto) {
+    @CacheEvict(value = CacheConfig.PRICE_LIST_CACHE, allEntries = true)
+    public ServiceCategoryDto createServiceCategory(ServiceCategoryDto categoryDto) {
         log.info("Створення нової категорії послуг: {}", categoryDto.getName());
         
         // Перевірка на дублікат коду
@@ -81,10 +87,11 @@ public class PriceListService {
     }
     
     /**
-     * Оновити категорію послуг
+     * Оновити існуючу категорію послуг
      */
     @Transactional
-    public ServiceCategoryDto updateCategory(UUID categoryId, ServiceCategoryDto categoryDto) {
+    @CacheEvict(value = CacheConfig.PRICE_LIST_CACHE, allEntries = true)
+    public ServiceCategoryDto updateServiceCategory(UUID categoryId, ServiceCategoryDto categoryDto) {
         log.info("Оновлення категорії послуг з ID: {}", categoryId);
         
         ServiceCategory existingCategory = serviceCategoryRepository.findById(categoryId)
@@ -113,9 +120,10 @@ public class PriceListService {
     }
     
     /**
-     * Створити новий елемент прайс-листа
+     * Додати новий елемент прайс-листа до категорії
      */
     @Transactional
+    @CacheEvict(value = CacheConfig.PRICE_LIST_CACHE, allEntries = true)
     public PriceListItemDto createPriceListItem(UUID categoryId, PriceListItemDto itemDto) {
         log.info("Створення нового елемента прайс-листа в категорії з ID: {}", categoryId);
         
@@ -141,9 +149,10 @@ public class PriceListService {
     }
     
     /**
-     * Оновити елемент прайс-листа
+     * Оновити існуючий елемент прайс-листа
      */
     @Transactional
+    @CacheEvict(value = CacheConfig.PRICE_LIST_CACHE, allEntries = true)
     public PriceListItemDto updatePriceListItem(UUID itemId, PriceListItemDto itemDto) {
         log.info("Оновлення елемента прайс-листа з ID: {}", itemId);
         

@@ -1,0 +1,83 @@
+databaseChangeLog:
+  - property:
+      name: app.version
+      value: "1.0"
+      
+  - changeSet:
+      id: 1-create-login-table
+      author: cascade
+      comment: "Створення таблиці для авторизаційних сесій"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: login
+      changes:
+        - createTable:
+            tableName: login
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: auth_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValue: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_login_user
+            baseTableName: login
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - createIndex:
+            indexName: idx_login_user_id
+            tableName: login
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_login_expiry
+            tableName: login
+            columns:
+              - column:
+                  name: expires_at
+        - setTableRemarks:
+            tableName: login
+            remarks: "Сесії входу користувачів в систему"

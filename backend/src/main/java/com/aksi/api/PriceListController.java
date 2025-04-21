@@ -51,7 +51,7 @@ public class PriceListController {
     public ResponseEntity<ServiceCategoryDto> createCategory(
             @RequestBody ServiceCategoryDto categoryDto) {
         log.info("REST запит на створення нової категорії послуг: {}", categoryDto.getName());
-        return new ResponseEntity<>(priceListService.createCategory(categoryDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(priceListService.createServiceCategory(categoryDto), HttpStatus.CREATED);
     }
     
     @PutMapping("/category/{categoryId}")
@@ -60,7 +60,7 @@ public class PriceListController {
             @PathVariable UUID categoryId,
             @RequestBody ServiceCategoryDto categoryDto) {
         log.info("REST запит на оновлення категорії послуг з ID: {}", categoryId);
-        return ResponseEntity.ok(priceListService.updateCategory(categoryId, categoryDto));
+        return ResponseEntity.ok(priceListService.updateServiceCategory(categoryId, categoryDto));
     }
     
     @PostMapping("/{categoryId}/item")

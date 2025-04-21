@@ -1,0 +1,258 @@
+databaseChangeLog:
+  - property:
+      name: app.version
+      value: "1.0"
+      
+  - changeSet:
+      id: 1-create-service-categories
+      author: cascade
+      comment: "Створення таблиці категорій послуг"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: service_categories
+      changes:
+        - createTable:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(1000)
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValue: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image
+                  type: varchar(255)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - setTableRemarks:
+            tableName: service_categories
+            remarks: "Категорії послуг хімчистки"
+
+  - changeSet:
+      id: 2-create-services-table
+      author: cascade
+      comment: "Створення таблиці послуг"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: services
+      changes:
+        - createTable:
+            tableName: services
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(1000)
+              - column:
+                  name: price
+                  type: decimal(10, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValue: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image
+                  type: varchar(255)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_service_category
+            baseTableName: services
+            baseColumnNames: category_id
+            referencedTableName: service_categories
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - setTableRemarks:
+            tableName: services
+            remarks: "Послуги хімчистки з цінами"
+
+  - changeSet:
+      id: 3-create-service-modifiers-table
+      author: cascade
+      comment: "Створення таблиці модифікаторів послуг"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: service_modifiers
+      changes:
+        - createTable:
+            tableName: service_modifiers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(1000)
+              - column:
+                  name: price_adjustment
+                  type: decimal(10, 2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: adjustment_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValue: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - setTableRemarks:
+            tableName: service_modifiers
+            remarks: "Модифікатори послуг, що впливають на ціноутворення"
+
+  - changeSet:
+      id: 4-create-service-modifier-applicability-table
+      author: cascade
+      comment: "Створення таблиці застосовності модифікаторів до послуг"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: service_modifier_applicability
+      changes:
+        - createTable:
+            tableName: service_modifier_applicability
+            columns:
+              - column:
+                  name: service_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: service_modifier_applicability
+            columnNames: service_id, modifier_id
+            constraintName: pk_service_modifier_applicability
+        - addForeignKeyConstraint:
+            constraintName: fk_modifier_applicability_service
+            baseTableName: service_modifier_applicability
+            baseColumnNames: service_id
+            referencedTableName: services
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_modifier_applicability_modifier
+            baseTableName: service_modifier_applicability
+            baseColumnNames: modifier_id
+            referencedTableName: service_modifiers
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
+        - setTableRemarks:
+            tableName: service_modifier_applicability
+            remarks: "Зв'язок між послугами та можливими модифікаторами"

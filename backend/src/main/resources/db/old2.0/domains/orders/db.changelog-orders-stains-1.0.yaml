@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - property:
+      name: app.version
+      value: "1.0"
+      
+  - changeSet:
+      id: 1-create-order-item-stains-table
+      author: fedotiuk-dm
+      comment: "Створення таблиці плям на речах замовлення"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: order_item_stains
+      changes:
+        - createTable:
+            tableName: order_item_stains
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_item_stain_order_item
+                    references: order_items(id)
+                    deleteCascade: true
+              - column:
+                  name: type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stain_description
+                  type: text
+        - setTableRemarks:
+            tableName: order_item_stains
+            remarks: "Плями на речах клієнта (вимагають особливої обробки)"
+        - createIndex:
+            indexName: idx_order_item_stains_order_item_id
+            tableName: order_item_stains
+            columns:
+              - column:
+                  name: order_item_id

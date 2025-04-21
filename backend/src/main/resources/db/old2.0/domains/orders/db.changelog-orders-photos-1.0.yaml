@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - property:
+      name: app.version
+      value: "1.0"
+      
+  - changeSet:
+      id: 1-create-order-item-photos-table
+      author: fedotiuk-dm
+      comment: "Створення таблиці фотографій речей замовлення"
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: order_item_photos
+      changes:
+        - createTable:
+            tableName: order_item_photos
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_item_photo_order_item
+                    references: order_items(id)
+                    deleteCascade: true
+              - column:
+                  name: file_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: url
+                  type: varchar(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content_type
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: size
+                  type: bigint
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: annotation_data
+                  type: text
+              - column:
+                  name: uploaded_at
+                  type: timestamp
+                  defaultValueDate: now()
+                  constraints:
+                    nullable: false
+        - setTableRemarks:
+            tableName: order_item_photos
+            remarks: "Фотографії речей клієнта (до/після хімчистки, пошкодження тощо)"
+        - createIndex:
+            indexName: idx_order_item_photos_order_item_id
+            tableName: order_item_photos
+            columns:
+              - column:
+                  name: order_item_id
