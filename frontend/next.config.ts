@@ -16,28 +16,35 @@ const nextConfig: NextConfig = {
         // Проксіювання запитів до API автентифікації
         source: '/api/auth/:path*',
         destination: `${BACKEND_URL}/api/auth/:path*`,
-        // Налаштування для повної передачі headers та cookies
+        // Покращені налаштування для передачі токенів авторизації
         basePath: false,
       },
       {
         // Проксіювання запитів для роботи з клієнтами
         source: '/api/clients/:path*',
         destination: `${BACKEND_URL}/api/clients/:path*`,
-        // Налаштування для повної передачі headers та cookies
+        // Покращені налаштування для передачі токенів авторизації
+        basePath: false,
+      },
+      {
+        // Проксіювання запитів для роботи з замовленнями
+        source: '/api/orders/:path*',
+        destination: `${BACKEND_URL}/api/orders/:path*`,
+        // Покращені налаштування для передачі токенів авторизації
         basePath: false,
       },
       {
         // Проксіювання запитів для роботи з прайс-листом
         source: '/api/price-list/:path*',
         destination: `${BACKEND_URL}/api/price-list/:path*`,
-        // Налаштування для повної передачі headers та cookies
+        // Покращені налаштування для передачі токенів авторизації
         basePath: false,
       },
       {
         // Загальні API запити
         source: '/api/:path*',
         destination: `${BACKEND_URL}/api/:path*`,
-        // Налаштування для повної передачі headers та cookies
+        // Покращені налаштування для передачі токенів авторизації
         basePath: false,
       },
     ];

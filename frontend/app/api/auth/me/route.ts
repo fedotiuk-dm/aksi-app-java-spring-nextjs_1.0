@@ -3,13 +3,14 @@ import { serverAuth } from '@/features/auth/server/serverAuth';
 
 /**
  * API роут для отримання інформації про поточного користувача
+ * GET /api/auth/me
  */
 export async function GET() {
   try {
-    // Отримуємо інформацію про поточного користувача
+    // Отримуємо інформацію про користувача через serverAuth
     const user = await serverAuth.getCurrentUser();
     
-    // Якщо користувач не авторизований, повертаємо помилку
+    // Якщо користувач не авторизований
     if (!user) {
       return NextResponse.json(
         { message: 'Користувач не авторизований' },
@@ -18,14 +19,14 @@ export async function GET() {
     }
     
     // Повертаємо дані користувача
-    return NextResponse.json(user, { status: 200 });
-  } catch (error) {
-    console.error('Помилка отримання інформації про користувача:', error);
+    return NextResponse.json(user);
+  } catch (error: unknown) {
+    console.error('Помилка при отриманні інформації про користувача:', error);
     
-    // Повертаємо помилку
+    // Повертаємо помилку з відповідним статус-кодом
     return NextResponse.json(
-      { message: 'Помилка отримання інформації про користувача' },
-      { status: 500 }
+      { message: (error as Error).message || 'Помилка при отриманні інформації про користувача' },
+      { status: 401 }
     );
   }
 }

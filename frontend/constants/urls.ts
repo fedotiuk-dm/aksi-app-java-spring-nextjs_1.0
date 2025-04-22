@@ -12,11 +12,31 @@
  *    - Приклад: const url = `${CLIENT_API_URL}/clients`;
  */
 
+// Контекстний шлях API - Spring Boot налаштований з /api префіксом
+
 // URL для серверних запитів (Next.js API → Java Backend)
 export const SERVER_API_URL =
   process.env.NODE_ENV === 'production'
     ? 'http://backend:8080' // Docker service name in production
     : 'http://localhost:8080'; // Local development
+
+/**
+ * Отримати базовий URL сервера API
+ * Ця функція використовується в openapi-typescript-fetch для налаштування базового URL
+ */
+export const getServerApiUrl = (): string => {
+  return SERVER_API_URL;
+};
+
+/**
+ * Отримати повний URL API з урахуванням контекстного шляху
+ * Використовуйте цю функцію при формуванні повних URL до бекенду
+ */
+export const getFullApiUrl = (path: string): string => {
+  // Перевіряємо, чи шлях уже містить /api
+  const apiPath = path.startsWith('/api') ? path : `/api${path.startsWith('/') ? path : `/${path}`}`;
+  return `${SERVER_API_URL}${apiPath}`;
+};
 
 // URL для клієнтських запитів (React → Next.js API)
 export const CLIENT_API_URL = '/api';

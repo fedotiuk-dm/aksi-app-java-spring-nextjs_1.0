@@ -17,7 +17,7 @@ export class ReceiptService {
     }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/receipts/{orderId}',
+            url: '/receipts/{orderId}',
             path: {
                 'orderId': orderId,
             },
@@ -43,7 +43,7 @@ export class ReceiptService {
     }): CancelablePromise<boolean> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/receipts/{orderId}/send',
+            url: '/receipts/{orderId}/send',
             path: {
                 'orderId': orderId,
             },

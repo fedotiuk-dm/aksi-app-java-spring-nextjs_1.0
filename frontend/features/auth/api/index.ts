@@ -1,16 +1,30 @@
-import { AuthenticationService } from '@/lib/api';
 import { useApiMutation } from '@/lib/api/hooks';
-import type { AuthResponse } from '@/lib/api/generated/models/AuthResponse';
 import type { LoginRequest } from '@/lib/api/generated/models/LoginRequest';
+import { AuthUser } from '../model/types';
 
 /**
  * Хук для авторизації користувача
+ * Використовує локальний Next.js API роут для передачі credentials
  */
 export const useLogin = () => {
-  return useApiMutation<AuthResponse, LoginRequest>(
-    (loginData) => AuthenticationService.login({ 
-      requestBody: loginData
-    })
+  return useApiMutation<AuthUser, LoginRequest>(
+    async (loginData) => {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Помилка при вході в систему');
+      }
+      
+      return response.json();
+    }
   );
 };
 
@@ -19,12 +33,22 @@ export const useLogin = () => {
  */
 export const useLogout = () => {
   return useApiMutation<void, void>(
-    () => fetch('/api/auth/logout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(() => void 0)
+    async () => {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Помилка при виході з системи');
+      }
+      
+      return void 0;
+    }
   );
 };
 
@@ -32,17 +56,50 @@ export const useLogout = () => {
  * Хук для оновлення JWT токена
  */
 export const useRefreshToken = () => {
-  return useApiMutation<AuthResponse, void>(
-    () => fetch('/api/auth/refresh-token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(res => {
-      if (!res.ok) {
-        throw new Error('Не вдалося оновити токен');
+  return useApiMutation<AuthUser, void>(
+    async () => {
+      const response = await fetch('/api/auth/refresh-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Не вдалося оновити токен');
       }
-      return res.json();
-    })
+      
+      return response.json();
+    }
+  );
+};
+
+/**
+ * Хук для отримання інформації про поточного користувача
+ */
+export const useGetCurrentUser = () => {
+  return useApiMutation<AuthUser | null, void>(
+    async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+        
+        if (!response.ok) {
+          return null;
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error('Помилка при отриманні даних користувача:', error);
+        return null;
+      }
+    }
   );
 };

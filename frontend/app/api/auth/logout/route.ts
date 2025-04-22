@@ -2,26 +2,23 @@ import { NextResponse } from 'next/server';
 import { serverAuth } from '@/features/auth/server/serverAuth';
 
 /**
- * API роут для виходу користувача із системи
- * Примітка: на бекенді немає ендпоінту для виходу, тому це чисто клієнтська операція
+ * API роут для виходу користувача з системи
+ * POST /api/auth/logout
  */
 export async function POST() {
   try {
-    // Просто видаляємо токени із cookies
+    // Виконуємо вихід через serverAuth
     await serverAuth.logout();
     
-    // Повертаємо успішний результат
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
-    console.error('Помилка видалення токенів:', error);
+    // Повертаємо успішну відповідь
+    return NextResponse.json({ message: 'Успішний вихід із системи' });
+  } catch (error: unknown) {
+    console.error('Помилка при виході з системи:', error);
     
-    // Навіть якщо виникла помилка, все одно повідомляємо про успіх, щоб клієнт вийшов
+    // Повертаємо помилку з відповідним статус-кодом
     return NextResponse.json(
-      { 
-        success: true, 
-        message: 'Сесія завершена' 
-      }, 
-      { status: 200 }
+      { message: (error as Error).message || 'Помилка при виході з системи' },
+      { status: 500 }
     );
   }
 }

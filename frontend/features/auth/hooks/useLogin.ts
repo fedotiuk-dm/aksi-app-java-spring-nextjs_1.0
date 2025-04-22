@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../store';
 import { useLogin as useApiLogin } from '../api';
 import type { LoginRequest } from '@/lib/api/generated/models/LoginRequest';
-import { convertToAuthUser } from '../model/types';
 
 /**
  * Клієнтський хук для входу користувача у систему
@@ -37,43 +36,22 @@ export const useLogin = () => {
       setError(null);
       setStoreError(null);
       
-      // Використовуємо Next.js API роут для логіну
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
+      // Використовуємо оновлений API хук для логіну
+      const user = await apiLoginMutation.mutateAsync(credentials);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage = errorData.message || 'Помилка при вході в систему';
-        setError(errorMessage);
-        setStoreError({ message: errorMessage, status: response.status });
-        throw new Error(errorMessage);
-      }
+      // Зберігаємо дані користувача в глобальному стані
+      setUser(user);
       
-      // Отримуємо дані користувача
-      const authResponse = await response.json();
-      
-      // Конвертуємо відповідь до формату AuthUser
-      const userData = convertToAuthUser(authResponse);
-      
-      // Зберігаємо дані користувача у стані
-      setUser(userData);
-      
-      // Перенаправляємо на цільову сторінку
+      // Перенаправляємо користувача на вказаний маршрут
       router.push(redirectTo);
       
-      return userData;
-    } catch (error) {
-      console.error('Помилка при спробі входу:', error);
+      return user;
+    } catch (error: unknown) {
       
-      // Обробляємо помилку
-      const errorMessage = error instanceof Error ? error.message : 'Невідома помилка при вході';
+      const errorMessage = (error as Error).message || 'Помилка при вході в систему';
+      console.error('Помилка при вході в систему:', error);
       setError(errorMessage);
-      
+      setStoreError({ message: errorMessage, status: 401 });
       throw error;
     } finally {
       setIsLoading(false);
@@ -85,7 +63,5 @@ export const useLogin = () => {
     login,
     isLoading,
     error,
-    // Надаємо доступ до оригінального API, якщо потрібно
-    loginMutation: apiLoginMutation,
   };
 };

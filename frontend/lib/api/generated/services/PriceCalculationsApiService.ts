@@ -23,7 +23,7 @@ export class PriceCalculationsApiService {
     }): CancelablePromise<OrderItemPriceCalculationDto> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/price-calculations/items/{itemId}',
+            url: '/price-calculations/items/{itemId}',
             path: {
                 'itemId': itemId,
             },
@@ -52,7 +52,7 @@ export class PriceCalculationsApiService {
     }): CancelablePromise<Array<OrderItemPriceCalculationDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/price-calculations/orders/{orderId}',
+            url: '/price-calculations/orders/{orderId}',
             path: {
                 'orderId': orderId,
             },

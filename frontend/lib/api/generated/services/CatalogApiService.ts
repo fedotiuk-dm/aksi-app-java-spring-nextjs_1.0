@@ -24,7 +24,7 @@ export class CatalogApiService {
     }): CancelablePromise<Array<string>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/catalog/categories/code/{categoryCode}/materials',
+            url: '/catalog/categories/code/{categoryCode}/materials',
             path: {
                 'categoryCode': categoryCode,
             },
@@ -53,7 +53,7 @@ export class CatalogApiService {
     }): CancelablePromise<Array<string>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/catalog/categories/{categoryId}/materials',
+            url: '/catalog/categories/{categoryId}/materials',
             path: {
                 'categoryId': categoryId,
             },
@@ -92,7 +92,7 @@ export class CatalogApiService {
     }): CancelablePromise<boolean> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/catalog/categories/{categoryId}/materials',
+            url: '/catalog/categories/{categoryId}/materials',
             path: {
                 'categoryId': categoryId,
             },
@@ -130,7 +130,7 @@ export class CatalogApiService {
     }): CancelablePromise<Array<MaterialWarningDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/catalog/materials/{material}/warnings',
+            url: '/catalog/materials/{material}/warnings',
             path: {
                 'material': material,
             },
@@ -162,7 +162,7 @@ export class CatalogApiService {
     }): CancelablePromise<Array<ModifierRecommendationDto>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/catalog/stains/modifiers',
+            url: '/catalog/stains/modifiers',
             query: {
                 'stainTypes': stainTypes,
             },
