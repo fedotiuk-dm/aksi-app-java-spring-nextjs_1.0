@@ -1,6 +1,9 @@
+'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '../store';
+import { useLogout as useApiLogout } from '../api';
 
 /**
  * Хук для виходу користувача із системи
@@ -12,6 +15,9 @@ export const useLogout = () => {
   
   const logoutStore = useAuthStore((state) => state.logout);
   
+  // Отримуємо хук для API-запиту
+  const apiLogout = useApiLogout();
+  
   /**
    * Функція виходу користувача із системи
    * @param redirectTo - шлях для перенаправлення після виходу
@@ -22,17 +28,7 @@ export const useLogout = () => {
       setError(null);
       
       // Викликаємо API для виходу
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      // Навіть якщо виникла помилка на сервері, вважаємо вихід успішним
-      if (!response.ok) {
-        console.warn('Помилка під час виходу на сервері, але сесія буде очищена локально');
-      }
+      await apiLogout.mutateAsync(undefined);
       
       // Очищаємо стан авторизації
       logoutStore();
@@ -40,14 +36,17 @@ export const useLogout = () => {
       // Перенаправляємо на цільову сторінку
       router.push(redirectTo);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Помилка виходу із системи';
-      setError(errorMessage);
+      console.error('Помилка при виході:', error);
       
-      // Все одно очищаємо стан авторизації локально
+      // Навіть якщо виникла помилка, все одно очищаємо стан авторизації
       logoutStore();
       
-      // Перенаправляємо на сторінку логіну
+      // Перенаправляємо на сторінку входу
       router.push(redirectTo);
+      
+      // Встановлюємо повідомлення про помилку
+      const errorMessage = error instanceof Error ? error.message : 'Невідома помилка при виході';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -57,5 +56,6 @@ export const useLogout = () => {
     logout,
     isLoading,
     error,
+    logoutMutation: apiLogout,
   };
 };

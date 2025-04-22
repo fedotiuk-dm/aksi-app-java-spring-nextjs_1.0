@@ -1,21 +1,27 @@
+'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LoginRequest } from '../types/authTypes';
-import { useAuthStore } from '../store/authStore';
-import { CLIENT_API_URL, AUTH_ENDPOINTS } from '@/constants/urls';
+import { useAuthStore } from '../store';
+import { useLogin as useApiLogin } from '../api';
+import type { LoginRequest } from '@/lib/api/generated/models/LoginRequest';
+import { convertToAuthUser } from '../model/types';
 
 /**
- * Хук для входу користувача у систему
+ * Клієнтський хук для входу користувача у систему
  */
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
+  
+  const setUser = useAuthStore((state) => state.setUser);
   const setStoreError = useAuthStore((state) => state.setError);
   const setStoreLoading = useAuthStore((state) => state.setLoading);
-  const setUser = useAuthStore((state) => state.setUser);
-
+  
+  // Отримуємо хук для API-запиту
+  const apiLoginMutation = useApiLogin();
+  
   /**
    * Функція для входу користувача
    * @param credentials - дані для входу
@@ -30,88 +36,56 @@ export const useLogin = () => {
       setStoreLoading(true);
       setError(null);
       setStoreError(null);
-
-      const apiUrl = `${CLIENT_API_URL}${AUTH_ENDPOINTS.LOGIN}`;
-      console.log('Спроба виконати запит на логін до:', apiUrl);
-      console.log('Дані для входу:', {
-        username: credentials.username,
-        password: '***',
-      });
-
-      // Викликаємо API роут для авторизації
-      const response = await fetch(apiUrl, {
+      
+      // Використовуємо Next.js API роут для логіну
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(credentials),
-        cache: 'no-store', // Вимикаємо кешування запитів авторизації
       });
-
-      console.log('Отримано відповідь:', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-      });
-
+      
       if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ message: 'Невідома помилка' }));
-        const errorMessage =
-          errorData.message || `Помилка авторизації (${response.status})`;
-
-        console.error('Помилка авторизації:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorMessage,
-        });
-
+        const errorData = await response.json();
+        const errorMessage = errorData.message || 'Помилка при вході в систему';
         setError(errorMessage);
-        setStoreError({
-          status: response.status,
-          message: errorMessage,
-        });
-        return;
+        setStoreError({ message: errorMessage, status: response.status });
+        throw new Error(errorMessage);
       }
-
-      const userData = await response.json();
-
-      console.log('Успішна авторизація, отримано дані користувача', {
-        id: userData.id,
-        username: userData.username,
-        role: userData.role,
-      });
-
-      // Встановлюємо дані користувача в store
+      
+      // Отримуємо дані користувача
+      const authResponse = await response.json();
+      
+      // Конвертуємо відповідь до формату AuthUser
+      const userData = convertToAuthUser(authResponse);
+      
+      // Зберігаємо дані користувача у стані
       setUser(userData);
-
+      
       // Перенаправляємо на цільову сторінку
       router.push(redirectTo);
+      
+      return userData;
     } catch (error) {
-      console.error(
-        'Необроблена помилка при спробі виконати запит на логін:',
-        error
-      );
-      const errorMessage =
-        error instanceof Error ? error.message : 'Помилка авторизації';
+      console.error('Помилка при спробі входу:', error);
+      
+      // Обробляємо помилку
+      const errorMessage = error instanceof Error ? error.message : 'Невідома помилка при вході';
       setError(errorMessage);
-      setStoreError({
-        message: errorMessage,
-      });
+      
+      throw error;
     } finally {
       setIsLoading(false);
       setStoreLoading(false);
     }
   };
-
+  
   return {
     login,
     isLoading,
     error,
-    clearError: () => {
-      setError(null);
-      setStoreError(null);
-    },
+    // Надаємо доступ до оригінального API, якщо потрібно
+    loginMutation: apiLoginMutation,
   };
 };

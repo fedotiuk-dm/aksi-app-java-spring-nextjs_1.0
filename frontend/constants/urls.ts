@@ -1,18 +1,28 @@
 /**
- * URL constants for API endpoints
+ * Правила формування API URL в проекті:
+ * 
+ * 1. Важливо! Spring Boot має контекстний шлях /api
  *
- * In Docker environment, we use service names for server-side requests
- * For local development, we use localhost
+ * 2. Для запитів з Next.js API роутів до бекенду:
+ *    - Використовуйте: ${SERVER_API_URL}/api/resource_path
+ *    - Приклад: const url = `${SERVER_API_URL}/api/clients`;
+ *
+ * 3. Для запитів від клієнта (React) до Next.js API:
+ *    - Використовуйте: ${CLIENT_API_URL}/resource_path
+ *    - Приклад: const url = `${CLIENT_API_URL}/clients`;
  */
 
-// Server-side URLs (for direct backend communication from Next.js API routes)
+// URL для серверних запитів (Next.js API → Java Backend)
 export const SERVER_API_URL =
   process.env.NODE_ENV === 'production'
     ? 'http://backend:8080' // Docker service name in production
     : 'http://localhost:8080'; // Local development
 
-// Client-side URLs (for browser requests that go through Next.js API routes)
+// URL для клієнтських запитів (React → Next.js API)
 export const CLIENT_API_URL = '/api';
+
+// API префікс, який завжди використовується в запитах до бекенду
+export const API_PREFIX = '/api';
 
 // Auth endpoints
 export const AUTH_ENDPOINTS = {

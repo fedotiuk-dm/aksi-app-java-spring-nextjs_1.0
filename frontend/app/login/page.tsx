@@ -1,13 +1,13 @@
 'use client';
 
 import { Box, Container, Paper, Typography } from '@mui/material';
-import { LoginForm } from '@/features/auth/components/LoginForm';
+import { LoginForm } from '@/features/auth/ui/LoginForm';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 
 /**
  * Сторінка авторизації
- * Використовує компонент LoginForm з features/auth/components
+ * Використовує компонент LoginForm з features/auth/ui
  * Підтримує параметр callbackUrl для повернення після логіну
  */
 // Компонент, що використовує useSearchParams

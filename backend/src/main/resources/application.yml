@@ -91,9 +91,9 @@ logging:
     org.springframework.web: DEBUG
     com.aksi: DEBUG
     # Розширені налаштування для логування Swagger/OpenAPI
-    springdoc: TRACE
-    org.springdoc: TRACE
-    io.swagger.v3: TRACE
+    # springdoc: TRACE
+    # org.springdoc: TRACE
+    # io.swagger.v3: TRACE
     com.aksi.config: TRACE
     org.springframework.security: DEBUG
     org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR

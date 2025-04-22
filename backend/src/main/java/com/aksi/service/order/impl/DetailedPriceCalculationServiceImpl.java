@@ -1,18 +1,5 @@
 package com.aksi.service.order.impl;
 
-import com.aksi.domain.order.entity.Order;
-import com.aksi.domain.order.entity.OrderItem;
-import com.aksi.domain.order.entity.OrderItemModifier;
-import com.aksi.domain.order.repository.OrderItemRepository;
-import com.aksi.dto.order.OrderItemPriceCalculationDto;
-import com.aksi.dto.order.PriceModifierDetailDto;
-import com.aksi.service.order.DetailedPriceCalculationService;
-// import com.aksi.service.order.PriceCalculationService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -20,6 +7,20 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.aksi.domain.order.entity.Order;
+import com.aksi.domain.order.entity.OrderItem;
+import com.aksi.domain.order.entity.OrderItemModifier;
+import com.aksi.domain.order.repository.OrderItemRepository;
+import com.aksi.dto.order.OrderItemPriceCalculationDto;
+import com.aksi.dto.order.PriceModifierDetailDto;
+import com.aksi.service.order.DetailedPriceCalculationService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Імплементація сервісу детального розрахунку цін

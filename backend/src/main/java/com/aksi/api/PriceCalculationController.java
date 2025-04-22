@@ -1,24 +1,29 @@
 package com.aksi.api;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.aksi.dto.order.OrderItemPriceCalculationDto;
 import com.aksi.service.order.DetailedPriceCalculationService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * REST контролер для доступу до детальної інформації про розрахунок цін.
  * Дозволяє отримати покрокову деталізацію розрахунку вартості для замовлень та окремих предметів.
  */
 @RestController
-@RequestMapping("/api/price-calculations")
+@RequestMapping("/price-calculations")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Price Calculations API", description = "API для детальних розрахунків вартості")

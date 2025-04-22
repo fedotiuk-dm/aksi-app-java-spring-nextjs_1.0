@@ -7,7 +7,7 @@ import { serverAuth } from '@/features/auth/server/serverAuth';
 export async function GET() {
   try {
     // Отримуємо інформацію про поточного користувача
-    const user = serverAuth.getCurrentUser();
+    const user = await serverAuth.getCurrentUser();
     
     // Якщо користувач не авторизований, повертаємо помилку
     if (!user) {

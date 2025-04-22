@@ -1,7 +1,9 @@
 'use client';
 
-import axios, { AxiosError, AxiosResponse, AxiosRequestConfig } from 'axios';
-import { useAuthStore } from '@/features/auth/store/authStore';
+import axios from 'axios';
+import type { AxiosError } from 'axios';
+import type { AxiosResponse, AxiosRequestConfig } from 'axios';
+import { useAuthStore } from '@/features/auth/store';
 
 /**
  * Інтерфейс для розширеної відповіді помилки з бекенду

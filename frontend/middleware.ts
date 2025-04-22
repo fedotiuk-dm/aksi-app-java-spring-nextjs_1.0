@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtDecode } from 'jwt-decode';
-import { JwtPayload, UserRole } from './features/auth/types/authTypes';
+import { JwtPayload, UserRole } from '@/features/auth/model/types';
 
 // Публічні шляхи, які не потребують автентифікації
 const publicPaths = [
@@ -73,13 +73,26 @@ export async function middleware(request: NextRequest) {
   // Отримуємо інформацію про користувача з токена
   try {
     const payload = jwtDecode<JwtPayload>(authToken);
-    const userRole = payload.role || UserRole.USER; // Використовуємо імпортований UserRole
+    const userRole = payload.role || UserRole.STAFF; // За замовчуванням надаємо базову роль STAFF
     
-    // Можна додати додаткові перевірки доступу за роллю
-    // Наприклад, перевірити, чи має користувач доступ до адмін. розділу
+    // Перевірки доступу на основі ролі користувача
+    
+    // Адміністративні розділи - тільки для ADMIN
     if (path.startsWith('/admin') && userRole !== UserRole.ADMIN) {
       return NextResponse.redirect(new URL('/', request.url));
     }
+    
+    // Розділи менеджера - для ADMIN та MANAGER
+    if (path.startsWith('/manager') && 
+        ![UserRole.ADMIN, UserRole.MANAGER].includes(userRole)) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+    
+    // Захищені розділи для персоналу - для всіх авторизованих користувачів
+    // Тут не потрібна додаткова перевірка, оскільки ми вже перевірили, що користувач авторизований
+    
+    // Додаткова перевірка для спеціальних розділів (можна додати за потреби)
+    // if (path.startsWith('/special-area') && ...) { ... }
   } catch (error) {
     console.error('Error processing token in middleware:', error instanceof Error ? error.message : 'Unknown error');
   }

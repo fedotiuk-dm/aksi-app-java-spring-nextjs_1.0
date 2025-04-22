@@ -1,23 +1,26 @@
-import { useAuthStore } from '../store/authStore';
+'use client';
+
+import { useAuthStore } from '../store';
 
 /**
- * Хук для отримання інформації про поточну авторизацію
+ * Хук для отримання інформації про поточного користувача
+ * та методів для управління автентифікацією
  */
 export const useAuth = () => {
-  const { 
-    isLoggedIn, 
-    username, 
+  // Витягуємо необхідні значення та методи з глобального стану авторизації
+  const {
+    isLoggedIn,
+    username,
     name,
     email,
     role,
     userId,
     position,
-    error, 
-    loading, 
-    hasRole, 
-    logout 
+    error,
+    hasRole,
+    checkIsLoggedIn,
   } = useAuthStore();
-  
+
   return {
     isLoggedIn,
     username,
@@ -27,8 +30,7 @@ export const useAuth = () => {
     userId,
     position,
     error,
-    loading,
     hasRole,
-    logout,
+    checkIsLoggedIn,
   };
 };

@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  * REST контролер для роботи з квитанціями замовлень.
  */
 @RestController
-@RequestMapping("/api/receipts")
+@RequestMapping("/receipts")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Receipt", description = "API для роботи з квитанціями")

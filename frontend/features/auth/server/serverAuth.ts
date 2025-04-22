@@ -1,52 +1,19 @@
 import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
-import { UUID } from 'crypto';
-import { authApi } from '../api/authApi';
-import {
-  LoginRequest,
-  JwtPayload,
-  AuthUser,
-  UserRole,
-  AuthResponse,
-  RegisterRequest,
-} from '../types/authTypes';
+import { AuthenticationService, OpenAPI } from '@/lib/api';
+import { AuthUser, JwtPayload, UserRole, convertToAuthUser } from '../model/types';
+import type { LoginRequest } from '@/lib/api/generated/models/LoginRequest';
+import type { RegisterRequest } from '@/lib/api/generated/models/RegisterRequest';
+import { SERVER_API_URL } from '@/constants/urls';
+
+// Налаштовуємо базовий URL для серверних запитів
+OpenAPI.BASE = `${SERVER_API_URL}/api`;
 
 // Назви cookies
 const TOKEN_COOKIE = 'auth_token';
 const REFRESH_TOKEN_COOKIE = 'refresh_token';
 
-// Опції для cookie
-interface CookieOptions {
-  httpOnly?: boolean;
-  secure?: boolean;
-  expires?: Date;
-  path?: string;
-  sameSite?: 'strict' | 'lax' | 'none';
-  domain?: string;
-  maxAge?: number;
-}
-
-// Визначаємо тип для cookieStore, щоб обійти проблеми з типізацією
-type CookieStore = {
-  get: (name: string) => { value: string } | undefined;
-  set: (name: string, value: string, options?: CookieOptions) => void;
-  delete: (name: string) => void;
-};
-
-/**
- * Конвертує AuthResponse від API в AuthUser для внутрішнього використання
- */
-const convertToAuthUser = (response: AuthResponse): AuthUser => {
-  return {
-    id: response.id,
-    username: response.username,
-    name: response.name,
-    email: response.email,
-    role: response.role,
-    position: response.position,
-    isAuthenticated: true,
-  };
-};
+// Використовуємо стандартні опції для cookies з Next.js
 
 // Серверні функції для роботи з автентифікацією
 export const serverAuth = {
@@ -57,78 +24,47 @@ export const serverAuth = {
    */
   async login(credentials: LoginRequest): Promise<AuthUser> {
     try {
-      console.log('Серверний логін: спроба виконати запит до API');
-      // Викликаємо API для логіну
-      console.log('Викликаємо authApi.login з параметрами:', {
-        username: credentials.username,
+      console.log('Виконуємо запит до бекенду для логіну');
+      
+      // Отримуємо JWT токен від бекенду
+      const authResponse = await AuthenticationService.login({
+        requestBody: credentials
       });
-      const response = await authApi.login(credentials);
-      console.log('Отримано відповідь від API:', {
-        id: response.id,
-        username: response.username,
-        role: response.role,
-        tokenReceived: !!response.accessToken,
-      });
-
-      if (!response.accessToken) {
-        console.error('Відсутній accessToken у відповіді API');
-        throw new Error('Не вдалося отримати токен доступу');
+      
+      if (!authResponse.accessToken || !authResponse.refreshToken) {
+        throw new Error('Не отримано токени автентифікації');
       }
-
-      // Зберігаємо токени у HttpOnly cookies
-      console.log('Спроба зберегти токени в cookies');
-
-      // Використовуємо правильний тип для cookieStore
-      const cookieStore = cookies() as unknown as CookieStore;
-
+      
+      // Зберігаємо токени в cookies
+      const cookieStore = await cookies();
+      
       // Зберігаємо access token
-      cookieStore.set(TOKEN_COOKIE, response.accessToken, {
+      cookieStore.set(TOKEN_COOKIE, authResponse.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        expires: new Date(Date.now() + response.expiresIn * 1000),
+        sameSite: 'lax',
         path: '/',
-        sameSite: 'strict',
+        // Якщо є expiresIn, встановлюємо maxAge
+        maxAge: authResponse.expiresIn ? authResponse.expiresIn : 3600 // за замовчуванням 1 година
       });
-      console.log('ACCESS_TOKEN збережено в cookies');
-
+      
       // Зберігаємо refresh token
-      cookieStore.set(REFRESH_TOKEN_COOKIE, response.refreshToken, {
+      cookieStore.set(REFRESH_TOKEN_COOKIE, authResponse.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 днів
+        sameSite: 'lax',
         path: '/',
-        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 // 7 днів
       });
-      console.log('REFRESH_TOKEN збережено в cookies');
-
+      
       // Конвертуємо відповідь в AuthUser
-      const authUser = convertToAuthUser(response);
-      console.log('Конвертовано відповідь в AuthUser:', authUser);
-
-      // Повертаємо інформацію про користувача
-      return authUser;
+      return convertToAuthUser(authResponse);
     } catch (error) {
-      console.error('Помилка авторизації:', error);
-      console.error(
-        'Деталі помилки:',
-        error instanceof Error
-          ? {
-              name: error.name,
-              message: error.message,
-              stack: error.stack,
-            }
-          : 'Unknown error'
-      );
-
-      // Передаємо більш детальну інформацію про помилку
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Невірний логін або пароль');
-      }
+      console.error('Помилка при логіні:', error);
+      throw error;
     }
   },
-
+  
   /**
    * Реєстрація нового користувача
    * @param registerData - дані для реєстрації
@@ -136,127 +72,151 @@ export const serverAuth = {
    */
   async register(registerData: RegisterRequest): Promise<AuthUser> {
     try {
-      // Викликаємо API для реєстрації
-      const response = await authApi.register(registerData);
-
-      // Зберігаємо токени у HttpOnly cookies
-      const cookieStore = cookies() as unknown as CookieStore;
-
-      cookieStore.set(TOKEN_COOKIE, response.accessToken, {
+      console.log('Виконуємо запит для реєстрації');
+      
+      // Отримуємо JWT токен від бекенду
+      const authResponse = await AuthenticationService.register({
+        requestBody: registerData
+      });
+      
+      if (!authResponse.accessToken || !authResponse.refreshToken) {
+        throw new Error('Не отримано токени автентифікації');
+      }
+      
+      // Зберігаємо токени в cookies
+      const cookieStore = await cookies();
+      
+      cookieStore.set(TOKEN_COOKIE, authResponse.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        expires: new Date(Date.now() + response.expiresIn * 1000),
+        sameSite: 'lax',
         path: '/',
-        sameSite: 'strict',
+        maxAge: authResponse.expiresIn ? authResponse.expiresIn : 3600
       });
-
-      cookieStore.set(REFRESH_TOKEN_COOKIE, response.refreshToken, {
+      
+      cookieStore.set(REFRESH_TOKEN_COOKIE, authResponse.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 днів
+        sameSite: 'lax',
         path: '/',
-        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 // 7 днів
       });
-
-      // Повертаємо інформацію про користувача
-      return convertToAuthUser(response);
+      
+      // Конвертуємо відповідь в AuthUser
+      return convertToAuthUser(authResponse);
     } catch (error) {
-      console.error('Помилка реєстрації:', error);
-      throw new Error('Не вдалося зареєструвати користувача');
+      console.error('Помилка при реєстрації:', error);
+      throw error;
     }
   },
-
+  
   /**
    * Оновлення токену на сервері
    * @returns об'єкт з інформацією про користувача або null, якщо оновлення не вдалося
    */
   async refreshToken(): Promise<AuthUser | null> {
-    const cookieStore = cookies() as unknown as CookieStore;
-    const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
-
-    if (!refreshToken) {
-      return null;
-    }
-
     try {
+      console.log('Намагаємось оновити токен');
+      const cookieStore = await cookies();
+      const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
+      
+      if (!refreshToken) {
+        console.warn('Відсутній refresh_token в cookies');
+        return null;
+      }
+      
       // Викликаємо API для оновлення токену
-      const response = await authApi.refreshToken(refreshToken);
-
-      // Оновлюємо токени у cookies
-      cookieStore.set(TOKEN_COOKIE, response.accessToken, {
+      const authResponse = await AuthenticationService.refreshToken({
+        requestBody: refreshToken
+      });
+      
+      if (!authResponse.accessToken) {
+        console.warn('Не отримано новий access token');
+        return null;
+      }
+      
+      // Оновлюємо access token in cookies
+      cookieStore.set(TOKEN_COOKIE, authResponse.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        expires: new Date(Date.now() + response.expiresIn * 1000),
+        sameSite: 'lax',
         path: '/',
-        sameSite: 'strict',
+        maxAge: authResponse.expiresIn ? authResponse.expiresIn : 3600
       });
-
-      cookieStore.set(REFRESH_TOKEN_COOKIE, response.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 днів
-        path: '/',
-        sameSite: 'strict',
-      });
-
-      // Повертаємо інформацію про користувача
-      return convertToAuthUser(response);
+      
+      // Якщо отримали новий refresh token, оновлюємо його теж
+      if (authResponse.refreshToken) {
+        cookieStore.set(REFRESH_TOKEN_COOKIE, authResponse.refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 7 * 24 * 60 * 60 // 7 днів
+        });
+      }
+      
+      // Повертаємо оновлену інформацію про користувача
+      return convertToAuthUser(authResponse);
     } catch (error) {
-      console.error('Помилка оновлення токену:', error);
-      // Видаляємо невалідні токени
-      const cookieStore = cookies() as unknown as CookieStore;
-      cookieStore.delete(TOKEN_COOKIE);
-      cookieStore.delete(REFRESH_TOKEN_COOKIE);
+      console.error('Помилка при оновленні токену:', error);
       return null;
     }
   },
-
+  
   /**
    * Вихід користувача із системи
    */
   async logout(): Promise<void> {
-    // В бекенді немає ендпоінту для виходу, тому просто видаляємо cookies
-    const cookieStore = cookies() as unknown as CookieStore;
+    const cookieStore = await cookies();
+    
+    // Видаляємо cookies
     cookieStore.delete(TOKEN_COOKIE);
     cookieStore.delete(REFRESH_TOKEN_COOKIE);
   },
-
+  
   /**
    * Отримання інформації про поточного користувача
    * @returns об'єкт з інформацією про користувача або null, якщо не авторизований
    */
   async getCurrentUser(): Promise<AuthUser | null> {
-    const cookieStore = cookies() as unknown as CookieStore;
-    const token = cookieStore.get(TOKEN_COOKIE)?.value;
-
-    if (!token) {
-      return null;
-    }
-
     try {
-      // Розшифровуємо JWT токен для отримання інформації
-      const payload = jwtDecode<JwtPayload>(token);
-
-      // Перевіряємо, чи токен не прострочений
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (payload.exp < currentTime) {
+      const token = await this.getToken();
+      
+      if (!token) {
+        console.log('Токен відсутній');
         return null;
       }
-
-      return {
-        id: (payload.userId || payload.sub) as UUID, // Використовуємо userId або sub в якості id
-        username: payload.username || payload.sub, // Використовуємо username або sub
-        name: payload.username || payload.sub, // Використовуємо username або sub
-        email: payload.username || payload.sub, // Використовуємо username або sub
-        role: payload.role || UserRole.USER, // За замовчуванням USER, якщо немає ролі
-        isAuthenticated: true,
-      };
+      
+      try {
+        // Розшифровуємо JWT токен
+        const payload = jwtDecode<JwtPayload>(token);
+        
+        // Перевіряємо термін дії токена
+        const currentTime = Math.floor(Date.now() / 1000);
+        
+        if (payload.exp < currentTime) {
+          console.log('Токен протермінований, намагаємось оновити');
+          return await this.refreshToken();
+        }
+        
+        // Повертаємо інформацію про користувача з JWT
+        return {
+          id: payload.sub,
+          username: payload.sub,
+          name: payload.name,
+          email: payload.email,
+          role: payload.role,
+        };
+      } catch (error) {
+        console.error('Помилка розшифрування JWT:', error);
+        return null;
+      }
     } catch (error) {
-      console.error('Помилка отримання даних користувача:', error);
+      console.error('Помилка отримання поточного користувача:', error);
       return null;
     }
   },
-
+  
   /**
    * Перевірка, чи користувач має певну роль
    * @param requiredRole - роль для перевірки
@@ -264,15 +224,15 @@ export const serverAuth = {
    */
   async hasRole(requiredRole: UserRole): Promise<boolean> {
     const user = await this.getCurrentUser();
-    return user?.role === requiredRole || false;
+    return !!user && user.role === requiredRole;
   },
-
+  
   /**
    * Отримання поточного JWT токену з cookies
    * @returns JWT токен або null
    */
   async getToken(): Promise<string | null> {
-    const cookieStore = cookies() as unknown as CookieStore;
+    const cookieStore = await cookies();
     return cookieStore.get(TOKEN_COOKIE)?.value || null;
-  },
+  }
 };

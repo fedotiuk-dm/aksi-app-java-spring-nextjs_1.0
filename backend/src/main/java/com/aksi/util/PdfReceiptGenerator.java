@@ -1,25 +1,38 @@
 package com.aksi.util;
 
-import com.aksi.domain.client.entity.Client;
-import com.aksi.domain.order.entity.Order;
-import com.aksi.domain.order.entity.OrderItem;
-import com.aksi.domain.order.entity.OrderItemStain;
-import com.aksi.domain.order.entity.OrderItemDefect;
-import com.aksi.domain.order.entity.UrgencyType;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
+import com.aksi.domain.client.entity.Client;
+import com.aksi.domain.order.entity.Order;
+import com.aksi.domain.order.entity.OrderItem;
+import com.aksi.domain.order.entity.OrderItemDefect;
+import com.aksi.domain.order.entity.OrderItemStain;
+import com.aksi.domain.order.entity.UrgencyType;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Клас для генерації PDF-квитанцій
@@ -406,11 +419,12 @@ public class PdfReceiptGenerator {
         
         // Текст юридичної інформації
         legalInfo.add(new Chunk(
-            "1. Термін зберігання замовлення після виконання - 30 днів. Після завершення цього " +
-            "терміну, компанія не несе відповідальності за збереження речей.\n" +
-            "2. У разі втрати квитанції, видача замовлення здійснюється за умови пред'явлення документа, що посвідчує особу.\n" +
-            "3. Претензії щодо якості приймаються протягом 2 днів з моменту отримання замовлення.\n" +
-            "4. Для отримання замовлення необхідно пред'явити цю квитанцію.",
+                """
+                        1. Термін зберігання замовлення після виконання - 30 днів. Після завершення цього \
+                        терміну, компанія не несе відповідальності за збереження речей.
+                        2. У разі втрати квитанції, видача замовлення здійснюється за умови пред'явлення документа, що посвідчує особу.
+                        3. Претензії щодо якості приймаються протягом 2 днів з моменту отримання замовлення.
+                        4. Для отримання замовлення необхідно пред'явити цю квитанцію.""",
             SMALL_FONT
         ));
         
@@ -457,8 +471,17 @@ public class PdfReceiptGenerator {
                 pdfQrImage.setAlignment(Element.ALIGN_CENTER);
                 document.add(pdfQrImage);
             }
-        } catch (Exception e) {
-            log.warn("Unexpected error adding QR code: {}", e.getMessage());
+        } catch (BadElementException e) {
+            // Виникає при проблемах з конвертацією BufferedImage в Image
+            log.warn("Error creating QR code image: {}", e.getMessage());
+            // Продовжуємо без QR-коду
+        } catch (IOException e) {
+            // Виникає при проблемах з читанням зображення
+            log.warn("Error reading QR code image: {}", e.getMessage());
+            // Продовжуємо без QR-коду
+        } catch (DocumentException e) {
+            // Виникає при проблемах з додаванням елемента до документа
+            log.warn("Error adding QR code to document: {}", e.getMessage());
             // Продовжуємо без QR-коду
         }
         

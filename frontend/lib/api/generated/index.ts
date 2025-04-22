@@ -1,0 +1,83 @@
+/* generated using openapi-typescript-codegen -- do not edit */
+/* istanbul ignore file */
+/* tslint:disable */
+/* eslint-disable */
+export { ApiError } from './core/ApiError';
+export { CancelablePromise, CancelError } from './core/CancelablePromise';
+export { OpenAPI } from './core/OpenAPI';
+export type { OpenAPIConfig } from './core/OpenAPI';
+
+export { AuthResponse } from './models/AuthResponse';
+export { ClientCreateRequest } from './models/ClientCreateRequest';
+export type { ClientDTO } from './models/ClientDTO';
+export { ClientResponse } from './models/ClientResponse';
+export { ClientSearchRequest } from './models/ClientSearchRequest';
+export { ClientUpdateRequest } from './models/ClientUpdateRequest';
+export type { ErrorResponse } from './models/ErrorResponse';
+export type { LoginRequest } from './models/LoginRequest';
+export { MaterialWarningDto } from './models/MaterialWarningDto';
+export { ModifierRecommendationDto } from './models/ModifierRecommendationDto';
+export { OrderCreateRequest } from './models/OrderCreateRequest';
+export { OrderDto } from './models/OrderDto';
+export type { OrderItemCreateRequest } from './models/OrderItemCreateRequest';
+export { OrderItemDefectCreateRequest } from './models/OrderItemDefectCreateRequest';
+export { OrderItemDefectDto } from './models/OrderItemDefectDto';
+export type { OrderItemDto } from './models/OrderItemDto';
+export type { OrderItemModifierCreateRequest } from './models/OrderItemModifierCreateRequest';
+export type { OrderItemModifierDto } from './models/OrderItemModifierDto';
+export type { OrderItemPhotoDto } from './models/OrderItemPhotoDto';
+export type { OrderItemPriceCalculationDto } from './models/OrderItemPriceCalculationDto';
+export { OrderItemStainCreateRequest } from './models/OrderItemStainCreateRequest';
+export { OrderItemStainDto } from './models/OrderItemStainDto';
+export type { Pageable } from './models/Pageable';
+export type { PageableObject } from './models/PageableObject';
+export type { PageClientResponse } from './models/PageClientResponse';
+export type { PageOrderDto } from './models/PageOrderDto';
+export type { PriceListItemDto } from './models/PriceListItemDto';
+export type { PriceModifierDetailDto } from './models/PriceModifierDetailDto';
+export type { ReceptionPointDTO } from './models/ReceptionPointDTO';
+export { RegisterRequest } from './models/RegisterRequest';
+export type { ServiceCategoryDto } from './models/ServiceCategoryDto';
+export type { SortObject } from './models/SortObject';
+
+export { $AuthResponse } from './schemas/$AuthResponse';
+export { $ClientCreateRequest } from './schemas/$ClientCreateRequest';
+export { $ClientDTO } from './schemas/$ClientDTO';
+export { $ClientResponse } from './schemas/$ClientResponse';
+export { $ClientSearchRequest } from './schemas/$ClientSearchRequest';
+export { $ClientUpdateRequest } from './schemas/$ClientUpdateRequest';
+export { $ErrorResponse } from './schemas/$ErrorResponse';
+export { $LoginRequest } from './schemas/$LoginRequest';
+export { $MaterialWarningDto } from './schemas/$MaterialWarningDto';
+export { $ModifierRecommendationDto } from './schemas/$ModifierRecommendationDto';
+export { $OrderCreateRequest } from './schemas/$OrderCreateRequest';
+export { $OrderDto } from './schemas/$OrderDto';
+export { $OrderItemCreateRequest } from './schemas/$OrderItemCreateRequest';
+export { $OrderItemDefectCreateRequest } from './schemas/$OrderItemDefectCreateRequest';
+export { $OrderItemDefectDto } from './schemas/$OrderItemDefectDto';
+export { $OrderItemDto } from './schemas/$OrderItemDto';
+export { $OrderItemModifierCreateRequest } from './schemas/$OrderItemModifierCreateRequest';
+export { $OrderItemModifierDto } from './schemas/$OrderItemModifierDto';
+export { $OrderItemPhotoDto } from './schemas/$OrderItemPhotoDto';
+export { $OrderItemPriceCalculationDto } from './schemas/$OrderItemPriceCalculationDto';
+export { $OrderItemStainCreateRequest } from './schemas/$OrderItemStainCreateRequest';
+export { $OrderItemStainDto } from './schemas/$OrderItemStainDto';
+export { $Pageable } from './schemas/$Pageable';
+export { $PageableObject } from './schemas/$PageableObject';
+export { $PageClientResponse } from './schemas/$PageClientResponse';
+export { $PageOrderDto } from './schemas/$PageOrderDto';
+export { $PriceListItemDto } from './schemas/$PriceListItemDto';
+export { $PriceModifierDetailDto } from './schemas/$PriceModifierDetailDto';
+export { $ReceptionPointDTO } from './schemas/$ReceptionPointDTO';
+export { $RegisterRequest } from './schemas/$RegisterRequest';
+export { $ServiceCategoryDto } from './schemas/$ServiceCategoryDto';
+export { $SortObject } from './schemas/$SortObject';
+
+export { AuthenticationService } from './services/AuthenticationService';
+export { CatalogApiService } from './services/CatalogApiService';
+export { ClientsService } from './services/ClientsService';
+export { OrdersService } from './services/OrdersService';
+export { PriceCalculationsApiService } from './services/PriceCalculationsApiService';
+export { PriceListService } from './services/PriceListService';
+export { ReceiptService } from './services/ReceiptService';
+export { ReceptionPointsService } from './services/ReceptionPointsService';
