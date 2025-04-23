@@ -1,0 +1,16 @@
+
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: system
+      comment: "Додавання колонки source_details в таблицю clients для зберігання деталей джерела, коли вибрано OTHER"
+      changes:
+        - addColumn:
+            tableName: clients
+            columns:
+              - column:
+                  name: source_details
+                  type: varchar(255)
+                  remarks: "Деталізація джерела залучення, коли обрано OTHER"
+                  constraints:
+                    nullable: true

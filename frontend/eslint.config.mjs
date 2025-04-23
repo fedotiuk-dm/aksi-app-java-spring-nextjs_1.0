@@ -14,11 +14,20 @@ const compat = new FlatCompat({
 
 // Базові налаштування Next.js
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Завантажуємо налаштування Next.js
+  ...compat.config({
+    extends: ["next/core-web-vitals"],
+    rules: {
+      // Відключаємо попередження про невикористані eslint-disable директиви
+      "eslint-comments/no-unused-disable": "off"
+    },
+    ignorePatterns: ["**/lib/api/generated/**/*"]
+  }),
   
   // Налаштування для всіх файлів
   {
     files: ["**/*.ts", "**/*.tsx"],
+    ignores: ["**/lib/api/generated/**/*"], // Ігноруємо автогенеровані файли
     plugins: {
       "@typescript-eslint": tsPlugin,
       "import": importPlugin,
@@ -85,6 +94,10 @@ const eslintConfig = [
       "@typescript-eslint/no-explicit-any": "off",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "off",
+      // Відключаємо попередження про невикористані eslint-disable директиви
+      "eslint-comments/no-unused-disable": "off",
+      // Додаємо правило, яке відключає всі попередження для автогенерованого коду
+      "eslint-comments/disable-enable-pair": "off"
     },
   },
 ];

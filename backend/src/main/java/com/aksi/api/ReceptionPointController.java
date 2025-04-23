@@ -1,19 +1,28 @@
 package com.aksi.api;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.aksi.dto.order.ReceptionPointDTO;
 import com.aksi.service.order.ReceptionPointService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * REST контролер для роботи з пунктами прийому замовлень
@@ -47,7 +56,7 @@ public class ReceptionPointController {
     @GetMapping("/all")
     @Operation(summary = "Отримати всі пункти прийому", 
               description = "Повертає список всіх пунктів прийому замовлень (активних та неактивних)")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    // @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')") - тимчасово вимкнено для розробки
     public ResponseEntity<List<ReceptionPointDTO>> getAllReceptionPoints() {
         log.info("REST запит на отримання всіх пунктів прийому");
         List<ReceptionPointDTO> result = receptionPointService.getAllReceptionPoints();
@@ -78,7 +87,7 @@ public class ReceptionPointController {
     @PostMapping
     @Operation(summary = "Створити новий пункт прийому", 
               description = "Створює новий пункт прийому замовлень")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    //@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ReceptionPointDTO> createReceptionPoint(
             @Valid @RequestBody ReceptionPointDTO dto) {
         log.info("REST запит на створення нового пункту прийому: {}", dto.getName());
@@ -95,7 +104,7 @@ public class ReceptionPointController {
     @PutMapping("/{id}")
     @Operation(summary = "Оновити пункт прийому", 
               description = "Оновлює дані існуючого пункту прийому замовлень")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    //@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ReceptionPointDTO> updateReceptionPoint(
             @Parameter(description = "Ідентифікатор пункту прийому") 
             @PathVariable UUID id,
@@ -114,7 +123,7 @@ public class ReceptionPointController {
     @PatchMapping("/{id}/status")
     @Operation(summary = "Змінити статус активності пункту прийому", 
               description = "Змінює статус активності (активний/неактивний) пункту прийому замовлень")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    //@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ReceptionPointDTO> setReceptionPointStatus(
             @Parameter(description = "Ідентифікатор пункту прийому") 
             @PathVariable UUID id,

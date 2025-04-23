@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Repository for the OrderItemPhoto entity.
  */
 @Repository
-public interface OrderItemPhotoRepository extends JpaRepository<OrderItemPhoto, Long> {
+public interface OrderItemPhotoRepository extends JpaRepository<OrderItemPhoto, UUID> {
     
     /**
      * Find all photos for a specific order item.
@@ -35,4 +36,12 @@ public interface OrderItemPhotoRepository extends JpaRepository<OrderItemPhoto, 
      * @param orderItem The order item
      */
     void deleteByOrderItem(OrderItem orderItem);
+    
+    /**
+     * Find all photos for a specific order item by its ID.
+     *
+     * @param itemId The order item ID
+     * @return A list of photos
+     */
+    List<OrderItemPhoto> findByOrderItemId(UUID itemId);
 }

@@ -13,6 +13,7 @@ export type ClientUpdateRequest = {
     notes?: string;
     phone?: string;
     source?: ClientUpdateRequest.source;
+    sourceDetails?: string;
     status?: ClientUpdateRequest.status;
     tags?: Array<string>;
 };

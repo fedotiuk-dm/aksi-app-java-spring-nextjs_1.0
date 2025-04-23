@@ -85,6 +85,12 @@ public class ClientCreateRequest {
     private ClientSource source;
     
     /**
+     * Деталізація джерела залучення, коли вибрано "OTHER"
+     */
+    @Size(max = 255, message = "Деталі джерела не можуть перевищувати 255 символів")
+    private String sourceDetails;
+    
+    /**
      * Дата народження
      */
     private LocalDate birthDate;

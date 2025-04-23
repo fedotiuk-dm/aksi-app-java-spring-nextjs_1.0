@@ -51,6 +51,10 @@ export const $ClientCreateRequest = {
         source: {
             type: 'Enum',
         },
+        sourceDetails: {
+            type: 'string',
+            maxLength: 255,
+        },
         status: {
             type: 'Enum',
         },

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Маппер для перетворення між різними представленнями клієнта
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, builder = @Builder(disableBuilder = true))
 public interface ClientMapper {
     
     /**
@@ -76,6 +76,7 @@ public interface ClientMapper {
     @Mapping(target = "address", source = "address")
     @Mapping(target = "notes", source = "notes")
     @Mapping(target = "source", source = "source")
+    @Mapping(target = "sourceDetails", source = "sourceDetails")
     @Mapping(target = "birthDate", source = "birthDate")
     @Mapping(target = "lastOrderDate", source = "lastOrderDate")
     @Mapping(target = "totalSpent", source = "totalSpent")

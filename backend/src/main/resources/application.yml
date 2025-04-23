@@ -1,6 +1,8 @@
 spring:
   application:
     name: aksi-backend
+  profiles:
+    include: files
   main:
     allow-circular-references: true
   mail:

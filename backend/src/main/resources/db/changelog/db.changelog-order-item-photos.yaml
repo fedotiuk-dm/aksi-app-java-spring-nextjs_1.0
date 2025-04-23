@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-order-item-photos-table
+      author: aksi-app
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: order_item_photos
+      changes:
+        - createTable:
+            tableName: order_item_photos
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_item_photos_order_item
+                    references: order_items(id)
+                    deleteCascade: true
+              - column:
+                  name: file_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: url
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content_type
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: size
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: annotation_data
+                  type: text
+              - column:
+                  name: uploaded_at
+                  type: timestamp
+                  constraints:
+                    nullable: false

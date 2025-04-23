@@ -55,6 +55,9 @@ export const $ClientResponse = {
         source: {
             type: 'Enum',
         },
+        sourceDetails: {
+            type: 'string',
+        },
         status: {
             type: 'Enum',
         },

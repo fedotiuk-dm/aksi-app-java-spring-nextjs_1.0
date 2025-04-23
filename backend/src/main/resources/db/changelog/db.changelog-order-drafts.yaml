@@ -1,0 +1,86 @@
+databaseChangeLog:
+  - changeSet:
+      id: order-drafts-table
+      author: cascade
+      changes:
+        - createTable:
+            tableName: order_drafts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: client_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_order_draft_client
+                    references: clients(id)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: draft_data
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: converted_to_order
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+              - column:
+                  name: draft_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+  
+  - changeSet:
+      id: order-drafts-indexes
+      author: cascade
+      changes:
+        - createIndex:
+            tableName: order_drafts
+            indexName: idx_order_drafts_client_id
+            columns:
+              - column:
+                  name: client_id
+        - createIndex:
+            tableName: order_drafts
+            indexName: idx_order_drafts_created_by
+            columns:
+              - column:
+                  name: created_by
+        - createIndex:
+            tableName: order_drafts
+            indexName: idx_order_drafts_order_id
+            columns:
+              - column:
+                  name: order_id
+        - createIndex:
+            tableName: order_drafts
+            indexName: idx_order_drafts_converted
+            columns:
+              - column:
+                  name: converted_to_order

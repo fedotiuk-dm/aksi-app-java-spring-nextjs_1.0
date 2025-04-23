@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.lang.NonNull;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  * Конфігурація веб-додатку та CORS
  */
 @Configuration
+@EnableSpringDataWebSupport
 @Slf4j
 public class WebConfig implements WebMvcConfigurer {
 
@@ -74,4 +76,5 @@ public class WebConfig implements WebMvcConfigurer {
         
         return new CorsFilter(source);
     }
+
 } 

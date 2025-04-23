@@ -90,6 +90,12 @@ public class Client {
     private ClientSource source;
     
     /**
+     * Деталізація джерела залучення, коли обрано "OTHER"
+     */
+    @Column(name = "source_details")
+    private String sourceDetails;
+    
+    /**
      * Дата народження клієнта
      */
     @Column(name = "birth_date")

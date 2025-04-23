@@ -15,6 +15,7 @@ export type ClientCreateRequest = {
     notes?: string;
     phone?: string;
     source?: ClientCreateRequest.source;
+    sourceDetails?: string;
     status?: ClientCreateRequest.status;
     tags?: Array<string>;
 };

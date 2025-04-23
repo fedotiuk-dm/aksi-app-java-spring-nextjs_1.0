@@ -121,6 +121,7 @@ if (typeof window !== 'undefined') {
   // Примітка: це хак, щоб змусити всі OpenAPI клієнти використовувати наш axios
   interface ExtendedWindow extends Window {
     // Використовуємо any, бо це спеціальний хак для OpenAPI клієнтів
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     axios: any;
   }
   (window as unknown as ExtendedWindow).axios = axiosInstance;

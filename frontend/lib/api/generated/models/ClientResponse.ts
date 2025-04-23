@@ -18,6 +18,7 @@ export type ClientResponse = {
     orderCount?: number;
     phone?: string;
     source?: ClientResponse.source;
+    sourceDetails?: string;
     status?: ClientResponse.status;
     tags?: Array<string>;
     totalSpent?: number;

@@ -73,6 +73,11 @@ public class ClientResponse {
     private ClientSource source;
     
     /**
+     * Деталізація джерела залучення, коли вибрано "OTHER"
+     */
+    private String sourceDetails;
+    
+    /**
      * Дата народження
      */
     private LocalDate birthDate;

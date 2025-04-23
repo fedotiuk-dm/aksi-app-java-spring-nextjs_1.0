@@ -17,3 +17,11 @@ databaseChangeLog:
       file: db/changelog/db.changelog-orders-indexes.yaml
   - include:
       file: db/changelog/domains/catalog/db.changelog-materials-categories-1.0.yaml
+  - include:
+      file: db/changelog/domains/catalog/db.changelog-item-attributes-1.0.yaml
+  - include:
+      file: db/changelog/db.changelog-clients-source-details.yaml
+  - include:
+      file: db/changelog/db.changelog-order-item-photos.yaml
+  - include:
+      file: db/changelog/db.changelog-order-drafts.yaml

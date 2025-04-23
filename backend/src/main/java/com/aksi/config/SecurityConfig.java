@@ -53,7 +53,8 @@ public class SecurityConfig {
             JwtAuthenticationFilter jwtAuthFilter = new JwtAuthenticationFilter(jwtUtils, userDetailsService());
             
             // Відкриваємо всі API, Swagger, Actuator у dev
-            String activeProfile = System.getProperty("spring.profiles.active", "dev");
+            String activeProfile = System.getProperty("spring.profiles.active", 
+                    System.getenv("SPRING_PROFILES_ACTIVE") != null ? System.getenv("SPRING_PROFILES_ACTIVE") : "dev");
             if ("dev".equals(activeProfile)) {
                 http
                     .cors(cors -> cors.configurationSource(corsConfigurationSource()))
