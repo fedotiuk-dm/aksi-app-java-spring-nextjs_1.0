@@ -1,0 +1,488 @@
+/**
+ * Форма з характеристиками предмета замовлення (Підетап 2.2)
+ * Дозволяє вибрати матеріал, колір, наповнювач та ступінь зносу
+ */
+import React, { FC, useState, useEffect } from 'react';
+import { Controller } from 'react-hook-form';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Radio,
+  RadioGroup,
+  Select,
+  TextField,
+  Typography,
+  CircularProgress,
+  Alert,
+} from '@mui/material';
+
+// Імпорт хуків та типів
+import { 
+  useItemPropertiesForm, 
+  ItemPropertiesFormValues 
+} from '@/features/order-wizard/hooks/useItemPropertiesForm';
+
+// Імпорт API хуків для отримання реальних даних
+import {
+  useColors,
+  useWearDegrees,
+  useMaterialsByCategory,
+  useCategoryNeedsFilling,
+  useFillings
+} from '@/features/order-wizard/api/hooks/useItemAttributes';
+
+export interface ItemPropertiesFormProps {
+  initialValues?: Partial<ItemPropertiesFormValues>;
+  onSubmit: (values: ItemPropertiesFormValues) => void;
+  onBack: () => void;
+  isSubmitting?: boolean;
+  categoryId: string;
+}
+
+/**
+ * Форма з характеристиками предмета замовлення (Підетап 2.2)
+ */
+export const ItemPropertiesForm: FC<ItemPropertiesFormProps> = ({
+  initialValues,
+  onSubmit,
+  onBack,
+  isSubmitting = false,
+  categoryId,
+}) => {
+  // Хук для роботи з формою
+  const {
+    control,
+    errors,
+    handleFormSubmit,
+    watch,
+    setValue,
+    trigger,
+    getValues,
+  } = useItemPropertiesForm({
+    initialValues,
+    onSubmit,
+    categoryId,
+  });
+
+  // Отримання всіх атрибутів через API
+  const { colors, isLoading: colorsLoading, error: colorsError } = useColors();
+  const { wearDegrees, isLoading: wearDegreesLoading, error: wearDegreesError } = useWearDegrees();
+  const { materials, isLoading: materialsLoading, error: materialsError } = useMaterialsByCategory(categoryId);
+  const { needsFilling, isLoading: needsFillingLoading, error: needsFillingError } = useCategoryNeedsFilling(categoryId);
+  const { fillings, isLoading: fillingsLoading, error: fillingsError } = useFillings();
+
+  // Отримуємо поточні значення для умовного рендерингу
+  const colorValue = watch('color');
+  const materialValue = watch('materialType');
+  const fillingValue = watch('filling');
+  const wearDegreeValue = watch('wearDegree');
+  const showCustomColorField = colorValue === 'custom';
+  const showFillingFields = needsFilling;
+  
+  // Додаємо стан для відслідковування валідності форми
+  const [isFormValid, setIsFormValid] = useState(false);
+  
+  // Оновлюємо стан кнопки при зміні значень полів
+  useEffect(() => {
+    // Перевірка наявності матеріалу та кольору
+    const hasMaterial = !!materialValue;
+    const hasColor = !!colorValue;
+    const hasCustomColor = colorValue === 'custom' ? !!watch('customColor') : true;
+    const hasFilling = showFillingFields ? !!fillingValue : true;
+    const hasWearDegree = !!wearDegreeValue;
+
+    // Готуємо інформацію для відлагодження
+    // Логуємо значення для відлагодження
+    console.log('Form values:', { 
+      material: materialValue, 
+      color: colorValue, 
+      customColor: watch('customColor'),
+      filling: fillingValue,
+      wearDegree: wearDegreeValue,
+      needsFilling: showFillingFields,
+      validationState: { hasMaterial, hasColor, hasCustomColor, hasFilling, hasWearDegree }
+    });
+
+    // Встановлюємо стан кнопки
+    const isValid = hasMaterial && hasColor && hasCustomColor && hasFilling && hasWearDegree;
+    setIsFormValid(isValid);
+    
+    // Запускаємо валідацію форми
+    trigger();
+  }, [materialValue, colorValue, fillingValue, wearDegreeValue, watch, showFillingFields, trigger]);
+
+  // Показуємо індикатор завантаження, якщо дані ще не отримано
+  if (colorsLoading || wearDegreesLoading || materialsLoading || needsFillingLoading || (showFillingFields && fillingsLoading)) {
+    return (
+      <Paper elevation={2} sx={{ p: 3, mb: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+        <CircularProgress />
+        <Typography variant="body1" sx={{ ml: 2 }}>
+          Завантаження даних характеристик...
+        </Typography>
+      </Paper>
+    );
+  }
+
+  // Показуємо помилку, якщо є
+  const apiError = colorsError || wearDegreesError || materialsError || needsFillingError || (showFillingFields && fillingsError);
+  if (apiError) {
+    return (
+      <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h6" color="error" gutterBottom>
+          Помилка завантаження даних
+        </Typography>
+        <Typography variant="body1">
+          {apiError}
+        </Typography>
+        <Button 
+          variant="outlined" 
+          onClick={onBack} 
+          sx={{ mt: 2 }}
+        >
+          Назад
+        </Button>
+      </Paper>
+    );
+  }
+
+  // Перевіряємо наявність необхідних даних
+  if (!colors.length || !wearDegrees.length || !materials.length || (showFillingFields && !fillings.length)) {
+    return (
+      <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Деякі потрібні дані недоступні. Перевірте налаштування бази даних.
+        </Alert>
+        <Typography variant="body1">
+          Доступні дані:
+          <ul>
+            <li>Кольори: {colors.length}</li>
+            <li>Ступені зносу: {wearDegrees.length}</li>
+            <li>Матеріали для категорії: {materials.length}</li>
+            {showFillingFields && <li>Наповнювачі: {fillings.length}</li>}
+          </ul>
+        </Typography>
+        <Button 
+          variant="outlined" 
+          onClick={onBack} 
+          sx={{ mt: 2 }}
+        >
+          Назад
+        </Button>
+      </Paper>
+    );
+  }
+
+  return (
+    <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+      <Typography variant="h6" gutterBottom>
+        Характеристики предмета
+      </Typography>
+
+      <form onSubmit={handleFormSubmit}>
+        <Grid container spacing={3}>
+          {/* Матеріал */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Controller
+              name="materialType"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.materialType}>
+                  <InputLabel id="material-label">Матеріал</InputLabel>
+                  <Select
+                    {...field}
+                    labelId="material-label"
+                    label="Матеріал"
+                    onChange={(e) => {
+                      // Явно встановлюємо значення з валідацією
+                      const value = e.target.value;
+                      if (value) {
+                        setValue('materialType', value, { 
+                          shouldValidate: true, 
+                          shouldDirty: true, 
+                          shouldTouch: true 
+                        });
+                        trigger();
+                      }
+                    }}
+                  >
+                    {materials.map((material) => (
+                      <MenuItem key={material.id} value={material.id || ''}>
+                        {material.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.materialType && (
+                    <FormHelperText>{errors.materialType.message}</FormHelperText>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
+
+          {/* Ступінь зносу */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Box sx={{ mb: 2 }}>
+              <Typography id="wear-degree-label" gutterBottom>
+                Ступінь зносу
+              </Typography>
+              <Controller
+                name="wearDegree"
+                control={control}
+                render={({ field }) => (
+                  <Box>
+                    <RadioGroup
+                      {...field}
+                      row
+                      aria-labelledby="wear-degree-label"
+                      name="wearDegree"
+                      value={field.value?.toString() || '10'}
+                      onChange={(e) => {
+                        // Встановлюємо значення явно через setValue для кращої реактивності
+                        const value = parseInt(e.target.value, 10);
+                        setValue('wearDegree', value, { 
+                          shouldValidate: true, 
+                          shouldDirty: true, 
+                          shouldTouch: true 
+                        });
+                        trigger();
+                      }}
+                    >
+                      {wearDegrees.map((option) => (
+                        <FormControlLabel
+                          key={option.id}
+                          value={option.id?.toString() || ''}
+                          control={<Radio />}
+                          label={option.name ? `${option.name} - ${option.description || ''}` : ''}
+                        />
+                      ))}
+                    </RadioGroup>
+                    {errors.wearDegree && (
+                      <FormHelperText error>{errors.wearDegree.message}</FormHelperText>
+                    )}
+                  </Box>
+                )}
+              />
+            </Box>
+          </Grid>
+
+          {/* Колір */}
+          <Grid size={{ xs: 12 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              Колір
+            </Typography>
+            <Controller
+              name="color"
+              control={control}
+              render={({ field }) => (
+                <FormControl component="fieldset" error={!!errors.color}>
+                  <RadioGroup
+                    {...field}
+                    aria-label="color"
+                    row
+                    sx={{ 
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+                      gap: 1,
+                    }}
+                    onChange={(e) => {
+                      // Встановлюємо значення явно через setValue для кращої реактивності
+                      const value = e.target.value;
+                      setValue('color', value, { 
+                        shouldValidate: true, 
+                        shouldDirty: true, 
+                        shouldTouch: true 
+                      });
+                      
+                      // Якщо вибрано не "custom", очищаємо поле кастомного кольору
+                      if (value !== 'custom') {
+                        setValue('customColor', '', { shouldValidate: true });
+                      }
+                      
+                      trigger();
+                    }}
+                  >
+                    {colors.map((color) => (
+                      <FormControlLabel
+                        key={color.id}
+                        value={color.id || ''}
+                        control={
+                          <Radio 
+                            sx={{
+                              '& .MuiSvgIcon-root': {
+                                color: color.hex || '#CCCCCC',
+                                border: (!color.hex || color.hex === '#FFFFFF') ? '1px solid #ccc' : 'none',
+                              }
+                            }}
+                          />
+                        }
+                        label={color.name}
+                      />
+                    ))}
+                    <FormControlLabel
+                      value="custom"
+                      control={<Radio />}
+                      label="Інший (вказати)"
+                    />
+                  </RadioGroup>
+                  {errors.color && (
+                    <FormHelperText>{errors.color.message}</FormHelperText>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
+
+          {/* Кастомний колір (якщо вибрано "Інший") */}
+          {showCustomColorField && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Controller
+                name="customColor"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Вкажіть колір"
+                    fullWidth
+                    error={!!errors.customColor}
+                    helperText={errors.customColor?.message}
+                    onChange={(e) => {
+                      // Встановлюємо значення явно через setValue для кращої реактивності
+                      const value = e.target.value;
+                      setValue('customColor', value, { 
+                        shouldValidate: true, 
+                        shouldDirty: true, 
+                        shouldTouch: true 
+                      });
+                      trigger();
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+          )}
+
+          {/* Наповнювач (якщо потрібен для категорії) */}
+          {showFillingFields && (
+            <>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Controller
+                  name="filling"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControl fullWidth error={!!errors.filling}>
+                      <InputLabel id="filling-label">Наповнювач</InputLabel>
+                      <Select
+                        {...field}
+                        labelId="filling-label"
+                        label="Наповнювач"
+                        onChange={(e) => {
+                          // Явно встановлюємо значення з валідацією
+                          const value = e.target.value;
+                          if (value) {
+                            setValue('filling', value, { 
+                              shouldValidate: true, 
+                              shouldDirty: true, 
+                              shouldTouch: true 
+                            });
+                            trigger();
+                          }
+                        }}
+                      >
+                        {fillings.map((filling) => (
+                          <MenuItem key={filling.id} value={filling.id || ''}>
+                            {filling.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errors.filling && (
+                        <FormHelperText>{errors.filling.message}</FormHelperText>
+                      )}
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+
+              {/* Чекбокс для "Збитий наповнювач" */}
+              <Grid size={{ xs: 12 }}>
+                <Controller
+                  name="isFillingFlattened"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          {...field}
+                          checked={field.value === true}
+                          onChange={(e) => {
+                            // Встановлюємо значення явно через setValue для кращої реактивності
+                            setValue('isFillingFlattened', e.target.checked, { 
+                              shouldValidate: false 
+                            });
+                          }}
+                        />
+                      }
+                      label="Збитий наповнювач"
+                    />
+                  )}
+                />
+              </Grid>
+            </>
+          )}
+
+          {/* Дебаг-інформація */}
+          <Grid size={{ xs: 12 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 2, mb: 1, display: 'block' }}>
+              Стан форми: {isFormValid ? 'валідна' : 'невалідна'} 
+              | Матеріал: {materialValue || 'не вибрано'} 
+              | Колір: {colorValue || 'не вибрано'} 
+              | Ступінь зносу: {wearDegreeValue || 'не вибрано'}
+              {showFillingFields && ` | Наповнювач: ${fillingValue || 'не вибрано'}`}
+            </Typography>
+          </Grid>
+          
+          {/* Кнопки дій */}
+          <Grid size={{ xs: 12 }} sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+            <Button 
+              onClick={onBack} 
+              variant="outlined"
+            >
+              Назад
+            </Button>
+            
+            {isFormValid ? (
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={isSubmitting}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('Відправляємо форму з даними:', getValues());
+                  handleFormSubmit();
+                }}
+              >
+                {isSubmitting ? 'Завантаження...' : 'Продовжити'}
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={true}
+              >
+                Продовжити
+              </Button>
+            )}
+          </Grid>
+        </Grid>
+      </form>
+    </Paper>
+  );
+};

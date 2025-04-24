@@ -2,7 +2,7 @@
  * Форма з базовою інформацією про предмет замовлення (Підетап 2.1)
  * Дозволяє вибрати категорію послуги, найменування виробу та одиницю виміру з кількістю
  */
-import React, { FC } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import {
   Box,
@@ -36,15 +36,17 @@ export const BasicItemInfoForm: FC<BasicItemInfoFormProps> = ({
   onSubmit,
   isSubmitting = false,
 }) => {
+  // Додаємо стан для відслідковування валідності форми
+  const [isFormValid, setIsFormValid] = useState(false);
   // Хук для роботи з формою
   const {
     control,
     setValue,
     errors,
-    isValid,
     handleFormSubmit,
-    categoryId,
-    priceListItemId,
+    watch,
+    getValues,
+    trigger
   } = useBasicItemForm({
     initialValues,
     onSubmit,
@@ -58,14 +60,36 @@ export const BasicItemInfoForm: FC<BasicItemInfoFormProps> = ({
     itemsLoading,
     itemUnitOfMeasurement,
   } = useItemFormLogic({
-    categoryId,
-    priceListItemId,
+    categoryId: watch('categoryId'),
+    priceListItemId: watch('priceListItemId'),
     // Створюємо адаптер для setValue щоб узгодити типи
     setValue: (name, value) => {
       // @ts-ignore - розбіжність типів між React Hook Form і кастомним хуком
       setValue(name, value);
     },
   });
+
+  // Спостерігаємо за зміною поля категорії та найменування
+  const categoryId = watch('categoryId');
+  const itemId = watch('priceListItemId');
+  
+  // Оновлюємо стан валідності форми при зміні основних полів
+  useEffect(() => {
+    // Перевіряємо два основних поля
+    const hasCategory = !!categoryId;
+    const hasItem = !!itemId;
+    const hasQuantity = !!watch('quantity');
+    const formValid = hasCategory && hasItem && hasQuantity;
+    
+    console.log('Form validation status:', { hasCategory, hasItem, hasQuantity, formValid });
+    console.log('Current values:', { categoryId, itemId, quantity: watch('quantity') });
+    
+    // Оновлюємо стан валідності
+    setIsFormValid(formValid);
+    
+    // Викликаємо валідацію форми для оновлення стану помилок
+    trigger();
+  }, [categoryId, itemId, watch, trigger]);
 
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
@@ -88,12 +112,33 @@ export const BasicItemInfoForm: FC<BasicItemInfoFormProps> = ({
                     labelId="category-label"
                     label="Категорія"
                     disabled={categoriesLoading}
+                    MenuProps={{
+                      style: { maxHeight: 300 },
+                      anchorOrigin: {
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      },
+                      transformOrigin: {
+                        vertical: 'top',
+                        horizontal: 'left',
+                      },
+                    }}
                   >
-                    {categories.map((category) => (
-                      <MenuItem key={category.id} value={category.id}>
-                        {category.name}
+                    {categoriesLoading ? (
+                      <MenuItem disabled value="">
+                        Завантаження категорій...
                       </MenuItem>
-                    ))}
+                    ) : categories.length === 0 ? (
+                      <MenuItem disabled value="">
+                        Немає доступних категорій
+                      </MenuItem>
+                    ) : (
+                      categories.map((category) => (
+                        <MenuItem key={category.id} value={category.id}>
+                          {category.name}
+                        </MenuItem>
+                      ))
+                    )}
                   </Select>
                   {errors.categoryId && (
                     <FormHelperText>{errors.categoryId.message}</FormHelperText>
@@ -116,12 +161,47 @@ export const BasicItemInfoForm: FC<BasicItemInfoFormProps> = ({
                     labelId="item-name-label"
                     label="Найменування"
                     disabled={!categoryId || itemsLoading}
+                    MenuProps={{ 
+                      // Налаштування для кращої роботи випадаючого списку
+                      style: { maxHeight: 300 },
+                      anchorOrigin: {
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                      },
+                      transformOrigin: {
+                        vertical: 'top',
+                        horizontal: 'left',
+                      },
+                    }}
                   >
-                    {priceListItems.map((item) => (
-                      <MenuItem key={item.id} value={item.id}>
-                        {item.name}
+                    {priceListItems.length === 0 ? (
+                      <MenuItem disabled value="">
+                        {itemsLoading ? 'Завантаження...' : 'Немає доступних предметів'}
                       </MenuItem>
-                    ))}
+                    ) : (
+                      priceListItems.map((item) => (
+                        <MenuItem 
+                          key={item.id} 
+                          value={item.id}
+                          onClick={() => {
+                            // Явно встановлюємо значення при кліку
+                            if (item.id) {
+                              setValue('priceListItemId', item.id, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+                            }
+                            // Запускаємо валідацію всіх полів
+                            trigger();
+                            console.log('Item selected:', item.id, item.name);
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                            <Typography variant="body1">{item.name}</Typography>
+                            <Typography variant="body2" color="primary.main" fontWeight="bold">
+                              {item.basePrice ? `${item.basePrice} ₴` : ''}
+                            </Typography>
+                          </Box>
+                        </MenuItem>
+                      ))
+                    )}
                   </Select>
                   {errors.priceListItemId && (
                     <FormHelperText>{errors.priceListItemId.message}</FormHelperText>
@@ -191,17 +271,39 @@ export const BasicItemInfoForm: FC<BasicItemInfoFormProps> = ({
             )}
           />
 
-          {/* Кнопки дій */}
+          {/* Дебаг-інформація */}
+          <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
+            <Typography variant="caption" color="text.secondary">
+              Стан форми: {isFormValid ? 'валідна' : 'невалідна'} | 
+              Категорія: {categoryId || 'не вибрана'} | 
+              Предмет: {itemId || 'не вибраний'}
+            </Typography>
+          </Grid>
+          
+          {/* Кнопка відправки форми */}
           <Grid size={{ xs: 12 }} sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={!isValid || isSubmitting}
-              sx={{ position: 'relative' }}
-            >
-              {isSubmitting ? 'Завантаження...' : 'Продовжити'}
-            </Button>
+            {isFormValid ? (
+              <Button 
+                type="submit" 
+                variant="contained" 
+                color="primary" 
+                disabled={isSubmitting}
+                onClick={() => {
+                  console.log('Submit button clicked with values:', getValues());
+                  handleFormSubmit();
+                }}
+              >
+                Продовжити (активна)
+              </Button>
+            ) : (
+              <Button 
+                variant="contained" 
+                color="primary" 
+                disabled
+              >
+                Продовжити (неактивна)
+              </Button>
+            )}
           </Grid>
         </Grid>
       </form>

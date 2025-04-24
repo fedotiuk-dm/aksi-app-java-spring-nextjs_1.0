@@ -43,19 +43,30 @@ export const basicItemSchema = z.object({
 });
 
 /**
- * Схема для характеристик предмета
+ * Схема для характеристик предмета (підетап 2.2)
  */
 export const itemPropertiesSchema = z.object({
-  // Матеріал (необов'язковий, але якщо є, то має бути не пустим)
-  material: z.string().min(1, { message: 'Матеріал не може бути пустим' }).optional(),
+  // Матеріал (обов'язковий, залежить від категорії)
+  materialType: z.string().min(1, { message: 'Потрібно вибрати матеріал' }),
   
-  // Колір (необов'язковий, але якщо є, то має бути не пустим)
-  color: z.string().min(1, { message: 'Колір не може бути пустим' }).optional(),
+  // Колір (обов'язковий)
+  color: z.string().min(1, { message: 'Потрібно вказати колір' }),
   
-  // Наповнювач
+  // Кастомний колір (необов'язковий)
+  customColor: z.string().optional(),
+  
+  // Наповнювач (необов'язковий, тільки для деяких категорій)
+  filling: z.string().optional(),
+  
+  // Чи збитий наповнювач
+  isFillingFlattened: z.boolean().default(false).optional(),
+  
+  // Ступінь зносу (у відсотках: 10, 30, 50, 75)
+  wearDegree: z.number().min(0).max(100).default(10),
+  
+  // Зберігаємо старі поля для сумісності
+  material: z.string().optional(),
   filler: z.string().optional(),
-  
-  // Спеціальні властивості предмета
   childSized: z.boolean().optional(),
   clumpedFiller: z.boolean().optional(),
   manualCleaning: z.boolean().optional(),

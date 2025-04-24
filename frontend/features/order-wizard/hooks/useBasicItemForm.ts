@@ -36,6 +36,8 @@ export const useBasicItemForm = ({ initialValues, onSubmit }: UseBasicItemFormPr
     handleSubmit,
     watch,
     setValue,
+    getValues,
+    trigger,
     formState: { errors, isValid },
   } = useForm<FormValues>({
     // @ts-ignore - zodResolver має несумісність типів, але працює коректно
@@ -82,6 +84,9 @@ export const useBasicItemForm = ({ initialValues, onSubmit }: UseBasicItemFormPr
     errors,
     isValid,
     handleFormSubmit,
+    watch,
+    getValues,
+    trigger,
     categoryId,
     priceListItemId,
   };

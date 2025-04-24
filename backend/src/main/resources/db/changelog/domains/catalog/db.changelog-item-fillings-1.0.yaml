@@ -1,0 +1,210 @@
+databaseChangeLog:
+  # Зміни для таблиці наповнювачів (fillings)
+  - changeSet:
+      id: 20250424-fillings-table
+      author: cascade
+      changes:
+        - createTable:
+            tableName: fillings
+            remarks: Таблиця для зберігання наповнювачів предметів
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_fillings
+                    nullable: false
+                  remarks: Унікальний ідентифікатор наповнювача
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                  remarks: Назва наповнювача
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_fillings_code
+                  remarks: Код наповнювача для системної ідентифікації
+              - column:
+                  name: sort_order
+                  type: int
+                  constraints:
+                    nullable: false
+                  remarks: Порядок сортування для відображення
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+                  remarks: Флаг активності наповнювача
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+                  remarks: Дата створення запису
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+                  remarks: Дата останнього оновлення запису
+
+  # Зміни для таблиці вимог категорій до наповнювачів
+  - changeSet:
+      id: 20250424-category-filling-requirements-table
+      author: cascade
+      changes:
+        - createTable:
+            tableName: category_filling_requirements
+            remarks: Таблиця для визначення, які категорії потребують наповнювача
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_category_filling_requirements
+                    nullable: false
+                  remarks: Унікальний ідентифікатор запису
+              - column:
+                  name: category_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_category_filling_req_category_id
+                    foreignKeyName: fk_category_filling_req_category
+                    references: service_categories(id)
+                  remarks: Ідентифікатор категорії послуг
+              - column:
+                  name: needs_filling
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                  remarks: Флаг необхідності наповнювача для даної категорії
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+                  remarks: Дата створення запису
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+                  remarks: Дата останнього оновлення запису
+
+  # Додаємо наповнювачі за замовчуванням
+  - changeSet:
+      id: 20250424-default-fillings
+      author: cascade
+      changes:
+        - insert:
+            tableName: fillings
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Пух
+              - column:
+                  name: code
+                  value: down
+              - column:
+                  name: sort_order
+                  value: 10
+        - insert:
+            tableName: fillings
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Синтепон
+              - column:
+                  name: code
+                  value: synthetic
+              - column:
+                  name: sort_order
+                  value: 20
+        - insert:
+            tableName: fillings
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Бавовна
+              - column:
+                  name: code
+                  value: cotton
+              - column:
+                  name: sort_order
+                  value: 30
+        - insert:
+            tableName: fillings
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Поролон
+              - column:
+                  name: code
+                  value: foam
+              - column:
+                  name: sort_order
+                  value: 40
+        - insert:
+            tableName: fillings
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: Інше
+              - column:
+                  name: code
+                  value: other
+              - column:
+                  name: sort_order
+                  value: 50
+
+  # Додаємо приклади категорій, які потребують наповнювач
+  - changeSet:
+      id: 20250424-default-category-filling-requirements
+      author: cascade
+      changes:
+        - sql:
+            splitStatements: true
+            sql: |
+              -- Категорії, які потребують наповнювач
+              INSERT INTO category_filling_requirements (id, category_id, needs_filling)
+              SELECT gen_random_uuid(), id, true 
+              FROM service_categories 
+              WHERE code IN ('coat', 'blanket', 'pillow', 'comforter', 'jacket');
+
+              -- Додаємо ще кілька категорій, які не потребують наповнювачі
+              INSERT INTO category_filling_requirements (id, category_id, needs_filling)
+              SELECT gen_random_uuid(), id, false 
+              FROM service_categories 
+              WHERE code IN ('shirt', 'trousers', 'dress', 'suit')
+              AND NOT EXISTS (SELECT 1 FROM category_filling_requirements WHERE category_id = service_categories.id);

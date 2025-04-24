@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { PriceListService, ServiceCategoryDto } from '@/lib/api';
 
 /**
@@ -23,6 +23,11 @@ export const useServiceCategories = () => {
       setIsLoading(false);
     }
   }, []);
+  
+  // Автоматично завантажуємо категорії при ініціалізації
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   return {
     categories,

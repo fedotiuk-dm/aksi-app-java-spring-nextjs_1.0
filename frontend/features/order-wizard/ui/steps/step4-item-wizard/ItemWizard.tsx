@@ -4,12 +4,14 @@
  */
 import { FC, useState } from 'react';
 import { BasicItemInfoForm } from './BasicItemInfoForm';
+import { ItemPropertiesForm } from './ItemPropertiesForm';
 import { z } from 'zod';
-import { basicItemSchema } from '@/features/order-wizard/model/schema';
-import { Box, Paper, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { basicItemSchema, itemPropertiesSchema } from '@/features/order-wizard/model/schema';
+import { Box, Paper, Step, StepLabel, Stepper, Typography, Button } from '@mui/material';
 
 // Типи форми, з використанням zod-схеми
 type BasicItemFormValues = z.infer<typeof basicItemSchema>;
+type ItemPropertiesFormValues = z.infer<typeof itemPropertiesSchema>;
 
 export interface ItemWizardProps {
   // Початкові значення для форми (при редагуванні)
@@ -66,24 +68,52 @@ export const ItemWizard: FC<ItemWizardProps> = ({
   const [activeStep, setActiveStep] = useState(0);
   
   // Стан для зберігання даних з форм
-  const [formData, setFormData] = useState<Partial<BasicItemFormValues>>(initialValues || {});
+  const [formData, setFormData] = useState<Partial<BasicItemFormValues & ItemPropertiesFormValues>>(initialValues || {});
   
   // Стан завантаження під час збереження
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-
-
-  // Обробники навігації між кроками
+  // Функція для переходу до наступного кроку
   const handleNext = () => {
-    setActiveStep((prev) => Math.min(prev + 1, ITEM_WIZARD_STEPS.length - 1));
+    const canMoveNext = validateCurrentStep();
+    if (canMoveNext) {
+      setActiveStep((prevStep) => prevStep + 1);
+    }
+  };
+
+  // Функція для валідації поточного кроку перед переходом
+  const validateCurrentStep = (): boolean => {
+    // Перевіряємо, чи заповнені необхідні поля на поточному кроці
+    switch(activeStep) {
+      // Базова інформація - перевіряємо, чи вибрані категорія та послуга
+      case 0:
+        return !!(formData.categoryId && formData.priceListItemId);
+      
+      // Інші кроки поки не потребують додаткової валідації
+      default:
+        return true;
+    }
   };
 
   const handleBack = () => {
     setActiveStep((prev) => Math.max(prev - 1, 0));
   };
 
-  // Обробник для збереження даних з першого кроку (базова інформація)
+  // Обробники відправки форм різних етапів
   const handleBasicInfoSubmit = (values: BasicItemFormValues) => {
+    // Зберігаємо дані з форми
+    setFormData({ ...formData, ...values });
+    
+    // Якщо вибрано категорію та послугу, переходимо до наступного кроку
+    if (values.categoryId && values.priceListItemId) {
+      handleNext();
+    } else {
+      console.warn('Потрібно вибрати категорію та послугу перед переходом до наступного кроку');
+    }
+  };
+  
+  // Обробник для збереження даних з другого кроку (характеристики)
+  const handlePropertiesSubmit = (values: ItemPropertiesFormValues) => {
     // Зберігаємо дані з форми
     setFormData((prev) => ({
       ...prev,
@@ -109,7 +139,7 @@ export const ItemWizard: FC<ItemWizardProps> = ({
   // Функція для відображення поточного кроку підвізарда
   const renderStep = () => {
     switch (activeStep) {
-      case 0:
+      case 0: // Базова інформація
         return (
           <BasicItemInfoForm
             initialValues={formData}
@@ -117,10 +147,21 @@ export const ItemWizard: FC<ItemWizardProps> = ({
             isSubmitting={isSubmitting}
           />
         );
-      case 1: // properties
-      case 2: // dirt
-      case 3: // pricing
-      case 4: // summary
+        
+      case 1: // Характеристики предмета
+        return (
+          <ItemPropertiesForm
+            initialValues={formData}
+            onSubmit={handlePropertiesSubmit}
+            onBack={handleBack}
+            isSubmitting={isSubmitting}
+            categoryId={formData.categoryId || ''}
+          />
+        );
+        
+      case 2: // dirt (забруднення)
+      case 3: // pricing (ціноутворення)
+      case 4: // summary (фотодокументація)
         // Тимчасове рішення для проміжних кроків: відображаємо заглушку
         return (
           <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
@@ -131,9 +172,9 @@ export const ItemWizard: FC<ItemWizardProps> = ({
               Цей крок буде реалізовано на наступних етапах розробки
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-              <button onClick={handleBack}>Назад</button>
-              <button onClick={handleNext}>Продовжити</button>
-              <button onClick={onCancel}>Скасувати</button>
+              <Button variant="outlined" onClick={handleBack}>Назад</Button>
+              <Button variant="contained" onClick={handleNext}>Продовжити</Button>
+              <Button color="error" variant="outlined" onClick={onCancel}>Скасувати</Button>
             </Box>
           </Paper>
         );
@@ -152,11 +193,25 @@ export const ItemWizard: FC<ItemWizardProps> = ({
               <Typography>Назва: {formData.name}</Typography>
               <Typography>Категорія: {formData.categoryId}</Typography>
               <Typography>Кількість: {formData.quantity}</Typography>
+              
+              {/* Додаємо відображення характеристик предмета */}
+              {formData.materialType && (
+                <Typography>Матеріал: {formData.materialType}</Typography>
+              )}
+              {formData.color && (
+                <Typography>Колір: {formData.color === 'custom' ? formData.customColor : formData.color}</Typography>
+              )}
+              {formData.wearDegree && (
+                <Typography>Ступінь зносу: {formData.wearDegree}%</Typography>
+              )}
+              {formData.filling && (
+                <Typography>Наповнювач: {formData.filling} {formData.isFillingFlattened ? '(збитий)' : ''}</Typography>
+              )}
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-              <button onClick={handleBack}>Назад</button>
-              <button onClick={handleFinalSubmit}>Зберегти предмет</button>
-              <button onClick={onCancel}>Скасувати</button>
+              <Button variant="outlined" onClick={handleBack}>Назад</Button>
+              <Button variant="contained" color="primary" onClick={handleFinalSubmit}>Зберегти предмет</Button>
+              <Button variant="outlined" color="error" onClick={onCancel}>Скасувати</Button>
             </Box>
           </Paper>
         );
