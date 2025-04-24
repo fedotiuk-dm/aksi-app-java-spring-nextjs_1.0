@@ -1,3 +1,6 @@
+/**
+ * Хуки для роботи з API клієнтів
+ */
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ClientsService } from '@/lib/api';
 import { ClientCreateRequest, 
@@ -13,6 +16,19 @@ export const useSearchClients = () => {
   return useMutation({
     mutationKey: ['searchClients'],
     mutationFn: async (request: ClientSearchRequest): Promise<PageClientResponse> => {
+      // Переконуємось, що використовується поле 'search', а не 'searchText'
+      if ('searchText' in request) {
+        // Якщо знайдено поле 'searchText', конвертуємо його в 'search'
+        const { searchText, ...rest } = request as unknown as { searchText: string } & Omit<ClientSearchRequest, 'search'>;
+        request = { ...rest, search: searchText } as ClientSearchRequest;
+      }
+      
+      // Додаткова перевірка на випадок, якщо request.searchQuery існує, але request.search не існує
+      if ('searchQuery' in request && !('search' in request)) {
+        const { searchQuery, ...rest } = request as unknown as { searchQuery: string } & Omit<ClientSearchRequest, 'search'>;
+        request = { ...rest, search: searchQuery } as ClientSearchRequest;
+      }
+      
       return await ClientsService.searchClients({ requestBody: request });
     }
   });

@@ -26,7 +26,23 @@ public class ClientDTO {
     /**
      * Ім'я клієнта
      */
-    private String name;
+    private String firstName;
+    
+    /**
+     * Прізвище клієнта
+     */
+    private String lastName;
+    
+    /**
+     * Отримати повне ім'я клієнта (прізвище + ім'я)
+     * @return Повне ім'я клієнта
+     */
+    public String getFullName() {
+        if (lastName == null && firstName == null) return "";
+        if (lastName == null) return firstName;
+        if (firstName == null) return lastName;
+        return lastName + " " + firstName;
+    }
     
     /**
      * Основний телефон

@@ -24,9 +24,18 @@ export const $ClientDTO = {
         email: {
             type: 'string',
         },
+        firstName: {
+            type: 'string',
+        },
+        fullName: {
+            type: 'string',
+        },
         id: {
             type: 'string',
             format: 'uuid',
+        },
+        lastName: {
+            type: 'string',
         },
         lastOrderDate: {
             type: 'string',
@@ -39,9 +48,6 @@ export const $ClientDTO = {
         loyaltyPoints: {
             type: 'number',
             format: 'int32',
-        },
-        name: {
-            type: 'string',
         },
         notes: {
             type: 'string',

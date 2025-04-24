@@ -9,11 +9,13 @@ export type ClientDTO = {
     birthDate?: string;
     createdAt?: string;
     email?: string;
+    firstName?: string;
+    fullName?: string;
     id?: string;
+    lastName?: string;
     lastOrderDate?: string;
     loyaltyLevel?: number;
     loyaltyPoints?: number;
-    name?: string;
     notes?: string;
     orderCount?: number;
     phone?: string;

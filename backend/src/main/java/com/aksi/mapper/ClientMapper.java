@@ -21,7 +21,8 @@ public interface ClientMapper {
      * @return DTO клієнта
      */
     @BeanMapping(ignoreByDefault = false)
-    @Mapping(target = "name", expression = "java(client.getLastName() + \" \" + client.getFirstName())")
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "active", expression = "java(client.getStatus() == com.aksi.domain.client.entity.ClientStatus.ACTIVE)")
     @Mapping(target = "source", expression = "java(client.getSource() != null ? client.getSource().name() : null)")
     @Mapping(target = "loyaltyLevel", expression = "java(client.getLoyaltyLevel() != null ? client.getLoyaltyLevel().ordinal() : 0)")

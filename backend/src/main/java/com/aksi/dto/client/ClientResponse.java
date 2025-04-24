@@ -30,10 +30,13 @@ public class ClientResponse {
     private UUID id;
     
     /**
-     * Повне ім'я клієнта
+     * Ім'я клієнта
      */
     private String firstName;
     
+    /**
+     * Прізвище клієнта
+     */
     private String lastName;
     
     /**

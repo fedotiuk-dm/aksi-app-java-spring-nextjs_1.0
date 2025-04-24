@@ -3,7 +3,7 @@
 import React from 'react';
 import { AuthGuard } from '@/features/auth/ui/AuthGuard';
 import { Container, Typography } from '@mui/material';
-import OrderWizard from '@/features/order-wizard/ui/OrderWizard';
+import { OrderWizard } from '@/features/order-wizard/OrderWizard';
 
 function OrderWizardContent() {
   return (

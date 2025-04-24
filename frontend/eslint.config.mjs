@@ -26,7 +26,7 @@ const eslintConfig = [
   
   // Налаштування для всіх файлів
   {
-    files: ["**/*.ts", "**/*.tsx"],
+    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
     ignores: ["**/lib/api/generated/**/*"], // Ігноруємо автогенеровані файли
     plugins: {
       "@typescript-eslint": tsPlugin,
@@ -45,6 +45,10 @@ const eslintConfig = [
       },
     },
     rules: {
+      // Глобальне правило, що забороняє імпорти напряму з директорії generated
+      "no-restricted-imports": ["error", {
+        "patterns": ["**/lib/api/generated/**"]
+      }],
       // Базові правила TypeScript
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
