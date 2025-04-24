@@ -55,10 +55,12 @@ export const orderItemUIToFormValues = (item: OrderItemUI): FullItemFormValues =
     id: item.id,
     localId: item.localId,
     name: item.name ?? '',
-    // Для форми нам потрібне categoryId, яке можна отримати з priceListItem якщо він є
+    // Для форми нам потрібне categoryId та priceListItemId
     categoryId: item.priceListItem?.categoryId ?? '',
+    // ID елемента прайс-листа
+    priceListItemId: item.priceListItemId ?? '',
     quantity: item.quantity ?? 1,
-    unitOfMeasurement: 'PIECE', // За замовчуванням використовуємо штуки
+    unitOfMeasurement: (item.unitOfMeasurement as 'PIECE' | 'KILOGRAM') ?? 'PIECE',
     
     // Властивості та характеристики
     material: item.material ?? '',

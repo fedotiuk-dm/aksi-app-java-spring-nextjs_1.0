@@ -22,6 +22,9 @@ export const basicItemSchema = z.object({
   // Категорія (обов'язкова)
   categoryId: z.string().min(1, { message: 'Потрібно вибрати категорію' }),
   
+  // ID елемента прайс-листа (обов'язковий)
+  priceListItemId: z.string().min(1, { message: 'Потрібно вибрати найменування виробу' }),
+  
   // Опис (необов'язковий)
   defectNotes: z.string().optional(),
   

@@ -1,10 +1,9 @@
-import { FC, useState } from 'react';
-import { useOrderWizardMachine } from './hooks/state';
-
-// Використовуємо імпорти через індексні файли згідно з Feature-Sliced Design
-import { ClientSelectionStep } from './ui/steps/step1-client-selection';
-import { BasicOrderInfoForm } from './ui/steps/step2-basic-info';
-import { ItemManager } from './ui/steps/step3-item-manager';
+/**
+ * Головний компонент OrderWizard
+ * Використовує Zustand store для управління станом і переходами 
+ */
+import { FC } from 'react';
+import { useOrderWizardStore, selectCurrentState, selectItemWizardState } from './model/store';
 
 // MUI компоненти
 import Box from '@mui/material/Box';
@@ -13,137 +12,107 @@ import Typography from '@mui/material/Typography';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
 
-/**
- * Головний компонент Order Wizard
- * 
- * Відповідає за відображення інтерфейсу для оформлення замовлень у хімчистці
- * з інтегрованою системою розрахунку цін, управлінням клієнтами
- * та формуванням квитанцій.
- */
-// Визначаємо типи станів візарда
-type WizardStep = 'clientSelection' | 'basicInfo' | 'itemManagement' | 'orderParams' | 'billing' | 'complete';
+// Кроки візарда
+import { ClientSelectionStep } from './ui/steps/step1-client-selection';
+import { BasicOrderInfoForm } from './ui/steps/step2-basic-info';
+import { ItemManager } from './ui/steps/step3-item-manager';
+import { ItemWizard } from './ui/steps/step4-item-wizard';
+import { OrderParamsStep } from './ui/steps/step5-order-params';
+import { BillingStep } from './ui/steps/step6-billing';
+import { CompletionStep } from './ui/steps/step7-completion';
 
+// Перетворення OrderItemUI на BasicItemFormValues
+import { orderItemUIToFormValues } from './lib/converters';
+
+/**
+ * Головний компонент візарда замовлення
+ */
 export const OrderWizard: FC = () => {
-  // Використовуємо React useState для керування етапами візарда
-  const [activeStep, setActiveStep] = useState<WizardStep>('clientSelection');
+  // Отримуємо стан та дії з Zustand store
+  const currentState = useOrderWizardStore(selectCurrentState);
+  const itemWizardState = useOrderWizardStore(selectItemWizardState);
+  const isInItemWizard = useOrderWizardStore(state => state.isInItemWizard());
+  const currentItem = useOrderWizardStore(state => state.currentItem);
   
-  // Використання XState машини станів для бізнес-логіки
-  const orderWizard = useOrderWizardMachine();
-  console.log('Поточний стан XState:', orderWizard.currentState);
-  console.log('Поточний активний крок React:', activeStep);
+  // Дії
+  const { 
+    goNext, 
+    goBack, 
+    saveItem, 
+    cancelItemEdit 
+  } = useOrderWizardStore();
   
-  // Опис етапів візарда
+  // Опис етапів
   const steps = [
     '1. Вибір клієнта',
     '2. Базова інформація',
     '3. Предмети замовлення',
     '4. Параметри замовлення',
     '5. Оплата',
-    '6. Завершення',
+    '6. Завершення'
   ];
   
-  // Визначення активного етапу для степера
+  // Рендеринг ItemWizard для додавання/редагування предмета
+  const renderItemWizard = () => {
+    // Конвертуємо дані з OrderItemUI у BasicItemFormValues для форми
+    const formValues = currentItem 
+      ? orderItemUIToFormValues(currentItem)
+      : undefined;
+    
+    return (
+      <ItemWizard
+        initialValues={formValues}
+        onSave={(item) => saveItem(item)}
+        onCancel={() => cancelItemEdit()}
+      />
+    );
+  };
+  
+  // Активний індекс для степера
   const getActiveStepIndex = () => {
-    switch (activeStep) {
-      case 'clientSelection':
-        return 0;
-      case 'basicInfo':
-        return 1;
-      case 'itemManagement':
-        return 2;
-      case 'orderParams':
-        return 3;
-      case 'billing':
-        return 4;
-      case 'complete':
-        return 5;
-      default:
-        return 0;
+    switch (currentState) {
+      case 'clientSelection': return 0;
+      case 'basicInfo': return 1;
+      case 'itemManagement': return 2;
+      case 'orderParams': return 3;
+      case 'billing': return 4;
+      case 'complete': return 5;
+      default: return 0;
     }
   };
   
-  // Функція для переходу до наступного кроку
-  const goToNextStep = () => {
-    console.log('Переходимо до наступного кроку від:', activeStep);
-    
-    switch (activeStep) {
-      case 'clientSelection':
-        setActiveStep('basicInfo');
-        break;
-      case 'basicInfo':
-        setActiveStep('itemManagement');
-        break;
-      case 'itemManagement':
-        setActiveStep('orderParams');
-        break;
-      case 'orderParams':
-        setActiveStep('billing');
-        break;
-      case 'billing':
-        setActiveStep('complete');
-        break;
-    }
-  };
-  
-  // Функція для повернення до попереднього кроку
-  const goToPreviousStep = () => {
-    console.log('Повертаємось до попереднього кроку від:', activeStep);
-    
-    switch (activeStep) {
-      case 'basicInfo':
-        setActiveStep('clientSelection');
-        break;
-      case 'itemManagement':
-        setActiveStep('basicInfo');
-        break;
-      case 'orderParams':
-        setActiveStep('itemManagement');
-        break;
-      case 'billing':
-        setActiveStep('orderParams');
-        break;
-      case 'complete':
-        setActiveStep('billing');
-        break;
-    }
-  };
-
-  // Відображення відповідного компонента в залежності від поточного стану
+  // Рендеринг контенту залежно від поточного стану
   const renderContent = () => {
-    console.log('Рендеримо компонент для кроку:', activeStep);
+    console.log('Рендеримо на основі стану:', currentState);
     
-    switch (activeStep) {
+    // Пріоритет 1: Якщо ми в режимі редагування предмета
+    if (isInItemWizard || itemWizardState !== 'idle') {
+      return renderItemWizard();
+    }
+    
+    // Пріоритет 2: По стану візарда
+    switch (currentState) {
       case 'clientSelection':
-        return <ClientSelectionStep onClientSelect={() => goToNextStep()} />;
+        return <ClientSelectionStep />;
+        
       case 'basicInfo':
         console.log('Рендеримо BasicOrderInfoForm');
-        return (
-          <BasicOrderInfoForm 
-            onNext={goToNextStep} 
-            onBack={goToPreviousStep} 
-          />
-        );
+        return <BasicOrderInfoForm onNext={goNext} onBack={goBack} />;
+        
       case 'itemManagement':
-        return (
-          <ItemManager
-            onNext={goToNextStep}
-            onBack={goToPreviousStep}
-          />
-        );
+        return <ItemManager onNext={goNext} onBack={goBack} />;
+        
       case 'orderParams':
+        return <OrderParamsStep onNext={goNext} onBack={goBack} />;
+        
       case 'billing':
+        return <BillingStep onNext={goNext} onBack={goBack} />;
+        
       case 'complete':
-        return (
-          <Paper elevation={3} sx={{ p: 3 }}>
-            <Typography variant="h6">Етап в розробці</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Цей етап буде реалізовано в наступних версіях...
-            </Typography>
-          </Paper>
-        );
+        return <CompletionStep />;
+        
       default:
         return (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}>
@@ -152,13 +121,12 @@ export const OrderWizard: FC = () => {
         );
     }
   };
-
-  // Рендеримо відповідний компонент
+  
   const content = renderContent();
   const stepperIndex = getActiveStepIndex();
   
-  console.log('Активний крок для степера:', stepperIndex, 'Для стану:', activeStep);
-
+  console.log('Активний крок для степера:', stepperIndex, 'Для стану:', currentState);
+  
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
@@ -174,9 +142,12 @@ export const OrderWizard: FC = () => {
           ))}
         </Stepper>
         
-        {/* Завжди показуємо поточний стан для діагностики */}
+        {/* Діагностична інформація про стан системи (лише для розробки) */}
         <Box sx={{ mb: 2, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
-          <Typography variant="caption">Поточний крок візарда: <strong>{activeStep}</strong></Typography>
+          <Typography variant="caption" component="div">
+            Стан Zustand: <strong>{currentState}</strong>
+            {isInItemWizard && <span> | <strong>В режимі товару</strong></span>}
+          </Typography>
         </Box>
         
         {content}

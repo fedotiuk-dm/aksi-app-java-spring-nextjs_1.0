@@ -2,8 +2,8 @@
  * Головний екран менеджера предметів замовлення (Етап 2.0)
  * Відповідає за відображення списку предметів та перехід до етапу додавання/редагування
  */
-import { FC, useState } from 'react';
-import { useOrderWizardMachine } from '@/features/order-wizard/hooks/state';
+import { FC, useState, useCallback } from 'react';
+import { useOrderWizard } from '@/features/order-wizard/hooks/state';
 
 // MUI компоненти
 import Box from '@mui/material/Box';
@@ -29,16 +29,29 @@ interface ItemManagerProps {
  */
 export const ItemManager: FC<ItemManagerProps> = ({ onNext, onBack }) => {
   // Отримуємо дані з машини станів
-  const { actions, items, client, orderData } = useOrderWizardMachine();
+  const { actions, items, client, orderData } = useOrderWizard();
   
-  // Локальний стан для відстеження завантаження
+  // Локальний стан для відстеження завантаження і примусового оновлення
   const [isLoading] = useState(false);
+  const [, forceRender] = useState<boolean>();
+  
+  // Функція для примусового оновлення компонента
+  const forceUpdate = useCallback(() => {
+    forceRender((prev) => !prev);
+  }, []);
   
   // Обробник додавання нового предмета
   const handleAddItem = () => {
     console.log('Додавання нового предмета');
+    
+    // Відправляємо подію до XState
     actions.addItem();
-    // Тут відбудеться перехід до підвізарду предметів через XState
+    
+    // Змушуємо React перерендерити компонент
+    // Це допоможе коректно відобразити ItemWizard після зміни стану
+    forceUpdate();
+  
+    // Ми використовуємо цей підхід замість перезавантаження сторінки
   };
   
   // Обробник редагування існуючого предмета

@@ -12,7 +12,7 @@ import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { basicOrderInfoSchema } from '@/features/order-wizard/model/schema/order.schema';
 import { useReceptionPoints } from '@/features/order-wizard/api';
-import { useOrderWizardMachine } from '@/features/order-wizard/hooks/state';
+import { useOrderWizard } from '@/features/order-wizard/hooks/state';
 import { basicInfoToOrderCreateRequest } from '@/features/order-wizard/model/adapters/order.adapters';
 import { clientDtoToUI } from '@/features/order-wizard/model/adapters/client.adapters';
 import dayjs from 'dayjs';
@@ -35,7 +35,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export const BasicOrderInfoForm: FC<BasicOrderInfoFormProps> = ({ onNext, onBack }) => {
   // Отримання даних про клієнта з машини станів
-  const { actions, client } = useOrderWizardMachine();
+  const { actions, client } = useOrderWizard();
   
   // Отримання списку пунктів прийому
   const { data: receptionPoints, isLoading: isLoadingReceptionPoints } = useReceptionPoints();
@@ -77,8 +77,8 @@ export const BasicOrderInfoForm: FC<BasicOrderInfoFormProps> = ({ onNext, onBack
     // Конвертація даних форми у частину OrderCreateRequest
     const orderData = basicInfoToOrderCreateRequest(formData);
     
-    // Відправка події в машину станів
-    actions.saveBasicInfo(orderData);
+    // Збереження даних у стор Zustand
+    actions.setOrderBasicInfo(orderData);
     console.log('Збережено базову інформацію замовлення');
     
     // Переходимо до наступного кроку через пропс onNext

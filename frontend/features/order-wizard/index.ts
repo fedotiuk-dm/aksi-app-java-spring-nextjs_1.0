@@ -7,7 +7,7 @@
 export { OrderWizard } from './OrderWizard';
 
 // Хуки для роботи зі станом візарда
-export { useOrderWizardMachine } from './hooks/state/useOrderWizardMachine';
+export { useOrderWizard as useOrderWizardMachine } from './hooks/state';
 
 // Типи даних для використання в інших модулях
 export * from './model/types/wizard.types';
