@@ -1,7 +1,10 @@
 import { FC, useState } from 'react';
 import { useOrderWizardMachine } from './hooks/state';
-import { ClientSelectionStep } from './ui/steps/step1-client-selection/ClientSelectionStep';
-import { BasicOrderInfoForm } from './ui/steps/step2-basic-info/BasicOrderInfoForm';
+
+// Використовуємо імпорти через індексні файли згідно з Feature-Sliced Design
+import { ClientSelectionStep } from './ui/steps/step1-client-selection';
+import { BasicOrderInfoForm } from './ui/steps/step2-basic-info';
+import { ItemManager } from './ui/steps/step3-item-manager';
 
 // MUI компоненти
 import Box from '@mui/material/Box';
@@ -125,12 +128,10 @@ export const OrderWizard: FC = () => {
         );
       case 'itemManagement':
         return (
-          <Paper elevation={3} sx={{ p: 3 }}>
-            <Typography variant="h6">Управління предметами</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Цей етап буде реалізовано в наступних версіях...
-            </Typography>
-          </Paper>
+          <ItemManager
+            onNext={goToNextStep}
+            onBack={goToPreviousStep}
+          />
         );
       case 'orderParams':
       case 'billing':
