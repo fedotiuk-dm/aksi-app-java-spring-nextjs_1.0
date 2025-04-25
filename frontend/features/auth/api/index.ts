@@ -1,5 +1,5 @@
 import { useApiMutation } from '@/lib/api/hooks';
-import type { LoginRequest } from '@/lib/api/generated/models/LoginRequest';
+import type { LoginRequest } from '@/lib/api';
 import { AuthUser } from '../model/types';
 
 /**

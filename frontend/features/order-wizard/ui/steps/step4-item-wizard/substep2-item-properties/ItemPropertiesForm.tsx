@@ -13,9 +13,9 @@ import {
 } from '@mui/material';
 
 // Імпорт хуків та типів
-import { 
-  useItemPropertiesForm, 
-  ItemPropertiesFormValues 
+import {
+  useItemPropertiesForm,
+  ItemPropertiesFormValues,
 } from '@/features/order-wizard/hooks/useItemPropertiesForm';
 
 // Імпорт API хуків для отримання реальних даних
@@ -24,7 +24,7 @@ import {
   useWearDegrees,
   useMaterialsByCategory,
   useCategoryNeedsFilling,
-  useFillings
+  useFillings,
 } from '@/features/order-wizard/api/hooks/useItemAttributes';
 
 // Імпорт компонента контенту
@@ -64,26 +64,33 @@ export const ItemPropertiesForm: FC<ItemPropertiesFormProps> = ({
   const fillings = useFillings();
 
   // Перевірка завантаження даних
-  const isLoading = 
-    colors.isLoading || 
-    wearDegrees.isLoading || 
-    materials.isLoading || 
-    needsFilling.isLoading || 
+  const isLoading =
+    colors.isLoading ||
+    wearDegrees.isLoading ||
+    materials.isLoading ||
+    needsFilling.isLoading ||
     (needsFilling.needsFilling && fillings.isLoading);
 
   // Перевірка помилок
-  const error = 
-    colors.error || 
-    wearDegrees.error || 
-    materials.error || 
-    needsFilling.error || 
+  const error =
+    colors.error ||
+    wearDegrees.error ||
+    materials.error ||
+    needsFilling.error ||
     (needsFilling.needsFilling && fillings.error);
 
   // Показуємо індикатор завантаження
   if (isLoading) {
     return (
       <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 200,
+          }}
+        >
           <CircularProgress size={40} />
           <Typography variant="body1" sx={{ ml: 2 }}>
             Завантаження характеристик предмета...
@@ -103,11 +110,7 @@ export const ItemPropertiesForm: FC<ItemPropertiesFormProps> = ({
         <Typography variant="body1" sx={{ mb: 2 }}>
           {error}
         </Typography>
-        <Button 
-          variant="outlined" 
-          onClick={onBack} 
-          sx={{ mt: 2 }}
-        >
+        <Button variant="outlined" onClick={onBack} sx={{ mt: 2 }}>
           Назад
         </Button>
       </Paper>
@@ -115,10 +118,10 @@ export const ItemPropertiesForm: FC<ItemPropertiesFormProps> = ({
   }
 
   // Перевірка, чи всі потрібні дані доступні
-  const dataAvailable = 
-    colors.colors.length > 0 && 
-    wearDegrees.wearDegrees.length > 0 && 
-    materials.materials.length > 0 && 
+  const dataAvailable =
+    colors.colors.length > 0 &&
+    wearDegrees.wearDegrees.length > 0 &&
+    materials.materials.length > 0 &&
     (!needsFilling.needsFilling || fillings.fillings.length > 0);
 
   // Якщо даних немає, показуємо повідомлення
@@ -139,11 +142,7 @@ export const ItemPropertiesForm: FC<ItemPropertiesFormProps> = ({
             )}
           </ul>
         </Typography>
-        <Button 
-          variant="outlined" 
-          onClick={onBack} 
-          sx={{ mt: 2 }}
-        >
+        <Button variant="outlined" onClick={onBack} sx={{ mt: 2 }}>
           Назад
         </Button>
       </Paper>

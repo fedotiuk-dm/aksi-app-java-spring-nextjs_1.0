@@ -6,19 +6,9 @@ import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { OrderCreateRequest } from '@/lib/api';
-import type { ClientDTO } from '@/lib/api';
 
 import type {
-  WizardState,
-  ClientSelectionSubState,
-  ItemManagementSubState,
-  ItemWizardSubState,
-  OrderItemUI,
-  OrderWizardContext,
-  ClientUI,
-  allowedTransitions,
-  StateHistoryEntry
+  WizardState
 } from '../types/wizard.types';
 
 import { createClientSlice, ClientSlice } from './slices/clientSlice';
@@ -40,17 +30,8 @@ export interface OrderWizardStore extends
   OrderSlice,
   UtilitySlice {
   // Додаткові поля можна додати тут
+  resetWizard: () => void; // Додано дію скидання
 }
-
-// Початковий контекст для роботи з даними
-const initialContext: OrderWizardContext = {
-  orderData: {},
-  items: [],
-  itemWizardState: 'idle',
-  itemWizardHistory: ['idle'],
-  formIsDirty: false,
-  validationErrors: {}
-};
 
 // Ключ для збереження стану у localStorage
 const STORAGE_KEY = 'aksi-order-wizard-storage';
@@ -91,14 +72,52 @@ export const useOrderWizardStore = create<OrderWizardStore>()(
   subscribeWithSelector(
     devtools(
       persist(
-        immer((...args) => ({
-          // Об'єднуємо всі слайси
-          ...createClientSlice(...args),
-          ...createNavigationSlice(...args),
-          ...createItemsSlice(...args),
-          ...createOrderSlice(...args),
-          ...createUtilitySlice()
-        })),
+        immer((...args) => {
+          // Збережемо посилання на set для використання в resetWizard
+          const setState = args[0];
+          const getState = args[1];
+          const storeApi = args[2];
+
+          // Створюємо початковий стан кожного slice (разом з діями)
+          const initialClientSlice = createClientSlice(setState, getState, storeApi);
+          const initialNavigationSlice = createNavigationSlice(setState, getState, storeApi);
+          const initialItemsSlice = createItemsSlice(setState, getState, storeApi);
+          const initialOrderSlice = createOrderSlice(setState, getState, storeApi);
+
+          // Збираємо повний початковий стан, що відповідає OrderWizardStore
+          // Потрібно додати утиліти та саму дію resetWizard
+          const initialState: OrderWizardStore = {
+            ...initialClientSlice,
+            ...initialNavigationSlice,
+            ...initialItemsSlice,
+            ...initialOrderSlice,
+            ...createUtilitySlice(), // Додаємо утиліти до початкового стану
+            // Додаємо саму дію resetWizard, вона буде перезаписана нижче
+            // Важливо, щоб initialState мав правильний тип для setState
+            resetWizard: () => { /* Placeholder, буде перезаписано */ },
+          };
+
+          return {
+            // Повертаємо початковий стан всіх слайсів
+            ...initialState,
+            // Реалізація дії скидання
+            resetWizard: () => {
+              // Тепер initialState має правильний тип OrderWizardStore
+              setState(initialState, true, 'resetWizard'); 
+
+              // Очистка localStorage, якщо persist middleware не робить це автоматично
+              // при повному перезапису стану. Варто протестувати.
+              try {
+                useOrderWizardStore.persist.clearStorage();
+                console.log('OrderWizardStore localStorage cleared.');
+              } catch (error) {
+                console.error('Failed to clear OrderWizardStore localStorage:', error);
+              }
+
+              console.log('OrderWizardStore reset to initial state.');
+            },
+          };
+        }),
         {
           name: STORAGE_KEY,
           storage: createJSONStorage(() => localStorage),

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../store';
 import { useLogout as useApiLogout } from '../api';
+import { useOrderWizardStore } from '@/features/order-wizard/model/store';
 
 /**
  * Хук для виходу користувача із системи
@@ -33,6 +34,9 @@ export const useLogout = () => {
       // Очищаємо стан авторизації
       logoutStore();
       
+      // Скидаємо стан Order Wizard
+      useOrderWizardStore.getState().resetWizard();
+      
       // Перенаправляємо на цільову сторінку
       router.push(redirectTo);
     } catch (error) {
@@ -40,6 +44,9 @@ export const useLogout = () => {
       
       // Навіть якщо виникла помилка, все одно очищаємо стан авторизації
       logoutStore();
+      
+      // Скидаємо стан Order Wizard
+      useOrderWizardStore.getState().resetWizard();
       
       // Перенаправляємо на сторінку входу
       router.push(redirectTo);
