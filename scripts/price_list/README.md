@@ -34,6 +34,12 @@ odiah,1,Брюки,шт,380.00,,,true
 docker cp /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/scripts/price_list/price_list.csv postgres:/price_list.csv
 ```
 
+### DEV
+
+```bash
+docker cp /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/scripts/price_list/price_list.csv postgres-dev:/price_list.csv
+```
+
 ### 2. Виконання SQL-скрипта імпорту через pgAdmin
 
 1. Відкрийте pgAdmin у браузері: http://localhost:5050

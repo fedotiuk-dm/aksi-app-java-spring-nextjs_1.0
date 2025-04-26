@@ -1,0 +1,51 @@
+/* generated using openapi-typescript-codegen -- do not edit */
+/* istanbul ignore file */
+/* tslint:disable */
+/* eslint-disable */
+export const $CreateOrderRequest = {
+    description: `Дані для чернетки замовлення`,
+    properties: {
+        branchLocation: {
+            type: 'string',
+            minLength: 1,
+        },
+        clientId: {
+            type: 'string',
+            isRequired: true,
+            format: 'uuid',
+        },
+        customerNotes: {
+            type: 'string',
+            maxLength: 1000,
+        },
+        discountAmount: {
+            type: 'number',
+        },
+        draft: {
+            type: 'boolean',
+        },
+        expectedCompletionDate: {
+            type: 'string',
+            format: 'date-time',
+        },
+        express: {
+            type: 'boolean',
+        },
+        internalNotes: {
+            type: 'string',
+            maxLength: 1000,
+        },
+        items: {
+            type: 'array',
+            contains: {
+                type: 'OrderItemDTO',
+            },
+        },
+        prepaymentAmount: {
+            type: 'number',
+        },
+        tagNumber: {
+            type: 'string',
+        },
+    },
+} as const;
