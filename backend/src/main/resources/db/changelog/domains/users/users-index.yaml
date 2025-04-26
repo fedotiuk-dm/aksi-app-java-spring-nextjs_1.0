@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: 1.0/001-create-users-base.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/002-create-users-indexes.yaml
+      relativeToChangelogFile: true

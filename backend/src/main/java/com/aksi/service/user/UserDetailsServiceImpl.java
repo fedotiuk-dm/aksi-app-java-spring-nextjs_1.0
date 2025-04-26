@@ -1,14 +1,16 @@
 package com.aksi.service.user;
 
-import com.aksi.domain.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.aksi.domain.user.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+
 /**
- * Сервіс для завантаження користувачів з бази даних для автентифікації
+ * Сервіс для завантаження користувачів з бази даних для автентифікації.
  */
 @Service
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
     
     /**
-     * Завантаження користувача за ім'ям або email
+     * Завантаження користувача за ім'ям або email.
      * @param username ім'я користувача або email
      * @return деталі користувача
      * @throws UsernameNotFoundException коли користувача не знайдено

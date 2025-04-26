@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.config.CacheConfig;
-import com.aksi.domain.pricing.entity.PriceListItem;
-import com.aksi.domain.pricing.entity.ServiceCategory;
+import com.aksi.domain.pricing.dto.PriceListItemDTO;
+import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
+import com.aksi.domain.pricing.entity.PriceListItemEntity;
+import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 import com.aksi.domain.pricing.repository.PriceListItemRepository;
 import com.aksi.domain.pricing.repository.ServiceCategoryRepository;
-import com.aksi.dto.pricing.PriceListItemDto;
-import com.aksi.dto.pricing.ServiceCategoryDto;
 import com.aksi.exception.ResourceNotFoundException;
 import com.aksi.mapper.PriceListMapper;
 
@@ -31,45 +31,52 @@ public class PriceListService {
     private final PriceListMapper priceListMapper;
 
     /**
-     * Отримати всі категорії послуг з відсортованими позиціями
+     * Отримати всі категорії послуг з відсортованими позиціями.
+     * @return список всіх категорій послуг з відсортованими позиціями
      */
     @Transactional(readOnly = true)
     @Cacheable(CacheConfig.PRICE_LIST_CACHE)
-    public List<ServiceCategoryDto> getAllCategories() {
+    public List<ServiceCategoryDTO> getAllCategories() {
         log.info("Отримання всіх категорій послуг");
-        List<ServiceCategory> categories = serviceCategoryRepository.findAllByOrderBySortOrderAsc();
+        List<ServiceCategoryEntity> categories = serviceCategoryRepository.findAllByOrderBySortOrderAsc();
         return priceListMapper.toCategoryDtoList(categories);
     }
 
     /**
-     * Отримати категорію послуг за ідентифікатором
+     * Отримати категорію послуг за ідентифікатором.
+     * @param categoryId ідентифікатор
+     * @return категорія послуг з усіма позиціями
      */
     @Transactional(readOnly = true)
     @Cacheable(value = CacheConfig.PRICE_LIST_CACHE, key = "#categoryId")
-    public ServiceCategoryDto getCategoryById(UUID categoryId) {
+    public ServiceCategoryDTO getCategoryById(UUID categoryId) {
         log.info("Отримання категорії послуг за ID: {}", categoryId);
-        ServiceCategory category = serviceCategoryRepository.findById(categoryId)
+        ServiceCategoryEntity category = serviceCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Категорію послуг не знайдено"));
         return priceListMapper.toDto(category);
     }
 
     /**
-     * Отримати категорію послуг за кодом
+     * Отримати категорію послуг за кодом.
+     * @param code код
+     * @return категорія послуг з усіма позиціями
      */
     @Transactional(readOnly = true)
-    public ServiceCategoryDto getCategoryByCode(String code) {
+    public ServiceCategoryDTO getCategoryByCode(String code) {
         log.info("Отримання категорії послуг за кодом: {}", code);
-        ServiceCategory category = serviceCategoryRepository.findByCode(code)
+        ServiceCategoryEntity category = serviceCategoryRepository.findByCode(code)
                 .orElseThrow(() -> new ResourceNotFoundException("Категорію послуг не знайдено"));
         return priceListMapper.toDto(category);
     }
     
     /**
-     * Створити нову категорію послуг
+     * Створити нову категорію послуг.
+     * @param categoryDto об'єкт передачі даних
+     * @return створена категорія послуг
      */
     @Transactional
     @CacheEvict(value = CacheConfig.PRICE_LIST_CACHE, allEntries = true)
-    public ServiceCategoryDto createServiceCategory(ServiceCategoryDto categoryDto) {
+    public ServiceCategoryDTO createServiceCategory(ServiceCategoryDTO categoryDto) {
         log.info("Створення нової категорії послуг: {}", categoryDto.getName());
         
         // Перевірка на дублікат коду
@@ -81,22 +88,25 @@ public class PriceListService {
         // Знаходимо максимальний sort_order і збільшуємо на 1
         Integer maxSortOrder = serviceCategoryRepository.findMaxSortOrder().orElse(0);
         
-        ServiceCategory category = priceListMapper.toEntity(categoryDto);
+        ServiceCategoryEntity category = priceListMapper.toEntity(categoryDto);
         category.setSortOrder(maxSortOrder + 1);
         
-        ServiceCategory savedCategory = serviceCategoryRepository.save(category);
+        ServiceCategoryEntity savedCategory = serviceCategoryRepository.save(category);
         return priceListMapper.toDto(savedCategory);
     }
     
     /**
-     * Оновити існуючу категорію послуг
+     * Оновити існуючу категорію послуг.
+     * @param categoryId ідентифікатор категорії
+     * @param categoryDto об'єкт передачі даних категорії
+     * @return оновлена категорія послуг
      */
     @Transactional
     @CacheEvict(value = CacheConfig.PRICE_LIST_CACHE, allEntries = true)
-    public ServiceCategoryDto updateServiceCategory(UUID categoryId, ServiceCategoryDto categoryDto) {
+    public ServiceCategoryDTO updateServiceCategory(UUID categoryId, ServiceCategoryDTO categoryDto) {
         log.info("Оновлення категорії послуг з ID: {}", categoryId);
         
-        ServiceCategory existingCategory = serviceCategoryRepository.findById(categoryId)
+        ServiceCategoryEntity existingCategory = serviceCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Категорію послуг не знайдено"));
         
         // Перевірка на дублікат коду, якщо він змінюється
@@ -117,20 +127,23 @@ public class PriceListService {
             existingCategory.setSortOrder(categoryDto.getSortOrder());
         }
         
-        ServiceCategory updatedCategory = serviceCategoryRepository.save(existingCategory);
+        ServiceCategoryEntity updatedCategory = serviceCategoryRepository.save(existingCategory);
         return priceListMapper.toDto(updatedCategory);
     }
     
     /**
-     * Додати новий елемент прайс-листа до категорії
+     * Додати новий елемент прайс-листа до категорії.
+     * @param categoryId ідентифікатор категорії
+     * @param itemDto об'єкт передачі даних елемента прайс-листа
+     * @return створений елемент прайс-листа
      */
     @Transactional
     @CacheEvict(value = CacheConfig.PRICE_LIST_CACHE, allEntries = true)
-    public PriceListItemDto createPriceListItem(UUID categoryId, PriceListItemDto itemDto) {
+    public PriceListItemDTO createPriceListItem(UUID categoryId, PriceListItemDTO itemDto) {
         log.info("Створення нового елемента прайс-листа в категорії з ID: {}", categoryId);
         
         // Перевіряємо, що категорія існує
-        ServiceCategory category = serviceCategoryRepository.findById(categoryId)
+        ServiceCategoryEntity category = serviceCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Категорію послуг не знайдено"));
         
         // Знаходимо максимальний номер в каталозі для цієї категорії
@@ -142,23 +155,26 @@ public class PriceListService {
                     throw new IllegalArgumentException("Елемент з такою назвою вже існує в цій категорії");
                 });
         
-        PriceListItem item = priceListMapper.toEntity(itemDto);
+        PriceListItemEntity item = priceListMapper.toEntity(itemDto);
         item.setCategory(category);
         item.setCatalogNumber(maxCatalogNumber + 1);
         
-        PriceListItem savedItem = priceListItemRepository.save(item);
+        PriceListItemEntity savedItem = priceListItemRepository.save(item);
         return priceListMapper.toDto(savedItem);
     }
     
     /**
-     * Оновити існуючий елемент прайс-листа
+     * Оновити існуючий елемент прайс-листа.
+     * @param itemId ідентифікатор елемента прайс-листа
+     * @param itemDto об'єкт передачі даних елемента прайс-листа
+     * @return оновлений елемент прайс-листа
      */
     @Transactional
     @CacheEvict(value = CacheConfig.PRICE_LIST_CACHE, allEntries = true)
-    public PriceListItemDto updatePriceListItem(UUID itemId, PriceListItemDto itemDto) {
+    public PriceListItemDTO updatePriceListItem(UUID itemId, PriceListItemDTO itemDto) {
         log.info("Оновлення елемента прайс-листа з ID: {}", itemId);
         
-        PriceListItem existingItem = priceListItemRepository.findById(itemId)
+        PriceListItemEntity existingItem = priceListItemRepository.findById(itemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Елемент прайс-листа не знайдено"));
         
         // Перевірка на дублікат назви, якщо вона змінюється
@@ -175,11 +191,11 @@ public class PriceListService {
         existingItem.setBasePrice(itemDto.getBasePrice());
         existingItem.setPriceBlack(itemDto.getPriceBlack());
         existingItem.setPriceColor(itemDto.getPriceColor());
-        existingItem.setActive(itemDto.getIsActive());
+        existingItem.setActive(itemDto.isActive());
         
         // Якщо потрібно змінити категорію
         if (itemDto.getCategoryId() != null && !existingItem.getCategory().getId().equals(itemDto.getCategoryId())) {
-            ServiceCategory newCategory = serviceCategoryRepository.findById(itemDto.getCategoryId())
+            ServiceCategoryEntity newCategory = serviceCategoryRepository.findById(itemDto.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Нову категорію не знайдено"));
             existingItem.setCategory(newCategory);
             
@@ -190,11 +206,13 @@ public class PriceListService {
                     });
             
             // Знаходимо максимальний номер в каталогі для нової категорії
-            Integer maxCatalogNumber = priceListItemRepository.findMaxCatalogNumberByCategory(itemDto.getCategoryId()).orElse(0);
+            Integer maxCatalogNumber = priceListItemRepository
+                .findMaxCatalogNumberByCategory(itemDto.getCategoryId())
+                .orElse(0);
             existingItem.setCatalogNumber(maxCatalogNumber + 1);
         }
         
-        PriceListItem updatedItem = priceListItemRepository.save(existingItem);
+        PriceListItemEntity updatedItem = priceListItemRepository.save(existingItem);
         return priceListMapper.toDto(updatedItem);
     }
 }

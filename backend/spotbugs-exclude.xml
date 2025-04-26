@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter
-    xmlns="https://github.com/spotbugs/filter/3.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://github.com/spotbugs/filter/3.0.0"
+        xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd
+https://github.com/spotbugs/filter/3.0.0 ">
 
     <!-- Виключаємо помилки в згенерованих класах -->
     <Match>
@@ -52,9 +53,9 @@
     <Match>
         <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
     </Match>
-    
+
     <!-- Виключаємо помилки про відсутність перевірки на null перед викликом -->
     <Match>
         <Bug pattern="NP_NULL_ON_SOME_PATH"/>
     </Match>
-</FindBugsFilter> 
+</FindBugsFilter>

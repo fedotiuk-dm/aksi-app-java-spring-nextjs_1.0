@@ -1,7 +1,7 @@
 package com.aksi.exception;
 
 /**
- * Виняток, що виникає при помилках автентифікації
+ * Виняток, що виникає при помилках автентифікації.
  */
 public class AuthenticationException extends RuntimeException {
     

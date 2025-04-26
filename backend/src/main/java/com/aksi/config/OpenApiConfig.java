@@ -20,7 +20,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Конфігурація OpenAPI для документації API
+ * Конфігурація OpenAPI для документації API.
  */
 @Configuration
 @OpenAPIDefinition(
@@ -48,7 +48,8 @@ public class OpenApiConfig {
     private String contextPath;
 
     /**
-     * Налаштування OpenAPI для документації API
+     * Налаштування OpenAPI для документації API.
+     * @return налаштована конфігурація OpenAPI для генерації документації Swagger
      */
     @Bean
     public OpenAPI customOpenAPI() {
@@ -74,7 +75,7 @@ public class OpenApiConfig {
                     .version("1.0")
                     .contact(new Contact()
                         .name("AKSI Support")
-                        .email("support@aksi.com.ua"))
+                        .email("aksi.vn.ua@gmail.com"))
                     .license(new License()
                         .name("Apache 2.0")
                         .url("https://www.apache.org/licenses/LICENSE-2.0")))

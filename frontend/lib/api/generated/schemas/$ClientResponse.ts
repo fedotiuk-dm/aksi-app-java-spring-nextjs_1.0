@@ -7,9 +7,11 @@ export const $ClientResponse = {
         address: {
             type: 'string',
         },
-        birthDate: {
-            type: 'string',
-            format: 'date',
+        communicationChannels: {
+            type: 'array',
+            contains: {
+                type: 'Enum',
+            },
         },
         createdAt: {
             type: 'string',
@@ -31,24 +33,6 @@ export const $ClientResponse = {
         lastName: {
             type: 'string',
         },
-        lastOrderDate: {
-            type: 'string',
-            format: 'date-time',
-        },
-        loyaltyLevel: {
-            type: 'Enum',
-        },
-        loyaltyPoints: {
-            type: 'number',
-            format: 'int32',
-        },
-        notes: {
-            type: 'string',
-        },
-        orderCount: {
-            type: 'number',
-            format: 'int32',
-        },
         phone: {
             type: 'string',
         },
@@ -57,18 +41,6 @@ export const $ClientResponse = {
         },
         sourceDetails: {
             type: 'string',
-        },
-        status: {
-            type: 'Enum',
-        },
-        tags: {
-            type: 'array',
-            contains: {
-                type: 'string',
-            },
-        },
-        totalSpent: {
-            type: 'number',
         },
         updatedAt: {
             type: 'string',

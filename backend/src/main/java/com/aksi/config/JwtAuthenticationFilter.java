@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Фільтр для автентифікації за JWT токеном
+ * Фільтр для автентифікації за JWT токеном.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     /**
-     * Фільтрує запити та автентифікує користувача за JWT токеном
+     * Фільтрує запити та автентифікує користувача за JWT токеном.
      */
     @Override
     protected void doFilterInternal(
@@ -60,7 +60,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-        } catch (io.jsonwebtoken.JwtException | org.springframework.security.core.userdetails.UsernameNotFoundException | IllegalArgumentException e) {
+        } catch (
+            io.jsonwebtoken.JwtException 
+            | org.springframework.security.core.userdetails.UsernameNotFoundException 
+            | IllegalArgumentException e
+        ) {
             log.error("Помилка аутентифікації: {}", e.getMessage());
             // Продовжуємо обробку запиту навіть при помилці
         }
@@ -68,3 +72,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 } 
+

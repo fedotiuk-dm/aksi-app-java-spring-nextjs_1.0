@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: 'pricelist-1.0-001'
+      author: 'cascade'
+      comment: 'Create service categories table'
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: service_categories
+      changes:
+        - createTable:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(1000)
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValue: 0
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueDate: now()
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueDate: now()

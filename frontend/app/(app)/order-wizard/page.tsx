@@ -1,25 +1,23 @@
-'use client';
-
 import React from 'react';
-import { AuthGuard } from '@/features/auth/ui/AuthGuard';
-import { Container, Typography } from '@mui/material';
-import { OrderWizard } from '@/features/order-wizard/OrderWizard';
+import OrderWizard from '@/features/order-wizard/ui/OrderWizard';
+import { Container, Typography, Paper } from '@mui/material';
 
-function OrderWizardContent() {
-  return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Створення нового замовлення
-      </Typography>
-      <OrderWizard />
-    </Container>
-  );
-}
-
+/**
+ * Сторінка з майстром створення замовлення
+ */
 export default function OrderWizardPage() {
   return (
-    <AuthGuard>
-      <OrderWizardContent />
-    </AuthGuard>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Створення нового замовлення
+        </Typography>
+        <Typography variant="body1" color="text.secondary" paragraph>
+          Додайте нове замовлення, заповнивши всі необхідні поля нижче
+        </Typography>
+      </Paper>
+      
+      <OrderWizard />
+    </Container>
   );
 }

@@ -9,7 +9,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 /**
- * Додаткова конфігурація для CORS
+ * Додаткова конфігурація для CORS.
  * Цей клас реєструє глобальний CORS фільтр, який буде застосовуватися
  * до всіх запитів, включаючи Authentication і OPTIONS запити
  */
@@ -17,14 +17,18 @@ import org.springframework.web.filter.CorsFilter;
 public class CorsConfig {
 
     /**
-     * Створюємо і реєструємо CORS фільтр з високим пріоритетом
+     * Створюємо і реєструємо CORS фільтр з високим пріоритетом.
+     * @return реєстрація фільтра CORS з налаштуванням високого пріоритету
      */
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilterRegistration() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
+        // Дозволяємо локальний доступ
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("http://127.0.0.1:3000");
+        // Дозволяємо доступ з Docker контейнера
+        config.addAllowedOrigin("http://frontend:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setMaxAge(3600L);

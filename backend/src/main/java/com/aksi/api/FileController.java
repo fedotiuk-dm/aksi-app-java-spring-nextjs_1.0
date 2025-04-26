@@ -1,10 +1,9 @@
 package com.aksi.api;
 
-import com.aksi.service.file.FileStorageService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,7 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
+import com.aksi.service.file.FileStorageService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * REST контролер для доступу до файлів.
@@ -22,13 +25,15 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/files")
 @Slf4j
+@Profile("disabled") // Тимчасово відключений
 @Tag(name = "Files API", description = "API для доступу до файлів")
 public class FileController {
 
     private final FileStorageService fileStorageService;
     
     /**
-     * Конструктор для ін'єкції залежностей
+     * Конструктор для ін'єкції залежностей.
+     * @param fileStorageService параметр fileStorageService
      */
     @Autowired
     public FileController(FileStorageService fileStorageService) {
@@ -36,7 +41,7 @@ public class FileController {
     }
     
     /**
-     * Отримати файл за його іменем
+     * Отримати файл за його іменем.
      *
      * @param fileName ім'я файлу
      * @return файл як ресурс
@@ -68,7 +73,7 @@ public class FileController {
     }
     
     /**
-     * Визначити тип контенту за розширенням файлу
+     * Визначити тип контенту за розширенням файлу.
      */
     private String determineContentType(String fileName) {
         String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();

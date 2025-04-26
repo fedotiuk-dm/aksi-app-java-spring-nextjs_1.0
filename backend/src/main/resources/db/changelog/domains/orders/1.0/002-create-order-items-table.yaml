@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 'orders-1.0-002'
+      author: 'fedotiuk-dm'
+      comment: 'Create order_items table'
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: order_items
+      changes:
+        - createTable:
+            tableName: order_items
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_items_order
+                    references: orders(id)
+              - column:
+                  name: item_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(1000)
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(100)
+              - column:
+                  name: color
+                  type: VARCHAR(50)
+              - column:
+                  name: material
+                  type: VARCHAR(100)
+              - column:
+                  name: defects
+                  type: VARCHAR(500)
+              - column:
+                  name: special_instructions
+                  type: VARCHAR(500)
+        - createIndex:
+            tableName: order_items
+            indexName: idx_order_items_order_id
+            columns:
+              - column:
+                  name: order_id

@@ -11,14 +11,15 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Конфігурація JSON серіалізації
+ * Конфігурація JSON серіалізації.
  */
 @Configuration
 @Slf4j
 public class JacksonConfig {
     
     /**
-     * Налаштування ObjectMapper для більш предбачуваної серіалізації
+     * Налаштування ObjectMapper для більш предбачуваної серіалізації.
+     * @return налаштований ObjectMapper для серіалізації/десеріалізації JSON
      */
     @Bean
     public ObjectMapper objectMapper() {

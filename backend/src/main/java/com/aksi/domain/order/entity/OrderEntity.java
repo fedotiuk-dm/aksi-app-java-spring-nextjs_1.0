@@ -1,0 +1,151 @@
+package com.aksi.domain.order.entity;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.aksi.domain.client.entity.ClientEntity;
+import com.aksi.domain.order.model.OrderStatusEnum;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Сутність замовлення у хімчистці.
+ */
+@Entity
+@Table(name = "orders")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderEntity {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    
+    @Column(name = "receipt_number", nullable = false, unique = true)
+    private String receiptNumber;
+    
+    @Column(name = "tag_number")
+    private String tagNumber;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false)
+    private ClientEntity client;
+    
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<OrderItemEntity> items = new ArrayList<>();
+    
+    @Column(name = "total_amount", nullable = false)
+    private BigDecimal totalAmount;
+    
+    @Column(name = "discount_amount")
+    private BigDecimal discountAmount;
+    
+    @Column(name = "final_amount", nullable = false)
+    private BigDecimal finalAmount;
+    
+    @Column(name = "prepayment_amount")
+    private BigDecimal prepaymentAmount;
+    
+    @Column(name = "balance_amount")
+    private BigDecimal balanceAmount;
+    
+    @Column(name = "branch_location", nullable = false)
+    private String branchLocation;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private OrderStatusEnum status = OrderStatusEnum.DRAFT;
+    
+    @Column(name = "created_date", nullable = false, updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdDate;
+    
+    @Column(name = "updated_date")
+    @UpdateTimestamp
+    private LocalDateTime updatedDate;
+    
+    @Column(name = "expected_completion_date")
+    private LocalDateTime expectedCompletionDate;
+    
+    @Column(name = "completed_date")
+    private LocalDateTime completedDate;
+    
+    @Column(name = "customer_notes", length = 1000)
+    private String customerNotes;
+    
+    @Column(name = "internal_notes", length = 1000)
+    private String internalNotes;
+    
+    @Column(name = "is_express")
+    @Builder.Default
+    private boolean express = false;
+    
+    @Column(name = "is_draft")
+    @Builder.Default
+    private boolean draft = true;
+    
+    /**
+     * Додати новий елемент до замовлення.
+     * @param item параметр item
+     */
+    public void addItem(OrderItemEntity item) {
+        items.add(item);
+        item.setOrder(this);
+    }
+    
+    /**
+     * Видалити елемент із замовлення.
+     * @param item параметр item
+     */
+    public void removeItem(OrderItemEntity item) {
+        items.remove(item);
+        item.setOrder(null);
+    }
+    
+    /**
+     * Розрахувати повну суму замовлення на основі елементів.
+     */
+    public void recalculateTotalAmount() {
+        this.totalAmount = items.stream()
+                .map(OrderItemEntity::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        if (this.discountAmount != null) {
+            this.finalAmount = this.totalAmount.subtract(this.discountAmount);
+        } else {
+            this.finalAmount = this.totalAmount;
+        }
+        
+        if (this.prepaymentAmount != null) {
+            this.balanceAmount = this.finalAmount.subtract(this.prepaymentAmount);
+        } else {
+            this.balanceAmount = this.finalAmount;
+        }
+    }
+}

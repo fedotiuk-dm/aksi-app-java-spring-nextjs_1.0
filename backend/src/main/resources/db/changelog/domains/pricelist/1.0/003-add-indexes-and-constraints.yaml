@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 'pricelist-1.0-003'
+      author: 'cascade'
+      comment: 'Add indexes to price list tables'
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: price_list_items
+      changes:
+        - createIndex:
+            indexName: idx_service_category_code
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+        - createIndex:
+            indexName: idx_service_category_sort_order
+            tableName: service_categories
+            columns:
+              - column:
+                  name: sort_order
+        - createIndex:
+            indexName: idx_price_list_item_category_id
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: category_id
+        - createIndex:
+            indexName: idx_price_list_item_active
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: active
+        - addUniqueConstraint:
+            constraintName: uk_price_list_item_category_id_catalog_number_name
+            tableName: price_list_items
+            columnNames: category_id, catalog_number, name

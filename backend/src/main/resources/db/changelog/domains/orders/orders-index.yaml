@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: 1.0/001-create-orders-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/002-create-order-items-table.yaml
+      relativeToChangelogFile: true

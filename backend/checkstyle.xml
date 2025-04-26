@@ -110,5 +110,53 @@
         <module name="AnnotationLocation">
             <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF"/>
         </module>
+
+        <!-- Naming conventions для кращої інтеграції з фронтендом -->
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern" value="Тип ''{0}'' повинен використовувати PascalCase для узгодження з TypeScript/JavaScript конвенціями."/>
+        </module>
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern" value="Поле ''{0}'' повинно використовувати camelCase для узгодження з TypeScript/JavaScript конвенціями."/>
+        </module>
+
+        <!-- Правила для DTO класів -->
+        <module name="MissingJavadocType">
+            <property name="scope" value="public"/>
+            <property name="severity" value="warning"/>
+            <property name="excludeScope" value="private"/>
+            <message key="javadoc.missing" value="Відсутня документація для класу {0}. DTO-класи повинні мати документацію для правильної генерації OpenAPI"/>
+        </module>
+
+        <!-- Правила для API контролерів -->
+        <module name="JavadocMethod">
+            <property name="accessModifiers" value="public"/>
+            <property name="allowMissingParamTags" value="false"/>
+            <property name="allowMissingReturnTag" value="false"/>
+            <message key="javadoc.missing" value="Відсутня документація для методу {0}. API-ендпоінти повинні мати документацію для OpenAPI."/>
+        </module>
+
+
+
+        <!-- Обмеження для DTO класів -->
+        <module name="MethodCount">
+            <property name="maxTotal" value="30"/>
+            <property name="maxPublic" value="20"/>
+            <message key="too.many.methods" value="Занадто багато методів у класі {0}. Розгляньте можливість розділення DTO на менші."/>
+        </module>
+
+    </module>
+    
+    <!-- Правила для OpenAPI анотацій -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@ApiIgnore"/>
+        <property name="message" value="Не використовуйте @ApiIgnore для публічних API-ендпоінтів"/>
+    </module>
+
+    <!-- Правила для булевих полів -->
+    <module name="RegexpSingleline">
+        <property name="format" value="private\s+boolean\s+is[A-Z]"/>
+        <property name="message" value="Не використовуйте префікс 'is' для булевих полів. Це може спричинити проблеми з OpenAPI та JSON-серіалізацією."/>
     </module>
 </module> 

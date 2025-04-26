@@ -1,111 +1,52 @@
 package com.aksi.domain.order.repository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.aksi.domain.client.entity.Client;
-import com.aksi.domain.order.entity.Order;
-import com.aksi.domain.order.entity.OrderStatus;
+import com.aksi.domain.order.entity.OrderEntity;
+import com.aksi.domain.order.model.OrderStatusEnum;
 
 /**
- * Repository for the Order entity.
+ * Репозиторій для роботи з замовленнями.
  */
 @Repository
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
     
     /**
-     * Find an order by its receipt number.
-     *
-     * @param receiptNumber The receipt number
-     * @return An optional containing the order if found
+     * Знайти замовлення за статусами для активних замовлень (не чернеток).
+     * @param statuses параметр statuses
+     * @return список замовлень з вказаними статусами
      */
-    Optional<Order> findByReceiptNumber(String receiptNumber);
+    List<OrderEntity> findByStatusInAndDraftFalse(List<OrderStatusEnum> statuses);
     
     /**
-     * Find an order by its unique tag.
-     *
-     * @param uniqueTag The unique tag
-     * @return An optional containing the order if found
+     * Знайти всі чернетки замовлень.
+     * @return список всіх чернеток замовлень
      */
-    Optional<Order> findByUniqueTag(String uniqueTag);
+    List<OrderEntity> findByDraftTrue();
     
     /**
-     * Find all orders for a client.
-     *
-     * @param client The client
-     * @param pageable Pagination information
-     * @return A page of orders
+     * Знайти замовлення за номером квитанції.
+     * @param receiptNumber параметр receiptNumber
+     * @return замовлення з вказаним номером квитанції або null
      */
-    Page<Order> findByClient(Client client, Pageable pageable);
+    OrderEntity findByReceiptNumber(String receiptNumber);
     
     /**
-     * Find all orders with a specific status.
-     *
-     * @param status The status
-     * @param pageable Pagination information
-     * @return A page of orders
+     * Знайти замовлення за ID клієнта.
+     * @param clientId ідентифікатор
+     * @return список всіх замовлень клієнта
      */
-    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
+    List<OrderEntity> findByClientId(UUID clientId);
     
     /**
-     * Find all orders expected to be completed on a specific date.
-     *
-     * @param date The expected completion date
-     * @param pageable Pagination information
-     * @return A page of orders
+     * Знайти замовлення за ID клієнта і статусом.
+     * @param clientId ідентифікатор
+     * @param status параметр status
+     * @return список замовлень клієнта з вказаним статусом
      */
-    Page<Order> findByExpectedCompletionDate(LocalDate date, Pageable pageable);
-    
-    /**
-     * Find orders created between two dates.
-     *
-     * @param startDate The start date and time
-     * @param endDate The end date and time
-     * @param pageable Pagination information
-     * @return A page of orders
-     */
-    Page<Order> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
-    
-    /**
-     * Search for orders by client name or receipt number.
-     *
-     * @param searchTerm The search term
-     * @param pageable Pagination information
-     * @return A page of orders
-     */
-    @Query("SELECT o FROM Order o WHERE " +
-           "LOWER(o.client.firstName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-           "LOWER(o.client.lastName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-           "LOWER(o.receiptNumber) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
-    Page<Order> searchByClientNameOrReceiptNumber(@Param("searchTerm") String searchTerm, Pageable pageable);
-    
-    /**
-     * Find orders by client and status.
-     *
-     * @param client The client
-     * @param status The status
-     * @param pageable Pagination information
-     * @return A page of orders
-     */
-    Page<Order> findByClientAndStatus(Client client, OrderStatus status, Pageable pageable);
-    
-    /**
-     * Generate the next receipt number based on the current date and sequence.
-     * This query returns the highest receipt number for the current year and month.
-     *
-     * @param yearMonth The year and month prefix (format: YYYYMM)
-     * @return The current highest receipt number with the given prefix, or null if none exists
-     */
-    @Query("SELECT o.receiptNumber FROM Order o WHERE o.receiptNumber LIKE :yearMonth% ORDER BY o.receiptNumber DESC")
-    List<String> findHighestReceiptNumberForYearMonth(@Param("yearMonth") String yearMonth);
+    List<OrderEntity> findByClientIdAndStatus(UUID clientId, OrderStatusEnum status);
 }

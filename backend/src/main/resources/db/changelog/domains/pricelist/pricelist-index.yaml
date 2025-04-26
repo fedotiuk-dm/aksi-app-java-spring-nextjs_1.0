@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - include:
+      file: 1.0/001-create-service-categories.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/002-create-price-list-items.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/003-add-indexes-and-constraints.yaml
+      relativeToChangelogFile: true

@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Конфігурація безпеки Spring Security
+ * Конфігурація безпеки Spring Security.
  */
 @Configuration
 @EnableWebSecurity
@@ -44,7 +44,9 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     
     /**
-     * Налаштування ланцюжка фільтрів безпеки
+     * Налаштування ланцюжка фільтрів безпеки.
+     * @param http об'єкт HttpSecurity
+     * @return налаштований SecurityFilterChain
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -94,7 +96,8 @@ public class SecurityConfig {
     }
     
     /**
-     * Сервіс для завантаження користувача з бази даних
+     * Сервіс для завантаження користувача з бази даних.
+     * @return реалізація UserDetailsService для автентифікації користувачів
      */
     @Bean
     public UserDetailsService userDetailsService() {
@@ -102,7 +105,8 @@ public class SecurityConfig {
     }
     
     /**
-     * Конфігурація CORS (Cross-Origin Resource Sharing)
+     * Конфігурація CORS (Cross-Origin Resource Sharing).
+     * @return джерело конфігурації CORS для забезпечення міждоменних запитів
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -128,7 +132,8 @@ public class SecurityConfig {
     }
     
     /**
-     * Провайдер автентифікації на основі DAO з BCrypt шифруванням паролів
+     * Провайдер автентифікації на основі DAO з BCrypt шифруванням паролів.
+     * @return налаштований провайдер автентифікації на основі бази даних
      */
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -139,7 +144,9 @@ public class SecurityConfig {
     }
     
     /**
-     * Менеджер автентифікації для логіну та реєстрації
+     * Менеджер автентифікації для логіну та реєстрації.
+     * @param config конфігурація
+     * @return менеджер автентифікації для обробки запитів авторизації
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -147,7 +154,8 @@ public class SecurityConfig {
     }
     
     /**
-     * Кодувальник паролів BCrypt
+     * Кодувальник паролів BCrypt.
+     * @return реалізація PasswordEncoder на основі BCrypt алгоритму
      */
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: 'clients-1.0-001'
+      author: 'fedotiuk-dm'
+      comment: 'Create clients base table'
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: clients
+      changes:
+        - createTable:
+            tableName: clients
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: VARCHAR(100)
+                  constraints:
+                    unique: true
+              - column:
+                  name: address
+                  type: VARCHAR(255)
+              - column:
+                  name: source
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: source_details
+                  type: VARCHAR(255)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_phone
+            columns:
+              - column:
+                  name: phone
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_email
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_names
+            columns:
+              - column:
+                  name: last_name
+              - column:
+                  name: first_name
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_deleted
+            columns:
+              - column:
+                  name: deleted

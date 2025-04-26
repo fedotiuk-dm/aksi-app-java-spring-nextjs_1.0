@@ -6,18 +6,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.domain.user.entity.Role;
-import com.aksi.domain.user.entity.User;
+import com.aksi.domain.auth.dto.AuthResponse;
+import com.aksi.domain.auth.dto.LoginRequest;
+import com.aksi.domain.auth.dto.RegisterRequest;
+import com.aksi.domain.user.entity.RoleEntity;
+import com.aksi.domain.user.entity.UserEntity;
 import com.aksi.domain.user.repository.UserRepository;
-import com.aksi.dto.auth.AuthResponse;
-import com.aksi.dto.auth.LoginRequest;
-import com.aksi.dto.auth.RegisterRequest;
 import com.aksi.exception.AuthenticationException;
 import com.aksi.exception.UserAlreadyExistsException;
 import com.aksi.util.JwtUtils;
 
 /**
- * Сервіс для автентифікації та реєстрації користувачів
+ * Сервіс для автентифікації та реєстрації користувачів.
  */
 @Service
 public class AuthService {
@@ -36,7 +36,7 @@ public class AuthService {
     }
     
     /**
-     * Реєстрація нового користувача
+     * Реєстрація нового користувача.
      * @param request дані для реєстрації
      * @return відповідь з JWT токеном
      */
@@ -53,17 +53,17 @@ public class AuthService {
         }
         
         // Встановлюємо роль STAFF якщо не вказано інше
-        Role role = request.getRole() != null ? request.getRole() : Role.STAFF;
+        RoleEntity role = request.getRole() != null ? request.getRole() : RoleEntity.STAFF;
         
         // Створення нового користувача
-        User user = User.builder()
+        UserEntity user = UserEntity.builder()
                 .name(request.getName())
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(role)
                 .position(request.getPosition())
-                .isActive(true)
+                .active(true)
                 .build();
         
         // Збереження користувача
@@ -90,7 +90,7 @@ public class AuthService {
     }
     
     /**
-     * Автентифікація користувача
+     * Автентифікація користувача.
      * @param request дані для входу
      * @return відповідь з JWT токеном
      */
@@ -105,7 +105,7 @@ public class AuthService {
             );
             
             // Якщо автентифікація успішна, знаходимо користувача
-            User user = userRepository.findByUsername(request.getUsername())
+            UserEntity user = userRepository.findByUsername(request.getUsername())
                     .or(() -> userRepository.findByEmail(request.getUsername()))
                     .orElseThrow(() -> new AuthenticationException("Неправильний логін або пароль"));
             
@@ -133,7 +133,7 @@ public class AuthService {
     }
 
     /**
-     * Оновлення JWT токена
+     * Оновлення JWT токена.
      * @param refreshToken токен для оновлення
      * @return відповідь з новим JWT токеном
      */
@@ -147,7 +147,7 @@ public class AuthService {
             }
             
             // Перевірка користувача
-            User user = userRepository.findByUsername(username)
+            UserEntity user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new AuthenticationException("Користувача не знайдено"));
             
             // Перевірка валідності токена

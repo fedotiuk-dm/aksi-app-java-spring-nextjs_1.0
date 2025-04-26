@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aksi.dto.pricing.PriceListItemDto;
-import com.aksi.dto.pricing.ServiceCategoryDto;
+import com.aksi.domain.pricing.dto.PriceListItemDTO;
+import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
 import com.aksi.service.pricing.PriceListService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,14 +33,14 @@ public class PriceListController {
 
     @GetMapping
     @Operation(summary = "Отримати всі категорії послуг")
-    public ResponseEntity<List<ServiceCategoryDto>> getAllCategories() {
+    public ResponseEntity<List<ServiceCategoryDTO>> getAllCategories() {
         log.info("REST запит на отримання всіх категорій послуг");
         return ResponseEntity.ok(priceListService.getAllCategories());
     }
 
     @GetMapping("/{categoryId}")
     @Operation(summary = "Отримати категорію послуг за ідентифікатором")
-    public ResponseEntity<ServiceCategoryDto> getCategoryById(
+    public ResponseEntity<ServiceCategoryDTO> getCategoryById(
             @PathVariable UUID categoryId) {
         log.info("REST запит на отримання категорії послуг за ID: {}", categoryId);
         return ResponseEntity.ok(priceListService.getCategoryById(categoryId));
@@ -48,7 +48,7 @@ public class PriceListController {
 
     @GetMapping("/category/{code}")
     @Operation(summary = "Отримати категорію послуг за кодом")
-    public ResponseEntity<ServiceCategoryDto> getCategoryByCode(
+    public ResponseEntity<ServiceCategoryDTO> getCategoryByCode(
             @PathVariable String code) {
         log.info("REST запит на отримання категорії послуг за кодом: {}", code);
         return ResponseEntity.ok(priceListService.getCategoryByCode(code));
@@ -56,35 +56,35 @@ public class PriceListController {
     
     @PostMapping("/category")
     @Operation(summary = "Створити нову категорію послуг")
-    public ResponseEntity<ServiceCategoryDto> createCategory(
-            @RequestBody ServiceCategoryDto categoryDto) {
+    public ResponseEntity<ServiceCategoryDTO> createCategory(
+            @RequestBody ServiceCategoryDTO categoryDto) {
         log.info("REST запит на створення нової категорії послуг: {}", categoryDto.getName());
         return new ResponseEntity<>(priceListService.createServiceCategory(categoryDto), HttpStatus.CREATED);
     }
     
     @PutMapping("/category/{categoryId}")
     @Operation(summary = "Оновити категорію послуг")
-    public ResponseEntity<ServiceCategoryDto> updateCategory(
+    public ResponseEntity<ServiceCategoryDTO> updateCategory(
             @PathVariable UUID categoryId,
-            @RequestBody ServiceCategoryDto categoryDto) {
+            @RequestBody ServiceCategoryDTO categoryDto) {
         log.info("REST запит на оновлення категорії послуг з ID: {}", categoryId);
         return ResponseEntity.ok(priceListService.updateServiceCategory(categoryId, categoryDto));
     }
     
     @PostMapping("/{categoryId}/item")
     @Operation(summary = "Створити новий елемент прайс-листа в категорії")
-    public ResponseEntity<PriceListItemDto> createPriceListItem(
+    public ResponseEntity<PriceListItemDTO> createPriceListItem(
             @PathVariable UUID categoryId,
-            @RequestBody PriceListItemDto itemDto) {
+            @RequestBody PriceListItemDTO itemDto) {
         log.info("REST запит на створення нового елемента прайс-листа в категорії з ID: {}", categoryId);
         return new ResponseEntity<>(priceListService.createPriceListItem(categoryId, itemDto), HttpStatus.CREATED);
     }
     
     @PutMapping("/item/{itemId}")
     @Operation(summary = "Оновити елемент прайс-листа")
-    public ResponseEntity<PriceListItemDto> updatePriceListItem(
+    public ResponseEntity<PriceListItemDTO> updatePriceListItem(
             @PathVariable UUID itemId,
-            @RequestBody PriceListItemDto itemDto) {
+            @RequestBody PriceListItemDTO itemDto) {
         log.info("REST запит на оновлення елемента прайс-листа з ID: {}", itemId);
         return ResponseEntity.ok(priceListService.updatePriceListItem(itemId, itemDto));
     }

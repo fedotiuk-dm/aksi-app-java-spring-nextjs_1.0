@@ -1,20 +1,21 @@
 package com.aksi.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+
 /**
- * Утилітарний клас для роботи з JWT
+ * Утилітарний клас для роботи з JWT.
  */
 @Component
 public class JwtUtils {
@@ -29,7 +30,7 @@ public class JwtUtils {
     private long refreshTokenExpiration;
     
     /**
-     * Витягує ім'я користувача з JWT токена
+     * Витягує ім'я користувача з JWT токена.
      * @param token JWT токен
      * @return ім'я користувача
      */
@@ -38,9 +39,10 @@ public class JwtUtils {
     }
     
     /**
-     * Витягує довільне поле з JWT токена
+     * Витягує довільне поле з JWT токена.
      * @param token JWT токен
      * @param claimsResolver функція для витягу поля
+     * @param <T> параметр <T>
      * @return значення поля
      */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -49,7 +51,7 @@ public class JwtUtils {
     }
     
     /**
-     * Генерує JWT токен для користувача
+     * Генерує JWT токен для користувача.
      * @param userDetails дані користувача
      * @return JWT токен
      */
@@ -58,7 +60,7 @@ public class JwtUtils {
     }
     
     /**
-     * Генерує JWT токен з додатковими полями
+     * Генерує JWT токен з додатковими полями.
      * @param extraClaims додаткові поля
      * @param userDetails дані користувача
      * @return JWT токен
@@ -74,27 +76,27 @@ public class JwtUtils {
     }
     
     /**
-     * Перевіряє дійсність JWT токена
+     * Перевіряє дійсність JWT токена.
      * @param token JWT токен
      * @param userDetails дані користувача
      * @return true, якщо токен дійсний
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return (username.equals(userDetails.getUsername())) && !tokenExpired(token);
     }
     
     /**
-     * Перевіряє чи закінчився термін дії токена
+     * Перевіряє чи закінчився термін дії токена.
      * @param token JWT токен
      * @return true, якщо термін дії закінчився
      */
-    private boolean isTokenExpired(String token) {
+    private boolean tokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
     
     /**
-     * Витягує дату закінчення терміну дії токена
+     * Витягує дату закінчення терміну дії токена.
      * @param token JWT токен
      * @return дата закінчення
      */
@@ -103,7 +105,7 @@ public class JwtUtils {
     }
     
     /**
-     * Витягує всі поля з JWT токена
+     * Витягує всі поля з JWT токена.
      * @param token JWT токен
      * @return поля токена
      */
@@ -116,7 +118,7 @@ public class JwtUtils {
     }
     
     /**
-     * Отримує ключ для підпису JWT
+     * Отримує ключ для підпису JWT.
      * @return ключ
      */
     private javax.crypto.SecretKey getSignInKey() {
@@ -125,7 +127,7 @@ public class JwtUtils {
     }
     
     /**
-     * Повертає час життя токена в секундах
+     * Повертає час життя токена в секундах.
      * @return час життя в секундах
      */
     public long getExpirationInSeconds() {
@@ -133,7 +135,7 @@ public class JwtUtils {
     }
     
     /**
-     * Генерує refresh token для користувача
+     * Генерує refresh token для користувача.
      * @param userDetails дані користувача
      * @return JWT refresh token
      */
@@ -147,7 +149,7 @@ public class JwtUtils {
     }
     
     /**
-     * Повертає час життя refresh токена в секундах
+     * Повертає час життя refresh токена в секундах.
      * @return час життя в секундах
      */
     public long getRefreshExpirationInSeconds() {

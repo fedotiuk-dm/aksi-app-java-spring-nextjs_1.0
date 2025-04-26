@@ -3,7 +3,8 @@
 import { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeRegistry } from './theme-registry';
-import { Toaster } from 'react-hot-toast';
+// Імпортуємо клієнтський компонент для toaster замість прямого імпорту
+import { ClientOnlyToaster } from '@/components/ui/ClientOnlyToaster';
 
 // Створюємо клієнт React Query
 const queryClient = new QueryClient({
@@ -24,7 +25,7 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeRegistry>
-        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+        <ClientOnlyToaster position="top-right" toastOptions={{ duration: 4000 }} />
         {children}
       </ThemeRegistry>
     </QueryClientProvider>

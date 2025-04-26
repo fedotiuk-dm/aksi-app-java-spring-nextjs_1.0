@@ -1,36 +1,35 @@
 package com.aksi.mapper;
 
-import com.aksi.domain.pricing.entity.PriceListItem;
-import com.aksi.domain.pricing.entity.ServiceCategory;
-import com.aksi.dto.pricing.PriceListItemDto;
-import com.aksi.dto.pricing.ServiceCategoryDto;
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
+import com.aksi.domain.pricing.dto.PriceListItemDTO;
+import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
+import com.aksi.domain.pricing.entity.PriceListItemEntity;
+import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 
 @Mapper(componentModel = "spring")
 public interface PriceListMapper {
 
     @Mapping(target = "items", source = "services")
-    ServiceCategoryDto toDto(ServiceCategory category);
+    ServiceCategoryDTO toDto(ServiceCategoryEntity category);
 
-    List<ServiceCategoryDto> toCategoryDtoList(List<ServiceCategory> categories);
+    List<ServiceCategoryDTO> toCategoryDtoList(List<ServiceCategoryEntity> categories);
 
-    @Mapping(target = "isActive", source = "active")
     @Mapping(target = "categoryId", source = "category.id")
-    PriceListItemDto toDto(PriceListItem priceListItem);
+    PriceListItemDTO toDto(PriceListItemEntity priceListItem);
 
-    List<PriceListItemDto> toItemDtoList(List<PriceListItem> items);
+    List<PriceListItemDTO> toItemDtoList(List<PriceListItemEntity> items);
 
     @Mapping(target = "services", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    ServiceCategory toEntity(ServiceCategoryDto dto);
+    ServiceCategoryEntity toEntity(ServiceCategoryDTO dto);
 
     @Mapping(target = "category", ignore = true)
-    @Mapping(target = "active", source = "isActive")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    PriceListItem toEntity(PriceListItemDto dto);
+    PriceListItemEntity toEntity(PriceListItemDTO dto);
 }

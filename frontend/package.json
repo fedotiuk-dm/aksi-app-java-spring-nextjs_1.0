@@ -11,12 +11,14 @@
     "generate-api:docker": "openapi --input http://backend:8080/api/v3/api-docs --output ./lib/api/generated --client axios --exportSchemas true --useOptions"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@hookform/resolvers": "^5.0.1",
     "@mui/icons-material": "^7.0.2",
     "@mui/lab": "^7.0.0-beta.11",
     "@mui/material": "^7.0.2",
+    "@mui/material-nextjs": "^7.0.2",
     "@mui/x-data-grid": "^8.0.0",
     "@mui/x-date-pickers": "^8.0.0",
     "@tanstack/react-query": "^5.72.2",

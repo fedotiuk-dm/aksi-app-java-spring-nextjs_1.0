@@ -1,31 +1,25 @@
 databaseChangeLog:
+  # Користувачі системи
   - include:
-      file: db/changelog/db.changelog-users.yaml
+      file: domains/users/users-index.yaml
+      relativeToChangelogFile: true
+      
+  # Автентифікація та авторизація
   - include:
-      file: db/changelog/db.changelog-login.yaml
+      file: domains/login/login-index.yaml
+      relativeToChangelogFile: true
+      
+  # Клієнти хімчистки
   - include:
-      file: db/changelog/db.changelog-clients.yaml
+      file: domains/clients/clients-index.yaml
+      relativeToChangelogFile: true
+      
+  # Прайс-листи
   - include:
-      file: db/changelog/db.changelog-pricelist.yaml
+      file: domains/pricelist/pricelist-index.yaml
+      relativeToChangelogFile: true
+      
+  # Замовлення
   - include:
-      file: db/changelog/db.changelog-orders-base.yaml
-  - include:
-      file: db/changelog/db.changelog-orders-extended.yaml
-  - include:
-      file: db/changelog/db.changelog-orders-constraints.yaml
-  - include:
-      file: db/changelog/db.changelog-orders-indexes.yaml
-  - include:
-      file: db/changelog/domains/catalog/db.changelog-materials-categories-1.0.yaml
-  - include:
-      file: db/changelog/domains/catalog/db.changelog-item-attributes-1.0.yaml
-  - include:
-      file: db/changelog/domains/catalog/db.changelog-item-fillings-1.0.yaml
-  - include:
-      file: db/changelog/domains/catalog/db.changelog-material-category-data-1.0.yaml
-  - include:
-      file: db/changelog/db.changelog-clients-source-details.yaml
-  - include:
-      file: db/changelog/db.changelog-order-item-photos.yaml
-  - include:
-      file: db/changelog/db.changelog-order-drafts.yaml
+      file: domains/orders/orders-index.yaml
+      relativeToChangelogFile: true

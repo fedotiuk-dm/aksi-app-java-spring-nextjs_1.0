@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Конфігурація веб-додатку та CORS
+ * Конфігурація веб-додатку та CORS.
  */
 @Configuration
 @EnableSpringDataWebSupport
@@ -63,8 +63,18 @@ public class WebConfig implements WebMvcConfigurer {
         
         config.setAllowedOriginPatterns(Collections.singletonList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"));
-        config.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "Authorization"));
+        config.setAllowedHeaders(
+            Arrays.asList("Origin",
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-Requested-With"
+        ));
+        config.setExposedHeaders(
+            Arrays.asList("Access-Control-Allow-Origin",
+            "Access-Control-Allow-Credentials",
+            "Authorization"
+        ));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
         

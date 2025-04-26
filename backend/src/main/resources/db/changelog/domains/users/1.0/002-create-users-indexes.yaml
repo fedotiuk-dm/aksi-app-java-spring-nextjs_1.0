@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 'users-1.0-002'
+      author: 'cascade'
+      comment: 'Add indexes for users table'
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: users
+      changes:
+        - createIndex:
+            tableName: users
+            indexName: idx_users_username
+            columns:
+              - column:
+                  name: username
+        - createIndex:
+            tableName: users
+            indexName: idx_users_email
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            tableName: users
+            indexName: idx_users_role
+            columns:
+              - column:
+                  name: role
+        - createIndex:
+            tableName: users
+            indexName: idx_users_is_active
+            columns:
+              - column:
+                  name: is_active

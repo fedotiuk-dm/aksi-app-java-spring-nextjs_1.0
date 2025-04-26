@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aksi.dto.auth.AuthResponse;
-import com.aksi.dto.auth.LoginRequest;
-import com.aksi.dto.auth.RegisterRequest;
+import com.aksi.domain.auth.dto.AuthResponse;
+import com.aksi.domain.auth.dto.LoginRequest;
+import com.aksi.domain.auth.dto.RegisterRequest;
 import com.aksi.service.auth.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Контролер для операцій автентифікації та реєстрації
+ * Контролер для операцій автентифікації та реєстрації.
  */
 @RestController
 @RequestMapping("/auth")
@@ -31,7 +31,7 @@ public class AuthController {
     private final AuthService authService;
     
     /**
-     * Реєстрація нового користувача
+     * Реєстрація нового користувача.
      * @param request дані користувача
      * @return відповідь з JWT токеном
      */
@@ -44,7 +44,7 @@ public class AuthController {
     }
     
     /**
-     * Вхід користувача
+     * Вхід користувача.
      * @param request дані для входу
      * @return відповідь з JWT токеном
      */
@@ -57,8 +57,8 @@ public class AuthController {
     }
     
     /**
-     * Оновлення токена
-     * @param request запит з refresh токеном
+     * Оновлення токена.
+     * @param refreshToken параметр refreshToken
      * @return відповідь з новим JWT токеном
      */
     @PostMapping("/refresh-token")

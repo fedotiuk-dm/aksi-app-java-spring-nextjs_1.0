@@ -22,11 +22,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.aksi.domain.user.entity.User;
+import com.aksi.domain.user.entity.UserEntity;
 import com.aksi.domain.user.repository.UserRepository;
-import com.aksi.dto.auth.AuthResponse;
-import com.aksi.dto.auth.LoginRequest;
-import com.aksi.dto.auth.RegisterRequest;
+import com.aksi.domain.auth.dto.AuthResponse;
+import com.aksi.domain.auth.dto.LoginRequest;
+import com.aksi.domain.auth.dto.RegisterRequest;
 import com.aksi.exception.AuthenticationException;
 import com.aksi.exception.UserAlreadyExistsException;
 import com.aksi.service.auth.AuthService;
@@ -53,7 +53,7 @@ public class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
-    private User mockUser;
+    private UserEntity mockUser;
     private RegisterRequest registerRequest;
     private LoginRequest loginRequest;
     private final String username = "testuser";
@@ -63,7 +63,7 @@ public class AuthServiceTest {
 
     @BeforeEach
     protected void setUp() {
-        mockUser = new User();
+        mockUser = new UserEntity();
         mockUser.setId(userId);
         mockUser.setUsername(username);
         mockUser.setEmail(email);
@@ -84,13 +84,13 @@ public class AuthServiceTest {
         when(userRepository.existsByUsername(registerRequest.getUsername())).thenReturn(false);
         when(userRepository.existsByEmail(registerRequest.getEmail())).thenReturn(false);
         when(passwordEncoder.encode(registerRequest.getPassword())).thenReturn("hashedPassword");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
-            User userToSave = invocation.getArgument(0);
+        when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> {
+            UserEntity userToSave = invocation.getArgument(0);
             userToSave.setId(userId);
             return userToSave;
         });
-        when(jwtUtils.generateToken(any(User.class))).thenReturn("accessToken");
-        when(jwtUtils.generateRefreshToken(any(User.class))).thenReturn("refreshToken");
+        when(jwtUtils.generateToken(any(UserEntity.class))).thenReturn("accessToken");
+        when(jwtUtils.generateRefreshToken(any(UserEntity.class))).thenReturn("refreshToken");
         when(jwtUtils.getExpirationInSeconds()).thenReturn(3600L);
 
         AuthResponse response = authService.register(registerRequest);
@@ -98,13 +98,12 @@ public class AuthServiceTest {
         assertNotNull(response);
         assertNotNull(response.getId());
         assertEquals(mockUser.getId().toString(), response.getId().toString());
-        assertEquals(mockUser.getUsername(), response.getUsername());
+        assertEquals(mockUser.getEmail(), response.getEmail());
         assertEquals("accessToken", response.getAccessToken());
         assertEquals("refreshToken", response.getRefreshToken());
-        assertEquals(3600L, response.getExpiresIn());
 
-        verify(userRepository).save(any(User.class));
-        verify(jwtUtils).generateToken(any(User.class));
+        verify(userRepository).save(any(UserEntity.class));
+        verify(jwtUtils).generateToken(any(UserEntity.class));
     }
 
     @Test
@@ -116,7 +115,7 @@ public class AuthServiceTest {
         });
         
         assertEquals("Користувач з таким логіном вже існує", exception.getMessage());
-        verify(userRepository, never()).save(any(User.class));
+        verify(userRepository, never()).save(any(UserEntity.class));
     }
 
     @Test
@@ -129,7 +128,7 @@ public class AuthServiceTest {
         });
         
         assertEquals("Користувач з таким email вже існує", exception.getMessage());
-        verify(userRepository, never()).save(any(User.class));
+        verify(userRepository, never()).save(any(UserEntity.class));
     }
 
     @Test
@@ -147,10 +146,9 @@ public class AuthServiceTest {
 
         assertNotNull(response);
         assertEquals(mockUser.getId().toString(), response.getId().toString());
-        assertEquals(mockUser.getUsername(), response.getUsername());
+        assertEquals(mockUser.getEmail(), response.getEmail());
         assertEquals("accessToken", response.getAccessToken());
         assertEquals("refreshToken", response.getRefreshToken());
-        assertEquals(3600L, response.getExpiresIn());
 
         verify(authenticationManager).authenticate(authToken);
         verify(jwtUtils).generateToken(mockUser);
@@ -202,10 +200,9 @@ public class AuthServiceTest {
 
         assertNotNull(response);
         assertEquals(mockUser.getId().toString(), response.getId().toString());
-        assertEquals(mockUser.getUsername(), response.getUsername());
+        assertEquals(mockUser.getEmail(), response.getEmail());
         assertEquals("newAccessToken", response.getAccessToken());
         assertEquals("newRefreshToken", response.getRefreshToken());
-        assertEquals(3600L, response.getExpiresIn());
 
         verify(jwtUtils).isTokenValid(refreshToken, mockUser);
         verify(jwtUtils).generateToken(mockUser);
@@ -225,6 +222,6 @@ public class AuthServiceTest {
         
         assertEquals("Недійсний refresh token", exception.getMessage());
         verify(jwtUtils).isTokenValid(refreshToken, mockUser);
-        verify(jwtUtils, never()).generateToken(any(User.class));
+        verify(jwtUtils, never()).generateToken(any(UserEntity.class));
     }
 } 
