@@ -1,26 +1,26 @@
 import { StateCreator } from 'zustand';
-import { OrderWizardState } from '../types';
+import { OrderWizardState } from '../types/types';
 
 export const createDetailsSlice: StateCreator<
   OrderWizardState,
-  [["zustand/immer", never]],
+  [['zustand/immer', never]],
   [],
-  Pick<OrderWizardState, 
-    'setCustomerNotes' | 
-    'setInternalNotes' | 
-    'setDirty' |
-    'setError' |
-    'setLoading'
+  Pick<
+    OrderWizardState,
+    | 'setCustomerNotes'
+    | 'setInternalNotes'
+    | 'setDirty'
+    | 'setError'
+    | 'setLoading'
   >
 > = (set) => ({
-  
   setCustomerNotes: (notes: string) => {
     set((state) => {
       state.customerNotes = notes;
       state.isDirty = true;
     });
   },
-  
+
   setInternalNotes: (notes: string) => {
     set((state) => {
       state.internalNotes = notes;
@@ -34,13 +34,13 @@ export const createDetailsSlice: StateCreator<
       state.isDirty = isDirty;
     });
   },
-  
+
   setError: (error: string | null) => {
     set((state) => {
       state.error = error;
     });
   },
-  
+
   setLoading: (isLoading: boolean) => {
     set((state) => {
       state.isLoading = isLoading;

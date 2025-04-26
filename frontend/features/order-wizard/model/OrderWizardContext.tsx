@@ -1,8 +1,12 @@
 import React, { createContext, useContext, PropsWithChildren } from 'react';
-import { useOrderWizardStore, useOrderWizardNavigation, useOrderWizardStatus } from './store';
+import {
+  useOrderWizardStore,
+  useOrderWizardNavigation,
+  useOrderWizardStatus,
+} from './store/store';
 import { useClients } from '../api/clients';
 import { useOrders } from '../api/orders';
-import { WizardStep } from './types';
+import { WizardStep } from './types/types';
 
 // Створюємо контекст для візарда
 interface OrderWizardContextValue {
@@ -11,13 +15,13 @@ interface OrderWizardContextValue {
   navigateToStep: (step: WizardStep, subStep?: string) => void;
   navigateBack: () => void;
   isStepActive: (step: WizardStep) => boolean;
-  
+
   // API для клієнтів
   clientsApi: ReturnType<typeof useClients>;
-  
+
   // API для замовлень
   ordersApi: ReturnType<typeof useOrders>;
-  
+
   // Статус
   isLoading: boolean;
   error: string | null;
@@ -28,17 +32,19 @@ const OrderWizardContext = createContext<OrderWizardContextValue | null>(null);
 /**
  * Провайдер контексту для Order Wizard
  */
-export const OrderWizardProvider: React.FC<PropsWithChildren> = ({ children }) => {
+export const OrderWizardProvider: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
   // Отримуємо дані про навігацію
   const navigation = useOrderWizardNavigation();
-  
+
   // Отримуємо дані про статус
   const status = useOrderWizardStatus();
-  
+
   // Отримуємо API хуки
   const clientsApi = useClients();
   const ordersApi = useOrders();
-  
+
   // Формуємо значення контексту
   const contextValue: OrderWizardContextValue = {
     // Навігація
@@ -46,16 +52,16 @@ export const OrderWizardProvider: React.FC<PropsWithChildren> = ({ children }) =
     navigateToStep: navigation.navigateToStep,
     navigateBack: navigation.navigateBack,
     isStepActive: navigation.isStepActive,
-    
-    // API 
+
+    // API
     clientsApi,
     ordersApi,
-    
+
     // Статус
     isLoading: status.isLoading,
     error: status.error,
   };
-  
+
   return (
     <OrderWizardContext.Provider value={contextValue}>
       {children}
@@ -68,11 +74,13 @@ export const OrderWizardProvider: React.FC<PropsWithChildren> = ({ children }) =
  */
 export const useOrderWizard = () => {
   const context = useContext(OrderWizardContext);
-  
+
   if (!context) {
-    throw new Error('useOrderWizard must be used within an OrderWizardProvider');
+    throw new Error(
+      'useOrderWizard must be used within an OrderWizardProvider'
+    );
   }
-  
+
   return context;
 };
 

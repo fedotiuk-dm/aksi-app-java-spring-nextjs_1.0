@@ -19,7 +19,7 @@ export namespace CreateClientRequest {
     export enum source {
         INSTAGRAM = 'INSTAGRAM',
         GOOGLE = 'GOOGLE',
-        RECOMMENDATIONS = 'RECOMMENDATIONS',
+        RECOMMENDATION = 'RECOMMENDATION',
         OTHER = 'OTHER',
     }
 }

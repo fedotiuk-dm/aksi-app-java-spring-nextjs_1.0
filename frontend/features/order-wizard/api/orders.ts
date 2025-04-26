@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { OrdersService, OrderDTO, OrderItemDTO } from '@/lib/api';
 import type { CreateOrderRequest } from '@/lib/api';
 import { Order, OrderItem } from '../model/types';
-import { useOrderWizardStatus } from '../model/store';
+import type { UUID } from 'node:crypto';
+import { useOrderWizardStatus } from '../model/store/store';
 import dayjs from 'dayjs';
 
 /**
@@ -11,7 +12,7 @@ import dayjs from 'dayjs';
 export const useOrders = () => {
   const { withLoading } = useOrderWizardStatus();
   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
-  
+
   /**
    * Створення нового замовлення
    */
@@ -27,34 +28,34 @@ export const useOrders = () => {
         customerNotes: orderData.customerNotes,
         internalNotes: orderData.internalNotes,
         express: orderData.express,
-        draft: orderData.draft
+        draft: orderData.draft,
       };
-      
+
       // Створення замовлення через API
       const response = await OrdersService.createOrder({
-        requestBody: apiOrderData
+        requestBody: apiOrderData,
       });
-      
+
       const mappedOrder = mapApiOrderToModelOrder(response);
       return mappedOrder;
     });
   };
-  
+
   /**
    * Отримання замовлення за ID
    */
   const getOrderById = async (orderId: string) => {
     return withLoading(async (): Promise<Order> => {
       const response = await OrdersService.getOrderById({
-        id: orderId
+        id: orderId,
       });
-      
+
       const mappedOrder = mapApiOrderToModelOrder(response);
       setOrderDetails(mappedOrder);
       return mappedOrder;
     });
   };
-  
+
   /**
    * Збереження чернетки замовлення
    */
@@ -70,33 +71,33 @@ export const useOrders = () => {
         customerNotes: orderData.customerNotes,
         internalNotes: orderData.internalNotes,
         express: orderData.express,
-        draft: true // Завжди чернетка
+        draft: true, // Завжди чернетка
       };
-      
+
       // Збереження чернетки через API
       const response = await OrdersService.saveOrderDraft({
-        requestBody: apiOrderData
+        requestBody: apiOrderData,
       });
-      
+
       const mappedOrder = mapApiOrderToModelOrder(response);
       return mappedOrder;
     });
   };
-  
+
   /**
    * Перетворення чернетки на активне замовлення
    */
   const convertDraftToOrder = async (orderId: string) => {
     return withLoading(async (): Promise<Order> => {
       const response = await OrdersService.convertDraftToOrder({
-        id: orderId
+        id: orderId,
       });
-      
+
       const mappedOrder = mapApiOrderToModelOrder(response);
       return mappedOrder;
     });
   };
-  
+
   /**
    * Додавання знижки до замовлення
    */
@@ -104,14 +105,14 @@ export const useOrders = () => {
     return withLoading(async (): Promise<Order> => {
       const response = await OrdersService.applyDiscount({
         id: orderId,
-        amount: discountAmount
+        amount: discountAmount,
       });
-      
+
       const mappedOrder = mapApiOrderToModelOrder(response);
       return mappedOrder;
     });
   };
-  
+
   /**
    * Додавання передоплати до замовлення
    */
@@ -119,14 +120,14 @@ export const useOrders = () => {
     return withLoading(async (): Promise<Order> => {
       const response = await OrdersService.addPrepayment({
         id: orderId,
-        amount: prepaymentAmount
+        amount: prepaymentAmount,
       });
-      
+
       const mappedOrder = mapApiOrderToModelOrder(response);
       return mappedOrder;
     });
   };
-  
+
   /**
    * Форматування дати у строковий формат для API
    */
@@ -134,7 +135,7 @@ export const useOrders = () => {
     if (!date) return undefined;
     return dayjs(date).format('YYYY-MM-DD');
   };
-  
+
   /**
    * Перетворення предмета замовлення з нашої моделі в API формат
    */
@@ -150,50 +151,64 @@ export const useOrders = () => {
       color: item.color,
       material: item.material,
       defects: item.defects,
-      specialInstructions: item.specialInstructions
+      specialInstructions: item.specialInstructions,
     };
   };
-  
+
   /**
    * Перетворення замовлення з API формату в нашу модель
    */
   const mapApiOrderToModelOrder = (apiOrder: OrderDTO): Order => {
     return {
-      id: apiOrder.id,
-      clientId: apiOrder.client?.id || '',
+      id: apiOrder.id ? (String(apiOrder.id) as UUID) : undefined,
+      clientId: apiOrder.client?.id
+        ? (String(apiOrder.client.id) as UUID)
+        : ('' as UUID), // Використовуємо порожній рядок як UUID для уникнення помилок типізації
       receiptNumber: apiOrder.receiptNumber,
       tagNumber: apiOrder.tagNumber,
-      items: apiOrder.items?.map(item => ({
-        id: item.id,
-        name: item.name || '',
-        description: item.description,
-        quantity: item.quantity || 1,
-        unitPrice: item.unitPrice || 0,
-        totalPrice: item.totalPrice || (item.quantity || 1) * (item.unitPrice || 0),
-        category: item.category,
-        color: item.color,
-        material: item.material,
-        defects: item.defects,
-        specialInstructions: item.specialInstructions
-      })) || [],
+      items:
+        apiOrder.items?.map((item) => ({
+          id: item.id ? (String(item.id) as UUID) : undefined,
+          name: item.name || '',
+          description: item.description,
+          quantity: item.quantity || 1,
+          unitPrice: item.unitPrice || 0,
+          totalPrice:
+            item.totalPrice || (item.quantity || 1) * (item.unitPrice || 0),
+          category: item.category,
+          color: item.color,
+          material: item.material,
+          defects: item.defects,
+          specialInstructions: item.specialInstructions,
+        })) || [],
       totalAmount: apiOrder.totalAmount || 0,
       discountAmount: apiOrder.discountAmount || 0,
       finalAmount: apiOrder.finalAmount || 0,
       prepaymentAmount: apiOrder.prepaymentAmount || 0,
       balanceAmount: apiOrder.balanceAmount || 0,
       branchLocation: apiOrder.branchLocation || '',
-      status: apiOrder.status ? String(apiOrder.status) as Order['status'] : undefined,
-      expectedCompletionDate: apiOrder.expectedCompletionDate ? new Date(apiOrder.expectedCompletionDate) : undefined,
-      completedDate: apiOrder.completedDate ? new Date(apiOrder.completedDate) : undefined,
-      createdDate: apiOrder.createdDate ? new Date(apiOrder.createdDate) : undefined,
-      updatedDate: apiOrder.updatedDate ? new Date(apiOrder.updatedDate) : undefined,
+      status: apiOrder.status
+        ? (String(apiOrder.status) as Order['status'])
+        : undefined,
+      expectedCompletionDate: apiOrder.expectedCompletionDate
+        ? new Date(apiOrder.expectedCompletionDate)
+        : undefined,
+      completedDate: apiOrder.completedDate
+        ? new Date(apiOrder.completedDate)
+        : undefined,
+      createdDate: apiOrder.createdDate
+        ? new Date(apiOrder.createdDate)
+        : undefined,
+      updatedDate: apiOrder.updatedDate
+        ? new Date(apiOrder.updatedDate)
+        : undefined,
       customerNotes: apiOrder.customerNotes,
       internalNotes: apiOrder.internalNotes,
       express: apiOrder.express || false,
-      draft: apiOrder.draft || false
+      draft: apiOrder.draft || false,
     };
   };
-  
+
   return {
     orderDetails,
     createOrder,
@@ -201,6 +216,6 @@ export const useOrders = () => {
     saveOrderDraft,
     convertDraftToOrder,
     applyDiscount,
-    addPrepayment
+    addPrepayment,
   };
 };

@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { createNavigationSlice } from './slices/navigationSlice';
-import { createClientSlice } from './slices/clientSlice';
-import { createBasicInfoSlice } from './slices/basicInfoSlice';
-import { createItemsSlice } from './slices/itemsSlice';
-import { createDetailsSlice } from './slices/detailsSlice';
-import { createBillingSlice } from './slices/billingSlice';
-import { OrderWizardState, WizardStep } from './types';
+import { createNavigationSlice } from '../slices/navigationSlice';
+import { createClientSlice } from '../slices/clientSlice';
+import { createBasicInfoSlice } from '../slices/basicInfoSlice';
+import { createItemsSlice } from '../slices/itemsSlice';
+import { createDetailsSlice } from '../slices/detailsSlice';
+import { createBillingSlice } from '../slices/billingSlice';
+import { OrderWizardState, WizardStep } from '../types/types';
 
 // Початковий стан для візарда
 const initialState: Partial<OrderWizardState> = {
@@ -50,7 +50,7 @@ const initialState: Partial<OrderWizardState> = {
 // Експортуємо хук для доступу до стору
 export const useOrderWizardStore = create<OrderWizardState>()(
   immer((set, get, store) => ({
-    ...initialState as OrderWizardState,
+    ...(initialState as OrderWizardState),
     ...createNavigationSlice(set, get, store),
     ...createClientSlice(set, get, store),
     ...createBasicInfoSlice(set, get, store),
@@ -72,13 +72,13 @@ export const useOrderWizardStore = create<OrderWizardState>()(
 
 // Хук для доступу до методів навігації візарда
 export const useOrderWizardNavigation = () => {
-  const { 
-    currentStep, 
-    currentSubStep, 
+  const {
+    currentStep,
+    currentSubStep,
     navigationHistory,
-    navigateToStep, 
-    navigateBack, 
-    resetNavigationHistory 
+    navigateToStep,
+    navigateBack,
+    resetNavigationHistory,
   } = useOrderWizardStore();
 
   return {
@@ -105,17 +105,22 @@ export const useOrderWizardStatus = () => {
     setLoading,
     setError,
     // Допоміжний метод для обробки запитів до API
-    withLoading: async <T>(promiseOrFn: Promise<T> | (() => Promise<T>)): Promise<T> => {
+    withLoading: async <T>(
+      promiseOrFn: Promise<T> | (() => Promise<T>)
+    ): Promise<T> => {
       try {
         setLoading(true);
         setError(null);
         // Перевіряємо, чи це функція, яка повертає Promise, чи сам Promise
-        const promise = typeof promiseOrFn === 'function' 
-          ? (promiseOrFn as () => Promise<T>)()
-          : promiseOrFn;
+        const promise =
+          typeof promiseOrFn === 'function'
+            ? (promiseOrFn as () => Promise<T>)()
+            : promiseOrFn;
         return await promise;
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Виникла невідома помилка');
+        setError(
+          err instanceof Error ? err.message : 'Виникла невідома помилка'
+        );
         throw err;
       } finally {
         setLoading(false);

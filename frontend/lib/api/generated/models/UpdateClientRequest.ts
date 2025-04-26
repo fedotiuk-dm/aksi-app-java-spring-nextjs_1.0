@@ -19,7 +19,7 @@ export namespace UpdateClientRequest {
     export enum source {
         INSTAGRAM = 'INSTAGRAM',
         GOOGLE = 'GOOGLE',
-        RECOMMENDATIONS = 'RECOMMENDATIONS',
+        RECOMMENDATION = 'RECOMMENDATION',
         OTHER = 'OTHER',
     }
 }

@@ -1,17 +1,15 @@
 import { StateCreator } from 'zustand';
-import { OrderWizardState, Client } from '../types';
+import { OrderWizardState, Client } from '../types/types';
 
 export const createClientSlice: StateCreator<
   OrderWizardState,
-  [["zustand/immer", never]],
+  [['zustand/immer', never]],
   [],
-  Pick<OrderWizardState, 
-    'setSelectedClient' | 
-    'setSearchQuery' | 
-    'setSearchResults'
+  Pick<
+    OrderWizardState,
+    'setSelectedClient' | 'setSearchQuery' | 'setSearchResults'
   >
 > = (set) => ({
-  
   setSelectedClient: (client: Client | null) => {
     set((state) => {
       state.selectedClient = client;
@@ -24,13 +22,13 @@ export const createClientSlice: StateCreator<
       state.isDirty = true;
     });
   },
-  
+
   setSearchQuery: (query: string) => {
     set((state) => {
       state.searchQuery = query;
     });
   },
-  
+
   setSearchResults: (results: Client[]) => {
     set((state) => {
       state.searchResults = results;
