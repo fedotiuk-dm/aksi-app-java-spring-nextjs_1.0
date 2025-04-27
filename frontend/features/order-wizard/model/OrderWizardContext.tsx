@@ -4,8 +4,16 @@ import {
   useOrderWizardNavigation,
   useOrderWizardStatus,
 } from './store/store';
-import { useClients } from '../api/clients';
-import { useOrders } from '../api/orders';
+// Імпортуємо API хуки з індексного файлу API для кращої організації
+import {
+  useClients,
+  useOrders,
+  useBranchLocations,
+  useOrderItems,
+  useItemCharacteristics,
+  usePriceCalculator,
+  useOrderItemPhotos
+} from '../api';
 import { WizardStep } from './types/types';
 
 // Створюємо контекст для візарда
@@ -16,11 +24,16 @@ interface OrderWizardContextValue {
   navigateBack: () => void;
   isStepActive: (step: WizardStep) => boolean;
 
-  // API для клієнтів
+  // API для загальних сутностей
   clientsApi: ReturnType<typeof useClients>;
-
-  // API для замовлень
   ordersApi: ReturnType<typeof useOrders>;
+  branchLocationsApi: ReturnType<typeof useBranchLocations>;
+  
+  // API для етапу 2 (Менеджер предметів)
+  orderItemsApi: ReturnType<typeof useOrderItems>;
+  itemCharacteristicsApi: ReturnType<typeof useItemCharacteristics>;
+  priceCalculatorApi: ReturnType<typeof usePriceCalculator>;
+  orderItemPhotosApi: ReturnType<typeof useOrderItemPhotos>;
 
   // Статус
   isLoading: boolean;
@@ -41,9 +54,14 @@ export const OrderWizardProvider: React.FC<PropsWithChildren> = ({
   // Отримуємо дані про статус
   const status = useOrderWizardStatus();
 
-  // Отримуємо API хуки
+  // Ініціалізуємо всі API хуки
   const clientsApi = useClients();
   const ordersApi = useOrders();
+  const branchLocationsApi = useBranchLocations();
+  const orderItemsApi = useOrderItems();
+  const itemCharacteristicsApi = useItemCharacteristics();
+  const priceCalculatorApi = usePriceCalculator();
+  const orderItemPhotosApi = useOrderItemPhotos();
 
   // Формуємо значення контексту
   const contextValue: OrderWizardContextValue = {
@@ -53,9 +71,16 @@ export const OrderWizardProvider: React.FC<PropsWithChildren> = ({
     navigateBack: navigation.navigateBack,
     isStepActive: navigation.isStepActive,
 
-    // API
+    // API для загальних сутностей
     clientsApi,
     ordersApi,
+    branchLocationsApi,
+    
+    // API для етапу 2
+    orderItemsApi,
+    itemCharacteristicsApi,
+    priceCalculatorApi,
+    orderItemPhotosApi,
 
     // Статус
     isLoading: status.isLoading,
@@ -77,7 +102,7 @@ export const useOrderWizard = () => {
 
   if (!context) {
     throw new Error(
-      'useOrderWizard must be used within an OrderWizardProvider'
+      'Хук useOrderWizard може використовуватись лише всередині OrderWizardProvider'
     );
   }
 

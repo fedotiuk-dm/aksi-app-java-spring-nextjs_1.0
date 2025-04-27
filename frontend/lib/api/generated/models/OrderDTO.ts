@@ -8,7 +8,9 @@ import type { OrderItemDTO } from './OrderItemDTO';
 export type OrderDTO = {
     balanceAmount?: number;
     branchLocation: BranchLocationDTO;
+    branchLocationId?: string;
     client: ClientResponse;
+    clientId?: string;
     completedDate?: string;
     createdDate?: string;
     customerNotes?: string;

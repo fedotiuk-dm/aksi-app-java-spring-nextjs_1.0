@@ -23,6 +23,12 @@ public class OrderItemDTO {
     
     private UUID id;
     
+    /**
+     * ID замовлення, до якого належить предмет.
+     * Додане для зручності фронтенду.
+     */
+    private UUID orderId;
+    
     @NotBlank(message = "Назва предмету обов'язкова")
     @Size(max = 255, message = "Назва предмету не може перевищувати 255 символів")
     private String name;

@@ -38,6 +38,12 @@ public class OrderDTO {
     @NotNull(message = "Клієнт обов'язковий")
     private ClientResponse client;
     
+    /**
+     * ID клієнта для зручного доступу з фронтенду.
+     * Значення дублює client.id, але дозволяє спростити маппінг на фронтенді.
+     */
+    private UUID clientId;
+    
     @Valid
     @Builder.Default
     private List<OrderItemDTO> items = new ArrayList<>();
@@ -54,6 +60,12 @@ public class OrderDTO {
     
     @NotNull(message = "Філія обов'язкова")
     private BranchLocationDTO branchLocation;
+    
+    /**
+     * ID філії для зручного доступу з фронтенду.
+     * Значення дублює branchLocation.id, але дозволяє спростити маппінг на фронтенді.
+     */
+    private UUID branchLocationId;
     
     @NotNull(message = "Статус обов'язковий")
     private OrderStatusEnum status;

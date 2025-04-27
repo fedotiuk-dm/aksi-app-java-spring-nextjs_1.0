@@ -11,9 +11,17 @@ export const $OrderDTO = {
             type: 'BranchLocationDTO',
             isRequired: true,
         },
+        branchLocationId: {
+            type: 'string',
+            format: 'uuid',
+        },
         client: {
             type: 'ClientResponse',
             isRequired: true,
+        },
+        clientId: {
+            type: 'string',
+            format: 'uuid',
         },
         completedDate: {
             type: 'string',

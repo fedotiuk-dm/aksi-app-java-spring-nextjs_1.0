@@ -30,6 +30,8 @@ public interface OrderMapper {
      * @param order параметр order
      * @return об'єкт OrderDTO, створений на основі ентіті замовлення
      */
+    @Mapping(target = "clientId", source = "client.id")
+    @Mapping(target = "branchLocationId", source = "branchLocation.id")
     OrderDTO toDTO(OrderEntity order);
     
     /**

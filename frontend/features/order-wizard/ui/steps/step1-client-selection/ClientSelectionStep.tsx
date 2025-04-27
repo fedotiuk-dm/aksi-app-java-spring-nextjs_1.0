@@ -17,7 +17,10 @@ import ClientForm from './components/ClientForm';
  * Перший крок Order Wizard - вибір або створення клієнта
  */
 export const ClientSelectionStep: React.FC = () => {
-  const { createClient, updateClient, searchResults } = useClients();
+  const { useCreateClient, useUpdateClient, useClientSearch } = useClients();
+  const createClientMutation = useCreateClient();
+  const updateClientMutation = useUpdateClient();
+  const { data: searchResults = [] } = useClientSearch('');
   const { navigateToStep } = useOrderWizardNavigation();
   
   // Стани для вибраного клієнта, клієнта для редагування та відображення форми
@@ -58,11 +61,14 @@ export const ClientSelectionStep: React.FC = () => {
       
       if (clientToEdit?.id) {
         // Оновлення існуючого клієнта
-        const updatedClient = await updateClient(clientToEdit.id.toString(), clientData);
+        const updatedClient = await updateClientMutation.mutateAsync({ 
+          clientId: clientToEdit.id.toString(), 
+          clientData
+        });
         setSelectedClient(updatedClient);
       } else {
         // Створення нового клієнта
-        const newClient = await createClient(clientData);
+        const newClient = await createClientMutation.mutateAsync(clientData);
         setSelectedClient(newClient);
       }
       

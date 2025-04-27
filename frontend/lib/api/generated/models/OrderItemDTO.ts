@@ -15,6 +15,7 @@ export type OrderItemDTO = {
     material?: string;
     name?: string;
     noGuaranteeReason?: string;
+    orderId?: string;
     otherStains?: string;
     quantity: number;
     specialInstructions?: string;

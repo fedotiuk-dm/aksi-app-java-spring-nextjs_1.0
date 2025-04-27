@@ -44,6 +44,10 @@ export const $OrderItemDTO = {
         noGuaranteeReason: {
             type: 'string',
         },
+        orderId: {
+            type: 'string',
+            format: 'uuid',
+        },
         otherStains: {
             type: 'string',
         },

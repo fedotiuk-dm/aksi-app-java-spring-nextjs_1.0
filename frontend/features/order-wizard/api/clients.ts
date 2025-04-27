@@ -1,146 +1,180 @@
-import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ClientsService, ClientResponse } from '@/lib/api';
 import type { CreateClientRequest, UpdateClientRequest } from '@/lib/api';
 import { Client, ClientSource } from '../model/types';
 import type { UUID } from 'node:crypto';
-import { useOrderWizardStatus } from '../model/store/store';
+
+// Ключі кешу для запитів
+const QUERY_KEYS = {
+  CLIENTS: 'clients',
+  CLIENT_SEARCH: 'clientSearch',
+  CLIENT_DETAILS: 'clientDetails',
+};
 
 /**
  * Хук для роботи з API клієнтів в Order Wizard
  */
 export const useClients = () => {
-  const { withLoading } = useOrderWizardStatus();
-  const [searchResults, setSearchResults] = useState<Client[]>([]);
+  const queryClient = useQueryClient();
 
   /**
-   * Пошук клієнтів за ключовим словом
+   * Пошук клієнтів за ключовим словом (підтримка TanStack Query)
    */
-  const searchClients = async (searchTerm: string) => {
-    // Перевірка на мінімальну довжину пошукового запиту
-    if (searchTerm.length < 3) {
-      setSearchResults([]);
-      return [];
-    }
+  const useClientSearch = (searchTerm: string) => {
+    return useQuery({
+      queryKey: [QUERY_KEYS.CLIENT_SEARCH, searchTerm],
+      queryFn: async (): Promise<Client[]> => {
+        // Перевірка на мінімальну довжину пошукового запиту
+        if (searchTerm.length < 3) {
+          return [];
+        }
+        
+        try {
+          // Викликаємо API пошуку клієнтів
+          const response = await ClientsService.searchClients({
+            keyword: searchTerm,
+          });
 
-    return withLoading(async (): Promise<Client[]> => {
-      try {
-        // Викликаємо API пошуку клієнтів
-        const response = await ClientsService.searchClients({
-          keyword: searchTerm,
-        });
+          console.log('Результат пошуку клієнтів:', response);
 
-        console.log('Результат пошуку клієнтів:', response);
+          // Перевіряємо тип відповіді та обробляємо відповідно
+          let clients: Client[] = [];
 
-        // Перевіряємо тип відповіді та обробляємо відповідно
-        let clients: Client[] = [];
+          if (Array.isArray(response)) {
+            // Якщо відповідь - масив
+            clients = response.map(mapApiClientToModelClient);
+          } else if (response) {
+            // Якщо відповідь - один об'єкт
+            clients = [mapApiClientToModelClient(response)];
+          }
 
-        if (Array.isArray(response)) {
-          // Якщо відповідь - масив
-          clients = response.map(mapApiClientToModelClient);
-        } else if (response) {
-          // Якщо відповідь - один об'єкт
-          clients = [mapApiClientToModelClient(response)];
+          console.log('Оброблені результати:', clients);
+          return clients;
+        } catch (error) {
+          console.error('Помилка при пошуку клієнтів:', error);
+          return [];
+        }
+      },
+      enabled: searchTerm.length >= 3,
+      staleTime: 1000 * 60 * 5, // 5 хвилин
+    });
+  };
+
+  /**
+   * Хук для отримання клієнта за ID
+   */
+  const useClientDetails = (clientId: string | undefined) => {
+    return useQuery({
+      queryKey: [QUERY_KEYS.CLIENT_DETAILS, clientId],
+      queryFn: async (): Promise<Client | null> => {
+        if (!clientId) return null;
+        
+        try {
+          const response = await ClientsService.getClientById({
+            id: clientId,
+          });
+          return mapApiClientToModelClient(response);
+        } catch (error) {
+          console.error('Помилка при отриманні клієнта:', error);
+          return null;
+        }
+      },
+      enabled: !!clientId,
+    });
+  };
+
+  /**
+   * Хук для створення нового клієнта
+   */
+  const useCreateClient = () => {
+    return useMutation({
+      mutationFn: async (clientData: Omit<Client, 'id'>): Promise<Client> => {
+        // Перетворюємо наш формат даних у формат API
+        const apiClientData: CreateClientRequest = {
+          firstName: clientData.firstName,
+          lastName: clientData.lastName,
+          phone: clientData.phone,
+          email: clientData.email,
+          address: formatAddress(clientData.address),
+          communicationChannels: clientData.communicationChannels,
+          source: clientData.source?.source
+            ? mapSourceToApiSource(clientData.source.source)
+            : undefined,
+          sourceDetails: clientData.source?.details,
+        };
+
+        // Діагностичний лог для перевірки даних, які відправляються на бекенд
+        console.log('Client data being sent to API:', JSON.stringify(apiClientData, null, 2));
+        
+        // Викликаємо API створення клієнта
+        try {
+          const response = await ClientsService.createClient({
+            requestBody: apiClientData,
+          });
+          return mapApiClientToModelClient(response);
+        } catch (error) {
+          console.error('Error details from API:', error);
+          throw error;
+        }
+      },
+      onSuccess: () => {
+        // Інвалідуємо кеш після успішного створення
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CLIENTS] });
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CLIENT_SEARCH] });
+      },
+    });
+  };
+
+  /**
+   * Хук для оновлення існуючого клієнта
+   */
+  const useUpdateClient = () => {
+    return useMutation({
+      mutationFn: async ({ 
+        clientId, 
+        clientData 
+      }: { 
+        clientId: string, 
+        clientData: Partial<Client>
+      }): Promise<Client> => {
+        // Перетворюємо наш формат даних у формат API
+        const apiClientData: UpdateClientRequest = {};
+
+        if (clientData.firstName !== undefined)
+          apiClientData.firstName = clientData.firstName;
+        if (clientData.lastName !== undefined)
+          apiClientData.lastName = clientData.lastName;
+        if (clientData.phone !== undefined)
+          apiClientData.phone = clientData.phone;
+        if (clientData.email !== undefined)
+          apiClientData.email = clientData.email;
+        if (clientData.address !== undefined)
+          apiClientData.address = formatAddress(clientData.address);
+        if (clientData.communicationChannels !== undefined) {
+          apiClientData.communicationChannels = clientData.communicationChannels;
+        }
+        if (clientData.source !== undefined && clientData.source.source) {
+          apiClientData.source = mapSourceToApiSource(clientData.source.source);
+          if (clientData.source.details) {
+            apiClientData.sourceDetails = clientData.source.details;
+          }
         }
 
-        console.log('Оброблені результати:', clients);
-
-        // Зберігаємо результати
-        setSearchResults(clients);
-        return clients;
-      } catch (error) {
-        console.error('Помилка при пошуку клієнтів:', error);
-        setSearchResults([]);
-        return [];
-      }
-    });
-  };
-
-  /**
-   * Отримання клієнта за ID
-   */
-  const getClientById = async (clientId: string) => {
-    return withLoading(async (): Promise<Client> => {
-      const response = await ClientsService.getClientById({
-        id: clientId,
-      });
-
-      return mapApiClientToModelClient(response);
-    });
-  };
-
-  /**
-   * Створення нового клієнта
-   */
-  const createClient = async (clientData: Omit<Client, 'id'>) => {
-    return withLoading(async (): Promise<Client> => {
-      // Перетворюємо наш формат даних у формат API
-      const apiClientData: CreateClientRequest = {
-        firstName: clientData.firstName,
-        lastName: clientData.lastName,
-        phone: clientData.phone,
-        email: clientData.email,
-        address: formatAddress(clientData.address),
-        communicationChannels: clientData.communicationChannels,
-        source: clientData.source?.source
-          ? mapSourceToApiSource(clientData.source.source)
-          : undefined,
-        sourceDetails: clientData.source?.details,
-      };
-
-      // Діагностичний лог для перевірки даних, які відправляються на бекенд
-      console.log('Client data being sent to API:', JSON.stringify(apiClientData, null, 2));
-      
-      // Викликаємо API створення клієнта
-      try {
-        const response = await ClientsService.createClient({
+        // Викликаємо API оновлення клієнта
+        const response = await ClientsService.updateClient({
+          id: clientId,
           requestBody: apiClientData,
         });
+
         return mapApiClientToModelClient(response);
-      } catch (error) {
-        console.error('Error details from API:', error);
-        throw error;
-      }
-    });
-  };
-
-  /**
-   * Оновлення існуючого клієнта
-   */
-  const updateClient = async (
-    clientId: string,
-    clientData: Partial<Client>
-  ) => {
-    return withLoading(async (): Promise<Client> => {
-      // Перетворюємо наш формат даних у формат API
-      const apiClientData: UpdateClientRequest = {};
-
-      if (clientData.firstName !== undefined)
-        apiClientData.firstName = clientData.firstName;
-      if (clientData.lastName !== undefined)
-        apiClientData.lastName = clientData.lastName;
-      if (clientData.phone !== undefined)
-        apiClientData.phone = clientData.phone;
-      if (clientData.email !== undefined)
-        apiClientData.email = clientData.email;
-      if (clientData.address !== undefined)
-        apiClientData.address = formatAddress(clientData.address);
-      if (clientData.communicationChannels !== undefined) {
-        apiClientData.communicationChannels = clientData.communicationChannels;
-      }
-      if (clientData.source !== undefined && clientData.source.source) {
-        apiClientData.source = mapSourceToApiSource(clientData.source.source);
-        if (clientData.source.details) {
-          apiClientData.sourceDetails = clientData.source.details;
-        }
-      }
-
-      // Викликаємо API оновлення клієнта
-      const response = await ClientsService.updateClient({
-        id: clientId,
-        requestBody: apiClientData,
-      });
-
-      return mapApiClientToModelClient(response);
+      },
+      onSuccess: (_, variables) => {
+        // Інвалідуємо кеш після успішного оновлення
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.CLIENTS] });
+        queryClient.invalidateQueries({ 
+          queryKey: [QUERY_KEYS.CLIENT_DETAILS, variables.clientId] 
+        });
+      },
     });
   };
 
@@ -241,11 +275,17 @@ export const useClients = () => {
     return SOURCE_MAPPING[source] || ClientResponse.source.OTHER;
   };
 
+  // Повертаємо всі хуки і допоміжні функції
   return {
-    searchResults,
-    searchClients,
-    getClientById,
-    createClient,
-    updateClient,
+    useClientSearch,
+    useClientDetails,
+    useCreateClient,
+    useUpdateClient,
+    // Допоміжні функції, які можуть бути потрібні поза межами хуків
+    mapApiClientToModelClient,
+    mapApiSourceToModelSource,
+    mapSourceToApiSource,
+    formatAddress,
+    parseAddress,
   };
 };

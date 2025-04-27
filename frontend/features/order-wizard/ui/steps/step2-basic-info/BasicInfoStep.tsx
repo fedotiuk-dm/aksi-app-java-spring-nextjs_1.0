@@ -2,10 +2,7 @@ import React from 'react';
 import { Grid, Typography, Box, Button } from '@mui/material';
 import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
 import type { UUID } from 'node:crypto';
-import {
-  BranchLocationSelect,
-  TagNumberInput
-} from './components';
+import { BranchLocationSelect, TagNumberInput } from '.';
 import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
 
 /**
@@ -13,19 +10,26 @@ import { StepContainer } from '@/features/order-wizard/ui/components/step-contai
  */
 export const BasicInfoStep: React.FC = () => {
   // Використовуємо окремі селектори для кожного поля, щоб уникнути безкінечних циклів
-  const branchLocationId = useOrderWizardStore((state) => state.branchLocationId);
+  const branchLocationId = useOrderWizardStore(
+    (state) => state.branchLocationId
+  );
   const tagNumber = useOrderWizardStore((state) => state.tagNumber);
-  const setBranchLocationId = useOrderWizardStore((state) => state.setBranchLocationId);
+  const setBranchLocationId = useOrderWizardStore(
+    (state) => state.setBranchLocationId
+  );
   const setTagNumber = useOrderWizardStore((state) => state.setTagNumber);
-  
+
   // Обробник зміни значення філії
-  const handleBranchLocationChange = React.useCallback((value: string | null) => {
-    if (value && value !== '') {
-      setBranchLocationId(value as UUID);
-    } else {
-      setBranchLocationId(null);
-    }
-  }, [setBranchLocationId]);
+  const handleBranchLocationChange = React.useCallback(
+    (value: string | null) => {
+      if (value && value !== '') {
+        setBranchLocationId(value as UUID);
+      } else {
+        setBranchLocationId(null);
+      }
+    },
+    [setBranchLocationId]
+  );
 
   // Стан для зберігання помилок валідації
   const [errors, setErrors] = React.useState<Record<string, string>>({});
@@ -47,9 +51,7 @@ export const BasicInfoStep: React.FC = () => {
   };
 
   return (
-    <StepContainer 
-      title="1.2 Базова інформація замовлення"
-    >
+    <StepContainer title="1.2 Базова інформація замовлення">
       <Box sx={{ p: 2 }}>
         <Typography variant="h6" gutterBottom>
           Вкажіть базову інформацію для створення замовлення
@@ -64,7 +66,8 @@ export const BasicInfoStep: React.FC = () => {
           <Grid size={{ xs: 12, md: 6 }}>
             {/* Дата створення замовлення (автоматично) */}
             <Typography variant="body1" gutterBottom>
-              <strong>Дата створення:</strong> {new Date().toLocaleDateString('uk-UA')}
+              <strong>Дата створення:</strong>{' '}
+              {new Date().toLocaleDateString('uk-UA')}
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -86,11 +89,7 @@ export const BasicInfoStep: React.FC = () => {
         </Grid>
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, p: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={validate}
-        >
+        <Button variant="contained" color="primary" onClick={validate}>
           Далі
         </Button>
       </Box>
