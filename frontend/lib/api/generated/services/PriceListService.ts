@@ -51,6 +51,31 @@ export class PriceListService {
         });
     }
     /**
+     * Отримати всі елементи прайс-листа за кодом категорії
+     * @returns PriceListItemDTO OK
+     * @throws ApiError
+     */
+    public static getItemsByCategoryCode({
+        categoryCode,
+    }: {
+        categoryCode: string,
+    }): CancelablePromise<Array<PriceListItemDTO>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/price-list/category/code/{categoryCode}/items',
+            path: {
+                'categoryCode': categoryCode,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
      * Оновити категорію послуг
      * @returns ServiceCategoryDTO OK
      * @throws ApiError
@@ -80,11 +105,86 @@ export class PriceListService {
         });
     }
     /**
+     * Отримати список найменувань виробів за категорією
+     * @returns string OK
+     * @throws ApiError
+     */
+    public static getItemNamesByCategory({
+        categoryId,
+    }: {
+        categoryId: string,
+    }): CancelablePromise<Array<string>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/price-list/category/{categoryId}/item-names',
+            path: {
+                'categoryId': categoryId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати всі елементи прайс-листа за категорією
+     * @returns PriceListItemDTO OK
+     * @throws ApiError
+     */
+    public static getItemsByCategory({
+        categoryId,
+    }: {
+        categoryId: string,
+    }): CancelablePromise<Array<PriceListItemDTO>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/price-list/category/{categoryId}/items',
+            path: {
+                'categoryId': categoryId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати доступні одиниці виміру для категорії
+     * @returns string OK
+     * @throws ApiError
+     */
+    public static getAvailableUnitsOfMeasure({
+        categoryId,
+    }: {
+        categoryId: string,
+    }): CancelablePromise<Array<string>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/price-list/category/{categoryId}/units-of-measure',
+            path: {
+                'categoryId': categoryId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
      * Отримати категорію послуг за кодом
      * @returns ServiceCategoryDTO OK
      * @throws ApiError
      */
-    public static getCategoryByCode({
+    public static getCategoryByCode1({
         code,
     }: {
         code: string,
@@ -94,6 +194,31 @@ export class PriceListService {
             url: '/price-list/category/{code}',
             path: {
                 'code': code,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати елемент прайс-листа за ID
+     * @returns PriceListItemDTO OK
+     * @throws ApiError
+     */
+    public static getItemById({
+        itemId,
+    }: {
+        itemId: string,
+    }): CancelablePromise<PriceListItemDTO> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/price-list/item/{itemId}',
+            path: {
+                'itemId': itemId,
             },
             errors: {
                 400: `Bad Request`,
@@ -138,7 +263,7 @@ export class PriceListService {
      * @returns ServiceCategoryDTO OK
      * @throws ApiError
      */
-    public static getCategoryById({
+    public static getCategoryById1({
         categoryId,
     }: {
         categoryId: string,

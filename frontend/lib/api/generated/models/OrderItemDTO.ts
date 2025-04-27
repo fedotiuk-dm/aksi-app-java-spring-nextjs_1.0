@@ -6,13 +6,22 @@ export type OrderItemDTO = {
     category?: string;
     color?: string;
     defects?: string;
+    defectsAndRisks?: string;
+    defectsNotes?: string;
     description?: string;
+    fillerCompressed?: boolean;
+    fillerType?: string;
     id?: string;
     material?: string;
     name?: string;
+    noGuaranteeReason?: string;
+    otherStains?: string;
     quantity: number;
     specialInstructions?: string;
+    stains?: string;
     totalPrice?: number;
+    unitOfMeasure?: string;
     unitPrice: number;
+    wearDegree?: string;
 };
 

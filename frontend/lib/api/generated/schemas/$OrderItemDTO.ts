@@ -13,9 +13,22 @@ export const $OrderItemDTO = {
         defects: {
             type: 'string',
         },
+        defectsAndRisks: {
+            type: 'string',
+        },
+        defectsNotes: {
+            type: 'string',
+            maxLength: 1000,
+        },
         description: {
             type: 'string',
             maxLength: 1000,
+        },
+        fillerCompressed: {
+            type: 'boolean',
+        },
+        fillerType: {
+            type: 'string',
         },
         id: {
             type: 'string',
@@ -28,6 +41,12 @@ export const $OrderItemDTO = {
             type: 'string',
             maxLength: 255,
         },
+        noGuaranteeReason: {
+            type: 'string',
+        },
+        otherStains: {
+            type: 'string',
+        },
         quantity: {
             type: 'number',
             isRequired: true,
@@ -38,12 +57,21 @@ export const $OrderItemDTO = {
             type: 'string',
             maxLength: 500,
         },
+        stains: {
+            type: 'string',
+        },
         totalPrice: {
             type: 'number',
+        },
+        unitOfMeasure: {
+            type: 'string',
         },
         unitPrice: {
             type: 'number',
             isRequired: true,
+        },
+        wearDegree: {
+            type: 'string',
         },
     },
 } as const;

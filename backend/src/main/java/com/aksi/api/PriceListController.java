@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/price-list")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Price-list", description = "API для роботи з прайс-листом хімчистки")
+@Tag(name = "Price List", description = "API для роботи з прайс-листом хімчистки")
 public class PriceListController {
 
     private final PriceListService priceListService;

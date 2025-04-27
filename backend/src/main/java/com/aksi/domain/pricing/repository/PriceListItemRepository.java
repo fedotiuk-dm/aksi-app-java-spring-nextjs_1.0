@@ -28,6 +28,17 @@ public interface PriceListItemRepository extends JpaRepository<PriceListItemEnti
     Optional<PriceListItemEntity> findByCategoryIdAndName(UUID categoryId, String name);
     
     /**
+     * Знаходить елемент прайс-листа за кодом категорії та назвою предмета.
+     * @param categoryCode код категорії
+     * @param itemName назва предмета
+     * @return Елемент прайс-листа
+     */
+    @Query("SELECT pli FROM PriceListItemEntity pli WHERE pli.category.code = :categoryCode AND pli.name = :itemName")
+    Optional<PriceListItemEntity> findByCategoryCodeAndItemName(
+            @Param("categoryCode") String categoryCode, 
+            @Param("itemName") String itemName);
+    
+    /**
      * Знаходить максимальний номер в каталозі для вказаної категорії.
      * @param categoryId ID категорії
      * @return Максимальний номер в каталозі або null, якщо у категорії немає позицій

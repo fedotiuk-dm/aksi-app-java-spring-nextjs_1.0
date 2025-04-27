@@ -72,6 +72,30 @@ public class OrderItemEntity {
     @Column(name = "special_instructions", length = 500)
     private String specialInstructions;
     
+    @Column(name = "filler_type")
+    private String fillerType;
+    
+    @Column(name = "filler_compressed")
+    private Boolean fillerCompressed;
+    
+    @Column(name = "wear_degree")
+    private String wearDegree;
+    
+    @Column(name = "stains", length = 500)
+    private String stains;
+    
+    @Column(name = "other_stains")
+    private String otherStains;
+    
+    @Column(name = "defects_and_risks", length = 500)
+    private String defectsAndRisks;
+    
+    @Column(name = "no_guarantee_reason", length = 500)
+    private String noGuaranteeReason;
+    
+    @Column(name = "defects_notes", length = 1000)
+    private String defectsNotes;
+    
     /**
      * Розрахувати повну вартість предмету.
      */

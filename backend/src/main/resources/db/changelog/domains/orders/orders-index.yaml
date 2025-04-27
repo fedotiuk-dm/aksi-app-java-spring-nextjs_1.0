@@ -11,3 +11,12 @@ databaseChangeLog:
   - include:
       file: 1.0/004-add-unit-of-measure-to-order-items.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/005-add-item-characteristics-to-order-items.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/006-add-stains-defects-to-order-items.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/007-create-order-item-photos-table.yaml
+      relativeToChangelogFile: true

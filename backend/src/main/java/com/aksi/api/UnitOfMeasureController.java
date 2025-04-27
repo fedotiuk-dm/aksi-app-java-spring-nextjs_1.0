@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RestController
 @RequestMapping("/units-of-measure")
-@Tag(name = "Одиниці виміру", description = "API для роботи з одиницями виміру для предметів хімчистки")
+@Tag(name = "Unit Of Measure", description = "API для роботи з одиницями виміру для предметів хімчистки")
 @RequiredArgsConstructor
 @Slf4j
 public class UnitOfMeasureController {

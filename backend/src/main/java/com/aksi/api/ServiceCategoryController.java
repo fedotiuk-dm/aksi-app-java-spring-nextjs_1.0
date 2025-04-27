@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RestController
 @RequestMapping("/service-categories")
-@Tag(name = "Категорії послуг", description = "API для роботи з категоріями послуг")
+@Tag(name = "Service Category", description = "API для роботи з категоріями послуг")
 @RequiredArgsConstructor
 @Slf4j
 public class ServiceCategoryController {

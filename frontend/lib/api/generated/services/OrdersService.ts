@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { CreateOrderRequest } from '../models/CreateOrderRequest';
 import type { OrderDTO } from '../models/OrderDTO';
+import type { OrderItemDTO } from '../models/OrderItemDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -332,6 +333,177 @@ export class OrdersService {
                 401: `Unauthorized`,
                 403: `Forbidden`,
                 404: `Замовлення не знайдено`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати всі предмети замовлення
+     * Повертає список всіх предметів для конкретного замовлення
+     * @returns OrderItemDTO Успішно отримано список предметів замовлення
+     * @throws ApiError
+     */
+    public static getOrderItems({
+        orderId,
+    }: {
+        /**
+         * ID замовлення
+         */
+        orderId: string,
+    }): CancelablePromise<Array<OrderItemDTO>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/orders/{orderId}/items',
+            path: {
+                'orderId': orderId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Замовлення не знайдено`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Додати новий предмет до замовлення
+     * Додає новий предмет до конкретного замовлення
+     * @returns OrderItemDTO Предмет успішно додано до замовлення
+     * @throws ApiError
+     */
+    public static addOrderItem({
+        orderId,
+        requestBody,
+    }: {
+        /**
+         * ID замовлення
+         */
+        orderId: string,
+        requestBody: OrderItemDTO,
+    }): CancelablePromise<OrderItemDTO> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/orders/{orderId}/items',
+            path: {
+                'orderId': orderId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Замовлення не знайдено`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Видалити предмет замовлення
+     * Видаляє предмет із замовлення
+     * @returns void
+     * @throws ApiError
+     */
+    public static deleteOrderItem({
+        orderId,
+        itemId,
+    }: {
+        /**
+         * ID замовлення
+         */
+        orderId: string,
+        /**
+         * ID предмета
+         */
+        itemId: string,
+    }): CancelablePromise<void> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/orders/{orderId}/items/{itemId}',
+            path: {
+                'orderId': orderId,
+                'itemId': itemId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Предмет замовлення не знайдено`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати конкретний предмет замовлення
+     * Повертає предмет замовлення за його ID
+     * @returns OrderItemDTO Предмет замовлення знайдено
+     * @throws ApiError
+     */
+    public static getOrderItem({
+        orderId,
+        itemId,
+    }: {
+        /**
+         * ID замовлення
+         */
+        orderId: string,
+        /**
+         * ID предмета
+         */
+        itemId: string,
+    }): CancelablePromise<OrderItemDTO> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/orders/{orderId}/items/{itemId}',
+            path: {
+                'orderId': orderId,
+                'itemId': itemId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Предмет замовлення не знайдено`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Оновити предмет замовлення
+     * Оновлює існуючий предмет у замовленні
+     * @returns OrderItemDTO Предмет замовлення успішно оновлено
+     * @throws ApiError
+     */
+    public static updateOrderItem({
+        orderId,
+        itemId,
+        requestBody,
+    }: {
+        /**
+         * ID замовлення
+         */
+        orderId: string,
+        /**
+         * ID предмета
+         */
+        itemId: string,
+        requestBody: OrderItemDTO,
+    }): CancelablePromise<OrderItemDTO> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/orders/{orderId}/items/{itemId}',
+            path: {
+                'orderId': orderId,
+                'itemId': itemId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Предмет замовлення не знайдено`,
                 409: `Conflict`,
             },
         });

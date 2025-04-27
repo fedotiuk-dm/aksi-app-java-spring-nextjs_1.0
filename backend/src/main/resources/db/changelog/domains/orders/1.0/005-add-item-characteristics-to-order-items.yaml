@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-add-item-characteristics-to-order-items
+      author: cascade
+      comment: 'Add additional item characteristics to order_items table'
+      changes:
+        - addColumn:
+            tableName: order_items
+            columns:
+              - column:
+                  name: filler_type
+                  type: varchar(50)
+                  remarks: 'Тип наповнювача (пух, синтепон, інше)'
+                  constraints:
+                    nullable: true
+              - column:
+                  name: filler_compressed
+                  type: boolean
+                  defaultValueBoolean: false
+                  remarks: 'Флаг збитого наповнювача'
+                  constraints:
+                    nullable: true
+              - column:
+                  name: wear_degree
+                  type: varchar(10)
+                  remarks: 'Ступінь зносу виробу у відсотках (10%, 30%, 50%, 75%)'
+                  constraints:
+                    nullable: true

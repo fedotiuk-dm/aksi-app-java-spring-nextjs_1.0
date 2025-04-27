@@ -51,4 +51,21 @@ public class OrderItemDTO {
     
     @Size(max = 500, message = "Спеціальні інструкції не можуть перевищувати 500 символів")
     private String specialInstructions;
+    
+    private String fillerType;
+    
+    private Boolean fillerCompressed;
+    
+    private String wearDegree;
+    
+    private String stains;
+    
+    private String otherStains;
+    
+    private String defectsAndRisks;
+    
+    private String noGuaranteeReason;
+    
+    @Size(max = 1000, message = "Примітки щодо дефектів не можуть перевищувати 1000 символів")
+    private String defectsNotes;
 }
