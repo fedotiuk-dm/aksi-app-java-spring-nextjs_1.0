@@ -1,4 +1,27 @@
 services:
+  # Traefik - зворотний проксі для маршрутизації
+  traefik:
+    image: traefik:v3.3
+    container_name: traefik
+    ports:
+      - "80:80"     # HTTP порт
+      - "9090:8080"  # Traefik Dashboard (змінено з 8080 на 9090, щоб уникнути конфлікту)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      # Налаштування Docker провайдера
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # Налаштування точок входу
+      - "--entrypoints.web.address=:80"
+      # Включення API Dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      # Налаштування логування
+      - "--log.level=INFO"
+    networks:
+      - aksi-network-dev
+    restart: unless-stopped
   # PostgreSQL - зберігаємо однаковий з основним compose файлом
   postgres:
     image: postgres:17
@@ -65,9 +88,10 @@ services:
       context: ../backend
       dockerfile: Dockerfile.dev
     container_name: backend-dev
+    expose:
+      - '8080'
     ports:
       - '8080:8080'
-      - '5005:5005' # Порт для Java remote debugging
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5
       SPRING_DATASOURCE_USERNAME: aksi_user
@@ -85,16 +109,26 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      traefik:
+        condition: service_started
     restart: unless-stopped
     networks:
       - aksi-network-dev
-    # Додаємо healthcheck для перевірки Spring Boot
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/api/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s  # Даємо більше часу на запуск Spring Boot
+    labels:
+      # Налаштування Traefik
+      - "traefik.enable=true"
+      # Правило маршрутизації - всі запити на /api/* спрямовуються на бекенд
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      # Вказуємо на якому порті працює сервіс
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"      
+      # Високий пріоритет для /api маршрутів
+      - "traefik.http.routers.backend.priority=100"
 
   # Frontend (Next.js) - розробка
   frontend:
@@ -106,8 +140,8 @@ services:
       - '3000:3000'
     environment:
       NODE_ENV: development
-      # Важливо: використовуємо internal Docker hostname для комунікації між контейнерами
-      NEXT_PUBLIC_API_URL: http://backend:8080/api
+      # Важливо: змінюємо URL на адресу Traefik, який забезпечує роутинг
+      NEXT_PUBLIC_API_URL: http://localhost/api
       NEXT_TELEMETRY_DISABLED: 1
     volumes:
       - ../frontend:/app  # Монтуємо весь проект для автоматичного перезавантаження
@@ -115,6 +149,7 @@ services:
       - frontend_next_cache:/app/.next  # Зберігаємо .next кеш у volume
     depends_on:
       - backend
+      - traefik
     restart: unless-stopped
     networks:
       - aksi-network-dev
@@ -125,6 +160,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s  # Даємо час на запуск Next.js
+    labels:
+      # Налаштування Traefik
+      - "traefik.enable=true"
+      # Правило маршрутизації - всі запити, які не починаються з /api
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      # Пріоритет - низький, щоб дозволити спочатку обробити /api запити
+      - "traefik.http.routers.frontend.priority=1"
+      # Вказуємо на якому порті працює сервіс
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
 networks:
   aksi-network-dev:

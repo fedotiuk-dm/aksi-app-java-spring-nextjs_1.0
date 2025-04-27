@@ -1,6 +1,5 @@
 import { OpenAPI } from './generated';
 import axios, { AxiosError } from 'axios';
-import { CLIENT_API_URL } from '@/constants/urls';
 
 /**
  * Фіксоване налаштування для всіх OpenAPI запитів
@@ -14,15 +13,17 @@ import { CLIENT_API_URL } from '@/constants/urls';
  */
 
 /**
- * УВАГА! Важлива зміна для клієнтського коду
- * Для клієнтського коду використовуємо CLIENT_API_URL ('/api'), а не прямий запит до бекенду
- * Це забезпечує проксіювання запитів через Next.js API роути
+ * НАЛАШТУВАННЯ API ДЛЯ РОБОТИ З TRAEFIK
+ * 
+ * Для клієнтського коду тепер ми використовуємо простий префікс '/api',
+ * який автоматично маршрутизується Traefik на бекенд.
+ * Це спрощує архітектуру і зменшує кількість потенційних проблем.
  */
 
-// Всі запити з браузера йдуть на CLIENT_API_URL = '/api' (без є базового URL)
-OpenAPI.BASE = CLIENT_API_URL;
+// Використовуємо фіксований URL для всіх API запитів - це гарантує, що всі запити йтимуть через Traefik
+OpenAPI.BASE = 'http://localhost/api'; // Використовуємо повний URL до Traefik
 
-// ДВІ КРИТИЧНО ВАЖЛИВІ НАЛАШТУВАННЯ ДЛЯ АВТОРИЗАЦІЇ:
+// Критично важливі налаштування для авторизації:
 OpenAPI.WITH_CREDENTIALS = true; // Дозволяє передавати cookies з токенами
 OpenAPI.CREDENTIALS = 'include'; // Дозволяє включати cookies в крос-доменні запити
 

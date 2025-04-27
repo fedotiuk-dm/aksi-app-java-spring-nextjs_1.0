@@ -17,7 +17,7 @@ public enum ClientSourceEntity {
     /**
      * Рекомендації від інших клієнтів.
      */
-    RECOMMENDATIONS,
+    RECOMMENDATION,
     
     /**
      * Інше джерело (з уточненням).

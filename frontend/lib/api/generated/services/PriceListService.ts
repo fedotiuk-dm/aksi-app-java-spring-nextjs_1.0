@@ -17,6 +17,13 @@ export class PriceListService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/price-list',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -34,6 +41,13 @@ export class PriceListService {
             url: '/price-list/category',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -56,6 +70,13 @@ export class PriceListService {
             },
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -73,6 +94,13 @@ export class PriceListService {
             url: '/price-list/category/{code}',
             path: {
                 'code': code,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
             },
         });
     }
@@ -96,6 +124,13 @@ export class PriceListService {
             },
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -113,6 +148,13 @@ export class PriceListService {
             url: '/price-list/{categoryId}',
             path: {
                 'categoryId': categoryId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
             },
         });
     }
@@ -136,6 +178,13 @@ export class PriceListService {
             },
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
 }

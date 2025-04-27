@@ -23,17 +23,35 @@ export const useClients = () => {
     }
 
     return withLoading(async (): Promise<Client[]> => {
-      // Викликаємо API пошуку клієнтів
-      const response = await ClientsService.searchClients({
-        keyword: searchTerm,
-      });
+      try {
+        // Викликаємо API пошуку клієнтів
+        const response = await ClientsService.searchClients({
+          keyword: searchTerm,
+        });
 
-      // Перетворюємо відповідь в масив клієнтів
-      const clients = response ? [mapApiClientToModelClient(response)] : [];
+        console.log('Результат пошуку клієнтів:', response);
 
-      // Зберігаємо результати
-      setSearchResults(clients);
-      return clients;
+        // Перевіряємо тип відповіді та обробляємо відповідно
+        let clients: Client[] = [];
+
+        if (Array.isArray(response)) {
+          // Якщо відповідь - масив
+          clients = response.map(mapApiClientToModelClient);
+        } else if (response) {
+          // Якщо відповідь - один об'єкт
+          clients = [mapApiClientToModelClient(response)];
+        }
+
+        console.log('Оброблені результати:', clients);
+
+        // Зберігаємо результати
+        setSearchResults(clients);
+        return clients;
+      } catch (error) {
+        console.error('Помилка при пошуку клієнтів:', error);
+        setSearchResults([]);
+        return [];
+      }
     });
   };
 
@@ -69,12 +87,19 @@ export const useClients = () => {
         sourceDetails: clientData.source?.details,
       };
 
+      // Діагностичний лог для перевірки даних, які відправляються на бекенд
+      console.log('Client data being sent to API:', JSON.stringify(apiClientData, null, 2));
+      
       // Викликаємо API створення клієнта
-      const response = await ClientsService.createClient({
-        requestBody: apiClientData,
-      });
-
-      return mapApiClientToModelClient(response);
+      try {
+        const response = await ClientsService.createClient({
+          requestBody: apiClientData,
+        });
+        return mapApiClientToModelClient(response);
+      } catch (error) {
+        console.error('Error details from API:', error);
+        throw error;
+      }
     });
   };
 
@@ -122,14 +147,31 @@ export const useClients = () => {
   /**
    * Функція для форматування адреси
    */
+  /**
+   * Форматує об'єкт адреси в рядок для відправки на бекенд
+   * Формат адреси: вулиця, місто, поштовий індекс, додаткова інформація
+   */
   const formatAddress = (address?: Client['address']): string | undefined => {
     if (!address) return undefined;
+    
+    // Перевіряємо чи є взагалі якісь дані в адресі
+    const hasAddressData = address.street || address.city || address.postalCode || address.additionalInfo;
+    if (!hasAddressData) return undefined;
 
-    return typeof address === 'object'
-      ? [address.street || '', address.city || '', address.postalCode || '']
-          .filter(Boolean)
-          .join(', ')
-      : address;
+    if (typeof address === 'object') {
+      // Формуємо масив всіх компонентів адреси
+      const addressParts = [
+        address.street || '',
+        address.city || '',
+        address.postalCode || '',
+        address.additionalInfo || ''
+      ];
+      
+      // Видаляємо порожні елементи та об'єднуємо в рядок
+      return addressParts.filter(part => part.trim() !== '').join(', ');
+    }
+    
+    return address;
   };
 
   /**

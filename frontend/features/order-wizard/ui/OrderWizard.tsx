@@ -1,124 +1,110 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Box, Typography, Paper, Stepper, Step, StepLabel, Button } from '@mui/material';
+import React from 'react';
+import { Box, Paper, Stepper, Step, StepLabel } from '@mui/material';
+import { OrderWizardProvider } from '../model/OrderWizardContext';
+import { useOrderWizardNavigation } from '../model/store/store';
+import { WizardStep } from '../model/types';
+import { StepContainer, StepNavigation } from './components';
+import { ClientSelectionStep } from './steps/step1-client-selection/ClientSelectionStep';
 
 /**
- * Простий компонент-заглушка OrderWizard.
- * Базова реалізація покрокового інтерфейсу для створення замовлення
+ * Головний компонент OrderWizard.
+ * Відображає покроковий інтерфейс для створення замовлення
  */
-const OrderWizard: React.FC = () => {
-  // Простий локальний стан для кроків
-  const [activeStep, setActiveStep] = useState(0);
+const OrderWizardContent: React.FC = () => {
+  const { currentStep, navigateToStep, navigateBack } = useOrderWizardNavigation();
 
   // Кроки майстра замовлень
   const wizardSteps = [
-    'Клієнт',
-    'Предмети',
-    'Параметри',
-    'Підтвердження'
+    { step: WizardStep.CLIENT_SELECTION, label: 'Клієнт' },
+    { step: WizardStep.ITEM_MANAGER, label: 'Предмети' },
+    { step: WizardStep.BASIC_INFO, label: 'Параметри' },
+    { step: WizardStep.COMPLETION, label: 'Підтвердження' }
   ];
 
-  // Заглушка для контенту кроків
-  const getStepContent = (step: number) => {
-    switch (step) {
-      case 0:
+  // Обробники навігації
+  const handleNext = () => {
+    const currentIndex = wizardSteps.findIndex(item => item.step === currentStep);
+    const nextStep = wizardSteps[currentIndex + 1]?.step;
+    if (nextStep) {
+      navigateToStep(nextStep);
+    }
+  };
+
+  const handleBack = () => {
+    navigateBack();
+  };
+
+  // Відображення контенту відповідно до поточного кроку
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case WizardStep.CLIENT_SELECTION:
+        return <ClientSelectionStep />;
+      case WizardStep.ITEM_MANAGER:
         return (
-          <Box py={3}>
-            <Typography variant="h6">Крок 1: Вибір або створення клієнта</Typography>
-            <Typography variant="body1" color="text.secondary" my={2}>
-              В цьому кроці ви зможете вибрати існуючого клієнта або створити нового.
-            </Typography>
-            <Typography variant="body2" color="primary">
-              Очікується реалізація API та компонентів
-            </Typography>
-          </Box>
+          <StepContainer title="Управління предметами">
+            <Box py={3}>
+              Компонент управління предметами буде реалізовано в наступних версіях
+            </Box>
+          </StepContainer>
         );
-      case 1:
+      case WizardStep.BASIC_INFO:
         return (
-          <Box py={3}>
-            <Typography variant="h6">Крок 2: Управління предметами</Typography>
-            <Typography variant="body1" color="text.secondary" my={2}>
-              В цьому кроці ви зможете додати предмети до замовлення, вказати їх кількість та ціну.
-            </Typography>
-            <Typography variant="body2" color="primary">
-              Очікується реалізація API та компонентів
-            </Typography>
-          </Box>
+          <StepContainer title="Параметри замовлення">
+            <Box py={3}>
+              Компонент параметрів замовлення буде реалізовано в наступних версіях
+            </Box>
+          </StepContainer>
         );
-      case 2:
+      case WizardStep.COMPLETION:
         return (
-          <Box py={3}>
-            <Typography variant="h6">Крок 3: Параметри замовлення</Typography>
-            <Typography variant="body1" color="text.secondary" my={2}>
-              В цьому кроці ви вказуєте загальні параметри замовлення та додаткову інформацію.
-            </Typography>
-            <Typography variant="body2" color="primary">
-              Очікується реалізація API та компонентів
-            </Typography>
-          </Box>
-        );
-      case 3:
-        return (
-          <Box py={3}>
-            <Typography variant="h6">Крок 4: Підтвердження замовлення</Typography>
-            <Typography variant="body1" color="text.secondary" my={2}>
-              В цьому кроці ви можете переглянути та підтвердити замовлення.
-            </Typography>
-            <Typography variant="body2" color="primary">
-              Очікується реалізація API та компонентів
-            </Typography>
-          </Box>
+          <StepContainer title="Підтвердження замовлення">
+            <Box py={3}>
+              Компонент підтвердження замовлення буде реалізовано в наступних версіях
+            </Box>
+          </StepContainer>
         );
       default:
-        return 'Невідомий крок';
+        return null;
     }
   };
 
-  // Перехід до наступного кроку
-  const handleNext = () => {
-    const nextStep = activeStep + 1;
-    if (nextStep < wizardSteps.length) {
-      setActiveStep(nextStep);
-    }
-  };
-
-  // Перехід до попереднього кроку
-  const handleBack = () => {
-    if (activeStep > 0) {
-      setActiveStep(activeStep - 1);
-    }
-  };
+  // Визначення стану кнопок для навігації
+  const isFirstStep = currentStep === wizardSteps[0].step;
+  const isLastStep = currentStep === wizardSteps[wizardSteps.length - 1].step;
 
   return (
     <Paper elevation={2} sx={{ p: 4, mb: 4 }}>
-      <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-        {wizardSteps.map((label) => (
+      <Stepper activeStep={wizardSteps.findIndex(item => item.step === currentStep)} sx={{ mb: 4 }}>
+        {wizardSteps.map(({ label }) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
           </Step>
         ))}
       </Stepper>
 
-      {getStepContent(activeStep)}
+      {renderStepContent()}
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-        <Button 
-          variant="outlined" 
-          disabled={activeStep === 0} 
-          onClick={handleBack}
-        >
-          Назад
-        </Button>
-        <Button 
-          variant="contained" 
-          onClick={handleNext}
-          disabled={activeStep === wizardSteps.length - 1}
-        >
-          {activeStep === wizardSteps.length - 1 ? 'Завершити' : 'Далі'}
-        </Button>
-      </Box>
+      <StepNavigation 
+        onNext={handleNext} 
+        onBack={handleBack} 
+        isBackDisabled={isFirstStep}
+        isNextDisabled={isLastStep}
+        nextLabel={isLastStep ? 'Завершити' : 'Далі'}
+      />
     </Paper>
+  );
+};
+
+/**
+ * Обгортка для OrderWizard з провайдером контексту
+ */
+const OrderWizard: React.FC = () => {
+  return (
+    <OrderWizardProvider>
+      <OrderWizardContent />
+    </OrderWizardProvider>
   );
 };
 

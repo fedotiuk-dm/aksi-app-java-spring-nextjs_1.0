@@ -18,6 +18,13 @@ export class OrdersService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/orders',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -36,6 +43,13 @@ export class OrdersService {
             url: '/orders',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -48,6 +62,13 @@ export class OrdersService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/orders/active',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -66,6 +87,13 @@ export class OrdersService {
             url: '/orders/draft',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -78,6 +106,13 @@ export class OrdersService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/orders/drafts',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -101,7 +136,11 @@ export class OrdersService {
                 'id': id,
             },
             errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Замовлення не знайдено`,
+                409: `Conflict`,
             },
         });
     }
@@ -126,7 +165,11 @@ export class OrdersService {
                 'id': id,
             },
             errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Замовлення не знайдено`,
+                409: `Conflict`,
             },
         });
     }
@@ -151,7 +194,11 @@ export class OrdersService {
                 'id': id,
             },
             errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Замовлення не знайдено`,
+                409: `Conflict`,
             },
         });
     }
@@ -176,7 +223,11 @@ export class OrdersService {
                 'id': id,
             },
             errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Замовлення не знайдено`,
+                409: `Conflict`,
             },
         });
     }
@@ -207,7 +258,11 @@ export class OrdersService {
                 'amount': amount,
             },
             errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Замовлення не знайдено`,
+                409: `Conflict`,
             },
         });
     }
@@ -238,7 +293,11 @@ export class OrdersService {
                 'amount': amount,
             },
             errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Замовлення не знайдено`,
+                409: `Conflict`,
             },
         });
     }
@@ -269,7 +328,11 @@ export class OrdersService {
                 'status': status,
             },
             errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Замовлення не знайдено`,
+                409: `Conflict`,
             },
         });
     }

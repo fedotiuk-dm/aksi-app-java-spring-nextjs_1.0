@@ -25,6 +25,13 @@ export class AuthenticationService {
             url: '/auth/login',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -43,6 +50,13 @@ export class AuthenticationService {
             url: '/auth/refresh-token',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -61,6 +75,13 @@ export class AuthenticationService {
             url: '/auth/register',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -71,6 +92,13 @@ export class AuthenticationService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/auth/test',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
 }

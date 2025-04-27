@@ -19,6 +19,13 @@ export class ClientsService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/clients',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
         });
     }
     /**
@@ -39,6 +46,10 @@ export class ClientsService {
             mediaType: 'application/json',
             errors: {
                 400: `Невірні дані`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
             },
         });
     }
@@ -61,6 +72,13 @@ export class ClientsService {
             url: '/clients/search',
             query: {
                 'keyword': keyword,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
             },
         });
     }
@@ -85,7 +103,11 @@ export class ClientsService {
                 'id': id,
             },
             errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Клієнта не знайдено`,
+                409: `Conflict`,
             },
         });
     }
@@ -110,7 +132,11 @@ export class ClientsService {
                 'id': id,
             },
             errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Клієнта не знайдено`,
+                409: `Conflict`,
             },
         });
     }
@@ -140,7 +166,10 @@ export class ClientsService {
             mediaType: 'application/json',
             errors: {
                 400: `Невірні дані`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
                 404: `Клієнта не знайдено`,
+                409: `Conflict`,
             },
         });
     }
