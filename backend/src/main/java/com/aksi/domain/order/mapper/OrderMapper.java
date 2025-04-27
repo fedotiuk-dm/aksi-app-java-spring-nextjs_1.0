@@ -1,121 +1,99 @@
 package com.aksi.domain.order.mapper;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-import org.springframework.stereotype.Component;
-
+import com.aksi.domain.branch.mapper.BranchLocationMapper;
 import com.aksi.domain.client.mapper.ClientMapper;
+import com.aksi.domain.order.dto.CreateOrderRequest;
 import com.aksi.domain.order.dto.OrderDTO;
 import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.entity.OrderEntity;
 import com.aksi.domain.order.entity.OrderItemEntity;
 
-import lombok.RequiredArgsConstructor;
-
 /**
  * Маппер для перетворення між OrderEntity і OrderDTO.
  */
-@Component
-@RequiredArgsConstructor
-public class OrderMapper {
-    
-    private final ClientMapper clientMapper;
+@Mapper(
+    componentModel = "spring",
+    uses = {ClientMapper.class, BranchLocationMapper.class},
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+)
+public interface OrderMapper {
     
     /**
      * Перетворити OrderEntity у OrderDTO.
      * @param order параметр order
      * @return об'єкт OrderDTO, створений на основі ентіті замовлення
      */
-    public OrderDTO toDTO(OrderEntity order) {
-        if (order == null) {
-            return null;
-        }
-        
-        return OrderDTO.builder()
-                .id(order.getId())
-                .receiptNumber(order.getReceiptNumber())
-                .tagNumber(order.getTagNumber())
-                .client(clientMapper.toClientResponse(order.getClient()))
-                .items(mapItemsToDTO(order.getItems()))
-                .totalAmount(order.getTotalAmount())
-                .discountAmount(order.getDiscountAmount())
-                .finalAmount(order.getFinalAmount())
-                .prepaymentAmount(order.getPrepaymentAmount())
-                .balanceAmount(order.getBalanceAmount())
-                .branchLocation(order.getBranchLocation())
-                .status(order.getStatus())
-                .createdDate(order.getCreatedDate())
-                .updatedDate(order.getUpdatedDate())
-                .expectedCompletionDate(order.getExpectedCompletionDate())
-                .completedDate(order.getCompletedDate())
-                .customerNotes(order.getCustomerNotes())
-                .internalNotes(order.getInternalNotes())
-                .express(order.isExpress())
-                .draft(order.isDraft())
-                .build();
-    }
+    OrderDTO toDTO(OrderEntity order);
     
     /**
-     * Перетворити OrderItemDTO у OrderItemEntity.
-     * @param dto об'єкт передачі даних
-     * @return ентіті елементу замовлення, створена на основі DTO
+     * Перетворити CreateOrderRequest у OrderEntity.
+     * @param orderRequest запит на створення замовлення
+     * @return сутність замовлення
      */
-    public OrderItemEntity fromDTO(OrderItemDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-        
-        return OrderItemEntity.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .quantity(dto.getQuantity())
-                .unitPrice(dto.getUnitPrice())
-                .totalPrice(dto.getTotalPrice())
-                .category(dto.getCategory())
-                .color(dto.getColor())
-                .material(dto.getMaterial())
-                .defects(dto.getDefects())
-                .specialInstructions(dto.getSpecialInstructions())
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "receiptNumber", ignore = true)
+    @Mapping(target = "tagNumber", ignore = true)
+    @Mapping(target = "client", ignore = true)
+    @Mapping(target = "items", ignore = true)
+    @Mapping(target = "totalAmount", ignore = true)
+    @Mapping(target = "finalAmount", ignore = true)
+    @Mapping(target = "balanceAmount", ignore = true)
+    @Mapping(target = "branchLocation", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "updatedDate", ignore = true)
+    @Mapping(target = "completedDate", ignore = true)
+    OrderEntity toEntity(CreateOrderRequest orderRequest);
+    
+    /**
+     * Оновити замовлення з новими даними.
+     * @param orderRequest запит на оновлення замовлення
+     * @param order замовлення для оновлення
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "receiptNumber", ignore = true)
+    @Mapping(target = "tagNumber", ignore = true)
+    @Mapping(target = "client", ignore = true)
+    @Mapping(target = "items", ignore = true)
+    @Mapping(target = "totalAmount", ignore = true)
+    @Mapping(target = "finalAmount", ignore = true)
+    @Mapping(target = "balanceAmount", ignore = true)
+    @Mapping(target = "branchLocation", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "updatedDate", ignore = true)
+    @Mapping(target = "completedDate", ignore = true)
+    void updateOrderFromRequest(CreateOrderRequest orderRequest, @MappingTarget OrderEntity order);
     
     /**
      * Перетворити OrderItemEntity у OrderItemDTO.
      * @param item параметр item
-     * @return об'єкт передачі даних елементу замовлення
+     * @return DTO елемента замовлення
      */
-    public OrderItemDTO toDTO(OrderItemEntity item) {
-        if (item == null) {
-            return null;
-        }
-        
-        return OrderItemDTO.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .quantity(item.getQuantity())
-                .unitPrice(item.getUnitPrice())
-                .totalPrice(item.getTotalPrice())
-                .category(item.getCategory())
-                .color(item.getColor())
-                .material(item.getMaterial())
-                .defects(item.getDefects())
-                .specialInstructions(item.getSpecialInstructions())
-                .build();
-    }
+    OrderItemDTO toOrderItemDTO(OrderItemEntity item);
     
     /**
-     * Перетворити список OrderItemEntity у список OrderItemDTO.
+     * Перетворити OrderItemDTO у OrderItemEntity.
+     * @param dto об'єкт передачі даних
+     * @return ентіті елемента замовлення
      */
-    private List<OrderItemDTO> mapItemsToDTO(List<OrderItemEntity> items) {
-        if (items == null) {
-            return List.of();
-        }
-        
-        return items.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    OrderItemEntity toOrderItemEntity(OrderItemDTO dto);
+    
+    /**
+     * Перетворити OrderItemDTO у OrderItemEntity.
+     * Аліас для toOrderItemEntity для зворотної сумісності.
+     * 
+     * @param itemDTO об'єкт передачі даних
+     * @return об'єкт entity
+     */
+    default OrderItemEntity fromDTO(OrderItemDTO itemDTO) {
+        return toOrderItemEntity(itemDTO);
     }
 }

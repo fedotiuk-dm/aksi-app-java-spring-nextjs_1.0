@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.order.dto.CreateOrderRequest;
 import com.aksi.domain.order.dto.OrderDTO;
+import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.model.OrderStatusEnum;
 import com.aksi.domain.order.service.OrderService;
 import com.aksi.exceptions.EntityNotFoundException;
@@ -193,5 +194,80 @@ public class OrderController {
     public ResponseEntity<List<OrderDTO>> getDraftOrders() {
         log.debug("REST запит на отримання чернеток замовлень");
         return ResponseEntity.ok(orderService.getDraftOrders());
+    }
+    
+    @GetMapping("/{orderId}/items")
+    @Operation(summary = "Отримати всі предмети замовлення", 
+               description = "Повертає список всіх предметів для конкретного замовлення")
+    @ApiResponse(responseCode = "200", description = "Успішно отримано список предметів замовлення",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderItemDTO.class))))
+    @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
+    public ResponseEntity<List<OrderItemDTO>> getOrderItems(
+            @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId) {
+        log.debug("REST запит на отримання всіх предметів замовлення {}", orderId);
+        return ResponseEntity.ok(orderService.getOrderItems(orderId));
+    }
+    
+    @GetMapping("/{orderId}/items/{itemId}")
+    @Operation(summary = "Отримати конкретний предмет замовлення", 
+               description = "Повертає предмет замовлення за його ID")
+    @ApiResponse(responseCode = "200", description = "Предмет замовлення знайдено",
+            content = @Content(schema = @Schema(implementation = OrderItemDTO.class)))
+    @ApiResponse(responseCode = "404", description = "Предмет замовлення не знайдено")
+    public ResponseEntity<OrderItemDTO> getOrderItem(
+            @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
+            @Parameter(description = "ID предмета", required = true) @PathVariable UUID itemId) {
+        log.debug("REST запит на отримання предмета {} замовлення {}", itemId, orderId);
+        
+        return orderService.getOrderItem(orderId, itemId)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new EntityNotFoundException("Предмет замовлення не знайдено", itemId));
+    }
+    
+    @PostMapping("/{orderId}/items")
+    @Operation(summary = "Додати новий предмет до замовлення", 
+               description = "Додає новий предмет до конкретного замовлення")
+    @ApiResponse(responseCode = "201", description = "Предмет успішно додано до замовлення",
+            content = @Content(schema = @Schema(implementation = OrderItemDTO.class)))
+    @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
+    public ResponseEntity<OrderItemDTO> addOrderItem(
+            @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
+            @Parameter(description = "Дані предмета", required = true) 
+            @Valid @RequestBody OrderItemDTO itemDTO) {
+        log.debug("REST запит на додавання нового предмета до замовлення {}", orderId);
+        
+        OrderItemDTO addedItem = orderService.addOrderItem(orderId, itemDTO);
+        return new ResponseEntity<>(addedItem, HttpStatus.CREATED);
+    }
+    
+    @PutMapping("/{orderId}/items/{itemId}")
+    @Operation(summary = "Оновити предмет замовлення", 
+               description = "Оновлює існуючий предмет у замовленні")
+    @ApiResponse(responseCode = "200", description = "Предмет замовлення успішно оновлено",
+            content = @Content(schema = @Schema(implementation = OrderItemDTO.class)))
+    @ApiResponse(responseCode = "404", description = "Предмет замовлення не знайдено")
+    public ResponseEntity<OrderItemDTO> updateOrderItem(
+            @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
+            @Parameter(description = "ID предмета", required = true) @PathVariable UUID itemId,
+            @Parameter(description = "Оновлені дані предмета", required = true) 
+            @Valid @RequestBody OrderItemDTO itemDTO) {
+        log.debug("REST запит на оновлення предмета {} у замовленні {}", itemId, orderId);
+        
+        OrderItemDTO updatedItem = orderService.updateOrderItem(orderId, itemId, itemDTO);
+        return ResponseEntity.ok(updatedItem);
+    }
+    
+    @DeleteMapping("/{orderId}/items/{itemId}")
+    @Operation(summary = "Видалити предмет замовлення", 
+               description = "Видаляє предмет із замовлення")
+    @ApiResponse(responseCode = "204", description = "Предмет замовлення успішно видалено")
+    @ApiResponse(responseCode = "404", description = "Предмет замовлення не знайдено")
+    public ResponseEntity<Void> deleteOrderItem(
+            @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
+            @Parameter(description = "ID предмета", required = true) @PathVariable UUID itemId) {
+        log.debug("REST запит на видалення предмета {} із замовлення {}", itemId, orderId);
+        
+        orderService.deleteOrderItem(orderId, itemId);
+        return ResponseEntity.noContent().build();
     }
 }

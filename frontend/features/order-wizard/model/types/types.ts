@@ -67,7 +67,12 @@ export interface OrderItem {
   specialInstructions?: string;
 }
 
-export type OrderStatus = 'DRAFT' | 'ACTIVE' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type OrderStatus =
+  | 'DRAFT'
+  | 'ACTIVE'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'CANCELLED';
 
 export interface Order {
   id?: UUID;
@@ -80,7 +85,7 @@ export interface Order {
   finalAmount?: number;
   prepaymentAmount?: number;
   balanceAmount?: number;
-  branchLocation: string;
+  branchLocationId: UUID;
   status?: OrderStatus;
   createdDate?: Date;
   updatedDate?: Date;
@@ -98,27 +103,27 @@ export interface OrderWizardState {
   currentStep: WizardStep;
   currentSubStep?: ItemManagerSubStep | string;
   navigationHistory: NavigationHistoryItem[];
-  
+
   // Клієнт
   selectedClient: Client | null;
   searchQuery: string;
   searchResults: Client[];
-  
+
   // Базова інформація
   tagNumber: string;
-  branchLocation: string;
+  branchLocationId: UUID | null;
   expectedCompletionDate: Date | null;
   express: boolean;
-  
+
   // Предмети
   items: OrderItem[];
   currentItemIndex: number | null;
   currentItem: OrderItem | null;
-  
+
   // Загальна інформація
   customerNotes: string;
   internalNotes: string;
-  
+
   // Ціни та оплата
   totalAmount: number;
   discountAmount: number;
@@ -134,35 +139,38 @@ export interface OrderWizardState {
   // Методи
   setCurrentStep: (step: WizardStep) => void;
   setCurrentSubStep: (subStep: ItemManagerSubStep | string | undefined) => void;
-  navigateToStep: (step: WizardStep, subStep?: ItemManagerSubStep | string) => void;
+  navigateToStep: (
+    step: WizardStep,
+    subStep?: ItemManagerSubStep | string
+  ) => void;
   navigateBack: () => void;
   resetNavigationHistory: () => void;
-  
+
   setSelectedClient: (client: Client | null) => void;
   setSearchQuery: (query: string) => void;
   setSearchResults: (results: Client[]) => void;
-  
+
   setTagNumber: (tagNumber: string) => void;
-  setBranchLocation: (location: string) => void;
+  setBranchLocationId: (locationId: UUID | null) => void;
   setExpectedCompletionDate: (date: Date | null) => void;
   setExpress: (express: boolean) => void;
-  
+
   addItem: (item: OrderItem) => void;
   updateItem: (index: number, item: OrderItem) => void;
   removeItem: (index: number) => void;
   setCurrentItemIndex: (index: number | null) => void;
   setCurrentItem: (item: OrderItem | null) => void;
-  
+
   setCustomerNotes: (notes: string) => void;
   setInternalNotes: (notes: string) => void;
-  
+
   updateTotals: () => void;
   setDiscountAmount: (amount: number) => void;
   setPrepaymentAmount: (amount: number) => void;
-  
+
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
   setDirty: (isDirty: boolean) => void;
-  
+
   resetWizard: () => void;
 }

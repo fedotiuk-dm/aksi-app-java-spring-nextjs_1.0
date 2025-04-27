@@ -5,3 +5,9 @@ databaseChangeLog:
   - include:
       file: 1.0/002-create-order-items-table.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/003-update-orders-branch-location.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/004-add-unit-of-measure-to-order-items.yaml
+      relativeToChangelogFile: true

@@ -21,7 +21,7 @@ const initialState: Partial<OrderWizardState> = {
 
   // Базова інформація
   tagNumber: '',
-  branchLocation: '',
+  branchLocationId: null, // Початкове значення - null, буде встановлено при виборі філії
   expectedCompletionDate: null,
   express: false,
 

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.aksi.domain.order.entity.OrderEntity;
@@ -27,6 +29,18 @@ public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
      * @return список всіх чернеток замовлень
      */
     List<OrderEntity> findByDraftTrue();
+    
+    /**
+     * Знайти максимальний лічильник в номері квитанції за певним префіксом.
+     * Наприклад, для номерів формату "202404-KYV-00001", "202404-KYV-00002" тощо,
+     * при префіксі "202404-KYV-" метод поверне максимальний лічильник - 2.
+     * 
+     * @param prefix префікс номера квитанції
+     * @return максимальний номер лічильника або null, якщо немає замовлень з таким префіксом
+     */
+    @Query("SELECT MAX(CAST(SUBSTRING(o.receiptNumber, LENGTH(:prefix) + 1) AS integer)) " +
+           "FROM OrderEntity o WHERE o.receiptNumber LIKE :prefix || '%'")
+    Integer findMaxCounterByReceiptNumberPrefix(@Param("prefix") String prefix);
     
     /**
      * Знайти замовлення за номером квитанції.

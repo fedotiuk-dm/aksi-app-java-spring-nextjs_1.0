@@ -8,6 +8,9 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export { AuthResponse } from './models/AuthResponse';
+export type { BranchLocationCreateRequest } from './models/BranchLocationCreateRequest';
+export type { BranchLocationDTO } from './models/BranchLocationDTO';
+export type { BranchLocationUpdateRequest } from './models/BranchLocationUpdateRequest';
 export { ClientResponse } from './models/ClientResponse';
 export { CreateClientRequest } from './models/CreateClientRequest';
 export type { CreateOrderRequest } from './models/CreateOrderRequest';
@@ -21,6 +24,9 @@ export type { ServiceCategoryDTO } from './models/ServiceCategoryDTO';
 export { UpdateClientRequest } from './models/UpdateClientRequest';
 
 export { $AuthResponse } from './schemas/$AuthResponse';
+export { $BranchLocationCreateRequest } from './schemas/$BranchLocationCreateRequest';
+export { $BranchLocationDTO } from './schemas/$BranchLocationDTO';
+export { $BranchLocationUpdateRequest } from './schemas/$BranchLocationUpdateRequest';
 export { $ClientResponse } from './schemas/$ClientResponse';
 export { $CreateClientRequest } from './schemas/$CreateClientRequest';
 export { $CreateOrderRequest } from './schemas/$CreateOrderRequest';
@@ -34,6 +40,7 @@ export { $ServiceCategoryDTO } from './schemas/$ServiceCategoryDTO';
 export { $UpdateClientRequest } from './schemas/$UpdateClientRequest';
 
 export { AuthenticationService } from './services/AuthenticationService';
+export { BranchLocationsApiService } from './services/BranchLocationsApiService';
 export { ClientsService } from './services/ClientsService';
 export { OrdersService } from './services/OrdersService';
 export { PriceListService } from './services/PriceListService';

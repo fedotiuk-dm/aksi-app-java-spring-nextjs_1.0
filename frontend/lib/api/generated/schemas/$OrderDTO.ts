@@ -8,8 +8,8 @@ export const $OrderDTO = {
             type: 'number',
         },
         branchLocation: {
-            type: 'string',
-            minLength: 1,
+            type: 'BranchLocationDTO',
+            isRequired: true,
         },
         client: {
             type: 'ClientResponse',

@@ -14,6 +14,7 @@ import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 public interface ServiceCategoryRepository extends JpaRepository<ServiceCategoryEntity, UUID> {
     Optional<ServiceCategoryEntity> findByCode(String code);
     List<ServiceCategoryEntity> findAllByOrderBySortOrderAsc();
+    List<ServiceCategoryEntity> findByActiveIsTrueOrderBySortOrder();
     
     /**
      * Знаходить максимальне значення поля sortOrder в таблиці категорій послуг.

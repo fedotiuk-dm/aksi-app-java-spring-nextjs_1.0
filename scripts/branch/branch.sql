@@ -1,0 +1,2 @@
+INSERT INTO branch_locations (id, name, address, phone, code, active, created_at, updated_at)
+VALUES (gen_random_uuid(), 'Головне відділення', 'Вінниця, вул. Замостянська, 33', '+380632913911', 'AKSI1', true, NOW(), NOW());

@@ -7,7 +7,7 @@ import type { OrderItemDTO } from './OrderItemDTO';
  * Дані для чернетки замовлення
  */
 export type CreateOrderRequest = {
-    branchLocation?: string;
+    branchLocationId: string;
     clientId: string;
     customerNotes?: string;
     discountAmount?: number;

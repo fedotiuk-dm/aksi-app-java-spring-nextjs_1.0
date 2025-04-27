@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 'orders-1.0-003'
+      author: 'system'
+      comment: 'Update orders table for branch_location relation'
+      changes:
+        # 1. Створюємо новий стовпець для зовнішнього ключа
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: branch_location_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+                  
+        # 2. Додаємо зовнішній ключ на таблицю branch_locations
+        - addForeignKeyConstraint:
+            constraintName: fk_orders_branch_location
+            baseTableName: orders
+            baseColumnNames: branch_location_id
+            referencedTableName: branch_locations
+            referencedColumnNames: id
+            onDelete: 'SET NULL'
+            onUpdate: 'CASCADE'
+            
+        # 3. Після міграції даних у майбутньому, можна буде додати not null обмеження
+        # Ця частина буде в окремій міграції після перенесення даних

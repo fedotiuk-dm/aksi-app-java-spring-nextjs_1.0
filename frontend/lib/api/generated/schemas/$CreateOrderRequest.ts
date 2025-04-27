@@ -5,9 +5,10 @@
 export const $CreateOrderRequest = {
     description: `Дані для чернетки замовлення`,
     properties: {
-        branchLocation: {
+        branchLocationId: {
             type: 'string',
-            minLength: 1,
+            isRequired: true,
+            format: 'uuid',
         },
         clientId: {
             type: 'string',

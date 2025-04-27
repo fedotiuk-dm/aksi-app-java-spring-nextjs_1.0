@@ -7,6 +7,7 @@ import { useOrderWizardNavigation } from '../model/store/store';
 import { WizardStep } from '../model/types';
 import { StepContainer, StepNavigation } from './components';
 import { ClientSelectionStep } from './steps/step1-client-selection/ClientSelectionStep';
+import { BasicInfoStep } from './steps/step2-basic-info';
 
 /**
  * Головний компонент OrderWizard.
@@ -18,8 +19,8 @@ const OrderWizardContent: React.FC = () => {
   // Кроки майстра замовлень
   const wizardSteps = [
     { step: WizardStep.CLIENT_SELECTION, label: 'Клієнт' },
+    { step: WizardStep.BASIC_INFO, label: 'Базова інформація' },
     { step: WizardStep.ITEM_MANAGER, label: 'Предмети' },
-    { step: WizardStep.BASIC_INFO, label: 'Параметри' },
     { step: WizardStep.COMPLETION, label: 'Підтвердження' }
   ];
 
@@ -50,13 +51,7 @@ const OrderWizardContent: React.FC = () => {
           </StepContainer>
         );
       case WizardStep.BASIC_INFO:
-        return (
-          <StepContainer title="Параметри замовлення">
-            <Box py={3}>
-              Компонент параметрів замовлення буде реалізовано в наступних версіях
-            </Box>
-          </StepContainer>
-        );
+        return <BasicInfoStep />;
       case WizardStep.COMPLETION:
         return (
           <StepContainer title="Підтвердження замовлення">

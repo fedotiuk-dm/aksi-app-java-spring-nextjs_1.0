@@ -63,6 +63,9 @@ public class OrderItemEntity {
     @Column(name = "material")
     private String material;
     
+    @Column(name = "unit_of_measure")
+    private String unitOfMeasure;
+    
     @Column(name = "defects")
     private String defects;
     

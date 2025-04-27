@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.aksi.domain.branch.dto.BranchLocationDTO;
 import com.aksi.domain.client.dto.ClientResponse;
 import com.aksi.domain.order.model.OrderStatusEnum;
 
@@ -51,8 +52,8 @@ public class OrderDTO {
     
     private BigDecimal balanceAmount;
     
-    @NotBlank(message = "Філія обов'язкова")
-    private String branchLocation;
+    @NotNull(message = "Філія обов'язкова")
+    private BranchLocationDTO branchLocation;
     
     @NotNull(message = "Статус обов'язковий")
     private OrderStatusEnum status;

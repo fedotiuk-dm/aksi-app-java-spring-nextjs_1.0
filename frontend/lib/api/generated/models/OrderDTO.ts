@@ -2,11 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BranchLocationDTO } from './BranchLocationDTO';
 import type { ClientResponse } from './ClientResponse';
 import type { OrderItemDTO } from './OrderItemDTO';
 export type OrderDTO = {
     balanceAmount?: number;
-    branchLocation?: string;
+    branchLocation: BranchLocationDTO;
     client: ClientResponse;
     completedDate?: string;
     createdDate?: string;

@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 'orders-1.0-004'
+      author: 'fedotiuk-dm'
+      comment: 'Add unit_of_measure column to order_items table'
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: order_items
+        not:
+          columnExists:
+            tableName: order_items
+            columnName: unit_of_measure
+      changes:
+        - addColumn:
+            tableName: order_items
+            columns:
+              - column:
+                  name: unit_of_measure
+                  type: VARCHAR(20)
+                  remarks: 'Одиниця виміру (шт./кг)'

@@ -45,6 +45,8 @@ public class OrderItemDTO {
     
     private String material;
     
+    private String unitOfMeasure;
+    
     private String defects;
     
     @Size(max = 500, message = "Спеціальні інструкції не можуть перевищувати 500 символів")

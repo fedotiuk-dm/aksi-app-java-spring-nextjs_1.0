@@ -9,6 +9,9 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import com.aksi.domain.branch.entity.BranchLocationEntity;
 import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.order.model.OrderStatusEnum;
 
@@ -55,7 +58,11 @@ public class OrderEntity {
     @JoinColumn(name = "client_id", nullable = false)
     private ClientEntity client;
     
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    /**
+     * Відношення до елементів замовлення (у одного замовлення може бути кілька елементів).
+     */
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     @Builder.Default
     private List<OrderItemEntity> items = new ArrayList<>();
     
@@ -74,8 +81,12 @@ public class OrderEntity {
     @Column(name = "balance_amount")
     private BigDecimal balanceAmount;
     
-    @Column(name = "branch_location", nullable = false)
-    private String branchLocation;
+    /**
+     * Пункт прийому замовлення
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_location_id", nullable = false)
+    private BranchLocationEntity branchLocation;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -102,13 +113,13 @@ public class OrderEntity {
     @Column(name = "internal_notes", length = 1000)
     private String internalNotes;
     
-    @Column(name = "is_express")
+    @Column(name = "is_express", nullable = false)
     @Builder.Default
     private boolean express = false;
     
-    @Column(name = "is_draft")
+    @Column(name = "is_draft", nullable = false)
     @Builder.Default
-    private boolean draft = true;
+    private boolean draft = false;
     
     /**
      * Додати новий елемент до замовлення.

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -37,8 +36,8 @@ public class CreateOrderRequest {
     
     private BigDecimal prepaymentAmount;
     
-    @NotBlank(message = "Філія обов'язкова")
-    private String branchLocation;
+    @NotNull(message = "ID філії обов'язковий")
+    private UUID branchLocationId;
     
     private LocalDateTime expectedCompletionDate;
     

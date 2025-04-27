@@ -19,6 +19,11 @@ databaseChangeLog:
       file: domains/pricelist/pricelist-index.yaml
       relativeToChangelogFile: true
       
+  # Філії та пункти прийому
+  - include:
+      file: domains/branches/branches-index.yaml
+      relativeToChangelogFile: true
+      
   # Замовлення
   - include:
       file: domains/orders/orders-index.yaml

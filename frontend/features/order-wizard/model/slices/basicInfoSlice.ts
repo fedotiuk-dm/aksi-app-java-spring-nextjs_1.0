@@ -1,5 +1,6 @@
 import { StateCreator } from 'zustand';
 import { OrderWizardState } from '../types/types';
+import { UUID } from 'node:crypto';
 
 export const createBasicInfoSlice: StateCreator<
   OrderWizardState,
@@ -8,7 +9,7 @@ export const createBasicInfoSlice: StateCreator<
   Pick<
     OrderWizardState,
     | 'setTagNumber'
-    | 'setBranchLocation'
+    | 'setBranchLocationId'
     | 'setExpectedCompletionDate'
     | 'setExpress'
   >
@@ -20,9 +21,9 @@ export const createBasicInfoSlice: StateCreator<
     });
   },
 
-  setBranchLocation: (location: string) => {
+  setBranchLocationId: (locationId: UUID | null) => {
     set((state) => {
-      state.branchLocation = location;
+      state.branchLocationId = locationId;
       state.isDirty = true;
     });
   },

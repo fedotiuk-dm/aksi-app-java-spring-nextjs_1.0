@@ -7,9 +7,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aksi.domain.branch.entity.BranchLocationEntity;
+import com.aksi.domain.branch.repository.BranchLocationRepository;
 import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.client.repository.ClientRepository;
 import com.aksi.domain.order.dto.CreateOrderRequest;
@@ -35,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
     
     private final OrderRepository orderRepository;
     private final ClientRepository clientRepository;
+    private final BranchLocationRepository branchLocationRepository;
     private final OrderMapper orderMapper;
     
     /**
@@ -81,10 +85,17 @@ public class OrderServiceImpl implements OrderService {
         // Створюємо нове замовлення
         OrderEntity order = new OrderEntity();
         order.setTagNumber(orderRequest.getTagNumber());
+        
+        // Встановлюємо пункт прийому замовлень
+        BranchLocationEntity branchLocation = branchLocationRepository.findById(orderRequest.getBranchLocationId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                    "Пункт прийому замовлень не знайдений з ID: " + orderRequest.getBranchLocationId()
+                ));
+        order.setBranchLocation(branchLocation);
+        
         // Генеруємо номер квитанції, оскільки він відсутній у запиті
-        order.setReceiptNumber(generateReceiptNumber());
+        order.setReceiptNumber(generateReceiptNumber(branchLocation));
         order.setClient(client);
-        order.setBranchLocation(orderRequest.getBranchLocation());
         order.setStatus(OrderStatusEnum.NEW);
         order.setCreatedDate(LocalDateTime.now());
         order.setExpectedCompletionDate(orderRequest.getExpectedCompletionDate());
@@ -106,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
         
         // Додаємо предмети до замовлення
         for (OrderItemDTO itemDTO : orderRequest.getItems()) {
-            OrderItemEntity item = orderMapper.fromDTO(itemDTO);
+            OrderItemEntity item = orderMapper.toOrderItemEntity(itemDTO);
             order.addItem(item);
             
             // Розраховуємо вартість предмету
@@ -197,7 +208,9 @@ public class OrderServiceImpl implements OrderService {
         request.setDraft(true);
         OrderDTO draftOrder = createOrder(request);
         
-        log.info("Збережено чернетку замовлення з ID: {}", draftOrder.getId());
+        // Безпечна робота з logger без доступу до draftOrder.getId()
+        // Тимчасовий обхід проблеми з Lombok
+        log.info("Збережено чернетку замовлення");
         return draftOrder;
     }
     
@@ -324,13 +337,162 @@ public class OrderServiceImpl implements OrderService {
     }
     
     /**
-     * Генерування унікального номера квитанції.
+     * Отримати всі предмети замовлення.
      */
-    private String generateReceiptNumber() {
-        // Генеруємо номер формату: AKSI-YYYYMMDD-XXXX, де XXXX - випадкове число
-        String datePart = LocalDateTime.now().toString().substring(0, 10).replace("-", "");
-        String randomPart = String.format("%04d", (int) (Math.random() * 10000));
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderItemDTO> getOrderItems(UUID orderId) {
+        log.debug("Отримання всіх предметів замовлення з ID: {}", orderId);
         
-        return "AKSI-" + datePart + "-" + randomPart;
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+        
+        return order.getItems().stream()
+                .map(orderMapper::toOrderItemDTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Отримати конкретний предмет замовлення за ID.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<OrderItemDTO> getOrderItem(UUID orderId, UUID itemId) {
+        log.debug("Отримання предмета з ID: {} із замовлення з ID: {}", itemId, orderId);
+        
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+        
+        return order.getItems().stream()
+                .filter(item -> item.getId().equals(itemId))
+                .findFirst()
+                .map(orderMapper::toOrderItemDTO);
+    }
+    
+    /**
+     * Додати новий предмет до замовлення.
+     */
+    @Override
+    @Transactional
+    public OrderItemDTO addOrderItem(UUID orderId, OrderItemDTO itemDTO) {
+        log.debug("Додавання нового предмета до замовлення з ID: {}", orderId);
+        
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+        
+        // Конвертуємо DTO в Entity
+        OrderItemEntity item = orderMapper.toOrderItemEntity(itemDTO);
+        
+        // Додаємо предмет до замовлення
+        order.addItem(item);
+        
+        // Розрахунок вартості предмета
+        item.recalculateTotalPrice();
+        
+        // Перерахунок загальної вартості замовлення
+        order.recalculateTotalAmount();
+        
+        // Зберігаємо оновлене замовлення
+        order = orderRepository.save(order);
+        
+        // Знаходимо доданий предмет і повертаємо його DTO
+        return order.getItems().stream()
+                .filter(i -> i.getName().equals(item.getName()) && 
+                          i.getQuantity().equals(item.getQuantity()) &&
+                          i.getUnitPrice().equals(item.getUnitPrice()))
+                .findFirst()
+                .map(orderMapper::toOrderItemDTO)
+                .orElseThrow(() -> new RuntimeException("Не вдалося знайти щойно доданий предмет"));
+    }
+    
+    /**
+     * Оновити існуючий предмет замовлення.
+     */
+    @Override
+    @Transactional
+    public OrderItemDTO updateOrderItem(UUID orderId, UUID itemId, OrderItemDTO itemDTO) {
+        log.debug("Оновлення предмета з ID: {} у замовленні з ID: {}", itemId, orderId);
+        
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+        
+        // Знаходимо предмет для оновлення
+        OrderItemEntity item = order.getItems().stream()
+                .filter(i -> i.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Предмет не знайдено в замовленні", itemId));
+        
+        // Оновлюємо поля предмету, ігноруючи id та order
+        String[] ignoreProperties = {"id", "order"};
+        BeanUtils.copyProperties(itemDTO, item, ignoreProperties);
+        
+        // Перерахунок вартості предмета
+        item.recalculateTotalPrice();
+        
+        // Перерахунок загальної вартості замовлення
+        order.recalculateTotalAmount();
+        
+        // Зберігаємо оновлене замовлення
+        orderRepository.save(order);
+        
+        // Повертаємо оновлений предмет
+        return orderMapper.toOrderItemDTO(item);
+    }
+    
+    /**
+     * Видалити предмет із замовлення.
+     */
+    @Override
+    @Transactional
+    public void deleteOrderItem(UUID orderId, UUID itemId) {
+        log.debug("Видалення предмета з ID: {} із замовлення з ID: {}", itemId, orderId);
+        
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+        
+        // Знаходимо предмет для видалення
+        OrderItemEntity itemToRemove = order.getItems().stream()
+                .filter(i -> i.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Предмет не знайдено в замовленні", itemId));
+        
+        // Видаляємо предмет із замовлення
+        order.getItems().remove(itemToRemove);
+        
+        // Перерахунок загальної вартості замовлення
+        order.recalculateTotalAmount();
+        
+        // Зберігаємо оновлене замовлення
+        orderRepository.save(order);
+    }
+    
+    /**
+     * Генерування унікального номера квитанції.
+     * Квитанція має формат: {year}{month}-{branch code}-{counter}
+     * Наприклад: 202404-KYV-00001
+     * 
+     * @param branchLocation пункт прийому замовлення
+     * @return унікальний номер квитанції
+     */
+    private String generateReceiptNumber(BranchLocationEntity branchLocation) {
+        LocalDateTime now = LocalDateTime.now();
+        int year = now.getYear();
+        int month = now.getMonthValue();
+        
+        // Формуємо першу частину номера квитанції: рік та місяць
+        String yearMonthPart = String.format("%d%02d", year, month);
+        
+        // Отримуємо код філії (branch code)
+        String branchCode = branchLocation.getCode();
+        
+        // Отримуємо останній номер для цього року, місяця та філії
+        String yearMonthBranchPrefix = yearMonthPart + "-" + branchCode + "-";
+        Integer lastCounter = orderRepository.findMaxCounterByReceiptNumberPrefix(yearMonthBranchPrefix);
+        
+        // Якщо немає замовлень з таким префіксом, починаємо з 1
+        int counter = (lastCounter != null) ? lastCounter + 1 : 1;
+        
+        // Формуємо кінцевий номер квитанції
+        return yearMonthPart + "-" + branchCode + "-" + String.format("%05d", counter);
     }
 }
