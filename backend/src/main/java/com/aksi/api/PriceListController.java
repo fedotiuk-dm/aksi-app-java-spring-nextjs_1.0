@@ -88,4 +88,44 @@ public class PriceListController {
         log.info("REST запит на оновлення елемента прайс-листа з ID: {}", itemId);
         return ResponseEntity.ok(priceListService.updatePriceListItem(itemId, itemDto));
     }
+    
+    @GetMapping("/category/{categoryId}/items")
+    @Operation(summary = "Отримати всі елементи прайс-листа за категорією")
+    public ResponseEntity<List<PriceListItemDTO>> getItemsByCategory(
+            @PathVariable UUID categoryId) {
+        log.info("REST запит на отримання елементів прайс-листа за категорією з ID: {}", categoryId);
+        return ResponseEntity.ok(priceListService.getItemsByCategory(categoryId));
+    }
+    
+    @GetMapping("/category/code/{categoryCode}/items")
+    @Operation(summary = "Отримати всі елементи прайс-листа за кодом категорії")
+    public ResponseEntity<List<PriceListItemDTO>> getItemsByCategoryCode(
+            @PathVariable String categoryCode) {
+        log.info("REST запит на отримання елементів прайс-листа за кодом категорії: {}", categoryCode);
+        return ResponseEntity.ok(priceListService.getItemsByCategoryCode(categoryCode));
+    }
+    
+    @GetMapping("/item/{itemId}")
+    @Operation(summary = "Отримати елемент прайс-листа за ID")
+    public ResponseEntity<PriceListItemDTO> getItemById(
+            @PathVariable UUID itemId) {
+        log.info("REST запит на отримання елемента прайс-листа за ID: {}", itemId);
+        return ResponseEntity.ok(priceListService.getItemById(itemId));
+    }
+    
+    @GetMapping("/category/{categoryId}/units-of-measure")
+    @Operation(summary = "Отримати доступні одиниці виміру для категорії")
+    public ResponseEntity<List<String>> getAvailableUnitsOfMeasure(
+            @PathVariable UUID categoryId) {
+        log.info("REST запит на отримання доступних одиниць виміру для категорії з ID: {}", categoryId);
+        return ResponseEntity.ok(priceListService.getAvailableUnitsOfMeasure(categoryId));
+    }
+    
+    @GetMapping("/category/{categoryId}/item-names")
+    @Operation(summary = "Отримати список найменувань виробів за категорією")
+    public ResponseEntity<List<String>> getItemNamesByCategory(
+            @PathVariable UUID categoryId) {
+        log.info("REST запит на отримання списку найменувань виробів за категорією з ID: {}", categoryId);
+        return ResponseEntity.ok(priceListService.getItemNamesByCategory(categoryId));
+    }
 }

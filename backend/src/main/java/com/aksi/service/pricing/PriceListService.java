@@ -2,6 +2,7 @@ package com.aksi.service.pricing;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -214,5 +215,102 @@ public class PriceListService {
         
         PriceListItemEntity updatedItem = priceListItemRepository.save(existingItem);
         return priceListMapper.toDto(updatedItem);
+    }
+
+    /**
+     * Отримати всі елементи прайс-листа за категорією.
+     * @param categoryId ідентифікатор категорії
+     * @return список елементів прайс-листа
+     */
+    @Transactional(readOnly = true)
+    public List<PriceListItemDTO> getItemsByCategory(UUID categoryId) {
+        log.info("Отримання елементів прайс-листа за категорією з ID: {}", categoryId);
+        
+        // Перевіряємо, що категорія існує
+        ServiceCategoryEntity category = serviceCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Категорію послуг не знайдено"));
+        
+        List<PriceListItemEntity> items = priceListItemRepository.findAllByCategoryOrderByCatalogNumberAsc(category);
+        
+        return priceListMapper.toItemDtoList(items);
+    }
+    
+    /**
+     * Отримати всі елементи прайс-листа за кодом категорії.
+     * @param categoryCode код категорії
+     * @return список елементів прайс-листа
+     */
+    @Transactional(readOnly = true)
+    public List<PriceListItemDTO> getItemsByCategoryCode(String categoryCode) {
+        log.info("Отримання елементів прайс-листа за кодом категорії: {}", categoryCode);
+        
+        // Перевіряємо, що категорія існує
+        ServiceCategoryEntity category = serviceCategoryRepository.findByCode(categoryCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Категорію послуг не знайдено"));
+        
+        List<PriceListItemEntity> items = priceListItemRepository.findAllByCategoryOrderByCatalogNumberAsc(category);
+        
+        return priceListMapper.toItemDtoList(items);
+    }
+    
+    /**
+     * Отримати елемент прайс-листа за ID.
+     * @param id ідентифікатор елемента прайс-листа
+     * @return елемент прайс-листа
+     */
+    @Transactional(readOnly = true)
+    public PriceListItemDTO getItemById(UUID id) {
+        log.info("Отримання елемента прайс-листа за ID: {}", id);
+        
+        PriceListItemEntity item = priceListItemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Елемент прайс-листа не знайдено"));
+        
+        return priceListMapper.toDto(item);
+    }
+    
+    /**
+     * Отримати доступні одиниці виміру для категорії.
+     * @param categoryId ідентифікатор категорії
+     * @return список доступних одиниць виміру
+     */
+    @Transactional(readOnly = true)
+    public List<String> getAvailableUnitsOfMeasure(UUID categoryId) {
+        log.info("Отримання доступних одиниць виміру для категорії з ID: {}", categoryId);
+        
+        // Перевіряємо, що категорія існує
+        if (!serviceCategoryRepository.existsById(categoryId)) {
+            throw new ResourceNotFoundException("Категорію послуг не знайдено");
+        }
+        
+        // Створюємо об'єкт категорії для пошуку
+        ServiceCategoryEntity category = new ServiceCategoryEntity();
+        category.setId(categoryId);
+        
+        // Отримуємо всі унікальні одиниці виміру для цієї категорії
+        return priceListItemRepository.findAllByCategory(category).stream()
+                .map(PriceListItemEntity::getUnitOfMeasure)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Отримати список найменувань виробів за категорією.
+     * @param categoryId ідентифікатор категорії
+     * @return список найменувань виробів
+     */
+    @Transactional(readOnly = true)
+    @Cacheable(CacheConfig.PRICE_LIST_CACHE)
+    public List<String> getItemNamesByCategory(UUID categoryId) {
+        log.info("Отримання списку найменувань виробів за категорією з ID: {}", categoryId);
+        
+        ServiceCategoryEntity category = serviceCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Категорію послуг не знайдено з ID: " + categoryId));
+        
+        return priceListItemRepository.findAllByCategory(category).stream()
+                .filter(item -> item.isActive()) // Тільки активні елементи
+                .map(PriceListItemEntity::getName)
+                .distinct() // Унікальні найменування
+                .sorted() // Сортування за алфавітом
+                .collect(Collectors.toList());
     }
 }
