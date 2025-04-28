@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid, Typography, Box, Button } from '@mui/material';
 import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
+import { WizardStep } from '@/features/order-wizard/model/types';
 import type { UUID } from 'node:crypto';
 import { BranchLocationSelect, TagNumberInput } from '.';
 import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
@@ -18,6 +19,7 @@ export const BasicInfoStep: React.FC = () => {
     (state) => state.setBranchLocationId
   );
   const setTagNumber = useOrderWizardStore((state) => state.setTagNumber);
+  const navigateToStep = useOrderWizardStore((state) => state.navigateToStep);
 
   // Обробник зміни значення філії
   const handleBranchLocationChange = React.useCallback(
@@ -35,7 +37,7 @@ export const BasicInfoStep: React.FC = () => {
   const [errors, setErrors] = React.useState<Record<string, string>>({});
 
   // Валідація перед переходом до наступного кроку
-  const validate = (): boolean => {
+  const validate = () => {
     const newErrors: Record<string, string> = {};
 
     if (!branchLocationId) {
@@ -47,7 +49,14 @@ export const BasicInfoStep: React.FC = () => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    
+    // Якщо помилок немає, переходимо до наступного кроку
+    if (Object.keys(newErrors).length === 0) {
+      navigateToStep(WizardStep.ITEM_MANAGER);
+      return true;
+    }
+    
+    return false;
   };
 
   return (

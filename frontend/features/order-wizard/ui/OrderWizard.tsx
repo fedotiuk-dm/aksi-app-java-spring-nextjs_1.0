@@ -8,6 +8,8 @@ import { WizardStep } from '../model/types';
 import { StepContainer, StepNavigation } from './components';
 import { ClientSelectionStep } from './steps/step1-client-selection/ClientSelectionStep';
 import { BasicInfoStep } from './steps/step2-basic-info';
+import { ItemManagerStep } from './steps/step3-item-manager';
+import { ItemWizardStep } from './steps/step4-item-wizard';
 
 /**
  * Головний компонент OrderWizard.
@@ -43,13 +45,9 @@ const OrderWizardContent: React.FC = () => {
       case WizardStep.CLIENT_SELECTION:
         return <ClientSelectionStep />;
       case WizardStep.ITEM_MANAGER:
-        return (
-          <StepContainer title="Управління предметами">
-            <Box py={3}>
-              Компонент управління предметами буде реалізовано в наступних версіях
-            </Box>
-          </StepContainer>
-        );
+        return <ItemManagerStep />;
+      case WizardStep.ITEM_WIZARD:
+        return <ItemWizardStep />;
       case WizardStep.BASIC_INFO:
         return <BasicInfoStep />;
       case WizardStep.COMPLETION:

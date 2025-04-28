@@ -18,10 +18,19 @@ export enum ItemManagerSubStep {
   ITEM_DETAILS = 'ITEM_DETAILS',
 }
 
+// Типи для підкроків Item Wizard
+export enum ItemWizardSubStep {
+  BASIC_INFO = 'BASIC_INFO',                // substep1-basic-info
+  ITEM_PROPERTIES = 'ITEM_PROPERTIES',      // substep2-item-properties
+  DEFECTS_STAINS = 'DEFECTS_STAINS',        // substep3-defects-stains
+  PRICE_CALCULATOR = 'PRICE_CALCULATOR',    // substep4-price-calculator
+  PHOTO_DOCUMENTATION = 'PHOTO_DOCUMENTATION' // substep5-photo-documentation
+}
+
 // Історія навігації для можливості переходу назад
 export interface NavigationHistoryItem {
   step: WizardStep;
-  subStep?: ItemManagerSubStep | string;
+  subStep?: ItemManagerSubStep | ItemWizardSubStep | string;
   data?: Record<string, unknown>;
 }
 
@@ -101,7 +110,7 @@ export interface Order {
 export interface OrderWizardState {
   // Навігація
   currentStep: WizardStep;
-  currentSubStep?: ItemManagerSubStep | string;
+  currentSubStep?: ItemManagerSubStep | ItemWizardSubStep | string;
   navigationHistory: NavigationHistoryItem[];
 
   // Клієнт
@@ -138,10 +147,10 @@ export interface OrderWizardState {
 
   // Методи
   setCurrentStep: (step: WizardStep) => void;
-  setCurrentSubStep: (subStep: ItemManagerSubStep | string | undefined) => void;
+  setCurrentSubStep: (subStep: ItemManagerSubStep | ItemWizardSubStep | string | undefined) => void;
   navigateToStep: (
     step: WizardStep,
-    subStep?: ItemManagerSubStep | string
+    subStep?: ItemManagerSubStep | ItemWizardSubStep | string
   ) => void;
   navigateBack: () => void;
   resetNavigationHistory: () => void;
