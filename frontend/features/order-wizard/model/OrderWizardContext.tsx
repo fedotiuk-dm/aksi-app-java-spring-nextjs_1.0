@@ -11,7 +11,7 @@ import {
   useBranchLocations,
   useOrderItems,
   useItemCharacteristics,
-  usePriceCalculator,
+  useItemPricing,
   useOrderItemPhotos
 } from '../api';
 import { WizardStep } from './types/types';
@@ -32,7 +32,7 @@ interface OrderWizardContextValue {
   // API для етапу 2 (Менеджер предметів)
   orderItemsApi: ReturnType<typeof useOrderItems>;
   itemCharacteristicsApi: ReturnType<typeof useItemCharacteristics>;
-  priceCalculatorApi: ReturnType<typeof usePriceCalculator>;
+  priceCalculatorApi: ReturnType<typeof useItemPricing>;
   orderItemPhotosApi: ReturnType<typeof useOrderItemPhotos>;
 
   // Статус
@@ -60,7 +60,7 @@ export const OrderWizardProvider: React.FC<PropsWithChildren> = ({
   const branchLocationsApi = useBranchLocations();
   const orderItemsApi = useOrderItems();
   const itemCharacteristicsApi = useItemCharacteristics();
-  const priceCalculatorApi = usePriceCalculator();
+  const priceCalculatorApi = useItemPricing();
   const orderItemPhotosApi = useOrderItemPhotos();
 
   // Формуємо значення контексту

@@ -22,14 +22,22 @@ export const QUERY_KEYS = {
   UNIT_SUPPORT: 'unitSupport',
   
   // Підетап 2.2: Характеристики предмета
-  CHARACTERISTICS: 'characteristics',
+  CHARACTERISTICS: 'characteristics',   // Загальний ключ для всіх характеристик предмета
+  MATERIALS: 'materials',               // Матеріали предметів
+  COLORS: 'colors',                     // Кольори предметів
+  FILLER_TYPES: 'fillerTypes',          // Типи наповнювачів
+  WEAR_DEGREES: 'wearDegrees',          // Ступені зносу
+  IS_FILLER_REQUIRED: 'isFillerRequired',
   
-  // Підетап 2.3: Забруднення та дефекти
-  DEFECTS: 'defects',
+  // Підетап 2.3: Забруднення, дефекти та ризики
+  STAIN_TYPES: 'stainTypes',            // Типи плям
+  DEFECT_TYPES: 'defectTypes',          // Типи дефектів
+  DEFECTS: 'defects',                   // Загальні дані про дефекти
   
-  // Підетап 2.4: Ціноутворення
-  PRICE_CALCULATION: 'priceCalculation',
-  PRICE_MODIFIERS: 'priceModifiers',
+  // Підетап 2.4: Знижки та надбавки (калькулятор ціни)
+  PRICE_MODIFIERS: 'priceModifiers',    // Модифікатори ціни
+  BASE_PRICE: 'basePrice',              // Базова ціна для категорії
+  PRICE_CALCULATION: 'priceCalculation', // Розрахунок ціни
   
   // Підетап 2.5: Фотодокументація
   ITEM_PHOTOS: 'itemPhotos',

@@ -1,5 +1,8 @@
 import { OrderDTO, OrderItemDTO } from '@/lib/api';
-import { Order, OrderItem } from '../../model/types';
+import { Order, OrderItem } from '../../model/types/types';
+// Імпортуємо типи для правильної типізації при де/серіалізації JSON
+// @ts-ignore
+import { Defect, Stain } from '../../model/schema/item-defects.schema';
 import type { UUID } from 'node:crypto';
 import dayjs from 'dayjs';
 
@@ -7,7 +10,7 @@ import dayjs from 'dayjs';
  * Безпечне отримання UUID з різних джерел (новий API або старий)
  */
 const safeUUID = (value: string | undefined): UUID => {
-  return value ? (String(value) as UUID) : '' as UUID;
+  return value ? (String(value) as UUID) : ('' as UUID);
 };
 
 /**
@@ -15,21 +18,20 @@ const safeUUID = (value: string | undefined): UUID => {
  */
 export const mapApiOrderToModelOrder = (apiOrder: OrderDTO): Order => {
   if (!apiOrder) return {} as Order;
-  
+
   // Отримуємо ID клієнта з прямого поля або з вкладеного об'єкта
   const clientId = apiOrder.clientId || apiOrder.client?.id;
-  
+
   // Отримуємо ID філії з прямого поля або з вкладеного об'єкта
-  const branchLocationId = apiOrder.branchLocationId || apiOrder.branchLocation?.id;
+  const branchLocationId =
+    apiOrder.branchLocationId || apiOrder.branchLocation?.id;
 
   return {
     id: apiOrder.id ? (String(apiOrder.id) as UUID) : undefined,
     receiptNumber: apiOrder.receiptNumber,
     tagNumber: apiOrder.tagNumber,
     clientId: safeUUID(clientId),
-    items: apiOrder.items
-      ? apiOrder.items.map(mapApiItemToModelItem)
-      : [],
+    items: apiOrder.items ? apiOrder.items.map(mapApiItemToModelItem) : [],
     totalAmount: apiOrder.totalAmount || 0,
     discountAmount: apiOrder.discountAmount || 0,
     finalAmount: apiOrder.finalAmount || 0,
@@ -63,7 +65,11 @@ export const mapApiOrderToModelOrder = (apiOrder: OrderDTO): Order => {
  */
 export const mapApiItemToModelItem = (apiItem: OrderItemDTO): OrderItem => {
   if (!apiItem) return {} as OrderItem;
-  
+
+  // Перетворюємо рядки JSON у відповідні типізовані масиви
+  const defectsArray: Defect[] = apiItem.defects ? JSON.parse(apiItem.defects) : [];
+  const stainsArray: Stain[] = apiItem.stains ? JSON.parse(apiItem.stains as string) : [];
+
   return {
     id: apiItem.id as UUID,
     name: apiItem.name || '',
@@ -74,7 +80,8 @@ export const mapApiItemToModelItem = (apiItem: OrderItemDTO): OrderItem => {
     category: apiItem.category || '',
     color: apiItem.color || '',
     material: apiItem.material || '',
-    defects: apiItem.defects || '',
+    defects: defectsArray,
+    stains: stainsArray,
     specialInstructions: apiItem.specialInstructions || '',
   };
 };
@@ -93,7 +100,8 @@ export const mapModelItemToApiItem = (item: OrderItem): OrderItemDTO => {
     category: item.category,
     color: item.color,
     material: item.material,
-    defects: item.defects,
+    defects: item.defects ? JSON.stringify(item.defects) : undefined,
+    stains: item.stains ? JSON.stringify(item.stains) : undefined,
     specialInstructions: item.specialInstructions,
   };
 };

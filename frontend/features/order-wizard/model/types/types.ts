@@ -13,9 +13,22 @@ export enum WizardStep {
 
 // Типи для підкроків (наприклад для Item Manager)
 export enum ItemManagerSubStep {
+  // Підетап 2.1: Основна інформація про предмет
   ITEM_LIST = 'ITEM_LIST',
   ITEM_SELECTION = 'ITEM_SELECTION',
   ITEM_DETAILS = 'ITEM_DETAILS',
+  
+  // Підетап 2.2: Характеристики предмета
+  ITEM_PROPERTIES = 'ITEM_PROPERTIES',
+  
+  // Підетап 2.3: Забруднення, дефекти та ризики
+  ITEM_DEFECTS = 'ITEM_DEFECTS',
+  
+  // Підетап 2.4: Знижки та надбавки (калькулятор ціни)
+  ITEM_PRICING = 'ITEM_PRICING',
+  
+  // Підетап 2.5: Фотодокументація
+  ITEM_PHOTOS = 'ITEM_PHOTOS',
 }
 
 // Типи для підкроків Item Wizard
@@ -62,6 +75,9 @@ export interface Client {
 }
 
 // Типи для замовлення
+import { Stain, Defect } from '@/features/order-wizard/model/schema/item-defects.schema';
+import { AppliedModifier, PriceCalculationResult } from '@/features/order-wizard/model/schema/item-pricing.schema';
+
 export interface OrderItem {
   id?: UUID;
   name: string;
@@ -72,7 +88,23 @@ export interface OrderItem {
   category?: string;
   color?: string;
   material?: string;
-  defects?: string;
+  
+  // Характеристики предмета (підетап 2.2)
+  filler?: string;
+  isFillerLumpy?: boolean;
+  wearDegree?: string;
+  propertyNotes?: string;
+  
+  // Плями та дефекти (підетап 2.3)
+  stains?: Stain[];
+  defects?: Defect[];
+  defectsNotes?: string;
+  
+  // Підетап 2.4: Знижки та надбавки (калькулятор ціни)
+  priceModifiers?: AppliedModifier[];
+  priceCalculationDetails?: PriceCalculationResult;
+  
+  // Загальні інструкції
   specialInstructions?: string;
 }
 

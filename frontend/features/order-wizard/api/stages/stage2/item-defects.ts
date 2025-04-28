@@ -3,20 +3,20 @@ import { ItemCharacteristicsService } from '@/lib/api';
 import { QUERY_KEYS } from '../../helpers/query-keys';
 
 /**
- * Хук для роботи з характеристиками предметів (етап 2.2)
+ * Хук для роботи з плямами та дефектами предметів (етап 2.3)
  */
-export const useItemCharacteristics = () => {
+export const useItemDefects = () => {
   /**
-   * Отримання списку кольорів
+   * Отримання типів плям для предметів
    */
-  const useColors = () => {
+  const useStainTypes = () => {
     return useQuery<string[]>({
-      queryKey: [QUERY_KEYS.CHARACTERISTICS, 'colors'],
+      queryKey: [QUERY_KEYS.DEFECTS, 'stainTypes'],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getColors();
+          return await ItemCharacteristicsService.getStainTypes();
         } catch (error) {
-          console.error('Помилка при отриманні кольорів:', error);
+          console.error('Помилка при отриманні типів плям:', error);
           return [];
         }
       },
@@ -25,27 +25,7 @@ export const useItemCharacteristics = () => {
   };
 
   /**
-   * Отримання списку матеріалів
-   */
-  const useMaterials = () => {
-    return useQuery<string[]>({
-      queryKey: [QUERY_KEYS.CHARACTERISTICS, 'materials'],
-      queryFn: async () => {
-        try {
-          // Використовуємо getMaterials без вказання категорії,
-          // щоб отримати всі матеріали
-          return await ItemCharacteristicsService.getMaterials({});
-        } catch (error) {
-          console.error('Помилка при отриманні матеріалів:', error);
-          return [];
-        }
-      },
-      staleTime: 1000 * 60 * 60, // Кеш на годину, рідко змінюються
-    });
-  };
-
-  /**
-   * Отримання списку дефектів
+   * Отримання дефектів для предметів
    */
   const useDefects = () => {
     return useQuery<string[]>({
@@ -63,7 +43,25 @@ export const useItemCharacteristics = () => {
   };
 
   /**
-   * Отримання списку дефектів та ризиків
+   * Отримання ризиків для предметів
+   */
+  const useRisks = () => {
+    return useQuery<string[]>({
+      queryKey: [QUERY_KEYS.DEFECTS, 'risks'],
+      queryFn: async () => {
+        try {
+          return await ItemCharacteristicsService.getRisks();
+        } catch (error) {
+          console.error('Помилка при отриманні ризиків:', error);
+          return [];
+        }
+      },
+      staleTime: 1000 * 60 * 60, // Кеш на годину, рідко змінюються
+    });
+  };
+
+  /**
+   * Отримання дефектів та ризиків разом
    */
   const useDefectsAndRisks = () => {
     return useQuery<string[]>({
@@ -80,14 +78,12 @@ export const useItemCharacteristics = () => {
     });
   };
 
-
-
-
-
   return {
-    useColors,
-    useMaterials,
+    useStainTypes,
     useDefects,
+    useRisks,
     useDefectsAndRisks,
   };
 };
+
+export default useItemDefects;
