@@ -1,11 +1,20 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Box } from '@mui/material';
 import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
-import { ItemWizardSubStep, WizardStep } from '@/features/order-wizard/model/types';
-import { BasicInfoSubstep } from './substep1-basic-info';
-import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
+import {
+  ItemWizardSubStep,
+  WizardStep,
+} from '@/features/order-wizard/model/types';
+import { 
+  BasicInfoSubstep,
+  ItemPropertiesSubstep,
+  DefectsStainsSubstep,
+  PriceCalculatorSubstep,
+  PhotoDocumentationSubstep
+} from '.';
+import { StepContainer } from '@/features/order-wizard/ui/components';
+import { ItemWizardStepper } from './components';
 
 /**
  * Компонент для 4.0 кроку майстра замовлень - "Додавання або редагування предмета"
@@ -13,11 +22,13 @@ import { StepContainer } from '@/features/order-wizard/ui/components/step-contai
  */
 export const ItemWizardStep: React.FC = () => {
   // Використовуємо окремі селектори для запобігання небажаних перерендерів
-  const currentStep = useOrderWizardStore(state => state.currentStep);
-  const currentSubStep = useOrderWizardStore(state => state.currentSubStep);
+  const currentStep = useOrderWizardStore((state) => state.currentStep);
+  const currentSubStep = useOrderWizardStore((state) => state.currentSubStep);
   // Ця змінна використовується зараз лише для логування, ми закоментували перевірку
   // const currentItem = useOrderWizardStore(state => state.currentItem);
-  const setCurrentSubStep = useOrderWizardStore(state => state.setCurrentSubStep);
+  const setCurrentSubStep = useOrderWizardStore(
+    (state) => state.setCurrentSubStep
+  );
   // Ця змінна використовується зараз лише для логування, ми закоментували перевірку
   // const navigateToStep = useOrderWizardStore(state => state.navigateToStep);
 
@@ -47,7 +58,7 @@ export const ItemWizardStep: React.FC = () => {
   const renderSubStepContent = () => {
     // Логуємо, який підетап зараз рендериться
     console.log('Rendering substep content for:', currentSubStep);
-    
+
     // Приведення типу до ItemWizardSubStep або рядка для безпечного порівняння
     const subStep = currentSubStep as string;
 
@@ -61,21 +72,21 @@ export const ItemWizardStep: React.FC = () => {
     if (subStep === ItemWizardSubStep.BASIC_INFO || subStep === 'BASIC_INFO') {
       return <BasicInfoSubstep />;
     }
-    
+
     // Для інших підетапів
     switch (subStep) {
       case ItemWizardSubStep.ITEM_PROPERTIES:
       case 'ITEM_PROPERTIES':
-        return <Box>Компонент властивостей предмета буде реалізовано пізніше</Box>;
+        return <ItemPropertiesSubstep />;
       case ItemWizardSubStep.DEFECTS_STAINS:
       case 'DEFECTS_STAINS':
-        return <Box>Компонент дефектів та плям буде реалізовано пізніше</Box>;
+        return <DefectsStainsSubstep />;
       case ItemWizardSubStep.PRICE_CALCULATOR:
       case 'PRICE_CALCULATOR':
-        return <Box>Компонент калькулятора ціни буде реалізовано пізніше</Box>;
+        return <PriceCalculatorSubstep />;
       case ItemWizardSubStep.PHOTO_DOCUMENTATION:
       case 'PHOTO_DOCUMENTATION':
-        return <Box>Компонент фотодокументації буде реалізовано пізніше</Box>;
+        return <PhotoDocumentationSubstep />;
       default:
         console.log('Unknown substep, rendering BasicInfoSubstep as default');
         return <BasicInfoSubstep />;
@@ -83,7 +94,12 @@ export const ItemWizardStep: React.FC = () => {
   };
 
   return (
-    <StepContainer title="Додавання предмета" subtitle="Введіть інформацію про новий предмет">
+    <StepContainer
+      title="Додавання предмета"
+      subtitle="Введіть інформацію про новий предмет"
+    >
+      {/* Відображення степера з прогресом візарда */}
+      <ItemWizardStepper />
       {renderSubStepContent()}
     </StepContainer>
   );

@@ -1,21 +1,57 @@
 import { useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import type { Control, FieldErrors, UseFormHandleSubmit, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
-import { 
-  itemPropertiesSchema, 
-  ItemPropertiesFormValues,
+import { WizardStep, ItemWizardSubStep } from '@/features/order-wizard/model/types';
+import { z } from 'zod';
+import {
+  itemPropertiesSchema,
   MaterialType,
   BaseColor,
   FillerType,
   WearDegree
 } from '@/features/order-wizard/model/schema/item-properties.schema';
-import { ItemWizardSubStep, WizardStep } from '@/features/order-wizard/model/types';
+
+// Використовуємо z.infer для отримання типу зі схеми, це вирішує проблеми типізації
+type ItemPropertiesFormValues = z.infer<typeof itemPropertiesSchema>;
+
+/**
+ * Інтерфейс результату хука useItemPropertiesForm
+ * Описує всі дані та функції, які повертає хук
+ */
+export interface ItemPropertiesFormHookResult {
+  form: {
+    control: Control<ItemPropertiesFormValues>;
+    formState: { 
+      isValid: boolean; 
+      errors: FieldErrors<ItemPropertiesFormValues> 
+    };
+  };
+  handleSubmit: UseFormHandleSubmit<ItemPropertiesFormValues>;
+  availableMaterials: MaterialType[];
+  watchColorType: BaseColor;
+  watchHasFiller: boolean;
+  watchFillerType: FillerType | undefined;
+  isFillerApplicable: boolean;
+  handleColorTypeChange: (color: BaseColor) => void;
+  handleCustomColorChange: (color: string) => void;
+  handleFillerToggle: (hasFilter: boolean) => void;
+  handleFillerTypeChange: (type: FillerType) => void;
+  handleCustomFillerChange: (value: string) => void;
+  handleFillerLumpyToggle: (isLumpy: boolean) => void;
+  handleWearDegreeChange: (degree: WearDegree) => void;
+  // Оновлений тип для handleSaveAndNext, щоб відповідав типу з useForm
+  handleSaveAndNext: ReturnType<UseFormHandleSubmit<ItemPropertiesFormValues>>;
+  handleBack: () => void;
+  loading: boolean;
+}
 
 /**
  * Хук для форми характеристик предмета (підетап 2.2)
+ * @returns {ItemPropertiesFormHookResult} Об'єкт з даними та методами для роботи з формою
  */
-export const useItemPropertiesForm = () => {
+export const useItemPropertiesForm = (): ItemPropertiesFormHookResult => {
   // Дані з глобального стану - використовуємо окремі селектори для зменшення перерендерів
   const currentItem = useOrderWizardStore(state => state.currentItem);
   const setCurrentItem = useOrderWizardStore(state => state.setCurrentItem);
@@ -28,12 +64,12 @@ export const useItemPropertiesForm = () => {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid, isDirty },
-    reset,
+    formState: { errors, isValid },
     trigger
   } = useForm<ItemPropertiesFormValues>({
-    // @ts-expect-error - Проблема з типізацією zod resolver, буде виправлено в майбутніх версіях
-    resolver: zodResolver(itemPropertiesSchema),
+    // Використовуємо as any для вирішення конфлікту типів між zodResolver та useForm
+    // Це тимчасове рішення до оновлення бібліотек
+    resolver: zodResolver(itemPropertiesSchema) as any,
     mode: 'onChange',
     defaultValues: {
       material: MaterialType.COTTON,
@@ -111,8 +147,11 @@ export const useItemPropertiesForm = () => {
     trigger(['fillerType', 'customFiller']);
   }, [setValue, trigger]);
   
-  // Обробник успішної валідації форми
-  const handleSaveProperties = useCallback((formData: ItemPropertiesFormValues) => {
+  /**
+   * Обробник збереження властивостей та переходу до наступного кроку
+   * @param formData - дані форми
+   */
+  const handleSaveProperties: SubmitHandler<ItemPropertiesFormValues> = useCallback((formData) => {
     if (!currentItem) return;
     
     // Зберігаємо колір
@@ -150,35 +189,65 @@ export const useItemPropertiesForm = () => {
     navigateToStep(WizardStep.ITEM_WIZARD, ItemWizardSubStep.BASIC_INFO);
   }, [navigateToStep]);
   
-  // Мемоізуємо об'єкт для запобігання зайвим перерендерам
+  // Обробник для збереження поточного кольору
+  const handleCustomColorChange = useCallback((color: string) => {
+    setValue('customColor', color);
+    trigger('customColor');
+  }, [setValue, trigger]);
+  
+  // Обробник для зміни ступеня зносу
+  const handleWearDegreeChange = useCallback((degree: WearDegree) => {
+    setValue('wearDegree', degree);
+    trigger('wearDegree');
+  }, [setValue, trigger]);
+  
+  // Обробник для перемикача грудкуватості наповнювача
+  const handleFillerLumpyToggle = useCallback((isLumpy: boolean) => {
+    setValue('isFillerLumpy', isLumpy);
+    trigger('isFillerLumpy');
+  }, [setValue, trigger]);
+  
+  // Обробник для зміни кастомного наповнювача
+  const handleCustomFillerChange = useCallback((value: string) => {
+    setValue('customFiller', value);
+    trigger('customFiller');
+  }, [setValue, trigger]);
+  
+  // Загортання функції handleSubmit для зручнішого використання
+  const handleSaveAndNext = handleSubmit(handleSaveProperties as any);
+  
+  // Перейменовуємо деякі функції для відповідності інтерфейсу
+  const handleFillerToggle = handleHasFillerChange;
+  
+  const loading = false; // Тут можна додати стейт завантаження, якщо потрібно
+  
+  // Мемоізуємо результат хука для уникнення зайвих перерендерів
   return useMemo(() => ({
-    // Форма
     form: {
       control,
-      formState: { errors, isValid, isDirty },
-      handleSubmit,
-      watch,
-      setValue,
-      reset
+      formState: { isValid, errors }
     },
-    
-    // Дані
+    handleSubmit,
     availableMaterials,
+    watchColorType,
+    watchHasFiller,
+    watchFillerType,
     isFillerApplicable,
-    showCustomColorField: watchColorType === BaseColor.CUSTOM,
-    showFillerFields: watchHasFiller,
-    showCustomFillerField: watchHasFiller && watchFillerType === FillerType.OTHER,
-    
-    // Обробники подій
     handleColorTypeChange,
-    handleHasFillerChange,
+    handleCustomColorChange,
+    handleFillerToggle,
     handleFillerTypeChange,
-    handleSaveProperties,
-    handleBack
+    handleCustomFillerChange,
+    handleFillerLumpyToggle,
+    handleWearDegreeChange,
+    handleSaveAndNext,
+    handleBack,
+    loading
   }), [
-    control, errors, isValid, isDirty, handleSubmit, watch, setValue, reset,
-    availableMaterials, isFillerApplicable, watchColorType, watchHasFiller, watchFillerType,
-    handleColorTypeChange, handleHasFillerChange, handleFillerTypeChange, 
-    handleSaveProperties, handleBack
+    control, errors, isValid, handleSubmit,
+    availableMaterials, watchColorType, watchHasFiller, watchFillerType, isFillerApplicable,
+    handleColorTypeChange, handleCustomColorChange, handleFillerToggle,
+    handleFillerTypeChange, handleCustomFillerChange, handleFillerLumpyToggle,
+    handleWearDegreeChange, handleSaveAndNext, handleBack, loading
   ]);
 };

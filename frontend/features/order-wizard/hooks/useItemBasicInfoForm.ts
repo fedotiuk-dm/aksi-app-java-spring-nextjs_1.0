@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
+import { useOrderWizardStore, useOrderWizardNavigation } from '@/features/order-wizard/model/store/store';
 import { useServiceCategories } from '@/features/order-wizard/api/stages/stage2/categories';
 import { 
   basicItemSchema,
@@ -12,6 +12,7 @@ import {
   ServiceCategory,
   KILOGRAM_CATEGORIES
 } from '@/features/order-wizard/model/types/service-categories';
+import { ItemWizardSubStep, WizardStep } from '@/features/order-wizard/model/types';
 import type { ServiceCategoryDTO, PriceListItemDTO } from '@/lib/api';
 
 /**
@@ -21,6 +22,9 @@ export const useItemBasicInfoForm = () => {
   // Дані з глобального стану - використовуємо окремі селектори
   const currentItem = useOrderWizardStore(state => state.currentItem);
   const setCurrentItem = useOrderWizardStore(state => state.setCurrentItem);
+  
+  // Отримуємо функцію для навігації між кроками
+  const { navigateToStep } = useOrderWizardNavigation();
   
   // Локальний стан
   const [selectedCategory, setSelectedCategory] = useState<ServiceCategoryDTO | null>(null);
@@ -139,9 +143,9 @@ export const useItemBasicInfoForm = () => {
     
     setCurrentItem(newItem);
     
-    // Тут можна також додати логіку для навігації до наступного підетапу
-    // navigateToNextSubstep();
-  }, [currentItem, selectedCategory, selectedItemName, setCurrentItem]);
+    // Переходимо до наступного підетапу - Властивості предмета
+    navigateToStep(WizardStep.ITEM_WIZARD, ItemWizardSubStep.ITEM_PROPERTIES);
+  }, [currentItem, selectedCategory, selectedItemName, setCurrentItem, navigateToStep]);
   
   // Мемоізуємо об'єкт завантаження, щоб уникнути його перестворення при кожному рендері
   const loading = useMemo(() => ({

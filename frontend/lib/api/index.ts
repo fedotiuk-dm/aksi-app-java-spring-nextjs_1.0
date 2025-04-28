@@ -21,7 +21,13 @@ import axios, { AxiosError } from 'axios';
  */
 
 // Використовуємо фіксований URL для всіх API запитів - це гарантує, що всі запити йтимуть через Traefik
-OpenAPI.BASE = 'http://localhost/api'; // Використовуємо повний URL до Traefik
+
+// Визначення базового URL залежно від режиму роботи
+const BASE_API_URL = process.env.NODE_ENV === 'production'
+  ? 'http://localhost/api'  // В продакшн через Traefik
+  : 'http://localhost:8080/api';  // Локальна розробка з прямим доступом до бекенду
+
+OpenAPI.BASE = BASE_API_URL; // Використовуємо повний URL до бекенду
 
 // Критично важливі налаштування для авторизації:
 OpenAPI.WITH_CREDENTIALS = true; // Дозволяє передавати cookies з токенами

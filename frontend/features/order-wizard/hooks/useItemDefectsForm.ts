@@ -2,16 +2,19 @@ import { useCallback, useMemo } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
+import { z } from 'zod';
 import {
   itemDefectsSchema,
-  ItemDefectsFormValues,
-  StainType,
-  DefectType,
+  Defect,
   Stain,
-  Defect
+  DefectType,
+  StainType
 } from '@/features/order-wizard/model/schema/item-defects.schema';
 import { WizardStep, ItemWizardSubStep } from '@/features/order-wizard/model/types';
 import useItemDefects from '@/features/order-wizard/api/stages/stage2/item-defects';
+
+// Використовуємо z.infer для отримання типу зі схеми, це вирішує проблеми типізації
+type ItemDefectsFormValues = z.infer<typeof itemDefectsSchema>;
 
 /**
  * Хук для форми плям та дефектів предмета (підетап 2.3)
@@ -34,8 +37,8 @@ export const useItemDefectsForm = () => {
     formState: { errors, isValid },
     reset
   } = useForm<ItemDefectsFormValues>({
-    // @ts-expect-error - Проблема з типізацією zod resolver
-    resolver: zodResolver(itemDefectsSchema),
+    // Використовуємо as any для вирішення конфлікту типів між zodResolver та useForm
+    resolver: zodResolver(itemDefectsSchema) as any,
     mode: 'onChange',
     defaultValues: {
       stains: [],

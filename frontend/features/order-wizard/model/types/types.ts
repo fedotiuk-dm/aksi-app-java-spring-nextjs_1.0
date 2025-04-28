@@ -37,7 +37,8 @@ export enum ItemWizardSubStep {
   ITEM_PROPERTIES = 'ITEM_PROPERTIES',      // substep2-item-properties
   DEFECTS_STAINS = 'DEFECTS_STAINS',        // substep3-defects-stains
   PRICE_CALCULATOR = 'PRICE_CALCULATOR',    // substep4-price-calculator
-  PHOTO_DOCUMENTATION = 'PHOTO_DOCUMENTATION' // substep5-photo-documentation
+  PHOTO_DOCUMENTATION = 'PHOTO_DOCUMENTATION', // substep5-photo-documentation
+  ITEM_SUMMARY = 'ITEM_SUMMARY'             // substep6-item-summary
 }
 
 // Історія навігації для можливості переходу назад
@@ -78,6 +79,16 @@ export interface Client {
 import { Stain, Defect } from '@/features/order-wizard/model/schema/item-defects.schema';
 import { AppliedModifier, PriceCalculationResult } from '@/features/order-wizard/model/schema/item-pricing.schema';
 
+// Тип для фотографій
+export interface ItemPhoto {
+  id?: UUID;
+  url: string;
+  thumbnailUrl?: string;
+  filename: string;
+  size: number;
+  createdAt?: string;
+}
+
 export interface OrderItem {
   id?: UUID;
   name: string;
@@ -103,6 +114,9 @@ export interface OrderItem {
   // Підетап 2.4: Знижки та надбавки (калькулятор ціни)
   priceModifiers?: AppliedModifier[];
   priceCalculationDetails?: PriceCalculationResult;
+  
+  // Підетап 2.5: Фотодокументація
+  photos?: ItemPhoto[];
   
   // Загальні інструкції
   specialInstructions?: string;
