@@ -65,7 +65,7 @@ public class OrderController {
         
         return orderService.getOrderById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", id));
+                .orElseThrow(() -> EntityNotFoundException.withId(id));
     }
     
     @PostMapping
@@ -221,7 +221,7 @@ public class OrderController {
         
         return orderService.getOrderItem(orderId, itemId)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new EntityNotFoundException("Предмет замовлення не знайдено", itemId));
+                .orElseThrow(() -> EntityNotFoundException.withId(itemId));
     }
     
     @PostMapping("/{orderId}/items")

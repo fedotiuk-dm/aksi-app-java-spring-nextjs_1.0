@@ -1,65 +1,61 @@
+'use client';
+
 import React from 'react';
-import { Box, Typography, Divider, Grid } from '@mui/material';
-import type { Control } from 'react-hook-form';
-import { 
-  ItemPricingFormValues,
-  PriceModifier
+import { Box, Typography, Divider } from '@mui/material';
+import { ModifierItem } from './';
+import {
+  PriceModifier,
+  AppliedModifier,
 } from '@/features/order-wizard/model/schema/item-pricing.schema';
-import { ModifierItem } from './ModifierItem';
 
 interface ModifierCategorySectionProps {
   title: string;
-  description?: string;
   modifiers: PriceModifier[];
-  control: Control<ItemPricingFormValues>;
-  isModifierApplied: (modifierId: string) => boolean;
-  getModifierSelectedValue: (modifierId: string) => number | undefined;
-  onModifierToggle: (modifierId: string, applied: boolean) => void;
-  onModifierValueChange: (modifierId: string, value: number) => void;
+  appliedModifiers: AppliedModifier[];
+  onModifierChange: (modifierId: string, value: number) => void;
+  onModifierRemove: (modifierId: string) => void;
 }
 
 /**
- * Компонент для відображення секції категорії модифікаторів
+ * Компонент для групування модифікаторів за категорією
  */
-export const ModifierCategorySection: React.FC<ModifierCategorySectionProps> = ({
+const ModifierCategorySection: React.FC<ModifierCategorySectionProps> = ({
   title,
-  description,
   modifiers,
-  control,
-  isModifierApplied,
-  getModifierSelectedValue,
-  onModifierToggle,
-  onModifierValueChange,
+  appliedModifiers,
+  onModifierChange,
+  onModifierRemove,
 }) => {
-  if (!modifiers || modifiers.length === 0) {
-    return null;
+  if (modifiers.length === 0) {
+    return null; // Не відображаємо секцію, якщо немає модифікаторів
   }
 
   return (
     <Box sx={{ mb: 3 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
         {title}
       </Typography>
-      {description && (
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          {description}
-        </Typography>
-      )}
-      <Divider sx={{ my: 1 }} />
-      <Grid container spacing={2} sx={{ mt: 1 }}>
-        {modifiers.map((modifier) => (
-          <Grid key={modifier.id} size={{ xs: 12, sm: 6 }}>
-            <ModifierItem
-              modifier={modifier}
-              control={control}
-              isApplied={isModifierApplied(modifier.id)}
-              selectedValue={getModifierSelectedValue(modifier.id)}
-              onToggle={(applied) => onModifierToggle(modifier.id, applied)}
-              onValueChange={(value) => onModifierValueChange(modifier.id, value)}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      <Divider sx={{ mb: 2 }} />
+
+      {modifiers.map((modifier) => {
+        // Перевіряємо, чи модифікатор вже застосований
+        const appliedModifier = appliedModifiers.find(
+          (m) => m.modifierId === modifier.id
+        );
+
+        return (
+          <ModifierItem
+            key={modifier.id}
+            modifier={modifier}
+            isApplied={!!appliedModifier}
+            selectedValue={appliedModifier?.selectedValue || 0}
+            onModifierChange={onModifierChange}
+            onModifierRemove={onModifierRemove}
+          />
+        );
+      })}
     </Box>
   );
 };
+
+export default ModifierCategorySection;

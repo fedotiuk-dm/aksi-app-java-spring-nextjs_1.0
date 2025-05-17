@@ -14,7 +14,8 @@ export const useItemCharacteristics = () => {
       queryKey: [QUERY_KEYS.COLORS],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getColors();
+          const response = await ItemCharacteristicsService.getColors();
+          return response || [];
         } catch (error) {
           console.error('Помилка при отриманні кольорів:', error);
           return [];
@@ -33,7 +34,10 @@ export const useItemCharacteristics = () => {
       queryKey: [QUERY_KEYS.MATERIALS, category],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getMaterials({ category });
+          const response = await ItemCharacteristicsService.getMaterials({
+            category,
+          });
+          return response || [];
         } catch (error) {
           console.error('Помилка при отриманні матеріалів:', error);
           return [];
@@ -51,7 +55,8 @@ export const useItemCharacteristics = () => {
       queryKey: [QUERY_KEYS.DEFECTS, 'defects'],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getDefects();
+          const response = await ItemCharacteristicsService.getDefects();
+          return response || [];
         } catch (error) {
           console.error('Помилка при отриманні дефектів:', error);
           return [];
@@ -69,7 +74,9 @@ export const useItemCharacteristics = () => {
       queryKey: [QUERY_KEYS.DEFECTS, 'defectsAndRisks'],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getDefectsAndRisks();
+          const response =
+            await ItemCharacteristicsService.getDefectsAndRisks();
+          return response || [];
         } catch (error) {
           console.error('Помилка при отриманні дефектів та ризиків:', error);
           return [];
@@ -78,7 +85,7 @@ export const useItemCharacteristics = () => {
       staleTime: 1000 * 60 * 60, // Кеш на годину, рідко змінюються
     });
   };
-  
+
   /**
    * Отримання типів наповнювачів для предметів
    */
@@ -87,7 +94,8 @@ export const useItemCharacteristics = () => {
       queryKey: [QUERY_KEYS.FILLER_TYPES],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getFillerTypes();
+          const response = await ItemCharacteristicsService.getFillerTypes();
+          return response || [];
         } catch (error) {
           console.error('Помилка при отриманні типів наповнювачів:', error);
           return [];
@@ -105,7 +113,8 @@ export const useItemCharacteristics = () => {
       queryKey: [QUERY_KEYS.WEAR_DEGREES],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getWearDegrees();
+          const response = await ItemCharacteristicsService.getWearDegrees();
+          return response || [];
         } catch (error) {
           console.error('Помилка при отриманні ступенів зносу:', error);
           return [];
@@ -124,16 +133,24 @@ export const useItemCharacteristics = () => {
       queryKey: [QUERY_KEYS.IS_FILLER_REQUIRED, categoryId],
       queryFn: async () => {
         if (!categoryId) return false;
-        
+
         try {
-          // TODO: Замінити реалізацію на виклик відповідного API, якщо буде додано
-          
-          // Наразі повертаємо тестові дані на основі категорії
-          // В реальній реалізації тут має бути запит до API
-          const categoriesWithFiller = ['OUTERWEAR', 'BLANKETS', 'PILLOWS'];
+          // TODO: Замінити реалізацію на виклик відповідного API
+
+          // Повертаємо значення на основі категорії
+          const categoriesWithFiller = [
+            'OUTERWEAR',
+            'BLANKETS',
+            'PILLOWS',
+            'BEDDING',
+            'QUILTED',
+          ];
           return categoriesWithFiller.includes(categoryId);
         } catch (error) {
-          console.error('Помилка при перевірці необхідності наповнювача:', error);
+          console.error(
+            'Помилка при перевірці необхідності наповнювача:',
+            error
+          );
           return false;
         }
       },
@@ -148,10 +165,9 @@ export const useItemCharacteristics = () => {
     useDefectsAndRisks,
     useFillerTypes,
     useWearDegrees,
-    useIsFillerRequired
+    useIsFillerRequired,
   };
 };
 
-// Уникаємо виклику React-хука на верхньому рівні
-// Замість цього експортуємо функцію-хук, яку можна викликати в компонентах
+// Експортуємо функцію-хук, яку можна викликати в компонентах
 export default useItemCharacteristics;

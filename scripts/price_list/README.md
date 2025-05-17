@@ -11,12 +11,14 @@
 ## Структура CSV-файлу
 
 CSV-файл повинен мати наступну структуру (включно з заголовками):
+
 ```
 category_code,catalog_number,name,unit_of_measure,base_price,price_black,price_color,active
 odiah,1,Брюки,шт,380.00,,,true
 ```
 
 Де:
+
 - category_code - код категорії, що відповідає полю code в таблиці service_categories
 - catalog_number - порядковий номер в каталозі
 - name - назва послуги

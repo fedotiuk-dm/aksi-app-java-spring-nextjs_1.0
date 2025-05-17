@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { devtools } from 'zustand/middleware';
 import { createNavigationSlice } from '../slices/navigationSlice';
 import { createClientSlice } from '../slices/clientSlice';
 import { createBasicInfoSlice } from '../slices/basicInfoSlice';
@@ -49,25 +50,29 @@ const initialState: Partial<OrderWizardState> = {
 
 // Експортуємо хук для доступу до стору
 export const useOrderWizardStore = create<OrderWizardState>()(
-  immer((set, get, store) => ({
-    ...(initialState as OrderWizardState),
-    ...createNavigationSlice(set, get, store),
-    ...createClientSlice(set, get, store),
-    ...createBasicInfoSlice(set, get, store),
-    ...createItemsSlice(set, get, store),
-    ...createDetailsSlice(set, get, store),
-    ...createBillingSlice(set, get, store),
+  devtools(
+    immer((set, get, store) => ({
+      ...(initialState as OrderWizardState),
+      ...createNavigationSlice(set, get, store),
+      ...createClientSlice(set, get, store),
+      ...createBasicInfoSlice(set, get, store),
+      ...createItemsSlice(set, get, store),
+      ...createDetailsSlice(set, get, store),
+      ...createBillingSlice(set, get, store),
 
-    // Метод для повного очищення стору
-    resetWizard: () => {
-      set((state) => {
-        Object.keys(initialState).forEach((key) => {
-          // @ts-ignore - динамічний доступ до властивостей
-          state[key] = initialState[key];
+      // Метод для повного очищення стору
+      resetWizard: () => {
+        console.log('Скидання стору до початкового стану');
+        set((state) => {
+          Object.keys(initialState).forEach((key) => {
+            // @ts-ignore - динамічний доступ до властивостей
+            state[key] = initialState[key];
+          });
         });
-      });
-    },
-  }))
+      },
+    })),
+    { name: 'OrderWizardStore', enabled: true }
+  )
 );
 
 // Хук для доступу до методів навігації візарда
@@ -81,11 +86,27 @@ export const useOrderWizardNavigation = () => {
     resetNavigationHistory,
   } = useOrderWizardStore();
 
+  // Додаємо додаткове логування для навігації
+  const navigateWithLog = (step: WizardStep, subStep?: string) => {
+    console.log(
+      `Навігація до: ${step}${subStep ? ` з підкроком ${subStep}` : ''}`
+    );
+    navigateToStep(step, subStep);
+
+    // Вивід стану після навігації
+    setTimeout(() => {
+      const state = useOrderWizardStore.getState();
+      console.log('Поточний крок після навігації:', state.currentStep);
+      console.log('Поточний підкрок після навігації:', state.currentSubStep);
+      console.log('Історія навігації:', state.navigationHistory);
+    }, 0);
+  };
+
   return {
     currentStep,
     currentSubStep,
     navigationHistory,
-    navigateToStep,
+    navigateToStep: navigateWithLog,
     navigateBack,
     resetNavigationHistory,
     // Зручний метод для визначення активності кроку

@@ -1,13 +1,13 @@
-import { Box, Typography, CircularProgress, Paper } from '@mui/material';
+import { Box, Typography, CircularProgress, Paper, Alert } from '@mui/material';
 import { useItemPropertiesForm } from '@/features/order-wizard/hooks/useItemPropertiesForm';
 import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
 import { StepNavigation } from '@/features/order-wizard/ui/components/step-navigation';
-import { 
+import {
   MaterialSelect,
   ColorSelect,
   FillerSelect,
   WearDegreeSelect,
-  NotesInput
+  NotesInput,
 } from './components';
 
 /**
@@ -16,7 +16,7 @@ import {
 export const ItemPropertiesSubstep = () => {
   // Використовуємо типізацію з as для уникнення помилок TypeScript
   const formData = useItemPropertiesForm();
-  
+
   // Деструктуризація даних та функцій з хука
   const {
     form,
@@ -34,51 +34,63 @@ export const ItemPropertiesSubstep = () => {
     handleWearDegreeChange,
     handleSaveAndNext,
     handleBack,
-    loading
+    loading,
+    currentItem,
   } = formData;
 
   // Отримуємо control та isValid зі значення form
-  const { control, formState: { isValid } } = form;
+  const {
+    control,
+    formState: { isValid },
+  } = form;
 
   return (
     <StepContainer
       title="Характеристики предмета"
       subtitle="Вкажіть матеріал, колір та інші особливості предмета"
     >
-      <Box 
-        component="form" 
-        noValidate 
+      <Box
+        component="form"
+        noValidate
         autoComplete="off"
-        sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: 3 
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3,
         }}
         // onSubmit перенесено до кнопки в StepNavigation
       >
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-            <CircularProgress />
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              my: 4,
+            }}
+          >
+            <CircularProgress size={24} />
+            <Typography variant="body1" sx={{ ml: 2 }}>
+              Завантаження даних...
+            </Typography>
           </Box>
         ) : (
           <>
             <Paper elevation={0} sx={{ p: 2 }}>
-              <Typography variant="subtitle1" gutterBottom>
+              <Typography variant="subtitle1" gutterBottom fontWeight="medium">
                 Матеріал та колір
               </Typography>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                Вкажіть матеріал та колір предмета. Це важливо для визначення
+                методу обробки.
+              </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <MaterialSelect 
-                  control={control} 
-                  materials={availableMaterials} 
-                />
-                
-                <ColorSelect 
+                <MaterialSelect
                   control={control}
-                  selectedColorType={watchColorType}
-                  onColorTypeChange={handleColorTypeChange}
-                  onCustomColorChange={handleCustomColorChange}
+                  materials={availableMaterials}
                 />
-                <ColorSelect 
+
+                <ColorSelect
                   control={control}
                   selectedColorType={watchColorType}
                   onColorTypeChange={handleColorTypeChange}
@@ -89,10 +101,18 @@ export const ItemPropertiesSubstep = () => {
 
             {isFillerApplicable && (
               <Paper elevation={0} sx={{ p: 2 }}>
-                <Typography variant="subtitle1" gutterBottom>
+                <Typography
+                  variant="subtitle1"
+                  gutterBottom
+                  fontWeight="medium"
+                >
                   Наповнювач
                 </Typography>
-                <FillerSelect 
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  Якщо предмет має наповнювач (пух, синтепон тощо), вкажіть його
+                  тип та стан.
+                </Typography>
+                <FillerSelect
                   control={control}
                   hasFiller={watchHasFiller}
                   selectedFillerType={watchFillerType}
@@ -105,23 +125,39 @@ export const ItemPropertiesSubstep = () => {
             )}
 
             <Paper elevation={0} sx={{ p: 2 }}>
-              <Typography variant="subtitle1" gutterBottom>
+              <Typography variant="subtitle1" gutterBottom fontWeight="medium">
                 Ступінь зносу
               </Typography>
-              <WearDegreeSelect 
+              <Typography variant="body2" color="text.secondary" paragraph>
+                Оцініть ступінь зносу предмета. Це допоможе встановити правильні
+                очікування щодо результату.
+              </Typography>
+              <WearDegreeSelect
                 control={control}
                 onWearDegreeChange={handleWearDegreeChange}
               />
             </Paper>
 
             <Paper elevation={0} sx={{ p: 2 }}>
-              <Typography variant="subtitle1" gutterBottom>
+              <Typography variant="subtitle1" gutterBottom fontWeight="medium">
                 Додаткові примітки
+              </Typography>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                За необхідності, додайте будь-які особливості предмета, які
+                варто враховувати.
               </Typography>
               <NotesInput control={control} />
             </Paper>
 
-            <StepNavigation 
+            {currentItem && (
+              <Alert severity="info" sx={{ mb: 2 }}>
+                Ви редагуєте предмет &quot;{currentItem.name}&quot;. Ці
+                характеристики впливатимуть на розрахунок ціни на наступному
+                кроці.
+              </Alert>
+            )}
+
+            <StepNavigation
               onBack={handleBack}
               onNext={handleSaveAndNext}
               isNextDisabled={!isValid}

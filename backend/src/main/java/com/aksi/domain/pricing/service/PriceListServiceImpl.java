@@ -52,7 +52,7 @@ public class PriceListServiceImpl implements PriceListService {
         log.debug("Отримання елементів прайс-листа за категорією з ID: {}", categoryId);
         
         ServiceCategoryEntity category = serviceCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Категорію послуг не знайдено", categoryId));
+                .orElseThrow(() -> EntityNotFoundException.withId(categoryId));
         
         List<PriceListItemEntity> items = priceListItemRepository.findAllByCategoryOrderByCatalogNumberAsc(category);
         
@@ -68,7 +68,7 @@ public class PriceListServiceImpl implements PriceListService {
         log.debug("Отримання елементів прайс-листа за кодом категорії: {}", categoryCode);
         
         ServiceCategoryEntity category = serviceCategoryRepository.findByCode(categoryCode)
-                .orElseThrow(() -> new EntityNotFoundException("Категорію послуг не знайдено за кодом", categoryCode));
+                .orElseThrow(() -> EntityNotFoundException.withMessage("Категорію послуг не знайдено за кодом: " + categoryCode));
         
         List<PriceListItemEntity> items = priceListItemRepository.findAllByCategoryOrderByCatalogNumberAsc(category);
         
@@ -84,7 +84,7 @@ public class PriceListServiceImpl implements PriceListService {
         log.debug("Отримання елемента прайс-листа за ID: {}", id);
         
         PriceListItemEntity item = priceListItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Елемент прайс-листа не знайдено", id));
+                .orElseThrow(() -> EntityNotFoundException.withId(id));
         
         return priceListMapper.toDto(item);
     }
@@ -99,7 +99,7 @@ public class PriceListServiceImpl implements PriceListService {
         
         // Перевіряємо, чи існує категорія
         if (!serviceCategoryRepository.existsById(categoryId)) {
-            throw new EntityNotFoundException("Категорію послуг не знайдено", categoryId);
+            throw EntityNotFoundException.withId(categoryId);
         }
         
         // Отримуємо всі унікальні одиниці виміру для цієї категорії

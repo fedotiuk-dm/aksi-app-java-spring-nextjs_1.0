@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.domain.pricing.constants.PriceModifierConstants;
+import com.aksi.domain.pricing.constants.PriceModifierConstants.FixedPriceModifier;
 import com.aksi.domain.pricing.constants.PriceModifierConstants.PriceModifier;
 import com.aksi.domain.pricing.constants.PriceModifierConstants.RangePercentageModifier;
-import com.aksi.domain.pricing.constants.PriceModifierConstants.FixedPriceModifier;
 import com.aksi.domain.pricing.dto.PriceCalculationRequestDTO;
 import com.aksi.domain.pricing.dto.PriceCalculationRequestDTO.FixedModifierQuantityDTO;
 import com.aksi.domain.pricing.dto.PriceCalculationRequestDTO.RangeModifierValueDTO;
@@ -48,7 +48,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
                 request.getCategoryCode(), request.getItemName());
         
         if (priceItemOpt.isEmpty()) {
-            throw new EntityNotFoundException(
+            throw EntityNotFoundException.withMessage(
                     "Не знайдено предмет у прайс-листі для категорії " + request.getCategoryCode() + 
                     " та найменування " + request.getItemName());
         }
@@ -204,13 +204,16 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
                 categoryCode, itemName);
         
         if (priceItemOpt.isEmpty()) {
-            throw new EntityNotFoundException(
+            throw EntityNotFoundException.withMessage(
                     "Не знайдено предмет у прайс-листі для категорії " + categoryCode + 
                     " та найменування " + itemName);
         }
         
         PriceListItemEntity priceItem = priceItemOpt.get();
         BigDecimal baseUnitPrice = priceItem.getBasePrice();
+        
+        // Створюємо порожній список для деталей розрахунку
+        List<ModifierCalculationDetail> calculationDetails = new ArrayList<>();
         
         // Повертаємо результат з базовою ціною
         return PriceCalculationResponseDTO.builder()
@@ -219,7 +222,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
                 .baseTotalPrice(baseUnitPrice)
                 .finalUnitPrice(baseUnitPrice)
                 .finalTotalPrice(baseUnitPrice)
-                .calculationDetails(new ArrayList<>())
+                .calculationDetails(calculationDetails)
                 .build();
     }
 }

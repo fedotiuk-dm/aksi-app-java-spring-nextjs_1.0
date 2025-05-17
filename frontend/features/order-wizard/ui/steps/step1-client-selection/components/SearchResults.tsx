@@ -1,18 +1,30 @@
 'use client';
 
-import React from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  List, 
-  ListItem, 
-  Divider, 
+import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
   Grid,
   Chip,
-  IconButton
+  IconButton,
+  useTheme,
+  useMediaQuery,
+  Avatar,
+  Fade,
+  Tooltip,
+  Card,
+  CardContent,
+  CardActionArea,
+  CardActions,
+  Pagination,
+  Badge,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import PersonIcon from '@mui/icons-material/Person';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Client } from '@/features/order-wizard/model/types';
 import { useSearchResults } from '@/features/order-wizard/hooks';
 
@@ -24,126 +36,341 @@ interface SearchResultsProps {
 }
 
 /**
- * Компонент для відображення результатів пошуку клієнтів
+ * Компонент для відображення результатів пошуку клієнтів у вигляді сітки карток
  * Використовує хук useSearchResults для логіки
  */
 export const SearchResults: React.FC<SearchResultsProps> = ({
   clients,
   onClientSelect,
   onClientEdit,
-  className
+  className,
 }) => {
+  // Використовуємо тему та медіазапити для адаптивного дизайну
+  const theme = useTheme();
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Стан для пагінації
+  const [page, setPage] = useState(1);
+  const clientsPerPage = isTablet ? 8 : isMobile ? 4 : 12;
+
   // Використовуємо хук для логіки обробки результатів
-  const { 
-    hasResults,
-    handleClientSelect,
-    handleClientEdit,
-    getChannelLabel
-  } = useSearchResults({ clients });
-  
+  const { hasResults, handleClientSelect, handleClientEdit, getChannelLabel } =
+    useSearchResults({ clients });
+
   // Якщо немає результатів, не відображаємо компонент
   if (!hasResults) {
     return null;
   }
 
+  // Розраховуємо клієнтів для поточної сторінки
+  const totalPages = Math.ceil(clients.length / clientsPerPage);
+  const startIndex = (page - 1) * clientsPerPage;
+  const displayedClients = clients.slice(
+    startIndex,
+    startIndex + clientsPerPage
+  );
+
+  // Функція для відображення ініціалів клієнта
+  const getClientInitials = (client: Client) => {
+    return `${client.firstName.charAt(0)}${client.lastName.charAt(
+      0
+    )}`.toUpperCase();
+  };
+
+  // Обробник зміни сторінки
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
+
   return (
-    <Paper className={className} sx={{ 
-      mt: 2, 
-      overflow: 'hidden', 
-      border: '1px solid #1976d2', 
-      borderRadius: 1, 
-      boxShadow: '0 2px 8px rgba(0,0,0,0.08)' 
-    }}>
-      <Box sx={{ 
-        p: 2, 
-        bgcolor: 'primary.main', 
-        color: 'white', 
-        fontWeight: 'bold',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.12)'   
-      }}>
-        <Typography variant="subtitle1" fontWeight="bold">
-          Вибрані клієнти: {clients.length}
-        </Typography>
+    <Paper
+      className={className}
+      elevation={3}
+      sx={{
+        mt: 3,
+        overflow: 'hidden',
+        border: `1px solid ${theme.palette.primary.main}`,
+        borderRadius: 2,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      }}
+    >
+      <Box
+        sx={{
+          p: isTablet ? 2 : 1.5,
+          bgcolor: 'primary.main',
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <PersonIcon />
+          <Typography
+            variant={isTablet ? 'h6' : 'subtitle1'}
+            fontWeight="bold"
+            sx={{ fontSize: isTablet ? '1.1rem' : '1rem' }}
+          >
+            Вибрані клієнти
+          </Typography>
+        </Box>
+
+        <Badge
+          badgeContent={clients.length}
+          color="error"
+          sx={{
+            '& .MuiBadge-badge': {
+              fontSize: isTablet ? '0.9rem' : '0.8rem',
+              fontWeight: 'bold',
+              height: isTablet ? 24 : 20,
+              minWidth: isTablet ? 24 : 20,
+            },
+          }}
+        >
+          <Box />
+        </Badge>
       </Box>
-      
-      <List disablePadding>
-        {clients.map((client, index) => (
-          <React.Fragment key={client.id || `selected-client-${index}`}>
-            <ListItem 
-              disablePadding 
-              sx={{ 
-                display: 'block', 
-                p: 2,
-                bgcolor: index % 2 === 0 ? 'background.paper' : 'grey.50',
-                '&:hover': { bgcolor: 'action.hover' }
-              }}
+
+      <Box sx={{ p: isTablet ? 3 : 2, bgcolor: 'grey.50' }}>
+        <Grid container spacing={isTablet ? 3 : 2}>
+          {displayedClients.map((client, index) => (
+            <Grid
+              key={client.id || `selected-client-${index}`}
+              size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
             >
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 9, sm: 10 }} 
-                      onClick={() => handleClientSelect(client, onClientSelect)} 
-                      sx={{ cursor: 'pointer' }}>
-                  <Typography variant="subtitle1" fontWeight="bold" color="primary">
-                    {client.lastName} {client.firstName}
-                  </Typography>
-                  
-                  <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                    {client.phone && (
-                      <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <strong>📞 Телефон:</strong> {client.phone}
-                      </Typography>
-                    )}
-                    
-                    {client.email && (
-                      <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <strong>✉️ Email:</strong> {client.email}
-                      </Typography>
-                    )}
-                    
-                    {client.address && (client.address.city || client.address.street) && (
-                      <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <strong>📍 Адреса:</strong> {client.address.city}
-                        {client.address.street && `, ${client.address.street}`}
-                      </Typography>
-                    )}
-                    
-                    {client.communicationChannels && client.communicationChannels.length > 0 && (
-                      <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {client.communicationChannels.map((channel) => (
-                          <Chip 
-                            key={channel} 
-                            label={getChannelLabel(channel)}
-                            size="small"
-                            color="primary"
-                            variant="outlined"
-                            sx={{ mr: 0.5, mb: 0.5 }}
-                          />
-                        ))}
-                      </Box>
-                    )}
-                  </Box>
-                </Grid>
-                
-                <Grid size={{ xs: 3, sm: 2 }} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-                  <IconButton 
-                    color="primary" 
-                    onClick={() => handleClientEdit(client, onClientEdit)}
-                    aria-label="редагувати клієнта"
+              <Fade in={true} style={{ transitionDelay: `${index * 50}ms` }}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: theme.shadows[5],
+                    },
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                    position: 'relative',
+                    borderRadius: 2,
+                  }}
+                >
+                  <CardActionArea
+                    onClick={() => handleClientSelect(client, onClientSelect)}
                     sx={{
-                      bgcolor: 'rgba(25, 118, 210, 0.08)',
-                      '&:hover': {
-                        bgcolor: 'rgba(25, 118, 210, 0.16)',
-                      },
+                      flexGrow: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'stretch',
+                      height: '100%',
                     }}
                   >
-                    <EditIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
-            </ListItem>
-            {index < clients.length - 1 && <Divider />}
-          </React.Fragment>
-        ))}
-      </List>
+                    <CardContent sx={{ p: isTablet ? 2.5 : 2, flexGrow: 1 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          gap: 2,
+                          alignItems: 'center',
+                          mb: 1.5,
+                        }}
+                      >
+                        <Avatar
+                          sx={{
+                            bgcolor: theme.palette.primary.main,
+                            width: isTablet ? 48 : 40,
+                            height: isTablet ? 48 : 40,
+                            fontSize: isTablet ? '1.2rem' : '1rem',
+                            fontWeight: 'bold',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                          }}
+                        >
+                          {getClientInitials(client)}
+                        </Avatar>
+
+                        <Typography
+                          variant="h6"
+                          fontWeight="bold"
+                          color="primary"
+                          noWrap
+                          sx={{
+                            fontSize: isTablet ? '1.2rem' : '1rem',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: '100%',
+                          }}
+                        >
+                          {client.lastName} {client.firstName}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 1,
+                        }}
+                      >
+                        {client.phone && (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                            }}
+                          >
+                            <PhoneIcon fontSize="small" color="primary" />
+                            <Typography
+                              variant="body2"
+                              noWrap
+                              sx={{
+                                fontSize: isTablet ? '1rem' : '0.875rem',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}
+                            >
+                              {client.phone}
+                            </Typography>
+                          </Box>
+                        )}
+
+                        {client.email && (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                            }}
+                          >
+                            <EmailIcon fontSize="small" color="primary" />
+                            <Typography
+                              variant="body2"
+                              noWrap
+                              sx={{
+                                fontSize: isTablet ? '1rem' : '0.875rem',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}
+                            >
+                              {client.email}
+                            </Typography>
+                          </Box>
+                        )}
+
+                        {client.address &&
+                          (client.address.city || client.address.street) && (
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                              }}
+                            >
+                              <LocationOnIcon
+                                fontSize="small"
+                                color="primary"
+                              />
+                              <Typography
+                                variant="body2"
+                                noWrap
+                                sx={{
+                                  fontSize: isTablet ? '1rem' : '0.875rem',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                }}
+                              >
+                                {client.address.city}
+                                {client.address.street &&
+                                  `, ${client.address.street}`}
+                              </Typography>
+                            </Box>
+                          )}
+                      </Box>
+
+                      {client.communicationChannels &&
+                        client.communicationChannels.length > 0 && (
+                          <Box
+                            sx={{
+                              mt: 2,
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              gap: 0.5,
+                            }}
+                          >
+                            {client.communicationChannels
+                              .slice(0, 3)
+                              .map((channel) => (
+                                <Chip
+                                  key={channel}
+                                  label={getChannelLabel(channel)}
+                                  size="small"
+                                  color="primary"
+                                  variant="outlined"
+                                  sx={{ fontSize: '0.75rem' }}
+                                />
+                              ))}
+                            {client.communicationChannels.length > 3 && (
+                              <Chip
+                                label={`+${
+                                  client.communicationChannels.length - 3
+                                }`}
+                                size="small"
+                                color="primary"
+                                variant="outlined"
+                                sx={{ fontSize: '0.75rem' }}
+                              />
+                            )}
+                          </Box>
+                        )}
+                    </CardContent>
+                  </CardActionArea>
+
+                  <CardActions
+                    sx={{ justifyContent: 'flex-end', p: 1.5, pt: 0 }}
+                  >
+                    <Tooltip title="Редагувати клієнта">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClientEdit(client, onClientEdit);
+                        }}
+                        aria-label="редагувати клієнта"
+                        sx={{
+                          bgcolor: 'rgba(25, 118, 210, 0.08)',
+                          '&:hover': {
+                            bgcolor: 'rgba(25, 118, 210, 0.16)',
+                          },
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </CardActions>
+                </Card>
+              </Fade>
+            </Grid>
+          ))}
+        </Grid>
+
+        {totalPages > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, pb: 1 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              size={isTablet ? 'medium' : 'small'}
+              color="primary"
+              showFirstButton
+              showLastButton
+              siblingCount={isMobile ? 0 : 1}
+            />
+          </Box>
+        )}
+      </Box>
     </Paper>
   );
 };

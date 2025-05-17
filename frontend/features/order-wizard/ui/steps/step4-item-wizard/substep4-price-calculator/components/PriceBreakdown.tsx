@@ -1,133 +1,178 @@
-import React from 'react';
-import { 
-  Box, 
-  Typography, 
-  Divider, 
-  List, 
-  ListItem, 
-  ListItemText,
-  ListItemIcon,
-  Chip
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+'use client';
 
-interface ModifierImpact {
-  modifierId: string;
-  name: string;
-  value: number;
-  impact: number;
-}
+import React from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+  Alert,
+} from '@mui/material';
+import { formatCurrency } from '@/features/order-wizard/api/helpers/formatters';
 
 interface PriceBreakdownProps {
   basePrice: number;
-  modifiersImpact: ModifierImpact[];
   totalPrice: number;
+  modifiersImpact: Array<{
+    modifierId: string;
+    name: string;
+    value: number;
+    impact: number;
+  }>;
+  quantity: number;
+  isLoading: boolean;
+  error?: string;
 }
 
 /**
- * Компонент для відображення детального розрахунку ціни
+ * Компонент для детального відображення розрахунку ціни
  */
-export const PriceBreakdown: React.FC<PriceBreakdownProps> = ({
+const PriceBreakdown: React.FC<PriceBreakdownProps> = ({
   basePrice,
-  modifiersImpact,
   totalPrice,
+  modifiersImpact,
+  quantity,
+  isLoading,
+  error,
 }) => {
-  // Функція для форматування ціни в гривнях
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('uk-UA', {
-      style: 'currency',
-      currency: 'UAH',
-      minimumFractionDigits: 2,
-    }).format(price);
-  };
+  const totalAmount = totalPrice * quantity;
+  const hasModifiers = modifiersImpact && modifiersImpact.length > 0;
 
-  // Функція для форматування відсотка
-  const formatPercent = (value: number) => {
-    return `${value}%`;
-  };
+  if (isLoading) {
+    return (
+      <Card
+        variant="outlined"
+        sx={{
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <CircularProgress size={30} />
+      </Card>
+    );
+  }
 
-  // Групуємо модифікатори на знижки та надбавки
-  const discounts = modifiersImpact.filter((mod) => mod.impact < 0);
-  const additions = modifiersImpact.filter((mod) => mod.impact > 0);
+  if (error) {
+    return (
+      <Card variant="outlined" sx={{ height: '100%' }}>
+        <CardContent>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Помилка при розрахунку ціни: {error}
+          </Alert>
+          <Typography variant="h6" gutterBottom>
+            Базова ціна
+          </Typography>
+          <Typography variant="h4" component="div" fontWeight="bold">
+            {formatCurrency(basePrice)}
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Box>
-      {/* Базова ціна */}
-      <ListItem sx={{ py: 1 }}>
-        <ListItemText 
-          primary="Базова ціна"
-        />
-        <Typography variant="body1" fontWeight="bold">
-          {formatPrice(basePrice)}
+    <Card variant="outlined" sx={{ height: '100%' }}>
+      <CardHeader title="Підсумок розрахунку" />
+      <CardContent>
+        <Typography variant="subtitle1" gutterBottom>
+          Базова ціна
         </Typography>
-      </ListItem>
-      
-      <Divider />
-      
-      {/* Надбавки */}
-      {additions.length > 0 && (
-        <>
-          <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-            Додаткові послуги та надбавки:
-          </Typography>
-          <List disablePadding>
-            {additions.map((mod) => (
-              <ListItem key={mod.modifierId} sx={{ py: 0.5 }}>
-                <ListItemIcon sx={{ minWidth: 24 }}>
-                  <AddIcon color="error" fontSize="small" />
-                </ListItemIcon>
-                <ListItemText 
-                  primary={mod.name}
-                  secondary={mod.value ? `${formatPercent(mod.value)}` : undefined}
-                />
-                <Chip 
-                  label={formatPrice(mod.impact)} 
-                  size="small" 
-                  color="error"
-                />
-              </ListItem>
-            ))}
-          </List>
-        </>
-      )}
-      
-      {/* Знижки */}
-      {discounts.length > 0 && (
-        <>
-          <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-            Знижки:
-          </Typography>
-          <List disablePadding>
-            {discounts.map((mod) => (
-              <ListItem key={mod.modifierId} sx={{ py: 0.5 }}>
-                <ListItemIcon sx={{ minWidth: 24 }}>
-                  <RemoveIcon color="success" fontSize="small" />
-                </ListItemIcon>
-                <ListItemText 
-                  primary={mod.name}
-                  secondary={mod.value ? `${formatPercent(mod.value)}` : undefined}
-                />
-                <Chip 
-                  label={formatPrice(Math.abs(mod.impact))} 
-                  size="small" 
-                  color="success"
-                />
-              </ListItem>
-            ))}
-          </List>
-        </>
-      )}
-      
-      <Divider sx={{ my: 2 }} />
-      
-      {/* Підсумкова ціна */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1 }}>
-        <Typography variant="h6">Підсумкова ціна:</Typography>
-        <Typography variant="h5" fontWeight="bold" color="primary.main">
-          {formatPrice(totalPrice)}
+        <Typography variant="h6" gutterBottom>
+          {formatCurrency(basePrice)}
         </Typography>
-      </Box>
-    </Box>
+
+        {hasModifiers && (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle1" gutterBottom>
+              Застосовані модифікатори
+            </Typography>
+            <List dense>
+              {modifiersImpact.map((item) => (
+                <ListItem key={item.modifierId} sx={{ py: 0.5 }}>
+                  <ListItemText
+                    primary={item.name}
+                    secondary={
+                      item.value
+                        ? `Значення: ${item.value}${
+                            typeof item.value === 'number' && item.value <= 100
+                              ? '%'
+                              : ''
+                          }`
+                        : undefined
+                    }
+                  />
+                  <Typography
+                    variant="body2"
+                    color={item.impact > 0 ? 'error.main' : 'success.main'}
+                    fontWeight="bold"
+                  >
+                    {item.impact > 0 ? '+' : ''}
+                    {formatCurrency(item.impact)}
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
+          </>
+        )}
+
+        <Divider sx={{ my: 2 }} />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="subtitle1">Ціна за одиницю:</Typography>
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            color={totalPrice > basePrice ? 'error' : 'inherit'}
+          >
+            {formatCurrency(totalPrice)}
+          </Typography>
+        </Box>
+
+        {quantity > 1 && (
+          <>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mt: 1,
+              }}
+            >
+              <Typography variant="subtitle1">Кількість:</Typography>
+              <Typography variant="h6">{quantity} шт.</Typography>
+            </Box>
+            <Divider sx={{ my: 1 }} />
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Typography variant="subtitle1">Загальна сума:</Typography>
+              <Typography variant="h5" fontWeight="bold" color="primary.main">
+                {formatCurrency(totalAmount)}
+              </Typography>
+            </Box>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 };
+
+export default PriceBreakdown;

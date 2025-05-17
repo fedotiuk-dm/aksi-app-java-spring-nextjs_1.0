@@ -1,9 +1,14 @@
-import { 
-  FormControl, 
-  FormHelperText, 
-  InputLabel, 
-  MenuItem, 
-  Select
+import {
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  ListItemText,
+  Typography,
+  Box,
+  Divider,
+  Chip,
 } from '@mui/material';
 import { Controller } from 'react-hook-form';
 import type { Control, FieldErrors } from 'react-hook-form';
@@ -21,17 +26,23 @@ export const CategorySelect = ({
   categories,
   control,
   errors,
-  onChange
+  onChange,
 }: CategorySelectProps) => {
+  // Розділяємо категорії на основні та інші
+  const mainCategories = categories.filter((cat) =>
+    ['DRY_CLEANING', 'LAUNDRY', 'IRONING'].includes(cat.code || '')
+  );
+
+  const otherCategories = categories.filter(
+    (cat) => !['DRY_CLEANING', 'LAUNDRY', 'IRONING'].includes(cat.code || '')
+  );
+
   return (
     <Controller
       name="categoryId"
       control={control}
       render={({ field }) => (
-        <FormControl 
-          fullWidth 
-          error={!!errors.categoryId}
-        >
+        <FormControl fullWidth error={!!errors.categoryId}>
           <InputLabel id="category-select-label">Категорія послуги</InputLabel>
           <Select
             labelId="category-select-label"
@@ -42,10 +53,87 @@ export const CategorySelect = ({
               field.onChange(e);
               onChange(e.target.value as string);
             }}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 300,
+                },
+              },
+            }}
+            renderValue={(selected) => {
+              const category = categories.find((cat) => cat.id === selected);
+              if (!category) return null;
+
+              return <Typography variant="body1">{category.name}</Typography>;
+            }}
           >
-            {categories.map((category) => (
+            {mainCategories.length > 0 && (
+              <>
+                {mainCategories.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <ListItemText
+                        primary={category.name}
+                        secondary={category.description || undefined}
+                      />
+                      {category.items && (
+                        <Chip
+                          label={`${category.items.length} товарів`}
+                          size="small"
+                          color="primary"
+                          variant="outlined"
+                          sx={{ ml: 1 }}
+                        />
+                      )}
+                    </Box>
+                  </MenuItem>
+                ))}
+
+                {otherCategories.length > 0 && (
+                  <>
+                    <Divider />
+                    <Typography
+                      variant="caption"
+                      sx={{ px: 2, py: 1, display: 'block' }}
+                    >
+                      Інші категорії
+                    </Typography>
+                  </>
+                )}
+              </>
+            )}
+
+            {otherCategories.map((category) => (
               <MenuItem key={category.id} value={category.id}>
-                {category.name}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '100%',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <ListItemText
+                    primary={category.name}
+                    secondary={category.description || undefined}
+                  />
+                  {category.items && (
+                    <Chip
+                      label={`${category.items.length} товарів`}
+                      size="small"
+                      color="primary"
+                      variant="outlined"
+                      sx={{ ml: 1 }}
+                    />
+                  )}
+                </Box>
               </MenuItem>
             ))}
           </Select>

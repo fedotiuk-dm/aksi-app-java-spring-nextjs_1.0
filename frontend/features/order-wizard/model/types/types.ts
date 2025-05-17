@@ -17,28 +17,28 @@ export enum ItemManagerSubStep {
   ITEM_LIST = 'ITEM_LIST',
   ITEM_SELECTION = 'ITEM_SELECTION',
   ITEM_DETAILS = 'ITEM_DETAILS',
-  
+
   // Підетап 2.2: Характеристики предмета
   ITEM_PROPERTIES = 'ITEM_PROPERTIES',
-  
+
   // Підетап 2.3: Забруднення, дефекти та ризики
   ITEM_DEFECTS = 'ITEM_DEFECTS',
-  
+
   // Підетап 2.4: Знижки та надбавки (калькулятор ціни)
   ITEM_PRICING = 'ITEM_PRICING',
-  
+
   // Підетап 2.5: Фотодокументація
   ITEM_PHOTOS = 'ITEM_PHOTOS',
 }
 
 // Типи для підкроків Item Wizard
 export enum ItemWizardSubStep {
-  BASIC_INFO = 'BASIC_INFO',                // substep1-basic-info
-  ITEM_PROPERTIES = 'ITEM_PROPERTIES',      // substep2-item-properties
-  DEFECTS_STAINS = 'DEFECTS_STAINS',        // substep3-defects-stains
-  PRICE_CALCULATOR = 'PRICE_CALCULATOR',    // substep4-price-calculator
+  BASIC_INFO = 'BASIC_INFO', // substep1-basic-info
+  ITEM_PROPERTIES = 'ITEM_PROPERTIES', // substep2-item-properties
+  DEFECTS_STAINS = 'DEFECTS_STAINS', // substep3-defects-stains
+  PRICE_CALCULATOR = 'PRICE_CALCULATOR', // substep4-price-calculator
   PHOTO_DOCUMENTATION = 'PHOTO_DOCUMENTATION', // substep5-photo-documentation
-  ITEM_SUMMARY = 'ITEM_SUMMARY'             // substep6-item-summary
+  ITEM_SUMMARY = 'ITEM_SUMMARY', // substep6-item-summary
 }
 
 // Історія навігації для можливості переходу назад
@@ -76,8 +76,14 @@ export interface Client {
 }
 
 // Типи для замовлення
-import { Stain, Defect } from '@/features/order-wizard/model/schema/item-defects.schema';
-import { AppliedModifier, PriceCalculationResult } from '@/features/order-wizard/model/schema/item-pricing.schema';
+import {
+  Stain,
+  Defect,
+} from '@/features/order-wizard/model/schema/item-defects.schema';
+import {
+  AppliedModifier,
+  PriceCalculationResult,
+} from '@/features/order-wizard/model/schema/item-pricing.schema';
 
 // Тип для фотографій
 export interface ItemPhoto {
@@ -97,27 +103,29 @@ export interface OrderItem {
   unitPrice: number;
   totalPrice: number;
   category?: string;
+  categoryId?: string;
+  categoryCode?: string;
   color?: string;
   material?: string;
-  
+
   // Характеристики предмета (підетап 2.2)
   filler?: string;
   isFillerLumpy?: boolean;
   wearDegree?: string;
   propertyNotes?: string;
-  
+
   // Плями та дефекти (підетап 2.3)
   stains?: Stain[];
   defects?: Defect[];
   defectsNotes?: string;
-  
+
   // Підетап 2.4: Знижки та надбавки (калькулятор ціни)
   priceModifiers?: AppliedModifier[];
   priceCalculationDetails?: PriceCalculationResult;
-  
+
   // Підетап 2.5: Фотодокументація
   photos?: ItemPhoto[];
-  
+
   // Загальні інструкції
   specialInstructions?: string;
 }
@@ -193,7 +201,9 @@ export interface OrderWizardState {
 
   // Методи
   setCurrentStep: (step: WizardStep) => void;
-  setCurrentSubStep: (subStep: ItemManagerSubStep | ItemWizardSubStep | string | undefined) => void;
+  setCurrentSubStep: (
+    subStep: ItemManagerSubStep | ItemWizardSubStep | string | undefined
+  ) => void;
   navigateToStep: (
     step: WizardStep,
     subStep?: ItemManagerSubStep | ItemWizardSubStep | string
@@ -215,6 +225,7 @@ export interface OrderWizardState {
   removeItem: (index: number) => void;
   setCurrentItemIndex: (index: number | null) => void;
   setCurrentItem: (item: OrderItem | null) => void;
+  updateCurrentItem: () => boolean;
 
   setCustomerNotes: (notes: string) => void;
   setInternalNotes: (notes: string) => void;

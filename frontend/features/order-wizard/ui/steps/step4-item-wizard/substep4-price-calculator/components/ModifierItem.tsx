@@ -1,141 +1,216 @@
-import React from 'react';
-import { 
-  Box, 
-  Checkbox, 
-  FormControlLabel, 
-  Slider, 
-  Typography, 
-  TextField,
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
   Card,
   CardContent,
-  Chip
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  Slider,
+  TextField,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
-import type { Control } from 'react-hook-form';
-import { 
-  ItemPricingFormValues, 
-  PriceModifier 
-} from '@/features/order-wizard/model/schema/item-pricing.schema';
+import InfoIcon from '@mui/icons-material/Info';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { PriceModifier } from '@/features/order-wizard/model/schema/item-pricing.schema';
+import { formatCurrency } from '@/features/order-wizard/api/helpers/formatters';
 
 interface ModifierItemProps {
   modifier: PriceModifier;
-  control: Control<ItemPricingFormValues>;
   isApplied: boolean;
-  selectedValue?: number;
-  onToggle: (applied: boolean) => void;
-  onValueChange: (value: number) => void;
+  selectedValue: number;
+  onModifierChange: (modifierId: string, value: number) => void;
+  onModifierRemove: (modifierId: string) => void;
 }
 
 /**
  * Компонент для відображення окремого модифікатора ціни
  */
-export const ModifierItem: React.FC<ModifierItemProps> = ({
+const ModifierItem: React.FC<ModifierItemProps> = ({
   modifier,
   isApplied,
   selectedValue,
-  onToggle,
-  onValueChange,
+  onModifierChange,
+  onModifierRemove,
 }) => {
-  // Форматування значення модифікатора
-  const formatModifierValue = (value: number) => {
-    if (modifier.isPercentage) {
-      return `${value}%`;
+  // Локальний стан для значення модифікатора (для слайдера/поля вводу)
+  const [value, setValue] = useState<number>(
+    isApplied ? selectedValue : modifier.value || 0
+  );
+
+  // Синхронізуємо локальний стан зі значенням із пропсів
+  useEffect(() => {
+    if (isApplied) {
+      setValue(selectedValue);
+    } else {
+      setValue(modifier.value || 0);
     }
-    return new Intl.NumberFormat('uk-UA', {
-      style: 'currency',
-      currency: 'UAH',
-    }).format(value);
+  }, [isApplied, selectedValue, modifier]);
+
+  // Обробник для перемикання стану (застосований/не застосований)
+  const handleToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      onModifierChange(modifier.id, value);
+    } else {
+      onModifierRemove(modifier.id);
+    }
   };
 
-  // Визначення значення для відображення
-  const displayValue = selectedValue !== undefined
-    ? selectedValue
-    : (modifier.value || 0);
+  // Обробник для зміни значення слайдера
+  const handleSliderChange = (_event: Event, newValue: number | number[]) => {
+    const numericValue = Array.isArray(newValue) ? newValue[0] : newValue;
+    setValue(numericValue);
+    if (isApplied) {
+      onModifierChange(modifier.id, numericValue);
+    }
+  };
 
-  // Визначаємо, чи це модифікатор з діапазоном значень
-  const isRangeModifier = modifier.minValue !== undefined && 
-                         modifier.maxValue !== undefined && 
-                         modifier.minValue !== modifier.maxValue;
+  // Обробник для зміни значення в текстовому полі
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = Number(event.target.value);
+    if (!isNaN(newValue)) {
+      setValue(newValue);
+      if (isApplied) {
+        onModifierChange(modifier.id, newValue);
+      }
+    }
+  };
 
-  // Визначаємо колір чіпу (зелений для знижок, червоний для надбавок)
-  const chipColor = modifier.isDiscount ? 'success' : 'error';
-  const chipLabel = modifier.isDiscount 
-    ? `Знижка ${formatModifierValue(displayValue)}` 
-    : `Надбавка ${formatModifierValue(displayValue)}`;
+  // Визначаємо, чи це діапазонний модифікатор
+  const isRangeModifier =
+    modifier.minValue !== undefined && modifier.maxValue !== undefined;
+
+  // Визначаємо, чи це фіксований числовий модифікатор
+  const isFixedModifier = !modifier.isPercentage && !isRangeModifier;
+
+  // Форматуємо значення для відображення (включаючи символ відсотка, якщо необхідно)
+  const formattedValue = modifier.isPercentage
+    ? `${value}%`
+    : formatCurrency(value);
 
   return (
-    <Card variant="outlined" sx={{ 
-      borderColor: isApplied ? 'primary.main' : 'divider',
-      transition: 'all 0.2s',
-      bgcolor: isApplied ? 'action.hover' : 'background.paper'
-    }}>
+    <Card
+      variant={isApplied ? 'outlined' : 'elevation'}
+      sx={{
+        mb: 2,
+        border: isApplied ? '1px solid' : 'none',
+        borderColor: 'primary.main',
+        opacity: isApplied ? 1 : 0.8,
+        transition: 'all 0.2s',
+        '&:hover': {
+          opacity: 1,
+          boxShadow: isApplied ? 3 : 1,
+        },
+      }}
+    >
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <Box>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isApplied}
-                  onChange={(e) => onToggle(e.target.checked)}
-                  color="primary"
-                />
-              }
-              label={
-                <Box>
-                  <Typography variant="subtitle2">{modifier.name}</Typography>
-                  {modifier.description && (
-                    <Typography variant="body2" color="text.secondary">
-                      {modifier.description}
-                    </Typography>
-                  )}
-                </Box>
-              }
-            />
-          </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+          }}
+        >
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isApplied}
+                onChange={handleToggle}
+                color="primary"
+              />
+            }
+            label={
+              <Typography
+                variant="subtitle2"
+                sx={{ fontWeight: isApplied ? 'bold' : 'normal' }}
+              >
+                {modifier.name}
+              </Typography>
+            }
+          />
+
+          {modifier.description && (
+            <Tooltip title={modifier.description}>
+              <IconButton size="small" color="primary" sx={{ ml: 1 }}>
+                <InfoIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+
           {isApplied && (
-            <Chip
-              label={chipLabel}
-              color={chipColor}
+            <IconButton
               size="small"
-              sx={{ mt: 1 }}
-            />
+              color="error"
+              onClick={() => onModifierRemove(modifier.id)}
+              sx={{ ml: 1 }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
           )}
         </Box>
 
-        {isApplied && isRangeModifier && (
-          <Box sx={{ px: 2, mt: 2 }}>
-            <Slider
-              value={displayValue}
-              min={modifier.minValue}
-              max={modifier.maxValue}
-              step={1}
-              valueLabelDisplay="auto"
-              valueLabelFormat={formatModifierValue}
-              onChange={(_, value) => onValueChange(value as number)}
-              marks={[
-                { value: modifier.minValue || 0, label: formatModifierValue(modifier.minValue || 0) },
-                { value: modifier.maxValue || 0, label: formatModifierValue(modifier.maxValue || 0) },
-              ]}
-            />
-          </Box>
-        )}
+        {/* Додаткові елементи інтерфейсу для різних типів модифікаторів */}
+        {isApplied && (
+          <Box sx={{ mt: 2, px: 1 }}>
+            {/* Слайдер для діапазонних модифікаторів */}
+            {isRangeModifier && (
+              <Box>
+                <Typography variant="caption" gutterBottom>
+                  Значення: {formattedValue}
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Slider
+                    value={value}
+                    onChange={handleSliderChange}
+                    min={modifier.minValue}
+                    max={modifier.maxValue}
+                    step={1}
+                    marks={[
+                      {
+                        value: modifier.minValue || 0,
+                        label: `${modifier.minValue}%`,
+                      },
+                      {
+                        value: modifier.maxValue || 100,
+                        label: `${modifier.maxValue}%`,
+                      },
+                    ]}
+                  />
+                </Box>
+              </Box>
+            )}
 
-        {isApplied && !isRangeModifier && !modifier.isPercentage && (
-          <Box sx={{ px: 2, mt: 2 }}>
-            <TextField
-              type="number"
-              label="Кількість"
-              value={displayValue}
-              onChange={(e) => onValueChange(Number(e.target.value))}
-              size="small"
-              InputProps={{
-                inputProps: {
-                  min: 1,
-                }
-              }}
-            />
+            {/* Числове поле для фіксованих модифікаторів */}
+            {isFixedModifier && (
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="caption" sx={{ mr: 2 }}>
+                  Кількість:
+                </Typography>
+                <TextField
+                  value={value}
+                  onChange={handleInputChange}
+                  type="number"
+                  size="small"
+                  inputProps={{ min: 1, step: 1 }}
+                  sx={{ width: '100px' }}
+                />
+              </Box>
+            )}
+
+            {/* Відображення значення для відсоткових модифікаторів */}
+            {modifier.isPercentage && !isRangeModifier && (
+              <Typography variant="body2" color="primary">
+                {modifier.isDiscount ? 'Знижка' : 'Додатково'}: {formattedValue}
+              </Typography>
+            )}
           </Box>
         )}
       </CardContent>
     </Card>
   );
 };
+
+export default ModifierItem;

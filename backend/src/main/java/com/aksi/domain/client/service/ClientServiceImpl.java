@@ -15,7 +15,7 @@ import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.client.entity.ClientSourceEntity;
 import com.aksi.domain.client.repository.ClientRepository;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.aksi.exceptions.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +41,7 @@ public class ClientServiceImpl implements ClientService {
     public ClientResponse getClientById(UUID id) {
         log.debug("Отримання клієнта за ID: {}", id);
         ClientEntity client = clientRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Клієнта з ID " + id + " не знайдено"));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Client", id));
         return mapToResponse(client);
     }
 
@@ -85,7 +85,7 @@ public class ClientServiceImpl implements ClientService {
         log.debug("Оновлення клієнта з ID: {}", id);
         
         ClientEntity client = clientRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Клієнта з ID " + id + " не знайдено"));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Client", id));
         
         validateUniquePhone(client, request.getPhone());
         validateUniqueEmail(client, request.getEmail());
@@ -105,7 +105,7 @@ public class ClientServiceImpl implements ClientService {
         log.debug("Видалення клієнта з ID: {}", id);
         
         if (!clientRepository.existsById(id)) {
-            throw new EntityNotFoundException("Клієнта з ID " + id + " не знайдено");
+            throw EntityNotFoundException.withMessage("Клієнта з ID " + id + " не знайдено");
         }
         
         clientRepository.deleteById(id);

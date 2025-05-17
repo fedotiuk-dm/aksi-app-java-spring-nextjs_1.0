@@ -3,27 +3,27 @@ databaseChangeLog:
   - include:
       file: domains/users/users-index.yaml
       relativeToChangelogFile: true
-      
+
   # Автентифікація та авторизація
   - include:
       file: domains/login/login-index.yaml
       relativeToChangelogFile: true
-      
+
   # Клієнти хімчистки
   - include:
       file: domains/clients/clients-index.yaml
       relativeToChangelogFile: true
-      
+
   # Прайс-листи
   - include:
       file: domains/pricelist/pricelist-index.yaml
       relativeToChangelogFile: true
-      
+
   # Філії та пункти прийому
   - include:
       file: domains/branches/branches-index.yaml
       relativeToChangelogFile: true
-      
+
   # Замовлення
   - include:
       file: domains/orders/orders-index.yaml

@@ -1,0 +1,130 @@
+ table_schema |          table_name           |       column_name        |          data_type          | is_nullable | column_default 
+--------------+-------------------------------+--------------------------+-----------------------------+-------------+----------------
+ public       | branch_locations              | id                       | uuid                        | NO          | 
+ public       | branch_locations              | name                     | character varying           | NO          | 
+ public       | branch_locations              | address                  | character varying           | YES         | 
+ public       | branch_locations              | phone                    | character varying           | YES         | 
+ public       | branch_locations              | code                     | character varying           | NO          | 
+ public       | branch_locations              | active                   | boolean                     | NO          | true
+ public       | branch_locations              | created_at               | timestamp without time zone | NO          | now()
+ public       | branch_locations              | updated_at               | timestamp without time zone | YES         | 
+ public       | client_communication_channels | client_id                | uuid                        | NO          | 
+ public       | client_communication_channels | channel                  | character varying           | NO          | 
+ public       | clients                       | id                       | uuid                        | NO          | 
+ public       | clients                       | first_name               | character varying           | NO          | 
+ public       | clients                       | last_name                | character varying           | NO          | 
+ public       | clients                       | phone                    | character varying           | NO          | 
+ public       | clients                       | email                    | character varying           | YES         | 
+ public       | clients                       | address                  | character varying           | YES         | 
+ public       | clients                       | source                   | character varying           | NO          | 
+ public       | clients                       | source_details           | character varying           | YES         | 
+ public       | clients                       | created_at               | timestamp without time zone | NO          | now()
+ public       | clients                       | updated_at               | timestamp without time zone | NO          | now()
+ public       | clients                       | deleted                  | boolean                     | NO          | false
+ public       | databasechangelog             | id                       | character varying           | NO          | 
+ public       | databasechangelog             | author                   | character varying           | NO          | 
+ public       | databasechangelog             | filename                 | character varying           | NO          | 
+ public       | databasechangelog             | dateexecuted             | timestamp without time zone | NO          | 
+ public       | databasechangelog             | orderexecuted            | integer                     | NO          | 
+ public       | databasechangelog             | exectype                 | character varying           | NO          | 
+ public       | databasechangelog             | md5sum                   | character varying           | YES         | 
+ public       | databasechangelog             | description              | character varying           | YES         | 
+ public       | databasechangelog             | comments                 | character varying           | YES         | 
+ public       | databasechangelog             | tag                      | character varying           | YES         | 
+ public       | databasechangelog             | liquibase                | character varying           | YES         | 
+ public       | databasechangelog             | contexts                 | character varying           | YES         | 
+ public       | databasechangelog             | labels                   | character varying           | YES         | 
+ public       | databasechangelog             | deployment_id            | character varying           | YES         | 
+ public       | databasechangeloglock         | id                       | integer                     | NO          | 
+ public       | databasechangeloglock         | locked                   | boolean                     | NO          | 
+ public       | databasechangeloglock         | lockgranted              | timestamp without time zone | YES         | 
+ public       | databasechangeloglock         | lockedby                 | character varying           | YES         | 
+ public       | login                         | id                       | uuid                        | NO          | 
+ public       | login                         | user_id                  | uuid                        | NO          | 
+ public       | login                         | email                    | character varying           | NO          | 
+ public       | login                         | password                 | character varying           | NO          | 
+ public       | login                         | email_verified           | timestamp without time zone | YES         | 
+ public       | login                         | is_active                | boolean                     | NO          | 
+ public       | login                         | created_at               | timestamp without time zone | NO          | now()
+ public       | login                         | updated_at               | timestamp without time zone | NO          | now()
+ public       | order_item_photos             | id                       | uuid                        | NO          | 
+ public       | order_item_photos             | item_id                  | uuid                        | NO          | 
+ public       | order_item_photos             | file_path                | character varying           | NO          | 
+ public       | order_item_photos             | thumbnail_path           | character varying           | YES         | 
+ public       | order_item_photos             | annotations              | text                        | YES         | 
+ public       | order_item_photos             | description              | character varying           | YES         | 
+ public       | order_item_photos             | created_at               | timestamp without time zone | NO          | 
+ public       | order_items                   | id                       | uuid                        | NO          | 
+ public       | order_items                   | order_id                 | uuid                        | NO          | 
+ public       | order_items                   | item_name                | character varying           | NO          | 
+ public       | order_items                   | description              | character varying           | YES         | 
+ public       | order_items                   | quantity                 | integer                     | NO          | 
+ public       | order_items                   | unit_price               | numeric                     | NO          | 
+ public       | order_items                   | total_price              | numeric                     | NO          | 
+ public       | order_items                   | category                 | character varying           | YES         | 
+ public       | order_items                   | color                    | character varying           | YES         | 
+ public       | order_items                   | material                 | character varying           | YES         | 
+ public       | order_items                   | defects                  | character varying           | YES         | 
+ public       | order_items                   | special_instructions     | character varying           | YES         | 
+ public       | order_items                   | unit_of_measure          | character varying           | YES         | 
+ public       | order_items                   | filler_type              | character varying           | YES         | 
+ public       | order_items                   | filler_compressed        | boolean                     | YES         | false
+ public       | order_items                   | wear_degree              | character varying           | YES         | 
+ public       | order_items                   | stains                   | character varying           | YES         | 
+ public       | order_items                   | other_stains             | character varying           | YES         | 
+ public       | order_items                   | defects_and_risks        | character varying           | YES         | 
+ public       | order_items                   | no_guarantee_reason      | character varying           | YES         | 
+ public       | order_items                   | defects_notes            | character varying           | YES         | 
+ public       | orders                        | id                       | uuid                        | NO          | 
+ public       | orders                        | receipt_number           | character varying           | NO          | 
+ public       | orders                        | tag_number               | character varying           | YES         | 
+ public       | orders                        | client_id                | uuid                        | NO          | 
+ public       | orders                        | total_amount             | numeric                     | NO          | 
+ public       | orders                        | discount_amount          | numeric                     | YES         | 
+ public       | orders                        | final_amount             | numeric                     | NO          | 
+ public       | orders                        | prepayment_amount        | numeric                     | YES         | 
+ public       | orders                        | balance_amount           | numeric                     | YES         | 
+ public       | orders                        | branch_location          | character varying           | NO          | 
+ public       | orders                        | status                   | character varying           | NO          | 
+ public       | orders                        | created_date             | timestamp without time zone | NO          | now()
+ public       | orders                        | updated_date             | timestamp without time zone | YES         | now()
+ public       | orders                        | expected_completion_date | timestamp without time zone | YES         | 
+ public       | orders                        | completed_date           | timestamp without time zone | YES         | 
+ public       | orders                        | customer_notes           | character varying           | YES         | 
+ public       | orders                        | internal_notes           | character varying           | YES         | 
+ public       | orders                        | is_express               | boolean                     | NO          | false
+ public       | orders                        | is_draft                 | boolean                     | NO          | true
+ public       | orders                        | branch_location_id       | uuid                        | YES         | 
+ public       | price_list_items              | id                       | uuid                        | NO          | 
+ public       | price_list_items              | category_id              | uuid                        | NO          | 
+ public       | price_list_items              | catalog_number           | integer                     | NO          | 
+ public       | price_list_items              | name                     | character varying           | NO          | 
+ public       | price_list_items              | unit_of_measure          | character varying           | NO          | 
+ public       | price_list_items              | base_price               | numeric                     | NO          | 
+ public       | price_list_items              | price_black              | numeric                     | YES         | 
+ public       | price_list_items              | price_color              | numeric                     | YES         | 
+ public       | price_list_items              | active                   | boolean                     | YES         | true
+ public       | price_list_items              | created_at               | timestamp without time zone | YES         | now()
+ public       | price_list_items              | updated_at               | timestamp without time zone | YES         | now()
+ public       | service_categories            | id                       | uuid                        | NO          | 
+ public       | service_categories            | code                     | character varying           | NO          | 
+ public       | service_categories            | name                     | character varying           | NO          | 
+ public       | service_categories            | description              | character varying           | YES         | 
+ public       | service_categories            | sort_order               | integer                     | YES         | 0
+ public       | service_categories            | active                   | boolean                     | NO          | true
+ public       | service_categories            | created_at               | timestamp without time zone | YES         | now()
+ public       | service_categories            | updated_at               | timestamp without time zone | YES         | now()
+ public       | users                         | id                       | uuid                        | NO          | 
+ public       | users                         | name                     | character varying           | NO          | 
+ public       | users                         | username                 | character varying           | NO          | 
+ public       | users                         | email                    | character varying           | NO          | 
+ public       | users                         | email_verified           | timestamp without time zone | YES         | 
+ public       | users                         | password                 | character varying           | NO          | 
+ public       | users                         | role                     | character varying           | NO          | 
+ public       | users                         | position                 | character varying           | YES         | 
+ public       | users                         | image                    | character varying           | YES         | 
+ public       | users                         | created_at               | timestamp without time zone | NO          | 
+ public       | users                         | updated_at               | timestamp without time zone | NO          | 
+ public       | users                         | is_active                | boolean                     | NO          | true
+(126 rows)
+

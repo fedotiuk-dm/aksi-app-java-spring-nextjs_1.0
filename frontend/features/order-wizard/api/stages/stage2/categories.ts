@@ -2,10 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import {
   ServiceCategoryService,
   PriceListService,
-  UnitOfMeasureService
+  UnitOfMeasureService,
 } from '@/lib/api';
 import { QUERY_KEYS } from '../../helpers/query-keys';
-import type { ServiceCategoryDTO as ServiceCategoryDTOBase, PriceListItemDTO as PriceListItemDTOBase } from '@/lib/api';
+import type {
+  ServiceCategoryDTO as ServiceCategoryDTOBase,
+  PriceListItemDTO as PriceListItemDTOBase,
+} from '@/lib/api';
 
 // Реекспорт типів для використання в UI
 export type ServiceCategoryDTO = ServiceCategoryDTOBase;
@@ -43,11 +46,32 @@ export const useServiceCategories = () => {
         if (!categoryId) {
           return [];
         }
-        
+
         try {
-          return await PriceListService.getItemsByCategory({ 
-            categoryId: categoryId 
+          const items = await PriceListService.getItemsByCategory({
+            categoryId: categoryId,
           });
+          // Додаємо логування для аналізу отриманих даних
+          console.log('Отримані дані з API для категорії:', categoryId);
+          console.log('Кількість товарів:', items.length);
+          if (items.length > 0) {
+            console.log(
+              'Приклад першого товару:',
+              JSON.stringify(items[0], null, 2)
+            );
+            // Перевіряємо поля priceBlack та priceColor
+            const itemsWithBlackPrice = items.filter(
+              (item) =>
+                item.priceBlack !== undefined && item.priceBlack !== null
+            );
+            const itemsWithColorPrice = items.filter(
+              (item) =>
+                item.priceColor !== undefined && item.priceColor !== null
+            );
+            console.log('Товарів з priceBlack:', itemsWithBlackPrice.length);
+            console.log('Товарів з priceColor:', itemsWithColorPrice.length);
+          }
+          return items;
         } catch (error) {
           console.error('Помилка при отриманні найменувань предметів:', error);
           return [];
@@ -68,10 +92,10 @@ export const useServiceCategories = () => {
         if (!categoryId) {
           return [];
         }
-        
+
         try {
           return await UnitOfMeasureService.getAvailableUnitsForCategory({
-            categoryId
+            categoryId,
           });
         } catch (error) {
           console.error('Помилка при отриманні одиниць виміру:', error);
@@ -87,8 +111,8 @@ export const useServiceCategories = () => {
    * Перевірка підтримки одиниці виміру для предмета
    */
   const useCheckUnitSupport = (
-    categoryId: string | null, 
-    itemName: string | null, 
+    categoryId: string | null,
+    itemName: string | null,
     unitOfMeasure: string | null
   ) => {
     return useQuery<boolean>({
@@ -97,15 +121,18 @@ export const useServiceCategories = () => {
         if (!categoryId || !itemName || !unitOfMeasure) {
           return false;
         }
-        
+
         try {
           return await UnitOfMeasureService.isUnitSupportedForItem({
             categoryId,
             itemName,
-            unitOfMeasure
+            unitOfMeasure,
           });
         } catch (error) {
-          console.error('Помилка при перевірці підтримки одиниці виміру:', error);
+          console.error(
+            'Помилка при перевірці підтримки одиниці виміру:',
+            error
+          );
           return false;
         }
       },
@@ -117,6 +144,6 @@ export const useServiceCategories = () => {
     useActiveCategories,
     useItemNames,
     useUnitsOfMeasure,
-    useCheckUnitSupport
+    useCheckUnitSupport,
   };
 };

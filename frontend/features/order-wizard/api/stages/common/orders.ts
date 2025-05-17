@@ -4,6 +4,7 @@ import type { CreateOrderRequest } from '@/lib/api';
 import { Order } from '../../../model/types';
 import { QUERY_KEYS } from '../../helpers/query-keys';
 import { mapApiOrderToModelOrder, formatDate } from '../../helpers/mappers';
+import { Defect } from '../../../model/schema/item-defects.schema';
 
 /**
  * Хук для базових операцій із замовленнями
@@ -73,7 +74,7 @@ export const useOrders = () => {
       queryKey: [QUERY_KEYS.ORDER_DETAILS, orderId],
       queryFn: async (): Promise<Order | null> => {
         if (!orderId) return null;
-        
+
         try {
           const response = await OrdersService.getOrderById({
             id: orderId,
@@ -89,6 +90,23 @@ export const useOrders = () => {
   };
 
   /**
+   * Конвертує масив дефектів у рядок для API
+   */
+  const convertDefectsToString = (defects?: Defect[]) => {
+    if (!defects || !Array.isArray(defects) || defects.length === 0) {
+      return undefined;
+    }
+
+    try {
+      // Конвертуємо масив дефектів у JSON рядок
+      return JSON.stringify(defects);
+    } catch (e) {
+      console.error('Помилка при конвертації дефектів у рядок:', e);
+      return undefined;
+    }
+  };
+
+  /**
    * Створення нового замовлення
    */
   const useCreateOrder = () => {
@@ -98,7 +116,7 @@ export const useOrders = () => {
         const apiOrderData: CreateOrderRequest = {
           clientId: orderData.clientId,
           tagNumber: orderData.tagNumber,
-          items: orderData.items.map(item => ({
+          items: orderData.items.map((item) => ({
             name: item.name,
             description: item.description,
             quantity: item.quantity,
@@ -107,7 +125,7 @@ export const useOrders = () => {
             category: item.category,
             color: item.color,
             material: item.material,
-            defects: item.defects,
+            defects: convertDefectsToString(item.defects),
             specialInstructions: item.specialInstructions,
           })),
           branchLocationId: orderData.branchLocationId, // Правильна назва поля в API
@@ -141,7 +159,7 @@ export const useOrders = () => {
         const apiOrderData: CreateOrderRequest = {
           clientId: orderData.clientId,
           tagNumber: orderData.tagNumber,
-          items: orderData.items.map(item => ({
+          items: orderData.items.map((item) => ({
             name: item.name,
             description: item.description,
             quantity: item.quantity,
@@ -150,7 +168,7 @@ export const useOrders = () => {
             category: item.category,
             color: item.color,
             material: item.material,
-            defects: item.defects,
+            defects: convertDefectsToString(item.defects),
             specialInstructions: item.specialInstructions,
           })),
           branchLocationId: orderData.branchLocationId, // Правильна назва поля в API
@@ -169,7 +187,9 @@ export const useOrders = () => {
       },
       onSuccess: () => {
         // Інвалідуємо кеш після успішного збереження
-        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDERS, 'drafts'] });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.ORDERS, 'drafts'],
+        });
       },
     });
   };
@@ -187,8 +207,8 @@ export const useOrders = () => {
       onSuccess: (_, orderId) => {
         // Інвалідуємо кеш після успішного скасування
         queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDERS] });
-        queryClient.invalidateQueries({ 
-          queryKey: [QUERY_KEYS.ORDER_DETAILS, orderId] 
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.ORDER_DETAILS, orderId],
         });
       },
     });
@@ -200,7 +220,7 @@ export const useOrders = () => {
     useActiveOrders,
     useDraftOrders,
     useOrderDetails,
-    
+
     // Мутації для зміни даних
     useCreateOrder,
     useSaveOrderDraft,

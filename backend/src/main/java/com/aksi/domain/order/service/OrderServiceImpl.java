@@ -77,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
         ClientEntity client = null;
         if (orderRequest.getClientId() != null) {
             client = clientRepository.findById(orderRequest.getClientId())
-                    .orElseThrow(() -> new EntityNotFoundException(
+                    .orElseThrow(() -> EntityNotFoundException.withMessage(
                         "Клієнт не знайдений з ID: " + orderRequest.getClientId()
                     ));
         }
@@ -88,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
         
         // Встановлюємо пункт прийому замовлень
         BranchLocationEntity branchLocation = branchLocationRepository.findById(orderRequest.getBranchLocationId())
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> EntityNotFoundException.withMessage(
                     "Пункт прийому замовлень не знайдений з ID: " + orderRequest.getBranchLocationId()
                 ));
         order.setBranchLocation(branchLocation);
@@ -143,7 +143,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Оновлення статусу замовлення {} на {}", id, status);
         
         OrderEntity order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", id));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", id
+                ));
         
         order.setStatus(status);
         order.setUpdatedDate(LocalDateTime.now());
@@ -167,7 +169,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Скасування замовлення: {}", id);
         
         OrderEntity order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", id));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", id
+                ));
         
         order.setStatus(OrderStatusEnum.CANCELLED);
         order.setUpdatedDate(LocalDateTime.now());
@@ -185,7 +189,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Відзначення замовлення як виконане: {}", id);
         
         OrderEntity order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", id));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", id
+                ));
         
         order.setStatus(OrderStatusEnum.COMPLETED);
         order.setCompletedDate(LocalDateTime.now());
@@ -223,7 +229,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Перетворення чернетки на активне замовлення: {}", id);
         
         OrderEntity order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", id));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", id
+                ));
         
         if (!order.isDraft()) {
             log.warn("Замовлення {} не є чернеткою", id);
@@ -249,7 +257,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Додавання знижки {} до замовлення {}", discountAmount, id);
         
         OrderEntity order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", id));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", id
+                ));
         
         order.setDiscountAmount(discountAmount);
         order.recalculateTotalAmount();
@@ -270,7 +280,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Додавання передоплати {} до замовлення {}", prepaymentAmount, id);
         
         OrderEntity order = orderRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", id));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", id
+                ));
         
         order.setPrepaymentAmount(prepaymentAmount);
         order.recalculateTotalAmount();
@@ -345,7 +357,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Отримання всіх предметів замовлення з ID: {}", orderId);
         
         OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", orderId
+                ));
         
         return order.getItems().stream()
                 .map(orderMapper::toOrderItemDTO)
@@ -361,7 +375,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Отримання предмета з ID: {} із замовлення з ID: {}", itemId, orderId);
         
         OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", orderId
+                ));
         
         return order.getItems().stream()
                 .filter(item -> item.getId().equals(itemId))
@@ -378,7 +394,9 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Додавання нового предмета до замовлення з ID: {}", orderId);
         
         OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", orderId
+                ));
         
         // Конвертуємо DTO в Entity
         OrderItemEntity item = orderMapper.toOrderItemEntity(itemDTO);
@@ -414,13 +432,17 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Оновлення предмета з ID: {} у замовленні з ID: {}", itemId, orderId);
         
         OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", orderId
+                ));
         
         // Знаходимо предмет для оновлення
         OrderItemEntity item = order.getItems().stream()
                 .filter(i -> i.getId().equals(itemId))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Предмет не знайдено в замовленні", itemId));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Предмет не знайдено в замовленні", itemId
+                ));
         
         // Оновлюємо поля предмету, ігноруючи id та order
         String[] ignoreProperties = {"id", "order"};
@@ -448,13 +470,17 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Видалення предмета з ID: {} із замовлення з ID: {}", itemId, orderId);
         
         OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", orderId
+                ));
         
         // Знаходимо предмет для видалення
         OrderItemEntity itemToRemove = order.getItems().stream()
                 .filter(i -> i.getId().equals(itemId))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Предмет не знайдено в замовленні", itemId));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Предмет не знайдено в замовленні", itemId
+                ));
         
         // Видаляємо предмет із замовлення
         order.getItems().remove(itemToRemove);

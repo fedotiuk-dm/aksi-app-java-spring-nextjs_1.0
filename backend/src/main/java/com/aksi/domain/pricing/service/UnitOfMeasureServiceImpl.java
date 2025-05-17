@@ -79,7 +79,7 @@ public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
         
         // Перевіряємо, чи існує категорія
         ServiceCategoryEntity category = serviceCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Категорію послуг не знайдено", categoryId));
+                .orElseThrow(() -> EntityNotFoundException.withId(categoryId));
         
         // Якщо для предмета вже є запис в базі, використовуємо його одиницю виміру
         List<PriceListItemEntity> matchingItems = priceListItemRepository.findAllByCategory(category).stream()
@@ -133,7 +133,7 @@ public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
         
         // Перевіряємо, чи існує категорія
         ServiceCategoryEntity category = serviceCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Категорію послуг не знайдено", categoryId));
+                .orElseThrow(() -> EntityNotFoundException.withId(categoryId));
         
         // Отримуємо всі унікальні одиниці виміру, які використовуються в цій категорії
         List<String> existingUnits = priceListItemRepository.findAllByCategory(category).stream()

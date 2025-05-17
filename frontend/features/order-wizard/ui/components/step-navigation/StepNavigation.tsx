@@ -17,6 +17,7 @@ interface StepNavigationProps {
   hideBackButton?: boolean;
   hideNextButton?: boolean;
   className?: string;
+  buttonSize?: 'small' | 'medium' | 'large';
 }
 
 /**
@@ -36,46 +37,47 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
   isBackDisabled = false,
   hideBackButton = false,
   hideNextButton = false,
-  className
+  className,
+  buttonSize = 'medium',
 }) => {
   return (
     <Stack direction="row" spacing={2} className={className}>
       {onCancel && (
-        <Button 
-          variant="text" 
+        <Button
+          variant="text"
           color="error"
           onClick={onCancel}
+          size={buttonSize}
         >
           {cancelLabel}
         </Button>
       )}
-      
+
       {onReset && (
-        <Button 
-          variant="text"
-          onClick={onReset}
-        >
+        <Button variant="text" onClick={onReset} size={buttonSize}>
           {resetLabel}
         </Button>
       )}
-      
+
       <div style={{ flexGrow: 1 }} />
-      
+
       {!hideBackButton && onBack && (
-        <Button 
-          variant="outlined" 
+        <Button
+          variant="outlined"
           onClick={onBack}
           disabled={isBackDisabled}
+          size={buttonSize}
         >
           {backLabel}
         </Button>
       )}
-      
+
       {!hideNextButton && onNext && (
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={onNext}
           disabled={isNextDisabled}
+          size={buttonSize}
         >
           {nextLabel}
         </Button>

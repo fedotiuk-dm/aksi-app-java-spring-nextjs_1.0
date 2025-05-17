@@ -14,10 +14,23 @@ export const useItemDefects = () => {
       queryKey: [QUERY_KEYS.DEFECTS, 'stainTypes'],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getStainTypes();
+          const response = await ItemCharacteristicsService.getStainTypes();
+          console.log('API (успіх): Отримані типи плям:', response);
+          return response;
         } catch (error) {
-          console.error('Помилка при отриманні типів плям:', error);
-          return [];
+          console.error('API (помилка): Не вдалося отримати типи плям:', error);
+          // Якщо API недоступне, повертаємо базові типи плям для можливості продовжити роботу
+          return [
+            'GREASE',
+            'BLOOD',
+            'PROTEIN',
+            'WINE',
+            'COFFEE',
+            'GRASS',
+            'INK',
+            'COSMETICS',
+            'OTHER',
+          ];
         }
       },
       staleTime: 1000 * 60 * 60, // Кеш на годину, рідко змінюються
@@ -32,10 +45,13 @@ export const useItemDefects = () => {
       queryKey: [QUERY_KEYS.DEFECTS, 'defects'],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getDefects();
+          const response = await ItemCharacteristicsService.getDefects();
+          console.log('API (успіх): Отримані дефекти:', response);
+          return response;
         } catch (error) {
-          console.error('Помилка при отриманні дефектів:', error);
-          return [];
+          console.error('API (помилка): Не вдалося отримати дефекти:', error);
+          // Якщо API недоступне, повертаємо базові типи дефектів
+          return ['WORN', 'TORN', 'MISSING_HARDWARE', 'DAMAGED_HARDWARE'];
         }
       },
       staleTime: 1000 * 60 * 60, // Кеш на годину, рідко змінюються
@@ -50,10 +66,13 @@ export const useItemDefects = () => {
       queryKey: [QUERY_KEYS.DEFECTS, 'risks'],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getRisks();
+          const response = await ItemCharacteristicsService.getRisks();
+          console.log('API (успіх): Отримані ризики:', response);
+          return response;
         } catch (error) {
-          console.error('Помилка при отриманні ризиків:', error);
-          return [];
+          console.error('API (помилка): Не вдалося отримати ризики:', error);
+          // Якщо API недоступне, повертаємо базові типи ризиків
+          return ['COLOR_CHANGE_RISK', 'DEFORMATION_RISK', 'NO_GUARANTEE'];
         }
       },
       staleTime: 1000 * 60 * 60, // Кеш на годину, рідко змінюються
@@ -68,10 +87,25 @@ export const useItemDefects = () => {
       queryKey: [QUERY_KEYS.DEFECTS, 'defectsAndRisks'],
       queryFn: async () => {
         try {
-          return await ItemCharacteristicsService.getDefectsAndRisks();
+          const response =
+            await ItemCharacteristicsService.getDefectsAndRisks();
+          console.log('API (успіх): Отримані дефекти та ризики:', response);
+          return response;
         } catch (error) {
-          console.error('Помилка при отриманні дефектів та ризиків:', error);
-          return [];
+          console.error(
+            'API (помилка): Не вдалося отримати дефекти та ризики:',
+            error
+          );
+          // Якщо API недоступне, повертаємо об'єднані базові типи
+          return [
+            'WORN',
+            'TORN',
+            'MISSING_HARDWARE',
+            'DAMAGED_HARDWARE',
+            'COLOR_CHANGE_RISK',
+            'DEFORMATION_RISK',
+            'NO_GUARANTEE',
+          ];
         }
       },
       staleTime: 1000 * 60 * 60, // Кеш на годину, рідко змінюються

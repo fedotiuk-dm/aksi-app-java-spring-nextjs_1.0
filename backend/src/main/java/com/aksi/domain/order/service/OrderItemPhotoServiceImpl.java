@@ -47,7 +47,7 @@ public class OrderItemPhotoServiceImpl implements OrderItemPhotoService {
     @Transactional
     public OrderItemPhotoDTO uploadPhoto(UUID itemId, MultipartFile file, String description) throws IOException {
         OrderItemEntity orderItem = orderItemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Предмет замовлення з ID " + itemId + " не знайдено"));
+                .orElseThrow(() -> EntityNotFoundException.withMessage("Предмет замовлення з ID " + itemId + " не знайдено"));
         
         // Зберігаємо файл
         String filePath = fileStorageService.storeFile(file);
@@ -70,7 +70,7 @@ public class OrderItemPhotoServiceImpl implements OrderItemPhotoService {
     @Transactional
     public OrderItemPhotoDTO updatePhotoAnnotations(UUID photoId, String annotations, String description) {
         OrderItemPhotoEntity photo = orderItemPhotoRepository.findById(photoId)
-                .orElseThrow(() -> new EntityNotFoundException("Фотографію з ID " + photoId + " не знайдено"));
+                .orElseThrow(() -> EntityNotFoundException.withMessage("Фотографію з ID " + photoId + " не знайдено"));
         
         photo.setAnnotations(annotations);
         
@@ -89,7 +89,7 @@ public class OrderItemPhotoServiceImpl implements OrderItemPhotoService {
     @Transactional
     public boolean deletePhoto(UUID photoId) {
         OrderItemPhotoEntity photo = orderItemPhotoRepository.findById(photoId)
-                .orElseThrow(() -> new EntityNotFoundException("Фотографію з ID " + photoId + " не знайдено"));
+                .orElseThrow(() -> EntityNotFoundException.withMessage("Фотографію з ID " + photoId + " не знайдено"));
         
         // Видаляємо файл зі сховища
         boolean fileDeleted = fileStorageService.deleteFile(photo.getFilePath());
@@ -110,7 +110,7 @@ public class OrderItemPhotoServiceImpl implements OrderItemPhotoService {
     @Transactional(readOnly = true)
     public OrderItemPhotoDTO getPhotoById(UUID photoId) {
         OrderItemPhotoEntity photo = orderItemPhotoRepository.findById(photoId)
-                .orElseThrow(() -> new EntityNotFoundException("Фотографію з ID " + photoId + " не знайдено"));
+                .orElseThrow(() -> EntityNotFoundException.withMessage("Фотографію з ID " + photoId + " не знайдено"));
         
         return mapToDTO(photo);
     }

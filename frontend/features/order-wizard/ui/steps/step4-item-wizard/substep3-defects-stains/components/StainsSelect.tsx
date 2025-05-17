@@ -1,24 +1,30 @@
 import React from 'react';
-import { 
-  Box, 
-  Button, 
-  Chip, 
-  FormControl, 
-  FormHelperText, 
-  Grid, 
-  MenuItem, 
-  Select, 
-  TextField, 
+import {
+  Box,
+  Button,
+  Chip,
+  FormControl,
+  FormHelperText,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
   Typography,
+  CircularProgress,
 } from '@mui/material';
-import { Add as AddIcon, Close as CloseIcon } from '@mui/icons-material';
+import type { SelectChangeEvent } from '@mui/material/Select';
+import {
+  Add as AddIcon,
+  Close as CloseIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
 import { Controller } from 'react-hook-form';
 import type { Control } from 'react-hook-form';
-import { 
-  ItemDefectsFormValues, 
-  StainType, 
+import {
+  ItemDefectsFormValues,
+  StainType,
   Stain,
-  getStainTypeLabel
+  getStainTypeLabel,
 } from '@/features/order-wizard/model/schema/item-defects.schema';
 
 interface StainsSelectProps {
@@ -27,44 +33,105 @@ interface StainsSelectProps {
   onAddStain: (stainType: StainType, description?: string) => void;
   onUpdateStain?: (index: number, stain: Stain) => void;
   onRemoveStain: (index: number) => void;
+  isLoading?: boolean;
 }
 
 /**
  * Компонент для вибору плям на предметі
  */
-export const StainsSelect: React.FC<StainsSelectProps> = ({ 
-  control, 
-  stains, 
-  onAddStain, 
-  onRemoveStain 
+export const StainsSelect: React.FC<StainsSelectProps> = ({
+  control,
+  stains,
+  onAddStain,
+  onRemoveStain,
+  isLoading = false,
 }) => {
-  const [selectedStainType, setSelectedStainType] = React.useState<StainType | ''>('');
+  const [selectedStainType, setSelectedStainType] = React.useState<
+    StainType | ''
+  >('');
   const [otherStainDescription, setOtherStainDescription] = React.useState('');
 
   const handleAddStain = () => {
     if (selectedStainType) {
       onAddStain(
-        selectedStainType as StainType, 
-        selectedStainType === StainType.OTHER ? otherStainDescription : undefined
+        selectedStainType as StainType,
+        selectedStainType === StainType.OTHER
+          ? otherStainDescription
+          : undefined
       );
       setSelectedStainType('');
       setOtherStainDescription('');
     }
   };
 
-  const handleStainTypeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleStainTypeChange = (event: SelectChangeEvent) => {
     setSelectedStainType(event.target.value as StainType);
   };
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDescriptionChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setOtherStainDescription(event.target.value);
   };
-  
+
   // Фільтруємо типи плям, які вже додані, крім типу "OTHER"
-  const availableStainTypes = Object.values(StainType).filter(type => {
+  const availableStainTypes = Object.values(StainType).filter((type) => {
     if (type === StainType.OTHER) return true;
-    return !stains.some(stain => stain.type === type);
+    return !stains.some((stain) => stain.type === type);
   });
+
+  const renderStainsList = () => {
+    if (isLoading) {
+      return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+          <CircularProgress size={24} />
+          <Typography variant="body2" color="text.secondary" sx={{ ml: 2 }}>
+            Завантаження даних...
+          </Typography>
+        </Box>
+      );
+    }
+
+    if (stains.length === 0) {
+      return (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            my: 2,
+            p: 2,
+            bgcolor: 'background.paper',
+            borderRadius: 1,
+          }}
+        >
+          <InfoIcon color="info" sx={{ mr: 1 }} />
+          <Typography variant="body2" color="text.secondary">
+            Плями не вказані. Додайте, якщо вони є на предметі.
+          </Typography>
+        </Box>
+      );
+    }
+
+    return (
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+        {stains.map((stain, index) => (
+          <Chip
+            key={`${stain.type}-${index}`}
+            label={
+              stain.type === StainType.OTHER
+                ? `${getStainTypeLabel(stain.type)}: ${stain.description}`
+                : getStainTypeLabel(stain.type)
+            }
+            onDelete={() => onRemoveStain(index)}
+            deleteIcon={<CloseIcon />}
+            color="primary"
+            variant="outlined"
+            sx={{ m: 0.5 }}
+          />
+        ))}
+      </Box>
+    );
+  };
 
   return (
     <Grid container spacing={2}>
@@ -79,10 +146,11 @@ export const StainsSelect: React.FC<StainsSelectProps> = ({
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
                   <Select
                     value={selectedStainType}
-                    onChange={handleStainTypeChange as any}
+                    onChange={handleStainTypeChange}
                     displayEmpty
                     fullWidth
                     sx={{ flexGrow: 1 }}
+                    disabled={isLoading}
                   >
                     <MenuItem value="" disabled>
                       Виберіть тип плями
@@ -97,8 +165,19 @@ export const StainsSelect: React.FC<StainsSelectProps> = ({
                     variant="contained"
                     color="primary"
                     onClick={handleAddStain}
-                    disabled={!selectedStainType}
-                    startIcon={<AddIcon />}
+                    disabled={
+                      !selectedStainType ||
+                      (selectedStainType === StainType.OTHER &&
+                        !otherStainDescription) ||
+                      isLoading
+                    }
+                    startIcon={
+                      isLoading ? (
+                        <CircularProgress size={16} color="inherit" />
+                      ) : (
+                        <AddIcon />
+                      )
+                    }
                   >
                     Додати
                   </Button>
@@ -112,33 +191,16 @@ export const StainsSelect: React.FC<StainsSelectProps> = ({
                     value={otherStainDescription}
                     onChange={handleDescriptionChange}
                     helperText="Вкажіть детальний опис плями"
+                    error={
+                      selectedStainType === StainType.OTHER &&
+                      !otherStainDescription
+                    }
+                    disabled={isLoading}
                   />
                 )}
 
                 {/* Відображення вибраних плям */}
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                  {stains.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">
-                      Плями не вказані. Додайте, якщо вони є на предметі.
-                    </Typography>
-                  ) : (
-                    stains.map((stain, index) => (
-                      <Chip
-                        key={`${stain.type}-${index}`}
-                        label={
-                          stain.type === StainType.OTHER
-                            ? `${getStainTypeLabel(stain.type)}: ${stain.description}`
-                            : getStainTypeLabel(stain.type)
-                        }
-                        onDelete={() => onRemoveStain(index)}
-                        deleteIcon={<CloseIcon />}
-                        color="primary"
-                        variant="outlined"
-                        sx={{ m: 0.5 }}
-                      />
-                    ))
-                  )}
-                </Box>
+                {renderStainsList()}
 
                 {error && <FormHelperText>{error.message}</FormHelperText>}
               </Box>

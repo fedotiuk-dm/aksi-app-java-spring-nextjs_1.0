@@ -1,5 +1,7 @@
 package com.aksi.api;
 
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.pricing.constants.PriceModifierConstants;
+import com.aksi.domain.pricing.constants.PriceModifierConstants.FixedPriceModifier;
 import com.aksi.domain.pricing.constants.PriceModifierConstants.ModifierType;
+import com.aksi.domain.pricing.constants.PriceModifierConstants.PercentageModifier;
 import com.aksi.domain.pricing.constants.PriceModifierConstants.PriceModifier;
+import com.aksi.domain.pricing.constants.PriceModifierConstants.RangePercentageModifier;
 import com.aksi.domain.pricing.dto.PriceCalculationRequestDTO;
 import com.aksi.domain.pricing.dto.PriceCalculationResponseDTO;
 import com.aksi.domain.pricing.service.PriceCalculationService;
@@ -134,13 +139,144 @@ public class PriceCalculationController {
      * @return DTO модифікатора ціни
      */
     private ModifierDTO mapModifierToDTO(PriceModifier modifier) {
-        return ModifierDTO.builder()
+        ModifierDTO.ModifierDTOBuilder builder = ModifierDTO.builder()
                 .id(modifier.getId())
                 .name(modifier.getName())
                 .description(modifier.getDescription())
                 .changeDescription(modifier.getChangeDescription())
                 .type(modifier.getType().name())
-                .build();
+                .category(modifier.getType().name());
+        
+        // Визначаємо, чи це знижка на основі опису зміни
+        String changeDesc = modifier.getChangeDescription();
+        boolean isDiscount = changeDesc != null && changeDesc.startsWith("-");
+        builder.discount(isDiscount);
+        
+        // Визначаємо тип модифікатора та встановлюємо відповідні поля
+        if (modifier instanceof PercentageModifier) {
+            // Простий відсотковий модифікатор
+            builder.percentage(true);
+            
+            // Спроба отримати значення через рефлексію
+            try {
+                Field percentageModifierField = PercentageModifier.class.getDeclaredField("percentageModifier");
+                percentageModifierField.setAccessible(true);
+                
+                BigDecimal percentageValue = (BigDecimal) percentageModifierField.get(modifier);
+                builder.value(percentageValue != null ? Math.abs(percentageValue.doubleValue()) : 0.0);
+            } catch (NoSuchFieldException | IllegalAccessException | ClassCastException | NullPointerException e) {
+                log.warn("Не вдалося отримати значення відсотка через рефлексію: {}", e.getMessage());
+                
+                // Якщо не вдалося отримати через рефлексію, пробуємо парсити з опису зміни
+                if (changeDesc != null) {
+                    try {
+                        String percentStr = changeDesc.replace("%", "").replace("+", "").replace("-", "").trim();
+                        double value = Double.parseDouble(percentStr);
+                        builder.value(value);
+                    } catch (NumberFormatException ne) {
+                        log.warn("Не вдалося розпарсити відсоткове значення модифікатора {}: {}", modifier.getId(), changeDesc);
+                        builder.value(0.0);
+                    }
+                } else {
+                    builder.value(0.0);
+                }
+            }
+        } else if (modifier instanceof RangePercentageModifier) {
+            // Модифікатор з діапазоном значень
+            builder.percentage(true);
+            
+            // Спроба отримати значення через рефлексію
+            try {
+                Field minPercentageField = RangePercentageModifier.class.getDeclaredField("minPercentage");
+                Field maxPercentageField = RangePercentageModifier.class.getDeclaredField("maxPercentage");
+                
+                minPercentageField.setAccessible(true);
+                maxPercentageField.setAccessible(true);
+                
+                BigDecimal minPercentage = (BigDecimal) minPercentageField.get(modifier);
+                BigDecimal maxPercentage = (BigDecimal) maxPercentageField.get(modifier);
+                
+                builder.minValue(minPercentage != null ? minPercentage.doubleValue() : 0.0);
+                builder.maxValue(maxPercentage != null ? maxPercentage.doubleValue() : 0.0);
+                builder.value(minPercentage != null ? minPercentage.doubleValue() : 0.0);
+            } catch (NoSuchFieldException | IllegalAccessException | ClassCastException | NullPointerException e) {
+                log.warn("Не вдалося отримати значення мінімального/максимального відсотка через рефлексію: {}", e.getMessage());
+                
+                // Якщо не вдалося отримати через рефлексію, пробуємо парсити з опису
+                String description = modifier.getDescription();
+                if (description != null && description.toLowerCase().contains("від") && description.toLowerCase().contains("до")) {
+                    String[] parts = description.toLowerCase().split("від|до");
+                    if (parts.length >= 3) {
+                        try {
+                            String minStr = parts[1].trim();
+                            String maxStr = parts[2].trim();
+                            
+                            // Видаляємо все, крім чисел і крапки
+                            minStr = minStr.replaceAll("[^0-9.]", "");
+                            maxStr = maxStr.replaceAll("[^0-9.]", "");
+                            
+                            double min = Double.parseDouble(minStr);
+                            double max = Double.parseDouble(maxStr);
+                            
+                            builder.minValue(min);
+                            builder.maxValue(max);
+                            builder.value(min); // За замовчуванням - мінімальне значення
+                        } catch (NumberFormatException ne) {
+                            log.warn("Не вдалося розпарсити діапазон для модифікатора {}: {}", modifier.getId(), ne.getMessage());
+                            // Встановлюємо значення за замовчуванням
+                            builder.minValue(0.0);
+                            builder.maxValue(0.0);
+                            builder.value(0.0);
+                        }
+                    } else {
+                        // Недостатньо частин у розбивці
+                        builder.minValue(0.0);
+                        builder.maxValue(0.0);
+                        builder.value(0.0);
+                    }
+                } else {
+                    // Опис не містить "від" або "до"
+                    builder.minValue(0.0);
+                    builder.maxValue(0.0);
+                    builder.value(0.0);
+                }
+            }
+        } else if (modifier instanceof FixedPriceModifier) {
+            // Фіксований ціновий модифікатор
+            builder.percentage(false);
+            
+            // Спроба отримати значення через рефлексію
+            try {
+                Field fixedPriceField = FixedPriceModifier.class.getDeclaredField("fixedPrice");
+                fixedPriceField.setAccessible(true);
+                
+                BigDecimal fixedPrice = (BigDecimal) fixedPriceField.get(modifier);
+                builder.value(fixedPrice != null ? fixedPrice.doubleValue() : 0.0);
+            } catch (NoSuchFieldException | IllegalAccessException | ClassCastException | NullPointerException e) {
+                log.warn("Не вдалося отримати значення фіксованої ціни через рефлексію: {}", e.getMessage());
+                
+                // Якщо не вдалося отримати через рефлексію, пробуємо парсити з опису зміни
+                if (changeDesc != null && changeDesc.contains("Фіксована ціна:")) {
+                    try {
+                        String priceStr = changeDesc.replace("Фіксована ціна:", "").replace("грн", "").trim();
+                        double value = Double.parseDouble(priceStr);
+                        builder.value(value);
+                    } catch (NumberFormatException ne) {
+                        log.warn("Не вдалося розпарсити фіксовану ціну для модифікатора {}: {}", modifier.getId(), ne.getMessage());
+                        builder.value(0.0);
+                    }
+                } else {
+                    // Якщо формат не відповідає очікуваному
+                    builder.value(0.0);
+                }
+            }
+        } else {
+            // Невідомий тип модифікатора
+            builder.percentage(false);
+            builder.value(0.0);
+        }
+        
+        return builder.build();
     }
     
     /**
@@ -156,5 +292,21 @@ public class PriceCalculationController {
         private String description;
         private String changeDescription;
         private String type;
+        private String category;
+        
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Чи є модифікатор відсотковим", example = "true")
+        private boolean percentage;
+        
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Чи є модифікатор знижкою", example = "false")
+        private boolean discount;
+        
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Значення модифікатора (відсоток або фіксована вартість)", example = "20.0")
+        private Double value;
+        
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Мінімальне значення для модифікаторів з діапазоном", example = "20.0") 
+        private Double minValue;
+        
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Максимальне значення для модифікаторів з діапазоном", example = "100.0")
+        private Double maxValue;
     }
 }

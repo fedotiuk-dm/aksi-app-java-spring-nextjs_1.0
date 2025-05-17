@@ -6,10 +6,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.exceptions.EntityNotFoundException;
 import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
 import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 import com.aksi.domain.pricing.repository.ServiceCategoryRepository;
+import com.aksi.exceptions.EntityNotFoundException;
 import com.aksi.mapper.PriceListMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
         log.debug("Отримання категорії послуг за ID: {}", id);
         
         ServiceCategoryEntity category = serviceCategoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Категорію послуг не знайдено", id));
+                .orElseThrow(() -> EntityNotFoundException.withId(id));
         
         return priceListMapper.toDto(category);
     }
@@ -62,7 +62,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
         log.debug("Отримання категорії послуг за кодом: {}", code);
         
         ServiceCategoryEntity category = serviceCategoryRepository.findByCode(code)
-                .orElseThrow(() -> new EntityNotFoundException("Категорію послуг не знайдено за кодом", code));
+                .orElseThrow(() -> EntityNotFoundException.withMessage("Категорію послуг не знайдено за кодом: " + code));
         
         return priceListMapper.toDto(category);
     }

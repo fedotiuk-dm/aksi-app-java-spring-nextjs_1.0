@@ -11,10 +11,16 @@ import {
 } from '@/lib/api';
 import {
   AppliedModifier,
-  PriceModifier,
   PriceCalculationResult,
+  PriceModifier,
 } from '@/features/order-wizard/model/schema/item-pricing.schema';
 import { QUERY_KEYS } from '../../helpers/query-keys';
+
+// Тип для API помилок
+interface ApiError {
+  status?: number;
+  message?: string;
+}
 
 /**
  * Хук для роботи з ціноутворенням предметів замовлення та ціновим калькулятором
@@ -25,77 +31,66 @@ export const useItemPricing = () => {
    */
   const mapModifierFromApi = useCallback(
     (apiModifier: ModifierDTO): PriceModifier => {
-      // Проаналізуємо тип модифікатора для отримання додаткових даних
+      // Визначення основних параметрів модифікатора
       const type = apiModifier.type || '';
-
-      // Значення модифікатора
-      // В майбутньому ці поля мають бути в ModifierDTO з бекенду
-      let value = 0;
-      let minValue: number | undefined = undefined;
-      let maxValue: number | undefined = undefined;
-      let isPercentage = false;
-      let isDiscount = false;
-
-      // Аналізуємо changeDescription та description для визначення параметрів
-      const description = apiModifier.description || '';
-      const changeDesc = apiModifier.changeDescription || '';
+      let value = apiModifier.value || 0;
+      let minValue = apiModifier.minValue;
+      let maxValue = apiModifier.maxValue;
+      let isPercentage = apiModifier.percentage ?? false;
+      let isDiscount = apiModifier.discount ?? false;
 
       // Визначаємо категорію модифікатора
-      let category = 'GENERAL';
-      if (type.includes('TEXTILE')) {
-        category = 'TEXTILE';
-      } else if (type.includes('LEATHER')) {
-        category = 'LEATHER';
+      let category = apiModifier.category || 'GENERAL';
+
+      // Якщо немає категорії з API, визначаємо на основі типу
+      if (!apiModifier.category) {
+        if (type.includes('TEXTILE')) {
+          category = 'TEXTILE';
+        } else if (type.includes('LEATHER')) {
+          category = 'LEATHER';
+        }
       }
 
-      // Визначаємо, чи це дисконт (знижка) на основі даних з API
-      isDiscount =
-        changeDesc.includes('-') ||
-        description.includes('знижка') ||
-        description.includes('-') ||
-        type.includes('DISCOUNT');
+      // Якщо значення не визначені через API, намагаємося отримати їх з опису
+      if (apiModifier.value === undefined) {
+        const description = apiModifier.description || '';
+        const changeDesc = apiModifier.changeDescription || '';
 
-      // Визначаємо, чи це відсотковий модифікатор
-      isPercentage =
-        changeDesc.includes('%') ||
-        description.includes('%') ||
-        type.includes('PERCENTAGE') ||
-        type.includes('PERCENT');
+        // Шукаємо числові значення
+        const percentMatches =
+          changeDesc.match(/([\d.]+)%/) || description.match(/([\d.]+)%/);
+        const rangeMatches =
+          description.match(/від\s+([\d.]+)\s+до\s+([\d.]+)/) ||
+          changeDesc.match(/від\s+([\d.]+)\s+до\s+([\d.]+)/);
+        const valueMatches =
+          changeDesc.match(/([\d.]+)/) || description.match(/([\d.]+)/);
 
-      // Шукаємо числові значення
-      const percentMatches =
-        changeDesc.match(/([\d.]+)%/) || description.match(/([\d.]+)%/);
-      const rangeMatches =
-        description.match(/від\s+([\d.]+)\s+до\s+([\d.]+)/) ||
-        changeDesc.match(/від\s+([\d.]+)\s+до\s+([\d.]+)/);
-      const valueMatches =
-        changeDesc.match(/([\d.]+)/) || description.match(/([\d.]+)/);
-
-      if (rangeMatches) {
-        // Це модифікатор з діапазоном
-        minValue = parseFloat(rangeMatches[1]);
-        maxValue = parseFloat(rangeMatches[2]);
-        value = minValue; // За замовчуванням беремо мінімальне значення
-      } else if (percentMatches) {
-        // Це відсотковий модифікатор
-        value = parseFloat(percentMatches[1]);
-        isPercentage = true;
-      } else if (valueMatches) {
-        // Якщо знайдено якесь числове значення
-        value = parseFloat(valueMatches[1]);
+        if (rangeMatches && minValue === undefined && maxValue === undefined) {
+          // Це модифікатор з діапазоном
+          minValue = parseFloat(rangeMatches[1]);
+          maxValue = parseFloat(rangeMatches[2]);
+          value = minValue; // За замовчуванням беремо мінімальне значення
+        } else if (percentMatches && value === 0) {
+          // Це відсотковий модифікатор
+          value = parseFloat(percentMatches[1]);
+          isPercentage = true;
+        } else if (valueMatches && value === 0) {
+          // Якщо знайдено якесь числове значення
+          value = parseFloat(valueMatches[1]);
+        }
       }
 
       return {
         id: apiModifier.id || '',
         name: apiModifier.name || '',
         type: type,
-        description: apiModifier.description,
-        category,
-        isPercentage,
-        value,
-        minValue,
-        maxValue,
-        isDiscount,
+        description: apiModifier.description || '',
+        category: category,
+        isPercentage: isPercentage,
+        value: value,
+        minValue: minValue,
+        maxValue: maxValue,
+        isDiscount: isDiscount,
       };
     },
     []
@@ -105,7 +100,7 @@ export const useItemPricing = () => {
    * Мапить всі модифікатори з API в формат фронтенду
    */
   const mapModifiersFromApi = useCallback(
-    (apiModifiers: ModifierDTO[]): PriceModifier[] => {
+    (apiModifiers: ModifierDTO[] = []): PriceModifier[] => {
       return apiModifiers.map(mapModifierFromApi);
     },
     [mapModifierFromApi]
@@ -116,9 +111,9 @@ export const useItemPricing = () => {
    */
   const mapCalculationDetailsFromApi = useCallback(
     (
-      apiDetails: ModifierCalculationDetail[]
+      apiDetails: ModifierCalculationDetail[] = []
     ): PriceCalculationResult['modifiersImpact'] => {
-      return apiDetails.map((detail) => ({
+      return apiDetails.map((detail: ModifierCalculationDetail) => ({
         modifierId: detail.modifierId || '',
         name: detail.modifierName || '',
         value: 0, // Буде заповнено пізніше з даних форми
@@ -139,31 +134,77 @@ export const useItemPricing = () => {
       appliedModifiers: AppliedModifier[],
       availableModifiers: PriceModifier[]
     ): PriceCalculationRequestDTO => {
+      console.log('Підготовка запиту для розрахунку ціни', {
+        basePrice,
+        categoryCode,
+        itemName,
+        кількість_модифікаторів: appliedModifiers.length,
+      });
+
       // Розділяємо модифікатори на різні типи
       const simpleModifierIds: string[] = [];
       const rangeModifierValues: RangeModifierValueDTO[] = [];
       const fixedModifierQuantities: FixedModifierQuantityDTO[] = [];
 
+      // Перевіряємо валідність вхідних даних
+      if (!categoryCode || !itemName) {
+        console.error(
+          'Відсутній код категорії або назва предмета в запиті розрахунку ціни'
+        );
+        return {
+          categoryCode: categoryCode || '',
+          itemName: itemName || '',
+          quantity: 1, // Завжди додаємо quantity=1 за замовчуванням
+          modifierIds: [],
+          rangeModifierValues: [],
+          fixedModifierQuantities: [],
+        };
+      }
+
+      // Обробляємо кожен модифікатор і групуємо за типами
       appliedModifiers.forEach((applied) => {
         const modifier = availableModifiers.find(
           (m) => m.id === applied.modifierId
         );
-        if (!modifier) return;
+        if (!modifier) {
+          console.warn(
+            `Модифікатор з ID ${applied.modifierId} не знайдено в доступних модифікаторах`
+          );
+          return;
+        }
+
+        console.log(`Обробка модифікатора: ${modifier.name} (${modifier.id})`);
 
         if (
           modifier.minValue !== undefined &&
           modifier.maxValue !== undefined
         ) {
           // Діапазонний модифікатор
+          let percentage = 0;
+
+          if (typeof applied.selectedValue === 'number') {
+            percentage = Math.max(
+              modifier.minValue,
+              Math.min(applied.selectedValue, modifier.maxValue)
+            );
+          } else {
+            percentage = modifier.minValue;
+            console.warn(
+              `Для діапазонного модифікатора ${modifier.name} не вказано значення, використано мінімальне: ${percentage}`
+            );
+          }
+
           rangeModifierValues.push({
             modifierId: applied.modifierId,
-            percentage: applied.selectedValue,
+            percentage: percentage,
           });
         } else if (!modifier.isPercentage) {
-          // Фіксований модифікатор
+          // Фіксований модифікатор (кількість)
+          const quantity = Math.max(1, Math.round(applied.selectedValue || 1));
+
           fixedModifierQuantities.push({
             modifierId: applied.modifierId,
-            quantity: Math.round(applied.selectedValue),
+            quantity: quantity,
           });
         } else {
           // Простий відсотковий модифікатор
@@ -172,9 +213,9 @@ export const useItemPricing = () => {
       });
 
       return {
-        categoryCode,
-        itemName,
-        quantity: 1, // За замовчуванням кількість = 1
+        categoryCode: categoryCode.trim(),
+        itemName: itemName.trim(),
+        quantity: 1, // Завжди додаємо quantity=1 для POST-запиту
         modifierIds: simpleModifierIds,
         rangeModifierValues,
         fixedModifierQuantities,
@@ -184,9 +225,6 @@ export const useItemPricing = () => {
   );
 
   /**
-   * Отримує базову ціну для предмета
-   */
-  /**
    * Отримання базової ціни для предмета
    */
   const useBasePrice = (
@@ -194,7 +232,7 @@ export const useItemPricing = () => {
     itemName: string | undefined
   ) => {
     return useQuery<PriceCalculationResponseDTO>({
-      queryKey: [QUERY_KEYS.PRICE_CALCULATION, 'base', categoryCode, itemName],
+      queryKey: [QUERY_KEYS.BASE_PRICE, categoryCode, itemName],
       queryFn: async () => {
         if (!categoryCode || !itemName) {
           throw new Error(
@@ -214,6 +252,173 @@ export const useItemPricing = () => {
       },
       enabled: !!categoryCode && !!itemName,
     });
+  };
+
+  /**
+   * Отримує базову ціну для предмета з розширеним інтерфейсом
+   */
+  const useBasePriceForItem = (categoryCode?: string, itemName?: string) => {
+    const result = useQuery({
+      queryKey: [QUERY_KEYS.BASE_PRICE, categoryCode, itemName],
+      queryFn: async () => {
+        if (!categoryCode || !itemName) {
+          throw new Error('Необхідні параметри не вказані');
+        }
+
+        try {
+          const response = await PriceCalculatorService.getBasePrice({
+            categoryCode,
+            itemName,
+          });
+
+          if (!response) {
+            console.warn('Отримано порожню відповідь при запиті базової ціни');
+            return 0;
+          }
+
+          return response.baseUnitPrice || 0;
+        } catch (error) {
+          console.error('Помилка при отриманні базової ціни:', error);
+          return 0;
+        }
+      },
+      enabled: !!categoryCode && !!itemName,
+    });
+
+    return {
+      basePrice: result.data || 0,
+      isLoading: result.isLoading,
+      error: result.error,
+    };
+  };
+
+  /**
+   * Отримання всіх доступних модифікаторів ціни
+   */
+  const useAllModifiers = () => {
+    return useQuery<PriceModifier[]>({
+      queryKey: [QUERY_KEYS.PRICE_MODIFIERS, 'all'],
+      queryFn: async () => {
+        try {
+          const response = await PriceCalculatorService.getAllModifiers();
+          return mapModifiersFromApi(response || []);
+        } catch (error) {
+          console.error('Помилка при отриманні модифікаторів ціни:', error);
+          return [];
+        }
+      },
+    });
+  };
+
+  /**
+   * Отримання модифікаторів ціни для конкретної категорії
+   */
+  const useModifiersForCategory = (categoryCode?: string) => {
+    return useQuery<PriceModifier[]>({
+      queryKey: [QUERY_KEYS.PRICE_MODIFIERS, 'category', categoryCode],
+      queryFn: async () => {
+        if (!categoryCode) {
+          console.log(
+            'Код категорії не вказано, повертаємо порожній список модифікаторів'
+          );
+          return [];
+        }
+
+        try {
+          const response = await PriceCalculatorService.getModifiersForCategory(
+            {
+              categoryCode,
+            }
+          );
+
+          if (!response || response.length === 0) {
+            console.log(
+              `Не знайдено модифікаторів для категорії ${categoryCode}`
+            );
+            return [];
+          }
+
+          console.log(
+            `Отримано ${response.length} модифікаторів для категорії ${categoryCode}`
+          );
+          return mapModifiersFromApi(response);
+        } catch (error) {
+          console.error(
+            'Помилка при отриманні модифікаторів для категорії:',
+            error
+          );
+          return [];
+        }
+      },
+      enabled: !!categoryCode,
+    });
+  };
+
+  /**
+   * Отримує модифікатори ціни та конвертує їх у формат фронтенду
+   */
+  const useModifiersForItem = (categoryCode?: string) => {
+    const result = useQuery({
+      queryKey: [QUERY_KEYS.PRICE_MODIFIERS, 'item', categoryCode],
+      queryFn: async () => {
+        if (!categoryCode) {
+          throw new Error('Код категорії не вказано');
+        }
+
+        try {
+          console.log(`Отримання модифікаторів для категорії: ${categoryCode}`);
+          const response = await PriceCalculatorService.getModifiersForCategory(
+            {
+              categoryCode,
+            }
+          );
+
+          if (!response || response.length === 0) {
+            console.log(
+              `Не знайдено модифікаторів для категорії ${categoryCode}`
+            );
+            return [];
+          }
+
+          console.log(
+            `Отримано ${response.length} модифікаторів для категорії ${categoryCode}`
+          );
+          const mappedModifiers = mapModifiersFromApi(response);
+
+          // Логуємо кількість модифікаторів за категоріями
+          const generalModifiers = mappedModifiers.filter(
+            (m) => m.category === 'GENERAL'
+          );
+          const textileModifiers = mappedModifiers.filter(
+            (m) => m.category === 'TEXTILE'
+          );
+          const leatherModifiers = mappedModifiers.filter(
+            (m) => m.category === 'LEATHER'
+          );
+
+          console.log(`Класифікація модифікаторів для ${categoryCode}:`, {
+            загальні: generalModifiers.length,
+            текстильні: textileModifiers.length,
+            шкіряні: leatherModifiers.length,
+          });
+
+          return mappedModifiers;
+        } catch (error) {
+          console.error(
+            'Помилка при отриманні модифікаторів для категорії:',
+            error
+          );
+          return [];
+        }
+      },
+      enabled: !!categoryCode,
+    });
+
+    return {
+      modifiers: result.data || [],
+      isLoading: result.isLoading,
+      error: result.error,
+    };
   };
 
   /**
@@ -239,117 +444,34 @@ export const useItemPricing = () => {
   };
 
   /**
-   * Отримання всіх доступних модифікаторів ціни
-   */
-  const useAllModifiers = () => {
-    return useQuery<ModifierDTO[]>({
-      queryKey: [QUERY_KEYS.PRICE_MODIFIERS, 'all'],
-      queryFn: async () => {
-        try {
-          return await PriceCalculatorService.getAllModifiers();
-        } catch (error) {
-          console.error('Помилка при отриманні модифікаторів ціни:', error);
-          return [];
-        }
-      },
-    });
-  };
-
-  /**
-   * Отримання модифікаторів ціни для конкретної категорії
-   */
-  const useModifiersForCategory = (categoryCode: string | undefined) => {
-    return useQuery<ModifierDTO[]>({
-      queryKey: [QUERY_KEYS.PRICE_MODIFIERS, 'category', categoryCode],
-      queryFn: async () => {
-        if (!categoryCode) {
-          return [];
-        }
-
-        try {
-          return await PriceCalculatorService.getModifiersForCategory({
-            categoryCode,
-          });
-        } catch (error) {
-          console.error(
-            'Помилка при отриманні модифікаторів для категорії:',
-            error
-          );
-          return [];
-        }
-      },
-      enabled: !!categoryCode,
-    });
-  };
-
-  /**
-   * Отримує базову ціну для предмета з розширеним інтерфейсом
-   */
-  const useBasePriceForItem = (categoryCode?: string, itemName?: string) => {
-    const { data, isLoading, error } = useBasePrice(categoryCode, itemName);
-
-    return {
-      basePrice: data?.baseUnitPrice || 0,
-      isLoading,
-      error,
-    };
-  };
-
-  /**
-   * Отримує модифікатори ціни та конвертує їх у формат фронтенду
-   */
-  const useModifiersForItem = (categoryCode?: string) => {
-    // Використовуємо один хук, щоб уникнути умовного виклику хуків
-    const categoryKey = categoryCode ? `category:${categoryCode}` : 'all';
-
-    const {
-      data = [],
-      isLoading,
-      error,
-    } = useQuery<ModifierDTO[]>({
-      queryKey: [QUERY_KEYS.PRICE_MODIFIERS, categoryKey],
-      queryFn: async () => {
-        try {
-          if (categoryCode) {
-            return await PriceCalculatorService.getModifiersForCategory({
-              categoryCode,
-            });
-          } else {
-            return await PriceCalculatorService.getAllModifiers();
-          }
-        } catch (error) {
-          console.error('Помилка при отриманні модифікаторів:', error);
-          return [];
-        }
-      },
-      enabled: true,
-    });
-
-    return {
-      modifiers: mapModifiersFromApi(data),
-      rawModifiers: data,
-      isLoading,
-      // Забезпечуємо доступ до помилки для обробки в UI
-      error,
-    };
-  };
-
-  /**
-   * Функція для обчислення ціни з урахуванням модифікаторів (не React хук)
+   * Виконує розрахунок ціни через API
    */
   const calculatePrice = async (
     basePrice: number,
-    categoryCode: string | undefined,
-    itemName: string | undefined,
+    categoryCode: string,
+    itemName: string,
     appliedModifiers: AppliedModifier[],
     availableModifiers: PriceModifier[]
   ): Promise<PriceCalculationResult> => {
-    if (!categoryCode || !itemName) {
-      throw new Error('Необхідно вказати категорію та назву предмета');
-    }
-
     try {
-      const request = prepareCalculationRequest(
+      console.log('Розрахунок ціни з модифікаторами:', {
+        категорія: categoryCode,
+        предмет: itemName,
+        модифікаторів: appliedModifiers.length,
+      });
+
+      // Якщо немає застосованих модифікаторів, повертаємо базову ціну
+      if (appliedModifiers.length === 0) {
+        console.log('Немає застосованих модифікаторів, повертаємо базову ціну');
+        return {
+          basePrice: basePrice,
+          totalPrice: basePrice,
+          modifiersImpact: [],
+        };
+      }
+
+      // Перетворюємо параметри в формат для API
+      const requestData = prepareCalculationRequest(
         basePrice,
         categoryCode,
         itemName,
@@ -357,56 +479,115 @@ export const useItemPricing = () => {
         availableModifiers
       );
 
-      // Використовуємо прямий API виклик, а не хук
-      const result = await PriceCalculatorService.calculatePrice({
-        requestBody: request,
-      });
+      try {
+        const response = await PriceCalculatorService.calculatePrice({
+          requestBody: requestData,
+        });
 
-      // Формуємо результат у форматі фронтенду
-      const calculationDetails = mapCalculationDetailsFromApi(
-        result.calculationDetails || []
-      );
+        console.log('Успішна відповідь від API розрахунку ціни:', response);
 
-      // Додаємо значення з форми до деталей розрахунку
-      const detailsWithValues = calculationDetails.map((detail) => ({
-        ...detail,
-        value:
-          appliedModifiers.find((m) => m.modifierId === detail.modifierId)
-            ?.selectedValue || 0,
-      }));
+        // Перетворюємо відповідь в формат для фронтенду
+        const result: PriceCalculationResult = {
+          basePrice: response.baseUnitPrice || basePrice,
+          totalPrice: response.finalUnitPrice || basePrice,
+          modifiersImpact: mapCalculationDetailsFromApi(
+            response.calculationDetails || []
+          ),
+        };
 
-      return {
-        basePrice,
-        modifiersImpact: detailsWithValues,
-        totalPrice: result.finalUnitPrice || basePrice,
-      };
+        // Додаємо значення модифікаторів з форми
+        result.modifiersImpact.forEach((impact) => {
+          const appliedModifier = appliedModifiers.find(
+            (m) => m.modifierId === impact.modifierId
+          );
+          if (appliedModifier) {
+            impact.value = appliedModifier.selectedValue;
+          }
+        });
+
+        return result;
+      } catch (error) {
+        // Обробка помилок API
+        console.error('Помилка при запиті до API calculatePrice:', error);
+
+        // Перевіряємо, чи це помилка EntityNotFoundException (404)
+        const isErrorObject = error && typeof error === 'object';
+        if (isErrorObject && 'status' in error) {
+          const apiError = error as ApiError;
+          const statusCode = apiError.status;
+          const errorMessage = apiError.message;
+
+          console.error(
+            `API помилка [${statusCode}]: ${errorMessage || 'Невідома помилка'}`
+          );
+
+          // Повертаємо базову ціну в разі помилки
+          return {
+            basePrice: basePrice,
+            totalPrice: basePrice,
+            modifiersImpact: appliedModifiers.map((mod) => {
+              const modifierInfo = availableModifiers.find(
+                (m) => m.id === mod.modifierId
+              );
+              return {
+                modifierId: mod.modifierId,
+                name: modifierInfo?.name || 'Невідомий модифікатор',
+                value: mod.selectedValue,
+                impact: 0, // Помилка, тому вплив невідомий
+              };
+            }),
+          };
+        }
+
+        throw error; // Перекидаємо всі інші помилки
+      }
     } catch (error) {
-      console.error('Помилка при розрахунку ціни:', error);
-      throw error;
+      console.error('Критична помилка при розрахунку ціни:', error);
+      // В разі помилки повертаємо базову ціну
+      return {
+        basePrice: basePrice,
+        totalPrice: basePrice,
+        modifiersImpact: [],
+      };
     }
   };
 
   /**
-   * Хук для розрахунку ціни при зміні модифікаторів
+   * Хук для автоматичного розрахунку ціни при зміні модифікаторів
    */
   const useCalculatePriceOnChange = (
     basePrice: number,
     categoryCode: string | undefined,
     itemName: string | undefined,
     appliedModifiers: AppliedModifier[],
-    availableModifiers: PriceModifier[]
+    availableModifiers: PriceModifier[],
+    updateTimestamp?: number // Для примусового оновлення
   ) => {
+    const queryKey = [
+      QUERY_KEYS.PRICE_CALCULATION,
+      'calculate',
+      categoryCode,
+      itemName,
+      basePrice,
+      JSON.stringify(appliedModifiers),
+      updateTimestamp || 0,
+    ];
+
+    const shouldFetch =
+      !!categoryCode &&
+      !!itemName &&
+      availableModifiers.length > 0 &&
+      basePrice > 0;
+
     return useQuery<PriceCalculationResult>({
-      queryKey: [
-        QUERY_KEYS.PRICE_CALCULATION,
-        'calculate',
-        categoryCode,
-        itemName,
-        appliedModifiers,
-      ],
+      queryKey,
       queryFn: async () => {
         if (!categoryCode || !itemName) {
-          throw new Error('Необхідно вказати категорію та назву предмета');
+          return {
+            basePrice,
+            totalPrice: basePrice,
+            modifiersImpact: [],
+          };
         }
 
         try {
@@ -418,17 +599,18 @@ export const useItemPricing = () => {
             availableModifiers
           );
         } catch (error) {
-          // При помилці API використовуємо локальний розрахунок
+          console.error('Помилка при розрахунку ціни:', error);
           return {
             basePrice,
-            modifiersImpact: [],
             totalPrice: basePrice,
+            modifiersImpact: [],
           };
         }
       },
-      enabled: !!categoryCode && !!itemName && appliedModifiers.length > 0,
-      // Використовуємо більший стандартний інтервал оновлення для розрахунків
-      staleTime: 30000,
+      enabled: shouldFetch,
+      staleTime: 1000, // Результат вважається актуальним 1 секунду
+      gcTime: 60 * 1000, // Зберігати дані в кеші 60 секунд
+      refetchOnWindowFocus: false,
     });
   };
 
