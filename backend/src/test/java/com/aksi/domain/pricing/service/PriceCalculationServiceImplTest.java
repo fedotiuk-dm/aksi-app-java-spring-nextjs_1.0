@@ -54,17 +54,17 @@ class PriceCalculationServiceImplTest {
         // Підготовка категорій
         textileCategory = new ServiceCategoryEntity();
         textileCategory.setId(UUID.randomUUID());
-        textileCategory.setCode("odiah");
+        textileCategory.setCode("CLOTHING");
         textileCategory.setName("Чистка одягу та текстилю");
         
         leatherCategory = new ServiceCategoryEntity();
         leatherCategory.setId(UUID.randomUUID());
-        leatherCategory.setCode("dublyanky");
+        leatherCategory.setCode("PADDING");
         leatherCategory.setName("Дублянки");
         
         furCategory = new ServiceCategoryEntity();
         furCategory.setId(UUID.randomUUID());
-        furCategory.setCode("hutriani_vyroby");
+        furCategory.setCode("FUR");
         furCategory.setName("Вироби із натурального хутра");
         
         // Підготовка тестових даних для різних категорій
@@ -93,35 +93,35 @@ class PriceCalculationServiceImplTest {
         // Перевірка модифікаторів для текстильних виробів
         List<PriceModifier> textileModifiers = PriceModifierConstants.TextileModifiers.getAllTextileModifiers();
         for (PriceModifier modifier : textileModifiers) {
-            assertTrue(modifier.isApplicableToCategory("odiah"), 
-                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'odiah'");
-            assertTrue(modifier.isApplicableToCategory("prania_bilyzny"), 
-                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'prania_bilyzny'");
-            assertTrue(modifier.isApplicableToCategory("prasuvanya"), 
-                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'prasuvanya'");
-            assertFalse(modifier.isApplicableToCategory("dublyanky"), 
-                    "Модифікатор " + modifier.getId() + " не має застосовуватись до категорії 'dublyanky'");
+            assertTrue(modifier.isApplicableToCategory("CLOTHING"), 
+                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'CLOTHING'");
+            assertTrue(modifier.isApplicableToCategory("LAUNDRY"), 
+                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'LAUNDRY'");
+            assertTrue(modifier.isApplicableToCategory("IRONING"), 
+                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'IRONING'");
+            assertFalse(modifier.isApplicableToCategory("PADDING"), 
+                    "Модифікатор " + modifier.getId() + " не має застосовуватись до категорії 'PADDING'");
         }
 
         // Перевірка модифікаторів для шкіряних виробів
         List<PriceModifier> leatherModifiers = PriceModifierConstants.LeatherModifiers.getAllLeatherModifiers();
         for (PriceModifier modifier : leatherModifiers) {
-            assertTrue(modifier.isApplicableToCategory("dublyanky"), 
-                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'dublyanky'");
-            assertTrue(modifier.isApplicableToCategory("shkiriani_vyroby"), 
-                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'shkiriani_vyroby'");
-            assertFalse(modifier.isApplicableToCategory("odiah"), 
-                    "Модифікатор " + modifier.getId() + " не має застосовуватись до категорії 'odiah'");
+            assertTrue(modifier.isApplicableToCategory("PADDING"), 
+                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'PADDING'");
+            assertTrue(modifier.isApplicableToCategory("LEATHER"), 
+                    "Модифікатор " + modifier.getId() + " має застосовуватись до категорії 'LEATHER'");
+            assertFalse(modifier.isApplicableToCategory("CLOTHING"), 
+                    "Модифікатор " + modifier.getId() + " не має застосовуватись до категорії 'CLOTHING'");
         }
 
         // Перевірка загальних модифікаторів (мають застосовуватись до всіх категорій)
         List<PriceModifier> generalModifiers = PriceModifierConstants.GeneralModifiers.getAllGeneralModifiers();
         for (PriceModifier modifier : generalModifiers) {
-            assertTrue(modifier.isApplicableToCategory("odiah"), 
+            assertTrue(modifier.isApplicableToCategory("CLOTHING"), 
                     "Загальний модифікатор " + modifier.getId() + " має застосовуватись до будь-якої категорії");
-            assertTrue(modifier.isApplicableToCategory("dublyanky"), 
+            assertTrue(modifier.isApplicableToCategory("PADDING"), 
                     "Загальний модифікатор " + modifier.getId() + " має застосовуватись до будь-якої категорії");
-            assertTrue(modifier.isApplicableToCategory("hutriani_vyroby"), 
+            assertTrue(modifier.isApplicableToCategory("FUR"), 
                     "Загальний модифікатор " + modifier.getId() + " має застосовуватись до будь-якої категорії");
         }
     }
@@ -130,12 +130,12 @@ class PriceCalculationServiceImplTest {
     @DisplayName("Тест базової ціни без модифікаторів")
     void testBasePrice() {
         // Моделюємо поведінку репозиторія
-        when(priceListItemRepository.findByCategoryCodeAndItemName("dublyanky", "Дублянка"))
+        when(priceListItemRepository.findByCategoryCodeAndItemName("PADDING", "Дублянка"))
                 .thenReturn(Optional.of(leatherItem));
 
         // Створюємо запит без модифікаторів
         PriceCalculationRequestDTO request = PriceCalculationRequestDTO.builder()
-                .categoryCode("dublyanky")
+                .categoryCode("PADDING")
                 .itemName("Дублянка")
                 .quantity(1)
                 .modifierIds(new ArrayList<>())
@@ -157,12 +157,12 @@ class PriceCalculationServiceImplTest {
     @DisplayName("Тест базової ціни із застосуванням відсоткового модифікатора")
     void testPercentageModifier() {
         // Моделюємо поведінку репозиторія
-        when(priceListItemRepository.findByCategoryCodeAndItemName("dublyanky", "Дублянка"))
+        when(priceListItemRepository.findByCategoryCodeAndItemName("PADDING", "Дублянка"))
                 .thenReturn(Optional.of(leatherItem));
 
         // Створюємо запит з відсотковим модифікатором (ручна чистка +20%)
         PriceCalculationRequestDTO request = PriceCalculationRequestDTO.builder()
-                .categoryCode("dublyanky")
+                .categoryCode("PADDING")
                 .itemName("Дублянка")
                 .quantity(1)
                 .modifierIds(List.of("manual_cleaning"))
@@ -187,7 +187,7 @@ class PriceCalculationServiceImplTest {
     @DisplayName("Тест із застосуванням діапазонного модифікатора")
     void testRangeModifier() {
         // Моделюємо поведінку репозиторія
-        when(priceListItemRepository.findByCategoryCodeAndItemName("dublyanky", "Дублянка"))
+        when(priceListItemRepository.findByCategoryCodeAndItemName("PADDING", "Дублянка"))
                 .thenReturn(Optional.of(leatherItem));
 
         // Створюємо запит з діапазонним модифікатором (very_dirty_items від 20% до 100%)
@@ -197,7 +197,7 @@ class PriceCalculationServiceImplTest {
         rangeValue.setPercentage(BigDecimal.valueOf(50));
 
         PriceCalculationRequestDTO request = PriceCalculationRequestDTO.builder()
-                .categoryCode("dublyanky")
+                .categoryCode("PADDING")
                 .itemName("Дублянка")
                 .quantity(1)
                 .modifierIds(List.of("very_dirty_items"))
@@ -221,7 +221,7 @@ class PriceCalculationServiceImplTest {
     @DisplayName("Тест із застосуванням фіксованого модифікатора")
     void testFixedModifier() {
         // Моделюємо поведінку репозиторія
-        when(priceListItemRepository.findByCategoryCodeAndItemName("dublyanky", "Дублянка"))
+        when(priceListItemRepository.findByCategoryCodeAndItemName("PADDING", "Дублянка"))
                 .thenReturn(Optional.of(leatherItem));
 
         // Створюємо запит з фіксованим модифікатором (пришивання гудзиків, 3 штуки по 10 грн)
@@ -230,7 +230,7 @@ class PriceCalculationServiceImplTest {
         fixedQuantity.setQuantity(3);
 
         PriceCalculationRequestDTO request = PriceCalculationRequestDTO.builder()
-                .categoryCode("dublyanky")
+                .categoryCode("PADDING")
                 .itemName("Дублянка")
                 .quantity(1)
                 .modifierIds(List.of("sewing_buttons"))
@@ -254,7 +254,7 @@ class PriceCalculationServiceImplTest {
     @DisplayName("Тест з комбінацією модифікаторів")
     void testCombinedModifiers() {
         // Моделюємо поведінку репозиторія
-        when(priceListItemRepository.findByCategoryCodeAndItemName("dublyanky", "Дублянка"))
+        when(priceListItemRepository.findByCategoryCodeAndItemName("PADDING", "Дублянка"))
                 .thenReturn(Optional.of(leatherItem));
 
         // Створюємо запит з комбінацією модифікаторів:
@@ -266,7 +266,7 @@ class PriceCalculationServiceImplTest {
         fixedQuantity.setQuantity(2);
 
         PriceCalculationRequestDTO request = PriceCalculationRequestDTO.builder()
-                .categoryCode("dublyanky")
+                .categoryCode("PADDING")
                 .itemName("Дублянка")
                 .quantity(1)
                 .modifierIds(List.of("manual_cleaning", "leather_with_inserts", "leather_sewing_buttons"))
@@ -294,12 +294,12 @@ class PriceCalculationServiceImplTest {
     @DisplayName("Тест з категорійними модифікаторами для різних категорій")
     void testCategorySpecificModifiers() {
         // Для текстильних модифікаторів
-        when(priceListItemRepository.findByCategoryCodeAndItemName("odiah", "Пальто"))
+        when(priceListItemRepository.findByCategoryCodeAndItemName("CLOTHING", "Пальто"))
                 .thenReturn(Optional.of(textileItem));
 
         // Створюємо запит з текстильним модифікатором
         PriceCalculationRequestDTO textileRequest = PriceCalculationRequestDTO.builder()
-                .categoryCode("odiah")
+                .categoryCode("CLOTHING")
                 .itemName("Пальто")
                 .quantity(1)
                 .modifierIds(List.of("silk_products")) // +50% для шовкових виробів
@@ -312,12 +312,12 @@ class PriceCalculationServiceImplTest {
         assertEquals(BigDecimal.valueOf(300.00).setScale(2, RoundingMode.HALF_UP), textileResponse.getFinalUnitPrice());
 
         // Для шкіряних модифікаторів
-        when(priceListItemRepository.findByCategoryCodeAndItemName("dublyanky", "Дублянка"))
+        when(priceListItemRepository.findByCategoryCodeAndItemName("PADDING", "Дублянка"))
                 .thenReturn(Optional.of(leatherItem));
 
         // Створюємо запит з шкіряним модифікатором
         PriceCalculationRequestDTO leatherRequest = PriceCalculationRequestDTO.builder()
-                .categoryCode("dublyanky")
+                .categoryCode("PADDING")
                 .itemName("Дублянка")
                 .quantity(1)
                 .modifierIds(List.of("leather_ironing")) // 70% від вартості

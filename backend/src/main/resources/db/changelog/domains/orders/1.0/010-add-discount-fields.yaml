@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: orders-1.0-010
+      author: cursor-dev
+      comment: Add discount fields to orders table
+      failOnError: true
+      preConditions:
+        - onFail: HALT
+        - tableExists:
+            tableName: orders
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: discount_type
+                  type: VARCHAR(20)
+                  defaultValue: 'NO_DISCOUNT'
+                  constraints:
+                    nullable: false
+                  remarks: 'Тип знижки (NO_DISCOUNT/EVERCARD/SOCIAL_MEDIA/MILITARY/CUSTOM)'
+              - column:
+                  name: discount_percentage
+                  type: INTEGER
+                  remarks: 'Відсоток знижки (для користувацького типу знижки)'
+              - column:
+                  name: discount_description
+                  type: VARCHAR(255)
+                  remarks: 'Опис знижки (для користувацького типу знижки)'

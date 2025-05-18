@@ -32,14 +32,14 @@ public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
     private final ServiceCategoryRepository serviceCategoryRepository;
     
     // Коди категорій послуг відповідно до реального прайс-листу
-    public static final String CATEGORY_CODE_ODIAH = "odiah";                // Чистка одягу та текстилю
-    public static final String CATEGORY_CODE_PRANIA = "prania_bilyzny";     // Прання білизни
-    public static final String CATEGORY_CODE_PRASUVANYA = "prasuvanya";     // Прасування
-    public static final String CATEGORY_CODE_SHKIRA = "shkiriani_vyroby";  // Чистка та відновлення шкіряних виробів
-    public static final String CATEGORY_CODE_DUBLYANKY = "dublyanky";      // Дублянки
-    public static final String CATEGORY_CODE_HUTRO = "hutriani_vyroby";   // Вироби із натурального хутра
-    public static final String CATEGORY_CODE_FARBUVANNIA = "farbuvannia"; // Фарбування текстильних виробів
-    public static final String CATEGORY_CODE_DODATKOVI = "dodatkovi_poslugy"; // Додаткові послуги
+    public static final String CATEGORY_CODE_ODIAH = "CLOTHING";                // Чистка одягу та текстилю
+    public static final String CATEGORY_CODE_PRANIA = "LAUNDRY";     // Прання білизни
+    public static final String CATEGORY_CODE_PRASUVANYA = "IRONING";     // Прасування
+    public static final String CATEGORY_CODE_SHKIRA = "LEATHER";  // Чистка та відновлення шкіряних виробів
+    public static final String CATEGORY_CODE_DUBLYANKY = "PADDING";      // Дублянки
+    public static final String CATEGORY_CODE_HUTRO = "FUR";   // Вироби із натурального хутра
+    public static final String CATEGORY_CODE_FARBUVANNIA = "DYEING"; // Фарбування текстильних виробів
+    public static final String CATEGORY_CODE_DODATKOVI = "ADDITIONAL_SERVICES"; // Додаткові послуги
     
     // Дефолтна одиниця виміру для кожної категорії згідно з реальним прайс-листом
     private static final Map<String, String> CATEGORY_DEFAULT_UNITS = new HashMap<>();

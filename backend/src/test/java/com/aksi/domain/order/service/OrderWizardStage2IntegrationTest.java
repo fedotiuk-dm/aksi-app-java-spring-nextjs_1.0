@@ -68,12 +68,12 @@ public class OrderWizardStage2IntegrationTest {
         // Налаштування категорій
         textileCategory = new ServiceCategoryEntity();
         textileCategory.setId(UUID.randomUUID());
-        textileCategory.setCode("odiah");
+        textileCategory.setCode("CLOTHING");
         textileCategory.setName("Одяг");
 
         leatherCategory = new ServiceCategoryEntity();
         leatherCategory.setId(UUID.randomUUID());
-        leatherCategory.setCode("dublyanky");
+        leatherCategory.setCode("PADDING");
         leatherCategory.setName("Дублянки");
 
         furCategory = new ServiceCategoryEntity();
@@ -126,7 +126,7 @@ public class OrderWizardStage2IntegrationTest {
         
         // Перевіряємо, що маємо правильний список категорій
         assertEquals(3, allCategories.size());
-        assertTrue(allCategories.stream().anyMatch(cat -> cat.getCode().equals("dublyanky")));
+        assertTrue(allCategories.stream().anyMatch(cat -> cat.getCode().equals("PADDING")));
         
         // Підетап 2.2: Вибір конкретного виробу в категорії "дублянки"
         // Моделюємо отримання списку всіх виробів у категорії "дублянки"
@@ -135,16 +135,16 @@ public class OrderWizardStage2IntegrationTest {
         lenient().when(priceListItemRepository.findAll()).thenReturn(leatherItems);
         
         // Перевіряємо, що маємо правильний список виробів
-        // Фільтруємо список виробів за категорією "dublyanky" вручну (як це робить сервіс)
+        // Фільтруємо список виробів за категорією "PADDING" вручну (як це робить сервіс)
         List<PriceListItemEntity> filteredItems = leatherItems.stream()
-                .filter(item -> item.getCategory().getCode().equals("dublyanky"))
+                .filter(item -> item.getCategory().getCode().equals("PADDING"))
                 .toList();
         assertEquals(1, filteredItems.size());
         assertEquals("Дублянка", filteredItems.get(0).getName());
         assertEquals(BigDecimal.valueOf(500.00), filteredItems.get(0).getBasePrice());
         
         // Моделюємо вибір конкретного виробу - "Дублянка"
-        when(priceListItemRepository.findByCategoryCodeAndItemName("dublyanky", "Дублянка"))
+        when(priceListItemRepository.findByCategoryCodeAndItemName("PADDING", "Дублянка"))
                 .thenReturn(Optional.of(leatherJacketItem));
                 
         // Підетап 2.3: Вибір кількості виробів
@@ -170,7 +170,7 @@ public class OrderWizardStage2IntegrationTest {
         
         // Створюємо повний запит для розрахунку ціни з усіма вибраними параметрами
         PriceCalculationRequestDTO request = PriceCalculationRequestDTO.builder()
-                .categoryCode("dublyanky")
+                .categoryCode("PADDING")
                 .itemName("Дублянка")
                 .quantity(quantity) // 2 штуки
                 .modifierIds(List.of(

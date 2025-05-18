@@ -13,10 +13,17 @@ export type CreateOrderRequest = {
     discountAmount?: number;
     draft?: boolean;
     expectedCompletionDate?: string;
-    express?: boolean;
+    expediteType?: CreateOrderRequest.expediteType;
     internalNotes?: string;
     items?: Array<OrderItemDTO>;
     prepaymentAmount?: number;
     tagNumber?: string;
 };
+export namespace CreateOrderRequest {
+    export enum expediteType {
+        STANDARD = 'STANDARD',
+        EXPRESS_48H = 'EXPRESS_48H',
+        EXPRESS_24H = 'EXPRESS_24H',
+    }
+}
 

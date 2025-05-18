@@ -363,7 +363,7 @@ public final class PriceModifierConstants {
         
         // Коди категорій текстильних виробів
         private static final Set<String> TEXTILE_CATEGORIES = Set.of(
-                "odiah", "prania_bilyzny", "prasuvanya", "farbuvannia" // Реальні коди текстильних категорій
+                "CLOTHING", "LAUNDRY", "IRONING", "DYEING" // Реальні коди текстильних категорій
         );
         
         // Модифікатори для текстильних виробів
@@ -462,7 +462,7 @@ public final class PriceModifierConstants {
         
         // Коди категорій шкіряних виробів
         private static final Set<String> LEATHER_CATEGORIES = Set.of(
-                "shkiriani_vyroby", "dublyanky", "hutriani_vyroby" // Реальні коди категорій шкіряних виробів
+                "LEATHER", "PADDING", "FUR" // Реальні коди категорій шкіряних виробів
         );
         
         // Модифікатори для шкіряних виробів

@@ -30,12 +30,85 @@ export const CategorySelect = ({
 }: CategorySelectProps) => {
   // Розділяємо категорії на основні та інші
   const mainCategories = categories.filter((cat) =>
-    ['DRY_CLEANING', 'LAUNDRY', 'IRONING'].includes(cat.code || '')
+    ['CLOTHING', 'LAUNDRY', 'IRONING'].includes(cat.code || '')
   );
 
   const otherCategories = categories.filter(
-    (cat) => !['DRY_CLEANING', 'LAUNDRY', 'IRONING'].includes(cat.code || '')
+    (cat) => !['CLOTHING', 'LAUNDRY', 'IRONING'].includes(cat.code || '')
   );
+
+  // Створюємо масив всіх елементів меню, щоб уникнути фрагментів
+  const menuItems: React.ReactNode[] = [];
+
+  // Додаємо основні категорії
+  mainCategories.forEach((category) => {
+    menuItems.push(
+      <MenuItem key={category.id} value={category.id}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            justifyContent: 'space-between',
+          }}
+        >
+          <ListItemText
+            primary={category.name}
+            secondary={category.description || undefined}
+          />
+          {category.items && (
+            <Chip
+              label={`${category.items.length} товарів`}
+              size="small"
+              color="primary"
+              variant="outlined"
+              sx={{ ml: 1 }}
+            />
+          )}
+        </Box>
+      </MenuItem>
+    );
+  });
+
+  // Додаємо розділювач і заголовок, якщо є обидва типи категорій
+  if (mainCategories.length > 0 && otherCategories.length > 0) {
+    menuItems.push(<Divider key="divider" />);
+    menuItems.push(
+      <Box key="other-header" sx={{ px: 2, py: 1 }}>
+        <Typography variant="caption">Інші категорії</Typography>
+      </Box>
+    );
+  }
+
+  // Додаємо інші категорії
+  otherCategories.forEach((category) => {
+    menuItems.push(
+      <MenuItem key={category.id} value={category.id}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            justifyContent: 'space-between',
+          }}
+        >
+          <ListItemText
+            primary={category.name}
+            secondary={category.description || undefined}
+          />
+          {category.items && (
+            <Chip
+              label={`${category.items.length} товарів`}
+              size="small"
+              color="primary"
+              variant="outlined"
+              sx={{ ml: 1 }}
+            />
+          )}
+        </Box>
+      </MenuItem>
+    );
+  });
 
   return (
     <Controller
@@ -67,75 +140,7 @@ export const CategorySelect = ({
               return <Typography variant="body1">{category.name}</Typography>;
             }}
           >
-            {mainCategories.length > 0 && (
-              <>
-                {mainCategories.map((category) => (
-                  <MenuItem key={category.id} value={category.id}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        width: '100%',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <ListItemText
-                        primary={category.name}
-                        secondary={category.description || undefined}
-                      />
-                      {category.items && (
-                        <Chip
-                          label={`${category.items.length} товарів`}
-                          size="small"
-                          color="primary"
-                          variant="outlined"
-                          sx={{ ml: 1 }}
-                        />
-                      )}
-                    </Box>
-                  </MenuItem>
-                ))}
-
-                {otherCategories.length > 0 && (
-                  <>
-                    <Divider />
-                    <Typography
-                      variant="caption"
-                      sx={{ px: 2, py: 1, display: 'block' }}
-                    >
-                      Інші категорії
-                    </Typography>
-                  </>
-                )}
-              </>
-            )}
-
-            {otherCategories.map((category) => (
-              <MenuItem key={category.id} value={category.id}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    width: '100%',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <ListItemText
-                    primary={category.name}
-                    secondary={category.description || undefined}
-                  />
-                  {category.items && (
-                    <Chip
-                      label={`${category.items.length} товарів`}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                      sx={{ ml: 1 }}
-                    />
-                  )}
-                </Box>
-              </MenuItem>
-            ))}
+            {menuItems}
           </Select>
           {errors.categoryId && (
             <FormHelperText>{errors.categoryId.message}</FormHelperText>
@@ -145,3 +150,4 @@ export const CategorySelect = ({
     />
   );
 };
+

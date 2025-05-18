@@ -163,10 +163,10 @@ export function isModifierApplicableToCategory(
   // Для текстильних модифікаторів
   if (modifierCategory === ModifierCategoryType.TEXTILE) {
     const textileCategories = [
-      'odiah',
-      'prania_bilyzny',
-      'prasuvanya',
-      'farbuvannia',
+      'CLOTHING',
+      'LAUNDRY',
+      'IRONING',
+      'DYEING',
     ];
     return textileCategories.some((code) =>
       itemCategory.toLowerCase().includes(code)
@@ -176,9 +176,9 @@ export function isModifierApplicableToCategory(
   // Для шкіряних модифікаторів
   if (modifierCategory === ModifierCategoryType.LEATHER) {
     const leatherCategories = [
-      'shkiriani_vyroby',
-      'dublyanky',
-      'hutriani_vyroby',
+      'LEATHER',
+      'PADDING',
+      'FUR',
     ];
     return leatherCategories.some((code) =>
       itemCategory.toLowerCase().includes(code)

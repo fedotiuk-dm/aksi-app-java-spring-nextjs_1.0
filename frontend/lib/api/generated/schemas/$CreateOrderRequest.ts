@@ -29,8 +29,8 @@ export const $CreateOrderRequest = {
             type: 'string',
             format: 'date-time',
         },
-        express: {
-            type: 'boolean',
+        expediteType: {
+            type: 'Enum',
         },
         internalNotes: {
             type: 'string',

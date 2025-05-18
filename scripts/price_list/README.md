@@ -14,7 +14,7 @@ CSV-файл повинен мати наступну структуру (вкл
 
 ```
 category_code,catalog_number,name,unit_of_measure,base_price,price_black,price_color,active
-odiah,1,Брюки,шт,380.00,,,true
+CLOTHING,1,Брюки,шт,380.00,,,true
 ```
 
 Де:

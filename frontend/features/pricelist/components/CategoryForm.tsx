@@ -127,7 +127,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
             value={formData.code}
             onChange={handleInputChange}
             error={!!errors.code}
-            helperText={errors.code || 'Унікальний код без пробілів (напр: odiah, khimchistka_vzuttya)'}
+            helperText={errors.code || 'Унікальний код без пробілів (напр: CLOTHING)'}
             required
           />
           <TextField

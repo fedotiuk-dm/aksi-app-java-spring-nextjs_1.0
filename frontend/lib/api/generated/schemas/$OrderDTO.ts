@@ -45,8 +45,8 @@ export const $OrderDTO = {
             type: 'string',
             format: 'date-time',
         },
-        express: {
-            type: 'boolean',
+        expediteType: {
+            type: 'Enum',
         },
         finalAmount: {
             type: 'number',

@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.aksi.domain.branch.entity.BranchLocationEntity;
 import com.aksi.domain.client.entity.ClientEntity;
+import com.aksi.domain.order.model.DiscountType;
 import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.model.OrderStatusEnum;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -71,6 +72,26 @@ public class OrderEntity {
     
     @Column(name = "discount_amount")
     private BigDecimal discountAmount;
+
+    /**
+     * Тип знижки
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "discount_type")
+    @Builder.Default
+    private DiscountType discountType = DiscountType.NO_DISCOUNT;
+    
+    /**
+     * Відсоток знижки (для користувацького типу знижки)
+     */
+    @Column(name = "discount_percentage")
+    private Integer discountPercentage;
+    
+    /**
+     * Опис знижки (для користувацького типу знижки)
+     */
+    @Column(name = "discount_description", length = 255)
+    private String discountDescription;
     
     @Column(name = "final_amount", nullable = false)
     private BigDecimal finalAmount;

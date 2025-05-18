@@ -17,7 +17,7 @@ export type OrderDTO = {
     discountAmount?: number;
     draft?: boolean;
     expectedCompletionDate?: string;
-    express?: boolean;
+    expediteType?: OrderDTO.expediteType;
     finalAmount?: number;
     id?: string;
     internalNotes?: string;
@@ -30,6 +30,11 @@ export type OrderDTO = {
     updatedDate?: string;
 };
 export namespace OrderDTO {
+    export enum expediteType {
+        STANDARD = 'STANDARD',
+        EXPRESS_48H = 'EXPRESS_48H',
+        EXPRESS_24H = 'EXPRESS_24H',
+    }
     export enum status {
         DRAFT = 'DRAFT',
         NEW = 'NEW',
