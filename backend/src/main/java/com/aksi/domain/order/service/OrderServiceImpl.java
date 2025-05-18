@@ -24,7 +24,7 @@ import com.aksi.domain.order.mapper.OrderMapper;
 import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.model.OrderStatusEnum;
 import com.aksi.domain.order.repository.OrderRepository;
-import com.aksi.exceptions.EntityNotFoundException;
+import com.aksi.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

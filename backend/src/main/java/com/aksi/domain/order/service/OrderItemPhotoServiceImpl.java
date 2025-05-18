@@ -15,7 +15,7 @@ import com.aksi.domain.order.entity.OrderItemEntity;
 import com.aksi.domain.order.entity.OrderItemPhotoEntity;
 import com.aksi.domain.order.repository.OrderItemPhotoRepository;
 import com.aksi.domain.order.repository.OrderItemRepository;
-import com.aksi.exceptions.EntityNotFoundException;
+import com.aksi.exception.EntityNotFoundException;
 import com.aksi.service.file.FileStorageService;
 
 import lombok.RequiredArgsConstructor;

@@ -14,6 +14,7 @@ import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.order.model.DiscountType;
 import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.model.OrderStatusEnum;
+import com.aksi.domain.order.model.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -96,9 +97,22 @@ public class OrderEntity {
     @Column(name = "final_amount", nullable = false)
     private BigDecimal finalAmount;
     
+    /**
+     * Спосіб оплати
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method")
+    private PaymentMethod paymentMethod;
+    
+    /**
+     * Сума передоплати
+     */
     @Column(name = "prepayment_amount")
     private BigDecimal prepaymentAmount;
     
+    /**
+     * Сума до сплати (борг)
+     */
     @Column(name = "balance_amount")
     private BigDecimal balanceAmount;
     
@@ -128,9 +142,21 @@ public class OrderEntity {
     @Column(name = "completed_date")
     private LocalDateTime completedDate;
     
+    /**
+     * Загальні примітки до замовлення
+     */
     @Column(name = "customer_notes", length = 1000)
     private String customerNotes;
     
+    /**
+     * Додаткові вимоги клієнта
+     */
+    @Column(name = "additional_requirements", length = 1000)
+    private String additionalRequirements;
+    
+    /**
+     * Внутрішні примітки (для персоналу)
+     */
     @Column(name = "internal_notes", length = 1000)
     private String internalNotes;
     

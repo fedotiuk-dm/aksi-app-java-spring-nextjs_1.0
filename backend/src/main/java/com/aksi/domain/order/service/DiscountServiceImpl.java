@@ -38,7 +38,7 @@ public class DiscountServiceImpl implements DiscountService {
         log.info("Applying discount to order: {}", request);
         
         OrderEntity order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", request.getOrderId().toString()));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Замовлення", request.getOrderId().toString()));
         
         // Встановлюємо тип знижки
         order.setDiscountType(request.getDiscountType());
@@ -82,7 +82,7 @@ public class DiscountServiceImpl implements DiscountService {
         log.info("Getting discount for order: {}", orderId);
         
         OrderEntity order = orderRepository.findById(UUID.fromString(orderId))
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Замовлення", orderId));
         
         return createDiscountResponse(order);
     }
@@ -93,7 +93,7 @@ public class DiscountServiceImpl implements DiscountService {
         log.info("Removing discount from order: {}", orderId);
         
         OrderEntity order = orderRepository.findById(UUID.fromString(orderId))
-                .orElseThrow(() -> new EntityNotFoundException("Замовлення не знайдено", orderId));
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Замовлення", orderId));
         
         // Скидаємо всі дані про знижку
         order.setDiscountType(DiscountType.NO_DISCOUNT);

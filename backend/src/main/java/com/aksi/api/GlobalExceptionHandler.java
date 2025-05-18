@@ -27,9 +27,9 @@ import org.springframework.web.util.WebUtils;
 import com.aksi.application.dto.common.ErrorResponse;
 import com.aksi.exception.AuthenticationException;
 import com.aksi.exception.BadRequestException;
+import com.aksi.exception.EntityNotFoundException;
 import com.aksi.exception.ResourceNotFoundException;
 import com.aksi.exception.UserAlreadyExistsException;
-import com.aksi.exceptions.EntityNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;

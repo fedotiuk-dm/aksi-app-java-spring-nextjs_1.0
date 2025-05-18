@@ -30,7 +30,7 @@ import com.aksi.domain.pricing.dto.PriceCalculationResponseDTO;
 import com.aksi.domain.pricing.entity.PriceListItemEntity;
 import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 import com.aksi.domain.pricing.repository.PriceListItemRepository;
-import com.aksi.exceptions.EntityNotFoundException;
+import com.aksi.exception.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class PriceCalculationServiceImplTest {

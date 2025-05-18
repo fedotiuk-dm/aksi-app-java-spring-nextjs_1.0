@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
 import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 import com.aksi.domain.pricing.repository.ServiceCategoryRepository;
-import com.aksi.exceptions.EntityNotFoundException;
+import com.aksi.exception.EntityNotFoundException;
 import com.aksi.mapper.PriceListMapper;
 
 import lombok.RequiredArgsConstructor;

@@ -15,7 +15,7 @@ import com.aksi.domain.pricing.entity.PriceListItemEntity;
 import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 import com.aksi.domain.pricing.repository.PriceListItemRepository;
 import com.aksi.domain.pricing.repository.ServiceCategoryRepository;
-import com.aksi.exceptions.EntityNotFoundException;
+import com.aksi.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

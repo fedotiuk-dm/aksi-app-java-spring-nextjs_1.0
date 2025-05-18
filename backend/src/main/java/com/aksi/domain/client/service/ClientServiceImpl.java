@@ -14,8 +14,8 @@ import com.aksi.domain.client.dto.UpdateClientRequest;
 import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.client.entity.ClientSourceEntity;
 import com.aksi.domain.client.repository.ClientRepository;
+import com.aksi.exception.EntityNotFoundException;
 
-import com.aksi.exceptions.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

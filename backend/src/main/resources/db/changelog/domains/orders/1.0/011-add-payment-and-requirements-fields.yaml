@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: orders-1.0-011
+      author: cursor-dev
+      comment: Add payment method and additional requirements fields to orders table
+      failOnError: true
+      preConditions:
+        - onFail: HALT
+        - tableExists:
+            tableName: orders
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: payment_method
+                  type: VARCHAR(20)
+                  remarks: 'Спосіб оплати (TERMINAL/CASH/BANK_TRANSFER)'
+              - column:
+                  name: additional_requirements
+                  type: VARCHAR(1000)
+                  remarks: 'Додаткові вимоги клієнта'

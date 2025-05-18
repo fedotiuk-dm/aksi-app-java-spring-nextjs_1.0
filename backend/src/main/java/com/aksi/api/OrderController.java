@@ -20,7 +20,7 @@ import com.aksi.domain.order.dto.OrderDTO;
 import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.model.OrderStatusEnum;
 import com.aksi.domain.order.service.OrderService;
-import com.aksi.exceptions.EntityNotFoundException;
+import com.aksi.exception.EntityNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -22,7 +22,7 @@ import com.aksi.domain.pricing.dto.PriceCalculationResponseDTO;
 import com.aksi.domain.pricing.dto.PriceCalculationResponseDTO.ModifierCalculationDetail;
 import com.aksi.domain.pricing.entity.PriceListItemEntity;
 import com.aksi.domain.pricing.repository.PriceListItemRepository;
-import com.aksi.exceptions.EntityNotFoundException;
+import com.aksi.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
