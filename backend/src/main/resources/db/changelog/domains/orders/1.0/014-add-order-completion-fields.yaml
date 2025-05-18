@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: orders-1.0-014
+      author: cursor
+      comment: Add order completion related fields
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: is_printed
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                  remarks: 'Чи був надрукований чек'
+              - column:
+                  name: is_emailed
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                  remarks: 'Чи був надісланий чек електронною поштою'
+              - column:
+                  name: completion_comments
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+                  remarks: 'Додаткові коментарі при завершенні замовлення'
+              - column:
+                  name: terms_accepted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+                  remarks: 'Чи прийняв клієнт умови надання послуг'
+              - column:
+                  name: finalized_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+                  remarks: 'Дата і час фіналізації замовлення'

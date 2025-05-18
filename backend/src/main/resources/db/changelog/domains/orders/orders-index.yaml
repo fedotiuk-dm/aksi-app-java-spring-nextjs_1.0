@@ -38,3 +38,6 @@ databaseChangeLog:
   - include:
       file: 1.0/013-create-customer-signatures-table.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/014-add-order-completion-fields.yaml
+      relativeToChangelogFile: true

@@ -172,6 +172,24 @@ public class OrderEntity {
     @Builder.Default
     private boolean draft = false;
     
+    @Column(name = "is_printed", nullable = false)
+    @Builder.Default
+    private boolean isPrinted = false;
+    
+    @Column(name = "is_emailed", nullable = false)
+    @Builder.Default
+    private boolean isEmailed = false;
+    
+    @Column(name = "completion_comments")
+    private String completionComments;
+    
+    @Column(name = "terms_accepted", nullable = false)
+    @Builder.Default
+    private boolean termsAccepted = false;
+    
+    @Column(name = "finalized_at")
+    private LocalDateTime finalizedAt;
+    
     /**
      * Додати новий елемент до замовлення.
      * @param item параметр item

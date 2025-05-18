@@ -156,4 +156,19 @@ public interface OrderService {
      * @return оновлене замовлення
      */
     OrderDTO updateOrderCompletionParameters(UUID orderId, ExpediteType expediteType, LocalDateTime expectedCompletionDate);
+    
+    /**
+     * Знайти сутність замовлення за ID.
+     * @param id ідентифікатор
+     * @return знайдена сутність замовлення
+     * @throws EntityNotFoundException якщо замовлення не знайдено
+     */
+    OrderEntity findOrderEntityById(UUID id);
+    
+    /**
+     * Зберегти замовлення.
+     * @param orderEntity сутність замовлення
+     * @return DTO оновленого замовлення
+     */
+    OrderDTO saveOrder(OrderEntity orderEntity);
 }

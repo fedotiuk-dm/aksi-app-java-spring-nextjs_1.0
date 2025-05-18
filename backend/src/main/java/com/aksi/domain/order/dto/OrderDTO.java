@@ -91,5 +91,12 @@ public class OrderDTO {
     @Builder.Default
     private ExpediteType expediteType = ExpediteType.STANDARD;
     
+    private boolean isPrinted;
+    private boolean isEmailed;
+    private String completionComments;
+    private boolean termsAccepted;
+    private LocalDateTime finalizedAt;
+
+    private boolean express;
     private boolean draft;
 }

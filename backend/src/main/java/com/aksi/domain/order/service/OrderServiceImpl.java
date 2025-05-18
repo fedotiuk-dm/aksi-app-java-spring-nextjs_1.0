@@ -543,4 +543,26 @@ public class OrderServiceImpl implements OrderService {
         
         return orderMapper.toDTO(savedOrder);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderEntity findOrderEntityById(UUID id) {
+        log.debug("Пошук сутності замовлення за ID: {}", id);
+        
+        return orderRepository.findById(id)
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", id
+                ));
+    }
+    
+    @Override
+    @Transactional
+    public OrderDTO saveOrder(OrderEntity orderEntity) {
+        log.debug("Збереження замовлення з ID: {}", orderEntity.getId());
+        
+        OrderEntity savedOrder = orderRepository.save(orderEntity);
+        log.info("Замовлення {} збережено", savedOrder.getId());
+        
+        return orderMapper.toDTO(savedOrder);
+    }
 }

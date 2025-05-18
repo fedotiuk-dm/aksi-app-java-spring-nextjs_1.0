@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/signatures")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Customer Signatures", description = "API для управління підписами клієнтів")
+@Tag(name = "CustomerSignature", description = "API для управління підписами клієнтів")
 public class CustomerSignatureController {
     
     private final CustomerSignatureService signatureService;
