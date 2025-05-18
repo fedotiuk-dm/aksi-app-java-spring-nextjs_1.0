@@ -142,7 +142,11 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
      * @return список знайдених записів
      */
     @Transactional(readOnly = true)
-    public abstract List<T> findByCodes(List<String> codes);
+    public List<T> findByCodes(List<String> codes) {
+        return repository.findAll().stream()
+                .filter(entity -> entity.isActive() && codes.contains(entity.getCode()))
+                .toList();
+    }
     
     /**
      * Отримати зареєстровані записи за списком назв.
@@ -151,5 +155,9 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
      * @return список знайдених записів
      */
     @Transactional(readOnly = true)
-    public abstract List<T> findByNames(List<String> names);
+    public List<T> findByNames(List<String> names) {
+        return repository.findAll().stream()
+                .filter(entity -> entity.isActive() && names.contains(entity.getName()))
+                .toList();
+    }
 } 

@@ -25,30 +25,4 @@ public abstract class AbstractDefectTypeService<R extends JpaRepository<DefectTy
      * @return список активних типів дефектів
      */
     public abstract List<com.aksi.domain.pricing.dto.DefectTypeDTO> getActiveDefectTypes();
-    
-    /**
-     * Отримати типи дефектів за їх кодами.
-     * 
-     * @param codes коди типів дефектів
-     * @return список типів дефектів
-     */
-    @Override
-    public List<DefectTypeEntity> findByCodes(List<String> codes) {
-        return repository.findAll().stream()
-                .filter(entity -> entity.isActive() && codes.contains(entity.getCode()))
-                .toList();
-    }
-    
-    /**
-     * Отримати типи дефектів за їх назвами.
-     * 
-     * @param names назви типів дефектів
-     * @return список типів дефектів
-     */
-    @Override
-    public List<DefectTypeEntity> findByNames(List<String> names) {
-        return repository.findAll().stream()
-                .filter(entity -> entity.isActive() && names.contains(entity.getName()))
-                .toList();
-    }
 } 
