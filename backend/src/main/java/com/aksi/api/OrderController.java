@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +20,7 @@ import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.model.OrderStatusEnum;
 import com.aksi.domain.order.service.OrderService;
 import com.aksi.exception.EntityNotFoundException;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,9 +49,18 @@ public class OrderController {
     @Operation(summary = "Отримати всі замовлення", description = "Повертає список всіх замовлень")
     @ApiResponse(responseCode = "200", description = "Успішно отримано список замовлень",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderDTO.class))))
-    public ResponseEntity<List<OrderDTO>> getAllOrders() {
-        log.debug("REST запит на отримання всіх замовлень");
-        return ResponseEntity.ok(orderService.getAllOrders());
+    public ResponseEntity<?> getAllOrders() {
+        log.debug("Запит на отримання всіх замовлень");
+        try {
+            List<OrderDTO> orders = orderService.getAllOrders();
+            return ApiResponseUtils.ok(orders, "Отримано {} замовлень", orders.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при отриманні замовлень", 
+                "Не вдалося отримати список замовлень. Причина: {}", 
+                e.getMessage()
+            );
+        }
     }
     
     @GetMapping("/{id}")
@@ -59,39 +68,81 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Замовлення знайдено",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<OrderDTO> getOrderById(
+    public ResponseEntity<?> getOrderById(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID id) {
-        log.debug("REST запит на отримання замовлення за ID: {}", id);
+        log.debug("Запит на отримання замовлення за ID: {}", id);
         
-        return orderService.getOrderById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> EntityNotFoundException.withId(id));
+        try {
+            return orderService.getOrderById(id)
+                    .map(order -> ApiResponseUtils.ok(order, "Отримано замовлення з ID: {}", id))
+                    .orElseThrow(() -> EntityNotFoundException.withId(id));
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Замовлення не знайдено", 
+                "Замовлення з ID: {} не знайдено", 
+                id
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при отриманні замовлення", 
+                "Не вдалося отримати замовлення з ID: {}. Причина: {}", 
+                id, e.getMessage()
+            );
+        }
     }
     
     @PostMapping
     @Operation(summary = "Створити нове замовлення", description = "Створює нове замовлення")
     @ApiResponse(responseCode = "201", description = "Замовлення успішно створено",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
-    public ResponseEntity<OrderDTO> createOrder(
+    public ResponseEntity<?> createOrder(
             @Parameter(description = "Дані для створення замовлення", required = true)
             @Valid @RequestBody CreateOrderRequest request) {
-        log.debug("REST запит на створення нового замовлення");
+        log.debug("Запит на створення нового замовлення");
         
-        OrderDTO createdOrder = orderService.createOrder(request);
-        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+        try {
+            OrderDTO createdOrder = orderService.createOrder(request);
+            return ApiResponseUtils.created(createdOrder, "Успішно створено нове замовлення з ID: {}", createdOrder.getId());
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest(
+                "Неправильні параметри для створення замовлення", 
+                "Не вдалося створити замовлення. Причина: {}", 
+                e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при створенні замовлення", 
+                "Не вдалося створити замовлення. Причина: {}", 
+                e.getMessage()
+            );
+        }
     }
     
     @PostMapping("/draft")
     @Operation(summary = "Зберегти чернетку замовлення", description = "Зберігає замовлення як чернетку")
     @ApiResponse(responseCode = "201", description = "Чернетку замовлення успішно збережено",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
-    public ResponseEntity<OrderDTO> saveOrderDraft(
+    public ResponseEntity<?> saveOrderDraft(
             @Parameter(description = "Дані для чернетки замовлення", required = true)
             @Valid @RequestBody CreateOrderRequest request) {
-        log.debug("REST запит на збереження чернетки замовлення");
+        log.debug("Запит на збереження чернетки замовлення");
         
-        OrderDTO draftOrder = orderService.saveOrderDraft(request);
-        return new ResponseEntity<>(draftOrder, HttpStatus.CREATED);
+        try {
+            OrderDTO draftOrder = orderService.saveOrderDraft(request);
+            return ApiResponseUtils.created(draftOrder, "Успішно збережено чернетку замовлення з ID: {}", draftOrder.getId());
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest(
+                "Неправильні параметри для збереження чернетки", 
+                "Не вдалося зберегти чернетку замовлення. Причина: {}", 
+                e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при збереженні чернетки", 
+                "Не вдалося зберегти чернетку замовлення. Причина: {}", 
+                e.getMessage()
+            );
+        }
     }
     
     @PutMapping("/{id}/status/{status}")
@@ -99,13 +150,33 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Статус замовлення успішно оновлено",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<OrderDTO> updateOrderStatus(
+    public ResponseEntity<?> updateOrderStatus(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID id,
             @Parameter(description = "Новий статус замовлення", required = true) @PathVariable OrderStatusEnum status) {
-        log.debug("REST запит на оновлення статусу замовлення {} на {}", id, status);
+        log.debug("Запит на оновлення статусу замовлення {} на {}", id, status);
         
-        OrderDTO updatedOrder = orderService.updateOrderStatus(id, status);
-        return ResponseEntity.ok(updatedOrder);
+        try {
+            OrderDTO updatedOrder = orderService.updateOrderStatus(id, status);
+            return ApiResponseUtils.ok(updatedOrder, "Успішно оновлено статус замовлення {} на {}", id, status);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Замовлення не знайдено", 
+                "Замовлення з ID: {} не знайдено", 
+                id
+            );
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest(
+                "Неправильні параметри для оновлення статусу", 
+                "Не вдалося оновити статус замовлення {}. Причина: {}", 
+                id, e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при оновленні статусу замовлення", 
+                "Не вдалося оновити статус замовлення {}. Причина: {}", 
+                id, e.getMessage()
+            );
+        }
     }
     
     @PutMapping("/{id}/convert-draft")
@@ -114,12 +185,32 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Чернетку успішно перетворено на замовлення",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<OrderDTO> convertDraftToOrder(
+    public ResponseEntity<?> convertDraftToOrder(
             @Parameter(description = "ID чернетки замовлення", required = true) @PathVariable UUID id) {
-        log.debug("REST запит на перетворення чернетки {} на активне замовлення", id);
+        log.debug("Запит на перетворення чернетки {} на активне замовлення", id);
         
-        OrderDTO convertedOrder = orderService.convertDraftToOrder(id);
-        return ResponseEntity.ok(convertedOrder);
+        try {
+            OrderDTO convertedOrder = orderService.convertDraftToOrder(id);
+            return ApiResponseUtils.ok(convertedOrder, "Успішно перетворено чернетку {} на активне замовлення", id);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Чернетку не знайдено", 
+                "Чернетку з ID: {} не знайдено", 
+                id
+            );
+        } catch (IllegalStateException e) {
+            return ApiResponseUtils.badRequest(
+                "Неможливо перетворити на активне замовлення", 
+                "Неможливо перетворити чернетку {} на активне замовлення. Причина: {}", 
+                id, e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при перетворенні чернетки", 
+                "Не вдалося перетворити чернетку {} на активне замовлення. Причина: {}", 
+                id, e.getMessage()
+            );
+        }
     }
     
     @PutMapping("/{id}/discount/{amount}")
@@ -127,13 +218,33 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Знижку успішно застосовано",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<OrderDTO> applyDiscount(
+    public ResponseEntity<?> applyDiscount(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID id,
             @Parameter(description = "Сума знижки", required = true) @PathVariable BigDecimal amount) {
-        log.debug("REST запит на застосування знижки {} до замовлення {}", amount, id);
+        log.debug("Запит на застосування знижки {} до замовлення {}", amount, id);
         
-        OrderDTO updatedOrder = orderService.applyDiscount(id, amount);
-        return ResponseEntity.ok(updatedOrder);
+        try {
+            OrderDTO updatedOrder = orderService.applyDiscount(id, amount);
+            return ApiResponseUtils.ok(updatedOrder, "Успішно застосовано знижку {} до замовлення {}", amount, id);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Замовлення не знайдено", 
+                "Замовлення з ID: {} не знайдено", 
+                id
+            );
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest(
+                "Неправильні параметри для застосування знижки", 
+                "Не вдалося застосувати знижку до замовлення {}. Причина: {}", 
+                id, e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при застосуванні знижки", 
+                "Не вдалося застосувати знижку до замовлення {}. Причина: {}", 
+                id, e.getMessage()
+            );
+        }
     }
     
     @PutMapping("/{id}/prepayment/{amount}")
@@ -141,13 +252,33 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Передоплату успішно додано",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<OrderDTO> addPrepayment(
+    public ResponseEntity<?> addPrepayment(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID id,
             @Parameter(description = "Сума передоплати", required = true) @PathVariable BigDecimal amount) {
-        log.debug("REST запит на додавання передоплати {} до замовлення {}", amount, id);
+        log.debug("Запит на додавання передоплати {} до замовлення {}", amount, id);
         
-        OrderDTO updatedOrder = orderService.addPrepayment(id, amount);
-        return ResponseEntity.ok(updatedOrder);
+        try {
+            OrderDTO updatedOrder = orderService.addPrepayment(id, amount);
+            return ApiResponseUtils.ok(updatedOrder, "Успішно додано передоплату {} до замовлення {}", amount, id);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Замовлення не знайдено", 
+                "Замовлення з ID: {} не знайдено", 
+                id
+            );
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest(
+                "Неправильні параметри для додавання передоплати", 
+                "Не вдалося додати передоплату до замовлення {}. Причина: {}", 
+                id, e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при додаванні передоплати", 
+                "Не вдалося додати передоплату до замовлення {}. Причина: {}", 
+                id, e.getMessage()
+            );
+        }
     }
     
     @PutMapping("/{id}/complete")
@@ -156,24 +287,64 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Замовлення успішно відзначено як виконане",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<OrderDTO> completeOrder(
+    public ResponseEntity<?> completeOrder(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID id) {
-        log.debug("REST запит на відзначення замовлення {} як виконане", id);
+        log.debug("Запит на відзначення замовлення {} як виконане", id);
         
-        OrderDTO completedOrder = orderService.completeOrder(id);
-        return ResponseEntity.ok(completedOrder);
+        try {
+            OrderDTO completedOrder = orderService.completeOrder(id);
+            return ApiResponseUtils.ok(completedOrder, "Успішно відзначено замовлення {} як виконане", id);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Замовлення не знайдено", 
+                "Замовлення з ID: {} не знайдено", 
+                id
+            );
+        } catch (IllegalStateException e) {
+            return ApiResponseUtils.badRequest(
+                "Неможливо відзначити замовлення як виконане", 
+                "Неможливо відзначити замовлення {} як виконане. Причина: {}", 
+                id, e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при відзначенні замовлення як виконане", 
+                "Не вдалося відзначити замовлення {} як виконане. Причина: {}", 
+                id, e.getMessage()
+            );
+        }
     }
     
     @DeleteMapping("/{id}/cancel")
     @Operation(summary = "Скасувати замовлення", description = "Скасовує замовлення")
     @ApiResponse(responseCode = "204", description = "Замовлення успішно скасовано")
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<Void> cancelOrder(
+    public ResponseEntity<?> cancelOrder(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID id) {
-        log.debug("REST запит на скасування замовлення {}", id);
+        log.debug("Запит на скасування замовлення {}", id);
         
-        orderService.cancelOrder(id);
-        return ResponseEntity.noContent().build();
+        try {
+            orderService.cancelOrder(id);
+            return ApiResponseUtils.noContent("Успішно скасовано замовлення {}", id);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Замовлення не знайдено", 
+                "Замовлення з ID: {} не знайдено", 
+                id
+            );
+        } catch (IllegalStateException e) {
+            return ApiResponseUtils.badRequest(
+                "Неможливо скасувати замовлення", 
+                "Неможливо скасувати замовлення {}. Причина: {}", 
+                id, e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при скасуванні замовлення", 
+                "Не вдалося скасувати замовлення {}. Причина: {}", 
+                id, e.getMessage()
+            );
+        }
     }
     
     @GetMapping("/active")
@@ -181,9 +352,19 @@ public class OrderController {
                description = "Повертає список активних замовлень")
     @ApiResponse(responseCode = "200", description = "Успішно отримано список активних замовлень",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderDTO.class))))
-    public ResponseEntity<List<OrderDTO>> getActiveOrders() {
-        log.debug("REST запит на отримання активних замовлень");
-        return ResponseEntity.ok(orderService.getActiveOrders());
+    public ResponseEntity<?> getActiveOrders() {
+        log.debug("Запит на отримання активних замовлень");
+        
+        try {
+            List<OrderDTO> activeOrders = orderService.getActiveOrders();
+            return ApiResponseUtils.ok(activeOrders, "Отримано {} активних замовлень", activeOrders.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при отриманні активних замовлень", 
+                "Не вдалося отримати активні замовлення. Причина: {}", 
+                e.getMessage()
+            );
+        }
     }
     
     @GetMapping("/drafts")
@@ -191,9 +372,19 @@ public class OrderController {
                description = "Повертає список чернеток замовлень")
     @ApiResponse(responseCode = "200", description = "Успішно отримано список чернеток замовлень",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderDTO.class))))
-    public ResponseEntity<List<OrderDTO>> getDraftOrders() {
-        log.debug("REST запит на отримання чернеток замовлень");
-        return ResponseEntity.ok(orderService.getDraftOrders());
+    public ResponseEntity<?> getDraftOrders() {
+        log.debug("Запит на отримання чернеток замовлень");
+        
+        try {
+            List<OrderDTO> draftOrders = orderService.getDraftOrders();
+            return ApiResponseUtils.ok(draftOrders, "Отримано {} чернеток замовлень", draftOrders.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при отриманні чернеток замовлень", 
+                "Не вдалося отримати чернетки замовлень. Причина: {}", 
+                e.getMessage()
+            );
+        }
     }
     
     @GetMapping("/{orderId}/items")
@@ -202,10 +393,26 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Успішно отримано список предметів замовлення",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderItemDTO.class))))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<List<OrderItemDTO>> getOrderItems(
+    public ResponseEntity<?> getOrderItems(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId) {
-        log.debug("REST запит на отримання всіх предметів замовлення {}", orderId);
-        return ResponseEntity.ok(orderService.getOrderItems(orderId));
+        log.debug("Запит на отримання всіх предметів замовлення {}", orderId);
+        
+        try {
+            List<OrderItemDTO> items = orderService.getOrderItems(orderId);
+            return ApiResponseUtils.ok(items, "Отримано {} предметів для замовлення {}", items.size(), orderId);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Замовлення не знайдено", 
+                "Замовлення з ID: {} не знайдено", 
+                orderId
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при отриманні предметів замовлення", 
+                "Не вдалося отримати предмети замовлення {}. Причина: {}", 
+                orderId, e.getMessage()
+            );
+        }
     }
     
     @GetMapping("/{orderId}/items/{itemId}")
@@ -214,14 +421,28 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Предмет замовлення знайдено",
             content = @Content(schema = @Schema(implementation = OrderItemDTO.class)))
     @ApiResponse(responseCode = "404", description = "Предмет замовлення не знайдено")
-    public ResponseEntity<OrderItemDTO> getOrderItem(
+    public ResponseEntity<?> getOrderItem(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
             @Parameter(description = "ID предмета", required = true) @PathVariable UUID itemId) {
-        log.debug("REST запит на отримання предмета {} замовлення {}", itemId, orderId);
+        log.debug("Запит на отримання предмета {} замовлення {}", itemId, orderId);
         
-        return orderService.getOrderItem(orderId, itemId)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> EntityNotFoundException.withId(itemId));
+        try {
+            return orderService.getOrderItem(orderId, itemId)
+                    .map(item -> ApiResponseUtils.ok(item, "Отримано предмет {} замовлення {}", itemId, orderId))
+                    .orElseThrow(() -> EntityNotFoundException.withId(itemId));
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Предмет замовлення не знайдено", 
+                "Предмет {} замовлення {} не знайдено", 
+                itemId, orderId
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при отриманні предмета замовлення", 
+                "Не вдалося отримати предмет {} замовлення {}. Причина: {}", 
+                itemId, orderId, e.getMessage()
+            );
+        }
     }
     
     @PostMapping("/{orderId}/items")
@@ -230,14 +451,34 @@ public class OrderController {
     @ApiResponse(responseCode = "201", description = "Предмет успішно додано до замовлення",
             content = @Content(schema = @Schema(implementation = OrderItemDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<OrderItemDTO> addOrderItem(
+    public ResponseEntity<?> addOrderItem(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
             @Parameter(description = "Дані предмета", required = true) 
             @Valid @RequestBody OrderItemDTO itemDTO) {
-        log.debug("REST запит на додавання нового предмета до замовлення {}", orderId);
+        log.debug("Запит на додавання нового предмета до замовлення {}", orderId);
         
-        OrderItemDTO addedItem = orderService.addOrderItem(orderId, itemDTO);
-        return new ResponseEntity<>(addedItem, HttpStatus.CREATED);
+        try {
+            OrderItemDTO addedItem = orderService.addOrderItem(orderId, itemDTO);
+            return ApiResponseUtils.created(addedItem, "Успішно додано новий предмет до замовлення {}", orderId);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Замовлення не знайдено", 
+                "Замовлення з ID: {} не знайдено", 
+                orderId
+            );
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest(
+                "Неправильні параметри предмета", 
+                "Не вдалося додати предмет до замовлення {}. Причина: {}", 
+                orderId, e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при додаванні предмета", 
+                "Не вдалося додати предмет до замовлення {}. Причина: {}", 
+                orderId, e.getMessage()
+            );
+        }
     }
     
     @PutMapping("/{orderId}/items/{itemId}")
@@ -246,15 +487,35 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Предмет замовлення успішно оновлено",
             content = @Content(schema = @Schema(implementation = OrderItemDTO.class)))
     @ApiResponse(responseCode = "404", description = "Предмет замовлення не знайдено")
-    public ResponseEntity<OrderItemDTO> updateOrderItem(
+    public ResponseEntity<?> updateOrderItem(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
             @Parameter(description = "ID предмета", required = true) @PathVariable UUID itemId,
             @Parameter(description = "Оновлені дані предмета", required = true) 
             @Valid @RequestBody OrderItemDTO itemDTO) {
-        log.debug("REST запит на оновлення предмета {} у замовленні {}", itemId, orderId);
+        log.debug("Запит на оновлення предмета {} у замовленні {}", itemId, orderId);
         
-        OrderItemDTO updatedItem = orderService.updateOrderItem(orderId, itemId, itemDTO);
-        return ResponseEntity.ok(updatedItem);
+        try {
+            OrderItemDTO updatedItem = orderService.updateOrderItem(orderId, itemId, itemDTO);
+            return ApiResponseUtils.ok(updatedItem, "Успішно оновлено предмет {} у замовленні {}", itemId, orderId);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Предмет або замовлення не знайдено", 
+                "Предмет {} замовлення {} не знайдено", 
+                itemId, orderId
+            );
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest(
+                "Неправильні параметри для оновлення предмета", 
+                "Не вдалося оновити предмет {} у замовленні {}. Причина: {}", 
+                itemId, orderId, e.getMessage()
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при оновленні предмета", 
+                "Не вдалося оновити предмет {} у замовленні {}. Причина: {}", 
+                itemId, orderId, e.getMessage()
+            );
+        }
     }
     
     @DeleteMapping("/{orderId}/items/{itemId}")
@@ -262,12 +523,26 @@ public class OrderController {
                description = "Видаляє предмет із замовлення")
     @ApiResponse(responseCode = "204", description = "Предмет замовлення успішно видалено")
     @ApiResponse(responseCode = "404", description = "Предмет замовлення не знайдено")
-    public ResponseEntity<Void> deleteOrderItem(
+    public ResponseEntity<?> deleteOrderItem(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
             @Parameter(description = "ID предмета", required = true) @PathVariable UUID itemId) {
-        log.debug("REST запит на видалення предмета {} із замовлення {}", itemId, orderId);
+        log.debug("Запит на видалення предмета {} із замовлення {}", itemId, orderId);
         
-        orderService.deleteOrderItem(orderId, itemId);
-        return ResponseEntity.noContent().build();
+        try {
+            orderService.deleteOrderItem(orderId, itemId);
+            return ApiResponseUtils.noContent("Успішно видалено предмет {} із замовлення {}", itemId, orderId);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound(
+                "Предмет або замовлення не знайдено", 
+                "Предмет {} замовлення {} не знайдено", 
+                itemId, orderId
+            );
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError(
+                "Помилка при видаленні предмета", 
+                "Не вдалося видалити предмет {} із замовлення {}. Причина: {}", 
+                itemId, orderId, e.getMessage()
+            );
+        }
     }
 }

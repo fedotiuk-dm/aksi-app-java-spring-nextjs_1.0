@@ -52,8 +52,38 @@ public class PriceRecommendationServiceImpl implements PriceRecommendationServic
         if (stains != null && !stains.isEmpty()) {
             List<ModifierRecommendationDTO> stainRecommendations = 
                     recommendationService.getRecommendedModifiersForStains(stains, categoryCode, materialType);
+            processModifierRecommendations(stainRecommendations, recommendedModifiers, false);
+        }
+        
+        // Отримуємо рекомендації на основі дефектів
+        if (defects != null && !defects.isEmpty()) {
+            List<ModifierRecommendationDTO> defectRecommendations = 
+                    recommendationService.getRecommendedModifiersForDefects(defects, categoryCode, materialType);
+            processModifierRecommendations(defectRecommendations, recommendedModifiers, true);
+        }
+        
+        return recommendedModifiers;
+    }
+    
+    /**
+     * Обробляє список рекомендацій та перетворює їх у модифікатори цін
+     * 
+     * @param recommendations список рекомендацій для обробки
+     * @param recommendedModifiers існуючий список рекомендованих модифікаторів
+     * @param checkForDuplicates чи перевіряти наявність дублікатів
+     */
+    private void processModifierRecommendations(
+            List<ModifierRecommendationDTO> recommendations,
+            List<PriceModifierDTO> recommendedModifiers,
+            boolean checkForDuplicates) {
+        
+        recommendations.forEach(rec -> {
+            // Перевіряємо, чи вже додано цей модифікатор, якщо потрібно
+            boolean shouldAdd = !checkForDuplicates || 
+                    recommendedModifiers.stream()
+                        .noneMatch(m -> m.getCode().equals(rec.getCode()));
             
-            stainRecommendations.forEach(rec -> {
+            if (shouldAdd) {
                 PriceModifierDTO modifier = modifierService.getModifierByCode(rec.getCode());
                 if (modifier != null) {
                     // Якщо є рекомендоване значення, встановлюємо його
@@ -62,32 +92,7 @@ public class PriceRecommendationServiceImpl implements PriceRecommendationServic
                     }
                     recommendedModifiers.add(modifier);
                 }
-            });
-        }
-        
-        // Отримуємо рекомендації на основі дефектів
-        if (defects != null && !defects.isEmpty()) {
-            List<ModifierRecommendationDTO> defectRecommendations = 
-                    recommendationService.getRecommendedModifiersForDefects(defects, categoryCode, materialType);
-            
-            defectRecommendations.forEach(rec -> {
-                // Перевіряємо, чи вже додано цей модифікатор від плям
-                boolean alreadyAdded = recommendedModifiers.stream()
-                        .anyMatch(m -> m.getCode().equals(rec.getCode()));
-                
-                if (!alreadyAdded) {
-                    PriceModifierDTO modifier = modifierService.getModifierByCode(rec.getCode());
-                    if (modifier != null) {
-                        // Якщо є рекомендоване значення, встановлюємо його
-                        if (rec.getRecommendedValue() != null) {
-                            modifier.setValue(BigDecimal.valueOf(rec.getRecommendedValue()));
-                        }
-                        recommendedModifiers.add(modifier);
-                    }
-                }
-            });
-        }
-        
-        return recommendedModifiers;
+            }
+        });
     }
 } 

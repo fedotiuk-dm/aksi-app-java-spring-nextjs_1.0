@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aksi.domain.order.dto.OrderDiscountRequest;
 import com.aksi.domain.order.dto.OrderDiscountResponse;
 import com.aksi.domain.order.service.DiscountService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,14 +41,20 @@ public class OrderDiscountController {
     @PostMapping("/apply")
     @Operation(summary = "Застосувати знижку до замовлення",
                description = "Застосовує знижку до замовлення з урахуванням обмежень на категорії")
-    public ResponseEntity<OrderDiscountResponse> applyDiscount(
+    public ResponseEntity<?> applyDiscount(
             @RequestBody @Validated OrderDiscountRequest request) {
-        
-        log.info("Received request to apply discount: {}", request);
-        OrderDiscountResponse response = discountService.applyDiscount(request);
-        log.info("Applied discount: {}", response);
-        
-        return ResponseEntity.ok(response);
+        try {
+            OrderDiscountResponse response = discountService.applyDiscount(request);
+            return ApiResponseUtils.ok(response, "Знижку застосовано до замовлення: {}", request.getOrderId());
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest("Неможливо застосувати знижку", 
+                "Неможливо застосувати знижку до замовлення: {}. Причина: {}", 
+                request.getOrderId(), e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при застосуванні знижки", 
+                "Виникла помилка при застосуванні знижки до замовлення: {}. Причина: {}", 
+                request.getOrderId(), e.getMessage());
+        }
     }
     
     /**
@@ -59,14 +66,19 @@ public class OrderDiscountController {
     @GetMapping("/{orderId}")
     @Operation(summary = "Отримати інформацію про знижку",
                description = "Повертає детальну інформацію про знижку до замовлення")
-    public ResponseEntity<OrderDiscountResponse> getOrderDiscount(
+    public ResponseEntity<?> getOrderDiscount(
             @PathVariable String orderId) {
-        
-        log.info("Received request to get discount for order: {}", orderId);
-        OrderDiscountResponse response = discountService.getOrderDiscount(orderId);
-        log.info("Retrieved discount: {}", response);
-        
-        return ResponseEntity.ok(response);
+        try {
+            OrderDiscountResponse response = discountService.getOrderDiscount(orderId);
+            return ApiResponseUtils.ok(response, "Отримано інформацію про знижку для замовлення: {}", orderId);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Знижку не знайдено", 
+                "Для замовлення: {} не знайдено знижки. Причина: {}", orderId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні інформації про знижку", 
+                "Виникла помилка при отриманні інформації про знижку для замовлення: {}. Причина: {}", 
+                orderId, e.getMessage());
+        }
     }
     
     /**
@@ -78,13 +90,18 @@ public class OrderDiscountController {
     @DeleteMapping("/{orderId}")
     @Operation(summary = "Скасувати знижку",
                description = "Видаляє знижку з замовлення")
-    public ResponseEntity<OrderDiscountResponse> removeDiscount(
+    public ResponseEntity<?> removeDiscount(
             @PathVariable String orderId) {
-        
-        log.info("Received request to remove discount from order: {}", orderId);
-        OrderDiscountResponse response = discountService.removeDiscount(orderId);
-        log.info("Removed discount: {}", response);
-        
-        return ResponseEntity.ok(response);
+        try {
+            OrderDiscountResponse response = discountService.removeDiscount(orderId);
+            return ApiResponseUtils.ok(response, "Знижку скасовано для замовлення: {}", orderId);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Знижку не знайдено для скасування", 
+                "Для замовлення: {} не знайдено знижки для скасування. Причина: {}", orderId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при скасуванні знижки", 
+                "Виникла помилка при скасуванні знижки для замовлення: {}. Причина: {}", 
+                orderId, e.getMessage());
+        }
     }
 } 

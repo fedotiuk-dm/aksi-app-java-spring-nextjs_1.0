@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aksi.domain.order.dto.OrderItemPhotoDTO;
 import com.aksi.domain.order.service.OrderItemPhotoService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -53,14 +53,24 @@ public class OrderItemPhotoController {
                description = "Повертає список всіх фотографій для вказаного предмета замовлення")
     @ApiResponse(responseCode = "200", description = "Список фотографій успішно отримано",
                 content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderItemPhotoDTO.class))))
-    public ResponseEntity<List<OrderItemPhotoDTO>> getPhotosByItemId(
+    public ResponseEntity<?> getPhotosByItemId(
             @Parameter(description = "ID предмета замовлення") @PathVariable UUID itemId) {
         
         log.info("Запит на отримання фотографій для предмета замовлення: {}", itemId);
         
-        List<OrderItemPhotoDTO> photos = orderItemPhotoService.getPhotosByItemId(itemId);
-        
-        return ResponseEntity.ok(photos);
+        try {
+            List<OrderItemPhotoDTO> photos = orderItemPhotoService.getPhotosByItemId(itemId);
+            return ApiResponseUtils.ok(photos, "Отримано {} фотографій для предмета замовлення: {}", 
+                photos.size(), itemId);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Предмет замовлення не знайдено", 
+                "Не вдалося отримати фотографії для предмета замовлення: {}. Причина: {}", 
+                itemId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні фотографій", 
+                "Виникла несподівана помилка при отриманні фотографій для предмета замовлення: {}. Причина: {}", 
+                itemId, e.getMessage());
+        }
     }
     
     /**
@@ -76,16 +86,30 @@ public class OrderItemPhotoController {
                description = "Завантажує нову фотографію для вказаного предмета замовлення")
     @ApiResponse(responseCode = "201", description = "Фотографія успішно завантажена",
                 content = @Content(schema = @Schema(implementation = OrderItemPhotoDTO.class)))
-    public ResponseEntity<OrderItemPhotoDTO> uploadPhoto(
+    public ResponseEntity<?> uploadPhoto(
             @Parameter(description = "ID предмета замовлення") @PathVariable UUID itemId,
             @Parameter(description = "Файл фотографії") @RequestParam("file") MultipartFile file,
-            @Parameter(description = "Опис фотографії (опціонально)") @RequestParam(required = false) String description) throws IOException {
+            @Parameter(description = "Опис фотографії (опціонально)") @RequestParam(required = false) String description) {
         
         log.info("Запит на завантаження фотографії для предмета замовлення: {}", itemId);
         
-        OrderItemPhotoDTO uploadedPhoto = orderItemPhotoService.uploadPhoto(itemId, file, description);
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(uploadedPhoto);
+        try {
+            OrderItemPhotoDTO uploadedPhoto = orderItemPhotoService.uploadPhoto(itemId, file, description);
+            return ApiResponseUtils.created(uploadedPhoto, "Фотографію успішно завантажено для предмета замовлення: {}", 
+                itemId);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest("Неможливо завантажити фотографію", 
+                "Не вдалося завантажити фотографію для предмета замовлення: {}. Причина: {}", 
+                itemId, e.getMessage());
+        } catch (IOException e) {
+            return ApiResponseUtils.badRequest("Помилка обробки файлу", 
+                "Помилка при обробці файлу фотографії для предмета замовлення: {}. Причина: {}", 
+                itemId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при завантаженні фотографії", 
+                "Виникла несподівана помилка при завантаженні фотографії для предмета замовлення: {}. Причина: {}", 
+                itemId, e.getMessage());
+        }
     }
     
     /**
@@ -102,7 +126,7 @@ public class OrderItemPhotoController {
                description = "Оновлює анотації (позначки) та опис для вказаної фотографії")
     @ApiResponse(responseCode = "200", description = "Анотації успішно оновлені",
                 content = @Content(schema = @Schema(implementation = OrderItemPhotoDTO.class)))
-    public ResponseEntity<OrderItemPhotoDTO> updatePhotoAnnotations(
+    public ResponseEntity<?> updatePhotoAnnotations(
             @Parameter(description = "ID предмета замовлення") @PathVariable UUID itemId,
             @Parameter(description = "ID фотографії") @PathVariable UUID photoId,
             @Parameter(description = "JSON з анотаціями") @RequestParam String annotations,
@@ -110,9 +134,18 @@ public class OrderItemPhotoController {
         
         log.info("Запит на оновлення анотацій для фотографії: {} предмета замовлення: {}", photoId, itemId);
         
-        OrderItemPhotoDTO updatedPhoto = orderItemPhotoService.updatePhotoAnnotations(photoId, annotations, description);
-        
-        return ResponseEntity.ok(updatedPhoto);
+        try {
+            OrderItemPhotoDTO updatedPhoto = orderItemPhotoService.updatePhotoAnnotations(photoId, annotations, description);
+            return ApiResponseUtils.ok(updatedPhoto, "Анотації для фотографії: {} успішно оновлено", photoId);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Фотографію не знайдено", 
+                "Не вдалося оновити анотації для фотографії: {}. Причина: {}", 
+                photoId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при оновленні анотацій", 
+                "Виникла несподівана помилка при оновленні анотацій для фотографії: {}. Причина: {}", 
+                photoId, e.getMessage());
+        }
     }
     
     /**
@@ -126,18 +159,29 @@ public class OrderItemPhotoController {
     @Operation(summary = "Видалити фотографію", 
                description = "Видаляє вказану фотографію предмета замовлення")
     @ApiResponse(responseCode = "204", description = "Фотографія успішно видалена")
-    public ResponseEntity<Void> deletePhoto(
+    public ResponseEntity<?> deletePhoto(
             @Parameter(description = "ID предмета замовлення") @PathVariable UUID itemId,
             @Parameter(description = "ID фотографії") @PathVariable UUID photoId) {
         
         log.info("Запит на видалення фотографії: {} предмета замовлення: {}", photoId, itemId);
         
-        boolean deleted = orderItemPhotoService.deletePhoto(photoId);
-        
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        try {
+            boolean deleted = orderItemPhotoService.deletePhoto(photoId);
+            
+            if (deleted) {
+                return ApiResponseUtils.noContent("Фотографію: {} успішно видалено", photoId);
+            } else {
+                return ApiResponseUtils.internalServerError("Не вдалося видалити фотографію", 
+                    "Не вдалося видалити фотографію: {} предмета замовлення: {}", photoId, itemId);
+            }
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Фотографію не знайдено", 
+                "Не вдалося видалити фотографію: {}. Причина: {}", 
+                photoId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при видаленні фотографії", 
+                "Виникла несподівана помилка при видаленні фотографії: {} предмета замовлення: {}. Причина: {}", 
+                photoId, itemId, e.getMessage());
         }
     }
     
@@ -153,14 +197,23 @@ public class OrderItemPhotoController {
                description = "Отримує інформацію про конкретну фотографію предмета замовлення")
     @ApiResponse(responseCode = "200", description = "Інформація про фотографію успішно отримана",
                 content = @Content(schema = @Schema(implementation = OrderItemPhotoDTO.class)))
-    public ResponseEntity<OrderItemPhotoDTO> getPhotoById(
+    public ResponseEntity<?> getPhotoById(
             @Parameter(description = "ID предмета замовлення") @PathVariable UUID itemId,
             @Parameter(description = "ID фотографії") @PathVariable UUID photoId) {
         
         log.info("Запит на отримання інформації про фотографію: {} предмета замовлення: {}", photoId, itemId);
         
-        OrderItemPhotoDTO photo = orderItemPhotoService.getPhotoById(photoId);
-        
-        return ResponseEntity.ok(photo);
+        try {
+            OrderItemPhotoDTO photo = orderItemPhotoService.getPhotoById(photoId);
+            return ApiResponseUtils.ok(photo, "Отримано інформацію про фотографію: {}", photoId);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Фотографію не знайдено", 
+                "Не вдалося знайти фотографію: {} предмета замовлення: {}. Причина: {}", 
+                photoId, itemId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні інформації про фотографію", 
+                "Виникла несподівана помилка при отриманні інформації про фотографію: {} предмета замовлення: {}. Причина: {}", 
+                photoId, itemId, e.getMessage());
+        }
     }
 }

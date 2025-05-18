@@ -3,7 +3,6 @@ package com.aksi.api;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aksi.domain.pricing.dto.DefectTypeDTO;
 import com.aksi.domain.pricing.enums.RiskLevel;
 import com.aksi.domain.pricing.service.DefectTypeService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,13 +54,14 @@ public class DefectTypeController {
         
         if (riskLevel != null) {
             defectTypes = defectTypeService.getDefectTypesByRiskLevel(riskLevel);
+            return ApiResponseUtils.ok(defectTypes, "REST запит на отримання типів дефектів з рівнем ризику: {}", riskLevel);
         } else if (activeOnly) {
             defectTypes = defectTypeService.getActiveDefectTypes();
+            return ApiResponseUtils.ok(defectTypes, "REST запит на отримання активних типів дефектів");
         } else {
             defectTypes = defectTypeService.getAllDefectTypes();
+            return ApiResponseUtils.ok(defectTypes, "REST запит на отримання всіх типів дефектів");
         }
-        
-        return ResponseEntity.ok(defectTypes);
     }
     
     /**
@@ -71,13 +72,12 @@ public class DefectTypeController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Отримати тип дефекту за ID", description = "Повертає тип дефекту за вказаним ідентифікатором")
-    public ResponseEntity<DefectTypeDTO> getDefectTypeById(@PathVariable UUID id) {
-        log.info("REST запит на отримання типу дефекту за ID: {}", id);
+    public ResponseEntity<?> getDefectTypeById(@PathVariable UUID id) {
         DefectTypeDTO defectType = defectTypeService.getDefectTypeById(id);
         if (defectType == null) {
-            return ResponseEntity.notFound().build();
+            return ApiResponseUtils.notFound("Тип дефекту не знайдено", "Тип дефекту з ID: {} не знайдено", id);
         }
-        return ResponseEntity.ok(defectType);
+        return ApiResponseUtils.ok(defectType, "REST запит на отримання типу дефекту за ID: {}", id);
     }
     
     /**
@@ -88,13 +88,12 @@ public class DefectTypeController {
      */
     @GetMapping("/by-code/{code}")
     @Operation(summary = "Отримати тип дефекту за кодом", description = "Повертає тип дефекту за вказаним кодом")
-    public ResponseEntity<DefectTypeDTO> getDefectTypeByCode(@PathVariable String code) {
-        log.info("REST запит на отримання типу дефекту за кодом: {}", code);
+    public ResponseEntity<?> getDefectTypeByCode(@PathVariable String code) {
         DefectTypeDTO defectType = defectTypeService.getDefectTypeByCode(code);
         if (defectType == null) {
-            return ResponseEntity.notFound().build();
+            return ApiResponseUtils.notFound("Тип дефекту не знайдено", "Тип дефекту з кодом: {} не знайдено", code);
         }
-        return ResponseEntity.ok(defectType);
+        return ApiResponseUtils.ok(defectType, "REST запит на отримання типу дефекту за кодом: {}", code);
     }
     
     /**
@@ -106,9 +105,8 @@ public class DefectTypeController {
     @PostMapping
     @Operation(summary = "Створити тип дефекту", description = "Створює новий тип дефекту з вказаними даними")
     public ResponseEntity<DefectTypeDTO> createDefectType(@Valid @RequestBody DefectTypeDTO defectTypeDTO) {
-        log.info("REST запит на створення нового типу дефекту: {}", defectTypeDTO);
         DefectTypeDTO createdDefectType = defectTypeService.createDefectType(defectTypeDTO);
-        return new ResponseEntity<>(createdDefectType, HttpStatus.CREATED);
+        return ApiResponseUtils.created(createdDefectType, "REST запит на створення нового типу дефекту: {}", defectTypeDTO);
     }
     
     /**
@@ -123,9 +121,8 @@ public class DefectTypeController {
     public ResponseEntity<DefectTypeDTO> updateDefectType(
             @PathVariable UUID id, 
             @Valid @RequestBody DefectTypeDTO defectTypeDTO) {
-        log.info("REST запит на оновлення типу дефекту з ID {}: {}", id, defectTypeDTO);
         DefectTypeDTO updatedDefectType = defectTypeService.updateDefectType(id, defectTypeDTO);
-        return ResponseEntity.ok(updatedDefectType);
+        return ApiResponseUtils.ok(updatedDefectType, "REST запит на оновлення типу дефекту з ID {}: {}", id, defectTypeDTO);
     }
     
     /**
@@ -137,8 +134,7 @@ public class DefectTypeController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Видалити тип дефекту", description = "Видаляє тип дефекту за вказаним ідентифікатором")
     public ResponseEntity<Void> deleteDefectType(@PathVariable UUID id) {
-        log.info("REST запит на деактивацію типу дефекту з ID: {}", id);
         defectTypeService.deleteDefectType(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponseUtils.noContent("REST запит на деактивацію типу дефекту з ID: {}", id);
     }
 } 

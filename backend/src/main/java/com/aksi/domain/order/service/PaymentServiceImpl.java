@@ -10,7 +10,7 @@ import com.aksi.domain.order.dto.PaymentCalculationRequest;
 import com.aksi.domain.order.dto.PaymentCalculationResponse;
 import com.aksi.domain.order.entity.OrderEntity;
 import com.aksi.domain.order.repository.OrderRepository;
-import com.aksi.exception.EntityNotFoundException;
+import com.aksi.util.OrderRepositoryUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentCalculationResponse calculatePayment(PaymentCalculationRequest request) {
         log.debug("Розрахунок оплати для замовлення: {}", request.getOrderId());
         
-        OrderEntity order = getOrderById(request.getOrderId());
+        OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, request.getOrderId());
         
         BigDecimal finalAmount = order.getFinalAmount();
         BigDecimal prepaymentAmount = request.getPrepaymentAmount() != null 
@@ -53,7 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentCalculationResponse applyPayment(PaymentCalculationRequest request) {
         log.debug("Застосування інформації про оплату для замовлення: {}", request.getOrderId());
         
-        OrderEntity order = getOrderById(request.getOrderId());
+        OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, request.getOrderId());
         
         // Встановлення способу оплати
         order.setPaymentMethod(request.getPaymentMethod());
@@ -83,7 +83,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentCalculationResponse getOrderPayment(UUID orderId) {
         log.debug("Отримання інформації про оплату для замовлення: {}", orderId);
         
-        OrderEntity order = getOrderById(orderId);
+        OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, orderId);
         
         return buildPaymentResponse(order, order.getPaymentMethod(), 
                 order.getPrepaymentAmount(), order.getBalanceAmount());
@@ -113,17 +113,5 @@ public class PaymentServiceImpl implements PaymentService {
                 .prepaymentAmount(prepaymentAmount)
                 .balanceAmount(balanceAmount)
                 .build();
-    }
-    
-    /**
-     * Отримати замовлення за ID
-     * 
-     * @param orderId ID замовлення
-     * @return сутність замовлення
-     * @throws EntityNotFoundException якщо замовлення не знайдено
-     */
-    private OrderEntity getOrderById(UUID orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Замовлення", orderId.toString()));
     }
 } 

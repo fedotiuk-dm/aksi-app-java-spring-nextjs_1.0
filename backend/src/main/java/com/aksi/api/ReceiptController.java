@@ -17,6 +17,7 @@ import com.aksi.domain.order.dto.receipt.EmailReceiptRequest;
 import com.aksi.domain.order.dto.receipt.ReceiptDTO;
 import com.aksi.domain.order.dto.receipt.ReceiptGenerationRequest;
 import com.aksi.domain.order.service.ReceiptService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,14 +47,23 @@ public class ReceiptController {
     @ApiResponse(responseCode = "200", description = "Дані квитанції успішно отримано",
             content = @Content(schema = @Schema(implementation = ReceiptDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<ReceiptDTO> getReceiptData(
+    public ResponseEntity<?> getReceiptData(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId) {
         
-        log.info("REST request to get receipt data for order ID: {}", orderId);
+        log.info("Запит на отримання даних квитанції для замовлення з ID: {}", orderId);
         
-        ReceiptGenerationRequest request = new ReceiptGenerationRequest(orderId, "PDF", true);
-        ReceiptDTO receiptData = receiptService.generateReceipt(request);
-        return ResponseEntity.ok(receiptData);
+        try {
+            ReceiptGenerationRequest request = new ReceiptGenerationRequest(orderId, "PDF", true);
+            ReceiptDTO receiptData = receiptService.generateReceipt(request);
+            return ApiResponseUtils.ok(receiptData, "Отримано дані квитанції для замовлення з ID: {}", orderId);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+                    "Замовлення з ID: {} не знайдено. Причина: {}", orderId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні даних квитанції", 
+                    "Виникла помилка при отриманні даних квитанції для замовлення з ID: {}. Причина: {}", 
+                    orderId, e.getMessage());
+        }
     }
     
     @PostMapping("/pdf")
@@ -62,20 +72,30 @@ public class ReceiptController {
     @ApiResponse(responseCode = "200", description = "PDF-квитанція успішно згенерована")
     @ApiResponse(responseCode = "400", description = "Некоректний запит")
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<byte[]> generatePdfReceipt(
+    public ResponseEntity<?> generatePdfReceipt(
             @Parameter(description = "Параметри генерації квитанції", required = true)
             @Valid @RequestBody ReceiptGenerationRequest request) {
         
-        log.info("REST request to generate PDF receipt for order ID: {}", request.getOrderId());
+        log.info("Запит на генерацію PDF-квитанції для замовлення з ID: {}", request.getOrderId());
         
-        byte[] pdfContent = receiptService.generatePdfReceipt(request);
-        
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("filename", "receipt_" + request.getOrderId() + ".pdf");
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        
-        return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+        try {
+            byte[] pdfContent = receiptService.generatePdfReceipt(request);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", "receipt_" + request.getOrderId() + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            
+            // Тут зберігаємо оригінальну поведінку, оскільки це PDF-файл з особливими заголовками
+            return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+                    "Замовлення з ID: {} не знайдено. Причина: {}", request.getOrderId(), e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при генерації PDF-квитанції", 
+                    "Виникла помилка при генерації PDF-квитанції для замовлення з ID: {}. Причина: {}", 
+                    request.getOrderId(), e.getMessage());
+        }
     }
     
     @PostMapping("/email")
@@ -84,14 +104,22 @@ public class ReceiptController {
     @ApiResponse(responseCode = "200", description = "Квитанція успішно відправлена")
     @ApiResponse(responseCode = "400", description = "Некоректний запит")
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<Void> sendReceiptByEmail(
+    public ResponseEntity<?> sendReceiptByEmail(
             @Parameter(description = "Параметри відправки квитанції", required = true)
             @Valid @RequestBody EmailReceiptRequest request) {
         
-        log.info("REST request to send receipt by email for order ID: {}", request.getOrderId());
+        log.info("Запит на відправку квитанції на email для замовлення з ID: {}", request.getOrderId());
         
-        receiptService.emailReceipt(request);
-        
-        return ResponseEntity.ok().build();
+        try {
+            receiptService.emailReceipt(request);
+            return ApiResponseUtils.ok(null, "Квитанцію успішно відправлено на вказану email-адресу");
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+                    "Замовлення з ID: {} не знайдено. Причина: {}", request.getOrderId(), e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при відправці квитанції на email", 
+                    "Виникла помилка при відправці квитанції на email для замовлення з ID: {}. Причина: {}", 
+                    request.getOrderId(), e.getMessage());
+        }
     }
 } 

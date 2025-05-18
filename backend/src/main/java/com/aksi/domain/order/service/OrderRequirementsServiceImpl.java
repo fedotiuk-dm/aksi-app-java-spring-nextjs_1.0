@@ -9,7 +9,7 @@ import com.aksi.domain.order.dto.AdditionalRequirementsRequest;
 import com.aksi.domain.order.dto.AdditionalRequirementsResponse;
 import com.aksi.domain.order.entity.OrderEntity;
 import com.aksi.domain.order.repository.OrderRepository;
-import com.aksi.exception.EntityNotFoundException;
+import com.aksi.util.OrderRepositoryUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class OrderRequirementsServiceImpl implements OrderRequirementsService {
     public AdditionalRequirementsResponse updateRequirements(AdditionalRequirementsRequest request) {
         log.debug("Оновлення додаткових вимог для замовлення: {}", request.getOrderId());
         
-        OrderEntity order = getOrderById(request.getOrderId());
+        OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, request.getOrderId());
         
         // Оновлення додаткових вимог та приміток
         order.setAdditionalRequirements(request.getAdditionalRequirements());
@@ -52,7 +52,7 @@ public class OrderRequirementsServiceImpl implements OrderRequirementsService {
     public AdditionalRequirementsResponse getRequirements(UUID orderId) {
         log.debug("Отримання додаткових вимог для замовлення: {}", orderId);
         
-        OrderEntity order = getOrderById(orderId);
+        OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, orderId);
         
         return buildRequirementsResponse(order);
     }
@@ -69,17 +69,5 @@ public class OrderRequirementsServiceImpl implements OrderRequirementsService {
                 .additionalRequirements(order.getAdditionalRequirements())
                 .customerNotes(order.getCustomerNotes())
                 .build();
-    }
-    
-    /**
-     * Отримати замовлення за ID
-     * 
-     * @param orderId ID замовлення
-     * @return сутність замовлення
-     * @throws EntityNotFoundException якщо замовлення не знайдено
-     */
-    private OrderEntity getOrderById(UUID orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Замовлення", orderId.toString()));
     }
 } 

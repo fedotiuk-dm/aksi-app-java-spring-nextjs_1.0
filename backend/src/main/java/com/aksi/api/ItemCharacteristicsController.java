@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.order.service.ItemCharacteristicsService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,9 +36,17 @@ public class ItemCharacteristicsController {
      */
     @GetMapping("/materials")
     @Operation(summary = "Отримати доступні матеріали для предметів")
-    public ResponseEntity<List<String>> getMaterials(@RequestParam(required = false) String category) {
-        log.info("REST запит на отримання доступних матеріалів для категорії: {}", category);
-        return ResponseEntity.ok(itemCharacteristicsService.getMaterialsByCategory(category));
+    public ResponseEntity<?> getMaterials(@RequestParam(required = false) String category) {
+        log.info("Запит на отримання доступних матеріалів для категорії: {}", category);
+        try {
+            List<String> materials = itemCharacteristicsService.getMaterialsByCategory(category);
+            return ApiResponseUtils.ok(materials, "Отримано {} матеріалів для категорії: {}", 
+                    materials.size(), category != null ? category : "всі категорії");
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні матеріалів", 
+                    "Не вдалося отримати матеріали для категорії: {}. Причина: {}", 
+                    category != null ? category : "всі категорії", e.getMessage());
+        }
     }
     
     /**
@@ -47,9 +56,15 @@ public class ItemCharacteristicsController {
      */
     @GetMapping("/colors")
     @Operation(summary = "Отримати базові кольори для предметів")
-    public ResponseEntity<List<String>> getColors() {
-        log.info("REST запит на отримання базових кольорів");
-        return ResponseEntity.ok(itemCharacteristicsService.getAllColors());
+    public ResponseEntity<?> getColors() {
+        log.info("Запит на отримання базових кольорів");
+        try {
+            List<String> colors = itemCharacteristicsService.getAllColors();
+            return ApiResponseUtils.ok(colors, "Отримано {} базових кольорів", colors.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні кольорів", 
+                    "Не вдалося отримати базові кольори. Причина: {}", e.getMessage());
+        }
     }
     
     /**
@@ -59,9 +74,15 @@ public class ItemCharacteristicsController {
      */
     @GetMapping("/filler-types")
     @Operation(summary = "Отримати типи наповнювачів для предметів")
-    public ResponseEntity<List<String>> getFillerTypes() {
-        log.info("REST запит на отримання типів наповнювачів");
-        return ResponseEntity.ok(itemCharacteristicsService.getAllFillerTypes());
+    public ResponseEntity<?> getFillerTypes() {
+        log.info("Запит на отримання типів наповнювачів");
+        try {
+            List<String> fillerTypes = itemCharacteristicsService.getAllFillerTypes();
+            return ApiResponseUtils.ok(fillerTypes, "Отримано {} типів наповнювачів", fillerTypes.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні типів наповнювачів", 
+                    "Не вдалося отримати типи наповнювачів. Причина: {}", e.getMessage());
+        }
     }
     
     /**
@@ -71,9 +92,15 @@ public class ItemCharacteristicsController {
      */
     @GetMapping("/wear-degrees")
     @Operation(summary = "Отримати ступені зносу для предметів")
-    public ResponseEntity<List<String>> getWearDegrees() {
-        log.info("REST запит на отримання ступенів зносу");
-        return ResponseEntity.ok(itemCharacteristicsService.getAllWearDegrees());
+    public ResponseEntity<?> getWearDegrees() {
+        log.info("Запит на отримання ступенів зносу");
+        try {
+            List<String> wearDegrees = itemCharacteristicsService.getAllWearDegrees();
+            return ApiResponseUtils.ok(wearDegrees, "Отримано {} ступенів зносу", wearDegrees.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні ступенів зносу", 
+                    "Не вдалося отримати ступені зносу. Причина: {}", e.getMessage());
+        }
     }
 
     // ---------- Забруднення та дефекти ----------
@@ -85,9 +112,15 @@ public class ItemCharacteristicsController {
      */
     @GetMapping("/stain-types")
     @Operation(summary = "Отримати типи плям для предметів")
-    public ResponseEntity<List<String>> getStainTypes() {
-        log.info("REST запит на отримання типів плям");
-        return ResponseEntity.ok(itemCharacteristicsService.getAllStainTypes());
+    public ResponseEntity<?> getStainTypes() {
+        log.info("Запит на отримання типів плям");
+        try {
+            List<String> stainTypes = itemCharacteristicsService.getAllStainTypes();
+            return ApiResponseUtils.ok(stainTypes, "Отримано {} типів плям", stainTypes.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні типів плям", 
+                    "Не вдалося отримати типи плям. Причина: {}", e.getMessage());
+        }
     }
 
     /**
@@ -97,9 +130,15 @@ public class ItemCharacteristicsController {
      */
     @GetMapping("/defects-and-risks")
     @Operation(summary = "Отримати дефекти та ризики для предметів")
-    public ResponseEntity<List<String>> getDefectsAndRisks() {
-        log.info("REST запит на отримання дефектів та ризиків");
-        return ResponseEntity.ok(itemCharacteristicsService.getAllDefectsAndRisks());
+    public ResponseEntity<?> getDefectsAndRisks() {
+        log.info("Запит на отримання дефектів та ризиків");
+        try {
+            List<String> defectsAndRisks = itemCharacteristicsService.getAllDefectsAndRisks();
+            return ApiResponseUtils.ok(defectsAndRisks, "Отримано {} дефектів та ризиків", defectsAndRisks.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні дефектів та ризиків", 
+                    "Не вдалося отримати дефекти та ризики. Причина: {}", e.getMessage());
+        }
     }
 
     /**
@@ -109,9 +148,15 @@ public class ItemCharacteristicsController {
      */
     @GetMapping("/defects")
     @Operation(summary = "Отримати тільки дефекти для предметів")
-    public ResponseEntity<List<String>> getDefects() {
-        log.info("REST запит на отримання тільки дефектів");
-        return ResponseEntity.ok(itemCharacteristicsService.getDefects());
+    public ResponseEntity<?> getDefects() {
+        log.info("Запит на отримання тільки дефектів");
+        try {
+            List<String> defects = itemCharacteristicsService.getDefects();
+            return ApiResponseUtils.ok(defects, "Отримано {} дефектів", defects.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні дефектів", 
+                    "Не вдалося отримати дефекти. Причина: {}", e.getMessage());
+        }
     }
 
     /**
@@ -121,8 +166,14 @@ public class ItemCharacteristicsController {
      */
     @GetMapping("/risks")
     @Operation(summary = "Отримати тільки ризики для предметів")
-    public ResponseEntity<List<String>> getRisks() {
-        log.info("REST запит на отримання тільки ризиків");
-        return ResponseEntity.ok(itemCharacteristicsService.getRisks());
+    public ResponseEntity<?> getRisks() {
+        log.info("Запит на отримання тільки ризиків");
+        try {
+            List<String> risks = itemCharacteristicsService.getRisks();
+            return ApiResponseUtils.ok(risks, "Отримано {} ризиків", risks.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні ризиків", 
+                    "Не вдалося отримати ризики. Причина: {}", e.getMessage());
+        }
     }
 }

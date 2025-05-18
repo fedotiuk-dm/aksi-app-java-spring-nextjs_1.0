@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.order.dto.OrderDetailedSummaryResponse;
 import com.aksi.domain.order.service.OrderSummaryService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -64,13 +65,21 @@ public class OrderSummaryController {
             content = @Content
         )
     })
-    public ResponseEntity<OrderDetailedSummaryResponse> getOrderDetailedSummary(
+    public ResponseEntity<?> getOrderDetailedSummary(
             @Parameter(description = "ID замовлення", example = "550e8400-e29b-41d4-a716-446655440000", required = true)
             @PathVariable UUID orderId) {
-        log.debug("REST запит на отримання детального підсумку замовлення з ID: {}", orderId);
+        log.info("Запит на отримання детального підсумку замовлення з ID: {}", orderId);
         
-        OrderDetailedSummaryResponse summary = orderSummaryService.getOrderDetailedSummary(orderId);
-        
-        return ResponseEntity.ok(summary);
+        try {
+            OrderDetailedSummaryResponse summary = orderSummaryService.getOrderDetailedSummary(orderId);
+            return ApiResponseUtils.ok(summary, "Отримано детальний підсумок замовлення з ID: {}", orderId);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+                    "Замовлення з ID: {} не знайдено. Причина: {}", orderId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні підсумку замовлення", 
+                    "Виникла помилка при отриманні детального підсумку замовлення з ID: {}. Причина: {}", 
+                    orderId, e.getMessage());
+        }
     }
 } 

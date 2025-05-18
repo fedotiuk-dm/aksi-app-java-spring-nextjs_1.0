@@ -20,6 +20,7 @@ import com.aksi.domain.pricing.service.PriceCalculationService;
 import com.aksi.domain.pricing.service.PriceCalculationService.FixedModifierQuantity;
 import com.aksi.domain.pricing.service.PriceCalculationService.RangeModifierValue;
 import com.aksi.domain.pricing.service.PriceModifierService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,14 +50,26 @@ public class PriceCalculationController {
      */
     @GetMapping("/base-price")
     @Operation(summary = "Отримати базову ціну для предмету з прайс-листа")
-    public ResponseEntity<BigDecimal> getBasePrice(
+    public ResponseEntity<?> getBasePrice(
             @RequestParam String categoryCode,
             @RequestParam String itemName,
             @RequestParam(required = false) String color) {
         log.info("REST запит на отримання базової ціни для категорії {}, предмету {}, колір {}", 
                 categoryCode, itemName, color);
-        BigDecimal basePrice = priceCalculationService.getBasePrice(categoryCode, itemName, color);
-        return ResponseEntity.ok(basePrice);
+        
+        try {
+            BigDecimal basePrice = priceCalculationService.getBasePrice(categoryCode, itemName, color);
+            return ApiResponseUtils.ok(basePrice, "Отримано базову ціну для категорії {}, предмету {}, колір {}", 
+                    categoryCode, itemName, color);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Предмет не знайдено в прайс-листі", 
+                    "Не вдалося знайти предмет в прайс-листі для категорії {}, предмету {}, колір {}. Причина: {}", 
+                    categoryCode, itemName, color, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні базової ціни", 
+                    "Виникла несподівана помилка при отриманні базової ціни для категорії {}, предмету {}, колір {}. Причина: {}", 
+                    categoryCode, itemName, color, e.getMessage());
+        }
     }
     
     /**
@@ -67,11 +80,23 @@ public class PriceCalculationController {
      */
     @GetMapping("/available-modifiers")
     @Operation(summary = "Отримати доступні модифікатори для категорії")
-    public ResponseEntity<List<String>> getAvailableModifiersForCategory(
+    public ResponseEntity<?> getAvailableModifiersForCategory(
             @RequestParam String categoryCode) {
         log.info("REST запит на отримання доступних модифікаторів для категорії {}", categoryCode);
-        List<String> modifierCodes = priceCalculationService.getAvailableModifiersForCategory(categoryCode);
-        return ResponseEntity.ok(modifierCodes);
+        
+        try {
+            List<String> modifierCodes = priceCalculationService.getAvailableModifiersForCategory(categoryCode);
+            return ApiResponseUtils.ok(modifierCodes, "Отримано {} доступних модифікаторів для категорії {}", 
+                    modifierCodes.size(), categoryCode);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Категорію не знайдено", 
+                    "Не вдалося знайти категорію {}. Причина: {}", 
+                    categoryCode, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні доступних модифікаторів", 
+                    "Виникла несподівана помилка при отриманні доступних модифікаторів для категорії {}. Причина: {}", 
+                    categoryCode, e.getMessage());
+        }
     }
     
     /**
@@ -83,11 +108,23 @@ public class PriceCalculationController {
     @GetMapping("/modifiers/by-category/{categoryCode}")
     @Operation(summary = "Отримати всі модифікатори для конкретної категорії послуг",
               description = "Повертає повні дані про модифікатори для вказаної категорії послуг")
-    public ResponseEntity<List<PriceModifierDTO>> getModifiersForServiceCategory(
+    public ResponseEntity<?> getModifiersForServiceCategory(
             @PathVariable String categoryCode) {
         log.info("REST запит на отримання модифікаторів для категорії послуг {}", categoryCode);
-        List<PriceModifierDTO> modifiers = priceModifierService.getModifiersForServiceCategory(categoryCode);
-        return ResponseEntity.ok(modifiers);
+        
+        try {
+            List<PriceModifierDTO> modifiers = priceModifierService.getModifiersForServiceCategory(categoryCode);
+            return ApiResponseUtils.ok(modifiers, "Отримано {} модифікаторів для категорії послуг {}", 
+                    modifiers.size(), categoryCode);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Категорію не знайдено", 
+                    "Не вдалося знайти категорію {}. Причина: {}", 
+                    categoryCode, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікаторів", 
+                    "Виникла несподівана помилка при отриманні модифікаторів для категорії послуг {}. Причина: {}", 
+                    categoryCode, e.getMessage());
+        }
     }
     
     /**
@@ -99,11 +136,19 @@ public class PriceCalculationController {
     @GetMapping("/modifiers/by-type/{category}")
     @Operation(summary = "Отримати модифікатори за типом",
                description = "Повертає модифікатори за типом (загальні, текстильні, шкіряні)")
-    public ResponseEntity<List<PriceModifierDTO>> getModifiersByCategory(
+    public ResponseEntity<?> getModifiersByCategory(
             @PathVariable ModifierCategory category) {
         log.info("REST запит на отримання модифікаторів за типом {}", category);
-        List<PriceModifierDTO> modifiers = priceModifierService.getModifiersByCategory(category);
-        return ResponseEntity.ok(modifiers);
+        
+        try {
+            List<PriceModifierDTO> modifiers = priceModifierService.getModifiersByCategory(category);
+            return ApiResponseUtils.ok(modifiers, "Отримано {} модифікаторів за типом {}", 
+                    modifiers.size(), category);
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікаторів за типом", 
+                    "Виникла несподівана помилка при отриманні модифікаторів за типом {}. Причина: {}", 
+                    category, e.getMessage());
+        }
     }
     
     /**
@@ -115,11 +160,22 @@ public class PriceCalculationController {
     @GetMapping("/modifiers/{code}")
     @Operation(summary = "Отримати детальну інформацію про модифікатор",
                description = "Повертає повну інформацію про модифікатор за його кодом")
-    public ResponseEntity<PriceModifierDTO> getModifierByCode(
+    public ResponseEntity<?> getModifierByCode(
             @PathVariable String code) {
         log.info("REST запит на отримання інформації про модифікатор {}", code);
-        PriceModifierDTO modifier = priceModifierService.getModifierByCode(code);
-        return ResponseEntity.ok(modifier);
+        
+        try {
+            PriceModifierDTO modifier = priceModifierService.getModifierByCode(code);
+            return ApiResponseUtils.ok(modifier, "Отримано інформацію про модифікатор {}", code);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Модифікатор не знайдено", 
+                    "Не вдалося знайти модифікатор з кодом {}. Причина: {}", 
+                    code, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні інформації про модифікатор", 
+                    "Виникла несподівана помилка при отриманні інформації про модифікатор {}. Причина: {}", 
+                    code, e.getMessage());
+        }
     }
     
     /**
@@ -131,11 +187,22 @@ public class PriceCalculationController {
     @PostMapping("/modifiers/batch")
     @Operation(summary = "Отримати інформацію про кілька модифікаторів",
                description = "Повертає інформацію про модифікатори за списком їх кодів")
-    public ResponseEntity<List<PriceModifierDTO>> getModifiersByCodes(
+    public ResponseEntity<?> getModifiersByCodes(
             @RequestBody List<String> codes) {
         log.info("REST запит на отримання інформації про модифікатори: {}", codes);
-        List<PriceModifierDTO> modifiers = priceModifierService.getModifiersByCodes(codes);
-        return ResponseEntity.ok(modifiers);
+        
+        try {
+            List<PriceModifierDTO> modifiers = priceModifierService.getModifiersByCodes(codes);
+            return ApiResponseUtils.ok(modifiers, "Отримано інформацію про {} модифікаторів", modifiers.size());
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest("Неправильні коди модифікаторів", 
+                    "Деякі коди модифікаторів неправильні: {}. Причина: {}", 
+                    codes, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні інформації про модифікатори", 
+                    "Виникла несподівана помилка при отриманні інформації про модифікатори: {}. Причина: {}", 
+                    codes, e.getMessage());
+        }
     }
     
     /**
@@ -164,26 +231,37 @@ public class PriceCalculationController {
             )
         }
     )
-    public ResponseEntity<PriceCalculationResponseDTO> calculatePrice(
+    public ResponseEntity<?> calculatePrice(
             @RequestBody PriceCalculationRequestDTO request) {
         log.info("REST запит на розрахунок ціни для категорії {} та предмету {} з {} модифікаторами", 
                 request.getCategoryCode(), request.getItemName(), 
                 request.getModifierCodes() != null ? request.getModifierCodes().size() : 0);
         
-        PriceCalculationResponseDTO response = priceCalculationService.calculatePrice(
-                request.getCategoryCode(),
-                request.getItemName(),
-                request.getQuantity(),
-                request.getColor(),
-                request.getModifierCodes(),
-                request.getRangeModifierValues(),
-                request.getFixedModifierQuantities(),
-                request.isExpedited(),
-                request.getExpeditePercent(),
-                request.getDiscountPercent()
-        );
-        
-        return ResponseEntity.ok(response);
+        try {
+            PriceCalculationResponseDTO response = priceCalculationService.calculatePrice(
+                    request.getCategoryCode(),
+                    request.getItemName(),
+                    request.getQuantity(),
+                    request.getColor(),
+                    request.getModifierCodes(),
+                    request.getRangeModifierValues(),
+                    request.getFixedModifierQuantities(),
+                    request.isExpedited(),
+                    request.getExpeditePercent(),
+                    request.getDiscountPercent()
+            );
+            
+            return ApiResponseUtils.ok(response, "Успішно розраховано ціну для категорії {} та предмету {}", 
+                    request.getCategoryCode(), request.getItemName());
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest("Неправильні параметри для розрахунку ціни", 
+                    "Помилка при розрахунку ціни для категорії {} та предмету {}. Причина: {}", 
+                    request.getCategoryCode(), request.getItemName(), e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при розрахунку ціни", 
+                    "Виникла несподівана помилка при розрахунку ціни для категорії {} та предмету {}. Причина: {}", 
+                    request.getCategoryCode(), request.getItemName(), e.getMessage());
+        }
     }
     
     /**
@@ -256,33 +334,55 @@ public class PriceCalculationController {
         private BigDecimal discountPercent;
     }
     
+    /**
+     * Отримати рекомендовані модифікатори на основі плям та дефектів.
+     */
     @GetMapping("/recommended-modifiers")
     @Operation(summary = "Отримати рекомендовані модифікатори на основі плям та дефектів", 
                description = "Повертає список рекомендованих модифікаторів для предмета на основі його плям, дефектів, категорії та матеріалу")
-    public ResponseEntity<List<PriceModifierDTO>> getRecommendedModifiers(
+    public ResponseEntity<?> getRecommendedModifiers(
             @RequestParam(required = false) Set<String> stains,
             @RequestParam(required = false) Set<String> defects,
             @RequestParam(required = false) String categoryCode,
             @RequestParam(required = false) String materialType) {
+        log.info("REST запит на отримання рекомендованих модифікаторів для категорії {}, матеріалу {}, з {} плямами та {} дефектами", 
+                categoryCode, materialType, 
+                stains != null ? stains.size() : 0, 
+                defects != null ? defects.size() : 0);
         
-        List<PriceModifierDTO> recommendedModifiers = 
-                priceCalculationService.getRecommendedModifiersForItem(stains, defects, categoryCode, materialType);
-        
-        return ResponseEntity.ok(recommendedModifiers);
+        try {
+            List<PriceModifierDTO> modifiers = priceCalculationService.getRecommendedModifiersForItem(stains, defects, categoryCode, materialType);
+            return ApiResponseUtils.ok(modifiers, "Отримано {} рекомендованих модифікаторів", modifiers.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні рекомендованих модифікаторів", 
+                    "Виникла несподівана помилка при отриманні рекомендованих модифікаторів. Причина: {}", 
+                    e.getMessage());
+        }
     }
     
+    /**
+     * Отримати попередження про ризики на основі плям та дефектів.
+     */
     @GetMapping("/risk-warnings")
     @Operation(summary = "Отримати попередження про ризики", 
                description = "Повертає список попереджень про ризики для предмета на основі його плям, дефектів, категорії та матеріалу")
-    public ResponseEntity<List<String>> getRiskWarnings(
+    public ResponseEntity<?> getRiskWarnings(
             @RequestParam(required = false) Set<String> stains,
             @RequestParam(required = false) Set<String> defects,
             @RequestParam(required = false) String categoryCode,
             @RequestParam(required = false) String materialType) {
+        log.info("REST запит на отримання попереджень про ризики для категорії {}, матеріалу {}, з {} плямами та {} дефектами", 
+                categoryCode, materialType, 
+                stains != null ? stains.size() : 0, 
+                defects != null ? defects.size() : 0);
         
-        List<String> warnings = 
-                priceCalculationService.getRiskWarningsForItem(stains, defects, materialType, categoryCode);
-        
-        return ResponseEntity.ok(warnings);
+        try {
+            List<String> warnings = priceCalculationService.getRiskWarningsForItem(stains, defects, materialType, categoryCode);
+            return ApiResponseUtils.ok(warnings, "Отримано {} попереджень про ризики", warnings.size());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні попереджень про ризики", 
+                    "Виникла несподівана помилка при отриманні попереджень про ризики. Причина: {}", 
+                    e.getMessage());
+        }
     }
 } 

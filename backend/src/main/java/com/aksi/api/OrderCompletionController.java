@@ -13,6 +13,7 @@ import com.aksi.domain.order.dto.CompletionDateResponse;
 import com.aksi.domain.order.dto.OrderCompletionUpdateRequest;
 import com.aksi.domain.order.service.CompletionDateService;
 import com.aksi.domain.order.service.OrderService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,14 +42,25 @@ public class OrderCompletionController {
     @PostMapping("/calculate")
     @Operation(summary = "Розрахувати очікувану дату завершення замовлення",
                description = "Розраховує дату завершення на основі категорій послуг та типу терміновості")
-    public ResponseEntity<CompletionDateResponse> calculateCompletionDate(
+    public ResponseEntity<?> calculateCompletionDate(
             @RequestBody @Validated CompletionDateCalculationRequest request) {
         
-        log.info("Received request to calculate completion date: {}", request);
-        CompletionDateResponse response = completionDateService.calculateExpectedCompletionDate(request);
-        log.info("Calculated completion date: {}", response);
+        log.info("Отримано запит на розрахунок дати завершення: {}", request);
         
-        return ResponseEntity.ok(response);
+        try {
+            CompletionDateResponse response = completionDateService.calculateExpectedCompletionDate(request);
+            log.info("Розраховано дату завершення: {}", response);
+            
+            return ApiResponseUtils.ok(response, "Успішно розраховано дату завершення для запиту");
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest("Неправильні параметри для розрахунку дати завершення", 
+                "Помилка при розрахунку дати завершення замовлення: {}. Причина: {}", 
+                request, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при розрахунку дати завершення", 
+                "Виникла несподівана помилка при розрахунку дати завершення: {}. Причина: {}", 
+                request, e.getMessage());
+        }
     }
     
     /**
@@ -60,18 +72,29 @@ public class OrderCompletionController {
     @PutMapping("/update")
     @Operation(summary = "Оновити параметри виконання замовлення",
                description = "Оновлює тип терміновості та очікувану дату завершення замовлення")
-    public ResponseEntity<Void> updateOrderCompletion(
+    public ResponseEntity<?> updateOrderCompletion(
             @RequestBody @Validated OrderCompletionUpdateRequest request) {
         
-        log.info("Received request to update order completion parameters: {}", request);
+        log.info("Отримано запит на оновлення параметрів виконання замовлення: {}", request);
         
-        orderService.updateOrderCompletionParameters(
-                request.getOrderId(), 
-                request.getExpediteType(), 
-                request.getExpectedCompletionDate());
-        
-        log.info("Order completion parameters updated successfully for orderId: {}", request.getOrderId());
-        
-        return ResponseEntity.ok().build();
+        try {
+            orderService.updateOrderCompletionParameters(
+                    request.getOrderId(), 
+                    request.getExpediteType(), 
+                    request.getExpectedCompletionDate());
+            
+            log.info("Параметри виконання замовлення успішно оновлено для orderId: {}", request.getOrderId());
+            
+            return ApiResponseUtils.noContent("Параметри виконання замовлення успішно оновлено для orderId: {}", 
+                    request.getOrderId());
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest("Неправильні параметри для оновлення", 
+                "Помилка при оновленні параметрів виконання для orderId: {}. Причина: {}", 
+                request.getOrderId(), e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при оновленні параметрів виконання", 
+                "Виникла несподівана помилка при оновленні параметрів виконання для orderId: {}. Причина: {}", 
+                request.getOrderId(), e.getMessage());
+        }
     }
 } 

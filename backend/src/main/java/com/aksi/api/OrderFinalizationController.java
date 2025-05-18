@@ -18,6 +18,7 @@ import com.aksi.domain.order.dto.OrderDTO;
 import com.aksi.domain.order.dto.OrderFinalizationRequest;
 import com.aksi.domain.order.dto.receipt.EmailReceiptRequest;
 import com.aksi.domain.order.service.OrderFinalizationService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  * REST контролер для операцій завершення замовлення
  */
 @RestController
-@RequestMapping("/api/orders/finalization")
+@RequestMapping("/orders/finalization")
 @Tag(name = "OrderFinalization", description = "API для завершення процесу оформлення замовлення")
 @RequiredArgsConstructor
 @Slf4j
@@ -53,11 +54,22 @@ public class OrderFinalizationController {
     @ApiResponse(responseCode = "200", description = "Замовлення успішно завершено",
                 content = @Content(schema = @Schema(implementation = OrderDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<OrderDTO> finalizeOrder(@Valid @RequestBody OrderFinalizationRequest request) {
+    public ResponseEntity<?> finalizeOrder(@Valid @RequestBody OrderFinalizationRequest request) {
         log.debug("REST запит на завершення замовлення: {}", request.getOrderId());
         
-        OrderDTO completedOrder = orderFinalizationService.finalizeOrder(request);
-        return ResponseEntity.ok(completedOrder);
+        try {
+            OrderDTO completedOrder = orderFinalizationService.finalizeOrder(request);
+            return ApiResponseUtils.ok(completedOrder, 
+                    "Замовлення успішно завершено: {}", request.getOrderId());
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+                    "Не вдалося завершити замовлення: {}. Причина: {}", 
+                    request.getOrderId(), e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при завершенні замовлення", 
+                    "Виникла несподівана помилка при завершенні замовлення: {}. Причина: {}", 
+                    request.getOrderId(), e.getMessage());
+        }
     }
     
     /**
@@ -72,25 +84,35 @@ public class OrderFinalizationController {
                description = "Повертає PDF-файл з чеком для завантаження")
     @ApiResponse(responseCode = "200", description = "PDF-чек успішно згенеровано")
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<ByteArrayResource> getOrderReceipt(
+    public ResponseEntity<?> getOrderReceipt(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
             @Parameter(description = "Включати підпис клієнта") 
             @RequestParam(required = false, defaultValue = "true") boolean includeSignature) {
         
         log.debug("REST запит на отримання PDF-чеку для замовлення: {}", orderId);
         
-        byte[] pdfContent = orderFinalizationService.getOrderReceipt(orderId, includeSignature);
-        
-        ByteArrayResource resource = new ByteArrayResource(pdfContent);
-        
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=receipt_" + orderId + ".pdf");
-        
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentLength(pdfContent.length)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(resource);
+        try {
+            byte[] pdfContent = orderFinalizationService.getOrderReceipt(orderId, includeSignature);
+            
+            ByteArrayResource resource = new ByteArrayResource(pdfContent);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=receipt_" + orderId + ".pdf");
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(pdfContent.length)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(resource);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+                    "Не вдалося отримати PDF-чек для замовлення: {}. Причина: {}", 
+                    orderId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при генерації PDF-чеку", 
+                    "Виникла несподівана помилка при генерації PDF-чеку для замовлення: {}. Причина: {}", 
+                    orderId, e.getMessage());
+        }
     }
     
     /**
@@ -104,17 +126,27 @@ public class OrderFinalizationController {
                description = "Відправляє PDF-чек замовлення на email клієнта")
     @ApiResponse(responseCode = "200", description = "Чек успішно відправлено")
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<Void> emailReceipt(
+    public ResponseEntity<?> emailReceipt(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
             @Valid @RequestBody EmailReceiptRequest request) {
         
         log.debug("REST запит на відправку чеку електронною поштою для замовлення: {}", orderId);
         
-        // Переконуємося, що ID замовлення в URL та в запиті співпадають
-        request.setOrderId(orderId);
-        
-        orderFinalizationService.sendReceiptByEmail(request);
-        
-        return ResponseEntity.ok().build();
+        try {
+            // Переконуємося, що ID замовлення в URL та в запиті співпадають
+            request.setOrderId(orderId);
+            
+            orderFinalizationService.sendReceiptByEmail(request);
+            
+            return ApiResponseUtils.ok(null, "Чек успішно відправлено на email для замовлення: {}", orderId);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+                    "Не вдалося надіслати чек для замовлення: {}. Причина: {}", 
+                    orderId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при відправці чеку на email", 
+                    "Виникла несподівана помилка при відправці чеку на email для замовлення: {}. Причина: {}", 
+                    orderId, e.getMessage());
+        }
     }
 } 

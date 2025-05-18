@@ -139,8 +139,6 @@ public class ModifierRecommendationServiceImpl implements ModifierRecommendation
             return List.of();
         }
         
-        final List<ModifierRecommendationDTO> recommendations = new ArrayList<>();
-        
         // Отримуємо всі активні типи плям
         final List<StainTypeDTO> stainTypes = stainTypeService.getActiveStainTypes();
         final Map<String, StainTypeDTO> stainTypeByName = new HashMap<>();
@@ -150,32 +148,13 @@ public class ModifierRecommendationServiceImpl implements ModifierRecommendation
             stainTypeByName.put(stainType.getName(), stainType);
         }
         
-        // Обробка кожного типу плями
-        for (final String stainName : stains) {
-            final StainTypeDTO stainType = stainTypeByName.get(stainName);
-            
-            if (stainType != null) {
-                final String stainCode = stainType.getCode();
-                final List<ModifierInfo> modifierInfos = stainToModifierMap.get(stainCode);
-                
-                if (modifierInfos != null) {
-                    for (final ModifierInfo info : modifierInfos) {
-                        // Пошук модифікатора в базі даних
-                        modifierRepository.findByCode(info.code)
-                            .ifPresent(entity -> {
-                                // Перевірка відповідності категорії
-                                if (isCategoryCompatible(entity, categoryCode)) {
-                                    recommendations.add(createRecommendation(entity, info, 
-                                        String.format("Рекомендовано через пляму: %s", stainName)));
-                                }
-                            });
-                    }
-                }
-            }
-        }
-        
-        // Об'єднуємо дублікати модифікаторів з різних причин, вибираючи найвищий пріоритет
-        return mergeRecommendations(recommendations);
+        return processModifierRecommendations(
+            stains,
+            stainTypeByName,
+            stainToModifierMap,
+            categoryCode,
+            (itemName, entity, info) -> String.format("Рекомендовано через пляму: %s", itemName)
+        );
     }
     
     @Override
@@ -183,8 +162,6 @@ public class ModifierRecommendationServiceImpl implements ModifierRecommendation
         if (defects == null || defects.isEmpty()) {
             return List.of();
         }
-        
-        final List<ModifierRecommendationDTO> recommendations = new ArrayList<>();
         
         // Отримуємо всі активні типи дефектів
         final List<DefectTypeDTO> defectTypes = defectTypeService.getActiveDefectTypes();
@@ -195,13 +172,45 @@ public class ModifierRecommendationServiceImpl implements ModifierRecommendation
             defectTypeByName.put(defectType.getName(), defectType);
         }
         
-        // Обробка кожного типу дефекту
-        for (final String defectName : defects) {
-            final DefectTypeDTO defectType = defectTypeByName.get(defectName);
+        return processModifierRecommendations(
+            defects,
+            defectTypeByName,
+            defectToModifierMap,
+            categoryCode,
+            (itemName, entity, info) -> String.format("Рекомендовано через дефект: %s", itemName)
+        );
+    }
+    
+    /**
+     * Обробляє рекомендації модифікаторів для заданого набору елементів (плями або дефекти).
+     * 
+     * @param <T> тип елемента (StainTypeDTO або DefectTypeDTO)
+     * @param items набір назв елементів (плям або дефектів)
+     * @param itemByName мапа для пошуку елемента за назвою
+     * @param itemToModifierMap мапа відповідності елементів до модифікаторів
+     * @param categoryCode код категорії предмета
+     * @param reasonProvider функціональний інтерфейс для створення опису причини рекомендації
+     * @return список рекомендованих модифікаторів
+     */
+    private <T> List<ModifierRecommendationDTO> processModifierRecommendations(
+            final Set<String> items,
+            final Map<String, T> itemByName,
+            final Map<String, List<ModifierInfo>> itemToModifierMap,
+            final String categoryCode,
+            final ReasonProvider reasonProvider) {
+        
+        final List<ModifierRecommendationDTO> recommendations = new ArrayList<>();
+        
+        // Обробка кожного елемента (плями або дефекту)
+        for (final String itemName : items) {
+            final T item = itemByName.get(itemName);
             
-            if (defectType != null) {
-                final String defectCode = defectType.getCode();
-                final List<ModifierInfo> modifierInfos = defectToModifierMap.get(defectCode);
+            if (item != null) {
+                final String itemCode = item instanceof StainTypeDTO ? 
+                        ((StainTypeDTO) item).getCode() : 
+                        ((DefectTypeDTO) item).getCode();
+                        
+                final List<ModifierInfo> modifierInfos = itemToModifierMap.get(itemCode);
                 
                 if (modifierInfos != null) {
                     for (final ModifierInfo info : modifierInfos) {
@@ -211,7 +220,7 @@ public class ModifierRecommendationServiceImpl implements ModifierRecommendation
                                 // Перевірка відповідності категорії
                                 if (isCategoryCompatible(entity, categoryCode)) {
                                     recommendations.add(createRecommendation(entity, info, 
-                                        String.format("Рекомендовано через дефект: %s", defectName)));
+                                        reasonProvider.getReason(itemName, entity, info)));
                                 }
                             });
                     }
@@ -223,28 +232,28 @@ public class ModifierRecommendationServiceImpl implements ModifierRecommendation
         return mergeRecommendations(recommendations);
     }
     
+    /**
+     * Функціональний інтерфейс для створення опису причини рекомендації.
+     */
+    @FunctionalInterface
+    private interface ReasonProvider {
+        String getReason(String itemName, PriceModifierEntity entity, ModifierInfo info);
+    }
+    
     @Override
     public List<String> getRiskWarnings(final Set<String> stains, final Set<String> defects, final String materialType, final String categoryCode) {
         final List<String> warnings = new ArrayList<>();
         
-        // Отримуємо всі типи плям та дефектів
-        final List<StainTypeDTO> stainTypes = stainTypeService.getActiveStainTypes();
-        final List<DefectTypeDTO> defectTypes = defectTypeService.getActiveDefectTypes();
-        
-        // Створюємо мапи для пошуку типу плями/дефекту за назвою
-        final Map<String, StainTypeDTO> stainTypeByName = new HashMap<>();
-        final Map<String, DefectTypeDTO> defectTypeByName = new HashMap<>();
-        
-        for (final StainTypeDTO stainType : stainTypes) {
-            stainTypeByName.put(stainType.getName(), stainType);
-        }
-        
-        for (final DefectTypeDTO defectType : defectTypes) {
-            defectTypeByName.put(defectType.getName(), defectType);
-        }
-        
-        // Додаємо попередження для плям високого ризику
-        if (stains != null) {
+        // Обробляємо попередження для плям високого ризику
+        if (stains != null && !stains.isEmpty()) {
+            final List<StainTypeDTO> stainTypes = stainTypeService.getActiveStainTypes();
+            final Map<String, StainTypeDTO> stainTypeByName = new HashMap<>();
+            
+            for (final StainTypeDTO stainType : stainTypes) {
+                stainTypeByName.put(stainType.getName(), stainType);
+            }
+            
+            // Додаємо попередження для плям високого ризику
             for (final String stainName : stains) {
                 final StainTypeDTO stainType = stainTypeByName.get(stainName);
                 if (stainType != null && RiskLevel.HIGH.equals(stainType.getRiskLevel())) {
@@ -253,8 +262,16 @@ public class ModifierRecommendationServiceImpl implements ModifierRecommendation
             }
         }
         
-        // Додаємо попередження для дефектів високого ризику
-        if (defects != null) {
+        // Обробляємо попередження для дефектів високого ризику
+        if (defects != null && !defects.isEmpty()) {
+            final List<DefectTypeDTO> defectTypes = defectTypeService.getActiveDefectTypes();
+            final Map<String, DefectTypeDTO> defectTypeByName = new HashMap<>();
+            
+            for (final DefectTypeDTO defectType : defectTypes) {
+                defectTypeByName.put(defectType.getName(), defectType);
+            }
+            
+            // Додаємо попередження для дефектів високого ризику
             for (final String defectName : defects) {
                 final DefectTypeDTO defectType = defectTypeByName.get(defectName);
                 if (defectType != null && RiskLevel.HIGH.equals(defectType.getRiskLevel())) {

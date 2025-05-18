@@ -11,6 +11,7 @@ import com.aksi.domain.auth.dto.AuthResponse;
 import com.aksi.domain.auth.dto.LoginRequest;
 import com.aksi.domain.auth.dto.RegisterRequest;
 import com.aksi.service.auth.AuthService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,9 +39,14 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(summary = "Реєстрація нового користувача", 
                description = "Створює нового користувача і повертає JWT токен")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        log.info("Запит на реєстрацію користувача: {}", request.getUsername());
-        return ResponseEntity.ok(authService.register(request));
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        try {
+            AuthResponse response = authService.register(request);
+            return ApiResponseUtils.ok(response, "Успішна реєстрація користувача: {}", request.getUsername());
+        } catch (Exception e) {
+            return ApiResponseUtils.conflict("Помилка при реєстрації", 
+                "Не вдалося зареєструвати користувача: {}. Причина: {}", request.getUsername(), e.getMessage());
+        }
     }
     
     /**
@@ -51,9 +57,14 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "Вхід користувача", 
                description = "Автентифікує користувача і повертає JWT токен")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        log.info("Запит на логін користувача: {}", request.getUsername());
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+        try {
+            AuthResponse response = authService.login(request);
+            return ApiResponseUtils.ok(response, "Успішний вхід користувача: {}", request.getUsername());
+        } catch (Exception e) {
+            return ApiResponseUtils.unauthorized("Помилка автентифікації", 
+                "Не вдалося автентифікувати користувача: {}. Причина: {}", request.getUsername(), e.getMessage());
+        }
     }
     
     /**
@@ -64,14 +75,24 @@ public class AuthController {
     @PostMapping("/refresh-token")
     @Operation(summary = "Оновлення токена", 
                description = "Оновлює JWT токен за допомогою refresh токена")
-    public ResponseEntity<AuthResponse> refreshToken(@RequestBody String refreshToken) {
-        log.info("Запит на оновлення токена");
-        return ResponseEntity.ok(authService.refreshToken(refreshToken));
+    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) {
+        try {
+            AuthResponse response = authService.refreshToken(refreshToken);
+            return ApiResponseUtils.ok(response, "Успішне оновлення токена");
+        } catch (Exception e) {
+            return ApiResponseUtils.unauthorized("Недійсний токен оновлення", 
+                "Не вдалося оновити токен. Причина: {}", e.getMessage());
+        }
     }
     
-    // Додаємо тестовий ендпоінт для перевірки доступності
+    /**
+     * Тестовий ендпоінт для перевірки доступності.
+     * @return відповідь про успішне з'єднання
+     */
     @GetMapping("/test")
+    @Operation(summary = "Перевірка доступності", 
+               description = "Тестовий ендпоінт для перевірки доступності API аутентифікації")
     public ResponseEntity<String> testAuthEndpoint() {
-        return ResponseEntity.ok("Auth endpoint is working!");
+        return ApiResponseUtils.ok("Auth endpoint is working!", "Тестовий запит до API аутентифікації");
     }
 } 

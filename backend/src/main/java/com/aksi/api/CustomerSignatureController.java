@@ -3,7 +3,6 @@ package com.aksi.api;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,7 @@ import com.aksi.domain.order.dto.CustomerSignatureRequest;
 import com.aksi.domain.order.dto.CustomerSignatureResponse;
 import com.aksi.domain.order.service.CustomerSignatureService;
 import com.aksi.exception.EntityNotFoundException;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -47,14 +47,20 @@ public class CustomerSignatureController {
             content = @Content(schema = @Schema(implementation = CustomerSignatureResponse.class)))
     @ApiResponse(responseCode = "400", description = "Некоректний запит")
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
-    public ResponseEntity<CustomerSignatureResponse> saveSignature(
+    public ResponseEntity<?> saveSignature(
             @Parameter(description = "Дані підпису клієнта", required = true)
             @Valid @RequestBody CustomerSignatureRequest request) {
-        
-        log.info("REST request to save customer signature for order ID: {}", request.getOrderId());
-        
-        CustomerSignatureResponse savedSignature = signatureService.saveSignature(request);
-        return new ResponseEntity<>(savedSignature, HttpStatus.CREATED);
+        try {
+            CustomerSignatureResponse savedSignature = signatureService.saveSignature(request);
+            return ApiResponseUtils.created(savedSignature, "Запит на збереження підпису клієнта для замовлення: {}", 
+                request.getOrderId());
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+                "Замовлення з ID: {} не знайдено під час спроби зберегти підпис", request.getOrderId());
+        } catch (Exception e) {
+            return ApiResponseUtils.badRequest("Помилка збереження підпису", 
+                "Не вдалося зберегти підпис для замовлення: {}. Причина: {}", request.getOrderId(), e.getMessage());
+        }
     }
     
     @GetMapping("/{id}")
@@ -63,14 +69,19 @@ public class CustomerSignatureController {
     @ApiResponse(responseCode = "200", description = "Підпис знайдено",
             content = @Content(schema = @Schema(implementation = CustomerSignatureResponse.class)))
     @ApiResponse(responseCode = "404", description = "Підпис не знайдено")
-    public ResponseEntity<CustomerSignatureResponse> getSignatureById(
+    public ResponseEntity<?> getSignatureById(
             @Parameter(description = "ID підпису", required = true) @PathVariable UUID id) {
-        
-        log.info("REST request to get signature by ID: {}", id);
-        
-        return signatureService.getSignatureById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> EntityNotFoundException.withId(id));
+        try {
+            CustomerSignatureResponse signature = signatureService.getSignatureById(id)
+                    .orElseThrow(() -> EntityNotFoundException.withId(id));
+            return ApiResponseUtils.ok(signature, "Запит на отримання підпису за ID: {}", id);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound("Підпис не знайдено", 
+                "Підпис з ID: {} не знайдено", id);
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка пошуку підпису", 
+                "Виникла помилка при пошуку підпису з ID: {}. Причина: {}", id, e.getMessage());
+        }
     }
     
     @GetMapping("/orders/{orderId}")
@@ -78,13 +89,15 @@ public class CustomerSignatureController {
                description = "Повертає всі підписи для конкретного замовлення")
     @ApiResponse(responseCode = "200", description = "Список підписів",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = CustomerSignatureResponse.class))))
-    public ResponseEntity<List<CustomerSignatureResponse>> getSignaturesByOrderId(
+    public ResponseEntity<?> getSignaturesByOrderId(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId) {
-        
-        log.info("REST request to get all signatures for order ID: {}", orderId);
-        
-        List<CustomerSignatureResponse> signatures = signatureService.getAllSignaturesByOrderId(orderId);
-        return ResponseEntity.ok(signatures);
+        try {
+            List<CustomerSignatureResponse> signatures = signatureService.getAllSignaturesByOrderId(orderId);
+            return ApiResponseUtils.ok(signatures, "Запит на отримання всіх підписів для замовлення з ID: {}", orderId);
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка отримання підписів", 
+                "Виникла помилка при отриманні підписів для замовлення з ID: {}. Причина: {}", orderId, e.getMessage());
+        }
     }
     
     @GetMapping("/orders/{orderId}/types/{signatureType}")
@@ -93,15 +106,22 @@ public class CustomerSignatureController {
     @ApiResponse(responseCode = "200", description = "Підпис знайдено",
             content = @Content(schema = @Schema(implementation = CustomerSignatureResponse.class)))
     @ApiResponse(responseCode = "404", description = "Підпис не знайдено")
-    public ResponseEntity<CustomerSignatureResponse> getSignatureByOrderIdAndType(
+    public ResponseEntity<?> getSignatureByOrderIdAndType(
             @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId,
             @Parameter(description = "Тип підпису", required = true) @PathVariable String signatureType) {
-        
-        log.info("REST request to get signature for order ID: {} and type: {}", orderId, signatureType);
-        
-        return signatureService.getSignatureByOrderIdAndType(orderId, signatureType)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new EntityNotFoundException("Signature not found for orderId: " + orderId + 
-                        " and type: " + signatureType));
+        try {
+            CustomerSignatureResponse signature = signatureService.getSignatureByOrderIdAndType(orderId, signatureType)
+                    .orElseThrow(() -> new EntityNotFoundException("Signature not found for orderId: " + orderId + 
+                            " and type: " + signatureType));
+            return ApiResponseUtils.ok(signature, "Запит на отримання підпису для замовлення з ID: {} та типу: {}", 
+                orderId, signatureType);
+        } catch (EntityNotFoundException e) {
+            return ApiResponseUtils.notFound("Підпис не знайдено", 
+                "Підпис типу '{}' для замовлення з ID: {} не знайдено", signatureType, orderId);
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка пошуку підпису", 
+                "Виникла помилка при пошуку підпису типу '{}' для замовлення з ID: {}. Причина: {}", 
+                signatureType, orderId, e.getMessage());
+        }
     }
 } 

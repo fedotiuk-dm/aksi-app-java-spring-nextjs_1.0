@@ -3,7 +3,6 @@ package com.aksi.api;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +19,7 @@ import com.aksi.domain.branch.dto.BranchLocationCreateRequest;
 import com.aksi.domain.branch.dto.BranchLocationDTO;
 import com.aksi.domain.branch.dto.BranchLocationUpdateRequest;
 import com.aksi.domain.branch.service.BranchLocationService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -50,18 +50,25 @@ public class BranchLocationController {
                      content = @Content(schema = @Schema(implementation = BranchLocationDTO.class)))
     })
     @GetMapping
-    public ResponseEntity<List<BranchLocationDTO>> getAllBranchLocations(
+    public ResponseEntity<?> getAllBranchLocations(
             @RequestParam(required = false) Boolean active) {
-        log.debug("REST запит на отримання пунктів прийому, active={}", active);
-        
-        List<BranchLocationDTO> result;
-        if (active != null && active) {
-            result = branchLocationService.getActiveBranchLocations();
-        } else {
-            result = branchLocationService.getAllBranchLocations();
+        try {
+            List<BranchLocationDTO> result;
+            
+            if (active != null && active) {
+                log.info("Запит на отримання активних пунктів прийому");
+                result = branchLocationService.getActiveBranchLocations();
+                return ApiResponseUtils.ok(result, "Отримано {} активних пунктів прийому", result.size());
+            } else {
+                log.info("Запит на отримання всіх пунктів прийому");
+                result = branchLocationService.getAllBranchLocations();
+                return ApiResponseUtils.ok(result, "Отримано {} пунктів прийому", result.size());
+            }
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні пунктів прийому", 
+                    "Виникла несподівана помилка при отриманні пунктів прийому. Причина: {}", 
+                    e.getMessage());
         }
-        
-        return ResponseEntity.ok(result);
     }
     
     @Operation(summary = "Отримати пункт прийому за ID", 
@@ -72,10 +79,20 @@ public class BranchLocationController {
         @ApiResponse(responseCode = "404", description = "Пункт прийому не знайдено")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<BranchLocationDTO> getBranchLocationById(@PathVariable UUID id) {
-        log.debug("REST запит на отримання пункту прийому за ID: {}", id);
-        BranchLocationDTO result = branchLocationService.getBranchLocationById(id);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<?> getBranchLocationById(@PathVariable UUID id) {
+        log.info("Запит на отримання пункту прийому за ID: {}", id);
+        
+        try {
+            BranchLocationDTO result = branchLocationService.getBranchLocationById(id);
+            return ApiResponseUtils.ok(result, "Отримано пункт прийому за ID: {}", id);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Пункт прийому не знайдено", 
+                    "Пункт прийому з ID: {} не знайдено. Причина: {}", id, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні пункту прийому", 
+                    "Виникла несподівана помилка при отриманні пункту прийому з ID: {}. Причина: {}", 
+                    id, e.getMessage());
+        }
     }
     
     @Operation(summary = "Отримати пункт прийому за кодом", 
@@ -86,10 +103,20 @@ public class BranchLocationController {
         @ApiResponse(responseCode = "404", description = "Пункт прийому не знайдено")
     })
     @GetMapping("/code/{code}")
-    public ResponseEntity<BranchLocationDTO> getBranchLocationByCode(@PathVariable String code) {
-        log.debug("REST запит на отримання пункту прийому за кодом: {}", code);
-        BranchLocationDTO result = branchLocationService.getBranchLocationByCode(code);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<?> getBranchLocationByCode(@PathVariable String code) {
+        log.info("Запит на отримання пункту прийому за кодом: {}", code);
+        
+        try {
+            BranchLocationDTO result = branchLocationService.getBranchLocationByCode(code);
+            return ApiResponseUtils.ok(result, "Отримано пункт прийому за кодом: {}", code);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Пункт прийому не знайдено", 
+                    "Пункт прийому з кодом: {} не знайдено. Причина: {}", code, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при отриманні пункту прийому", 
+                    "Виникла несподівана помилка при отриманні пункту прийому з кодом: {}. Причина: {}", 
+                    code, e.getMessage());
+        }
     }
     
     @Operation(summary = "Створити новий пункт прийому", 
@@ -102,11 +129,25 @@ public class BranchLocationController {
     })
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BranchLocationDTO> createBranchLocation(
+    public ResponseEntity<?> createBranchLocation(
             @Valid @RequestBody BranchLocationCreateRequest request) {
-        log.debug("REST запит на створення нового пункту прийому: {}", request);
-        BranchLocationDTO result = branchLocationService.createBranchLocation(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        log.info("Запит на створення нового пункту прийому: {}", request);
+        
+        try {
+            BranchLocationDTO result = branchLocationService.createBranchLocation(request);
+            return ApiResponseUtils.created(result, "Створено новий пункт прийому: {}", result.getName());
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.badRequest("Некоректні дані для створення пункту прийому", 
+                    "Не вдалося створити пункт прийому. Причина: {}", e.getMessage());
+        } catch (Exception e) {
+            if (e.getMessage() != null && e.getMessage().contains("вже існує")) {
+                return ApiResponseUtils.conflict("Пункт прийому з таким кодом вже існує", 
+                        "Пункт прийому з кодом: {} вже існує.", request.getCode());
+            }
+            return ApiResponseUtils.internalServerError("Помилка при створенні пункту прийому", 
+                    "Виникла несподівана помилка при створенні пункту прийому. Причина: {}", 
+                    e.getMessage());
+        }
     }
     
     @Operation(summary = "Оновити пункт прийому", 
@@ -120,12 +161,26 @@ public class BranchLocationController {
     })
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BranchLocationDTO> updateBranchLocation(
+    public ResponseEntity<?> updateBranchLocation(
             @PathVariable UUID id,
             @Valid @RequestBody BranchLocationUpdateRequest request) {
-        log.debug("REST запит на оновлення пункту прийому з ID: {}, дані: {}", id, request);
-        BranchLocationDTO result = branchLocationService.updateBranchLocation(id, request);
-        return ResponseEntity.ok(result);
+        log.info("Запит на оновлення пункту прийому з ID: {}, дані: {}", id, request);
+        
+        try {
+            BranchLocationDTO result = branchLocationService.updateBranchLocation(id, request);
+            return ApiResponseUtils.ok(result, "Оновлено пункт прийому з ID: {}", id);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Пункт прийому не знайдено", 
+                    "Пункт прийому з ID: {} не знайдено. Причина: {}", id, e.getMessage());
+        } catch (Exception e) {
+            if (e.getMessage() != null && e.getMessage().contains("вже існує")) {
+                return ApiResponseUtils.conflict("Пункт прийому з таким кодом вже існує", 
+                        "Не вдалося оновити пункт прийому. Код: {} вже використовується.", request.getCode());
+            }
+            return ApiResponseUtils.internalServerError("Помилка при оновленні пункту прийому", 
+                    "Виникла несподівана помилка при оновленні пункту прийому з ID: {}. Причина: {}", 
+                    id, e.getMessage());
+        }
     }
     
     @Operation(summary = "Змінити статус активності", 
@@ -137,12 +192,22 @@ public class BranchLocationController {
     })
     @PutMapping("/{id}/active")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<BranchLocationDTO> setActiveStatus(
+    public ResponseEntity<?> setActiveStatus(
             @PathVariable UUID id,
             @RequestParam boolean active) {
-        log.debug("REST запит на зміну статусу активності пункту прийому з ID: {} на: {}", id, active);
-        BranchLocationDTO result = branchLocationService.setActive(id, active);
-        return ResponseEntity.ok(result);
+        log.info("Запит на зміну статусу активності пункту прийому з ID: {} на: {}", id, active);
+        
+        try {
+            BranchLocationDTO result = branchLocationService.setActive(id, active);
+            return ApiResponseUtils.ok(result, "Змінено статус активності пункту прийому з ID: {} на: {}", id, active);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Пункт прийому не знайдено", 
+                    "Пункт прийому з ID: {} не знайдено. Причина: {}", id, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при зміні статусу активності", 
+                    "Виникла несподівана помилка при зміні статусу активності пункту прийому з ID: {}. Причина: {}", 
+                    id, e.getMessage());
+        }
     }
     
     @Operation(summary = "Видалити пункт прийому", 
@@ -153,9 +218,19 @@ public class BranchLocationController {
     })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteBranchLocation(@PathVariable UUID id) {
-        log.debug("REST запит на видалення пункту прийому з ID: {}", id);
-        branchLocationService.deleteBranchLocation(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteBranchLocation(@PathVariable UUID id) {
+        log.info("Запит на видалення пункту прийому з ID: {}", id);
+        
+        try {
+            branchLocationService.deleteBranchLocation(id);
+            return ApiResponseUtils.noContent("Видалено пункт прийому з ID: {}", id);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Пункт прийому не знайдено", 
+                    "Пункт прийому з ID: {} не знайдено. Причина: {}", id, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при видаленні пункту прийому", 
+                    "Виникла несподівана помилка при видаленні пункту прийому з ID: {}. Причина: {}", 
+                    id, e.getMessage());
+        }
     }
 }

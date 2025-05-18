@@ -3,7 +3,6 @@ package com.aksi.api;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aksi.domain.pricing.dto.StainTypeDTO;
 import com.aksi.domain.pricing.enums.RiskLevel;
 import com.aksi.domain.pricing.service.StainTypeService;
+import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * REST контролер для управління типами плям.
@@ -31,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/stain-types")
 @RequiredArgsConstructor
 @Tag(name = "Типи плям", description = "API для управління типами плям")
+@Slf4j
 public class StainTypeController {
     
     private final StainTypeService stainTypeService;
@@ -52,13 +54,14 @@ public class StainTypeController {
         
         if (riskLevel != null) {
             stainTypes = stainTypeService.getStainTypesByRiskLevel(riskLevel);
+            return ApiResponseUtils.ok(stainTypes, "REST запит на отримання типів плям з рівнем ризику: {}", riskLevel);
         } else if (activeOnly) {
             stainTypes = stainTypeService.getActiveStainTypes();
+            return ApiResponseUtils.ok(stainTypes, "REST запит на отримання активних типів плям");
         } else {
             stainTypes = stainTypeService.getAllStainTypes();
+            return ApiResponseUtils.ok(stainTypes, "REST запит на отримання всіх типів плям");
         }
-        
-        return ResponseEntity.ok(stainTypes);
     }
     
     /**
@@ -69,8 +72,12 @@ public class StainTypeController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Отримати тип плями за ID", description = "Повертає тип плями за вказаним ідентифікатором")
-    public ResponseEntity<StainTypeDTO> getStainTypeById(@PathVariable UUID id) {
-        return ResponseEntity.ok(stainTypeService.getStainTypeById(id));
+    public ResponseEntity<?> getStainTypeById(@PathVariable UUID id) {
+        StainTypeDTO stainType = stainTypeService.getStainTypeById(id);
+        if (stainType == null) {
+            return ApiResponseUtils.notFound("Тип плями не знайдено", "Тип плями з ID: {} не знайдено", id);
+        }
+        return ApiResponseUtils.ok(stainType, "REST запит на отримання типу плями за ID: {}", id);
     }
     
     /**
@@ -81,8 +88,12 @@ public class StainTypeController {
      */
     @GetMapping("/by-code/{code}")
     @Operation(summary = "Отримати тип плями за кодом", description = "Повертає тип плями за вказаним кодом")
-    public ResponseEntity<StainTypeDTO> getStainTypeByCode(@PathVariable String code) {
-        return ResponseEntity.ok(stainTypeService.getStainTypeByCode(code));
+    public ResponseEntity<?> getStainTypeByCode(@PathVariable String code) {
+        StainTypeDTO stainType = stainTypeService.getStainTypeByCode(code);
+        if (stainType == null) {
+            return ApiResponseUtils.notFound("Тип плями не знайдено", "Тип плями з кодом: {} не знайдено", code);
+        }
+        return ApiResponseUtils.ok(stainType, "REST запит на отримання типу плями за кодом: {}", code);
     }
     
     /**
@@ -93,8 +104,14 @@ public class StainTypeController {
      */
     @PostMapping
     @Operation(summary = "Створити тип плями", description = "Створює новий тип плями з вказаними даними")
-    public ResponseEntity<StainTypeDTO> createStainType(@Valid @RequestBody StainTypeDTO stainTypeDTO) {
-        return new ResponseEntity<>(stainTypeService.createStainType(stainTypeDTO), HttpStatus.CREATED);
+    public ResponseEntity<?> createStainType(@Valid @RequestBody StainTypeDTO stainTypeDTO) {
+        try {
+            StainTypeDTO createdStainType = stainTypeService.createStainType(stainTypeDTO);
+            return ApiResponseUtils.created(createdStainType, "REST запит на створення нового типу плями: {}", stainTypeDTO);
+        } catch (Exception e) {
+            return ApiResponseUtils.conflict("Неможливо створити тип плями", 
+                    "Помилка при створенні типу плями: {}. Причина: {}", stainTypeDTO.getCode(), e.getMessage());
+        }
     }
     
     /**
@@ -106,10 +123,16 @@ public class StainTypeController {
      */
     @PutMapping("/{id}")
     @Operation(summary = "Оновити тип плями", description = "Оновлює існуючий тип плями за вказаним ідентифікатором")
-    public ResponseEntity<StainTypeDTO> updateStainType(
+    public ResponseEntity<?> updateStainType(
             @PathVariable UUID id, 
             @Valid @RequestBody StainTypeDTO stainTypeDTO) {
-        return ResponseEntity.ok(stainTypeService.updateStainType(id, stainTypeDTO));
+        try {
+            StainTypeDTO updatedStainType = stainTypeService.updateStainType(id, stainTypeDTO);
+            return ApiResponseUtils.ok(updatedStainType, "REST запит на оновлення типу плями з ID {}: {}", id, stainTypeDTO);
+        } catch (Exception e) {
+            return ApiResponseUtils.notFound("Тип плями не знайдено або неможливо оновити", 
+                    "Помилка при оновленні типу плями з ID: {}. Причина: {}", id, e.getMessage());
+        }
     }
     
     /**
@@ -120,8 +143,13 @@ public class StainTypeController {
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "Видалити тип плями", description = "Видаляє тип плями за вказаним ідентифікатором")
-    public ResponseEntity<Void> deleteStainType(@PathVariable UUID id) {
-        stainTypeService.deleteStainType(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteStainType(@PathVariable UUID id) {
+        try {
+            stainTypeService.deleteStainType(id);
+            return ApiResponseUtils.noContent("REST запит на деактивацію типу плями з ID: {}", id);
+        } catch (Exception e) {
+            return ApiResponseUtils.notFound("Тип плями не знайдено або неможливо видалити", 
+                    "Помилка при видаленні типу плями з ID: {}. Причина: {}", id, e.getMessage());
+        }
     }
 } 
