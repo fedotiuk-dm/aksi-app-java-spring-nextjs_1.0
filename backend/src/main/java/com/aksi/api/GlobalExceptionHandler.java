@@ -115,11 +115,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleEntityNotFoundException(EntityNotFoundException ex) {
-        String errorId = generateErrorId();
-        setMDC(errorId, HttpStatus.NOT_FOUND);
-        
-        logException("Сутність не знайдено", ex);
-        return createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), ex, errorId);
+        return handleStandardException(ex, HttpStatus.NOT_FOUND, "Сутність не знайдено", ex.getMessage());
     }
     
     /**
@@ -128,11 +124,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        String errorId = generateErrorId();
-        setMDC(errorId, HttpStatus.CONFLICT);
-        
-        logException("Спроба створити дублікат користувача", ex);
-        return createErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), ex, errorId);
+        return handleStandardException(ex, HttpStatus.CONFLICT, "Спроба створити дублікат користувача", ex.getMessage());
     }
     
     /**
@@ -141,11 +133,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleAuthenticationException(AuthenticationException ex) {
-        String errorId = generateErrorId();
-        setMDC(errorId, HttpStatus.UNAUTHORIZED);
-        
-        logException("Помилка автентифікації", ex);
-        return createErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex, errorId);
+        return handleStandardException(ex, HttpStatus.UNAUTHORIZED, "Помилка автентифікації", ex.getMessage());
     }
     
     /**
@@ -154,11 +142,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleAccessDeniedException(AccessDeniedException ex) {
-        String errorId = generateErrorId();
-        setMDC(errorId, HttpStatus.FORBIDDEN);
-        
-        logException("Доступ заборонено", ex);
-        return createErrorResponse(HttpStatus.FORBIDDEN, "Доступ заборонено", ex, errorId);
+        return handleStandardException(ex, HttpStatus.FORBIDDEN, "Доступ заборонено", "Доступ заборонено");
     }
     
     /**
@@ -167,11 +151,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException ex) {
-        String errorId = generateErrorId();
-        setMDC(errorId, HttpStatus.NOT_FOUND);
-        
-        logException("Ресурс не знайдено", ex);
-        return createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), ex, errorId);
+        return handleStandardException(ex, HttpStatus.NOT_FOUND, "Ресурс не знайдено", ex.getMessage());
     }
     
     /**
@@ -180,11 +160,32 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(BadRequestException ex) {
+        return handleStandardException(ex, HttpStatus.BAD_REQUEST, "Некоректний запит", ex.getMessage());
+    }
+    
+    /**
+     * Обробка помилки некоректних даних
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex) {
+        return handleStandardException(ex, HttpStatus.BAD_REQUEST, "Помилка некоректних даних", ex.getMessage());
+    }
+    
+    /**
+     * Загальний метод для обробки стандартних винятків
+     * @param ex виняток
+     * @param status HTTP статус відповіді
+     * @param logMessage повідомлення для журналу
+     * @param responseMessage повідомлення для відповіді
+     * @return уніфікована відповідь про помилку
+     */
+    private ErrorResponse handleStandardException(Exception ex, HttpStatus status, String logMessage, String responseMessage) {
         String errorId = generateErrorId();
-        setMDC(errorId, HttpStatus.BAD_REQUEST);
+        setMDC(errorId, status);
         
-        logException("Некоректний запит", ex);
-        return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), ex, errorId);
+        logException(logMessage, ex);
+        return createErrorResponse(status, responseMessage, ex, errorId);
     }
     
     /**
@@ -226,19 +227,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(status)
                 .body(errorResponse);
-    }
-    
-    /**
-     * Обробка помилки некоректних даних
-     */
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex) {
-        String errorId = generateErrorId();
-        setMDC(errorId, HttpStatus.BAD_REQUEST);
-        
-        logException("Помилка некоректних даних", ex);
-        return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), ex, errorId);
     }
     
     /**

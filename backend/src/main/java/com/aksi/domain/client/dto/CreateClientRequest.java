@@ -1,69 +1,44 @@
 package com.aksi.domain.client.dto;
 
-import java.util.Set;
-
-import com.aksi.domain.client.entity.ClientSourceEntity;
-import com.aksi.domain.client.entity.CommunicationChannelEntity;
-
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  * DTO для запиту на створення нового клієнта.
  */
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-public class CreateClientRequest {
+@EqualsAndHashCode(callSuper = true)
+public class CreateClientRequest extends BaseClientRequest {
 
     /**
-     * Прізвище клієнта.
+     * Прізвище клієнта. Перевизначено для додавання валідації NotBlank.
      */
     @NotBlank(message = "Прізвище не може бути пустим")
-    private String lastName;
+    @Override
+    public String getLastName() {
+        return super.getLastName();
+    }
 
     /**
-     * Ім'я клієнта.
+     * Ім'я клієнта. Перевизначено для додавання валідації NotBlank.
      */
     @NotBlank(message = "Ім'я не може бути пустим")
-    private String firstName;
+    @Override
+    public String getFirstName() {
+        return super.getFirstName();
+    }
 
     /**
-     * Номер телефону клієнта.
+     * Номер телефону клієнта. Перевизначено для додавання валідації NotBlank.
      */
     @NotBlank(message = "Телефон не може бути пустим")
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Некоректний формат телефону")
-    private String phone;
-
-    /**
-     * Email клієнта.
-     */
-    @Email(message = "Некоректний формат email")
-    private String email;
-
-    /**
-     * Адреса клієнта.
-     */
-    private String address;
-
-    /**
-     * Канали комунікації з клієнтом.
-     */
-    private Set<CommunicationChannelEntity> communicationChannels;
-
-    /**
-     * Джерело, з якого клієнт дізнався про хімчистку.
-     */
-    private ClientSourceEntity source;
-
-    /**
-     * Деталі джерела, якщо вибрано "Інше".
-     */
-    private String sourceDetails;
+    @Override
+    public String getPhone() {
+        return super.getPhone();
+    }
 }

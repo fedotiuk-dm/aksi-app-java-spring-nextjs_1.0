@@ -1,5 +1,8 @@
 package com.aksi.service.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -69,24 +72,8 @@ public class AuthService {
         // Збереження користувача
         userRepository.save(user);
         
-        // Генерація JWT токена
-        String token = jwtUtils.generateToken(user);
-        
-        // Генерація refresh токена
-        String refreshToken = jwtUtils.generateRefreshToken(user);
-        
-        // Повернення відповіді
-        return AuthResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .role(user.getRole())
-                .position(user.getPosition())
-                .accessToken(token)
-                .refreshToken(refreshToken)
-                .expiresIn(jwtUtils.getExpirationInSeconds())
-                .build();
+        // Генерація токенів та побудова відповіді
+        return createAuthResponseForUser(user);
     }
     
     /**
@@ -105,28 +92,10 @@ public class AuthService {
             );
             
             // Якщо автентифікація успішна, знаходимо користувача
-            UserEntity user = userRepository.findByUsername(request.getUsername())
-                    .or(() -> userRepository.findByEmail(request.getUsername()))
-                    .orElseThrow(() -> new AuthenticationException("Неправильний логін або пароль"));
+            UserEntity user = findUserByUsernameOrEmail(request.getUsername());
             
-            // Генерація JWT токена
-            String token = jwtUtils.generateToken(user);
-            
-            // Генерація refresh токена
-            String refreshToken = jwtUtils.generateRefreshToken(user);
-            
-            // Повернення відповіді
-            return AuthResponse.builder()
-                    .id(user.getId())
-                    .name(user.getName())
-                    .username(user.getUsername())
-                    .email(user.getEmail())
-                    .role(user.getRole())
-                    .position(user.getPosition())
-                    .accessToken(token)
-                    .refreshToken(refreshToken)
-                    .expiresIn(jwtUtils.getExpirationInSeconds())
-                    .build();
+            // Генерація токенів та побудова відповіді
+            return createAuthResponseForUser(user);
         } catch (org.springframework.security.core.AuthenticationException e) {
             throw new AuthenticationException("Неправильний логін або пароль");
         }
@@ -147,34 +116,93 @@ public class AuthService {
             }
             
             // Перевірка користувача
-            UserEntity user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new AuthenticationException("Користувача не знайдено"));
+            UserEntity user = findUserByUsername(username);
             
             // Перевірка валідності токена
             if (!jwtUtils.isTokenValid(refreshToken, user)) {
                 throw new AuthenticationException("Недійсний refresh token");
             }
             
-            // Генерація нового JWT токена
-            String accessToken = jwtUtils.generateToken(user);
-            
-            // Генерація нового refresh токена
-            String newRefreshToken = jwtUtils.generateRefreshToken(user);
-            
-            // Повернення відповіді
-            return AuthResponse.builder()
-                    .id(user.getId())
-                    .name(user.getName())
-                    .username(user.getUsername())
-                    .email(user.getEmail())
-                    .role(user.getRole())
-                    .position(user.getPosition())
-                    .accessToken(accessToken)
-                    .refreshToken(newRefreshToken)
-                    .expiresIn(jwtUtils.getExpirationInSeconds())
-                    .build();
+            // Генерація токенів та побудова відповіді
+            return createAuthResponseForUser(user);
         } catch (IllegalArgumentException | io.jsonwebtoken.JwtException | NullPointerException e) {
             throw new AuthenticationException("Помилка оновлення токена: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Знаходить користувача за username або email.
+     * 
+     * @param usernameOrEmail Логін або email користувача
+     * @return Об'єкт користувача
+     * @throws AuthenticationException якщо користувача не знайдено
+     */
+    private UserEntity findUserByUsernameOrEmail(String usernameOrEmail) {
+        return userRepository.findByUsername(usernameOrEmail)
+                .or(() -> userRepository.findByEmail(usernameOrEmail))
+                .orElseThrow(() -> new AuthenticationException("Неправильний логін або пароль"));
+    }
+    
+    /**
+     * Знаходить користувача за username.
+     * 
+     * @param username Логін користувача
+     * @return Об'єкт користувача
+     * @throws AuthenticationException якщо користувача не знайдено
+     */
+    private UserEntity findUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new AuthenticationException("Користувача не знайдено"));
+    }
+    
+    /**
+     * Створює об'єкт AuthResponse для користувача, генеруючи необхідні токени.
+     * 
+     * @param user Користувач
+     * @return Об'єкт AuthResponse з JWT токенами та інформацією про користувача
+     */
+    private AuthResponse createAuthResponseForUser(UserEntity user) {
+        Map<String, String> tokens = generateTokenPair(user);
+        return buildAuthResponse(user, tokens.get("accessToken"), tokens.get("refreshToken"));
+    }
+    
+    /**
+     * Створення AuthResponse на основі даних користувача та токенів
+     * 
+     * @param user Користувач
+     * @param accessToken JWT токен доступу
+     * @param refreshToken Токен оновлення
+     * @return Об'єкт AuthResponse з усіма необхідними даними
+     */
+    private AuthResponse buildAuthResponse(UserEntity user, String accessToken, String refreshToken) {
+        return AuthResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .position(user.getPosition())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .expiresIn(jwtUtils.getExpirationInSeconds())
+                .build();
+    }
+    
+    /**
+     * Генерація пари токенів (access та refresh) для користувача
+     * 
+     * @param user Користувач
+     * @return Пара токенів (ключ "accessToken" для JWT токену, "refreshToken" для refresh токену)
+     */
+    private Map<String, String> generateTokenPair(UserEntity user) {
+        Map<String, String> tokens = new HashMap<>();
+        
+        // Генерація JWT токена
+        tokens.put("accessToken", jwtUtils.generateToken(user));
+        
+        // Генерація refresh токена
+        tokens.put("refreshToken", jwtUtils.generateRefreshToken(user));
+        
+        return tokens;
     }
 } 

@@ -1,49 +1,23 @@
 package com.aksi.domain.branch.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Запит на створення нового пункту прийому замовлень.
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class BranchLocationCreateRequest {
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+public class BranchLocationCreateRequest extends BaseBranchLocationRequest {
 
     /**
-     * Назва пункту прийому.
+     * Конструктор зі значенням за замовчуванням для поля active.
+     * Завжди створює активну філію.
      */
-    @NotBlank(message = "Назва пункту прийому не може бути порожньою")
-    private String name;
-
-    /**
-     * Адреса пункту прийому.
-     */
-    @NotBlank(message = "Адреса пункту прийому не може бути порожньою")
-    private String address;
-
-    /**
-     * Контактний телефон пункту прийому.
-     */
-    @Pattern(regexp = "^\\+?[0-9\\s-()]{10,15}$", message = "Неправильний формат телефону")
-    private String phone;
-
-    /**
-     * Код пункту прийому (для формування номерів замовлень).
-     */
-    @NotBlank(message = "Код пункту прийому не може бути порожнім")
-    @Pattern(regexp = "^[A-Z0-9]{2,5}$", message = "Код повинен містити від 2 до 5 символів (великі літери та цифри)")
-    private String code;
-
-    /**
-     * Статус активності пункту прийому.
-     */
-    @Builder.Default
-    private Boolean active = true;
+    public BranchLocationCreateRequest() {
+        super();
+        setActive(true); // Значення за замовчуванням
+    }
 }

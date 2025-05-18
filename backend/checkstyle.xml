@@ -5,15 +5,15 @@
 
 <!--
     Конфігурація Checkstyle для проєкту "Хімчистка AKSI"
-    Базується на Google Java Style з модифікаціями для Spring Boot проєктів
+    Базується на Google Java Style з модифікаціями для Spring Boot проєктів з DDD
     
     Основні принципи:
     1. Відповідність Java Code Conventions
     2. Узгодженість коду в усьому проєкті
     3. Покращена читабельність та підтримка коду
     4. Виявлення потенційних помилок на ранніх етапах
-    5. Відповідність Spring Best Practices
-    6. Відповідність вимогам DDD/додатку хімчистки
+    5. Відповідність Spring Best Practices та DDD
+    6. Відсутність дублювання коду та хардкоду
 -->
 
 <module name="Checker">
@@ -44,28 +44,22 @@
             value="^\s*\*\s*@|^\s*\*\s*\[|^\s*\*\s*[a-zA-Z0-9_]+=|^\s*\*\s*https?://|^import\s+.*|^package\s+.*"/>
     </module>
 
+    <!-- Підключення файлу виключень -->
     <module name="SuppressionFilter">
         <property name="file" value="${checkstyle.suppressions.file}" default="checkstyle-suppressions.xml"/>
     </module>
 
-    <module name="SuppressionSingleFilter">
-        <property name="checks" value="Javadoc.*"/>
-        <property name="files" value="package-info.java"/>
-    </module>
-    
-    <!-- Використовуємо CPD з maven-pmd-plugin для перевірки дублювання коду замість застарілого StrictDuplicateCode -->
-
+    <!-- Підтримка CPD (Copy-Paste Detector) -->
     <module name="TreeWalker">
         <!-- Загальні налаштування -->
         <property name="tabWidth" value="4"/>
-        <property name="cacheFile" value="target/checkstyle-cachefile"/>
 
         <!-- Імпорти -->
         <module name="AvoidStarImport">
             <property name="excludes" value="java.util.stream,java.util.function,java.util.concurrent,jakarta.validation.constraints,org.junit.jupiter.api.*,org.mockito.*,org.assertj.core.api.*,org.springframework.test.context.*"/>
         </module>
         <module name="IllegalImport">
-            <property name="illegalPkgs" value="java.util, java.sql, java.awt, javax.swing, sun."/>
+            <property name="illegalPkgs" value="java.awt, javax.swing, sun."/>
         </module>
         <module name="RedundantImport"/>
         <module name="UnusedImports">
@@ -80,13 +74,12 @@
 
         <!-- Документація -->
         <module name="JavadocType">
-            <property name="scope" value="protected"/>
             <property name="tokens" value="CLASS_DEF,INTERFACE_DEF,ENUM_DEF,ANNOTATION_DEF"/>
-            <property name="authorFormat" value="\S"/>
+            <message key="javadoc.missing" value="Missing Javadoc comment."/>
         </module>
         
         <module name="JavadocMethod">
-            <property name="scope" value="protected"/>
+            <property name="accessModifiers" value="public, protected"/>
             <property name="validateThrows" value="true"/>
             <property name="allowMissingParamTags" value="true"/>
             <property name="allowMissingReturnTag" value="true"/>
@@ -94,7 +87,7 @@
         </module>
         
         <module name="JavadocVariable">
-            <property name="scope" value="protected"/>
+            <property name="accessModifiers" value="public, protected"/>
             <property name="tokens" value="VARIABLE_DEF"/>
         </module>
         
@@ -104,7 +97,6 @@
         </module>
 
         <!-- Назви -->
-        <!-- Naming conventions for TypeScript/JavaScript compatibility -->
         <module name="TypeName">
             <property name="format" value="^[A-Z][a-zA-Z0-9_$]*$"/>
             <message key="name.invalidPattern" value="Type ''{0}'' should use PascalCase to match TypeScript/JavaScript conventions."/>
@@ -163,7 +155,7 @@
             <property name="allowEmptyLambdas" value="true"/>
             <property name="allowEmptyMethods" value="true"/>
             <property name="allowEmptyTypes" value="true"/>
-            <property name="tokens" value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR, BXOR_ASSIGN, COLON, DIV, DIV_ASSIGN, DO_WHILE, EQUAL, GE, GT, LAMBDA, LAND, LCURLY, LE, LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_RETURN, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, LNOT, LOR, LT, MINUS, MINUS_ASSIGN, MOD, MOD_ASSIGN, NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION, RCURLY, SL, SLIST, SL_ASSIGN, SR, SR_ASSIGN, STAR, STAR_ASSIGN, TYPE_EXTENSION_AND, WILDCARD_TYPE"/>
+            <property name="tokens" value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR, BXOR_ASSIGN, COLON, DIV, DIV_ASSIGN, DO_WHILE, EQUAL, GE, GT, LAMBDA, LAND, LCURLY, LE, LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_RETURN, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, LOR, LT, MINUS, MINUS_ASSIGN, MOD, MOD_ASSIGN, NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION, RCURLY, SL, SLIST, SL_ASSIGN, SR, SR_ASSIGN, STAR, STAR_ASSIGN, TYPE_EXTENSION_AND, WILDCARD_TYPE"/>
         </module>
         
         <module name="OneStatementPerLine"/>
@@ -225,12 +217,7 @@
         <!-- Lombok специфічні налаштування -->
         <module name="SuppressWarnings">
             <property name="format" value="^lombok"/>
-            <property name="tokens" value="ANNOTATION_FIELD_DEF,ANNOTATION,CLASS_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
-        </module>
-        
-        <!-- Перевірки для тестів -->
-        <module name="JUnitTestMethodWithoutAssertion">
-            <property name="severity" value="ignore"/>
+            <property name="tokens" value="ANNOTATION_FIELD_DEF,CLASS_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
         </module>
         
         <!-- Інші перевірки -->
@@ -243,7 +230,7 @@
         </module>
         
         <module name="FinalParameters">
-            <property name="tokens" value="CTOR_DEF, METHOD_DEF, LAMBDA"/>
+            <property name="tokens" value="CTOR_DEF, METHOD_DEF"/>
         </module>
         
         <module name="FinalLocalVariable">
@@ -259,7 +246,7 @@
         </module>
         
         <module name="UnnecessaryParentheses">
-            <property name="tokens" value="EXPR, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LAMBDA"/>
+            <property name="tokens" value="EXPR, LAMBDA"/>
         </module>
         
         <module name="OneTopLevelClass"/>
@@ -291,138 +278,170 @@
         <!-- Додаткові перевірки для вимог DDD/хімчистки -->
         <module name="Regexp">
             <property name="format" value="[\s\w\.\(\)]new BigDecimal\(\s*\d"/>
-            <property name="message" value="Уникайте хардкоду числових значень. Використовуйте константи чи значення з конфігурації/БД"/>
             <property name="illegalPattern" value="true"/>
             <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Уникайте хардкоду числових значень. Використовуйте константи чи значення з конфігурації/БД"/>
         </module>
         
+        <!-- Перевірка хардкоду категорій послуг -->
         <module name="Regexp">
-            <property name="format" value="\"(IRONING|WASHING|DYEING|LEATHER|CLOTHING|FUR|PADDING|LAUNDRY)\""/>
-            <property name="message" value="Хардкод кодів категорій. Використовуйте enum або константи"/>
+            <property name="format" value="&quot;(IRONING|WASHING|DYEING|LEATHER|CLOTHING|FUR|PADDING|LAUNDRY)&quot;"/>
             <property name="illegalPattern" value="true"/>
             <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Хардкод кодів категорій. Використовуйте enum або константи"/>
         </module>
         
+        <!-- DDD-специфічні правила іменування -->
         <module name="TypeName">
             <property name="format" value="^(?!.*(?&lt;!Entity)Repository$|.*(?&lt;!Service)Impl$).*$"/>
-            <property name="message" value="Репозиторії повинні закінчуватися на 'Repository', а реалізація сервісів - на 'ServiceImpl'"/>
+            <message key="name.invalidPattern" value="Репозиторії повинні закінчуватися на 'Repository', а реалізація сервісів - на 'ServiceImpl'"/>
         </module>
         
         <!-- Перевірка сутностей DDD -->
         <module name="Regexp">
             <property name="format" value="@Entity\s+public\s+class\s+(?!.*Entity)"/>
-            <property name="message" value="Клас сутності повинен мати суфікс 'Entity'"/>
             <property name="illegalPattern" value="true"/>
             <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Клас сутності повинен мати суфікс 'Entity'"/>
         </module>
         
         <!-- Правила для DTO класів -->
         <module name="Regexp">
             <property name="format" value="public\s+class\s+([a-zA-Z0-9_]+)(?!(Request|Response|DTO))\s+\{[\s\S]*?@ApiModel"/>
-            <property name="message" value="DTO класи для API повинні мати суфікси 'Request', 'Response' або 'DTO'"/>
             <property name="illegalPattern" value="true"/>
             <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="DTO класи для API повинні мати суфікси 'Request', 'Response' або 'DTO'"/>
         </module>
         
         <!-- Уникнення бізнес-логіки в DTO/моделях -->
         <module name="Regexp">
             <property name="format" value="@Data.*class.*DTO[\s\r\n]*\{[\s\S]*?public [a-zA-Z0-9_]+\("/>
-            <property name="message" value="DTO не повинні містити бізнес-методи, тільки дані"/>
             <property name="illegalPattern" value="true"/>
             <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="DTO не повинні містити бізнес-методи, тільки дані"/>
+        </module>
+
+        <!-- Перевірка структури модифікаторів цін для OrderWizard -->
+        <module name="Regexp">
+            <property name="format" value="calculatePriceWithModifiers\([^)]*\)\s*\{(?!.*service)"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Метод calculatePriceWithModifiers повинен делегувати логіку розрахунку в спеціалізований сервіс"/>
+        </module>
+
+        <!-- Перевірка методів для OrderWizard - заборона хардкоду знижок -->
+        <module name="Regexp">
+            <property name="format" value="discount\s*=\s*\d+"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Використовуйте константи для знижок замість хардкоду"/>
         </module>
     </module>
     
     <!-- Додаткові перевірки для XML файлів -->
     <module name="RegexpSingleline">
         <property name="format" value="\t"/>
-        <property name="message" value="Line contains a tab character."/>
         <property name="fileExtensions" value="xml"/>
+        <message key="regexp.exceeded" value="Line contains a tab character."/>
     </module>
     
     <module name="RegexpSingleline">
         <property name="format" value="\s+$"/>
-        <property name="message" value="Line has trailing spaces."/>
+        <message key="regexp.exceeded" value="Line has trailing spaces."/>
     </module>
     
     <module name="RegexpSingleline">
         <property name="format" value="\r\n"/>
-        <property name="message" value="Line has Windows line ending (CRLF)."/>
+        <message key="regexp.exceeded" value="Line has Windows line ending (CRLF)."/>
     </module>
     
     <!-- Перевірки для YAML файлів -->
     <module name="RegexpSingleline">
         <property name="format" value="\t"/>
-        <property name="message" value="Line contains a tab character."/>
         <property name="fileExtensions" value="yml,yaml"/>
+        <message key="regexp.exceeded" value="Line contains a tab character."/>
     </module>
     
     <module name="RegexpSingleline">
         <property name="format" value="\s+$"/>
-        <property name="message" value="Line has trailing spaces."/>
         <property name="fileExtensions" value="yml,yaml"/>
+        <message key="regexp.exceeded" value="Line has trailing spaces."/>
     </module>
     
     <!-- Перевірки для виявлення закоментованого коду -->
     <module name="RegexpMultiline">
         <property name="format" value="/\*\s*.*\bpublic\b.*\*/|//\s*.*\bpublic\b"/>
-        <property name="message" value="Закоментований код має бути видалений"/>
         <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Закоментований код має бути видалений"/>
     </module>
     
     <!-- Перевірка хардкоду URL та шляхів -->
     <module name="RegexpSingleline">
-        <property name="format" value="\"(http|https|ftp)://"/>
-        <property name="message" value="Хардкодовані URL мають бути винесені в конфігурацію"/>
+        <property name="format" value="&quot;(http|https|ftp)://"/>
+        <message key="regexp.exceeded" value="Хардкодовані URL мають бути винесені в конфігурацію"/>
     </module>
     
     <!-- Перевірка тестових даних у продакшн коді -->
     <module name="RegexpSingleline">
         <property name="format" value="(?i)\b(test|mock|dummy|fake|stub)\w*\s*="/>
-        <property name="message" value="Тестові дані у продакшн коді"/>
         <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Тестові дані у продакшн коді"/>
     </module>
     
     <!-- API Documentation Rules -->
     <module name="RegexpSingleline">
         <property name="format" value="@ApiIgnore"/>
-        <property name="message" value="Do not use @ApiIgnore for public API endpoints. Use @Hidden or proper documentation instead."/>
+        <message key="regexp.exceeded" value="Do not use @ApiIgnore for public API endpoints. Use @Hidden or proper documentation instead."/>
     </module>
 
     <module name="RegexpSingleline">
         <property name="format" value="private\s+boolean\s+is[A-Z]"/>
-        <property name="message" value="Avoid using 'is' prefix for boolean fields to prevent issues with OpenAPI and JSON serialization."/>
+        <message key="regexp.exceeded" value="Avoid using 'is' prefix for boolean fields to prevent issues with OpenAPI and JSON serialization."/>
     </module>
     
     <module name="RegexpSingleline">
         <property name="format" value="@JsonIgnore"/>
-        <property name="message" value="Be careful with @JsonIgnore. Consider using @Schema(hidden = true) for OpenAPI documentation."/>
+        <message key="regexp.exceeded" value="Be careful with @JsonIgnore. Consider using @Schema(hidden = true) for OpenAPI documentation."/>
     </module>
 
     <!-- Правила для API та DTO сумісності з фронтендом -->
     <module name="RegexpSingleline">
         <property name="format" value="@(RestController|Controller).*class\s+(?!.*Controller)"/>
-        <property name="message" value="REST контролери повинні мати суфікс 'Controller' для послідовності іменування"/>
         <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="REST контролери повинні мати суфікс 'Controller' для послідовності іменування"/>
     </module>
     
     <module name="RegexpSingleline">
-        <property name="format" value="@RequestMapping\s*\(\s*\"/api/"/>
-        <property name="message" value="Не додавайте '/api/' у RequestMapping - це додається автоматично"/>
+        <property name="format" value="@RequestMapping\s*\(\s*&quot;/api/"/>
         <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Не додавайте '/api/' у RequestMapping - це додається автоматично"/>
     </module>
     
     <!-- API URL конвенції для фронтенду -->
     <module name="RegexpSingleline">
-        <property name="format" value="@(GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping)\s*\(\s*\"[^\"]*[A-Z]"/>
-        <property name="message" value="API URL повинні бути в kebab-case (маленькі літери з дефісами)"/>
+        <property name="format" value="@(GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping)\s*\(\s*&quot;[^&quot;]*[A-Z]"/>
         <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="API URL повинні бути в kebab-case (маленькі літери з дефісами)"/>
     </module>
     
     <!-- Перевірка узгодженості DTO для REST API -->
     <module name="RegexpSingleline">
         <property name="format" value="(@PostMapping|@PutMapping)[\s\S]{0,100}public[\s\S]{0,100}\([^)]*(?!(Request|DTO))[a-zA-Z0-9_]+\s+\w+\)"/>
-        <property name="message" value="Вхідні параметри для POST/PUT повинні використовувати класи з суфіксом Request або DTO"/>
         <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Вхідні параметри для POST/PUT повинні використовувати класи з суфіксом Request або DTO"/>
+    </module>
+
+    <!-- Вимоги до бази даних для OrderWizard -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@Column\(name = &quot;[^&quot;]*[A-Z]"/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Імена колонок в БД мають бути в snake_case"/>
+    </module>
+
+    <!-- Правила для відповідності DDD та Feature-Sliced Design -->
+    <module name="RegexpSingleline">
+        <property name="format" value="package com\.aksi\.domain\.[^.]+\.service;"/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Сервіси повинні бути в пакеті domain.[domainName].service"/>
     </module>
 </module>

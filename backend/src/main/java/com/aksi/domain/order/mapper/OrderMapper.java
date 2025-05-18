@@ -1,5 +1,6 @@
 package com.aksi.domain.order.mapper;
 
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -36,22 +37,12 @@ public interface OrderMapper {
     
     /**
      * Перетворити CreateOrderRequest у OrderEntity.
+     * Використовує спільний метод mapOrderCommonFields для наслідування анотацій.
+     * 
      * @param orderRequest запит на створення замовлення
      * @return сутність замовлення
      */
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "receiptNumber", ignore = true)
-    @Mapping(target = "tagNumber", ignore = true)
-    @Mapping(target = "client", ignore = true)
-    @Mapping(target = "items", ignore = true)
-    @Mapping(target = "totalAmount", ignore = true)
-    @Mapping(target = "finalAmount", ignore = true)
-    @Mapping(target = "balanceAmount", ignore = true)
-    @Mapping(target = "branchLocation", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "createdDate", ignore = true)
-    @Mapping(target = "updatedDate", ignore = true)
-    @Mapping(target = "completedDate", ignore = true)
+    @InheritConfiguration(name = "mapOrderCommonFields")
     OrderEntity toEntity(CreateOrderRequest orderRequest);
     
     /**
@@ -59,19 +50,7 @@ public interface OrderMapper {
      * @param orderRequest запит на оновлення замовлення
      * @param order замовлення для оновлення
      */
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "receiptNumber", ignore = true)
-    @Mapping(target = "tagNumber", ignore = true)
-    @Mapping(target = "client", ignore = true)
-    @Mapping(target = "items", ignore = true)
-    @Mapping(target = "totalAmount", ignore = true)
-    @Mapping(target = "finalAmount", ignore = true)
-    @Mapping(target = "balanceAmount", ignore = true)
-    @Mapping(target = "branchLocation", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "createdDate", ignore = true)
-    @Mapping(target = "updatedDate", ignore = true)
-    @Mapping(target = "completedDate", ignore = true)
+    @InheritConfiguration(name = "mapOrderCommonFields")
     void updateOrderFromRequest(CreateOrderRequest orderRequest, @MappingTarget OrderEntity order);
     
     /**
@@ -89,13 +68,25 @@ public interface OrderMapper {
     OrderItemEntity toOrderItemEntity(OrderItemDTO dto);
     
     /**
-     * Перетворити OrderItemDTO у OrderItemEntity.
-     * Аліас для toOrderItemEntity для зворотної сумісності.
-     * 
-     * @param itemDTO об'єкт передачі даних
-     * @return об'єкт entity
+     * Базове мапінгове налаштування для перетворення та оновлення OrderEntity.
+     * Цей метод використовується для визначення спільного набору анотацій @Mapping,
+     * які застосовуються як для toEntity, так і для updateOrderFromRequest.
+     *
+     * @param orderRequest запит із даними замовлення
+     * @param order цільовий об'єкт замовлення (може бути новим або існуючим)
      */
-    default OrderItemEntity fromDTO(OrderItemDTO itemDTO) {
-        return toOrderItemEntity(itemDTO);
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "receiptNumber", ignore = true)
+    @Mapping(target = "tagNumber", ignore = true)
+    @Mapping(target = "client", ignore = true)
+    @Mapping(target = "items", ignore = true)
+    @Mapping(target = "totalAmount", ignore = true)
+    @Mapping(target = "finalAmount", ignore = true)
+    @Mapping(target = "balanceAmount", ignore = true)
+    @Mapping(target = "branchLocation", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "updatedDate", ignore = true)
+    @Mapping(target = "completedDate", ignore = true)
+    void mapOrderCommonFields(CreateOrderRequest orderRequest, @MappingTarget OrderEntity order);
 }
