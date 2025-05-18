@@ -11,5 +11,6 @@ export type ServiceCategoryDTO = {
     items?: Array<PriceListItemDTO>;
     name?: string;
     sortOrder?: number;
+    standardProcessingDays?: number;
 };
 

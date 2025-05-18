@@ -30,5 +30,9 @@ export const $ServiceCategoryDTO = {
             type: 'number',
             format: 'int32',
         },
+        standardProcessingDays: {
+            type: 'number',
+            format: 'int32',
+        },
     },
 } as const;

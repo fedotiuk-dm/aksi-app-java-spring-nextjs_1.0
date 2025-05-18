@@ -19,6 +19,7 @@ public class ServiceCategoryDTO {
     private String description;
     private Integer sortOrder;
     private boolean active; // булеве поле без префіксу 'is' для коректної роботи з JavaBeans
+    private int standardProcessingDays;
     private List<PriceListItemDTO> items;
 }
 
