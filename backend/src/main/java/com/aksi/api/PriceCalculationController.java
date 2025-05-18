@@ -30,11 +30,11 @@ import lombok.extern.slf4j.Slf4j;
  * Контролер для розрахунку цін з модифікаторами.
  */
 @RestController
-@RequestMapping("/price-calculator")
-@Tag(name = "Price Calculator", description = "API для розрахунку цін з використанням модифікаторів з БД")
+@RequestMapping("/price-calculation")
+@Tag(name = "Price Calculation", description = "API для розрахунку цін з використанням модифікаторів з БД")
 @RequiredArgsConstructor
 @Slf4j
-public class PriceCalculatorController {
+public class PriceCalculationController {
     
     private final PriceCalculationService priceCalculationService;
     private final PriceModifierService priceModifierService;
@@ -142,7 +142,28 @@ public class PriceCalculatorController {
      * Розрахувати ціну з урахуванням вибраних модифікаторів.
      */
     @PostMapping("/calculate")
-    @Operation(summary = "Розрахувати ціну з урахуванням вибраних модифікаторів")
+    @Operation(
+        summary = "Розрахувати ціну з урахуванням вибраних модифікаторів",
+        description = "Детальний розрахунок ціни з урахуванням базової ціни, модифікаторів, знижок та терміновості",
+        responses = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "200", 
+                description = "Успішний розрахунок ціни", 
+                content = @io.swagger.v3.oas.annotations.media.Content(
+                    mediaType = "application/json",
+                    schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = PriceCalculationResponseDTO.class)
+                )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "400", 
+                description = "Неправильні вхідні дані"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "404", 
+                description = "Не знайдено предмет або категорію в прайс-листі"
+            )
+        }
+    )
     public ResponseEntity<PriceCalculationResponseDTO> calculatePrice(
             @RequestBody PriceCalculationRequestDTO request) {
         log.info("REST запит на розрахунок ціни для категорії {} та предмету {} з {} модифікаторами", 
@@ -172,55 +193,66 @@ public class PriceCalculatorController {
     @lombok.Builder
     @lombok.NoArgsConstructor
     @lombok.AllArgsConstructor
+    @io.swagger.v3.oas.annotations.media.Schema(description = "Запит на розрахунок ціни для предмета")
     public static class PriceCalculationRequestDTO {
         /**
          * Код категорії послуги.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Код категорії послуги", example = "CLOTHING", required = true)
         private String categoryCode;
         
         /**
          * Найменування предмету з прайс-листа.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Найменування предмету з прайс-листа", example = "Піджак", required = true)
         private String itemName;
         
         /**
          * Колір предмету.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Колір предмету", example = "чорний")
         private String color;
         
         /**
          * Кількість предметів.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Кількість предметів", example = "1", required = true)
         private int quantity;
         
         /**
          * Список кодів модифікаторів.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Список кодів модифікаторів", example = "[\"manual_cleaning\", \"kids_items\"]")
         private List<String> modifierCodes;
         
         /**
          * Значення для модифікаторів з діапазоном.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Значення для модифікаторів з діапазоном", example = "[{\"modifierCode\": \"dirt_level\", \"value\": 30.0}]")
         private List<RangeModifierValue> rangeModifierValues;
         
         /**
          * Кількості для фіксованих модифікаторів.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Кількості для фіксованих модифікаторів", example = "[{\"modifierCode\": \"buttons\", \"quantity\": 5}]")
         private List<FixedModifierQuantity> fixedModifierQuantities;
         
         /**
          * Чи термінове замовлення.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Чи термінове замовлення", example = "false")
         private boolean expedited;
         
         /**
          * Відсоток надбавки за терміновість.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Відсоток надбавки за терміновість", example = "50.0")
         private BigDecimal expeditePercent;
         
         /**
          * Відсоток знижки.
          */
+        @io.swagger.v3.oas.annotations.media.Schema(description = "Відсоток знижки", example = "10.0")
         private BigDecimal discountPercent;
     }
     

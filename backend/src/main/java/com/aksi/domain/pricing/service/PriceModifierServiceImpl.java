@@ -3,7 +3,6 @@ package com.aksi.domain.pricing.service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -16,7 +15,6 @@ import com.aksi.domain.pricing.entity.PriceModifierEntity;
 import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
 import com.aksi.domain.pricing.mapper.PriceModifierMapper;
 import com.aksi.domain.pricing.repository.PriceModifierRepository;
-import com.aksi.domain.pricing.repository.ServiceCategoryRepository;
 import com.aksi.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -31,27 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 public class PriceModifierServiceImpl implements PriceModifierService {
     
     private final PriceModifierRepository modifierRepository;
-    private final ServiceCategoryRepository serviceCategoryRepository;
     private final PriceModifierMapper modifierMapper;
-    
-    /**
-     * Мапа для конвертації кодів категорій послуг у категорії модифікаторів.
-     */
-    private static final Map<String, ModifierCategory> SERVICE_CATEGORY_TO_MODIFIER_CATEGORY = Map.of(
-        // Textile categories
-        "CLOTHING", ModifierCategory.TEXTILE,
-        "IRONING", ModifierCategory.TEXTILE,
-        "PADDING", ModifierCategory.TEXTILE,
-        "DYEING", ModifierCategory.TEXTILE,
-        "LAUNDRY", ModifierCategory.TEXTILE,
-        
-        // Leather categories
-        "LEATHER", ModifierCategory.LEATHER,
-        "FUR", ModifierCategory.LEATHER,
-        
-        // All others are treated as general (although they apply to both but with specific factors)
-        "ADDITIONAL_SERVICES", ModifierCategory.GENERAL
-    );
+    private final ServiceCategoryModifierMapper categoryModifierMapper;
     
     /**
      * {@inheritDoc}
@@ -97,9 +76,8 @@ public class PriceModifierServiceImpl implements PriceModifierService {
     public List<PriceModifierDTO> getModifiersForServiceCategory(String categoryCode) {
         log.debug("Отримання модифікаторів для категорії послуг: {}", categoryCode);
         
-        // Отримуємо модифікатор-категорію для коду категорії послуг 
-        ModifierCategory modifierCategory = SERVICE_CATEGORY_TO_MODIFIER_CATEGORY.getOrDefault(
-                categoryCode, ModifierCategory.GENERAL);
+        // Використовуємо мапер для отримання категорії модифікатора
+        ModifierCategory modifierCategory = categoryModifierMapper.mapServiceToModifierCategory(categoryCode);
         
         // Отримуємо модифікатори для цієї категорії
         return modifierRepository.findModifiersForServiceCategory(modifierCategory).stream()

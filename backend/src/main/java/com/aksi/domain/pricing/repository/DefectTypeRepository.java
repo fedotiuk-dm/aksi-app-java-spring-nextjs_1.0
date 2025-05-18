@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.aksi.domain.pricing.entity.DefectTypeEntity;
-import com.aksi.domain.pricing.entity.DefectTypeEntity.RiskLevel;
+import com.aksi.domain.pricing.enums.RiskLevel;
 
 /**
  * Репозиторій для роботи з типами дефектів.

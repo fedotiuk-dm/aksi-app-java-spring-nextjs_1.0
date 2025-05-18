@@ -13,6 +13,7 @@
     3. Покращена читабельність та підтримка коду
     4. Виявлення потенційних помилок на ранніх етапах
     5. Відповідність Spring Best Practices
+    6. Відповідність вимогам DDD/додатку хімчистки
 -->
 
 <module name="Checker">
@@ -44,18 +45,20 @@
     </module>
 
     <module name="SuppressionFilter">
-        <property name="file" value="${checkstyle.suppressions.file}" default="${project.basedir}/checkstyle-suppressions.xml"/>
+        <property name="file" value="${checkstyle.suppressions.file}" default="checkstyle-suppressions.xml"/>
     </module>
 
     <module name="SuppressionSingleFilter">
         <property name="checks" value="Javadoc.*"/>
         <property name="files" value="package-info.java"/>
     </module>
+    
+    <!-- Використовуємо CPD з maven-pmd-plugin для перевірки дублювання коду замість застарілого StrictDuplicateCode -->
 
     <module name="TreeWalker">
         <!-- Загальні налаштування -->
         <property name="tabWidth" value="4"/>
-        <property name="cacheFile" value="${project.basedir}/target/checkstyle-cachefile"/>
+        <property name="cacheFile" value="target/checkstyle-cachefile"/>
 
         <!-- Імпорти -->
         <module name="AvoidStarImport">
@@ -277,6 +280,57 @@
         <module name="JavadocParagraph">
             <property name="allowNewlineParagraph" value="false"/>
         </module>
+        
+        <!-- Перевірка магічних чисел/рядків -->
+        <module name="MagicNumber">
+            <property name="ignoreNumbers" value="-1, 0, 1, 2, 10, 100"/>
+            <property name="ignoreAnnotation" value="true"/>
+            <property name="ignoreFieldDeclaration" value="true"/>
+        </module>
+        
+        <!-- Додаткові перевірки для вимог DDD/хімчистки -->
+        <module name="Regexp">
+            <property name="format" value="[\s\w\.\(\)]new BigDecimal\(\s*\d"/>
+            <property name="message" value="Уникайте хардкоду числових значень. Використовуйте константи чи значення з конфігурації/БД"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+        </module>
+        
+        <module name="Regexp">
+            <property name="format" value="\"(IRONING|WASHING|DYEING|LEATHER|CLOTHING|FUR|PADDING|LAUNDRY)\""/>
+            <property name="message" value="Хардкод кодів категорій. Використовуйте enum або константи"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+        </module>
+        
+        <module name="TypeName">
+            <property name="format" value="^(?!.*(?&lt;!Entity)Repository$|.*(?&lt;!Service)Impl$).*$"/>
+            <property name="message" value="Репозиторії повинні закінчуватися на 'Repository', а реалізація сервісів - на 'ServiceImpl'"/>
+        </module>
+        
+        <!-- Перевірка сутностей DDD -->
+        <module name="Regexp">
+            <property name="format" value="@Entity\s+public\s+class\s+(?!.*Entity)"/>
+            <property name="message" value="Клас сутності повинен мати суфікс 'Entity'"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+        </module>
+        
+        <!-- Правила для DTO класів -->
+        <module name="Regexp">
+            <property name="format" value="public\s+class\s+([a-zA-Z0-9_]+)(?!(Request|Response|DTO))\s+\{[\s\S]*?@ApiModel"/>
+            <property name="message" value="DTO класи для API повинні мати суфікси 'Request', 'Response' або 'DTO'"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+        </module>
+        
+        <!-- Уникнення бізнес-логіки в DTO/моделях -->
+        <module name="Regexp">
+            <property name="format" value="@Data.*class.*DTO[\s\r\n]*\{[\s\S]*?public [a-zA-Z0-9_]+\("/>
+            <property name="message" value="DTO не повинні містити бізнес-методи, тільки дані"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+        </module>
     </module>
     
     <!-- Додаткові перевірки для XML файлів -->
@@ -307,32 +361,29 @@
         <property name="format" value="\s+$"/>
         <property name="message" value="Line has trailing spaces."/>
         <property name="fileExtensions" value="yml,yaml"/>
-        
-        <!-- DTO and API Documentation Rules -->
-        <module name="MissingJavadocType">
-            <property name="scope" value="public"/>
-            <property name="severity" value="warning"/>
-            <property name="excludeScope" value="private"/>
-            <message key="javadoc.missing" value="Missing documentation for class {0}. DTO classes must be documented for proper OpenAPI generation"/>
-        </module>
-
-        <!-- API Controller Documentation -->
-        <module name="JavadocMethod">
-            <property name="accessModifiers" value="public"/>
-            <property name="allowMissingParamTags" value="false"/>
-            <property name="allowMissingReturnTag" value="false"/>
-            <message key="javadoc.missing" value="Missing documentation for method {0}. API endpoints must be documented for OpenAPI."/>
-        </module>
-
-        <!-- DTO Size Limits -->
-        <module name="MethodCount">
-            <property name="maxTotal" value="30"/>
-            <property name="maxPublic" value="20"/>
-            <message key="too.many.methods" value="Too many methods in class {0}. Consider splitting the DTO into smaller ones."/>
-        </module>
     </module>
     
-    <!-- API and Frontend Integration Rules -->
+    <!-- Перевірки для виявлення закоментованого коду -->
+    <module name="RegexpMultiline">
+        <property name="format" value="/\*\s*.*\bpublic\b.*\*/|//\s*.*\bpublic\b"/>
+        <property name="message" value="Закоментований код має бути видалений"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+    
+    <!-- Перевірка хардкоду URL та шляхів -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\"(http|https|ftp)://"/>
+        <property name="message" value="Хардкодовані URL мають бути винесені в конфігурацію"/>
+    </module>
+    
+    <!-- Перевірка тестових даних у продакшн коді -->
+    <module name="RegexpSingleline">
+        <property name="format" value="(?i)\b(test|mock|dummy|fake|stub)\w*\s*="/>
+        <property name="message" value="Тестові дані у продакшн коді"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+    
+    <!-- API Documentation Rules -->
     <module name="RegexpSingleline">
         <property name="format" value="@ApiIgnore"/>
         <property name="message" value="Do not use @ApiIgnore for public API endpoints. Use @Hidden or proper documentation instead."/>
@@ -346,5 +397,32 @@
     <module name="RegexpSingleline">
         <property name="format" value="@JsonIgnore"/>
         <property name="message" value="Be careful with @JsonIgnore. Consider using @Schema(hidden = true) for OpenAPI documentation."/>
+    </module>
+
+    <!-- Правила для API та DTO сумісності з фронтендом -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@(RestController|Controller).*class\s+(?!.*Controller)"/>
+        <property name="message" value="REST контролери повинні мати суфікс 'Controller' для послідовності іменування"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+    
+    <module name="RegexpSingleline">
+        <property name="format" value="@RequestMapping\s*\(\s*\"/api/"/>
+        <property name="message" value="Не додавайте '/api/' у RequestMapping - це додається автоматично"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+    
+    <!-- API URL конвенції для фронтенду -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@(GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping)\s*\(\s*\"[^\"]*[A-Z]"/>
+        <property name="message" value="API URL повинні бути в kebab-case (маленькі літери з дефісами)"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+    
+    <!-- Перевірка узгодженості DTO для REST API -->
+    <module name="RegexpSingleline">
+        <property name="format" value="(@PostMapping|@PutMapping)[\s\S]{0,100}public[\s\S]{0,100}\([^)]*(?!(Request|DTO))[a-zA-Z0-9_]+\s+\w+\)"/>
+        <property name="message" value="Вхідні параметри для POST/PUT повинні використовувати класи з суфіксом Request або DTO"/>
+        <property name="fileExtensions" value="java"/>
     </module>
 </module>

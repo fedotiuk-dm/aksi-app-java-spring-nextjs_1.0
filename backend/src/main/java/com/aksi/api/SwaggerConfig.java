@@ -1,20 +1,21 @@
 package com.aksi.api;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.servers.Server;
-import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Arrays;
 
 /**
  * Конфігурація Swagger/OpenAPI для документації API.
@@ -38,31 +39,58 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         final String securitySchemeName = "bearerAuth";
         
-        // Створюємо компоненти безпосередньо в конструкторі
-        return new OpenAPI()
-                .servers(getServers())
+        // Налаштування компонентів OpenAPI
+        OpenAPI openAPI = new OpenAPI()
+                .servers(createServersList())
                 .info(createApiInfo())
                 .tags(getApiTags())
                 .externalDocs(new ExternalDocumentation()
-                        .description("Документація AKSI")
-                        .url("https://docs.aksi.vn.ua"))
-                .components(new io.swagger.v3.oas.models.Components()
-                        .addSecuritySchemes(securitySchemeName,
-                                new SecurityScheme()
-                                        .name(securitySchemeName)
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")))
-                .security(Collections.singletonList(new SecurityRequirement().addList(securitySchemeName)))
-                .extensions(Collections.singletonMap("x-api-version", API_VERSION));
+                        .description("Повна документація AKSI")
+                        .url("https://docs.aksi.vn.ua"));
+                
+        // Налаштовуємо компоненти OpenAPI
+        openAPI.components(new io.swagger.v3.oas.models.Components()
+            .addSecuritySchemes(securitySchemeName,
+                new SecurityScheme()
+                    .name(securitySchemeName)
+                    .type(SecurityScheme.Type.HTTP)
+                    .scheme("bearer")
+                    .bearerFormat("JWT")
+                    .description("JWT токен для аутентифікації. Введіть 'Bearer' [пробіл] і отриманий токен."))
+            .addSchemas("ErrorResponse", new io.swagger.v3.oas.models.media.Schema<>()
+                .name("ErrorResponse")
+                .type("object")
+                .addProperty("timestamp", new io.swagger.v3.oas.models.media.DateTimeSchema()
+                    .example("2023-01-01T12:00:00Z"))
+                .addProperty("status", new io.swagger.v3.oas.models.media.IntegerSchema()
+                    .example(400))
+                .addProperty("error", new io.swagger.v3.oas.models.media.StringSchema()
+                    .example("Bad Request"))
+                .addProperty("message", new io.swagger.v3.oas.models.media.StringSchema()
+                    .example("Invalid input data"))
+                .addProperty("path", new io.swagger.v3.oas.models.media.StringSchema()
+                    .example("/api/endpoint"))));
+                
+        // Додаємо безпеку
+        openAPI.addSecurityItem(new SecurityRequirement().addList(securitySchemeName));
+        
+        // Додаємо версію API
+        openAPI.extensions(Collections.singletonMap("x-api-version", API_VERSION));
+        
+        return openAPI;
     }
     
     // Додаємо глобальні відповіді до всіх операцій
     // Використовуйте анотації @ApiResponse у контролерах для більш детальних відповідей
     
-    private List<Server> getServers() {
+    private List<Server> createServersList() {
+        // Використовуємо Docker-ім'я сервісу для контейнерізованого середовища
+        Server dockerServer = new Server()
+                .url("http://backend:8080")
+                .description("Docker сервер (використовується в контейнері)");
+                
         Server localServer = new Server()
-                .url("http://localhost:8080/api")
+                .url("http://localhost:8080")
                 .description("Локальний сервер розробки");
                 
         Server devServer = new Server()
@@ -73,7 +101,7 @@ public class SwaggerConfig {
                 .url("https://api.aksi.vn.ua")
                 .description("Продуктивний сервер");
                 
-        return Arrays.asList(localServer, devServer, prodServer);
+        return Arrays.asList(dockerServer, localServer, devServer, prodServer);
     }
     
     private Info createApiInfo() {
@@ -168,7 +196,7 @@ public class SwaggerConfig {
                 .description("API для роботи з характеристиками предметів замовлення"),
                 
             new Tag()
-                .name("Price Calculator")
+                .name("Price Calculation")
                 .description("API для розрахунку цін з урахуванням різних модифікаторів"),
             
             // Files & Resources

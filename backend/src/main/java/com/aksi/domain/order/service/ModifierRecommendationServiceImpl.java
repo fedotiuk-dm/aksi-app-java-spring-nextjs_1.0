@@ -12,9 +12,8 @@ import com.aksi.domain.order.dto.ModifierRecommendationDTO;
 import com.aksi.domain.order.dto.ModifierRecommendationDTO.RecommendationPriority;
 import com.aksi.domain.pricing.dto.DefectTypeDTO;
 import com.aksi.domain.pricing.dto.StainTypeDTO;
-import com.aksi.domain.pricing.entity.DefectTypeEntity;
 import com.aksi.domain.pricing.entity.PriceModifierEntity;
-import com.aksi.domain.pricing.entity.StainTypeEntity;
+import com.aksi.domain.pricing.enums.RiskLevel;
 import com.aksi.domain.pricing.repository.PriceModifierRepository;
 import com.aksi.domain.pricing.service.DefectTypeService;
 import com.aksi.domain.pricing.service.StainTypeService;
@@ -248,7 +247,7 @@ public class ModifierRecommendationServiceImpl implements ModifierRecommendation
         if (stains != null) {
             for (final String stainName : stains) {
                 final StainTypeDTO stainType = stainTypeByName.get(stainName);
-                if (stainType != null && StainTypeEntity.RiskLevel.HIGH.equals(stainType.getRiskLevel())) {
+                if (stainType != null && RiskLevel.HIGH.equals(stainType.getRiskLevel())) {
                     warnings.add(String.format("Увага! Плями типу \"%s\" можуть не видалитися повністю.", stainName));
                 }
             }
@@ -258,7 +257,7 @@ public class ModifierRecommendationServiceImpl implements ModifierRecommendation
         if (defects != null) {
             for (final String defectName : defects) {
                 final DefectTypeDTO defectType = defectTypeByName.get(defectName);
-                if (defectType != null && DefectTypeEntity.RiskLevel.HIGH.equals(defectType.getRiskLevel())) {
+                if (defectType != null && RiskLevel.HIGH.equals(defectType.getRiskLevel())) {
                     warnings.add(String.format("Увага! Через наявність дефекту \"%s\" можливі ускладнення під час чистки.", defectName));
                 }
             }

@@ -23,7 +23,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Імплементація сервісу для роботи зі знижками
+ * Імплементація сервісу для роботи зі знижками.
+ * Сервіс надає наступні можливості:
+ * - Застосування знижок до замовлень з урахуванням обмежень для категорій послуг
+ * - Перевірка можливості застосування знижки до категорії
+ * - Розрахунок суми знижки та підсумкової вартості
+ * - Обробка різних типів знижок (стандартних та користувацьких)
  */
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,13 @@ public class DiscountServiceImpl implements DiscountService {
 
     private final OrderRepository orderRepository;
     
+    /**
+     * Застосовує знижку до замовлення на основі запиту.
+     * Встановлює тип знижки, відсоток та опис, а також розраховує суму знижки.
+     * 
+     * @param request дані про знижку, що містить orderId, type, percentage та description
+     * @return інформація про застосовану знижку, включаючи категорії, до яких знижка не застосовується
+     */
     @Override
     @Transactional
     public OrderDiscountResponse applyDiscount(OrderDiscountRequest request) {
@@ -76,6 +88,12 @@ public class DiscountServiceImpl implements DiscountService {
         return createDiscountResponse(order);
     }
     
+    /**
+     * Отримує інформацію про поточну знижку для замовлення.
+     * 
+     * @param orderId ідентифікатор замовлення
+     * @return деталі поточної знижки та категорії, до яких знижка не застосовується
+     */
     @Override
     @Transactional(readOnly = true)
     public OrderDiscountResponse getOrderDiscount(String orderId) {
@@ -87,6 +105,12 @@ public class DiscountServiceImpl implements DiscountService {
         return createDiscountResponse(order);
     }
     
+    /**
+     * Видаляє знижку із замовлення та перераховує загальну суму.
+     * 
+     * @param orderId ідентифікатор замовлення
+     * @return оновлені дані замовлення без знижки
+     */
     @Override
     @Transactional
     public OrderDiscountResponse removeDiscount(String orderId) {
@@ -111,7 +135,9 @@ public class DiscountServiceImpl implements DiscountService {
     }
     
     /**
-     * Розрахувати суму знижки для замовлення з урахуванням обмежень на категорії
+     * Розраховує суму знижки для замовлення з урахуванням обмежень на категорії.
+     * Знаходить елементи замовлення, до яких можна застосувати знижку,
+     * та обчислює загальну суму знижки.
      * 
      * @param order замовлення
      */
@@ -143,10 +169,11 @@ public class DiscountServiceImpl implements DiscountService {
     }
     
     /**
-     * Створити відповідь з інформацією про знижку
+     * Створює відповідь з детальною інформацією про знижку для замовлення.
+     * Включає дані про категорії, до яких знижка не застосовується.
      * 
      * @param order замовлення
-     * @return детальна інформація про знижку
+     * @return детальна інформація про знижку та її застосування
      */
     private OrderDiscountResponse createDiscountResponse(OrderEntity order) {
         // Знаходимо елементи, до яких не застосовується знижка
@@ -172,5 +199,46 @@ public class DiscountServiceImpl implements DiscountService {
                 .nonDiscountableCategories(nonDiscountableCategories)
                 .nonDiscountableAmount(nonDiscountableAmount)
                 .build();
+    }
+
+    /**
+     * Перевіряє, чи можна застосувати знижку до категорії послуг.
+     * Певні категорії (прання, прасування, фарбування) не підлягають знижкам.
+     * 
+     * @param categoryCode код категорії послуг
+     * @return true, якщо знижка може бути застосована, false - інакше
+     */
+    @Override
+    public boolean isDiscountApplicable(String categoryCode) {
+        return !NonDiscountableCategory.isNonDiscountable(categoryCode);
+    }
+
+    /**
+     * Застосовує знижку до ціни, якщо це можливо для категорії.
+     * Автоматично перевіряє, чи може категорія мати знижку.
+     * 
+     * @param price ціна без знижки
+     * @param discountPercent відсоток знижки
+     * @param categoryCode код категорії
+     * @return ціна зі знижкою або початкова ціна, якщо знижка не застосовується до категорії
+     */
+    @Override
+    public BigDecimal applyDiscountIfApplicable(BigDecimal price, BigDecimal discountPercent, String categoryCode) {
+        if (price == null || discountPercent == null || categoryCode == null) {
+            return price;
+        }
+        
+        // Перевіряємо чи може бути застосована знижка для цієї категорії
+        if (NonDiscountableCategory.isNonDiscountable(categoryCode)) {
+            return price; // Для категорій, що не підлягають знижкам, повертаємо оригінальну ціну
+        }
+        
+        // Обчислюємо знижку
+        BigDecimal discountMultiplier = BigDecimal.ONE.subtract(
+                discountPercent.divide(new BigDecimal("100"), 10, RoundingMode.HALF_UP));
+        
+        // Застосовуємо знижку
+        return price.multiply(discountMultiplier)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 } 

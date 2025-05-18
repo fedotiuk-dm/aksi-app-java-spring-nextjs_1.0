@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.aksi.domain.pricing.dto.DefectTypeDTO;
 import com.aksi.domain.pricing.entity.DefectTypeEntity;
-import com.aksi.domain.pricing.entity.DefectTypeEntity.RiskLevel;
+import com.aksi.domain.pricing.enums.RiskLevel;
 
 /**
  * Сервіс для роботи з типами дефектів.

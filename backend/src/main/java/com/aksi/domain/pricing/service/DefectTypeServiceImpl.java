@@ -8,24 +8,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.domain.pricing.dto.DefectTypeDTO;
 import com.aksi.domain.pricing.entity.DefectTypeEntity;
-import com.aksi.domain.pricing.entity.DefectTypeEntity.RiskLevel;
+import com.aksi.domain.pricing.enums.RiskLevel;
 import com.aksi.domain.pricing.mapper.DefectTypeMapper;
 import com.aksi.domain.pricing.repository.DefectTypeRepository;
 import com.aksi.exception.EntityNotFoundException;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Реалізація сервісу для роботи з типами дефектів.
+ * Успадковується від AbstractDefectTypeService для використання спільної логіки.
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
-public class DefectTypeServiceImpl implements DefectTypeService {
+public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeRepository> implements DefectTypeService {
     
-    private final DefectTypeRepository defectTypeRepository;
     private final DefectTypeMapper defectTypeMapper;
+
+    /**
+     * Конструктор з параметрами.
+     * 
+     * @param defectTypeRepository репозиторій для роботи з типами дефектів
+     * @param defectTypeMapper мапер для конвертації між Entity та DTO
+     */
+    public DefectTypeServiceImpl(DefectTypeRepository defectTypeRepository, DefectTypeMapper defectTypeMapper) {
+        super(defectTypeRepository);
+        this.defectTypeMapper = defectTypeMapper;
+    }
 
     /**
      * {@inheritDoc}
@@ -33,7 +42,7 @@ public class DefectTypeServiceImpl implements DefectTypeService {
     @Override
     @Transactional(readOnly = true)
     public List<DefectTypeDTO> getAllDefectTypes() {
-        return defectTypeMapper.toDtoList(defectTypeRepository.findAll());
+        return defectTypeMapper.toDtoList(repository.findAll());
     }
 
     /**
@@ -42,7 +51,7 @@ public class DefectTypeServiceImpl implements DefectTypeService {
     @Override
     @Transactional(readOnly = true)
     public List<DefectTypeDTO> getActiveDefectTypes() {
-        return defectTypeMapper.toDtoList(defectTypeRepository.findByActiveTrue());
+        return defectTypeMapper.toDtoList(repository.findByActiveTrue());
     }
 
     /**
@@ -51,7 +60,7 @@ public class DefectTypeServiceImpl implements DefectTypeService {
     @Override
     @Transactional(readOnly = true)
     public List<DefectTypeEntity> getAllActiveDefectTypes() {
-        return defectTypeRepository.findByActiveTrue();
+        return repository.findByActiveTrue();
     }
 
     /**
@@ -60,7 +69,7 @@ public class DefectTypeServiceImpl implements DefectTypeService {
     @Override
     @Transactional(readOnly = true)
     public DefectTypeDTO getDefectTypeById(UUID id) {
-        return defectTypeRepository.findById(id)
+        return repository.findById(id)
                 .map(defectTypeMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Тип дефекту з ID " + id + " не знайдено"));
     }
@@ -71,7 +80,7 @@ public class DefectTypeServiceImpl implements DefectTypeService {
     @Override
     @Transactional(readOnly = true)
     public DefectTypeDTO getDefectTypeByCode(String code) {
-        return defectTypeRepository.findByCode(code)
+        return repository.findByCode(code)
                 .map(defectTypeMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Тип дефекту з кодом " + code + " не знайдено"));
     }
@@ -82,16 +91,16 @@ public class DefectTypeServiceImpl implements DefectTypeService {
     @Override
     @Transactional
     public DefectTypeDTO createDefectType(DefectTypeDTO defectTypeDTO) {
-        if (defectTypeDTO.getId() != null && defectTypeRepository.existsById(defectTypeDTO.getId())) {
+        if (defectTypeDTO.getId() != null && repository.existsById(defectTypeDTO.getId())) {
             throw new IllegalArgumentException("Тип дефекту з ID " + defectTypeDTO.getId() + " вже існує");
         }
         
-        if (defectTypeRepository.existsByCode(defectTypeDTO.getCode())) {
+        if (repository.existsByCode(defectTypeDTO.getCode())) {
             throw new IllegalArgumentException("Тип дефекту з кодом " + defectTypeDTO.getCode() + " вже існує");
         }
         
         DefectTypeEntity entity = defectTypeMapper.toEntity(defectTypeDTO);
-        entity = defectTypeRepository.save(entity);
+        entity = repository.save(entity);
         
         log.info("Створено новий тип дефекту: {}", entity.getCode());
         return defectTypeMapper.toDto(entity);
@@ -103,12 +112,12 @@ public class DefectTypeServiceImpl implements DefectTypeService {
     @Override
     @Transactional
     public DefectTypeDTO updateDefectType(UUID id, DefectTypeDTO defectTypeDTO) {
-        DefectTypeEntity existingEntity = defectTypeRepository.findById(id)
+        DefectTypeEntity existingEntity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Тип дефекту з ID " + id + " не знайдено"));
         
         // Перевіряємо, чи не існує інший запис з таким же кодом
         if (!existingEntity.getCode().equals(defectTypeDTO.getCode()) && 
-                defectTypeRepository.existsByCode(defectTypeDTO.getCode())) {
+                repository.existsByCode(defectTypeDTO.getCode())) {
             throw new IllegalArgumentException("Тип дефекту з кодом " + defectTypeDTO.getCode() + " вже існує");
         }
         
@@ -119,7 +128,7 @@ public class DefectTypeServiceImpl implements DefectTypeService {
         existingEntity.setRiskLevel(defectTypeDTO.getRiskLevel());
         existingEntity.setActive(defectTypeDTO.isActive());
         
-        existingEntity = defectTypeRepository.save(existingEntity);
+        existingEntity = repository.save(existingEntity);
         
         log.info("Оновлено тип дефекту: {}", existingEntity.getCode());
         return defectTypeMapper.toDto(existingEntity);
@@ -131,11 +140,11 @@ public class DefectTypeServiceImpl implements DefectTypeService {
     @Override
     @Transactional
     public void deleteDefectType(UUID id) {
-        if (!defectTypeRepository.existsById(id)) {
+        if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Тип дефекту з ID " + id + " не знайдено");
         }
         
-        defectTypeRepository.deleteById(id);
+        repository.deleteById(id);
         log.info("Видалено тип дефекту з ID: {}", id);
     }
 
@@ -145,6 +154,6 @@ public class DefectTypeServiceImpl implements DefectTypeService {
     @Override
     @Transactional(readOnly = true)
     public List<DefectTypeDTO> getDefectTypesByRiskLevel(RiskLevel riskLevel) {
-        return defectTypeMapper.toDtoList(defectTypeRepository.findByActiveTrueAndRiskLevel(riskLevel));
+        return defectTypeMapper.toDtoList(repository.findByActiveTrueAndRiskLevel(riskLevel));
     }
 } 

@@ -3,6 +3,7 @@ package com.aksi.domain.pricing.dto;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import com.aksi.domain.pricing.constants.ModifierFormatConstants;
 import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
 import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierType;
 
@@ -66,32 +67,25 @@ public class PriceModifierDTO {
             return "";
         }
         
-        switch (modifierType) {
-            case PERCENTAGE:
-                if (value != null) {
-                    return (value.compareTo(BigDecimal.ZERO) >= 0 ? "+" : "") + value + "%";
-                }
-                break;
+        return switch (modifierType) {
+            case PERCENTAGE -> value != null 
+                ? String.format(
+                    ModifierFormatConstants.PERCENTAGE_FORMAT,
+                    value.compareTo(BigDecimal.ZERO) >= 0 ? ModifierFormatConstants.PERCENTAGE_PLUS_PREFIX : "",
+                    value)
+                : "";
                 
-            case RANGE_PERCENTAGE:
-                if (minValue != null && maxValue != null) {
-                    return "від +" + minValue + "% до +" + maxValue + "%";
-                }
-                break;
+            case RANGE_PERCENTAGE -> minValue != null && maxValue != null 
+                ? String.format(ModifierFormatConstants.RANGE_PERCENTAGE_FORMAT, minValue, maxValue)
+                : "";
                 
-            case FIXED:
-                if (value != null) {
-                    return "фіксована ціна " + value + " грн";
-                }
-                break;
+            case FIXED -> value != null 
+                ? String.format(ModifierFormatConstants.FIXED_PRICE_FORMAT, value, ModifierFormatConstants.DEFAULT_CURRENCY)
+                : "";
                 
-            case ADDITION:
-                if (value != null) {
-                    return "додатково " + value + " грн";
-                }
-                break;
-        }
-        
-        return "";
+            case ADDITION -> value != null 
+                ? String.format(ModifierFormatConstants.ADDITION_FORMAT, value, ModifierFormatConstants.DEFAULT_CURRENCY)
+                : "";
+        };
     }
 } 

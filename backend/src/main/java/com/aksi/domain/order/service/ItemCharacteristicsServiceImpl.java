@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.order.constants.ItemCharacteristicsConstants;
-import com.aksi.domain.pricing.entity.DefectTypeEntity.RiskLevel;
+import com.aksi.domain.pricing.enums.RiskLevel;
 import com.aksi.domain.pricing.service.DefectTypeService;
 import com.aksi.domain.pricing.service.StainTypeService;
 

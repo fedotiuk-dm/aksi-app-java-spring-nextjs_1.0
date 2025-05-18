@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.aksi.domain.pricing.dto.StainTypeDTO;
 import com.aksi.domain.pricing.entity.StainTypeEntity;
-import com.aksi.domain.pricing.entity.StainTypeEntity.RiskLevel;
+import com.aksi.domain.pricing.enums.RiskLevel;
 
 /**
  * Сервіс для роботи з типами плям.

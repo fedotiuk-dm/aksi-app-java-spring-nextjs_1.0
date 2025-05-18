@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.pricing.dto.DefectTypeDTO;
-import com.aksi.domain.pricing.entity.DefectTypeEntity.RiskLevel;
+import com.aksi.domain.pricing.enums.RiskLevel;
 import com.aksi.domain.pricing.service.DefectTypeService;
 
 import io.swagger.v3.oas.annotations.Operation;

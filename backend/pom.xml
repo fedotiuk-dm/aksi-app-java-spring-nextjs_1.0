@@ -40,7 +40,10 @@
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <itextpdf.version>5.5.13.4</itextpdf.version>
         <zxing.version>3.5.3</zxing.version>
-        <vavr.version>0.10.6</vavr.version>
+        <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
+        <!-- Кодування для всього проекту -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
@@ -157,13 +160,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Vavr -->
-        <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
-            <version>${vavr.version}</version>
-        </dependency>
-
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -272,6 +268,12 @@
                 <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
                     <configLocation>${basedir}/checkstyle.xml</configLocation>
+                    <suppressionsLocation>${basedir}/checkstyle-suppressions.xml</suppressionsLocation>
+                    <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+                    <propertyExpansion>
+                        basedir=${project.basedir}
+                        project.basedir=${project.basedir}
+                    </propertyExpansion>
                     <inputEncoding>UTF-8</inputEncoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
@@ -294,6 +296,30 @@
                         <version>${checkstyle.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+            <!-- PMD для пошуку дублювання коду (CPD) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${maven-pmd-plugin.version}</version>
+                <configuration>
+                    <minimumTokens>30</minimumTokens>
+                    <skipEmptyReport>false</skipEmptyReport>
+                    <analysisCache>true</analysisCache>
+                    <printFailingErrors>true</printFailingErrors>
+                    <linkXRef>false</linkXRef>
+                    <failOnViolation>false</failOnViolation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>cpd-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>cpd-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

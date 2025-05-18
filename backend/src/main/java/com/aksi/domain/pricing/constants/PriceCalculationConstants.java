@@ -42,6 +42,17 @@ public final class PriceCalculationConstants {
         return base.add(calculatePercentage(base, percentage));
     }
     
+    /**
+     * Застосовує знижку до базової ціни.
+     * 
+     * @deprecated Замініть використання цього методу на {@link com.aksi.domain.order.service.DiscountService#applyDiscountIfApplicable}
+     * для правильної перевірки можливості застосування знижки до конкретної категорії
+     * 
+     * @param base базова ціна
+     * @param percentage відсоток знижки
+     * @return ціна зі знижкою
+     */
+    @Deprecated
     public static BigDecimal applyDiscount(BigDecimal base, BigDecimal percentage) {
         return base.subtract(calculatePercentage(base, percentage));
     }

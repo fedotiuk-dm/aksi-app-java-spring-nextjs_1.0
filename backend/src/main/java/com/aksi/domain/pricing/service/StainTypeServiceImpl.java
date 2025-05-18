@@ -8,24 +8,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.domain.pricing.dto.StainTypeDTO;
 import com.aksi.domain.pricing.entity.StainTypeEntity;
-import com.aksi.domain.pricing.entity.StainTypeEntity.RiskLevel;
+import com.aksi.domain.pricing.enums.RiskLevel;
 import com.aksi.domain.pricing.mapper.StainTypeMapper;
 import com.aksi.domain.pricing.repository.StainTypeRepository;
 import com.aksi.exception.EntityNotFoundException;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Реалізація сервісу для роботи з типами плям.
+ * Успадковується від AbstractStainTypeService для використання спільної логіки.
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
-public class StainTypeServiceImpl implements StainTypeService {
+public class StainTypeServiceImpl extends AbstractStainTypeService<StainTypeRepository> implements StainTypeService {
     
-    private final StainTypeRepository stainTypeRepository;
     private final StainTypeMapper stainTypeMapper;
+
+    /**
+     * Конструктор з параметрами.
+     * 
+     * @param stainTypeRepository репозиторій для роботи з типами плям
+     * @param stainTypeMapper мапер для конвертації між Entity та DTO
+     */
+    public StainTypeServiceImpl(StainTypeRepository stainTypeRepository, StainTypeMapper stainTypeMapper) {
+        super(stainTypeRepository);
+        this.stainTypeMapper = stainTypeMapper;
+    }
 
     /**
      * {@inheritDoc}
@@ -33,7 +42,7 @@ public class StainTypeServiceImpl implements StainTypeService {
     @Override
     @Transactional(readOnly = true)
     public List<StainTypeDTO> getAllStainTypes() {
-        return stainTypeMapper.toDtoList(stainTypeRepository.findAll());
+        return stainTypeMapper.toDtoList(repository.findAll());
     }
 
     /**
@@ -42,7 +51,7 @@ public class StainTypeServiceImpl implements StainTypeService {
     @Override
     @Transactional(readOnly = true)
     public List<StainTypeDTO> getActiveStainTypes() {
-        return stainTypeMapper.toDtoList(stainTypeRepository.findByActiveTrue());
+        return stainTypeMapper.toDtoList(repository.findByActiveTrue());
     }
 
     /**
@@ -51,7 +60,7 @@ public class StainTypeServiceImpl implements StainTypeService {
     @Override
     @Transactional(readOnly = true)
     public List<StainTypeEntity> getAllActiveStainTypes() {
-        return stainTypeRepository.findByActiveTrue();
+        return repository.findByActiveTrue();
     }
 
     /**
@@ -60,7 +69,7 @@ public class StainTypeServiceImpl implements StainTypeService {
     @Override
     @Transactional(readOnly = true)
     public StainTypeDTO getStainTypeById(UUID id) {
-        return stainTypeRepository.findById(id)
+        return repository.findById(id)
                 .map(stainTypeMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Тип плями з ID " + id + " не знайдено"));
     }
@@ -71,7 +80,7 @@ public class StainTypeServiceImpl implements StainTypeService {
     @Override
     @Transactional(readOnly = true)
     public StainTypeDTO getStainTypeByCode(String code) {
-        return stainTypeRepository.findByCode(code)
+        return repository.findByCode(code)
                 .map(stainTypeMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Тип плями з кодом " + code + " не знайдено"));
     }
@@ -82,16 +91,16 @@ public class StainTypeServiceImpl implements StainTypeService {
     @Override
     @Transactional
     public StainTypeDTO createStainType(StainTypeDTO stainTypeDTO) {
-        if (stainTypeDTO.getId() != null && stainTypeRepository.existsById(stainTypeDTO.getId())) {
+        if (stainTypeDTO.getId() != null && repository.existsById(stainTypeDTO.getId())) {
             throw new IllegalArgumentException("Тип плями з ID " + stainTypeDTO.getId() + " вже існує");
         }
         
-        if (stainTypeRepository.existsByCode(stainTypeDTO.getCode())) {
+        if (repository.existsByCode(stainTypeDTO.getCode())) {
             throw new IllegalArgumentException("Тип плями з кодом " + stainTypeDTO.getCode() + " вже існує");
         }
         
         StainTypeEntity entity = stainTypeMapper.toEntity(stainTypeDTO);
-        entity = stainTypeRepository.save(entity);
+        entity = repository.save(entity);
         
         log.info("Створено новий тип плями: {}", entity.getCode());
         return stainTypeMapper.toDto(entity);
@@ -103,12 +112,12 @@ public class StainTypeServiceImpl implements StainTypeService {
     @Override
     @Transactional
     public StainTypeDTO updateStainType(UUID id, StainTypeDTO stainTypeDTO) {
-        StainTypeEntity existingEntity = stainTypeRepository.findById(id)
+        StainTypeEntity existingEntity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Тип плями з ID " + id + " не знайдено"));
         
         // Перевіряємо, чи не існує інший запис з таким же кодом
         if (!existingEntity.getCode().equals(stainTypeDTO.getCode()) && 
-                stainTypeRepository.existsByCode(stainTypeDTO.getCode())) {
+                repository.existsByCode(stainTypeDTO.getCode())) {
             throw new IllegalArgumentException("Тип плями з кодом " + stainTypeDTO.getCode() + " вже існує");
         }
         
@@ -119,7 +128,7 @@ public class StainTypeServiceImpl implements StainTypeService {
         existingEntity.setRiskLevel(stainTypeDTO.getRiskLevel());
         existingEntity.setActive(stainTypeDTO.isActive());
         
-        existingEntity = stainTypeRepository.save(existingEntity);
+        existingEntity = repository.save(existingEntity);
         
         log.info("Оновлено тип плями: {}", existingEntity.getCode());
         return stainTypeMapper.toDto(existingEntity);
@@ -131,11 +140,11 @@ public class StainTypeServiceImpl implements StainTypeService {
     @Override
     @Transactional
     public void deleteStainType(UUID id) {
-        if (!stainTypeRepository.existsById(id)) {
+        if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Тип плями з ID " + id + " не знайдено");
         }
         
-        stainTypeRepository.deleteById(id);
+        repository.deleteById(id);
         log.info("Видалено тип плями з ID: {}", id);
     }
 
@@ -145,6 +154,6 @@ public class StainTypeServiceImpl implements StainTypeService {
     @Override
     @Transactional(readOnly = true)
     public List<StainTypeDTO> getStainTypesByRiskLevel(RiskLevel riskLevel) {
-        return stainTypeMapper.toDtoList(stainTypeRepository.findByActiveTrueAndRiskLevel(riskLevel));
+        return stainTypeMapper.toDtoList(repository.findByActiveTrueAndRiskLevel(riskLevel));
     }
 } 
