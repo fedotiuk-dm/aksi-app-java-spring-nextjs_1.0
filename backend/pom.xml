@@ -310,6 +310,11 @@
                     <printFailingErrors>true</printFailingErrors>
                     <linkXRef>false</linkXRef>
                     <failOnViolation>false</failOnViolation>
+                    <!-- Виключення контролерів з CPD -->
+                    <excludes>
+                        <exclude>**/api/**/*Controller.java</exclude>
+                        <exclude>**/util/ApiResponseUtils.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
