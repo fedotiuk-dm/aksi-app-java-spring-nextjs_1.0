@@ -74,17 +74,39 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,loggers
+        include: '*'
       base-path: /actuator
   endpoint:
     health:
       show-details: always
     loggers:
       enabled: true
+    logfile:
+      enabled: true
+      path: logs/aksi-app.log
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true
+    enable:
+      all: true
   server:
     port: 8080
     servlet:
-      context-path: ${server.servlet.context-path}
+      context-path: /api
+  endpoint.health.probes.enabled: true
+  info:
+    env:
+      enabled: true
 
 logging:
   level:

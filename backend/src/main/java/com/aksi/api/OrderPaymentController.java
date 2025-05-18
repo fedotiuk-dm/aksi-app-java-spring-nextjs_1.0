@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/orders/{orderId}/payment")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Оплата замовлень", description = "API для роботи з оплатою замовлень")
+@Tag(name = "Payment for Order", description = "API для роботи з оплатою замовлень")
 public class OrderPaymentController {
     
     private final PaymentService paymentService;

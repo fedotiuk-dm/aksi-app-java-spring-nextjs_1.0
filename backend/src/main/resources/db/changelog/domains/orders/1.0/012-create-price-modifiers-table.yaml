@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-price-modifiers-table
+      author: aksi-developer
+      changes:
+        - createTable:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_price_modifiers_order_item
+                    referencedTableName: order_items
+                    referencedColumnNames: id
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: modifier_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: decimal(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: decimal(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_price_modifiers_order_item_id
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: order_item_id
+      comment: 'Таблиця для зберігання модифікаторів ціни предметів замовлення'

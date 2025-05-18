@@ -32,3 +32,9 @@ databaseChangeLog:
   - include:
       file: 1.0/011-add-payment-and-requirements-fields.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/012-create-price-modifiers-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/013-create-customer-signatures-table.yaml
+      relativeToChangelogFile: true

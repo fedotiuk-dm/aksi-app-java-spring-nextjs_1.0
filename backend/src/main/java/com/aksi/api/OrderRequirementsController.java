@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/orders/{orderId}/requirements")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Додаткові вимоги замовлення", description = "API для роботи з додатковими вимогами та примітками до замовлення")
+@Tag(name = "Additional Requirements for Order", description = "API для роботи з додатковими вимогами та примітками до замовлення")
 public class OrderRequirementsController {
     
     private final OrderRequirementsService orderRequirementsService;
