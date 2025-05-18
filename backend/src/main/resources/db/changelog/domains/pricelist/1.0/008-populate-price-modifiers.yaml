@@ -1,0 +1,669 @@
+databaseChangeLog:
+  - changeSet:
+      id: pricelist-1.0-008
+      author: fedotiuk-dm
+      comment: Populate price_modifier_definitions table with initial data
+      preConditions:
+        - onFail: MARK_RAN
+          tableIsEmpty:
+            tableName: price_modifier_definitions
+      changes:
+        # Загальні модифікатори
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: kids_items
+              - column:
+                  name: name
+                  value: 'Дитячі речі (до 30 розміру)'
+              - column:
+                  name: description
+                  value: '30% від вартості для дитячих речей до 30 розміру'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'GENERAL'
+              - column:
+                  name: value
+                  value: '-30.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 10
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: manual_cleaning
+              - column:
+                  name: name
+                  value: 'Ручна чистка'
+              - column:
+                  name: description
+                  value: '+20% до вартості за ручну чистку'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'GENERAL'
+              - column:
+                  name: value
+                  value: '20.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 20
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: very_dirty_items
+              - column:
+                  name: name
+                  value: 'Дуже забруднені речі'
+              - column:
+                  name: description
+                  value: 'Від +20% до +100% до вартості за дуже забруднені речі'
+              - column:
+                  name: modifier_type
+                  value: 'RANGE_PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'GENERAL'
+              - column:
+                  name: min_value
+                  value: '20.00'
+              - column:
+                  name: max_value
+                  value: '100.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 30
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: urgent_cleaning
+              - column:
+                  name: name
+                  value: 'Термінова чистка'
+              - column:
+                  name: description
+                  value: 'Від +50% до +100% до вартості за термінову чистку'
+              - column:
+                  name: modifier_type
+                  value: 'RANGE_PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'GENERAL'
+              - column:
+                  name: min_value
+                  value: '50.00'
+              - column:
+                  name: max_value
+                  value: '100.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 40
+
+        # Модифікатори для текстильних виробів
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: fur_collars
+              - column:
+                  name: name
+                  value: 'Чистка виробів з хутряними комірами та манжетами'
+              - column:
+                  name: description
+                  value: '+30% до вартості чистки'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'TEXTILE'
+              - column:
+                  name: value
+                  value: '30.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 100
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: water_repellent_coating
+              - column:
+                  name: name
+                  value: 'Нанесення водовідштовхуючого покриття'
+              - column:
+                  name: description
+                  value: '+30% до вартості'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'TEXTILE'
+              - column:
+                  name: value
+                  value: '30.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 110
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: silk_products
+              - column:
+                  name: name
+                  value: 'Чистка виробів із натурального шовку, атласу, шифону'
+              - column:
+                  name: description
+                  value: '+50% до вартості'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'TEXTILE'
+              - column:
+                  name: value
+                  value: '50.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 120
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: combined_products
+              - column:
+                  name: name
+                  value: 'Чистка комбінованих виробів (шкіра+текстиль)'
+              - column:
+                  name: description
+                  value: '+100% до вартості чистки текстилю'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'TEXTILE'
+              - column:
+                  name: value
+                  value: '100.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 130
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: large_toys
+              - column:
+                  name: name
+                  value: "Ручна чистка великих м'яких іграшок"
+              - column:
+                  name: description
+                  value: '+100% до вартості чистки'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'TEXTILE'
+              - column:
+                  name: value
+                  value: '100.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 140
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: sewing_buttons
+              - column:
+                  name: name
+                  value: 'Пришивання гудзиків'
+              - column:
+                  name: description
+                  value: 'Фіксована вартість за пришивання одного гудзика'
+              - column:
+                  name: modifier_type
+                  value: 'FIXED'
+              - column:
+                  name: category
+                  value: 'TEXTILE'
+              - column:
+                  name: value
+                  value: '10.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 150
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: black_light_colors
+              - column:
+                  name: name
+                  value: 'Чистка виробів чорного та світлих тонів'
+              - column:
+                  name: description
+                  value: '+20% до вартості'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'TEXTILE'
+              - column:
+                  name: value
+                  value: '20.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 160
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: wedding_dress_trail
+              - column:
+                  name: name
+                  value: 'Чистка весільної сукні зі шлейфом'
+              - column:
+                  name: description
+                  value: '+30% до вартості'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'TEXTILE'
+              - column:
+                  name: value
+                  value: '30.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 170
+
+        # Модифікатори для шкіряних виробів
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: leather_ironing
+              - column:
+                  name: name
+                  value: 'Прасування шкіряних виробів'
+              - column:
+                  name: description
+                  value: '70% від вартості чистки'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'LEATHER'
+              - column:
+                  name: value
+                  value: '70.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 200
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: leather_water_repellent
+              - column:
+                  name: name
+                  value: 'Нанесення водовідштовхуючого покриття'
+              - column:
+                  name: description
+                  value: '+30% до вартості послуги'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'LEATHER'
+              - column:
+                  name: value
+                  value: '30.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 210
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: leather_coloring_after_our_cleaning
+              - column:
+                  name: name
+                  value: 'Фарбування (після нашої чистки)'
+              - column:
+                  name: description
+                  value: '+50% до вартості послуги'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'LEATHER'
+              - column:
+                  name: value
+                  value: '50.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 220
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: leather_coloring_after_other_cleaning
+              - column:
+                  name: name
+                  value: 'Фарбування (після чистки деінде)'
+              - column:
+                  name: description
+                  value: '100% вартість чистки за фарбування після чистки деінде'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'LEATHER'
+              - column:
+                  name: value
+                  value: '100.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 230
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: leather_with_inserts
+              - column:
+                  name: name
+                  value: 'Чистка шкіряних виробів із вставками'
+              - column:
+                  name: description
+                  value: '+30% до вартості за чистку шкіряних виробів із вставками'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'LEATHER'
+              - column:
+                  name: value
+                  value: '30.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 240
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: pearl_coating
+              - column:
+                  name: name
+                  value: 'Нанесення перламутрового покриття'
+              - column:
+                  name: description
+                  value: '+30% до вартості послуги за нанесення перламутрового покриття'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'LEATHER'
+              - column:
+                  name: value
+                  value: '30.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 250
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: natural_sheepskin
+              - column:
+                  name: name
+                  value: 'Чистка натуральних дублянок на штучному хутрі'
+              - column:
+                  name: description
+                  value: '-20% від вартості за чистку натуральних дублянок на штучному хутрі'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'LEATHER'
+              - column:
+                  name: value
+                  value: '-20.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 260
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: leather_sewing_buttons
+              - column:
+                  name: name
+                  value: 'Пришивання гудзиків на шкіряні вироби'
+              - column:
+                  name: description
+                  value: 'Фіксована вартість за пришивання одного гудзика'
+              - column:
+                  name: modifier_type
+                  value: 'FIXED'
+              - column:
+                  name: category
+                  value: 'LEATHER'
+              - column:
+                  name: value
+                  value: '15.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 270
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: leather_manual_cleaning
+              - column:
+                  name: name
+                  value: 'Ручна чистка виробів зі шкіри'
+              - column:
+                  name: description
+                  value: '+30% до вартості чистки'
+              - column:
+                  name: modifier_type
+                  value: 'PERCENTAGE'
+              - column:
+                  name: category
+                  value: 'LEATHER'
+              - column:
+                  name: value
+                  value: '30.00'
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 280

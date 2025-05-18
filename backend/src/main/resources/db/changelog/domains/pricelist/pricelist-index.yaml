@@ -14,3 +14,18 @@ databaseChangeLog:
   - include:
       file: 1.0/005-update-categories-processing-days.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/007-create-price-modifier-definitions.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/008-populate-price-modifiers.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/009-create-stain-defect-types.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/010-populate-stain-defect-types.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/011-add-expedite-price-modifiers.yaml
+      relativeToChangelogFile: true

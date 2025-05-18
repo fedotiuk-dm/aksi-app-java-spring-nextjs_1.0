@@ -101,15 +101,12 @@
         </module>
 
         <!-- Назви -->
-        <!-- Naming conventions for TypeScript/JavaScript compatibility -->
         <module name="TypeName">
             <property name="format" value="^[A-Z][a-zA-Z0-9_$]*$"/>
-            <message key="name.invalidPattern" value="Type ''{0}'' should use PascalCase to match TypeScript/JavaScript conventions."/>
         </module>
         
         <module name="MethodName">
             <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
-            <message key="name.invalidPattern" value="Method ''{0}'' should use camelCase to match TypeScript/JavaScript conventions."/>
         </module>
         
         <module name="ConstantName">
@@ -122,7 +119,6 @@
         
         <module name="MemberName">
             <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
-            <message key="name.invalidPattern" value="Field ''{0}'' should use camelCase to match TypeScript/JavaScript conventions."/>
         </module>
         
         <module name="ParameterName">
@@ -194,6 +190,10 @@
             <property name="format" value="^[a-z]+(\.[a-z0-9]+)*$"/>
         </module>
         
+        <module name="TypeName">
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, ANNOTATION_DEF, RECORD_DEF"/>
+        </module>
+        
         <module name="MethodLength">
             <property name="max" value="100"/>
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
@@ -260,7 +260,9 @@
         </module>
         
         <module name="OneTopLevelClass"/>
+        
         <module name="NoFinalizer"/>
+        
         <module name="OverloadMethodsDeclarationOrder"/>
         
         <module name="AtclauseOrder">
@@ -271,7 +273,22 @@
         <module name="JavadocTagContinuationIndentation"/>
         
         <module name="SummaryJavadoc">
-            <property name="forbiddenSummaryFragments" value="^@return the *|^This method returns |^A \{[^}]*\} (is )?(a )?[a-zA-Z0-9]+\s*\."/>
+            <property name="forbiddenSummaryFragments" value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+\} (is )?(a )?[a-zA-Z0-9]+\s*\."/>
+        </module>
+        
+        <module name="JavadocParagraph">
+            <property name="allowNewlineParagraph" value="false"/>
+        </module>
+        
+        <module name="AtclauseOrder">
+            <property name="tagOrder" value="@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index"/>
+            <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, ANNOTATION_DEF, ANNOTATION_FIELD_DEF, RECORD_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+        
+        <module name="JavadocTagContinuationIndentation"/>
+        
+        <module name="SummaryJavadoc">
+            <property name="forbiddenSummaryFragments" value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+\} (is )?(a )?[a-zA-Z0-9]+\s*\."/>
         </module>
         
         <module name="JavadocParagraph">
@@ -307,44 +324,129 @@
         <property name="format" value="\s+$"/>
         <property name="message" value="Line has trailing spaces."/>
         <property name="fileExtensions" value="yml,yaml"/>
-        
-        <!-- DTO and API Documentation Rules -->
-        <module name="MissingJavadocType">
-            <property name="scope" value="public"/>
-            <property name="severity" value="warning"/>
-            <property name="excludeScope" value="private"/>
-            <message key="javadoc.missing" value="Missing documentation for class {0}. DTO classes must be documented for proper OpenAPI generation"/>
+    </module>
+</module>
+        <module name="RedundantImport"/>
+        <module name="UnusedImports"/>
+        <module name="ImportOrder">
+            <property name="groups" value="java,javax,org,com"/>
+            <property name="ordered" value="true"/>
+            <property name="separated" value="true"/>
+            <property name="option" value="top"/>
+            <property name="sortStaticImportsAlphabetically" value="true"/>
         </module>
-
-        <!-- API Controller Documentation -->
+        
+        <!-- Стиль коду -->
+        <module name="LeftCurly"/>
+        <module name="RightCurly"/>
+        <module name="NeedBraces"/>
+        <module name="EmptyBlock">
+            <property name="option" value="TEXT"/>
+            <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
+        </module>
+        
+        <!-- Модифікатори -->
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
+        
+        <!-- Коментарі -->
         <module name="JavadocMethod">
             <property name="accessModifiers" value="public"/>
             <property name="allowMissingParamTags" value="false"/>
             <property name="allowMissingReturnTag" value="false"/>
-            <message key="javadoc.missing" value="Missing documentation for method {0}. API endpoints must be documented for OpenAPI."/>
+        </module>
+        <module name="JavadocStyle"/>
+        
+        <!-- Naming conventions -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+        <module name="TypeName"/>
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="ClassTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+        </module>
+        <module name="MethodTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+        </module>
+        
+        <!-- Whitespace -->
+        <module name="GenericWhitespace"/>
+        <module name="MethodParamPad"/>
+        <module name="NoWhitespaceBefore"/>
+        <module name="NoWhitespaceAfter"/>
+        <module name="ParenPad"/>
+        <module name="TypecastParenPad"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+        </module>
+        
+        <!-- Аннотації -->
+        <module name="AnnotationLocation">
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF"/>
         </module>
 
-        <!-- DTO Size Limits -->
+        <!-- Naming conventions для кращої інтеграції з фронтендом -->
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern" value="Тип ''{0}'' повинен використовувати PascalCase для узгодження з TypeScript/JavaScript конвенціями."/>
+        </module>
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern" value="Поле ''{0}'' повинно використовувати camelCase для узгодження з TypeScript/JavaScript конвенціями."/>
+        </module>
+
+        <!-- Правила для DTO класів -->
+        <module name="MissingJavadocType">
+            <property name="scope" value="public"/>
+            <property name="severity" value="warning"/>
+            <property name="excludeScope" value="private"/>
+            <message key="javadoc.missing" value="Відсутня документація для класу {0}. DTO-класи повинні мати документацію для правильної генерації OpenAPI"/>
+        </module>
+
+        <!-- Правила для API контролерів -->
+        <module name="JavadocMethod">
+            <property name="accessModifiers" value="public"/>
+            <property name="allowMissingParamTags" value="false"/>
+            <property name="allowMissingReturnTag" value="false"/>
+            <message key="javadoc.missing" value="Відсутня документація для методу {0}. API-ендпоінти повинні мати документацію для OpenAPI."/>
+        </module>
+
+
+
+        <!-- Обмеження для DTO класів -->
         <module name="MethodCount">
             <property name="maxTotal" value="30"/>
             <property name="maxPublic" value="20"/>
-            <message key="too.many.methods" value="Too many methods in class {0}. Consider splitting the DTO into smaller ones."/>
+            <message key="too.many.methods" value="Занадто багато методів у класі {0}. Розгляньте можливість розділення DTO на менші."/>
         </module>
+
     </module>
     
-    <!-- API and Frontend Integration Rules -->
+    <!-- Правила для OpenAPI анотацій -->
     <module name="RegexpSingleline">
         <property name="format" value="@ApiIgnore"/>
-        <property name="message" value="Do not use @ApiIgnore for public API endpoints. Use @Hidden or proper documentation instead."/>
+        <property name="message" value="Не використовуйте @ApiIgnore для публічних API-ендпоінтів"/>
     </module>
 
+    <!-- Правила для булевих полів -->
     <module name="RegexpSingleline">
         <property name="format" value="private\s+boolean\s+is[A-Z]"/>
-        <property name="message" value="Avoid using 'is' prefix for boolean fields to prevent issues with OpenAPI and JSON serialization."/>
+        <property name="message" value="Не використовуйте префікс 'is' для булевих полів. Це може спричинити проблеми з OpenAPI та JSON-серіалізацією."/>
     </module>
-    
-    <module name="RegexpSingleline">
-        <property name="format" value="@JsonIgnore"/>
-        <property name="message" value="Be careful with @JsonIgnore. Consider using @Schema(hidden = true) for OpenAPI documentation."/>
-    </module>
-</module>
+</module> 

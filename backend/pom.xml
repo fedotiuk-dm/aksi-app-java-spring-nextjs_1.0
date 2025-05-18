@@ -40,7 +40,7 @@
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <itextpdf.version>5.5.13.4</itextpdf.version>
         <zxing.version>3.5.3</zxing.version>
-        
+        <vavr.version>0.10.6</vavr.version>
     </properties>
 
     <dependencies>
@@ -155,6 +155,13 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Vavr -->
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>${vavr.version}</version>
         </dependency>
 
         <!-- Testing -->

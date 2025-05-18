@@ -33,6 +33,11 @@ public class PriceCalculationResponseDTO {
     private BigDecimal baseTotalPrice;
     
     /**
+     * Одиниця виміру (шт, кг, кв.м, пара).
+     */
+    private String unitOfMeasure;
+    
+    /**
      * Кінцева ціна за одиницю з урахуванням всіх модифікаторів.
      */
     private BigDecimal finalUnitPrice;
@@ -43,51 +48,7 @@ public class PriceCalculationResponseDTO {
     private BigDecimal finalTotalPrice;
     
     /**
-     * Список деталей розрахунку для кожного модифікатора.
+     * Список деталей розрахунку для кожного кроку обчислення.
      */
-    private List<ModifierCalculationDetail> calculationDetails;
-    
-    /**
-     * Деталі розрахунку для конкретного модифікатора.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ModifierCalculationDetail {
-        /**
-         * ID модифікатора.
-         */
-        private String modifierId;
-        
-        /**
-         * Назва модифікатора.
-         */
-        private String modifierName;
-        
-        /**
-         * Опис модифікатора.
-         */
-        private String modifierDescription;
-        
-        /**
-         * Опис змін, які модифікатор вносить у ціну.
-         */
-        private String changeDescription;
-        
-        /**
-         * Ціна до застосування модифікатора.
-         */
-        private BigDecimal priceBefore;
-        
-        /**
-         * Ціна після застосування модифікатора.
-         */
-        private BigDecimal priceAfter;
-        
-        /**
-         * Різниця (зміна) в ціні після застосування модифікатора.
-         */
-        private BigDecimal priceDifference;
-    }
+    private List<CalculationDetailsDTO> calculationDetails;
 }

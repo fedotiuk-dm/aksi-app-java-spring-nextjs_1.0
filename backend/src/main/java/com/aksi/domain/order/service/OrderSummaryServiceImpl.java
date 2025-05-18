@@ -1,7 +1,6 @@
 package com.aksi.domain.order.service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,10 +22,12 @@ import com.aksi.domain.order.entity.OrderItemPhotoEntity;
 import com.aksi.domain.order.entity.PriceModifierEntity;
 import com.aksi.domain.order.mapper.OrderItemPhotoMapper;
 import com.aksi.domain.order.mapper.PriceModifierMapper;
+import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.model.ModifierType;
 import com.aksi.domain.order.repository.OrderItemPhotoRepository;
 import com.aksi.domain.order.repository.OrderRepository;
 import com.aksi.domain.order.repository.PriceModifierRepository;
+import com.aksi.domain.pricing.constants.PriceCalculationConstants;
 import com.aksi.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -62,15 +63,13 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
         List<OrderItemDetailedDTO> detailedItems = mapOrderItems(order.getItems());
         
         // Розрахунок суми надбавки за терміновість
-        BigDecimal expediteSurchargeAmount = BigDecimal.ZERO;
-        switch (order.getExpediteType()) {
-            case EXPRESS_48H -> expediteSurchargeAmount = order.getTotalAmount().multiply(new BigDecimal("0.5"));
-            case EXPRESS_24H -> expediteSurchargeAmount = order.getTotalAmount();
-            case STANDARD -> {} // Стандартне виконання не має надбавки
-        }
+        ExpediteType expediteType = order.getExpediteType();
+        BigDecimal expediteSurchargeAmount = PriceCalculationConstants.calculatePercentage(
+                order.getTotalAmount(), expediteType.getSurchargePercentage());
         
         // Округлення до 2 знаків після коми
-        expediteSurchargeAmount = expediteSurchargeAmount.setScale(2, RoundingMode.HALF_UP);
+        expediteSurchargeAmount = expediteSurchargeAmount.setScale(
+                PriceCalculationConstants.SCALE, PriceCalculationConstants.ROUNDING_MODE);
         
         // Створення DTO відповіді
         return OrderDetailedSummaryResponse.builder()
@@ -187,7 +186,7 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
         // Модифікатори в залежності від матеріалу
         if ("Шовк".equals(item.getMaterial())) {
             BigDecimal percentage = new BigDecimal("50");
-            BigDecimal amount = basePrice.multiply(percentage).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+            BigDecimal amount = PriceCalculationConstants.calculatePercentage(basePrice, percentage);
             
             modifiers.add(PriceModifierDTO.builder()
                     .name("Натуральний шовк")
@@ -196,9 +195,9 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
                     .value(percentage)
                     .amount(amount)
                     .build());
-        } else if ("Шкіра".equals(item.getMaterial())) {
+        } else if ("Натуральна шкіра".equals(item.getMaterial())) {
             BigDecimal percentage = new BigDecimal("30");
-            BigDecimal amount = basePrice.multiply(percentage).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+            BigDecimal amount = PriceCalculationConstants.calculatePercentage(basePrice, percentage);
             
             modifiers.add(PriceModifierDTO.builder()
                     .name("Натуральна шкіра")
@@ -209,35 +208,10 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
                     .build());
         }
         
-        // Модифікатори в залежності від кольору
-        if ("Чорний".equals(item.getColor())) {
-            BigDecimal percentage = new BigDecimal("20");
-            BigDecimal amount = basePrice.multiply(percentage).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-            
-            modifiers.add(PriceModifierDTO.builder()
-                    .name("Чорний колір")
-                    .description("Надбавка за чорний колір")
-                    .type(ModifierType.PERCENTAGE)
-                    .value(percentage)
-                    .amount(amount)
-                    .build());
-        } else if ("Білий".equals(item.getColor())) {
-            BigDecimal percentage = new BigDecimal("20");
-            BigDecimal amount = basePrice.multiply(percentage).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-            
-            modifiers.add(PriceModifierDTO.builder()
-                    .name("Білий колір")
-                    .description("Надбавка за білий колір")
-                    .type(ModifierType.PERCENTAGE)
-                    .value(percentage)
-                    .amount(amount)
-                    .build());
-        }
-        
-        // Додаткові модифікатори для дитячих речей
+        // Модифікатори для дитячих речей
         if (item.getDescription() != null && item.getDescription().toLowerCase().contains("дитяч")) {
-            BigDecimal percentage = new BigDecimal("-30");
-            BigDecimal amount = basePrice.multiply(percentage).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+            BigDecimal percentage = PriceCalculationConstants.KIDS_ITEMS_PERCENTAGE;
+            BigDecimal amount = PriceCalculationConstants.calculatePercentage(basePrice, percentage);
             
             modifiers.add(PriceModifierDTO.builder()
                     .name("Дитячі речі")
@@ -251,8 +225,8 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
         // Модифікатори для ручної чистки
         if (item.getSpecialInstructions() != null && 
                 item.getSpecialInstructions().toLowerCase().contains("ручн")) {
-            BigDecimal percentage = new BigDecimal("20");
-            BigDecimal amount = basePrice.multiply(percentage).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+            BigDecimal percentage = PriceCalculationConstants.MANUAL_CLEANING_PERCENTAGE;
+            BigDecimal amount = PriceCalculationConstants.calculatePercentage(basePrice, percentage);
             
             modifiers.add(PriceModifierDTO.builder()
                     .name("Ручна чистка")
@@ -273,30 +247,32 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
      * @return відсоток зносу
      */
     private Integer parseWearDegree(String wearDegree) {
-        if (wearDegree == null) {
+        if (wearDegree == null || wearDegree.isBlank()) {
             return null;
         }
         
-        String cleanValue = wearDegree.replace("%", "").trim();
-        try {
-            return Integer.valueOf(cleanValue);
-        } catch (NumberFormatException e) {
-            log.warn("Не вдалося розпізнати ступінь зносу: {}", wearDegree);
+        // Очищаємо від нечислових символів
+        String cleanValue = wearDegree.replaceAll("[^0-9]", "");
+        
+        if (cleanValue.isBlank()) {
             return null;
         }
+        
+        return cleanValue.matches("\\d+") ? Integer.valueOf(cleanValue) : null;
     }
     
     /**
-     * Перетворює рядок зі списком елементів, розділених комами, у список рядків.
+     * Перетворює рядок зі списком значень (через кому) у список рядків.
      * 
-     * @param listField рядок зі списком елементів
+     * @param listField рядок зі списком значень
      * @return список рядків
      */
     private List<String> parseListField(String listField) {
-        if (listField == null || listField.isEmpty()) {
+        if (listField == null || listField.isBlank()) {
             return new ArrayList<>();
         }
         
+        // Розділяємо за комою та прибираємо зайві пробіли
         return Arrays.stream(listField.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())

@@ -1,0 +1,260 @@
+databaseChangeLog:
+  - changeSet:
+      id: pricelist-1.0-010
+      author: developer
+      comment: Populate stain_types and defect_types tables with initial data
+      failOnError: true
+      changes:
+        # Заповнення таблиці типів плям
+        - insert:
+            tableName: stain_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'FAT'
+              - column:
+                  name: name
+                  value: 'Жир'
+              - column:
+                  name: description
+                  value: 'Жирові плями (масло, олія тощо)'
+              - column:
+                  name: risk_level
+                  value: 'MEDIUM'
+
+        - insert:
+            tableName: stain_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'BLOOD'
+              - column:
+                  name: name
+                  value: 'Кров'
+              - column:
+                  name: description
+                  value: 'Плями крові'
+              - column:
+                  name: risk_level
+                  value: 'HIGH'
+
+        - insert:
+            tableName: stain_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'WINE'
+              - column:
+                  name: name
+                  value: 'Вино'
+              - column:
+                  name: description
+                  value: 'Плями вина (червоне, біле)'
+              - column:
+                  name: risk_level
+                  value: 'HIGH'
+
+        - insert:
+            tableName: stain_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'COFFEE'
+              - column:
+                  name: name
+                  value: 'Кава'
+              - column:
+                  name: description
+                  value: 'Плями кави'
+              - column:
+                  name: risk_level
+                  value: 'MEDIUM'
+
+        - insert:
+            tableName: stain_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'GRASS'
+              - column:
+                  name: name
+                  value: 'Трава'
+              - column:
+                  name: description
+                  value: 'Плями від трави'
+              - column:
+                  name: risk_level
+                  value: 'MEDIUM'
+
+        - insert:
+            tableName: stain_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'INK'
+              - column:
+                  name: name
+                  value: 'Чорнило'
+              - column:
+                  name: description
+                  value: 'Плями чорнила, ручки'
+              - column:
+                  name: risk_level
+                  value: 'HIGH'
+
+        - insert:
+            tableName: stain_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'COSMETICS'
+              - column:
+                  name: name
+                  value: 'Косметика'
+              - column:
+                  name: description
+                  value: 'Плями косметики (помада, туш тощо)'
+              - column:
+                  name: risk_level
+                  value: 'MEDIUM'
+
+        # Заповнення таблиці типів дефектів
+        - insert:
+            tableName: defect_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'WORN'
+              - column:
+                  name: name
+                  value: 'Потертості'
+              - column:
+                  name: description
+                  value: 'Потертості на виробі'
+              - column:
+                  name: risk_level
+                  value: 'MEDIUM'
+
+        - insert:
+            tableName: defect_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'TORN'
+              - column:
+                  name: name
+                  value: 'Порвана тканина'
+              - column:
+                  name: description
+                  value: 'Порвані ділянки тканини'
+              - column:
+                  name: risk_level
+                  value: 'HIGH'
+
+        - insert:
+            tableName: defect_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'MISSING_FITTINGS'
+              - column:
+                  name: name
+                  value: 'Відсутність фурнітури'
+              - column:
+                  name: description
+                  value: 'Відсутні елементи фурнітури (гудзики, нашивки тощо)'
+              - column:
+                  name: risk_level
+                  value: 'LOW'
+
+        - insert:
+            tableName: defect_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'DAMAGED_FITTINGS'
+              - column:
+                  name: name
+                  value: 'Пошкодження фурнітури'
+              - column:
+                  name: description
+                  value: 'Пошкоджені елементи фурнітури'
+              - column:
+                  name: risk_level
+                  value: 'MEDIUM'
+
+        - insert:
+            tableName: defect_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'COLOR_CHANGE_RISK'
+              - column:
+                  name: name
+                  value: 'Ризик зміни кольору'
+              - column:
+                  name: description
+                  value: 'Ризик зміни кольору тканини під час чистки'
+              - column:
+                  name: risk_level
+                  value: 'HIGH'
+
+        - insert:
+            tableName: defect_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: 'uuid_generate_v4()'
+              - column:
+                  name: code
+                  value: 'DEFORMATION_RISK'
+              - column:
+                  name: name
+                  value: 'Ризик деформації'
+              - column:
+                  name: description
+                  value: 'Ризик деформації виробу під час чистки'
+              - column:
+                  name: risk_level
+                  value: 'HIGH'
+      rollback:
+        - delete:
+            tableName: stain_types
+        - delete:
+            tableName: defect_types
