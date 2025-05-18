@@ -1,8 +1,8 @@
 databaseChangeLog:
   - changeSet:
       id: 006-add-stains-defects-to-order-items
-      author: cascade
-      comment: 'Add stains and defects fields to order_items table'
+      author: fedotiuk-dm
+      comment: Add stains and defects fields to order_items table
       changes:
         - addColumn:
             tableName: order_items

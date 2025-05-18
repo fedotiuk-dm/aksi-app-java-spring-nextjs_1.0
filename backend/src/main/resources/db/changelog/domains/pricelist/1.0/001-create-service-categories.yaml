@@ -1,13 +1,13 @@
 databaseChangeLog:
   - changeSet:
-      id: 'pricelist-1.0-001'
-      author: 'cascade'
-      comment: 'Create service categories table'
+      id: pricelist-1.0-001
+      author: fedotiuk-dm
+      comment: Create service categories table
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: service_categories
+        - onFail: MARK_RAN
+          not:
+            - tableExists:
+                tableName: service_categories
       changes:
         - createTable:
             tableName: service_categories
@@ -35,7 +35,7 @@ databaseChangeLog:
               - column:
                   name: sort_order
                   type: int
-                  defaultValue: 0
+                  defaultValueNumeric: 0
               - column:
                   name: active
                   type: boolean

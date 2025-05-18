@@ -1,8 +1,8 @@
 databaseChangeLog:
   - changeSet:
-      id: 'orders-1.0-003'
-      author: 'system'
-      comment: 'Update orders table for branch_location relation'
+      id: orders-1.0-003
+      author: fedotiuk-dm
+      comment: Update orders table for branch_location relation
       changes:
         # 1. Створюємо новий стовпець для зовнішнього ключа
         - addColumn:

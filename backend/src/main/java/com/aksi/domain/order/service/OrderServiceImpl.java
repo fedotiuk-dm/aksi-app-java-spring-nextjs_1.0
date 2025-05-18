@@ -21,6 +21,7 @@ import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.entity.OrderEntity;
 import com.aksi.domain.order.entity.OrderItemEntity;
 import com.aksi.domain.order.mapper.OrderMapper;
+import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.model.OrderStatusEnum;
 import com.aksi.domain.order.repository.OrderRepository;
 import com.aksi.exceptions.EntityNotFoundException;
@@ -101,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
         order.setExpectedCompletionDate(orderRequest.getExpectedCompletionDate());
         order.setCustomerNotes(orderRequest.getCustomerNotes());
         order.setInternalNotes(orderRequest.getInternalNotes());
-        order.setExpress(orderRequest.isExpress());
+        order.setExpediteType(orderRequest.getExpediteType());
         order.setDraft(orderRequest.isDraft());
         order.setTotalAmount(BigDecimal.ZERO);
         order.setFinalAmount(BigDecimal.ZERO);
@@ -520,5 +521,26 @@ public class OrderServiceImpl implements OrderService {
         
         // Формуємо кінцевий номер квитанції
         return yearMonthPart + "-" + branchCode + "-" + String.format("%05d", counter);
+    }
+    
+    @Override
+    @Transactional
+    public OrderDTO updateOrderCompletionParameters(UUID orderId, ExpediteType expediteType, LocalDateTime expectedCompletionDate) {
+        log.info("Updating order completion parameters for orderId: {}, expediteType: {}, expectedCompletionDate: {}", 
+                orderId, expediteType, expectedCompletionDate);
+        
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
+                    "Замовлення не знайдено", orderId
+                ));
+        
+        order.setExpediteType(expediteType);
+        order.setExpectedCompletionDate(expectedCompletionDate);
+        order.setUpdatedDate(LocalDateTime.now());
+        
+        OrderEntity savedOrder = orderRepository.save(order);
+        log.info("Order completion parameters updated successfully for orderId: {}", orderId);
+        
+        return orderMapper.toDTO(savedOrder);
     }
 }

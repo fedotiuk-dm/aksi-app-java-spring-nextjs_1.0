@@ -1,6 +1,7 @@
 package com.aksi.domain.order.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import com.aksi.domain.order.dto.CreateOrderRequest;
 import com.aksi.domain.order.dto.OrderDTO;
 import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.entity.OrderEntity;
+import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.model.OrderStatusEnum;
 
 /**
@@ -144,4 +146,14 @@ public interface OrderService {
      * @param itemId ідентифікатор предмета
      */
     void deleteOrderItem(UUID orderId, UUID itemId);
+    
+    /**
+     * Оновити параметри виконання замовлення
+     * 
+     * @param orderId ідентифікатор замовлення
+     * @param expediteType тип термінового виконання
+     * @param expectedCompletionDate очікувана дата завершення
+     * @return оновлене замовлення
+     */
+    OrderDTO updateOrderCompletionParameters(UUID orderId, ExpediteType expediteType, LocalDateTime expectedCompletionDate);
 }

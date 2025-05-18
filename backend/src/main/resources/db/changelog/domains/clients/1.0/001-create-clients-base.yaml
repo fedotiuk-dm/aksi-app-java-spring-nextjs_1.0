@@ -1,13 +1,13 @@
 databaseChangeLog:
   - changeSet:
-      id: 'clients-1.0-001'
-      author: 'fedotiuk-dm'
-      comment: 'Create clients base table'
+      id: clients-1.0-001
+      author: fedotiuk-dm
+      comment: Create clients base table
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: clients
+        - onFail: MARK_RAN
+          not:
+            - tableExists:
+                tableName: clients
       changes:
         - createTable:
             tableName: clients

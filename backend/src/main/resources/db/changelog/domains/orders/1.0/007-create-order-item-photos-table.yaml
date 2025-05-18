@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-order-item-photos-table
-      author: aksi-developer
+      author: fedotiuk-dm
       changes:
         - createTable:
             tableName: order_item_photos

@@ -1,16 +1,16 @@
 databaseChangeLog:
   - changeSet:
-      id: 'clients-1.0-006'
-      author: 'fedotiuk-dm'
-      comment: 'Create client communication channels table'
+      id: clients-1.0-006
+      author: fedotiuk-dm
+      comment: Create client communication channels table
       preConditions:
-        onFail: MARK_RAN
-        and:
-          - tableExists:
-              tableName: clients
-          - not:
-              tableExists:
-                tableName: client_communication_channels
+        - onFail: MARK_RAN
+          and:
+            - tableExists:
+                tableName: clients
+            - not:
+                - tableExists:
+                    tableName: client_communication_channels
       changes:
         - createTable:
             tableName: client_communication_channels

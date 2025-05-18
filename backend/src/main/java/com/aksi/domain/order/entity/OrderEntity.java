@@ -9,11 +9,11 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import com.aksi.domain.branch.entity.BranchLocationEntity;
 import com.aksi.domain.client.entity.ClientEntity;
+import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.model.OrderStatusEnum;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -113,9 +113,13 @@ public class OrderEntity {
     @Column(name = "internal_notes", length = 1000)
     private String internalNotes;
     
-    @Column(name = "is_express", nullable = false)
+    /**
+     * Тип термінового виконання
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "expedite_type", nullable = false)
     @Builder.Default
-    private boolean express = false;
+    private ExpediteType expediteType = ExpediteType.STANDARD;
     
     @Column(name = "is_draft", nullable = false)
     @Builder.Default

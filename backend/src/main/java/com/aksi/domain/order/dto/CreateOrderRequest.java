@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.aksi.domain.order.model.ExpediteType;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -47,7 +49,11 @@ public class CreateOrderRequest {
     @Size(max = 1000, message = "Внутрішні примітки не можуть перевищувати 1000 символів")
     private String internalNotes;
     
-    private boolean express;
+    /**
+     * Тип термінового виконання
+     */
+    @Builder.Default
+    private ExpediteType expediteType = ExpediteType.STANDARD;
     
     private boolean draft;
 }

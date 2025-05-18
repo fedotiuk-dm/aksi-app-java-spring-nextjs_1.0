@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: pricelist-1.0-005
+      author: fedotiuk-dm
+      comment: Update processing days for different service categories
+      failOnError: true
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: service_categories
+        - columnExists:
+            tableName: service_categories
+            columnName: standard_processing_days
+      changes:
+        # Стандартні категорії - 2 дні (48 годин)
+        - update:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: standard_processing_days
+                  valueNumeric: 2
+            where: code IN ('farbuvannia', 'prasuvanya', 'dublyanky', 'dodatkovi_poslugy', 'odiah')
+        
+        # Шкіряні вироби - 14 днів
+        - update:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: standard_processing_days
+                  valueNumeric: 14
+            where: code = 'shkiriani_vyroby'
+        
+        # Хутряні вироби - 14 днів
+        - update:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: standard_processing_days
+                  valueNumeric: 14
+            where: code = 'hutriani_vyroby'
+        
+        # Прання білизни - 7 днів
+        - update:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: standard_processing_days
+                  valueNumeric: 7
+            where: code = 'prania_bilyzny'
+      rollback:
+        - update:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: standard_processing_days
+                  valueNumeric: 2
+            where: "1=1"  # Скидаємо всі значення на 2 дні

@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: orders-1.0-008
+      author: fedotiuk-dm
+      comment: Add expedite_type column to orders table
+      failOnError: true
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: orders
+        - not:
+            - columnExists:
+                tableName: orders
+                columnName: expedite_type
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: expedite_type
+                  type: VARCHAR(20)
+                  defaultValue: 'STANDARD'
+                  constraints:
+                    nullable: false
+                  remarks: 'Тип терміновості (STANDARD/EXPRESS_48H/EXPRESS_24H)'
+        - dropColumn:
+            tableName: orders
+            columnName: is_express
+            preConditions:
+              - onFail: MARK_RAN
+              - columnExists:
+                  tableName: orders
+                  columnName: is_express
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_expedite_type
+            columns:
+              - column:
+                  name: expedite_type

@@ -1,13 +1,13 @@
 databaseChangeLog:
   - changeSet:
-      id: 'orders-1.0-002'
-      author: 'fedotiuk-dm'
-      comment: 'Create order_items table'
+      id: orders-1.0-002
+      author: fedotiuk-dm
+      comment: Create order_items table
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: order_items
+        - onFail: MARK_RAN
+          not:
+            - tableExists:
+                tableName: order_items
       changes:
         - createTable:
             tableName: order_items

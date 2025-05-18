@@ -44,6 +44,10 @@ public class ServiceCategoryEntity {
     
     @Builder.Default
     private boolean active = true;
+    
+    @Column(name = "standard_processing_days", nullable = false)
+    @Builder.Default
+    private int standardProcessingDays = 2;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

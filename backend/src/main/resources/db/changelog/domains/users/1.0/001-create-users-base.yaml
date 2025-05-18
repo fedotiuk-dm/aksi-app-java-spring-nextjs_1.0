@@ -1,13 +1,13 @@
 databaseChangeLog:
   - changeSet:
-      id: 'users-1.0-001'
-      author: 'cascade'
-      comment: 'Create users table'
+      id: users-1.0-001
+      author: fedotiuk-dm
+      comment: Create users table
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: users
+        - onFail: MARK_RAN
+          not:
+            - tableExists:
+                tableName: users
       changes:
         - createTable:
             tableName: users
@@ -73,6 +73,6 @@ databaseChangeLog:
               - column:
                   name: is_active
                   type: BOOLEAN
-                  defaultValue: true
+                  defaultValueBoolean: true
                   constraints:
                     nullable: false

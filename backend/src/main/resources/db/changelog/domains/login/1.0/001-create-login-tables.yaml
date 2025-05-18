@@ -1,13 +1,13 @@
 databaseChangeLog:
   - changeSet:
-      id: 'login-1.0-001'
-      author: 'cascade'
-      comment: 'Create login table'
+      id: login-1.0-001
+      author: fedotiuk-dm
+      comment: Create login table
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: login
+        - onFail: MARK_RAN
+          not:
+            - tableExists:
+                tableName: login
       changes:
         - createTable:
             tableName: login

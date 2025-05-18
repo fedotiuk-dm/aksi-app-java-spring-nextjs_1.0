@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import com.aksi.domain.branch.dto.BranchLocationDTO;
 import com.aksi.domain.client.dto.ClientResponse;
+import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.model.OrderStatusEnum;
 
 import jakarta.validation.Valid;
@@ -84,7 +85,11 @@ public class OrderDTO {
     @Size(max = 1000, message = "Внутрішні примітки не можуть перевищувати 1000 символів")
     private String internalNotes;
     
-    private boolean express;
+    /**
+     * Тип термінового виконання
+     */
+    @Builder.Default
+    private ExpediteType expediteType = ExpediteType.STANDARD;
     
     private boolean draft;
 }

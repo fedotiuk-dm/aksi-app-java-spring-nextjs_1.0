@@ -1,8 +1,8 @@
 databaseChangeLog:
   - changeSet:
       id: 005-add-item-characteristics-to-order-items
-      author: cascade
-      comment: 'Add additional item characteristics to order_items table'
+      author: fedotiuk-dm
+      comment: Add additional item characteristics to order_items table
       changes:
         - addColumn:
             tableName: order_items

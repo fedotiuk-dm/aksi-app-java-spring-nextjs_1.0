@@ -8,3 +8,9 @@ databaseChangeLog:
   - include:
       file: 1.0/003-add-indexes-and-constraints.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/004-add-standard-processing-days.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/005-update-categories-processing-days.yaml
+      relativeToChangelogFile: true

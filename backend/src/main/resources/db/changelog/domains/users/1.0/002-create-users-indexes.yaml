@@ -1,12 +1,12 @@
 databaseChangeLog:
   - changeSet:
-      id: 'users-1.0-002'
-      author: 'cascade'
-      comment: 'Add indexes for users table'
+      id: users-1.0-002
+      author: fedotiuk-dm
+      comment: Add indexes for users table
       preConditions:
-        onFail: MARK_RAN
-        tableExists:
-          tableName: users
+        - onFail: MARK_RAN
+          tableExists:
+            tableName: users
       changes:
         - createIndex:
             tableName: users

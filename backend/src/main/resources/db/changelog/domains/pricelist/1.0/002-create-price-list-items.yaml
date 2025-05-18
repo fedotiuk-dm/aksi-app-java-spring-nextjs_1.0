@@ -1,13 +1,13 @@
 databaseChangeLog:
   - changeSet:
-      id: 'pricelist-1.0-002'
-      author: 'cascade'
-      comment: 'Create price list items table'
+      id: pricelist-1.0-002
+      author: fedotiuk-dm
+      comment: Create price list items table
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: price_list_items
+        - onFail: MARK_RAN
+          not:
+            - tableExists:
+                tableName: price_list_items
       changes:
         - createTable:
             tableName: price_list_items
