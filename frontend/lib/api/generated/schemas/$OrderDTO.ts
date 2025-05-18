@@ -27,6 +27,9 @@ export const $OrderDTO = {
             type: 'string',
             format: 'date-time',
         },
+        completionComments: {
+            type: 'string',
+        },
         createdDate: {
             type: 'string',
             format: 'date-time',
@@ -41,6 +44,9 @@ export const $OrderDTO = {
         draft: {
             type: 'boolean',
         },
+        emailed: {
+            type: 'boolean',
+        },
         expectedCompletionDate: {
             type: 'string',
             format: 'date-time',
@@ -48,8 +54,15 @@ export const $OrderDTO = {
         expediteType: {
             type: 'Enum',
         },
+        express: {
+            type: 'boolean',
+        },
         finalAmount: {
             type: 'number',
+        },
+        finalizedAt: {
+            type: 'string',
+            format: 'date-time',
         },
         id: {
             type: 'string',
@@ -68,6 +81,9 @@ export const $OrderDTO = {
         prepaymentAmount: {
             type: 'number',
         },
+        printed: {
+            type: 'boolean',
+        },
         receiptNumber: {
             type: 'string',
             minLength: 1,
@@ -78,6 +94,9 @@ export const $OrderDTO = {
         },
         tagNumber: {
             type: 'string',
+        },
+        termsAccepted: {
+            type: 'boolean',
         },
         totalAmount: {
             type: 'number',
