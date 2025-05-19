@@ -43,19 +43,9 @@ public class DefectRecommendationService {
             return List.of();
         }
         
-        // Отримуємо всі активні типи дефектів
-        final List<DefectTypeDTO> defectTypes = defectTypeService.getActiveDefectTypes();
-        
-        if (defectTypes == null || defectTypes.isEmpty()) {
-            log.warn("Не знайдено активні типи дефектів у базі даних");
+        final Map<String, DefectTypeDTO> defectTypeByName = getDefectTypesByName(defects);
+        if (defectTypeByName.isEmpty()) {
             return List.of();
-        }
-        
-        final Map<String, DefectTypeDTO> defectTypeByName = new HashMap<>();
-        
-        // Створюємо мапу для пошуку типу дефекту за назвою
-        for (final DefectTypeDTO defectType : defectTypes) {
-            defectTypeByName.put(defectType.getName(), defectType);
         }
         
         log.debug("Отримання рекомендацій для {} типів дефектів", defects.size());
@@ -85,17 +75,9 @@ public class DefectRecommendationService {
             return List.of();
         }
         
-        final List<DefectTypeDTO> defectTypes = defectTypeService.getActiveDefectTypes();
-        
-        if (defectTypes == null || defectTypes.isEmpty()) {
-            log.warn("Не знайдено активні типи дефектів у базі даних");
+        final Map<String, DefectTypeDTO> defectTypeByName = getDefectTypesByName(defects);
+        if (defectTypeByName.isEmpty()) {
             return List.of();
-        }
-        
-        final Map<String, DefectTypeDTO> defectTypeByName = new HashMap<>();
-        
-        for (final DefectTypeDTO defectType : defectTypes) {
-            defectTypeByName.put(defectType.getName(), defectType);
         }
         
         log.debug("Отримання попереджень про ризики для {} типів дефектів", defects.size());
@@ -105,5 +87,36 @@ public class DefectRecommendationService {
             (item, name) -> String.format("Ризик для дефекту '%s': %s", 
                 name, item.getDescription())
         );
+    }
+
+    /**
+     * Отримати мапу активних типів дефектів за їх назвою.
+     * 
+     * @param defects список дефектів (використовується для логування)
+     * @return мапа типів дефектів за назвою
+     */
+    private Map<String, DefectTypeDTO> getDefectTypesByName(final Set<String> defects) {
+        // Отримуємо всі активні типи дефектів
+        final List<DefectTypeDTO> defectTypes = defectTypeService.getActiveDefectTypes();
+        
+        if (defectTypes == null || defectTypes.isEmpty()) {
+            log.warn("Не знайдено активні типи дефектів у базі даних");
+            return Map.of();
+        }
+        
+        final Map<String, DefectTypeDTO> defectTypeByName = new HashMap<>();
+        
+        // Створюємо мапу для пошуку типу дефекту за назвою
+        for (final DefectTypeDTO defectType : defectTypes) {
+            defectTypeByName.put(defectType.getName(), defectType);
+        }
+        
+        // Додаємо можливість використовувати параметр defects для майбутнього розширення
+        // Наприклад, тут можна додати додаткову логіку з використанням множини defects
+        
+        log.debug("Підготовлено мапу з {} типів дефектів для {} дефектів замовлення", 
+              defectTypeByName.size(), defects != null ? defects.size() : 0);
+        
+        return defectTypeByName;
     }
 } 

@@ -1,91 +1,35 @@
 package com.aksi.domain.pricing.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import com.aksi.domain.pricing.constants.ModifierFormatConstants;
 import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
 import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierType;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * DTO для передачі даних про модифікатори цін з каталогу.
  */
-@Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "Модифікатор ціни з каталогу (фіксований, відсотковий, діапазонний)")
-public class PriceModifierDefinitionDTO {
-    
-    @Schema(description = "Унікальний ідентифікатор модифікатора")
-    private UUID id;
-    
-    @Schema(description = "Код модифікатора для програмного використання")
-    private String code;
-    
-    @Schema(description = "Назва модифікатора")
-    private String name;
-    
-    @Schema(description = "Опис модифікатора")
-    private String description;
-    
-    @Schema(description = "Тип модифікатора (PERCENTAGE, FIXED, RANGE_PERCENTAGE, ADDITION)")
-    private ModifierType modifierType;
-    
-    @Schema(description = "Категорія модифікатора (GENERAL, TEXTILE, LEATHER)")
-    private ModifierCategory category;
-    
-    @Schema(description = "Значення для фіксованих модифікаторів або відсоткових")
-    private BigDecimal value;
-    
-    @Schema(description = "Мінімальне значення для модифікаторів з діапазоном")
-    private BigDecimal minValue;
-    
-    @Schema(description = "Максимальне значення для модифікаторів з діапазоном")
-    private BigDecimal maxValue;
-    
-    @Schema(description = "Чи активний модифікатор")
-    private boolean active;
-    
-    @Schema(description = "Порядок сортування для відображення")
-    private Integer sortOrder;
+public class PriceModifierDefinitionDTO extends BasePriceModifierDTO {
+    // Всі поля та методи успадковуються від BasePriceModifierDTO
     
     /**
-     * Повертає текстовий опис зміни ціни для відображення користувачу.
-     * 
-     * @return Текстовий опис зміни
+     * Конструктор з усіма параметрами для правильної роботи з MapStruct
      */
-    @Schema(description = "Текстовий опис зміни ціни", accessMode = Schema.AccessMode.READ_ONLY)
-    public String getChangeDescription() {
-        if (modifierType == null) {
-            return "";
-        }
-        
-        return switch (modifierType) {
-            case PERCENTAGE -> value != null 
-                ? String.format(
-                    ModifierFormatConstants.PERCENTAGE_FORMAT,
-                    value.compareTo(BigDecimal.ZERO) >= 0 ? ModifierFormatConstants.PERCENTAGE_PLUS_PREFIX : "",
-                    value)
-                : "";
-                
-            case RANGE_PERCENTAGE -> minValue != null && maxValue != null 
-                ? String.format(ModifierFormatConstants.RANGE_PERCENTAGE_FORMAT, minValue, maxValue)
-                : "";
-                
-            case FIXED -> value != null 
-                ? String.format(ModifierFormatConstants.FIXED_PRICE_FORMAT, value, ModifierFormatConstants.DEFAULT_CURRENCY)
-                : "";
-                
-            case ADDITION -> value != null 
-                ? String.format(ModifierFormatConstants.ADDITION_FORMAT, value, ModifierFormatConstants.DEFAULT_CURRENCY)
-                : "";
-        };
+    public PriceModifierDefinitionDTO(UUID id, String code, String name, String description, 
+                                     ModifierType modifierType, ModifierCategory category, 
+                                     BigDecimal value, BigDecimal minValue, BigDecimal maxValue, 
+                                     boolean active, Integer sortOrder) {
+        super(id, code, name, description, modifierType, category, value, minValue, maxValue, active, sortOrder);
     }
-} 
+}
