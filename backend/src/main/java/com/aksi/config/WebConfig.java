@@ -41,18 +41,19 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         log.info("Налаштування статичних ресурсів для Swagger UI");
         registry.addResourceHandler("/swagger-ui/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/");
-        registry.addResourceHandler("/swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/v3/api-docs/**")
-                .addResourceLocations("classpath:/META-INF/resources/");
+                .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/")
+                .resourceChain(false);
+
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/")
+                .resourceChain(false);
     }
 
     @Override
     public void addViewControllers(@NonNull ViewControllerRegistry registry) {
         log.info("Налаштування контролерів для перенаправлення");
-        // Додаємо перенаправлення з кореневого URL на Swagger UI
-        registry.addRedirectViewController("/swagger-ui", "/swagger-ui.html");
+        registry.addRedirectViewController("/swagger-ui", "/swagger-ui/index.html");
+        registry.addRedirectViewController("/swagger-ui/", "/swagger-ui/index.html");
     }
 
     @Bean

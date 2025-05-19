@@ -14,10 +14,12 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.media.IntegerSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import io.swagger.v3.oas.models.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -27,11 +29,11 @@ import lombok.extern.slf4j.Slf4j;
 @OpenAPIDefinition(
     info = @io.swagger.v3.oas.annotations.info.Info(
         title = "AKSI API",
-        version = "1.0",
+        version = "1.0.0",
         description = "API для системи керування клінінговою компанією AKSI",
         contact = @io.swagger.v3.oas.annotations.info.Contact(
             name = "AKSI Support",
-            email = "support@aksi.com.ua"
+            email = "aksi.vn.ua@gmail.com"
         )
     )
 )
@@ -45,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OpenApiConfig {
 
-    @Value("${server.servlet.context-path}")
+    @Value("${server.servlet.context-path:/api}")
     private String contextPath;
 
     /**
@@ -62,42 +64,51 @@ public class OpenApiConfig {
             SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList("bearerAuth");
 
-            // Сервери API
+            // Список серверів - використовуємо порожні URL щоб уникнути конфліктів
             List<Server> servers = Arrays.asList(
-                new Server().url(contextPath).description("API Сервер"),
-                new Server().url("http://localhost:8080" + contextPath).description("Локальний сервер")
+                new Server().url("").description("Поточний сервер")
             );
 
             // Створюємо об'єкт OpenAPI з інформацією про API
             OpenAPI openAPI = new OpenAPI()
                 .info(new Info()
                     .title("AKSI API")
-                    .description("API для системи керування клінінговою компанією AKSI")
-                    .version("1.0")
+                    .description("API для системи керування хімчисткою AKSI")
+                    .version("1.0.0")
                     .contact(new Contact()
                         .name("AKSI Support")
                         .email("aksi.vn.ua@gmail.com"))
                     .license(new License()
-                        .name("Apache 2.0")
-                        .url("https://www.apache.org/licenses/LICENSE-2.0")))
+                        .name("Proprietary")
+                        .url("https://aksi.vn.ua")))
                 .servers(servers)
-                .addSecurityItem(securityRequirement)
-                .components(new Components()
-                    .addSecuritySchemes("bearerAuth",
-                        new SecurityScheme()
-                            .type(SecurityScheme.Type.HTTP)
-                            .scheme("bearer")
-                            .bearerFormat("JWT")
-                            .description("JWT токен авторизації. Формат: Bearer {token}")
-                    )
-                );
+                .addSecurityItem(securityRequirement);
 
-            // Додаємо додаткові теги для групування API
-            openAPI.addTagsItem(new Tag().name("Orders").description("Операції із замовленнями"))
-                   .addTagsItem(new Tag().name("OrderItems").description("Операції з елементами замовлень"))
-                   .addTagsItem(new Tag().name("OrderCompletion").description("Операції з завершення замовлень"))
-                   .addTagsItem(new Tag().name("OrderDiscounts").description("Операції із знижками до замовлень"))
-                   .addTagsItem(new Tag().name("OrderFinalization").description("Операції фіналізації замовлень"));
+            // Налаштовуємо компоненти та схему помилок
+            Components components = new Components()
+                .addSecuritySchemes("bearerAuth",
+                    new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                        .description("JWT токен авторизації. Формат: Bearer {token}")
+                )
+                .addSchemas("ErrorResponse", new Schema<>()
+                    .name("ErrorResponse")
+                    .type("object")
+                    .description("Інформація про помилку з часовою міткою у форматі ISO-8601")
+                    .addProperty("timestamp", new StringSchema()
+                        .example("2023-01-01T12:00:00Z"))
+                    .addProperty("status", new IntegerSchema()
+                        .example(400))
+                    .addProperty("error", new StringSchema()
+                        .example("Bad Request"))
+                    .addProperty("message", new StringSchema()
+                        .example("Invalid input data"))
+                    .addProperty("path", new StringSchema()
+                        .example("/api/endpoint")));
+
+            openAPI.components(components);
 
             return openAPI;
 

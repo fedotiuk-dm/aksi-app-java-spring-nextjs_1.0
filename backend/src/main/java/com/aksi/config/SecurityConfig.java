@@ -7,25 +7,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import com.aksi.domain.user.repository.UserRepository;
-import com.aksi.service.user.UserDetailsServiceImpl;
-import com.aksi.util.JwtUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SecurityConfig {
 
-    private final JwtUtils jwtUtils;
-    private final UserRepository userRepository;
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
 
     /**
      * Налаштування ланцюжка фільтрів безпеки.
@@ -52,39 +44,41 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.info("Налаштування SecurityFilterChain");
         try {
-            JwtAuthenticationFilter jwtAuthFilter = new JwtAuthenticationFilter(jwtUtils, userDetailsService());
-
-            // Відкриваємо всі API, Swagger, Actuator у dev
+            // Визначення активного профілю
             String activeProfile = System.getProperty("spring.profiles.active",
-                    System.getenv("SPRING_PROFILES_ACTIVE") != null ? System.getenv("SPRING_PROFILES_ACTIVE") : "dev");
+                    System.getenv("SPRING_PROFILES_ACTIVE") != null ?
+                        System.getenv("SPRING_PROFILES_ACTIVE") : "dev");
+
+            // Загальні URL-шляхи, доступні всім
+            String[] publicUrls = {
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/webjars/**",
+                "/swagger-resources/**",
+                "/actuator/**"
+            };
+
+            // Спільна конфігурація для всіх профілів
+            http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+            // Специфічна конфігурація залежно від профілю
             if ("dev".equals(activeProfile)) {
-                http
-                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                    .csrf(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                    )
-                    .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .authenticationProvider(authenticationProvider())
-                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                http.authorizeHttpRequests(auth -> auth
+                    .requestMatchers(publicUrls).permitAll()
+                    .anyRequest().permitAll()
+                );
             } else {
-                http
-                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                    .csrf(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(
-                            "/v3/api-docs/**",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/webjars/**",
-                            "/swagger-resources/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-                        .anyRequest().authenticated()
-                    )
-                    .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .authenticationProvider(authenticationProvider())
-                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                http.authorizeHttpRequests(auth -> auth
+                    .requestMatchers(publicUrls).permitAll()
+                    .requestMatchers("/auth/**").permitAll()
+                    .anyRequest().authenticated()
+                );
             }
 
             log.info("SecurityFilterChain успішно налаштовано");
@@ -93,15 +87,6 @@ public class SecurityConfig {
             log.error("Помилка при налаштуванні SecurityFilterChain: {}", e.getMessage(), e);
             throw e;
         }
-    }
-
-    /**
-     * Сервіс для завантаження користувача з бази даних.
-     * @return реалізація UserDetailsService для автентифікації користувачів
-     */
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl(userRepository);
     }
 
     /**
@@ -132,18 +117,6 @@ public class SecurityConfig {
     }
 
     /**
-     * Провайдер автентифікації на основі DAO з BCrypt шифруванням паролів.
-     * @return налаштований провайдер автентифікації на основі бази даних
-     */
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService());
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
-
-    /**
      * Менеджер автентифікації для логіну та реєстрації.
      * @param config конфігурація
      * @return менеджер автентифікації для обробки запитів авторизації
@@ -151,14 +124,5 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
-    }
-
-    /**
-     * Кодувальник паролів BCrypt.
-     * @return реалізація PasswordEncoder на основі BCrypt алгоритму
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

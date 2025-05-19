@@ -8,8 +8,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: your.email@gmail.com
-    password: your-app-password
+    username: aksi.vn.ua@gmail.com
+    password: ${MAIL_PASSWORD:your_password}
     properties:
       mail:
         smtp:
@@ -59,6 +59,11 @@ server:
   port: 8080
   servlet:
     context-path: /api
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+    include-exception: false
 
 # Налаштування JWT
 jwt:
@@ -101,16 +106,6 @@ management:
         request:
           autotime:
             enabled: true
-    enable:
-      all: true
-  server:
-    port: 8080
-    servlet:
-      context-path: /api
-  endpoint.health.probes.enabled: true
-  info:
-    env:
-      enabled: true
 
 logging:
   level:
@@ -137,32 +132,17 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: method
     tagsSorter: alpha
-    displayRequestDuration: true
-    filter: true
-    deepLinking: true
-    syntaxHighlight:
-      activated: true
     doc-expansion: none
+    filter: true
     disable-swagger-default-url: true
     display-request-duration: true
-    csrf:
-      enabled: true
+    default-models-expand-depth: -1
   api-docs:
     path: /v3/api-docs
     enabled: true
-  show-actuator: true
-  packages-to-scan: com.aksi
+  packages-to-scan: com.aksi.api
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
   paths-to-match: /**
-  model-converters:
-    deprecating-converter:
-      enabled: true
-  writer-with-order-by-keys: true
-  group-configs:
-    - group: auth
-      paths-to-match: /auth/**
-      packages-to-scan: com.aksi.api
-    - group: clients
-      paths-to-match: /clients/**
-      packages-to-scan: com.aksi.api
+  cache:
+    disabled: true

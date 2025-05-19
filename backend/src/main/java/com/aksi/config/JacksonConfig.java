@@ -24,17 +24,17 @@ public class JacksonConfig {
     @Bean
     public ObjectMapper objectMapper() {
         log.info("Налаштування ObjectMapper");
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
 
         // Додаємо підтримку Java 8 Date/Time API (LocalDateTime, LocalDate, тощо)
-        mapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new JavaTimeModule());
 
         // Вимикаємо серіалізацію дат як масиви timestamp
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
         // Не включати null поля
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        return mapper;
+        return objectMapper;
     }
 }
