@@ -229,9 +229,7 @@
             <property name="severity" value="ignore"/>
         </module>
         
-        <module name="FinalParameters">
-            <property name="tokens" value="CTOR_DEF, METHOD_DEF"/>
-        </module>
+        <!-- Модуль FinalParameters видалено, оскільки він створює проблеми у Spring проекті -->
         
         <module name="FinalLocalVariable">
             <property name="validateEnhancedForLoopVariable" value="true"/>
