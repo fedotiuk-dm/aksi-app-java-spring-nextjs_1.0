@@ -2,18 +2,15 @@
 
 import React, { useEffect } from 'react';
 import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
+import { ItemWizardSubStep, WizardStep } from '@/features/order-wizard/model/types';
 import {
-  ItemWizardSubStep,
-  WizardStep,
-} from '@/features/order-wizard/model/types';
-import { 
   BasicInfoSubstep,
   ItemPropertiesSubstep,
   DefectsStainsSubstep,
   PriceCalculatorSubstep,
-  PhotoDocumentationSubstep
+  PhotoDocumentationSubstep,
 } from '.';
-import { StepContainer } from '@/features/order-wizard/ui/components';
+import { StepContainer } from '@/features/order-wizard/ui/shared';
 import { ItemWizardStepper } from './components';
 
 /**
@@ -26,9 +23,7 @@ export const ItemWizardStep: React.FC = () => {
   const currentSubStep = useOrderWizardStore((state) => state.currentSubStep);
   // Ця змінна використовується зараз лише для логування, ми закоментували перевірку
   // const currentItem = useOrderWizardStore(state => state.currentItem);
-  const setCurrentSubStep = useOrderWizardStore(
-    (state) => state.setCurrentSubStep
-  );
+  const setCurrentSubStep = useOrderWizardStore((state) => state.setCurrentSubStep);
   // Ця змінна використовується зараз лише для логування, ми закоментували перевірку
   // const navigateToStep = useOrderWizardStore(state => state.navigateToStep);
 
@@ -94,10 +89,7 @@ export const ItemWizardStep: React.FC = () => {
   };
 
   return (
-    <StepContainer
-      title="Додавання предмета"
-      subtitle="Введіть інформацію про новий предмет"
-    >
+    <StepContainer title="Додавання предмета" subtitle="Введіть інформацію про новий предмет">
       {/* Відображення степера з прогресом візарда */}
       <ItemWizardStepper />
       {renderSubStepContent()}

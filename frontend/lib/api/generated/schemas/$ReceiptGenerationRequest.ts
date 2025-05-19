@@ -5,16 +5,16 @@
 export const $ReceiptGenerationRequest = {
     description: `Параметри генерації квитанції`,
     properties: {
+        orderId: {
+            type: 'string',
+            isRequired: true,
+            format: 'uuid',
+        },
         format: {
             type: 'string',
         },
         includeSignature: {
             type: 'boolean',
-        },
-        orderId: {
-            type: 'string',
-            isRequired: true,
-            format: 'uuid',
         },
     },
 } as const;

@@ -4,21 +4,19 @@
 /* eslint-disable */
 export const $ReceiptDTO = {
     properties: {
-        additionalNotes: {
+        orderId: {
+            type: 'string',
+            format: 'uuid',
+        },
+        receiptNumber: {
             type: 'string',
         },
-        branchInfo: {
-            type: 'ReceiptBranchInfoDTO',
-        },
-        clientInfo: {
-            type: 'ReceiptClientInfoDTO',
+        tagNumber: {
+            type: 'string',
         },
         createdDate: {
             type: 'string',
             format: 'date-time',
-        },
-        customerSignatureData: {
-            type: 'string',
         },
         expectedCompletionDate: {
             type: 'string',
@@ -27,8 +25,11 @@ export const $ReceiptDTO = {
         expediteType: {
             type: 'Enum',
         },
-        financialInfo: {
-            type: 'ReceiptFinancialInfoDTO',
+        branchInfo: {
+            type: 'ReceiptBranchInfoDTO',
+        },
+        clientInfo: {
+            type: 'ReceiptClientInfoDTO',
         },
         items: {
             type: 'array',
@@ -36,24 +37,23 @@ export const $ReceiptDTO = {
                 type: 'ReceiptItemDTO',
             },
         },
+        financialInfo: {
+            type: 'ReceiptFinancialInfoDTO',
+        },
         legalTerms: {
             type: 'string',
         },
-        orderId: {
-            type: 'string',
-            format: 'uuid',
-        },
-        paymentMethod: {
-            type: 'Enum',
-        },
-        receiptNumber: {
-            type: 'string',
-        },
-        tagNumber: {
+        customerSignatureData: {
             type: 'string',
         },
         termsAccepted: {
             type: 'boolean',
+        },
+        additionalNotes: {
+            type: 'string',
+        },
+        paymentMethod: {
+            type: 'Enum',
         },
     },
 } as const;

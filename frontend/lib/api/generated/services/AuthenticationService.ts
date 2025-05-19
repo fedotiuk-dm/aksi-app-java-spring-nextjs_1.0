@@ -9,19 +9,19 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class AuthenticationService {
     /**
-     * Вхід користувача
-     * Автентифікує користувача і повертає JWT токен
+     * Реєстрація нового користувача
+     * Створює нового користувача і повертає JWT токен
      * @returns any OK
      * @throws ApiError
      */
-    public static login({
+    public static register({
         requestBody,
     }: {
-        requestBody: LoginRequest,
+        requestBody: RegisterRequest,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/auth/login',
+            url: '/auth/register',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -59,19 +59,19 @@ export class AuthenticationService {
         });
     }
     /**
-     * Реєстрація нового користувача
-     * Створює нового користувача і повертає JWT токен
+     * Вхід користувача
+     * Автентифікує користувача і повертає JWT токен
      * @returns any OK
      * @throws ApiError
      */
-    public static register({
+    public static login({
         requestBody,
     }: {
-        requestBody: RegisterRequest,
+        requestBody: LoginRequest,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/auth/register',
+            url: '/auth/login',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

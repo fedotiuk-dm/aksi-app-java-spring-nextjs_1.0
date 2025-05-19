@@ -3,10 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OrderDiscountRequest = {
-    discountDescription?: string;
-    discountPercentage?: number;
-    discountType: OrderDiscountRequest.discountType;
     orderId: string;
+    discountType: OrderDiscountRequest.discountType;
+    discountPercentage?: number;
+    discountDescription?: string;
 };
 export namespace OrderDiscountRequest {
     export enum discountType {

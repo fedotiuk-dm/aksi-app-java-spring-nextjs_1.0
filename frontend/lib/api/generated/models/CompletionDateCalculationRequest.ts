@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CompletionDateCalculationRequest = {
+    serviceCategoryIds: Array<string>;
     expediteType: CompletionDateCalculationRequest.expediteType;
-    serviceCategoryIds?: Array<string>;
 };
 export namespace CompletionDateCalculationRequest {
     export enum expediteType {

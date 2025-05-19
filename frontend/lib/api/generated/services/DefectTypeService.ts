@@ -8,6 +8,88 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class DefectTypeService {
     /**
+     * Отримати тип дефекту за ID
+     * Повертає тип дефекту за вказаним ідентифікатором
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getDefectTypeById({
+        id,
+    }: {
+        id: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/defect-types/{id}',
+            path: {
+                'id': id,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Оновити тип дефекту
+     * Оновлює існуючий тип дефекту за вказаним ідентифікатором
+     * @returns DefectTypeDTO OK
+     * @throws ApiError
+     */
+    public static updateDefectType({
+        id,
+        requestBody,
+    }: {
+        id: string,
+        requestBody: DefectTypeDTO,
+    }): CancelablePromise<DefectTypeDTO> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/defect-types/{id}',
+            path: {
+                'id': id,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Видалити тип дефекту
+     * Видаляє тип дефекту за вказаним ідентифікатором
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static deleteDefectType({
+        id,
+    }: {
+        id: string,
+    }): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/defect-types/{id}',
+            path: {
+                'id': id,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
      * Отримати типи дефектів
      * Повертає список всіх або тільки активних типів дефектів з можливістю фільтрації за рівнем ризику
      * @returns DefectTypeDTO OK
@@ -78,88 +160,6 @@ export class DefectTypeService {
             path: {
                 'code': code,
             },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Видалити тип дефекту
-     * Видаляє тип дефекту за вказаним ідентифікатором
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static deleteDefectType({
-        id,
-    }: {
-        id: string,
-    }): CancelablePromise<any> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/defect-types/{id}',
-            path: {
-                'id': id,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати тип дефекту за ID
-     * Повертає тип дефекту за вказаним ідентифікатором
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getDefectTypeById({
-        id,
-    }: {
-        id: string,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/defect-types/{id}',
-            path: {
-                'id': id,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Оновити тип дефекту
-     * Оновлює існуючий тип дефекту за вказаним ідентифікатором
-     * @returns DefectTypeDTO OK
-     * @throws ApiError
-     */
-    public static updateDefectType({
-        id,
-        requestBody,
-    }: {
-        id: string,
-        requestBody: DefectTypeDTO,
-    }): CancelablePromise<DefectTypeDTO> {
-        return __request(OpenAPI, {
-            method: 'PUT',
-            url: '/defect-types/{id}',
-            path: {
-                'id': id,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,

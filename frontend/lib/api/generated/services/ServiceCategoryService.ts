@@ -25,31 +25,6 @@ export class ServiceCategoryService {
         });
     }
     /**
-     * Отримати категорію послуг за кодом
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getCategoryByCode({
-        code,
-    }: {
-        code: string,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/service-categories/code/{code}',
-            path: {
-                'code': code,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
      * Отримати категорію послуг за ID
      * @returns any OK
      * @throws ApiError
@@ -64,6 +39,31 @@ export class ServiceCategoryService {
             url: '/service-categories/{id}',
             path: {
                 'id': id,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати категорію послуг за кодом
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getCategoryByCode({
+        code,
+    }: {
+        code: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/service-categories/code/{code}',
+            path: {
+                'code': code,
             },
             errors: {
                 400: `Bad Request`,

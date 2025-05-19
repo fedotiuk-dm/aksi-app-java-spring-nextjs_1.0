@@ -10,65 +10,9 @@ import type { OrderItemDetailedDTO } from './OrderItemDetailedDTO';
  */
 export type OrderDetailedSummaryResponse = {
     /**
-     * Сума до сплати при отриманні
-     */
-    balanceAmount?: number;
-    /**
-     * Філія, в якій оформлено замовлення
-     */
-    branchLocation?: BranchLocationDTO;
-    /**
-     * Детальна інформація про клієнта
-     */
-    client?: ClientResponse;
-    /**
-     * Дата створення замовлення
-     */
-    createdDate?: string;
-    /**
-     * Примітки клієнта
-     */
-    customerNotes?: string;
-    /**
-     * Сума знижки
-     */
-    discountAmount?: number;
-    /**
-     * Відсоток знижки
-     */
-    discountPercentage?: number;
-    /**
-     * Тип знижки
-     */
-    discountType?: string;
-    /**
-     * Очікувана дата виконання замовлення
-     */
-    expectedCompletionDate?: string;
-    /**
-     * Сума надбавки за терміновість
-     */
-    expediteSurchargeAmount?: number;
-    /**
-     * Тип термінового виконання
-     */
-    expediteType?: OrderDetailedSummaryResponse.expediteType;
-    /**
-     * Фінальна вартість замовлення з урахуванням знижок та надбавок
-     */
-    finalAmount?: number;
-    /**
      * ID замовлення
      */
     id?: string;
-    /**
-     * Список предметів замовлення з детальними розрахунками
-     */
-    items?: Array<OrderItemDetailedDTO>;
-    /**
-     * Сума передоплати
-     */
-    prepaymentAmount?: number;
     /**
      * Номер квитанції замовлення
      */
@@ -78,9 +22,65 @@ export type OrderDetailedSummaryResponse = {
      */
     tagNumber?: string;
     /**
+     * Детальна інформація про клієнта
+     */
+    client?: ClientResponse;
+    /**
+     * Філія, в якій оформлено замовлення
+     */
+    branchLocation?: BranchLocationDTO;
+    /**
+     * Список предметів замовлення з детальними розрахунками
+     */
+    items?: Array<OrderItemDetailedDTO>;
+    /**
      * Загальна вартість замовлення до знижок
      */
     totalAmount?: number;
+    /**
+     * Сума знижки
+     */
+    discountAmount?: number;
+    /**
+     * Сума надбавки за терміновість
+     */
+    expediteSurchargeAmount?: number;
+    /**
+     * Фінальна вартість замовлення з урахуванням знижок та надбавок
+     */
+    finalAmount?: number;
+    /**
+     * Сума передоплати
+     */
+    prepaymentAmount?: number;
+    /**
+     * Сума до сплати при отриманні
+     */
+    balanceAmount?: number;
+    /**
+     * Тип термінового виконання
+     */
+    expediteType?: OrderDetailedSummaryResponse.expediteType;
+    /**
+     * Очікувана дата виконання замовлення
+     */
+    expectedCompletionDate?: string;
+    /**
+     * Дата створення замовлення
+     */
+    createdDate?: string;
+    /**
+     * Примітки клієнта
+     */
+    customerNotes?: string;
+    /**
+     * Тип знижки
+     */
+    discountType?: string;
+    /**
+     * Відсоток знижки
+     */
+    discountPercentage?: number;
 };
 export namespace OrderDetailedSummaryResponse {
     /**

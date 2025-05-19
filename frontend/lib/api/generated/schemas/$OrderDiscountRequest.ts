@@ -4,23 +4,23 @@
 /* eslint-disable */
 export const $OrderDiscountRequest = {
     properties: {
-        discountDescription: {
+        orderId: {
             type: 'string',
-            maxLength: 255,
+            isRequired: true,
+            format: 'uuid',
+        },
+        discountType: {
+            type: 'Enum',
+            isRequired: true,
         },
         discountPercentage: {
             type: 'number',
             format: 'int32',
             maximum: 100,
         },
-        discountType: {
-            type: 'Enum',
-            isRequired: true,
-        },
-        orderId: {
+        discountDescription: {
             type: 'string',
-            isRequired: true,
-            format: 'uuid',
+            maxLength: 255,
         },
     },
 } as const;

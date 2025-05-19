@@ -4,12 +4,12 @@
 /* eslint-disable */
 import type { CalculationDetailsDTO } from './CalculationDetailsDTO';
 export type PriceCalculationResponseDTO = {
-    baseTotalPrice?: number;
     baseUnitPrice?: number;
-    calculationDetails?: Array<CalculationDetailsDTO>;
-    finalTotalPrice?: number;
-    finalUnitPrice?: number;
     quantity?: number;
+    baseTotalPrice?: number;
     unitOfMeasure?: string;
+    finalUnitPrice?: number;
+    finalTotalPrice?: number;
+    calculationDetails?: Array<CalculationDetailsDTO>;
 };
 

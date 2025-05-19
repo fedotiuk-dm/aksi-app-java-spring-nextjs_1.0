@@ -1,0 +1,12 @@
+# Автогенеровані файли
+lib/api/generated/**/*
+.next/**/*
+node_modules/**/*
+build/**/*
+dist/**/*
+
+# Кеш та тимчасові файли
+*.log
+.DS_Store
+coverage/**/*
+.vercel/**/*

@@ -10,38 +10,14 @@ export const $PriceCalculationRequestDTO = {
             description: `Код категорії послуги`,
             isRequired: true,
         },
-        color: {
-            type: 'string',
-            description: `Колір предмету`,
-        },
-        discountPercent: {
-            type: 'number',
-            description: `Відсоток знижки`,
-        },
-        expeditePercent: {
-            type: 'number',
-            description: `Відсоток надбавки за терміновість`,
-        },
-        expedited: {
-            type: 'boolean',
-            description: `Чи термінове замовлення`,
-        },
-        fixedModifierQuantities: {
-            type: 'array',
-            contains: {
-                type: 'FixedModifierQuantity',
-            },
-        },
         itemName: {
             type: 'string',
             description: `Найменування предмету з прайс-листа`,
             isRequired: true,
         },
-        modifierCodes: {
-            type: 'array',
-            contains: {
-                type: 'string',
-            },
+        color: {
+            type: 'string',
+            description: `Колір предмету`,
         },
         quantity: {
             type: 'number',
@@ -49,11 +25,35 @@ export const $PriceCalculationRequestDTO = {
             isRequired: true,
             format: 'int32',
         },
+        modifierCodes: {
+            type: 'array',
+            contains: {
+                type: 'string',
+            },
+        },
         rangeModifierValues: {
             type: 'array',
             contains: {
                 type: 'RangeModifierValue',
             },
+        },
+        fixedModifierQuantities: {
+            type: 'array',
+            contains: {
+                type: 'FixedModifierQuantity',
+            },
+        },
+        expedited: {
+            type: 'boolean',
+            description: `Чи термінове замовлення`,
+        },
+        expeditePercent: {
+            type: 'number',
+            description: `Відсоток надбавки за терміновість`,
+        },
+        discountPercent: {
+            type: 'number',
+            description: `Відсоток знижки`,
         },
     },
 } as const;

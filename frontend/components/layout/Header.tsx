@@ -1,6 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+// Зовнішні залежності
+import {
+  Menu as MenuIcon,
+  Home as HomeIcon,
+  People as PeopleIcon,
+  Receipt as ReceiptIcon,
+  LocalLaundryService as LaundryIcon,
+  AttachMoney as PriceIcon,
+  Settings as SettingsIcon,
+  Person as PersonIcon,
+  Logout as LogoutIcon,
+} from '@mui/icons-material';
 import {
   AppBar,
   Box,
@@ -17,20 +28,20 @@ import {
   Divider,
   Avatar,
 } from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Home as HomeIcon,
-  People as PeopleIcon,
-  Receipt as ReceiptIcon,
-  LocalLaundryService as LaundryIcon,
-  AttachMoney as PriceIcon,
-  Settings as SettingsIcon,
-  Person as PersonIcon,
-  Logout as LogoutIcon,
-} from '@mui/icons-material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+
+// MUI компоненти
+
+// MUI іконки
+
+// Внутрішні залежності
 import { useLogout } from '@/features/auth/hooks/useLogout';
+
+// Константи
+const APP_NAME = 'AKSI Хімчистка';
+const APP_BAR_BG_COLOR = 'primary.main';
 
 const navigationItems = [
   { name: 'Головна', path: '/', icon: <HomeIcon /> },
@@ -61,7 +72,7 @@ export default function Header() {
 
   return (
     <>
-      <AppBar position="static" elevation={0} sx={{ bgcolor: 'primary.main' }}>
+      <AppBar position="static" elevation={0} sx={{ bgcolor: APP_BAR_BG_COLOR }}>
         <Toolbar>
           <IconButton
             edge="start"
@@ -73,7 +84,7 @@ export default function Header() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            AKSI Хімчистка
+            {APP_NAME}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <IconButton
@@ -116,7 +127,7 @@ export default function Header() {
                 <ListItemText>Налаштування</ListItemText>
               </MenuItem>
               <Divider />
-              <MenuItem 
+              <MenuItem
                 onClick={() => {
                   handleUserMenuClose();
                   logout();
@@ -133,19 +144,15 @@ export default function Header() {
         </Toolbar>
       </AppBar>
 
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={() => toggleDrawer(false)}
-      >
+      <Drawer anchor="left" open={drawerOpen} onClose={() => toggleDrawer(false)}>
         <Box
           sx={{ width: 250 }}
           role="presentation"
           onClick={() => toggleDrawer(false)}
           onKeyDown={() => toggleDrawer(false)}
         >
-          <Box sx={{ p: 2, bgcolor: 'primary.main', color: 'white' }}>
-            <Typography variant="h6">AKSI Хімчистка</Typography>
+          <Box sx={{ p: 2, bgcolor: APP_BAR_BG_COLOR, color: 'white' }}>
+            <Typography variant="h6">{APP_NAME}</Typography>
             <Typography variant="body2">Панель управління</Typography>
           </Box>
           <Divider />
@@ -160,18 +167,17 @@ export default function Header() {
                   selected={pathname === item.path}
                   sx={{
                     '&.Mui-selected': {
-                      bgcolor: 'primary.light',
-                      color: 'primary.main',
+                      bgcolor: APP_BAR_BG_COLOR,
+                      color: APP_BAR_BG_COLOR,
                       '&:hover': {
-                        bgcolor: 'primary.light',
+                        bgcolor: APP_BAR_BG_COLOR,
                       },
                     },
                   }}
                 >
                   <ListItemIcon
                     sx={{
-                      color:
-                        pathname === item.path ? 'primary.main' : 'inherit',
+                      color: pathname === item.path ? APP_BAR_BG_COLOR : 'inherit',
                     }}
                   >
                     {item.icon}

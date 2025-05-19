@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type RegisterRequest = {
-    email?: string;
-    name?: string;
-    password?: string;
-    position?: string;
+    name: string;
+    username: string;
+    email: string;
+    password: string;
     role?: RegisterRequest.role;
-    username?: string;
+    position?: string;
 };
 export namespace RegisterRequest {
     export enum role {

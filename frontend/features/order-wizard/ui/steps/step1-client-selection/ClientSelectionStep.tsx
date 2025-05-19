@@ -23,10 +23,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import EmailIcon from '@mui/icons-material/Email';
 import { Client } from '@/features/order-wizard/model/types';
-import {
-  StepContainer,
-  StepNavigation,
-} from '@/features/order-wizard/ui/components';
+import { StepContainer, StepNavigation } from '@/features/order-wizard/ui/shared';
 import { useClients } from '@/features/order-wizard/api/clients';
 import { useOrderWizardNavigation } from '@/features/order-wizard/model/store';
 import { WizardStep } from '@/features/order-wizard/model/types';
@@ -120,19 +117,14 @@ export const ClientSelectionStep: React.FC = () => {
 
   // Функція для відображення ініціалів клієнта
   const getClientInitials = (client: Client) => {
-    return `${client.firstName.charAt(0)}${client.lastName.charAt(
-      0
-    )}`.toUpperCase();
+    return `${client.firstName.charAt(0)}${client.lastName.charAt(0)}`.toUpperCase();
   };
 
   // Визначаємо, чи є результати пошуку для відображення
   const hasSearchResults = !showCreateForm && searchResults.length > 0;
 
   return (
-    <StepContainer
-      title="Вибір клієнта"
-      subtitle="Оберіть існуючого клієнта або створіть нового"
-    >
+    <StepContainer title="Вибір клієнта" subtitle="Оберіть існуючого клієнта або створіть нового">
       <Box sx={{ position: 'relative' }}>
         {/* Секція пошуку або створення клієнта */}
         <Box
@@ -158,9 +150,7 @@ export const ClientSelectionStep: React.FC = () => {
                   variant={isTablet ? 'h5' : 'h6'}
                   sx={{ fontWeight: 'bold', color: 'primary.main' }}
                 >
-                  {showCreateForm
-                    ? 'Створення нового клієнта'
-                    : 'Знайти існуючого клієнта'}
+                  {showCreateForm ? 'Створення нового клієнта' : 'Знайти існуючого клієнта'}
                 </Typography>
 
                 {!showCreateForm && (
@@ -243,10 +233,7 @@ export const ClientSelectionStep: React.FC = () => {
         {selectedClient && !showCreateForm && (
           <Grid container>
             <Grid size={{ xs: 12 }}>
-              <Zoom
-                in={selectedClient !== null && !showCreateForm}
-                timeout={400}
-              >
+              <Zoom in={selectedClient !== null && !showCreateForm} timeout={400}>
                 <Card
                   sx={{
                     mt: isTablet ? 3 : 2,
@@ -282,9 +269,7 @@ export const ClientSelectionStep: React.FC = () => {
                         gap: isMobile ? 3 : 0,
                       }}
                     >
-                      <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-                      >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Avatar
                           sx={{
                             bgcolor: 'primary.main',
@@ -299,11 +284,7 @@ export const ClientSelectionStep: React.FC = () => {
                         </Avatar>
 
                         <Box>
-                          <Typography
-                            variant="subtitle1"
-                            color="success.main"
-                            fontWeight="medium"
-                          >
+                          <Typography variant="subtitle1" color="success.main" fontWeight="medium">
                             Вибрано клієнта:
                           </Typography>
                           <Typography
@@ -331,13 +312,8 @@ export const ClientSelectionStep: React.FC = () => {
                                 gap: 1,
                               }}
                             >
-                              <LocalPhoneIcon
-                                fontSize="small"
-                                color="primary"
-                              />
-                              <Typography variant="body2">
-                                {selectedClient.phone}
-                              </Typography>
+                              <LocalPhoneIcon fontSize="small" color="primary" />
+                              <Typography variant="body2">{selectedClient.phone}</Typography>
                             </Box>
 
                             {selectedClient.email && (
@@ -349,9 +325,7 @@ export const ClientSelectionStep: React.FC = () => {
                                 }}
                               >
                                 <EmailIcon fontSize="small" color="primary" />
-                                <Typography variant="body2">
-                                  {selectedClient.email}
-                                </Typography>
+                                <Typography variant="body2">{selectedClient.email}</Typography>
                               </Box>
                             )}
                           </Box>
@@ -366,23 +340,21 @@ export const ClientSelectionStep: React.FC = () => {
                                   gap: 1,
                                 }}
                               >
-                                {selectedClient.communicationChannels.map(
-                                  (channel) => (
-                                    <Chip
-                                      key={channel}
-                                      label={
-                                        channel === 'PHONE'
-                                          ? 'Телефон'
-                                          : channel === 'SMS'
+                                {selectedClient.communicationChannels.map((channel) => (
+                                  <Chip
+                                    key={channel}
+                                    label={
+                                      channel === 'PHONE'
+                                        ? 'Телефон'
+                                        : channel === 'SMS'
                                           ? 'SMS'
                                           : channel
-                                      }
-                                      size="small"
-                                      variant="outlined"
-                                      color="primary"
-                                    />
-                                  )
-                                )}
+                                    }
+                                    size="small"
+                                    variant="outlined"
+                                    color="primary"
+                                  />
+                                ))}
                               </Box>
                             )}
                         </Box>

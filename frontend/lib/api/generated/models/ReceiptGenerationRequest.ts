@@ -6,8 +6,8 @@
  * Параметри генерації квитанції
  */
 export type ReceiptGenerationRequest = {
+    orderId: string;
     format?: string;
     includeSignature?: boolean;
-    orderId: string;
 };
 

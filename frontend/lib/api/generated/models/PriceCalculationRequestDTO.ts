@@ -13,40 +13,40 @@ export type PriceCalculationRequestDTO = {
      */
     categoryCode: string;
     /**
-     * Колір предмету
-     */
-    color?: string;
-    /**
-     * Відсоток знижки
-     */
-    discountPercent?: number;
-    /**
-     * Відсоток надбавки за терміновість
-     */
-    expeditePercent?: number;
-    /**
-     * Чи термінове замовлення
-     */
-    expedited?: boolean;
-    /**
-     * Кількості для фіксованих модифікаторів
-     */
-    fixedModifierQuantities?: Array<FixedModifierQuantity>;
-    /**
      * Найменування предмету з прайс-листа
      */
     itemName: string;
     /**
-     * Список кодів модифікаторів
+     * Колір предмету
      */
-    modifierCodes?: Array<string>;
+    color?: string;
     /**
      * Кількість предметів
      */
     quantity: number;
     /**
+     * Список кодів модифікаторів
+     */
+    modifierCodes?: Array<string>;
+    /**
      * Значення для модифікаторів з діапазоном
      */
     rangeModifierValues?: Array<RangeModifierValue>;
+    /**
+     * Кількості для фіксованих модифікаторів
+     */
+    fixedModifierQuantities?: Array<FixedModifierQuantity>;
+    /**
+     * Чи термінове замовлення
+     */
+    expedited?: boolean;
+    /**
+     * Відсоток надбавки за терміновість
+     */
+    expeditePercent?: number;
+    /**
+     * Відсоток знижки
+     */
+    discountPercent?: number;
 };
 

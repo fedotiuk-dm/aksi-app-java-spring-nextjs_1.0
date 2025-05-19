@@ -7,20 +7,23 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class UnitOfMeasureService {
     /**
-     * Отримати всі доступні одиниці виміру для категорії
+     * Отримати рекомендовану одиницю виміру для предмета
      * @returns any OK
      * @throws ApiError
      */
-    public static getAvailableUnitsForCategory({
+    public static getRecommendedUnitOfMeasure({
         categoryId,
+        itemName,
     }: {
         categoryId: string,
+        itemName: string,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/units-of-measure/category/{categoryId}',
-            path: {
+            url: '/units-of-measure/recommend',
+            query: {
                 'categoryId': categoryId,
+                'itemName': itemName,
             },
             errors: {
                 400: `Bad Request`,
@@ -63,23 +66,20 @@ export class UnitOfMeasureService {
         });
     }
     /**
-     * Отримати рекомендовану одиницю виміру для предмета
+     * Отримати всі доступні одиниці виміру для категорії
      * @returns any OK
      * @throws ApiError
      */
-    public static getRecommendedUnitOfMeasure({
+    public static getAvailableUnitsForCategory({
         categoryId,
-        itemName,
     }: {
         categoryId: string,
-        itemName: string,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/units-of-measure/recommend',
-            query: {
+            url: '/units-of-measure/category/{categoryId}',
+            path: {
                 'categoryId': categoryId,
-                'itemName': itemName,
             },
             errors: {
                 400: `Bad Request`,

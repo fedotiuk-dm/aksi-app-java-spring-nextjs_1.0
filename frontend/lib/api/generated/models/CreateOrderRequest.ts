@@ -7,17 +7,17 @@ import type { OrderItemDTO } from './OrderItemDTO';
  * Дані для чернетки замовлення
  */
 export type CreateOrderRequest = {
-    branchLocationId: string;
-    clientId: string;
-    customerNotes?: string;
-    discountAmount?: number;
-    draft?: boolean;
-    expectedCompletionDate?: string;
-    expediteType?: CreateOrderRequest.expediteType;
-    internalNotes?: string;
-    items?: Array<OrderItemDTO>;
-    prepaymentAmount?: number;
     tagNumber?: string;
+    clientId: string;
+    items?: Array<OrderItemDTO>;
+    discountAmount?: number;
+    prepaymentAmount?: number;
+    branchLocationId: string;
+    expectedCompletionDate?: string;
+    customerNotes?: string;
+    internalNotes?: string;
+    expediteType?: CreateOrderRequest.expediteType;
+    draft?: boolean;
 };
 export namespace CreateOrderRequest {
     export enum expediteType {

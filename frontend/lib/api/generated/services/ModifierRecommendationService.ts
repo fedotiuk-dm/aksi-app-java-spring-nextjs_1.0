@@ -7,25 +7,25 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class ModifierRecommendationService {
     /**
-     * Отримати рекомендовані модифікатори на основі дефектів
-     * Повертає список рекомендованих модифікаторів цін на основі вказаних типів дефектів, категорії та матеріалу
+     * Отримати рекомендовані модифікатори на основі плям
+     * Повертає список рекомендованих модифікаторів цін на основі вказаних типів плям, категорії та матеріалу
      * @returns any OK
      * @throws ApiError
      */
-    public static getRecommendedModifiersForDefects({
-        defects,
+    public static getRecommendedModifiersForStains({
+        stains,
         categoryCode,
         materialType,
     }: {
-        defects: Array<string>,
+        stains: Array<string>,
         categoryCode?: string,
         materialType?: string,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/modifier-recommendations/defects',
+            url: '/modifier-recommendations/stains',
             query: {
-                'defects': defects,
+                'stains': stains,
                 'categoryCode': categoryCode,
                 'materialType': materialType,
             },
@@ -74,25 +74,25 @@ export class ModifierRecommendationService {
         });
     }
     /**
-     * Отримати рекомендовані модифікатори на основі плям
-     * Повертає список рекомендованих модифікаторів цін на основі вказаних типів плям, категорії та матеріалу
+     * Отримати рекомендовані модифікатори на основі дефектів
+     * Повертає список рекомендованих модифікаторів цін на основі вказаних типів дефектів, категорії та матеріалу
      * @returns any OK
      * @throws ApiError
      */
-    public static getRecommendedModifiersForStains({
-        stains,
+    public static getRecommendedModifiersForDefects({
+        defects,
         categoryCode,
         materialType,
     }: {
-        stains: Array<string>,
+        defects: Array<string>,
         categoryCode?: string,
         materialType?: string,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/modifier-recommendations/stains',
+            url: '/modifier-recommendations/defects',
             query: {
-                'stains': stains,
+                'defects': defects,
                 'categoryCode': categoryCode,
                 'materialType': materialType,
             },

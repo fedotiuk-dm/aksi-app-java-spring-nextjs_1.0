@@ -5,12 +5,6 @@
 export const $EmailReceiptRequest = {
     description: `Параметри відправки квитанції`,
     properties: {
-        includeSignature: {
-            type: 'boolean',
-        },
-        message: {
-            type: 'string',
-        },
         orderId: {
             type: 'string',
             isRequired: true,
@@ -18,10 +12,17 @@ export const $EmailReceiptRequest = {
         },
         recipientEmail: {
             type: 'string',
+            isRequired: true,
             minLength: 1,
         },
         subject: {
             type: 'string',
+        },
+        message: {
+            type: 'string',
+        },
+        includeSignature: {
+            type: 'boolean',
         },
     },
 } as const;

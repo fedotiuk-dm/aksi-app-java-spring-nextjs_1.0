@@ -4,6 +4,18 @@
 /* eslint-disable */
 export const $ReceiptClientInfoDTO = {
     properties: {
+        lastName: {
+            type: 'string',
+        },
+        firstName: {
+            type: 'string',
+        },
+        phone: {
+            type: 'string',
+        },
+        email: {
+            type: 'string',
+        },
         address: {
             type: 'string',
         },
@@ -12,18 +24,6 @@ export const $ReceiptClientInfoDTO = {
             contains: {
                 type: 'string',
             },
-        },
-        email: {
-            type: 'string',
-        },
-        firstName: {
-            type: 'string',
-        },
-        lastName: {
-            type: 'string',
-        },
-        phone: {
-            type: 'string',
         },
     },
 } as const;

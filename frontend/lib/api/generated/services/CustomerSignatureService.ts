@@ -34,6 +34,35 @@ export class CustomerSignatureService {
         });
     }
     /**
+     * Отримати підпис за ID
+     * Повертає підпис клієнта за його ID
+     * @returns CustomerSignatureResponse Підпис знайдено
+     * @throws ApiError
+     */
+    public static getSignatureById({
+        id,
+    }: {
+        /**
+         * ID підпису
+         */
+        id: string,
+    }): CancelablePromise<CustomerSignatureResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/signatures/{id}',
+            path: {
+                'id': id,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Підпис не знайдено`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
      * Отримати всі підписи для замовлення
      * Повертає всі підписи для конкретного замовлення
      * @returns CustomerSignatureResponse Список підписів
@@ -87,35 +116,6 @@ export class CustomerSignatureService {
             path: {
                 'orderId': orderId,
                 'signatureType': signatureType,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Підпис не знайдено`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати підпис за ID
-     * Повертає підпис клієнта за його ID
-     * @returns CustomerSignatureResponse Підпис знайдено
-     * @throws ApiError
-     */
-    public static getSignatureById({
-        id,
-    }: {
-        /**
-         * ID підпису
-         */
-        id: string,
-    }): CancelablePromise<CustomerSignatureResponse> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/signatures/{id}',
-            path: {
-                'id': id,
             },
             errors: {
                 400: `Bad Request`,

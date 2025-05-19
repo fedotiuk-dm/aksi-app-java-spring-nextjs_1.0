@@ -4,16 +4,16 @@
 /* eslint-disable */
 export const $ReceiptBranchInfoDTO = {
     properties: {
-        address: {
-            type: 'string',
-        },
         branchName: {
             type: 'string',
         },
-        operatorName: {
+        address: {
             type: 'string',
         },
         phone: {
+            type: 'string',
+        },
+        operatorName: {
             type: 'string',
         },
     },

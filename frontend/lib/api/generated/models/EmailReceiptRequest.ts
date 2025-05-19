@@ -6,10 +6,10 @@
  * Параметри відправки квитанції
  */
 export type EmailReceiptRequest = {
-    includeSignature?: boolean;
-    message?: string;
     orderId: string;
-    recipientEmail?: string;
+    recipientEmail: string;
     subject?: string;
+    message?: string;
+    includeSignature?: boolean;
 };
 

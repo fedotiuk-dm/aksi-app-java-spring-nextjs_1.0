@@ -7,8 +7,8 @@
  */
 export type CustomerSignatureRequest = {
     orderId: string;
-    signatureData?: string;
-    signatureType?: string;
+    signatureData: string;
     termsAccepted: boolean;
+    signatureType?: string;
 };
 

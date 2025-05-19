@@ -33,18 +33,18 @@ export class OrderDiscountsService {
         });
     }
     /**
-     * Скасувати знижку
-     * Видаляє знижку з замовлення
+     * Отримати інформацію про знижку
+     * Повертає детальну інформацію про знижку до замовлення
      * @returns any OK
      * @throws ApiError
      */
-    public static removeDiscount({
+    public static getOrderDiscount({
         orderId,
     }: {
         orderId: string,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
-            method: 'DELETE',
+            method: 'GET',
             url: '/orders/discounts/{orderId}',
             path: {
                 'orderId': orderId,
@@ -59,18 +59,18 @@ export class OrderDiscountsService {
         });
     }
     /**
-     * Отримати інформацію про знижку
-     * Повертає детальну інформацію про знижку до замовлення
+     * Скасувати знижку
+     * Видаляє знижку з замовлення
      * @returns any OK
      * @throws ApiError
      */
-    public static getOrderDiscount({
+    public static removeDiscount({
         orderId,
     }: {
         orderId: string,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
-            method: 'GET',
+            method: 'DELETE',
             url: '/orders/discounts/{orderId}',
             path: {
                 'orderId': orderId,

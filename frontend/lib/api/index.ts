@@ -1,5 +1,8 @@
-import { OpenAPI } from './generated';
 import axios, { AxiosError } from 'axios';
+
+import { OpenAPI } from './generated';
+
+import type { AxiosInstance } from 'axios';
 
 /**
  * Фіксоване налаштування для всіх OpenAPI запитів
@@ -154,48 +157,60 @@ axios.interceptors.response.use(
   }
 );
 
-// Додаємо глобальний перехоплювач запитів для виправлення проблем з API
-// Цей інтерцептор обробляє всі запити, а не тільки з OpenAPI
-axios.interceptors.request.use(
-  (config) => {
-    // Правило 1: Для /price-calculation/calculate завжди використовуємо POST
-    if (config.url?.includes('/price-calculation/calculate')) {
-      // Примусово встановлюємо метод POST
-      config.method = 'post';
+// Типи для конфігурації axios
+interface AxiosConfig {
+  url?: string;
+  method?: string;
+  data?: unknown;
+  headers?: Record<string, string>;
+}
 
-      // Правило 2: Переконуємося, що quantity=1 є в тілі запиту
-      if (config.data) {
-        // Якщо дані вже є в форматі string (JSON), парсимо і модифікуємо
-        if (typeof config.data === 'string') {
-          try {
-            const parsedData = JSON.parse(config.data);
-            if (!parsedData.quantity) {
-              parsedData.quantity = 1;
-              config.data = JSON.stringify(parsedData);
-            }
-          } catch (e) {
-            // Ігноруємо помилки парсингу
-          }
-        }
-        // Якщо дані у форматі об'єкта, просто додаємо quantity
-        else if (typeof config.data === 'object') {
-          const data = config.data as any;
-          if (!data.quantity) {
-            data.quantity = 1;
-          }
-        }
-      }
-      // Якщо даних немає, створюємо об'єкт з quantity=1
-      else if (!config.data && config.method === 'post') {
-        config.data = { quantity: 1 };
-      }
+interface ExtendedWindow extends Window {
+  axios: AxiosInstance;
+}
 
-      // Правило 3: Переконуємося, що заголовок Content-Type встановлено правильно
-      if (!config.headers['Content-Type']) {
-        config.headers['Content-Type'] = 'application/json';
+// Функція для обробки даних запиту
+const processRequestData = (config: AxiosConfig): void => {
+  if (config.data) {
+    if (typeof config.data === 'string') {
+      try {
+        const parsedData = JSON.parse(config.data);
+        if (!parsedData.quantity) {
+          parsedData.quantity = 1;
+          config.data = JSON.stringify(parsedData);
+        }
+      } catch {
+        // Ігноруємо помилки парсингу
+      }
+    } else if (typeof config.data === 'object') {
+      const data = config.data as { quantity?: number };
+      if (!data.quantity) {
+        data.quantity = 1;
       }
     }
+  } else if (!config.data && config.method === 'post') {
+    config.data = { quantity: 1 };
+  }
+};
 
+// Функція для обробки заголовків
+const processHeaders = (config: AxiosConfig): void => {
+  if (!config.headers) {
+    config.headers = {};
+  }
+  if (!config.headers['Content-Type']) {
+    config.headers['Content-Type'] = 'application/json';
+  }
+};
+
+// Додаємо глобальний перехоплювач запитів для виправлення проблем з API
+axios.interceptors.request.use(
+  (config) => {
+    if (config.url?.includes('/price-calculation/calculate')) {
+      config.method = 'post';
+      processRequestData(config);
+      processHeaders(config);
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -204,16 +219,9 @@ axios.interceptors.request.use(
 // Додатковий перехоплювач для axiosInstance (для OpenAPI)
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Той самий код для примусового POST і quantity=1
     if (config.url?.includes('/price-calculation/calculate')) {
       config.method = 'post';
-
-      if (config.data && typeof config.data === 'object') {
-        const data = config.data as any;
-        if (!data.quantity) {
-          data.quantity = 1;
-        }
-      }
+      processRequestData(config);
     }
     return config;
   },
@@ -222,12 +230,6 @@ axiosInstance.interceptors.request.use(
 
 // Замінюємо глобальний axios на наш налаштований екземпляр
 if (typeof window !== 'undefined') {
-  // Примітка: це хак, щоб змусити всі OpenAPI клієнти використовувати наш axios
-  interface ExtendedWindow extends Window {
-    // Використовуємо any, бо це спеціальний хак для OpenAPI клієнтів
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    axios: any;
-  }
   (window as unknown as ExtendedWindow).axios = axiosInstance;
 }
 

@@ -4,21 +4,21 @@
 /* eslint-disable */
 export const $ReceiptPriceModifierDTO = {
     properties: {
+        name: {
+            type: 'string',
+        },
         description: {
             type: 'string',
+        },
+        percentageValue: {
+            type: 'number',
+            format: 'int32',
         },
         fixedValue: {
             type: 'number',
         },
         impact: {
             type: 'number',
-        },
-        name: {
-            type: 'string',
-        },
-        percentageValue: {
-            type: 'number',
-            format: 'int32',
         },
     },
 } as const;

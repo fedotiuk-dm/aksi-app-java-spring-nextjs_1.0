@@ -5,6 +5,25 @@
 export const $CreateClientRequest = {
     description: `Дані нового клієнта`,
     properties: {
+        lastName: {
+            type: 'string',
+            isRequired: true,
+            minLength: 1,
+        },
+        firstName: {
+            type: 'string',
+            isRequired: true,
+            minLength: 1,
+        },
+        phone: {
+            type: 'string',
+            isRequired: true,
+            minLength: 1,
+            pattern: '^\\+ ? [0-9]{10,15}$',
+        },
+        email: {
+            type: 'string',
+        },
         address: {
             type: 'string',
         },
@@ -13,22 +32,6 @@ export const $CreateClientRequest = {
             contains: {
                 type: 'Enum',
             },
-        },
-        email: {
-            type: 'string',
-        },
-        firstName: {
-            type: 'string',
-            minLength: 1,
-        },
-        lastName: {
-            type: 'string',
-            minLength: 1,
-        },
-        phone: {
-            type: 'string',
-            minLength: 1,
-            pattern: '^\\+ ? [0-9]{10,15}$',
         },
         source: {
             type: 'Enum',

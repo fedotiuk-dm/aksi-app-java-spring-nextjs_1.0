@@ -4,10 +4,6 @@
 /* eslint-disable */
 export const $CustomerSignatureResponse = {
     properties: {
-        createdAt: {
-            type: 'string',
-            format: 'date-time',
-        },
         id: {
             type: 'string',
             format: 'uuid',
@@ -19,11 +15,15 @@ export const $CustomerSignatureResponse = {
         signatureData: {
             type: 'string',
         },
+        termsAccepted: {
+            type: 'boolean',
+        },
         signatureType: {
             type: 'string',
         },
-        termsAccepted: {
-            type: 'boolean',
+        createdAt: {
+            type: 'string',
+            format: 'date-time',
         },
         updatedAt: {
             type: 'string',

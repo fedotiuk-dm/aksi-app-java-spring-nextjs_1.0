@@ -7,14 +7,93 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class ItemCharacteristicsService {
     /**
-     * Отримати базові кольори для предметів
+     * Отримати ступені зносу для предметів
      * @returns any OK
      * @throws ApiError
      */
-    public static getColors(): CancelablePromise<Record<string, any>> {
+    public static getWearDegrees(): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/item-characteristics/colors',
+            url: '/item-characteristics/wear-degrees',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати типи плям для предметів
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getStainTypes1(): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/item-characteristics/stain-types',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати тільки ризики для предметів
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getRisks(): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/item-characteristics/risks',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати доступні матеріали для предметів
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getMaterials({
+        category,
+    }: {
+        category?: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/item-characteristics/materials',
+            query: {
+                'category': category,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати типи наповнювачів для предметів
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getFillerTypes(): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/item-characteristics/filler-types',
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,
@@ -61,93 +140,14 @@ export class ItemCharacteristicsService {
         });
     }
     /**
-     * Отримати типи наповнювачів для предметів
+     * Отримати базові кольори для предметів
      * @returns any OK
      * @throws ApiError
      */
-    public static getFillerTypes(): CancelablePromise<Record<string, any>> {
+    public static getColors(): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/item-characteristics/filler-types',
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати доступні матеріали для предметів
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getMaterials({
-        category,
-    }: {
-        category?: string,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/item-characteristics/materials',
-            query: {
-                'category': category,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати тільки ризики для предметів
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getRisks(): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/item-characteristics/risks',
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати типи плям для предметів
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getStainTypes1(): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/item-characteristics/stain-types',
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати ступені зносу для предметів
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getWearDegrees(): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/item-characteristics/wear-degrees',
+            url: '/item-characteristics/colors',
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,

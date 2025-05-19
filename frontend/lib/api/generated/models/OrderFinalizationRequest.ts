@@ -3,11 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OrderFinalizationRequest = {
-    comments?: string;
-    generatePrintableReceipt?: boolean;
     orderId: string;
-    sendReceiptByEmail?: boolean;
     signatureData?: string;
     termsAccepted?: boolean;
+    sendReceiptByEmail?: boolean;
+    generatePrintableReceipt?: boolean;
+    comments?: string;
 };
 

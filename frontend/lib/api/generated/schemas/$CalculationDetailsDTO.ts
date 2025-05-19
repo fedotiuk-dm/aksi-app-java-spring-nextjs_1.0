@@ -4,6 +4,13 @@
 /* eslint-disable */
 export const $CalculationDetailsDTO = {
     properties: {
+        step: {
+            type: 'number',
+            format: 'int32',
+        },
+        stepName: {
+            type: 'string',
+        },
         description: {
             type: 'string',
         },
@@ -16,21 +23,14 @@ export const $CalculationDetailsDTO = {
         modifierValue: {
             type: 'string',
         },
-        priceAfter: {
+        priceBefore: {
             type: 'number',
         },
-        priceBefore: {
+        priceAfter: {
             type: 'number',
         },
         priceDifference: {
             type: 'number',
-        },
-        step: {
-            type: 'number',
-            format: 'int32',
-        },
-        stepName: {
-            type: 'string',
         },
     },
 } as const;

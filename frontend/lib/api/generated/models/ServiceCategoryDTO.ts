@@ -4,13 +4,13 @@
 /* eslint-disable */
 import type { PriceListItemDTO } from './PriceListItemDTO';
 export type ServiceCategoryDTO = {
-    active?: boolean;
-    code?: string;
-    description?: string;
     id?: string;
-    items?: Array<PriceListItemDTO>;
+    code?: string;
     name?: string;
+    description?: string;
     sortOrder?: number;
+    active?: boolean;
     standardProcessingDays?: number;
+    items?: Array<PriceListItemDTO>;
 };
 

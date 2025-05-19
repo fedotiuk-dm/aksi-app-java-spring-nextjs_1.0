@@ -19,7 +19,16 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@features/order-wizard/*": ["./features/order-wizard/*"],
+      "@features/order-wizard/wizard/*": ["./features/order-wizard/wizard/*"],
+      "@features/order-wizard/clients/*": ["./features/order-wizard/clients/*"],
+      "@features/order-wizard/branches/*": ["./features/order-wizard/branches/*"],
+      "@features/order-wizard/items/*": ["./features/order-wizard/items/*"],
+      "@features/order-wizard/price-calculator/*": ["./features/order-wizard/price-calculator/*"],
+      "@features/order-wizard/orders/*": ["./features/order-wizard/orders/*"],
+      "@features/order-wizard/ui/*": ["./features/order-wizard/ui/*"],
+      "@features/order-wizard/shared/*": ["./features/order-wizard/shared/*"]
     }
   },
   "include": [

@@ -4,7 +4,7 @@
 /* eslint-disable */
 export const $ReceiptFinancialInfoDTO = {
     properties: {
-        balanceAmount: {
+        totalAmount: {
             type: 'number',
         },
         discountAmount: {
@@ -22,7 +22,7 @@ export const $ReceiptFinancialInfoDTO = {
         prepaymentAmount: {
             type: 'number',
         },
-        totalAmount: {
+        balanceAmount: {
             type: 'number',
         },
     },

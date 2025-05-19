@@ -7,21 +7,21 @@ import type { ReceiptClientInfoDTO } from './ReceiptClientInfoDTO';
 import type { ReceiptFinancialInfoDTO } from './ReceiptFinancialInfoDTO';
 import type { ReceiptItemDTO } from './ReceiptItemDTO';
 export type ReceiptDTO = {
-    additionalNotes?: string;
-    branchInfo?: ReceiptBranchInfoDTO;
-    clientInfo?: ReceiptClientInfoDTO;
-    createdDate?: string;
-    customerSignatureData?: string;
-    expectedCompletionDate?: string;
-    expediteType?: ReceiptDTO.expediteType;
-    financialInfo?: ReceiptFinancialInfoDTO;
-    items?: Array<ReceiptItemDTO>;
-    legalTerms?: string;
     orderId?: string;
-    paymentMethod?: ReceiptDTO.paymentMethod;
     receiptNumber?: string;
     tagNumber?: string;
+    createdDate?: string;
+    expectedCompletionDate?: string;
+    expediteType?: ReceiptDTO.expediteType;
+    branchInfo?: ReceiptBranchInfoDTO;
+    clientInfo?: ReceiptClientInfoDTO;
+    items?: Array<ReceiptItemDTO>;
+    financialInfo?: ReceiptFinancialInfoDTO;
+    legalTerms?: string;
+    customerSignatureData?: string;
     termsAccepted?: boolean;
+    additionalNotes?: string;
+    paymentMethod?: ReceiptDTO.paymentMethod;
 };
 export namespace ReceiptDTO {
     export enum expediteType {

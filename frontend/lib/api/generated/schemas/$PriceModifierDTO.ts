@@ -5,17 +5,13 @@
 export const $PriceModifierDTO = {
     description: `Модифікатор ціни предмета замовлення`,
     properties: {
-        amount: {
-            type: 'number',
-            description: `Сума модифікатора`,
+        name: {
+            type: 'string',
+            description: `Назва модифікатора`,
         },
         description: {
             type: 'string',
             description: `Опис модифікатора`,
-        },
-        name: {
-            type: 'string',
-            description: `Назва модифікатора`,
         },
         type: {
             type: 'Enum',
@@ -23,6 +19,10 @@ export const $PriceModifierDTO = {
         value: {
             type: 'number',
             description: `Значення модифікатора`,
+        },
+        amount: {
+            type: 'number',
+            description: `Сума модифікатора`,
         },
     },
 } as const;

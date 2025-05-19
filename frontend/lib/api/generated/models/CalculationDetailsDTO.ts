@@ -3,14 +3,14 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CalculationDetailsDTO = {
+    step?: number;
+    stepName?: string;
     description?: string;
     modifierCode?: string;
     modifierName?: string;
     modifierValue?: string;
-    priceAfter?: number;
     priceBefore?: number;
+    priceAfter?: number;
     priceDifference?: number;
-    step?: number;
-    stepName?: string;
 };
 

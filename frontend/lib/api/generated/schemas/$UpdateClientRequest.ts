@@ -5,6 +5,19 @@
 export const $UpdateClientRequest = {
     description: `Дані для оновлення клієнта`,
     properties: {
+        lastName: {
+            type: 'string',
+        },
+        firstName: {
+            type: 'string',
+        },
+        phone: {
+            type: 'string',
+            pattern: '^\\+ ? [0-9]{10,15}$',
+        },
+        email: {
+            type: 'string',
+        },
         address: {
             type: 'string',
         },
@@ -13,19 +26,6 @@ export const $UpdateClientRequest = {
             contains: {
                 type: 'Enum',
             },
-        },
-        email: {
-            type: 'string',
-        },
-        firstName: {
-            type: 'string',
-        },
-        lastName: {
-            type: 'string',
-        },
-        phone: {
-            type: 'string',
-            pattern: '^\\+ ? [0-9]{10,15}$',
         },
         source: {
             type: 'Enum',

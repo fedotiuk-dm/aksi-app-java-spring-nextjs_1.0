@@ -10,31 +10,6 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class OrderFinalizationService {
     /**
-     * Завершити оформлення замовлення
-     * Фіналізує замовлення, зберігає підпис клієнта та змінює статус замовлення
-     * @returns OrderDTO Замовлення успішно завершено
-     * @throws ApiError
-     */
-    public static finalizeOrder({
-        requestBody,
-    }: {
-        requestBody: OrderFinalizationRequest,
-    }): CancelablePromise<OrderDTO> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/orders/finalization/complete',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Замовлення не знайдено`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
      * Відправити чек на email
      * Відправляє PDF-чек замовлення на email клієнта
      * @returns any Чек успішно відправлено
@@ -56,6 +31,31 @@ export class OrderFinalizationService {
             path: {
                 'orderId': orderId,
             },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Замовлення не знайдено`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Завершити оформлення замовлення
+     * Фіналізує замовлення, зберігає підпис клієнта та змінює статус замовлення
+     * @returns OrderDTO Замовлення успішно завершено
+     * @throws ApiError
+     */
+    public static finalizeOrder({
+        requestBody,
+    }: {
+        requestBody: OrderFinalizationRequest,
+    }): CancelablePromise<OrderDTO> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/orders/finalization/complete',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

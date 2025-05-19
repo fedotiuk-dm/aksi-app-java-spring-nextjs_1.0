@@ -8,6 +8,55 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class OrderItemPhotosService {
     /**
+     * Оновити анотації фотографії
+     * Оновлює анотації (позначки) та опис для вказаної фотографії
+     * @returns OrderItemPhotoDTO Анотації успішно оновлені
+     * @throws ApiError
+     */
+    public static updatePhotoAnnotations({
+        itemId,
+        photoId,
+        annotations,
+        description,
+    }: {
+        /**
+         * ID предмета замовлення
+         */
+        itemId: string,
+        /**
+         * ID фотографії
+         */
+        photoId: string,
+        /**
+         * JSON з анотаціями
+         */
+        annotations: string,
+        /**
+         * Новий опис фотографії
+         */
+        description?: string,
+    }): CancelablePromise<OrderItemPhotoDTO> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/order-items/{itemId}/photos/{photoId}/annotations',
+            path: {
+                'itemId': itemId,
+                'photoId': photoId,
+            },
+            query: {
+                'annotations': annotations,
+                'description': description,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
      * Отримати всі фотографії предмета замовлення
      * Повертає список всіх фотографій для вказаного предмета замовлення
      * @returns OrderItemPhotoDTO Список фотографій успішно отримано
@@ -83,41 +132,6 @@ export class OrderItemPhotosService {
         });
     }
     /**
-     * Видалити фотографію
-     * Видаляє вказану фотографію предмета замовлення
-     * @returns void
-     * @throws ApiError
-     */
-    public static deletePhoto({
-        itemId,
-        photoId,
-    }: {
-        /**
-         * ID предмета замовлення
-         */
-        itemId: string,
-        /**
-         * ID фотографії
-         */
-        photoId: string,
-    }): CancelablePromise<void> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/order-items/{itemId}/photos/{photoId}',
-            path: {
-                'itemId': itemId,
-                'photoId': photoId,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
      * Отримати фотографію за ID
      * Отримує інформацію про конкретну фотографію предмета замовлення
      * @returns OrderItemPhotoDTO Інформація про фотографію успішно отримана
@@ -153,16 +167,14 @@ export class OrderItemPhotosService {
         });
     }
     /**
-     * Оновити анотації фотографії
-     * Оновлює анотації (позначки) та опис для вказаної фотографії
-     * @returns OrderItemPhotoDTO Анотації успішно оновлені
+     * Видалити фотографію
+     * Видаляє вказану фотографію предмета замовлення
+     * @returns void
      * @throws ApiError
      */
-    public static updatePhotoAnnotations({
+    public static deletePhoto({
         itemId,
         photoId,
-        annotations,
-        description,
     }: {
         /**
          * ID предмета замовлення
@@ -172,25 +184,13 @@ export class OrderItemPhotosService {
          * ID фотографії
          */
         photoId: string,
-        /**
-         * JSON з анотаціями
-         */
-        annotations: string,
-        /**
-         * Новий опис фотографії
-         */
-        description?: string,
-    }): CancelablePromise<OrderItemPhotoDTO> {
+    }): CancelablePromise<void> {
         return __request(OpenAPI, {
-            method: 'PUT',
-            url: '/order-items/{itemId}/photos/{photoId}/annotations',
+            method: 'DELETE',
+            url: '/order-items/{itemId}/photos/{photoId}',
             path: {
                 'itemId': itemId,
                 'photoId': photoId,
-            },
-            query: {
-                'annotations': annotations,
-                'description': description,
             },
             errors: {
                 400: `Bad Request`,

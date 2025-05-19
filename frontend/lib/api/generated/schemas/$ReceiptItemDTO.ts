@@ -4,40 +4,44 @@
 /* eslint-disable */
 export const $ReceiptItemDTO = {
     properties: {
-        basePrice: {
-            type: 'number',
-        },
-        color: {
-            type: 'string',
-        },
-        defects: {
-            type: 'array',
-            contains: {
-                type: 'string',
-            },
-        },
-        filler: {
-            type: 'string',
-        },
-        finalPrice: {
-            type: 'number',
-        },
         id: {
             type: 'string',
             format: 'uuid',
         },
-        material: {
-            type: 'string',
+        orderNumber: {
+            type: 'number',
+            format: 'int32',
         },
         name: {
             type: 'string',
         },
-        notes: {
+        serviceCategory: {
             type: 'string',
         },
-        orderNumber: {
+        quantity: {
+            type: 'number',
+        },
+        unitOfMeasure: {
+            type: 'string',
+        },
+        material: {
+            type: 'string',
+        },
+        color: {
+            type: 'string',
+        },
+        filler: {
+            type: 'string',
+        },
+        wearPercentage: {
             type: 'number',
             format: 'int32',
+        },
+        basePrice: {
+            type: 'number',
+        },
+        finalPrice: {
+            type: 'number',
         },
         priceModifiers: {
             type: 'array',
@@ -45,24 +49,20 @@ export const $ReceiptItemDTO = {
                 type: 'ReceiptPriceModifierDTO',
             },
         },
-        quantity: {
-            type: 'number',
-        },
-        serviceCategory: {
-            type: 'string',
-        },
         stains: {
             type: 'array',
             contains: {
                 type: 'string',
             },
         },
-        unitOfMeasure: {
-            type: 'string',
+        defects: {
+            type: 'array',
+            contains: {
+                type: 'string',
+            },
         },
-        wearPercentage: {
-            type: 'number',
-            format: 'int32',
+        notes: {
+            type: 'string',
         },
     },
 } as const;

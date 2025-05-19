@@ -14,9 +14,9 @@ import {
   Alert,
 } from '@mui/material';
 import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
-import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
+import { StepContainer } from '@/features/order-wizard/ui/shared/step-container';
 import { WizardStep } from '@/features/order-wizard/model/types/types';
-import { StepNavigation } from '@/features/order-wizard/ui/components/step-navigation';
+import { StepNavigation } from '@/features/order-wizard/ui/shared/step-navigation';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
@@ -62,10 +62,7 @@ export const CompletionStep: React.FC = () => {
         }}
       >
         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-          <VerifiedIcon
-            color="success"
-            fontSize={isTablet ? 'large' : 'medium'}
-          />
+          <VerifiedIcon color="success" fontSize={isTablet ? 'large' : 'medium'} />
           <Typography
             variant={isTablet ? 'h5' : 'h6'}
             color="success.dark"
@@ -92,9 +89,7 @@ export const CompletionStep: React.FC = () => {
               {selectedClient?.firstName} {selectedClient?.lastName}
             </Typography>
             <Typography>Телефон: {selectedClient?.phone}</Typography>
-            {selectedClient?.email && (
-              <Typography>Email: {selectedClient.email}</Typography>
-            )}
+            {selectedClient?.email && <Typography>Email: {selectedClient.email}</Typography>}
           </CardContent>
         </Card>
 
@@ -103,9 +98,7 @@ export const CompletionStep: React.FC = () => {
             <Typography variant="subtitle1" gutterBottom fontWeight="bold">
               Інформація про замовлення
             </Typography>
-            <Typography>
-              Загальна кількість предметів: {items.length}
-            </Typography>
+            <Typography>Загальна кількість предметів: {items.length}</Typography>
             <Typography gutterBottom>
               Загальна вартість:{' '}
               {new Intl.NumberFormat('uk-UA', {
@@ -117,16 +110,13 @@ export const CompletionStep: React.FC = () => {
 
             {/* Тут у повній реалізації буде детальна інформація про замовлення */}
             <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-              У повній реалізації тут буде відображатися детальна інформація про
-              предмети замовлення, ціни, знижки та інші параметри.
+              У повній реалізації тут буде відображатися детальна інформація про предмети
+              замовлення, ціни, знижки та інші параметри.
             </Typography>
           </CardContent>
         </Card>
 
-        <Card
-          elevation={2}
-          sx={{ mb: 3, borderRadius: 2, bgcolor: theme.palette.primary.light }}
-        >
+        <Card elevation={2} sx={{ mb: 3, borderRadius: 2, bgcolor: theme.palette.primary.light }}>
           <CardContent>
             <Typography
               variant="subtitle1"
@@ -137,9 +127,8 @@ export const CompletionStep: React.FC = () => {
               Ви ознайомилися з умовами надання послуг?
             </Typography>
             <Typography variant="body2" color="primary.contrastText">
-              Натискаючи кнопку &quot;Завершити та оформити замовлення&quot;, ви
-              підтверджуєте, що ознайомилися з усіма умовами та правилами
-              надання послуг хімчистки.
+              Натискаючи кнопку &quot;Завершити та оформити замовлення&quot;, ви підтверджуєте, що
+              ознайомилися з усіма умовами та правилами надання послуг хімчистки.
             </Typography>
           </CardContent>
         </Card>

@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OrderCompletionUpdateRequest = {
-    expectedCompletionDate: string;
-    expediteType: OrderCompletionUpdateRequest.expediteType;
     orderId: string;
+    expediteType: OrderCompletionUpdateRequest.expediteType;
+    expectedCompletionDate: string;
 };
 export namespace OrderCompletionUpdateRequest {
     export enum expediteType {

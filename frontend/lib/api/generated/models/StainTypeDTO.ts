@@ -7,29 +7,29 @@
  */
 export type StainTypeDTO = {
     /**
-     * Чи активний запис
+     * Унікальний ідентифікатор
      */
-    active?: boolean;
+    id?: string;
     /**
      * Код типу для програмного використання
      */
     code?: string;
     /**
-     * Опис типу
-     */
-    description?: string;
-    /**
-     * Унікальний ідентифікатор
-     */
-    id?: string;
-    /**
      * Назва типу
      */
     name?: string;
     /**
+     * Опис типу
+     */
+    description?: string;
+    /**
      * Рівень ризику: LOW, MEDIUM, HIGH
      */
     riskLevel?: StainTypeDTO.riskLevel;
+    /**
+     * Чи активний запис
+     */
+    active?: boolean;
 };
 export namespace StainTypeDTO {
     /**

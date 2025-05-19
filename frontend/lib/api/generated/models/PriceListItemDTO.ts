@@ -3,14 +3,14 @@
 /* tslint:disable */
 /* eslint-disable */
 export type PriceListItemDTO = {
-    active?: boolean;
-    basePrice?: number;
-    catalogNumber?: number;
-    categoryId?: string;
     id?: string;
+    categoryId?: string;
+    catalogNumber?: number;
     name?: string;
+    unitOfMeasure?: string;
+    basePrice?: number;
     priceBlack?: number;
     priceColor?: number;
-    unitOfMeasure?: string;
+    active?: boolean;
 };
 

@@ -4,32 +4,35 @@
 /* eslint-disable */
 export const $BranchLocationDTO = {
     properties: {
-        active: {
-            type: 'boolean',
-        },
-        address: {
-            type: 'string',
-            minLength: 1,
-        },
-        code: {
-            type: 'string',
-            minLength: 1,
-        },
-        createdAt: {
-            type: 'string',
-            format: 'date-time',
-        },
         id: {
             type: 'string',
             format: 'uuid',
         },
         name: {
             type: 'string',
+            isRequired: true,
+            minLength: 1,
+        },
+        address: {
+            type: 'string',
+            isRequired: true,
             minLength: 1,
         },
         phone: {
             type: 'string',
             pattern: '^\\+ ? [0-9\\s-()]{10,15}$',
+        },
+        code: {
+            type: 'string',
+            isRequired: true,
+            minLength: 1,
+        },
+        active: {
+            type: 'boolean',
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time',
         },
         updatedAt: {
             type: 'string',

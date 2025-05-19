@@ -9,52 +9,21 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class PriceCalculationService {
     /**
-     * Отримати доступні модифікатори для категорії
+     * Отримати інформацію про кілька модифікаторів
+     * Повертає інформацію про модифікатори за списком їх кодів
      * @returns any OK
      * @throws ApiError
      */
-    public static getAvailableModifiersForCategory({
-        categoryCode,
+    public static getModifiersByCodes({
+        requestBody,
     }: {
-        categoryCode: string,
+        requestBody: Array<string>,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
-            method: 'GET',
-            url: '/price-calculation/available-modifiers',
-            query: {
-                'categoryCode': categoryCode,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати базову ціну для предмету з прайс-листа
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getBasePrice({
-        categoryCode,
-        itemName,
-        color,
-    }: {
-        categoryCode: string,
-        itemName: string,
-        color?: string,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/price-calculation/base-price',
-            query: {
-                'categoryCode': categoryCode,
-                'itemName': itemName,
-                'color': color,
-            },
+            method: 'POST',
+            url: '/price-calculation/modifiers/batch',
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,
@@ -90,98 +59,30 @@ export class PriceCalculationService {
         });
     }
     /**
-     * Отримати інформацію про кілька модифікаторів
-     * Повертає інформацію про модифікатори за списком їх кодів
+     * Отримати попередження про ризики
+     * Повертає список попереджень про ризики для предмета на основі його плям, дефектів, категорії та матеріалу
      * @returns any OK
      * @throws ApiError
      */
-    public static getModifiersByCodes({
-        requestBody,
-    }: {
-        requestBody: Array<string>,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/price-calculation/modifiers/batch',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати всі модифікатори для конкретної категорії послуг
-     * Повертає повні дані про модифікатори для вказаної категорії послуг
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getModifiersForServiceCategory1({
+    public static getRiskWarnings({
+        stains,
+        defects,
         categoryCode,
+        materialType,
     }: {
-        categoryCode: string,
+        stains?: Array<string>,
+        defects?: Array<string>,
+        categoryCode?: string,
+        materialType?: string,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/price-calculation/modifiers/by-category/{categoryCode}',
-            path: {
+            url: '/price-calculation/risk-warnings',
+            query: {
+                'stains': stains,
+                'defects': defects,
                 'categoryCode': categoryCode,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати модифікатори за типом
-     * Повертає модифікатори за типом (загальні, текстильні, шкіряні)
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getModifiersByCategory1({
-        category,
-    }: {
-        category: 'GENERAL' | 'TEXTILE' | 'LEATHER',
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/price-calculation/modifiers/by-type/{category}',
-            path: {
-                'category': category,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати детальну інформацію про модифікатор
-     * Повертає повну інформацію про модифікатор за його кодом
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getModifierByCode1({
-        code,
-    }: {
-        code: string,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/price-calculation/modifiers/{code}',
-            path: {
-                'code': code,
+                'materialType': materialType,
             },
             errors: {
                 400: `Bad Request`,
@@ -228,30 +129,129 @@ export class PriceCalculationService {
         });
     }
     /**
-     * Отримати попередження про ризики
-     * Повертає список попереджень про ризики для предмета на основі його плям, дефектів, категорії та матеріалу
+     * Отримати детальну інформацію про модифікатор
+     * Повертає повну інформацію про модифікатор за його кодом
      * @returns any OK
      * @throws ApiError
      */
-    public static getRiskWarnings({
-        stains,
-        defects,
-        categoryCode,
-        materialType,
+    public static getModifierByCode1({
+        code,
     }: {
-        stains?: Array<string>,
-        defects?: Array<string>,
-        categoryCode?: string,
-        materialType?: string,
+        code: string,
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/price-calculation/risk-warnings',
-            query: {
-                'stains': stains,
-                'defects': defects,
+            url: '/price-calculation/modifiers/{code}',
+            path: {
+                'code': code,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати модифікатори за типом
+     * Повертає модифікатори за типом (загальні, текстильні, шкіряні)
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getModifiersByCategory1({
+        category,
+    }: {
+        category: 'GENERAL' | 'TEXTILE' | 'LEATHER',
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/price-calculation/modifiers/by-type/{category}',
+            path: {
+                'category': category,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати всі модифікатори для конкретної категорії послуг
+     * Повертає повні дані про модифікатори для вказаної категорії послуг
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getModifiersForServiceCategory1({
+        categoryCode,
+    }: {
+        categoryCode: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/price-calculation/modifiers/by-category/{categoryCode}',
+            path: {
                 'categoryCode': categoryCode,
-                'materialType': materialType,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати базову ціну для предмету з прайс-листа
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getBasePrice({
+        categoryCode,
+        itemName,
+        color,
+    }: {
+        categoryCode: string,
+        itemName: string,
+        color?: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/price-calculation/base-price',
+            query: {
+                'categoryCode': categoryCode,
+                'itemName': itemName,
+                'color': color,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати доступні модифікатори для категорії
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getAvailableModifiersForCategory({
+        categoryCode,
+    }: {
+        categoryCode: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/price-calculation/available-modifiers',
+            query: {
+                'categoryCode': categoryCode,
             },
             errors: {
                 400: `Bad Request`,

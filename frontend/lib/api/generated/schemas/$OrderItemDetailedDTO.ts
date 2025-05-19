@@ -5,27 +5,34 @@
 export const $OrderItemDetailedDTO = {
     description: `Детальна інформація про предмет замовлення з розрахунком вартості`,
     properties: {
-        basePrice: {
-            type: 'number',
-            description: `Базова ціна предмета`,
+        id: {
+            type: 'string',
+            description: `ID предмета замовлення`,
+            format: 'uuid',
+        },
+        name: {
+            type: 'string',
+            description: `Найменування предмета`,
         },
         category: {
             type: 'string',
             description: `Категорія послуги`,
         },
+        quantity: {
+            type: 'number',
+            description: `Кількість`,
+        },
+        unitOfMeasure: {
+            type: 'string',
+            description: `Одиниця виміру`,
+        },
+        material: {
+            type: 'string',
+            description: `Матеріал предмета`,
+        },
         color: {
             type: 'string',
             description: `Колір предмета`,
-        },
-        defectNotes: {
-            type: 'string',
-            description: `Примітки щодо дефектів`,
-        },
-        defects: {
-            type: 'array',
-            contains: {
-                type: 'string',
-            },
         },
         filler: {
             type: 'string',
@@ -35,38 +42,10 @@ export const $OrderItemDetailedDTO = {
             type: 'boolean',
             description: `Прапорець, що вказує, чи є наповнювач збитим`,
         },
-        finalPrice: {
+        wearPercentage: {
             type: 'number',
-            description: `Фінальна ціна предмета`,
-        },
-        id: {
-            type: 'string',
-            description: `ID предмета замовлення`,
-            format: 'uuid',
-        },
-        material: {
-            type: 'string',
-            description: `Матеріал предмета`,
-        },
-        name: {
-            type: 'string',
-            description: `Найменування предмета`,
-        },
-        photos: {
-            type: 'array',
-            contains: {
-                type: 'OrderItemPhotoDTO',
-            },
-        },
-        priceModifiers: {
-            type: 'array',
-            contains: {
-                type: 'PriceModifierDTO',
-            },
-        },
-        quantity: {
-            type: 'number',
-            description: `Кількість`,
+            description: `Ступінь зносу (у відсотках)`,
+            format: 'int32',
         },
         stains: {
             type: 'array',
@@ -74,14 +53,35 @@ export const $OrderItemDetailedDTO = {
                 type: 'string',
             },
         },
-        unitOfMeasure: {
-            type: 'string',
-            description: `Одиниця виміру`,
+        defects: {
+            type: 'array',
+            contains: {
+                type: 'string',
+            },
         },
-        wearPercentage: {
+        defectNotes: {
+            type: 'string',
+            description: `Примітки щодо дефектів`,
+        },
+        basePrice: {
             type: 'number',
-            description: `Ступінь зносу (у відсотках)`,
-            format: 'int32',
+            description: `Базова ціна предмета`,
+        },
+        priceModifiers: {
+            type: 'array',
+            contains: {
+                type: 'PriceModifierDTO',
+            },
+        },
+        finalPrice: {
+            type: 'number',
+            description: `Фінальна ціна предмета`,
+        },
+        photos: {
+            type: 'array',
+            contains: {
+                type: 'OrderItemPhotoDTO',
+            },
         },
     },
 } as const;

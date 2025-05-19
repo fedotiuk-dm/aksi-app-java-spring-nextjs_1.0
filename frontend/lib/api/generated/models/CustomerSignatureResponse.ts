@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CustomerSignatureResponse = {
-    createdAt?: string;
     id?: string;
     orderId?: string;
     signatureData?: string;
-    signatureType?: string;
     termsAccepted?: boolean;
+    signatureType?: string;
+    createdAt?: string;
     updatedAt?: string;
 };
 

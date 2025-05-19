@@ -4,16 +4,17 @@
 /* eslint-disable */
 export const $CompletionDateCalculationRequest = {
     properties: {
-        expediteType: {
-            type: 'Enum',
-            isRequired: true,
-        },
         serviceCategoryIds: {
             type: 'array',
             contains: {
                 type: 'string',
                 format: 'uuid',
             },
+            isRequired: true,
+        },
+        expediteType: {
+            type: 'Enum',
+            isRequired: true,
         },
     },
 } as const;

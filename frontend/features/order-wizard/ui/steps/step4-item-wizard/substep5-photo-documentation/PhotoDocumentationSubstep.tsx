@@ -1,21 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Alert,
-  LinearProgress,
-  Button,
-} from '@mui/material';
+import { Box, Typography, Paper, Grid, Alert, LinearProgress, Button } from '@mui/material';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import { StepContainer } from '@/features/order-wizard/ui/components';
+import { StepContainer } from '@/features/order-wizard/ui/shared';
 import { useItemPhotosForm } from '@/features/order-wizard/hooks/useItemPhotosForm';
 import { PhotoUploader, PhotoPreview } from './components';
-import {
-  WizardStep,
-  ItemManagerSubStep,
-} from '@/features/order-wizard/model/types';
+import { WizardStep, ItemManagerSubStep } from '@/features/order-wizard/model/types';
 import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
 
 /**
@@ -38,9 +27,7 @@ export const PhotoDocumentationSubstep: React.FC = () => {
   const currentItem = useOrderWizardStore((state) => state.currentItem);
   const addItem = useOrderWizardStore((state) => state.addItem);
   const updateItem = useOrderWizardStore((state) => state.updateItem);
-  const currentItemIndex = useOrderWizardStore(
-    (state) => state.currentItemIndex
-  );
+  const currentItemIndex = useOrderWizardStore((state) => state.currentItemIndex);
   const setDirty = useOrderWizardStore((state) => state.setDirty);
 
   // Ліміт фотографій для завантаження
@@ -95,11 +82,7 @@ export const PhotoDocumentationSubstep: React.FC = () => {
           // Перевіряємо, чи це редагування існуючого предмета чи додавання нового
           if (currentItemIndex !== null) {
             // Оновлюємо існуючий предмет
-            console.log(
-              'Оновлюємо існуючий предмет з індексом:',
-              currentItemIndex,
-              currentItem
-            );
+            console.log('Оновлюємо існуючий предмет з індексом:', currentItemIndex, currentItem);
             updateItem(currentItemIndex, currentItem);
           } else {
             // Додаємо новий предмет
@@ -122,11 +105,7 @@ export const PhotoDocumentationSubstep: React.FC = () => {
         // Перевіряємо, чи це редагування існуючого предмета чи додавання нового
         if (currentItemIndex !== null) {
           // Оновлюємо існуючий предмет
-          console.log(
-            'Оновлюємо існуючий предмет з індексом:',
-            currentItemIndex,
-            currentItem
-          );
+          console.log('Оновлюємо існуючий предмет з індексом:', currentItemIndex, currentItem);
           updateItem(currentItemIndex, currentItem);
         } else {
           // Додаємо новий предмет
@@ -167,11 +146,7 @@ export const PhotoDocumentationSubstep: React.FC = () => {
         onSubmit={onSubmit}
       >
         {isLoading && (
-          <LinearProgress
-            variant="determinate"
-            value={uploadProgress}
-            sx={{ mt: 1, mb: 2 }}
-          />
+          <LinearProgress variant="determinate" value={uploadProgress} sx={{ mt: 1, mb: 2 }} />
         )}
 
         {error && (
@@ -181,8 +156,8 @@ export const PhotoDocumentationSubstep: React.FC = () => {
         )}
 
         <Alert severity="info" sx={{ mb: 2 }}>
-          Цей етап є необов&apos;язковим. Ви можете пропустити його, якщо не
-          бажаєте завантажувати фотографії предмета.
+          Цей етап є необов&apos;язковим. Ви можете пропустити його, якщо не бажаєте завантажувати
+          фотографії предмета.
         </Alert>
 
         {/* Інструкції щодо завантаження фото */}
@@ -194,8 +169,7 @@ export const PhotoDocumentationSubstep: React.FC = () => {
             • Завантажте до {photoLimit} фотографій предмета для кращої оцінки
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • Зробіть фото з різних ракурсів, включаючи загальний вигляд та
-            проблемні ділянки
+            • Зробіть фото з різних ракурсів, включаючи загальний вигляд та проблемні ділянки
           </Typography>
           <Typography variant="body2" color="text.secondary">
             • Максимальний розмір кожного фото - 5MB
@@ -240,16 +214,13 @@ export const PhotoDocumentationSubstep: React.FC = () => {
 
           {uploadedPhotos.length === 0 ? (
             <Typography variant="body2" color="text.secondary" sx={{ my: 2 }}>
-              Поки що не завантажено жодного фото. Використайте кнопки вище для
-              додавання фотографій або пропустіть цей етап.
+              Поки що не завантажено жодного фото. Використайте кнопки вище для додавання фотографій
+              або пропустіть цей етап.
             </Typography>
           ) : (
             <Grid container spacing={2} sx={{ mt: 1 }}>
               {uploadedPhotos.map((photo, index) => (
-                <Grid
-                  key={`photo-preview-${index}`}
-                  size={{ xs: 6, sm: 4, md: 3 }}
-                >
+                <Grid key={`photo-preview-${index}`} size={{ xs: 6, sm: 4, md: 3 }}>
                   <PhotoPreview
                     photo={photo}
                     onDelete={() => handleRemovePhoto(index)}
@@ -283,15 +254,8 @@ export const PhotoDocumentationSubstep: React.FC = () => {
               Пропустити
             </Button>
 
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={isLoading}
-            >
-              {uploadedPhotos.length > 0
-                ? 'Зберегти та продовжити'
-                : 'Продовжити без фото'}
+            <Button variant="contained" color="primary" type="submit" disabled={isLoading}>
+              {uploadedPhotos.length > 0 ? 'Зберегти та продовжити' : 'Продовжити без фото'}
             </Button>
           </Box>
         </Box>

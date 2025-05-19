@@ -4,31 +4,35 @@
 /* eslint-disable */
 export const $RegisterRequest = {
     properties: {
-        email: {
-            type: 'string',
-            minLength: 1,
-        },
         name: {
             type: 'string',
+            isRequired: true,
             maxLength: 50,
             minLength: 2,
         },
+        username: {
+            type: 'string',
+            isRequired: true,
+            maxLength: 20,
+            minLength: 3,
+            pattern: '^[a-zA-Z0-9._-]+$',
+        },
+        email: {
+            type: 'string',
+            isRequired: true,
+            minLength: 1,
+        },
         password: {
             type: 'string',
+            isRequired: true,
             maxLength: 2147483647,
             minLength: 6,
-        },
-        position: {
-            type: 'string',
         },
         role: {
             type: 'Enum',
         },
-        username: {
+        position: {
             type: 'string',
-            maxLength: 20,
-            minLength: 3,
-            pattern: '^[a-zA-Z0-9._-]+$',
         },
     },
 } as const;

@@ -10,31 +10,6 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class ReceiptService {
     /**
-     * Відправити квитанцію на email
-     * Відправляє PDF-квитанцію на вказаний email
-     * @returns any Квитанція успішно відправлена
-     * @throws ApiError
-     */
-    public static sendReceiptByEmail({
-        requestBody,
-    }: {
-        requestBody: EmailReceiptRequest,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/receipts/email',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Некоректний запит`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Замовлення не знайдено`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
      * Згенерувати PDF-квитанцію
      * Генерує PDF-квитанцію для замовлення з вказаними параметрами
      * @returns any PDF-квитанція успішно згенерована
@@ -48,6 +23,31 @@ export class ReceiptService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/receipts/pdf',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Некоректний запит`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Замовлення не знайдено`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Відправити квитанцію на email
+     * Відправляє PDF-квитанцію на вказаний email
+     * @returns any Квитанція успішно відправлена
+     * @throws ApiError
+     */
+    public static sendReceiptByEmail({
+        requestBody,
+    }: {
+        requestBody: EmailReceiptRequest,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/receipts/email',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

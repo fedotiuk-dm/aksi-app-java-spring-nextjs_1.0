@@ -3,26 +3,26 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OrderItemDTO = {
+    id?: string;
+    orderId?: string;
+    name: string;
+    description?: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice?: number;
     category?: string;
     color?: string;
-    defects?: string;
-    defectsAndRisks?: string;
-    defectsNotes?: string;
-    description?: string;
-    fillerCompressed?: boolean;
-    fillerType?: string;
-    id?: string;
     material?: string;
-    name?: string;
-    noGuaranteeReason?: string;
-    orderId?: string;
-    otherStains?: string;
-    quantity: number;
-    specialInstructions?: string;
-    stains?: string;
-    totalPrice?: number;
     unitOfMeasure?: string;
-    unitPrice: number;
+    defects?: string;
+    specialInstructions?: string;
+    fillerType?: string;
+    fillerCompressed?: boolean;
     wearDegree?: string;
+    stains?: string;
+    otherStains?: string;
+    defectsAndRisks?: string;
+    noGuaranteeReason?: string;
+    defectsNotes?: string;
 };
 

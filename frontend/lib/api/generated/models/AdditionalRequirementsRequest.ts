@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type AdditionalRequirementsRequest = {
+    orderId: string;
     additionalRequirements?: string;
     customerNotes?: string;
-    orderId: string;
 };
 

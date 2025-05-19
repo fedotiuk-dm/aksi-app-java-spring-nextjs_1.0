@@ -3,13 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 export type BranchLocationDTO = {
-    active?: boolean;
-    address?: string;
-    code?: string;
-    createdAt?: string;
     id?: string;
-    name?: string;
+    name: string;
+    address: string;
     phone?: string;
+    code: string;
+    active?: boolean;
+    createdAt?: string;
     updatedAt?: string;
 };
 

@@ -4,12 +4,14 @@
 /* eslint-disable */
 export const $LoginRequest = {
     properties: {
-        password: {
-            type: 'string',
-            minLength: 1,
-        },
         username: {
             type: 'string',
+            isRequired: true,
+            minLength: 1,
+        },
+        password: {
+            type: 'string',
+            isRequired: true,
             minLength: 1,
         },
     },

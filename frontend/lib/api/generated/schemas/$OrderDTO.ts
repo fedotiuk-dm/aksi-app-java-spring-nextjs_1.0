@@ -4,6 +4,44 @@
 /* eslint-disable */
 export const $OrderDTO = {
     properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+        },
+        receiptNumber: {
+            type: 'string',
+            isRequired: true,
+            minLength: 1,
+        },
+        tagNumber: {
+            type: 'string',
+        },
+        client: {
+            type: 'ClientResponse',
+            isRequired: true,
+        },
+        clientId: {
+            type: 'string',
+            format: 'uuid',
+        },
+        items: {
+            type: 'array',
+            contains: {
+                type: 'OrderItemDTO',
+            },
+        },
+        totalAmount: {
+            type: 'number',
+        },
+        discountAmount: {
+            type: 'number',
+        },
+        finalAmount: {
+            type: 'number',
+        },
+        prepaymentAmount: {
+            type: 'number',
+        },
         balanceAmount: {
             type: 'number',
         },
@@ -15,22 +53,23 @@ export const $OrderDTO = {
             type: 'string',
             format: 'uuid',
         },
-        client: {
-            type: 'ClientResponse',
+        status: {
+            type: 'Enum',
             isRequired: true,
         },
-        clientId: {
-            type: 'string',
-            format: 'uuid',
-        },
-        completedDate: {
+        createdDate: {
             type: 'string',
             format: 'date-time',
         },
-        completionComments: {
+        updatedDate: {
             type: 'string',
+            format: 'date-time',
         },
-        createdDate: {
+        expectedCompletionDate: {
+            type: 'string',
+            format: 'date-time',
+        },
+        completedDate: {
             type: 'string',
             format: 'date-time',
         },
@@ -38,72 +77,34 @@ export const $OrderDTO = {
             type: 'string',
             maxLength: 1000,
         },
-        discountAmount: {
-            type: 'number',
-        },
-        draft: {
-            type: 'boolean',
-        },
-        emailed: {
-            type: 'boolean',
-        },
-        expectedCompletionDate: {
-            type: 'string',
-            format: 'date-time',
-        },
-        expediteType: {
-            type: 'Enum',
-        },
-        express: {
-            type: 'boolean',
-        },
-        finalAmount: {
-            type: 'number',
-        },
-        finalizedAt: {
-            type: 'string',
-            format: 'date-time',
-        },
-        id: {
-            type: 'string',
-            format: 'uuid',
-        },
         internalNotes: {
             type: 'string',
             maxLength: 1000,
         },
-        items: {
-            type: 'array',
-            contains: {
-                type: 'OrderItemDTO',
-            },
-        },
-        prepaymentAmount: {
-            type: 'number',
-        },
-        printed: {
-            type: 'boolean',
-        },
-        receiptNumber: {
-            type: 'string',
-            minLength: 1,
-        },
-        status: {
+        expediteType: {
             type: 'Enum',
-            isRequired: true,
         },
-        tagNumber: {
+        completionComments: {
             type: 'string',
         },
         termsAccepted: {
             type: 'boolean',
         },
-        totalAmount: {
-            type: 'number',
-        },
-        updatedDate: {
+        finalizedAt: {
             type: 'string',
             format: 'date-time',
+        },
+        express: {
+            type: 'boolean',
+        },
+        draft: {
+            type: 'boolean',
+        },
+        printed: {
+            type: 'boolean',
+        },
+        emailed: {
+            type: 'boolean',
         },
     },
 } as const;

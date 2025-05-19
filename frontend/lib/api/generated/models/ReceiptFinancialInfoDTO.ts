@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ReceiptFinancialInfoDTO = {
-    balanceAmount?: number;
+    totalAmount?: number;
     discountAmount?: number;
     discountType?: string;
     expediteSurcharge?: number;
     finalAmount?: number;
     prepaymentAmount?: number;
-    totalAmount?: number;
+    balanceAmount?: number;
 };
 

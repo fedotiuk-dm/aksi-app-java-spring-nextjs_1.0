@@ -1,0 +1,58 @@
+{
+  "semi": true,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "bracketSameLine": false,
+  "quoteProps": "as-needed",
+  "proseWrap": "preserve",
+  "htmlWhitespaceSensitivity": "css",
+  "embeddedLanguageFormatting": "auto",
+  "singleAttributePerLine": false,
+  "importOrder": [
+    "^@/(.*)$",
+    "^@features/order-wizard/(.*)$",
+    "^@features/order-wizard/wizard/(.*)$",
+    "^@features/order-wizard/clients/(.*)$",
+    "^@features/order-wizard/branches/(.*)$",
+    "^@features/order-wizard/items/(.*)$",
+    "^@features/order-wizard/price-calculator/(.*)$",
+    "^@features/order-wizard/orders/(.*)$",
+    "^@features/order-wizard/ui/(.*)$",
+    "^@features/order-wizard/shared/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "overrides": [
+    {
+      "files": "*.{ts,tsx}",
+      "options": {
+        "parser": "typescript"
+      }
+    },
+    {
+      "files": "*.{js,jsx}",
+      "options": {
+        "parser": "babel"
+      }
+    },
+    {
+      "files": "*.json",
+      "options": {
+        "parser": "json"
+      }
+    },
+    {
+      "files": "*.md",
+      "options": {
+        "parser": "markdown"
+      }
+    }
+  ]
+}

@@ -12,14 +12,15 @@ export const $CustomerSignatureRequest = {
         },
         signatureData: {
             type: 'string',
+            isRequired: true,
             minLength: 1,
-        },
-        signatureType: {
-            type: 'string',
         },
         termsAccepted: {
             type: 'boolean',
             isRequired: true,
+        },
+        signatureType: {
+            type: 'string',
         },
     },
 } as const;

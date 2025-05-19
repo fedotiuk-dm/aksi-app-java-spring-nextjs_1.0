@@ -9,14 +9,9 @@ import {
   Alert,
 } from '@mui/material';
 import { useItemBasicInfoForm } from '@/features/order-wizard/hooks/useItemBasicInfoForm';
-import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
-import { StepNavigation } from '@/features/order-wizard/ui/components/step-navigation';
-import {
-  CategorySelect,
-  ItemNameSelect,
-  QuantityInput,
-  UnitOfMeasureSelect,
-} from './components';
+import { StepContainer } from '@/features/order-wizard/ui/shared/step-container';
+import { StepNavigation } from '@/features/order-wizard/ui/shared/step-navigation';
+import { CategorySelect, ItemNameSelect, QuantityInput, UnitOfMeasureSelect } from './components';
 
 /**
  * Перший підетап Менеджера предметів - Введення основної інформації
@@ -102,18 +97,11 @@ export const BasicInfoSubstep = () => {
           </Card>
 
           <Card variant="outlined" sx={{ backgroundColor: 'background.paper' }}>
-            <CardHeader
-              title="Кількість"
-              titleTypographyProps={{ variant: 'h6' }}
-              sx={{ pb: 1 }}
-            />
+            <CardHeader title="Кількість" titleTypographyProps={{ variant: 'h6' }} sx={{ pb: 1 }} />
             <Divider />
             <CardContent sx={{ pt: 2 }}>
               <Box sx={{ display: 'flex', gap: 2 }}>
-                <QuantityInput
-                  control={form.control}
-                  errors={form.formState.errors}
-                />
+                <QuantityInput control={form.control} errors={form.formState.errors} />
 
                 <UnitOfMeasureSelect
                   unitsOfMeasure={unitsOfMeasure}
@@ -125,14 +113,11 @@ export const BasicInfoSubstep = () => {
                 />
               </Box>
 
-              {!isItemSupported &&
-                itemNameSelected &&
-                form.watch('measurementUnit') && (
-                  <Alert severity="error" sx={{ mt: 2 }}>
-                    Обрана одиниця виміру не підтримується для цього
-                    найменування.
-                  </Alert>
-                )}
+              {!isItemSupported && itemNameSelected && form.watch('measurementUnit') && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  Обрана одиниця виміру не підтримується для цього найменування.
+                </Alert>
+              )}
             </CardContent>
           </Card>
 

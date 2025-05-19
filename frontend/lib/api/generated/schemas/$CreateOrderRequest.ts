@@ -5,36 +5,13 @@
 export const $CreateOrderRequest = {
     description: `Дані для чернетки замовлення`,
     properties: {
-        branchLocationId: {
+        tagNumber: {
             type: 'string',
-            isRequired: true,
-            format: 'uuid',
         },
         clientId: {
             type: 'string',
             isRequired: true,
             format: 'uuid',
-        },
-        customerNotes: {
-            type: 'string',
-            maxLength: 1000,
-        },
-        discountAmount: {
-            type: 'number',
-        },
-        draft: {
-            type: 'boolean',
-        },
-        expectedCompletionDate: {
-            type: 'string',
-            format: 'date-time',
-        },
-        expediteType: {
-            type: 'Enum',
-        },
-        internalNotes: {
-            type: 'string',
-            maxLength: 1000,
         },
         items: {
             type: 'array',
@@ -42,11 +19,34 @@ export const $CreateOrderRequest = {
                 type: 'OrderItemDTO',
             },
         },
+        discountAmount: {
+            type: 'number',
+        },
         prepaymentAmount: {
             type: 'number',
         },
-        tagNumber: {
+        branchLocationId: {
             type: 'string',
+            isRequired: true,
+            format: 'uuid',
+        },
+        expectedCompletionDate: {
+            type: 'string',
+            format: 'date-time',
+        },
+        customerNotes: {
+            type: 'string',
+            maxLength: 1000,
+        },
+        internalNotes: {
+            type: 'string',
+            maxLength: 1000,
+        },
+        expediteType: {
+            type: 'Enum',
+        },
+        draft: {
+            type: 'boolean',
         },
     },
 } as const;

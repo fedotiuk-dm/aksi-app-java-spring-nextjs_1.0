@@ -3,17 +3,17 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ClientResponse = {
-    address?: string;
-    communicationChannels?: Array<'PHONE' | 'SMS' | 'VIBER'>;
-    createdAt?: string;
-    email?: string;
-    firstName?: string;
-    fullName?: string;
     id?: string;
     lastName?: string;
+    firstName?: string;
+    fullName?: string;
     phone?: string;
+    email?: string;
+    address?: string;
+    communicationChannels?: Array<'PHONE' | 'SMS' | 'VIBER'>;
     source?: ClientResponse.source;
     sourceDetails?: string;
+    createdAt?: string;
     updatedAt?: string;
 };
 export namespace ClientResponse {

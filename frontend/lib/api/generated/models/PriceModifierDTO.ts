@@ -7,17 +7,13 @@
  */
 export type PriceModifierDTO = {
     /**
-     * Сума модифікатора
+     * Назва модифікатора
      */
-    amount?: number;
+    name?: string;
     /**
      * Опис модифікатора
      */
     description?: string;
-    /**
-     * Назва модифікатора
-     */
-    name?: string;
     /**
      * Тип модифікатора
      */
@@ -26,6 +22,10 @@ export type PriceModifierDTO = {
      * Значення модифікатора
      */
     value?: number;
+    /**
+     * Сума модифікатора
+     */
+    amount?: number;
 };
 export namespace PriceModifierDTO {
     /**

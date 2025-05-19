@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OrderItemPhotoDTO = {
-    annotations?: string;
-    createdAt?: string;
-    description?: string;
-    fileUrl?: string;
     id?: string;
     itemId?: string;
+    fileUrl?: string;
     thumbnailUrl?: string;
+    annotations?: string;
+    description?: string;
+    createdAt?: string;
 };
 

@@ -6,41 +6,36 @@ import type { BranchLocationDTO } from './BranchLocationDTO';
 import type { ClientResponse } from './ClientResponse';
 import type { OrderItemDTO } from './OrderItemDTO';
 export type OrderDTO = {
+    id?: string;
+    receiptNumber: string;
+    tagNumber?: string;
+    client: ClientResponse;
+    clientId?: string;
+    items?: Array<OrderItemDTO>;
+    totalAmount?: number;
+    discountAmount?: number;
+    finalAmount?: number;
+    prepaymentAmount?: number;
     balanceAmount?: number;
     branchLocation: BranchLocationDTO;
     branchLocationId?: string;
-    client: ClientResponse;
-    clientId?: string;
-    completedDate?: string;
-    completionComments?: string;
-    createdDate?: string;
-    customerNotes?: string;
-    discountAmount?: number;
-    draft?: boolean;
-    emailed?: boolean;
-    expectedCompletionDate?: string;
-    expediteType?: OrderDTO.expediteType;
-    express?: boolean;
-    finalAmount?: number;
-    finalizedAt?: string;
-    id?: string;
-    internalNotes?: string;
-    items?: Array<OrderItemDTO>;
-    prepaymentAmount?: number;
-    printed?: boolean;
-    receiptNumber?: string;
     status: OrderDTO.status;
-    tagNumber?: string;
-    termsAccepted?: boolean;
-    totalAmount?: number;
+    createdDate?: string;
     updatedDate?: string;
+    expectedCompletionDate?: string;
+    completedDate?: string;
+    customerNotes?: string;
+    internalNotes?: string;
+    expediteType?: OrderDTO.expediteType;
+    completionComments?: string;
+    termsAccepted?: boolean;
+    finalizedAt?: string;
+    express?: boolean;
+    draft?: boolean;
+    printed?: boolean;
+    emailed?: boolean;
 };
 export namespace OrderDTO {
-    export enum expediteType {
-        STANDARD = 'STANDARD',
-        EXPRESS_48H = 'EXPRESS_48H',
-        EXPRESS_24H = 'EXPRESS_24H',
-    }
     export enum status {
         DRAFT = 'DRAFT',
         NEW = 'NEW',
@@ -48,6 +43,11 @@ export namespace OrderDTO {
         COMPLETED = 'COMPLETED',
         DELIVERED = 'DELIVERED',
         CANCELLED = 'CANCELLED',
+    }
+    export enum expediteType {
+        STANDARD = 'STANDARD',
+        EXPRESS_48H = 'EXPRESS_48H',
+        EXPRESS_24H = 'EXPRESS_24H',
     }
 }
 

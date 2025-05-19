@@ -6,12 +6,12 @@
  * Дані для оновлення клієнта
  */
 export type UpdateClientRequest = {
+    lastName?: string;
+    firstName?: string;
+    phone?: string;
+    email?: string;
     address?: string;
     communicationChannels?: Array<'PHONE' | 'SMS' | 'VIBER'>;
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
     source?: UpdateClientRequest.source;
     sourceDetails?: string;
 };

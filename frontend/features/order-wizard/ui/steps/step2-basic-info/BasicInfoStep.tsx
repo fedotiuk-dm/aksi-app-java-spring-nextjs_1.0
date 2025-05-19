@@ -17,8 +17,8 @@ import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
 import { WizardStep } from '@/features/order-wizard/model/types';
 import type { UUID } from 'node:crypto';
 import { BranchLocationSelect, TagNumberInput } from '.';
-import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
-import { StepNavigation } from '@/features/order-wizard/ui/components/step-navigation';
+import { StepContainer } from '@/features/order-wizard/ui/shared/step-container';
+import { StepNavigation } from '@/features/order-wizard/ui/shared/step-navigation';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
@@ -30,13 +30,9 @@ export const BasicInfoStep: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
 
   // Використовуємо окремі селектори для кожного поля, щоб уникнути безкінечних циклів
-  const branchLocationId = useOrderWizardStore(
-    (state) => state.branchLocationId
-  );
+  const branchLocationId = useOrderWizardStore((state) => state.branchLocationId);
   const tagNumber = useOrderWizardStore((state) => state.tagNumber);
-  const setBranchLocationId = useOrderWizardStore(
-    (state) => state.setBranchLocationId
-  );
+  const setBranchLocationId = useOrderWizardStore((state) => state.setBranchLocationId);
   const setTagNumber = useOrderWizardStore((state) => state.setTagNumber);
   const navigateToStep = useOrderWizardStore((state) => state.navigateToStep);
 
@@ -111,8 +107,7 @@ export const BasicInfoStep: React.FC = () => {
             sx={{ mb: 3, borderRadius: 2 }}
             onClose={() => setShowValidationError(false)}
           >
-            Будь ласка, заповніть всі обов&apos;apos;язкові поля перед
-            продовженням
+            Будь ласка, заповніть всі обов&apos;apos;язкові поля перед продовженням
           </Alert>
         </Fade>
 
@@ -145,10 +140,7 @@ export const BasicInfoStep: React.FC = () => {
                   <Stack spacing={3}>
                     {/* Номер квитанції */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <ReceiptIcon
-                        color="primary"
-                        fontSize={isTablet ? 'medium' : 'small'}
-                      />
+                      <ReceiptIcon color="primary" fontSize={isTablet ? 'medium' : 'small'} />
                       <Box>
                         <Typography variant="body2" color="text.secondary">
                           Номер квитанції:
@@ -165,10 +157,7 @@ export const BasicInfoStep: React.FC = () => {
 
                     {/* Дата створення */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <CalendarTodayIcon
-                        color="primary"
-                        fontSize={isTablet ? 'medium' : 'small'}
-                      />
+                      <CalendarTodayIcon color="primary" fontSize={isTablet ? 'medium' : 'small'} />
                       <Box>
                         <Typography variant="body2" color="text.secondary">
                           Дата створення:

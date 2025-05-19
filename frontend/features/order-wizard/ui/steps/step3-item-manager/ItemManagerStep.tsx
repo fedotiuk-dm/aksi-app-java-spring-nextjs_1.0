@@ -16,13 +16,10 @@ import {
   Fade,
 } from '@mui/material';
 import { useOrderWizardStore } from '@/features/order-wizard/model/store/store';
-import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
-import {
-  WizardStep,
-  ItemWizardSubStep,
-} from '@/features/order-wizard/model/types/types';
+import { StepContainer } from '@/features/order-wizard/ui/shared/step-container';
+import { WizardStep, ItemWizardSubStep } from '@/features/order-wizard/model/types/types';
 import { ItemsTable, TotalAmount } from './components';
-import { StepNavigation } from '@/features/order-wizard/ui/components/step-navigation';
+import { StepNavigation } from '@/features/order-wizard/ui/shared/step-navigation';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CalculateIcon from '@mui/icons-material/Calculate';
 
@@ -38,9 +35,7 @@ export const ItemManagerStep: React.FC = () => {
   const totalAmount = useOrderWizardStore((state) => state.totalAmount);
   const navigateToStep = useOrderWizardStore((state) => state.navigateToStep);
   const removeItem = useOrderWizardStore((state) => state.removeItem);
-  const setCurrentItemIndex = useOrderWizardStore(
-    (state) => state.setCurrentItemIndex
-  );
+  const setCurrentItemIndex = useOrderWizardStore((state) => state.setCurrentItemIndex);
 
   // Стан для сповіщень
   const [showEmptyOrderAlert, setShowEmptyOrderAlert] = React.useState(false);
@@ -99,8 +94,8 @@ export const ItemManagerStep: React.FC = () => {
             Додані предмети замовлення
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Додайте один або більше предметів до замовлення. Ви можете
-            редагувати або видаляти предмети у будь-який час.
+            Додайте один або більше предметів до замовлення. Ви можете редагувати або видаляти
+            предмети у будь-який час.
           </Typography>
         </Box>
 
@@ -110,8 +105,7 @@ export const ItemManagerStep: React.FC = () => {
             sx={{ mb: 3, borderRadius: 2 }}
             onClose={() => setShowEmptyOrderAlert(false)}
           >
-            Неможливо продовжити без додавання хоча б одного предмета до
-            замовлення
+            Неможливо продовжити без додавання хоча б одного предмета до замовлення
           </Alert>
         </Fade>
 
@@ -124,11 +118,7 @@ export const ItemManagerStep: React.FC = () => {
           }}
         >
           <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
-            <ItemsTable
-              items={items}
-              onEdit={handleEditItem}
-              onDelete={handleDeleteItem}
-            />
+            <ItemsTable items={items} onEdit={handleEditItem} onDelete={handleDeleteItem} />
           </CardContent>
         </Card>
 
@@ -163,9 +153,7 @@ export const ItemManagerStep: React.FC = () => {
                 color: 'primary.contrastText',
               }}
             >
-              <CardContent
-                sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-              >
+              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <CalculateIcon fontSize={isTablet ? 'large' : 'medium'} />
                 <TotalAmount amount={totalAmount} />
               </CardContent>

@@ -4,21 +4,21 @@
 /* eslint-disable */
 import type { ReceiptPriceModifierDTO } from './ReceiptPriceModifierDTO';
 export type ReceiptItemDTO = {
-    basePrice?: number;
-    color?: string;
-    defects?: Array<string>;
-    filler?: string;
-    finalPrice?: number;
     id?: string;
-    material?: string;
-    name?: string;
-    notes?: string;
     orderNumber?: number;
-    priceModifiers?: Array<ReceiptPriceModifierDTO>;
-    quantity?: number;
+    name?: string;
     serviceCategory?: string;
-    stains?: Array<string>;
+    quantity?: number;
     unitOfMeasure?: string;
+    material?: string;
+    color?: string;
+    filler?: string;
     wearPercentage?: number;
+    basePrice?: number;
+    finalPrice?: number;
+    priceModifiers?: Array<ReceiptPriceModifierDTO>;
+    stains?: Array<string>;
+    defects?: Array<string>;
+    notes?: string;
 };
 

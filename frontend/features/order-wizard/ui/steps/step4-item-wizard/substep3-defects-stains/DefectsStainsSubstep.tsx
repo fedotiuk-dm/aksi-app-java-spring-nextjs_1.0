@@ -1,7 +1,7 @@
 import { Box, Typography, Paper, CircularProgress, Alert } from '@mui/material';
 import { useItemDefectsForm } from '@/features/order-wizard/hooks/useItemDefectsForm';
-import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
-import { StepNavigation } from '@/features/order-wizard/ui/components/step-navigation';
+import { StepContainer } from '@/features/order-wizard/ui/shared/step-container';
+import { StepNavigation } from '@/features/order-wizard/ui/shared/step-navigation';
 import { StainsSelect, DefectsSelect, DefectsNotesInput } from './components';
 
 /**
@@ -53,8 +53,8 @@ export const DefectsStainsSubstep = () => {
                 Плями на предметі
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Додайте всі видимі плями на предметі. Це допоможе краще обрати
-                метод чистки та розрахувати вартість обробки.
+                Додайте всі видимі плями на предметі. Це допоможе краще обрати метод чистки та
+                розрахувати вартість обробки.
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <StainsSelect
@@ -72,9 +72,8 @@ export const DefectsStainsSubstep = () => {
                 Дефекти та ризики
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Вкажіть наявні дефекти та потенційні ризики, які може мати
-                процес обробки. Це важливо для встановлення правильних
-                очікувань.
+                Вкажіть наявні дефекти та потенційні ризики, які може мати процес обробки. Це
+                важливо для встановлення правильних очікувань.
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <DefectsSelect
@@ -92,8 +91,8 @@ export const DefectsStainsSubstep = () => {
                 Примітки щодо дефектів
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Додайте детальний опис розташування та характеру дефектів, щоб
-                краще документувати стан предмета.
+                Додайте детальний опис розташування та характеру дефектів, щоб краще документувати
+                стан предмета.
               </Typography>
               <DefectsNotesInput control={control} />
             </Paper>
@@ -104,14 +103,14 @@ export const DefectsStainsSubstep = () => {
                 {stainsFields.length === 1
                   ? 'плямy'
                   : stainsFields.length > 1 && stainsFields.length < 5
-                  ? 'плями'
-                  : 'плям'}{' '}
+                    ? 'плями'
+                    : 'плям'}{' '}
                 та {defectsFields.length}{' '}
                 {defectsFields.length === 1
                   ? 'дефект'
                   : defectsFields.length > 1 && defectsFields.length < 5
-                  ? 'дефекти'
-                  : 'дефектів'}
+                    ? 'дефекти'
+                    : 'дефектів'}
                 . Ці дані будуть використані при розрахунку ціни.
               </Alert>
             )}

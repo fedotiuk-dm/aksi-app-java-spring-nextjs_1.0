@@ -4,26 +4,26 @@
 /* eslint-disable */
 export const $PriceListItemDTO = {
     properties: {
-        active: {
-            type: 'boolean',
-        },
-        basePrice: {
-            type: 'number',
-        },
-        catalogNumber: {
-            type: 'number',
-            format: 'int32',
+        id: {
+            type: 'string',
+            format: 'uuid',
         },
         categoryId: {
             type: 'string',
             format: 'uuid',
         },
-        id: {
-            type: 'string',
-            format: 'uuid',
+        catalogNumber: {
+            type: 'number',
+            format: 'int32',
         },
         name: {
             type: 'string',
+        },
+        unitOfMeasure: {
+            type: 'string',
+        },
+        basePrice: {
+            type: 'number',
         },
         priceBlack: {
             type: 'number',
@@ -31,8 +31,8 @@ export const $PriceListItemDTO = {
         priceColor: {
             type: 'number',
         },
-        unitOfMeasure: {
-            type: 'string',
+        active: {
+            type: 'boolean',
         },
     },
 } as const;

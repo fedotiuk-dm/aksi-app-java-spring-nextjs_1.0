@@ -4,19 +4,19 @@
 /* eslint-disable */
 export const $OrderCompletionUpdateRequest = {
     properties: {
-        expectedCompletionDate: {
+        orderId: {
             type: 'string',
             isRequired: true,
-            format: 'date-time',
+            format: 'uuid',
         },
         expediteType: {
             type: 'Enum',
             isRequired: true,
         },
-        orderId: {
+        expectedCompletionDate: {
             type: 'string',
             isRequired: true,
-            format: 'uuid',
+            format: 'date-time',
         },
     },
 } as const;

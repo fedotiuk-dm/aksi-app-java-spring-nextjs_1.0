@@ -9,25 +9,33 @@ import type { PriceModifierDTO } from './PriceModifierDTO';
  */
 export type OrderItemDetailedDTO = {
     /**
-     * Базова ціна предмета
+     * ID предмета замовлення
      */
-    basePrice?: number;
+    id?: string;
+    /**
+     * Найменування предмета
+     */
+    name?: string;
     /**
      * Категорія послуги
      */
     category?: string;
     /**
+     * Кількість
+     */
+    quantity?: number;
+    /**
+     * Одиниця виміру
+     */
+    unitOfMeasure?: string;
+    /**
+     * Матеріал предмета
+     */
+    material?: string;
+    /**
      * Колір предмета
      */
     color?: string;
-    /**
-     * Примітки щодо дефектів
-     */
-    defectNotes?: string;
-    /**
-     * Список виявлених дефектів та ризиків
-     */
-    defects?: Array<string>;
     /**
      * Наповнювач предмета
      */
@@ -37,44 +45,36 @@ export type OrderItemDetailedDTO = {
      */
     fillerClumped?: boolean;
     /**
-     * Фінальна ціна предмета
+     * Ступінь зносу (у відсотках)
      */
-    finalPrice?: number;
-    /**
-     * ID предмета замовлення
-     */
-    id?: string;
-    /**
-     * Матеріал предмета
-     */
-    material?: string;
-    /**
-     * Найменування предмета
-     */
-    name?: string;
-    /**
-     * Фотографії предмета
-     */
-    photos?: Array<OrderItemPhotoDTO>;
-    /**
-     * Список застосованих модифікаторів ціни
-     */
-    priceModifiers?: Array<PriceModifierDTO>;
-    /**
-     * Кількість
-     */
-    quantity?: number;
+    wearPercentage?: number;
     /**
      * Список виявлених плям на предметі
      */
     stains?: Array<string>;
     /**
-     * Одиниця виміру
+     * Список виявлених дефектів та ризиків
      */
-    unitOfMeasure?: string;
+    defects?: Array<string>;
     /**
-     * Ступінь зносу (у відсотках)
+     * Примітки щодо дефектів
      */
-    wearPercentage?: number;
+    defectNotes?: string;
+    /**
+     * Базова ціна предмета
+     */
+    basePrice?: number;
+    /**
+     * Список застосованих модифікаторів ціни
+     */
+    priceModifiers?: Array<PriceModifierDTO>;
+    /**
+     * Фінальна ціна предмета
+     */
+    finalPrice?: number;
+    /**
+     * Фотографії предмета
+     */
+    photos?: Array<OrderItemPhotoDTO>;
 };
 

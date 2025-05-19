@@ -4,25 +4,28 @@
 /* eslint-disable */
 export const $BranchLocationUpdateRequest = {
     properties: {
-        active: {
-            type: 'boolean',
+        name: {
+            type: 'string',
+            isRequired: true,
+            minLength: 1,
         },
         address: {
             type: 'string',
-            minLength: 1,
-        },
-        code: {
-            type: 'string',
-            minLength: 1,
-            pattern: '^[A-Z0-9]{2,5}$',
-        },
-        name: {
-            type: 'string',
+            isRequired: true,
             minLength: 1,
         },
         phone: {
             type: 'string',
             pattern: '^\\+ ? [0-9\\s-()]{10,15}$',
+        },
+        code: {
+            type: 'string',
+            isRequired: true,
+            minLength: 1,
+            pattern: '^[A-Z0-9]{2,5}$',
+        },
+        active: {
+            type: 'boolean',
         },
     },
 } as const;

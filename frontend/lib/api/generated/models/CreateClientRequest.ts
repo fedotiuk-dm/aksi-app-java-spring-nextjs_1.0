@@ -6,12 +6,12 @@
  * Дані нового клієнта
  */
 export type CreateClientRequest = {
+    lastName: string;
+    firstName: string;
+    phone: string;
+    email?: string;
     address?: string;
     communicationChannels?: Array<'PHONE' | 'SMS' | 'VIBER'>;
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
     source?: CreateClientRequest.source;
     sourceDetails?: string;
 };

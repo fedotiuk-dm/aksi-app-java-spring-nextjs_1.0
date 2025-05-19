@@ -4,6 +4,11 @@
 /* eslint-disable */
 export const $AdditionalRequirementsRequest = {
     properties: {
+        orderId: {
+            type: 'string',
+            isRequired: true,
+            format: 'uuid',
+        },
         additionalRequirements: {
             type: 'string',
             maxLength: 1000,
@@ -11,11 +16,6 @@ export const $AdditionalRequirementsRequest = {
         customerNotes: {
             type: 'string',
             maxLength: 1000,
-        },
-        orderId: {
-            type: 'string',
-            isRequired: true,
-            format: 'uuid',
         },
     },
 } as const;

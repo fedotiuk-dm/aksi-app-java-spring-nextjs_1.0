@@ -26,7 +26,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Client } from '@/features/order-wizard/model/types';
-import { useSearchResults } from '@/features/order-wizard/hooks';
+import { useSearchResults } from '@/features/order-wizard/api/clients/hooks/use-client-search';
 
 interface SearchResultsProps {
   clients: Client[];
@@ -199,7 +199,6 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                             fontSize: isTablet ? '1.2rem' : '1rem',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            maxWidth: '100%',
                           }}
                         >
                           {client.lastName} {client.firstName}
@@ -221,21 +220,12 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                               gap: 1,
                             }}
                           >
-                            <PhoneIcon fontSize="small" color="primary" />
-                            <Typography
-                              variant="body2"
-                              noWrap
-                              sx={{
-                                fontSize: isTablet ? '1rem' : '0.875rem',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}
-                            >
+                            <PhoneIcon fontSize="small" color="action" />
+                            <Typography variant="body2">
                               {client.phone}
                             </Typography>
                           </Box>
                         )}
-
                         {client.email && (
                           <Box
                             sx={{
@@ -244,105 +234,69 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                               gap: 1,
                             }}
                           >
-                            <EmailIcon fontSize="small" color="primary" />
-                            <Typography
-                              variant="body2"
-                              noWrap
-                              sx={{
-                                fontSize: isTablet ? '1rem' : '0.875rem',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}
-                            >
+                            <EmailIcon fontSize="small" color="action" />
+                            <Typography variant="body2">
                               {client.email}
                             </Typography>
                           </Box>
                         )}
-
-                        {client.address &&
-                          (client.address.city || client.address.street) && (
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1,
-                              }}
-                            >
-                              <LocationOnIcon
-                                fontSize="small"
-                                color="primary"
-                              />
-                              <Typography
-                                variant="body2"
-                                noWrap
-                                sx={{
-                                  fontSize: isTablet ? '1rem' : '0.875rem',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                }}
-                              >
-                                {client.address.city}
-                                {client.address.street &&
-                                  `, ${client.address.street}`}
-                              </Typography>
-                            </Box>
-                          )}
+                        {client.address && (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                            }}
+                          >
+                            <LocationOnIcon fontSize="small" color="action" />
+                            <Typography variant="body2">
+                              {client.address.street}, {client.address.city}
+                            </Typography>
+                          </Box>
+                        )}
                       </Box>
 
                       {client.communicationChannels &&
                         client.communicationChannels.length > 0 && (
                           <Box
                             sx={{
-                              mt: 2,
+                              mt: 1,
                               display: 'flex',
                               flexWrap: 'wrap',
                               gap: 0.5,
                             }}
                           >
-                            {client.communicationChannels
-                              .slice(0, 3)
-                              .map((channel) => (
-                                <Chip
-                                  key={channel}
-                                  label={getChannelLabel(channel)}
-                                  size="small"
-                                  color="primary"
-                                  variant="outlined"
-                                  sx={{ fontSize: '0.75rem' }}
-                                />
-                              ))}
-                            {client.communicationChannels.length > 3 && (
+                            {client.communicationChannels.map((channel) => (
                               <Chip
-                                label={`+${
-                                  client.communicationChannels.length - 3
-                                }`}
+                                key={channel}
+                                label={getChannelLabel(channel)}
                                 size="small"
                                 color="primary"
                                 variant="outlined"
-                                sx={{ fontSize: '0.75rem' }}
+                                sx={{
+                                  fontSize: isTablet ? '0.9rem' : '0.75rem',
+                                  height: isTablet ? 28 : 24,
+                                }}
                               />
-                            )}
+                            ))}
                           </Box>
                         )}
                     </CardContent>
                   </CardActionArea>
 
-                  <CardActions
-                    sx={{ justifyContent: 'flex-end', p: 1.5, pt: 0 }}
-                  >
+                  <CardActions sx={{ p: 1, justifyContent: 'flex-end' }}>
                     <Tooltip title="Редагувати клієнта">
                       <IconButton
                         size="small"
-                        color="primary"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleClientEdit(client, onClientEdit);
                         }}
-                        aria-label="редагувати клієнта"
                         sx={{
-                          bgcolor: 'rgba(25, 118, 210, 0.08)',
+                          color: 'primary.main',
                           '&:hover': {
-                            bgcolor: 'rgba(25, 118, 210, 0.16)',
+                            bgcolor: 'primary.light',
+                            color: 'white',
                           },
                         }}
                       >
@@ -357,16 +311,18 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         </Grid>
 
         {totalPages > 1 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, pb: 1 }}>
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
             <Pagination
               count={totalPages}
               page={page}
               onChange={handlePageChange}
-              size={isTablet ? 'medium' : 'small'}
               color="primary"
-              showFirstButton
-              showLastButton
-              siblingCount={isMobile ? 0 : 1}
+              size={isTablet ? 'medium' : 'small'}
+              sx={{
+                '& .MuiPaginationItem-root': {
+                  fontSize: isTablet ? '1rem' : '0.875rem',
+                },
+              }}
             />
           </Box>
         )}

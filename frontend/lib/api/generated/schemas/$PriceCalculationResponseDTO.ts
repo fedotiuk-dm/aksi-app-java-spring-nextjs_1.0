@@ -4,10 +4,23 @@
 /* eslint-disable */
 export const $PriceCalculationResponseDTO = {
     properties: {
+        baseUnitPrice: {
+            type: 'number',
+        },
+        quantity: {
+            type: 'number',
+            format: 'int32',
+        },
         baseTotalPrice: {
             type: 'number',
         },
-        baseUnitPrice: {
+        unitOfMeasure: {
+            type: 'string',
+        },
+        finalUnitPrice: {
+            type: 'number',
+        },
+        finalTotalPrice: {
             type: 'number',
         },
         calculationDetails: {
@@ -15,19 +28,6 @@ export const $PriceCalculationResponseDTO = {
             contains: {
                 type: 'CalculationDetailsDTO',
             },
-        },
-        finalTotalPrice: {
-            type: 'number',
-        },
-        finalUnitPrice: {
-            type: 'number',
-        },
-        quantity: {
-            type: 'number',
-            format: 'int32',
-        },
-        unitOfMeasure: {
-            type: 'string',
         },
     },
 } as const;

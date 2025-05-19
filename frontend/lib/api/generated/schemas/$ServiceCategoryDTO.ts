@@ -4,35 +4,35 @@
 /* eslint-disable */
 export const $ServiceCategoryDTO = {
     properties: {
-        active: {
-            type: 'boolean',
-        },
-        code: {
-            type: 'string',
-        },
-        description: {
-            type: 'string',
-        },
         id: {
             type: 'string',
             format: 'uuid',
         },
-        items: {
-            type: 'array',
-            contains: {
-                type: 'PriceListItemDTO',
-            },
+        code: {
+            type: 'string',
         },
         name: {
+            type: 'string',
+        },
+        description: {
             type: 'string',
         },
         sortOrder: {
             type: 'number',
             format: 'int32',
         },
+        active: {
+            type: 'boolean',
+        },
         standardProcessingDays: {
             type: 'number',
             format: 'int32',
+        },
+        items: {
+            type: 'array',
+            contains: {
+                type: 'PriceListItemDTO',
+            },
         },
     },
 } as const;

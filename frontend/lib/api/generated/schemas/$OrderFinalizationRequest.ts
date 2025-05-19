@@ -4,25 +4,25 @@
 /* eslint-disable */
 export const $OrderFinalizationRequest = {
     properties: {
-        comments: {
-            type: 'string',
-        },
-        generatePrintableReceipt: {
-            type: 'boolean',
-        },
         orderId: {
             type: 'string',
             isRequired: true,
             format: 'uuid',
-        },
-        sendReceiptByEmail: {
-            type: 'boolean',
         },
         signatureData: {
             type: 'string',
         },
         termsAccepted: {
             type: 'boolean',
+        },
+        sendReceiptByEmail: {
+            type: 'boolean',
+        },
+        generatePrintableReceipt: {
+            type: 'boolean',
+        },
+        comments: {
+            type: 'string',
         },
     },
 } as const;

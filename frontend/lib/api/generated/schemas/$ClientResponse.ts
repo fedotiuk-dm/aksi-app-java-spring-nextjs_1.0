@@ -4,6 +4,25 @@
 /* eslint-disable */
 export const $ClientResponse = {
     properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+        },
+        lastName: {
+            type: 'string',
+        },
+        firstName: {
+            type: 'string',
+        },
+        fullName: {
+            type: 'string',
+        },
+        phone: {
+            type: 'string',
+        },
+        email: {
+            type: 'string',
+        },
         address: {
             type: 'string',
         },
@@ -13,34 +32,15 @@ export const $ClientResponse = {
                 type: 'Enum',
             },
         },
-        createdAt: {
-            type: 'string',
-            format: 'date-time',
-        },
-        email: {
-            type: 'string',
-        },
-        firstName: {
-            type: 'string',
-        },
-        fullName: {
-            type: 'string',
-        },
-        id: {
-            type: 'string',
-            format: 'uuid',
-        },
-        lastName: {
-            type: 'string',
-        },
-        phone: {
-            type: 'string',
-        },
         source: {
             type: 'Enum',
         },
         sourceDetails: {
             type: 'string',
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time',
         },
         updatedAt: {
             type: 'string',

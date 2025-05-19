@@ -8,6 +8,88 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class StainTypeService {
     /**
+     * Отримати тип плями за ID
+     * Повертає тип плями за вказаним ідентифікатором
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getStainTypeById({
+        id,
+    }: {
+        id: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/stain-types/{id}',
+            path: {
+                'id': id,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Оновити тип плями
+     * Оновлює існуючий тип плями за вказаним ідентифікатором
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static updateStainType({
+        id,
+        requestBody,
+    }: {
+        id: string,
+        requestBody: StainTypeDTO,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/stain-types/{id}',
+            path: {
+                'id': id,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Видалити тип плями
+     * Видаляє тип плями за вказаним ідентифікатором
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static deleteStainType({
+        id,
+    }: {
+        id: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/stain-types/{id}',
+            path: {
+                'id': id,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
      * Отримати типи плям
      * Повертає список всіх або тільки активних типів плям з можливістю фільтрації за рівнем ризику
      * @returns StainTypeDTO OK
@@ -78,88 +160,6 @@ export class StainTypeService {
             path: {
                 'code': code,
             },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Видалити тип плями
-     * Видаляє тип плями за вказаним ідентифікатором
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static deleteStainType({
-        id,
-    }: {
-        id: string,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/stain-types/{id}',
-            path: {
-                'id': id,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати тип плями за ID
-     * Повертає тип плями за вказаним ідентифікатором
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getStainTypeById({
-        id,
-    }: {
-        id: string,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/stain-types/{id}',
-            path: {
-                'id': id,
-            },
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Оновити тип плями
-     * Оновлює існуючий тип плями за вказаним ідентифікатором
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static updateStainType({
-        id,
-        requestBody,
-    }: {
-        id: string,
-        requestBody: StainTypeDTO,
-    }): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'PUT',
-            url: '/stain-types/{id}',
-            path: {
-                'id': id,
-            },
-            body: requestBody,
-            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,

@@ -4,19 +4,6 @@
 /* eslint-disable */
 export const $OrderItemPhotoDTO = {
     properties: {
-        annotations: {
-            type: 'string',
-        },
-        createdAt: {
-            type: 'string',
-            format: 'date-time',
-        },
-        description: {
-            type: 'string',
-        },
-        fileUrl: {
-            type: 'string',
-        },
         id: {
             type: 'string',
             format: 'uuid',
@@ -25,8 +12,21 @@ export const $OrderItemPhotoDTO = {
             type: 'string',
             format: 'uuid',
         },
+        fileUrl: {
+            type: 'string',
+        },
         thumbnailUrl: {
             type: 'string',
+        },
+        annotations: {
+            type: 'string',
+        },
+        description: {
+            type: 'string',
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time',
         },
     },
 } as const;

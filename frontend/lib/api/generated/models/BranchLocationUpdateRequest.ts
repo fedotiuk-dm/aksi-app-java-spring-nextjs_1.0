@@ -3,10 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type BranchLocationUpdateRequest = {
-    active?: boolean;
-    address?: string;
-    code?: string;
-    name?: string;
+    name: string;
+    address: string;
     phone?: string;
+    code: string;
+    active?: boolean;
 };
 

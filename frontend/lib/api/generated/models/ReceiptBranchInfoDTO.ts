@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ReceiptBranchInfoDTO = {
-    address?: string;
     branchName?: string;
-    operatorName?: string;
+    address?: string;
     phone?: string;
+    operatorName?: string;
 };
 

@@ -1,7 +1,7 @@
 import { Box, Typography, CircularProgress, Paper, Alert } from '@mui/material';
 import { useItemPropertiesForm } from '@/features/order-wizard/hooks/useItemPropertiesForm';
-import { StepContainer } from '@/features/order-wizard/ui/components/step-container';
-import { StepNavigation } from '@/features/order-wizard/ui/components/step-navigation';
+import { StepContainer } from '@/features/order-wizard/ui/shared/step-container';
+import { StepNavigation } from '@/features/order-wizard/ui/shared/step-navigation';
 import {
   MaterialSelect,
   ColorSelect,
@@ -81,14 +81,10 @@ export const ItemPropertiesSubstep = () => {
                 Матеріал та колір
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Вкажіть матеріал та колір предмета. Це важливо для визначення
-                методу обробки.
+                Вкажіть матеріал та колір предмета. Це важливо для визначення методу обробки.
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <MaterialSelect
-                  control={control}
-                  materials={availableMaterials}
-                />
+                <MaterialSelect control={control} materials={availableMaterials} />
 
                 <ColorSelect
                   control={control}
@@ -101,16 +97,11 @@ export const ItemPropertiesSubstep = () => {
 
             {isFillerApplicable && (
               <Paper elevation={0} sx={{ p: 2 }}>
-                <Typography
-                  variant="subtitle1"
-                  gutterBottom
-                  fontWeight="medium"
-                >
+                <Typography variant="subtitle1" gutterBottom fontWeight="medium">
                   Наповнювач
                 </Typography>
                 <Typography variant="body2" color="text.secondary" paragraph>
-                  Якщо предмет має наповнювач (пух, синтепон тощо), вкажіть його
-                  тип та стан.
+                  Якщо предмет має наповнювач (пух, синтепон тощо), вкажіть його тип та стан.
                 </Typography>
                 <FillerSelect
                   control={control}
@@ -129,13 +120,10 @@ export const ItemPropertiesSubstep = () => {
                 Ступінь зносу
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Оцініть ступінь зносу предмета. Це допоможе встановити правильні
-                очікування щодо результату.
+                Оцініть ступінь зносу предмета. Це допоможе встановити правильні очікування щодо
+                результату.
               </Typography>
-              <WearDegreeSelect
-                control={control}
-                onWearDegreeChange={handleWearDegreeChange}
-              />
+              <WearDegreeSelect control={control} onWearDegreeChange={handleWearDegreeChange} />
             </Paper>
 
             <Paper elevation={0} sx={{ p: 2 }}>
@@ -143,17 +131,15 @@ export const ItemPropertiesSubstep = () => {
                 Додаткові примітки
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                За необхідності, додайте будь-які особливості предмета, які
-                варто враховувати.
+                За необхідності, додайте будь-які особливості предмета, які варто враховувати.
               </Typography>
               <NotesInput control={control} />
             </Paper>
 
             {currentItem && (
               <Alert severity="info" sx={{ mb: 2 }}>
-                Ви редагуєте предмет &quot;{currentItem.name}&quot;. Ці
-                характеристики впливатимуть на розрахунок ціни на наступному
-                кроці.
+                Ви редагуєте предмет &quot;{currentItem.name}&quot;. Ці характеристики впливатимуть
+                на розрахунок ціни на наступному кроці.
               </Alert>
             )}
 
