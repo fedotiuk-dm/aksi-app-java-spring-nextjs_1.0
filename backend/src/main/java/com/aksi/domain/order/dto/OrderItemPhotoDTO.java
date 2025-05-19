@@ -16,37 +16,37 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItemPhotoDTO {
-    
+
     /**
      * Унікальний ідентифікатор фотографії.
      */
     private UUID id;
-    
+
     /**
      * Ідентифікатор предмета замовлення.
      */
     private UUID itemId;
-    
+
     /**
      * URL для доступу до фотографії.
      */
     private String fileUrl;
-    
+
     /**
      * URL для доступу до мініатюри фотографії.
      */
     private String thumbnailUrl;
-    
+
     /**
      * JSON з анотаціями (маркуванням проблемних місць).
      */
     private String annotations;
-    
+
     /**
      * Текстовий опис до фотографії.
      */
     private String description;
-    
+
     /**
      * Дата і час створення фотографії.
      */

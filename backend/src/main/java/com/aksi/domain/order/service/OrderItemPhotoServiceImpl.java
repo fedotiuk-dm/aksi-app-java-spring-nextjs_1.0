@@ -28,96 +28,96 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderItemPhotoServiceImpl implements OrderItemPhotoService {
-    
+
     private final OrderItemPhotoRepository orderItemPhotoRepository;
     private final OrderItemRepository orderItemRepository;
     private final FileStorageService fileStorageService;
-    
+
     @Override
     @Transactional(readOnly = true)
     public List<OrderItemPhotoDTO> getPhotosByItemId(UUID itemId) {
         List<OrderItemPhotoEntity> photos = orderItemPhotoRepository.findByOrderItemId(itemId);
-        
+
         return photos.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     @Transactional
     public OrderItemPhotoDTO uploadPhoto(UUID itemId, MultipartFile file, String description) throws IOException {
         OrderItemEntity orderItem = orderItemRepository.findById(itemId)
                 .orElseThrow(() -> EntityNotFoundException.withMessage("Предмет замовлення з ID " + itemId + " не знайдено"));
-        
+
         // Зберігаємо файл
         String filePath = fileStorageService.storeFile(file);
-        
+
         // Створюємо запис у БД
         OrderItemPhotoEntity photo = OrderItemPhotoEntity.builder()
                 .orderItem(orderItem)
                 .filePath(filePath)
                 .description(StringUtils.hasText(description) ? description : null)
                 .build();
-        
+
         OrderItemPhotoEntity savedPhoto = orderItemPhotoRepository.save(photo);
-        
+
         log.info("Завантажено фото для предмета замовлення {}: {}", itemId, savedPhoto.getId());
-        
+
         return mapToDTO(savedPhoto);
     }
-    
+
     @Override
     @Transactional
     public OrderItemPhotoDTO updatePhotoAnnotations(UUID photoId, String annotations, String description) {
         OrderItemPhotoEntity photo = orderItemPhotoRepository.findById(photoId)
                 .orElseThrow(() -> EntityNotFoundException.withMessage("Фотографію з ID " + photoId + " не знайдено"));
-        
+
         photo.setAnnotations(annotations);
-        
+
         if (StringUtils.hasText(description)) {
             photo.setDescription(description);
         }
-        
+
         OrderItemPhotoEntity updatedPhoto = orderItemPhotoRepository.save(photo);
-        
+
         log.info("Оновлено анотації для фото {}", photoId);
-        
+
         return mapToDTO(updatedPhoto);
     }
-    
+
     @Override
     @Transactional
     public boolean deletePhoto(UUID photoId) {
         OrderItemPhotoEntity photo = orderItemPhotoRepository.findById(photoId)
                 .orElseThrow(() -> EntityNotFoundException.withMessage("Фотографію з ID " + photoId + " не знайдено"));
-        
+
         // Видаляємо файл зі сховища
         boolean fileDeleted = fileStorageService.deleteFile(photo.getFilePath());
-        
+
         if (!fileDeleted) {
             log.warn("Не вдалося видалити файл фотографії з шляху: {}", photo.getFilePath());
         }
-        
+
         // Видаляємо запис з БД
         orderItemPhotoRepository.delete(photo);
-        
+
         log.info("Видалено фото {} для предмета замовлення {}", photoId, photo.getOrderItem().getId());
-        
+
         return true;
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public OrderItemPhotoDTO getPhotoById(UUID photoId) {
         OrderItemPhotoEntity photo = orderItemPhotoRepository.findById(photoId)
                 .orElseThrow(() -> EntityNotFoundException.withMessage("Фотографію з ID " + photoId + " не знайдено"));
-        
+
         return mapToDTO(photo);
     }
-    
+
     /**
      * Перетворює сутність фотографії в DTO.
-     * 
+     *
      * @param entity сутність фотографії
      * @return DTO фотографії
      */
@@ -126,8 +126,8 @@ public class OrderItemPhotoServiceImpl implements OrderItemPhotoService {
                 .id(entity.getId())
                 .itemId(entity.getOrderItem().getId())
                 .fileUrl(fileStorageService.getFileUrl(entity.getFilePath()))
-                .thumbnailUrl(entity.getThumbnailPath() != null 
-                        ? fileStorageService.getFileUrl(entity.getThumbnailPath()) 
+                .thumbnailUrl(entity.getThumbnailPath() != null
+                        ? fileStorageService.getFileUrl(entity.getThumbnailPath())
                         : null)
                 .annotations(entity.getAnnotations())
                 .description(entity.getDescription())

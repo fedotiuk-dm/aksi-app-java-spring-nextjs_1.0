@@ -19,24 +19,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiError {
-    
+
     /**
      * HTTP статус помилки.
      */
     private int status;
-    
+
     /**
      * Загальне повідомлення про помилку.
      */
     private String message;
-    
+
     /**
      * Детальний список помилок (для валідації полів).
      */
     private Map<String, String> errors;
-    
+
     /**
      * Час виникнення помилки.
      */
     private LocalDateTime timestamp;
-} 
+}

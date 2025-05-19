@@ -56,21 +56,21 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
     @Transactional(readOnly = true)
     public OrderDetailedSummaryResponse getOrderDetailedSummary(UUID orderId) {
         log.debug("Отримання детального підсумку замовлення з ID: {}", orderId);
-        
+
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Замовлення", "id", orderId.toString()));
-        
+
         List<OrderItemDetailedDTO> detailedItems = mapOrderItems(order.getItems());
-        
+
         // Розрахунок суми надбавки за терміновість
         ExpediteType expediteType = order.getExpediteType();
         BigDecimal expediteSurchargeAmount = PriceCalculationConstants.calculatePercentage(
                 order.getTotalAmount(), expediteType.getSurchargePercentage());
-        
+
         // Округлення до 2 знаків після коми
         expediteSurchargeAmount = expediteSurchargeAmount.setScale(
                 PriceCalculationConstants.SCALE, PriceCalculationConstants.ROUNDING_MODE);
-        
+
         // Створення DTO відповіді
         return OrderDetailedSummaryResponse.builder()
                 .id(order.getId())
@@ -93,43 +93,43 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
                 .discountPercentage(order.getDiscountPercentage())
                 .build();
     }
-    
+
     /**
      * Перетворює список сутностей елементів замовлення у список детальних DTO елементів.
-     * 
+     *
      * @param items список сутностей елементів замовлення
      * @return список детальних DTO елементів
      */
     private List<OrderItemDetailedDTO> mapOrderItems(List<OrderItemEntity> items) {
         List<OrderItemDetailedDTO> result = new ArrayList<>();
-        
+
         for (OrderItemEntity item : items) {
             // Отримання фотографій предмета
             List<OrderItemPhotoEntity> photos = orderItemPhotoRepository.findByOrderItemId(item.getId());
             List<OrderItemPhotoDTO> photoDTOs = photos.stream()
                     .map(orderItemPhotoMapper::toDto)
                     .collect(Collectors.toList());
-            
+
             // Отримання модифікаторів ціни з бази даних
             List<OrderItemPriceModifierEntity> modifierEntities = priceModifierRepository.findByOrderItemId(item.getId());
             List<PriceModifierDTO> priceModifiers;
-            
+
             // Якщо в базі даних є модифікатори, використовуємо їх, інакше створюємо модельні
             if (!modifierEntities.isEmpty()) {
                 priceModifiers = priceModifierMapper.toDtoList(modifierEntities);
             } else {
                 // Для зворотної сумісності зі старими даними, створюємо модельні модифікатори
                 priceModifiers = createSamplePriceModifiers(item);
-                
+
                 // Записуємо їх в базу даних для майбутнього використання
                 if (!priceModifiers.isEmpty()) {
                     saveModifiersToDatabase(item, priceModifiers);
                 }
             }
-            
+
             List<String> stains = parseListField(item.getStains());
             List<String> defects = parseListField(item.getDefectsAndRisks());
-            
+
             OrderItemDetailedDTO detailedItem = OrderItemDetailedDTO.builder()
                     .id(item.getId())
                     .name(item.getName())
@@ -149,45 +149,45 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
                     .finalPrice(item.getTotalPrice())
                     .photos(photoDTOs)
                     .build();
-            
+
             result.add(detailedItem);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Зберігає модифікатори ціни в базу даних для майбутнього використання.
-     * 
+     *
      * @param item предмет замовлення
      * @param modifiers модифікатори ціни
      */
     private void saveModifiersToDatabase(OrderItemEntity item, List<PriceModifierDTO> modifiers) {
         List<OrderItemPriceModifierEntity> entities = priceModifierMapper.toEntityList(modifiers);
-        
+
         // Встановлюємо відношення до предмета замовлення
         entities.forEach(entity -> entity.setOrderItem(item));
-        
+
         priceModifierRepository.saveAll(entities);
     }
-    
+
     /**
      * Створює приклад модифікаторів ціни для предмета замовлення.
      * У реальній системі ці дані повинні зберігатися в БД або розраховуватися на основі
      * додаткових характеристик товару.
-     * 
+     *
      * @param item предмет замовлення
      * @return список модифікаторів ціни
      */
     private List<PriceModifierDTO> createSamplePriceModifiers(OrderItemEntity item) {
         List<PriceModifierDTO> modifiers = new ArrayList<>();
         BigDecimal basePrice = item.getUnitPrice();
-        
+
         // Модифікатори в залежності від матеріалу
         if ("Шовк".equals(item.getMaterial())) {
             BigDecimal percentage = new BigDecimal("50");
             BigDecimal amount = PriceCalculationConstants.calculatePercentage(basePrice, percentage);
-            
+
             modifiers.add(PriceModifierDTO.builder()
                     .name("Натуральний шовк")
                     .description("Надбавка за особливий матеріал")
@@ -198,7 +198,7 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
         } else if ("Натуральна шкіра".equals(item.getMaterial())) {
             BigDecimal percentage = new BigDecimal("30");
             BigDecimal amount = PriceCalculationConstants.calculatePercentage(basePrice, percentage);
-            
+
             modifiers.add(PriceModifierDTO.builder()
                     .name("Натуральна шкіра")
                     .description("Надбавка за особливий матеріал")
@@ -207,12 +207,12 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
                     .amount(amount)
                     .build());
         }
-        
+
         // Модифікатори для дитячих речей
         if (item.getDescription() != null && item.getDescription().toLowerCase().contains("дитяч")) {
             BigDecimal percentage = PriceCalculationConstants.KIDS_ITEMS_PERCENTAGE;
             BigDecimal amount = PriceCalculationConstants.calculatePercentage(basePrice, percentage);
-            
+
             modifiers.add(PriceModifierDTO.builder()
                     .name("Дитячі речі")
                     .description("Знижка на дитячі речі (до 30 розміру)")
@@ -221,13 +221,13 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
                     .amount(amount)
                     .build());
         }
-        
+
         // Модифікатори для ручної чистки
-        if (item.getSpecialInstructions() != null && 
+        if (item.getSpecialInstructions() != null &&
                 item.getSpecialInstructions().toLowerCase().contains("ручн")) {
             BigDecimal percentage = PriceCalculationConstants.MANUAL_CLEANING_PERCENTAGE;
             BigDecimal amount = PriceCalculationConstants.calculatePercentage(basePrice, percentage);
-            
+
             modifiers.add(PriceModifierDTO.builder()
                     .name("Ручна чистка")
                     .description("Надбавка за ручну чистку")
@@ -236,13 +236,13 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
                     .amount(amount)
                     .build());
         }
-        
+
         return modifiers;
     }
-    
+
     /**
      * Перетворює рядок зі ступенем зносу у відповідний відсоток.
-     * 
+     *
      * @param wearDegree рядок зі ступенем зносу
      * @return відсоток зносу
      */
@@ -250,20 +250,20 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
         if (wearDegree == null || wearDegree.isBlank()) {
             return null;
         }
-        
+
         // Очищаємо від нечислових символів
         String cleanValue = wearDegree.replaceAll("[^0-9]", "");
-        
+
         if (cleanValue.isBlank()) {
             return null;
         }
-        
+
         return cleanValue.matches("\\d+") ? Integer.valueOf(cleanValue) : null;
     }
-    
+
     /**
      * Перетворює рядок зі списком значень (через кому) у список рядків.
-     * 
+     *
      * @param listField рядок зі списком значень
      * @return список рядків
      */
@@ -271,11 +271,11 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
         if (listField == null || listField.isBlank()) {
             return new ArrayList<>();
         }
-        
+
         // Розділяємо за комою та прибираємо зайві пробіли
         return Arrays.stream(listField.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList());
     }
-} 
+}

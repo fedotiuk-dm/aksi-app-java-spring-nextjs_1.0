@@ -12,13 +12,13 @@ import com.aksi.domain.order.entity.CustomerSignatureEntity;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CustomerSignatureMapper {
-    
+
     /**
      * Перетворити сутність на DTO відповіді
-     * 
+     *
      * @param entity сутність підпису
      * @return DTO відповіді
      */
     @Mapping(target = "orderId", source = "order.id")
     CustomerSignatureResponse toResponse(CustomerSignatureEntity entity);
-} 
+}

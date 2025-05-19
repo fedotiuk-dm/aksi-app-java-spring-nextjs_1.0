@@ -22,10 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ServiceCategoryServiceImpl implements ServiceCategoryService {
-    
+
     private final ServiceCategoryRepository serviceCategoryRepository;
     private final PriceListMapper priceListMapper;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -33,12 +33,12 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     @Transactional(readOnly = true)
     public List<ServiceCategoryDTO> getAllActiveCategories() {
         log.debug("Отримання списку всіх активних категорій послуг");
-        
+
         List<ServiceCategoryEntity> categories = serviceCategoryRepository.findByActiveIsTrueOrderBySortOrder();
-        
+
         return priceListMapper.toCategoryDtoList(categories);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -46,13 +46,13 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     @Transactional(readOnly = true)
     public ServiceCategoryDTO getCategoryById(UUID id) {
         log.debug("Отримання категорії послуг за ID: {}", id);
-        
+
         ServiceCategoryEntity category = serviceCategoryRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.withId(id));
-        
+
         return priceListMapper.toDto(category);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -60,10 +60,10 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     @Transactional(readOnly = true)
     public ServiceCategoryDTO getCategoryByCode(String code) {
         log.debug("Отримання категорії послуг за кодом: {}", code);
-        
+
         ServiceCategoryEntity category = serviceCategoryRepository.findByCode(code)
                 .orElseThrow(() -> EntityNotFoundException.withMessage("Категорію послуг не знайдено за кодом: " + code));
-        
+
         return priceListMapper.toDto(category);
     }
 }

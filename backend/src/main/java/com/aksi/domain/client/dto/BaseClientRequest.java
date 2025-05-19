@@ -35,7 +35,7 @@ public abstract class BaseClientRequest {
     /**
      * Номер телефону клієнта.
      */
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Некоректний формат телефону")
+    @Pattern(regexp = "^\\+ ? [0-9]{10,15}$", message = "Некоректний формат телефону")
     private String phone;
 
     /**
@@ -63,4 +63,4 @@ public abstract class BaseClientRequest {
      * Деталі джерела, якщо вибрано "Інше".
      */
     private String sourceDetails;
-} 
+}

@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 /**
  * Entity для зберігання типів плям.
- * Використовується для рекомендацій модифікаторів цін та відображення 
+ * Використовується для рекомендацій модифікаторів цін та відображення
  * у інтерфейсі замовлення.
  */
 @Entity
@@ -19,6 +19,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class StainTypeEntity extends AbstractItemIssueEntity {
-    
+
     // Можна додати специфічні для плям поля, якщо вони з'являться
-} 
+}

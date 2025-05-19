@@ -57,17 +57,17 @@ public class OpenApiConfig {
         try {
             log.info("Ініціалізація OpenAPI конфігурації");
             log.debug("Використання контекстного шляху: {}", contextPath);
-            
+
             // Визначення вимог безпеки
             SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList("bearerAuth");
-            
+
             // Сервери API
             List<Server> servers = Arrays.asList(
                 new Server().url(contextPath).description("API Сервер"),
                 new Server().url("http://localhost:8080" + contextPath).description("Локальний сервер")
             );
-            
+
             // Створюємо об'єкт OpenAPI з інформацією про API
             OpenAPI openAPI = new OpenAPI()
                 .info(new Info()
@@ -83,7 +83,7 @@ public class OpenApiConfig {
                 .servers(servers)
                 .addSecurityItem(securityRequirement)
                 .components(new Components()
-                    .addSecuritySchemes("bearerAuth", 
+                    .addSecuritySchemes("bearerAuth",
                         new SecurityScheme()
                             .type(SecurityScheme.Type.HTTP)
                             .scheme("bearer")
@@ -91,19 +91,19 @@ public class OpenApiConfig {
                             .description("JWT токен авторизації. Формат: Bearer {token}")
                     )
                 );
-            
+
             // Додаємо додаткові теги для групування API
             openAPI.addTagsItem(new Tag().name("Orders").description("Операції із замовленнями"))
                    .addTagsItem(new Tag().name("OrderItems").description("Операції з елементами замовлень"))
                    .addTagsItem(new Tag().name("OrderCompletion").description("Операції з завершення замовлень"))
                    .addTagsItem(new Tag().name("OrderDiscounts").description("Операції із знижками до замовлень"))
                    .addTagsItem(new Tag().name("OrderFinalization").description("Операції фіналізації замовлень"));
-            
+
             return openAPI;
-            
+
         } catch (Exception e) {
             log.error("Помилка при створенні конфігурації OpenAPI: {}", e.getMessage(), e);
             throw e;
         }
     }
-} 
+}

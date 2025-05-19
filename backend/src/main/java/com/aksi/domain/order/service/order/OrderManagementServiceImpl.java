@@ -34,12 +34,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderManagementServiceImpl implements OrderManagementService {
-    
+
     private final OrderRepository orderRepository;
     private final ClientRepository clientRepository;
     private final BranchLocationRepository branchLocationRepository;
     private final OrderMapper orderMapper;
-    
+
     @Override
     @Transactional(readOnly = true)
     public List<OrderDTO> getAllOrders() {
@@ -49,7 +49,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
                 .map(orderMapper::toDTO)
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public Optional<OrderDTO> getOrderById(UUID id) {
@@ -57,12 +57,12 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         return orderRepository.findById(id)
                 .map(orderMapper::toDTO);
     }
-    
+
     @Override
     @Transactional
     public OrderDTO createOrder(CreateOrderRequest orderRequest) {
         log.debug("Створення нового замовлення: {}", orderRequest);
-        
+
         // Якщо клієнт існує, знаходимо його
         ClientEntity client = null;
         if (orderRequest.getClientId() != null) {
@@ -71,18 +71,18 @@ public class OrderManagementServiceImpl implements OrderManagementService {
                         "Клієнт не знайдений з ID: " + orderRequest.getClientId()
                     ));
         }
-        
+
         // Створюємо нове замовлення
         OrderEntity order = new OrderEntity();
         order.setTagNumber(orderRequest.getTagNumber());
-        
+
         // Встановлюємо пункт прийому замовлень
         BranchLocationEntity branchLocation = branchLocationRepository.findById(orderRequest.getBranchLocationId())
                 .orElseThrow(() -> EntityNotFoundException.withMessage(
                     "Пункт прийому замовлень не знайдений з ID: " + orderRequest.getBranchLocationId()
                 ));
         order.setBranchLocation(branchLocation);
-        
+
         // Генеруємо номер квитанції
         order.setReceiptNumber(generateReceiptNumber(branchLocation.getId()));
         order.setClient(client);
@@ -95,48 +95,48 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         order.setDraft(orderRequest.isDraft());
         order.setTotalAmount(BigDecimal.ZERO);
         order.setFinalAmount(BigDecimal.ZERO);
-        
+
         // Встановлюємо знижку і предоплату, якщо вони є
         if (orderRequest.getDiscountAmount() != null) {
             order.setDiscountAmount(orderRequest.getDiscountAmount());
         }
-        
+
         if (orderRequest.getPrepaymentAmount() != null) {
             order.setPrepaymentAmount(orderRequest.getPrepaymentAmount());
         }
-        
+
         // Додаємо предмети до замовлення
         for (OrderItemDTO itemDTO : orderRequest.getItems()) {
             OrderItemEntity item = orderMapper.toOrderItemEntity(itemDTO);
             order.addItem(item);
-            
+
             // Розраховуємо вартість предмету
             item.recalculateTotalPrice();
         }
-        
+
         // Оновлюємо суми замовлення
         order.recalculateTotalAmount();
-        
+
         // Зберігаємо в БД
         order = orderRepository.save(order);
-        
+
         // Повертаємо DTO для використання в контролері
         return orderMapper.toDTO(order);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public List<OrderDTO> getActiveOrders() {
         log.debug("Отримання активних замовлень");
-        
+
         List<OrderEntity> activeOrders = orderRepository.findByStatusInAndDraftFalse(
                 List.of(OrderStatusEnum.NEW, OrderStatusEnum.IN_PROGRESS));
-        
+
         return activeOrders.stream()
                 .map(orderMapper::toDTO)
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public OrderEntity findOrderEntityById(UUID id) {
@@ -146,7 +146,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
                     "Замовлення не знайдено", id
                 ));
     }
-    
+
     @Override
     @Transactional
     public OrderDTO saveOrder(OrderEntity orderEntity) {
@@ -156,7 +156,7 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         OrderEntity savedOrder = orderRepository.save(orderEntity);
         return orderMapper.toDTO(savedOrder);
     }
-    
+
     @Override
     public String generateReceiptNumber(UUID branchLocationId) {
         // Знаходимо філію для отримання її коду
@@ -164,17 +164,17 @@ public class OrderManagementServiceImpl implements OrderManagementService {
                 .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
                     "Пункт прийому замовлень не знайдено", branchLocationId
                 ));
-        
+
         // Отримуємо код філії (або 'XX' якщо код відсутній)
         String branchCode = branchLocation.getCode() != null ? branchLocation.getCode() : "XX";
-        
+
         // Формуємо номер з дати та часу
         LocalDateTime now = LocalDateTime.now();
         String year = String.valueOf(now.getYear()).substring(2); // Останні дві цифри року
         String month = String.format("%02d", now.getMonthValue());
         String day = String.format("%02d", now.getDayOfMonth());
         String randomSuffix = String.format("%03d", (int) (Math.random() * 1000));
-        
+
         return branchCode + "-" + year + month + day + "-" + randomSuffix;
     }
-} 
+}

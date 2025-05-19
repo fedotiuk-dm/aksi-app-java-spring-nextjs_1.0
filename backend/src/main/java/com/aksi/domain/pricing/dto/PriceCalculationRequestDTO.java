@@ -19,45 +19,45 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PriceCalculationRequestDTO {
-    
+
     /**
      * Код категорії послуги.
      */
     @NotBlank(message = "Код категорії обов'язковий")
     private String categoryCode;
-    
+
     /**
      * Найменування предмету з прайс-листа.
      */
     @NotBlank(message = "Найменування предмету обов'язкове")
     private String itemName;
-    
+
     /**
      * Кількість предметів.
      */
     @NotNull(message = "Кількість предметів обов'язкова")
     @Positive(message = "Кількість має бути більше нуля")
     private Integer quantity;
-    
+
     /**
      * Список ID модифікаторів, які потрібно застосувати до ціни.
      * Можуть бути загальними або специфічними для категорії.
      */
     private List<String> modifierIds;
-    
+
     /**
      * Значення відсотка для модифікаторів з діапазоном значень.
      * Ключ - ID модифікатора, значення - вибраний відсоток.
      */
     private List<RangeModifierValueDTO> rangeModifierValues;
-    
+
     /**
      * Кількість для модифікаторів з фіксованою ціною.
      * Наприклад, кількість гудзиків для пришивання.
      * Ключ - ID модифікатора, значення - кількість.
      */
     private List<FixedModifierQuantityDTO> fixedModifierQuantities;
-    
+
     /**
      * DTO для значення відсотка в діапазоні.
      */
@@ -70,14 +70,14 @@ public class PriceCalculationRequestDTO {
          */
         @NotBlank(message = "ID модифікатора обов'язковий")
         private String modifierId;
-        
+
         /**
          * Вибраний відсоток.
          */
         @NotNull(message = "Відсоток обов'язковий")
         private BigDecimal percentage;
     }
-    
+
     /**
      * DTO для кількості для модифікаторів з фіксованою ціною.
      */
@@ -90,7 +90,7 @@ public class PriceCalculationRequestDTO {
          */
         @NotBlank(message = "ID модифікатора обов'язковий")
         private String modifierId;
-        
+
         /**
          * Кількість.
          */

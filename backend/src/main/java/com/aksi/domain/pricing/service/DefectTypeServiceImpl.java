@@ -22,12 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeRepository> implements DefectTypeService {
-    
+
     private final DefectTypeMapper defectTypeMapper;
 
     /**
      * Конструктор з параметрами.
-     * 
+     *
      * @param defectTypeRepository репозиторій для роботи з типами дефектів
      * @param defectTypeMapper мапер для конвертації між Entity та DTO
      */
@@ -94,14 +94,14 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
         if (defectTypeDTO.getId() != null && repository.existsById(defectTypeDTO.getId())) {
             throw new IllegalArgumentException("Тип дефекту з ID " + defectTypeDTO.getId() + " вже існує");
         }
-        
+
         if (repository.existsByCode(defectTypeDTO.getCode())) {
             throw new IllegalArgumentException("Тип дефекту з кодом " + defectTypeDTO.getCode() + " вже існує");
         }
-        
+
         DefectTypeEntity entity = defectTypeMapper.toEntity(defectTypeDTO);
         entity = repository.save(entity);
-        
+
         log.info("Створено новий тип дефекту: {}", entity.getCode());
         return defectTypeMapper.toDto(entity);
     }
@@ -114,22 +114,22 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     public DefectTypeDTO updateDefectType(UUID id, DefectTypeDTO defectTypeDTO) {
         DefectTypeEntity existingEntity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Тип дефекту з ID " + id + " не знайдено"));
-        
+
         // Перевіряємо, чи не існує інший запис з таким же кодом
-        if (!existingEntity.getCode().equals(defectTypeDTO.getCode()) && 
+        if (!existingEntity.getCode().equals(defectTypeDTO.getCode()) &&
                 repository.existsByCode(defectTypeDTO.getCode())) {
             throw new IllegalArgumentException("Тип дефекту з кодом " + defectTypeDTO.getCode() + " вже існує");
         }
-        
+
         // Оновлюємо поля
         existingEntity.setCode(defectTypeDTO.getCode());
         existingEntity.setName(defectTypeDTO.getName());
         existingEntity.setDescription(defectTypeDTO.getDescription());
         existingEntity.setRiskLevel(defectTypeDTO.getRiskLevel());
         existingEntity.setActive(defectTypeDTO.isActive());
-        
+
         existingEntity = repository.save(existingEntity);
-        
+
         log.info("Оновлено тип дефекту: {}", existingEntity.getCode());
         return defectTypeMapper.toDto(existingEntity);
     }
@@ -143,7 +143,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
         if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Тип дефекту з ID " + id + " не знайдено");
         }
-        
+
         repository.deleteById(id);
         log.info("Видалено тип дефекту з ID: {}", id);
     }
@@ -156,4 +156,4 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     public List<DefectTypeDTO> getDefectTypesByRiskLevel(RiskLevel riskLevel) {
         return defectTypeMapper.toDtoList(repository.findByActiveTrueAndRiskLevel(riskLevel));
     }
-} 
+}

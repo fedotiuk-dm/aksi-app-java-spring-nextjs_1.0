@@ -23,4 +23,4 @@ public interface RestrictedCategory {
      * @return true, якщо категорія має обмеження
      */
     boolean isRestricted(String categoryCode);
-} 
+}

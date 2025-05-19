@@ -37,11 +37,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Tag(name = "CustomerSignature", description = "API для управління підписами клієнтів")
 public class CustomerSignatureController {
-    
+
     private final CustomerSignatureService signatureService;
-    
+
     @PostMapping
-    @Operation(summary = "Зберегти підпис клієнта", 
+    @Operation(summary = "Зберегти підпис клієнта",
                description = "Зберігає новий або оновлює існуючий підпис клієнта")
     @ApiResponse(responseCode = "201", description = "Підпис успішно збережено",
             content = @Content(schema = @Schema(implementation = CustomerSignatureResponse.class)))
@@ -52,19 +52,19 @@ public class CustomerSignatureController {
             @Valid @RequestBody CustomerSignatureRequest request) {
         try {
             CustomerSignatureResponse savedSignature = signatureService.saveSignature(request);
-            return ApiResponseUtils.created(savedSignature, "Запит на збереження підпису клієнта для замовлення: {}", 
+            return ApiResponseUtils.created(savedSignature, "Запит на збереження підпису клієнта для замовлення: {}",
                 request.getOrderId());
         } catch (EntityNotFoundException e) {
-            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+            return ApiResponseUtils.notFound("Замовлення не знайдено",
                 "Замовлення з ID: {} не знайдено під час спроби зберегти підпис", request.getOrderId());
         } catch (Exception e) {
-            return ApiResponseUtils.badRequest("Помилка збереження підпису", 
+            return ApiResponseUtils.badRequest("Помилка збереження підпису",
                 "Не вдалося зберегти підпис для замовлення: {}. Причина: {}", request.getOrderId(), e.getMessage());
         }
     }
-    
+
     @GetMapping("/{id}")
-    @Operation(summary = "Отримати підпис за ID", 
+    @Operation(summary = "Отримати підпис за ID",
                description = "Повертає підпис клієнта за його ID")
     @ApiResponse(responseCode = "200", description = "Підпис знайдено",
             content = @Content(schema = @Schema(implementation = CustomerSignatureResponse.class)))
@@ -76,16 +76,16 @@ public class CustomerSignatureController {
                     .orElseThrow(() -> EntityNotFoundException.withId(id));
             return ApiResponseUtils.ok(signature, "Запит на отримання підпису за ID: {}", id);
         } catch (EntityNotFoundException e) {
-            return ApiResponseUtils.notFound("Підпис не знайдено", 
+            return ApiResponseUtils.notFound("Підпис не знайдено",
                 "Підпис з ID: {} не знайдено", id);
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка пошуку підпису", 
+            return ApiResponseUtils.internalServerError("Помилка пошуку підпису",
                 "Виникла помилка при пошуку підпису з ID: {}. Причина: {}", id, e.getMessage());
         }
     }
-    
+
     @GetMapping("/orders/{orderId}")
-    @Operation(summary = "Отримати всі підписи для замовлення", 
+    @Operation(summary = "Отримати всі підписи для замовлення",
                description = "Повертає всі підписи для конкретного замовлення")
     @ApiResponse(responseCode = "200", description = "Список підписів",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = CustomerSignatureResponse.class))))
@@ -95,13 +95,13 @@ public class CustomerSignatureController {
             List<CustomerSignatureResponse> signatures = signatureService.getAllSignaturesByOrderId(orderId);
             return ApiResponseUtils.ok(signatures, "Запит на отримання всіх підписів для замовлення з ID: {}", orderId);
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка отримання підписів", 
+            return ApiResponseUtils.internalServerError("Помилка отримання підписів",
                 "Виникла помилка при отриманні підписів для замовлення з ID: {}. Причина: {}", orderId, e.getMessage());
         }
     }
-    
+
     @GetMapping("/orders/{orderId}/types/{signatureType}")
-    @Operation(summary = "Отримати підпис за типом для замовлення", 
+    @Operation(summary = "Отримати підпис за типом для замовлення",
                description = "Повертає підпис конкретного типу для замовлення")
     @ApiResponse(responseCode = "200", description = "Підпис знайдено",
             content = @Content(schema = @Schema(implementation = CustomerSignatureResponse.class)))
@@ -111,17 +111,17 @@ public class CustomerSignatureController {
             @Parameter(description = "Тип підпису", required = true) @PathVariable String signatureType) {
         try {
             CustomerSignatureResponse signature = signatureService.getSignatureByOrderIdAndType(orderId, signatureType)
-                    .orElseThrow(() -> new EntityNotFoundException("Signature not found for orderId: " + orderId + 
+                    .orElseThrow(() -> new EntityNotFoundException("Signature not found for orderId: " + orderId +
                             " and type: " + signatureType));
-            return ApiResponseUtils.ok(signature, "Запит на отримання підпису для замовлення з ID: {} та типу: {}", 
+            return ApiResponseUtils.ok(signature, "Запит на отримання підпису для замовлення з ID: {} та типу: {}",
                 orderId, signatureType);
         } catch (EntityNotFoundException e) {
-            return ApiResponseUtils.notFound("Підпис не знайдено", 
+            return ApiResponseUtils.notFound("Підпис не знайдено",
                 "Підпис типу '{}' для замовлення з ID: {} не знайдено", signatureType, orderId);
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка пошуку підпису", 
-                "Виникла помилка при пошуку підпису типу '{}' для замовлення з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка пошуку підпису",
+                "Виникла помилка при пошуку підпису типу '{}' для замовлення з ID: {}. Причина: {}",
                 signatureType, orderId, e.getMessage());
         }
     }
-} 
+}

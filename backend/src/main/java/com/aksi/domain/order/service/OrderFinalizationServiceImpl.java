@@ -38,7 +38,7 @@ public class OrderFinalizationServiceImpl implements OrderFinalizationService {
     @Transactional
     public OrderDTO finalizeOrder(OrderFinalizationRequest request) {
         log.info("Завершення замовлення з ID: {}", request.getOrderId());
-        
+
         // 1. Зберігаємо підпис клієнта, якщо він наданий
         if (request.getSignatureData() != null && !request.getSignatureData().isEmpty()) {
             CustomerSignatureRequest signatureRequest = CustomerSignatureRequest.builder()
@@ -47,25 +47,25 @@ public class OrderFinalizationServiceImpl implements OrderFinalizationService {
                     .termsAccepted(request.getTermsAccepted())
                     .signatureType("CUSTOMER_ACCEPTANCE")
                     .build();
-            
+
             CustomerSignatureResponse savedSignature = signatureService.saveSignature(signatureRequest);
             log.debug("Збережено підпис клієнта з ID: {}", savedSignature.getId());
         }
-        
+
         // 2. Змінюємо статус замовлення на NEW та оновлюємо додаткові поля для завершення
         OrderEntity orderEntity = orderService.findOrderEntityById(request.getOrderId());
         orderEntity.setStatus(OrderStatusEnum.NEW);
         orderEntity.setUpdatedDate(LocalDateTime.now());
         orderEntity.setFinalizedAt(LocalDateTime.now());
         orderEntity.setTermsAccepted(request.getTermsAccepted() != null && request.getTermsAccepted());
-        
+
         // Оновлюємо коментарі до замовлення, якщо вони є
         if (request.getComments() != null && !request.getComments().isEmpty()) {
             orderEntity.setCompletionComments(request.getComments());
         }
-        
+
         OrderDTO updatedOrder = orderService.saveOrder(orderEntity);
-        
+
         // 3. Якщо потрібно надіслати чек електронною поштою
         if (request.getSendReceiptByEmail() != null && request.getSendReceiptByEmail()) {
             // Формуємо запит на відправку чеку по email
@@ -74,22 +74,22 @@ public class OrderFinalizationServiceImpl implements OrderFinalizationService {
                         .orderId(request.getOrderId())
                         .includeSignature(true)
                         .build();
-                
+
                 // Отримуємо email клієнта з замовлення
                 String clientEmail = updatedOrder.getClient().getEmail();
-                
+
                 // Якщо email доступний, відправляємо чек
                 if (clientEmail != null && !clientEmail.isEmpty()) {
                     emailRequest.setRecipientEmail(clientEmail);
                     emailRequest.setSubject("Ваше замовлення №" + updatedOrder.getReceiptNumber() + " в хімчистці AKSI");
-                    
+
                     // Відправляємо email
                     sendReceiptByEmail(emailRequest);
-                    
+
                     // Оновлюємо прапорець відправки email
                     orderEntity.setEmailed(true);
                     orderService.saveOrder(orderEntity);
-                    
+
                     log.info("Чек успішно надіслано на email: {}", clientEmail);
                 } else {
                     log.warn("Не вдалося надіслати чек: email клієнта не вказано");
@@ -99,14 +99,14 @@ public class OrderFinalizationServiceImpl implements OrderFinalizationService {
                 log.error("Помилка при відправці чеку електронною поштою", e);
             }
         }
-        
+
         // 4. Якщо потрібно створити друковану версію чеку
         if (request.getGeneratePrintableReceipt() != null && request.getGeneratePrintableReceipt()) {
             // Встановлюємо прапорець друку
             orderEntity.setPrinted(true);
             orderService.saveOrder(orderEntity);
         }
-        
+
         log.info("Замовлення {} успішно завершено", request.getOrderId());
         return updatedOrder;
     }
@@ -132,21 +132,21 @@ public class OrderFinalizationServiceImpl implements OrderFinalizationService {
     @Override
     public byte[] getOrderReceipt(UUID orderId, boolean includeSignature) {
         log.info("Отримання PDF чеку для замовлення: {}", orderId);
-        
+
         // Перевіряємо існування замовлення
         orderService.getOrderById(orderId)
             .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Замовлення не знайдено", orderId));
-        
+
         // Створюємо запит на генерацію чеку
         ReceiptGenerationRequest receiptRequest = new ReceiptGenerationRequest(
-                orderId, 
-                "PDF", 
+                orderId,
+                "PDF",
                 includeSignature);
-        
+
         // Генеруємо PDF
         byte[] pdfContent = receiptService.generatePdfReceipt(receiptRequest);
         log.info("PDF чек успішно згенеровано для замовлення: {}", orderId);
-        
+
         return pdfContent;
     }
-} 
+}

@@ -10,14 +10,14 @@ import com.aksi.domain.order.entity.OrderEntity;
  * Сервіс для фінансових операцій із замовленнями.
  */
 public interface OrderFinancialService {
-    
+
     /**
      * Розрахувати вартість замовлення.
      * @param order параметр order
      * @return замовлення з розрахованою загальною вартістю
      */
     OrderDTO calculateOrderTotal(OrderEntity order);
-    
+
     /**
      * Додати знижку до замовлення.
      * @param id ідентифікатор
@@ -25,7 +25,7 @@ public interface OrderFinancialService {
      * @return замовлення з доданою знижкою
      */
     OrderDTO applyDiscount(UUID id, BigDecimal discountAmount);
-    
+
     /**
      * Додати передоплату до замовлення.
      * @param id ідентифікатор
@@ -33,4 +33,4 @@ public interface OrderFinancialService {
      * @return замовлення з доданою передоплатою
      */
     OrderDTO addPrepayment(UUID id, BigDecimal prepaymentAmount);
-} 
+}

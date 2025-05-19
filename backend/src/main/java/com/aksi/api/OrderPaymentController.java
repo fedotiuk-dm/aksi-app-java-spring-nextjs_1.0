@@ -30,12 +30,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Tag(name = "Payment for Order", description = "API для роботи з оплатою замовлень")
 public class OrderPaymentController {
-    
+
     private final PaymentService paymentService;
-    
+
     /**
      * Розрахувати деталі оплати замовлення
-     * 
+     *
      * @param orderId ID замовлення
      * @param request запит з інформацією про оплату
      * @return відповідь з розрахунком оплати
@@ -47,27 +47,27 @@ public class OrderPaymentController {
             @PathVariable UUID orderId,
             @Valid @RequestBody PaymentCalculationRequest request) {
         log.info("Розрахунок оплати для замовлення: {}", orderId);
-        
+
         try {
             // Переконуємося, що ID замовлення в URL та в запиті співпадають
             request.setOrderId(orderId);
-            
+
             PaymentCalculationResponse response = paymentService.calculatePayment(request);
             return ApiResponseUtils.ok(response, "Успішно розраховано деталі оплати для замовлення: {}", orderId);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.badRequest("Неправильні параметри для розрахунку оплати", 
-                "Помилка при розрахунку оплати для замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.badRequest("Неправильні параметри для розрахунку оплати",
+                "Помилка при розрахунку оплати для замовлення: {}. Причина: {}",
                 orderId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при розрахунку оплати", 
-                "Виникла несподівана помилка при розрахунку оплати для замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при розрахунку оплати",
+                "Виникла несподівана помилка при розрахунку оплати для замовлення: {}. Причина: {}",
                 orderId, e.getMessage());
         }
     }
-    
+
     /**
      * Застосувати інформацію про оплату до замовлення
-     * 
+     *
      * @param orderId ID замовлення
      * @param request запит з інформацією про оплату
      * @return відповідь з оновленими даними про оплату
@@ -79,27 +79,27 @@ public class OrderPaymentController {
             @PathVariable UUID orderId,
             @Valid @RequestBody PaymentCalculationRequest request) {
         log.info("Застосування інформації про оплату для замовлення: {}", orderId);
-        
+
         try {
             // Переконуємося, що ID замовлення в URL та в запиті співпадають
             request.setOrderId(orderId);
-            
+
             PaymentCalculationResponse response = paymentService.applyPayment(request);
             return ApiResponseUtils.ok(response, "Успішно застосовано інформацію про оплату для замовлення: {}", orderId);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.badRequest("Неправильні параметри для застосування оплати", 
-                "Помилка при застосуванні оплати для замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.badRequest("Неправильні параметри для застосування оплати",
+                "Помилка при застосуванні оплати для замовлення: {}. Причина: {}",
                 orderId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при застосуванні оплати", 
-                "Виникла несподівана помилка при застосуванні оплати для замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при застосуванні оплати",
+                "Виникла несподівана помилка при застосуванні оплати для замовлення: {}. Причина: {}",
                 orderId, e.getMessage());
         }
     }
-    
+
     /**
      * Отримати інформацію про оплату замовлення
-     * 
+     *
      * @param orderId ID замовлення
      * @return відповідь з даними про оплату
      */
@@ -108,18 +108,18 @@ public class OrderPaymentController {
             description = "Повертає поточні дані про оплату замовлення")
     public ResponseEntity<?> getOrderPayment(@PathVariable UUID orderId) {
         log.info("Отримання інформації про оплату для замовлення: {}", orderId);
-        
+
         try {
             PaymentCalculationResponse response = paymentService.getOrderPayment(orderId);
             return ApiResponseUtils.ok(response, "Отримано інформацію про оплату для замовлення: {}", orderId);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Інформація про оплату не знайдена", 
-                "Не вдалося отримати інформацію про оплату для замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.notFound("Інформація про оплату не знайдена",
+                "Не вдалося отримати інформацію про оплату для замовлення: {}. Причина: {}",
                 orderId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні інформації про оплату", 
-                "Виникла несподівана помилка при отриманні інформації про оплату для замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні інформації про оплату",
+                "Виникла несподівана помилка при отриманні інформації про оплату для замовлення: {}. Причина: {}",
                 orderId, e.getMessage());
         }
     }
-} 
+}

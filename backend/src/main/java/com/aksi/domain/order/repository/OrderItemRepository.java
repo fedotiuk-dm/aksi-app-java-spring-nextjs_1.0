@@ -13,18 +13,18 @@ import com.aksi.domain.order.entity.OrderItemEntity;
  */
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItemEntity, UUID> {
-    
+
     /**
      * Знайти всі предмети для вказаного замовлення.
-     * 
+     *
      * @param orderId ID замовлення
      * @return список предметів замовлення
      */
     List<OrderItemEntity> findByOrderId(UUID orderId);
-    
+
     /**
      * Видалити всі предмети для вказаного замовлення.
-     * 
+     *
      * @param orderId ID замовлення
      */
     void deleteByOrderId(UUID orderId);

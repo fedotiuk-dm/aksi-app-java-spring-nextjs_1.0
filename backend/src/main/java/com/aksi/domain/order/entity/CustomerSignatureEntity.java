@@ -29,41 +29,41 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerSignatureEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    
+
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     private OrderEntity order;
-    
+
     @Lob
     @Column(name = "signature_data", nullable = false, columnDefinition = "TEXT")
     private String signatureData;
-    
+
     @Column(name = "terms_accepted", nullable = false)
     @Builder.Default
     private boolean termsAccepted = false;
-    
+
     @Column(name = "signature_type", nullable = false)
     @Builder.Default
     private String signatureType = "CUSTOMER_ACCEPTANCE";
-    
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-    
+
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-    
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
-    
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-} 
+}

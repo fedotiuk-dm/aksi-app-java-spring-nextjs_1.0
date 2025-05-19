@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FileController {
 
     private final FileStorageService fileStorageService;
-    
+
     /**
      * Конструктор для ін'єкції залежностей.
      * @param fileStorageService параметр fileStorageService
@@ -40,7 +40,7 @@ public class FileController {
     public FileController(FileStorageService fileStorageService) {
         this.fileStorageService = fileStorageService;
     }
-    
+
     /**
      * Отримати файл за його іменем.
      *
@@ -48,17 +48,17 @@ public class FileController {
      * @return файл як ресурс або відповідь з помилкою
      */
     @GetMapping("/{fileName:.+}")
-    @Operation(summary = "Отримати файл", 
+    @Operation(summary = "Отримати файл",
                description = "Повертає файл за його унікальним іменем")
     public ResponseEntity<?> getFile(@PathVariable String fileName) {
         try {
             // Використовуємо сервіс для отримання файлу як ресурсу
             Resource resource = fileStorageService.getFileAsResource(fileName);
-            
+
             if (resource != null && resource.exists()) {
                 // Визначення типу контенту
                 String contentType = determineContentType(fileName);
-                
+
                 // Тут ми не використовуємо ApiResponseUtils, оскільки повертаємо безпосередньо файл
                 // з додатковими заголовками
                 return ResponseEntity.ok()
@@ -66,24 +66,24 @@ public class FileController {
                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
             } else {
-                return ApiResponseUtils.notFound("Файл не знайдено", 
+                return ApiResponseUtils.notFound("Файл не знайдено",
                     "Файл з іменем {} не знайдено у сховищі", fileName);
             }
         } catch (IOException e) {
-            return ApiResponseUtils.badRequest("Помилка доступу до файлу", 
+            return ApiResponseUtils.badRequest("Помилка доступу до файлу",
                 "Помилка при доступі до файлу {}: {}", fileName, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні файлу", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні файлу",
                 "Неочікувана помилка при отриманні файлу {}: {}", fileName, e.getMessage());
         }
     }
-    
+
     /**
      * Визначити тип контенту за розширенням файлу.
      */
     private String determineContentType(String fileName) {
         String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
-        
+
         return switch (extension) {
             case "jpg", "jpeg" -> "image/jpeg";
             case "png" -> "image/png";

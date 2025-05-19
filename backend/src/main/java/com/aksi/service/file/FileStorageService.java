@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
  * Сервіс для зберігання та управління файлами.
  */
 public interface FileStorageService {
-    
+
     /**
      * Зберегти файл у файловій системі або хмарному сховищі.
      *
@@ -17,7 +17,7 @@ public interface FileStorageService {
      * @throws IOException при помилці зберігання файлу
      */
     String storeFile(MultipartFile file) throws IOException;
-    
+
     /**
      * Отримати URL файлу за його іменем.
      *
@@ -25,7 +25,7 @@ public interface FileStorageService {
      * @return URL для доступу до файлу
      */
     String getFileUrl(String fileName);
-    
+
     /**
      * Видалити файл за його іменем.
      *
@@ -33,7 +33,7 @@ public interface FileStorageService {
      * @return true, якщо файл успішно видалено
      */
     boolean deleteFile(String fileName);
-    
+
     /**
      * Отримати файл як ресурс за його іменем.
      *

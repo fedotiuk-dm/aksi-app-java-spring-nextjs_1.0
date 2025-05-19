@@ -11,17 +11,17 @@ import com.aksi.domain.pricing.dto.PriceModifierDTO;
  * Інтерфейс сервісу для розрахунку цін з модифікаторами з бази даних.
  */
 public interface PriceCalculationService {
-    
+
     /**
      * Отримати базову ціну товару з прайс-листа.
-     * 
+     *
      * @param categoryCode Код категорії товару
      * @param itemName Найменування товару
      * @param color Колір товару (може бути null)
      * @return Базова ціна
      */
     BigDecimal getBasePrice(String categoryCode, String itemName, String color);
-    
+
     /**
      * Розрахувати ціну з урахуванням вибраних модифікаторів.
      *
@@ -48,34 +48,34 @@ public interface PriceCalculationService {
             boolean isExpedited,
             BigDecimal expediteFactor,
             BigDecimal discountPercent);
-    
+
     /**
      * Отримати список доступних модифікаторів для категорії.
-     * 
+     *
      * @param categoryCode Код категорії
      * @return Список кодів доступних модифікаторів
      */
     List<String> getAvailableModifiersForCategory(String categoryCode);
-    
+
     /**
      * Запис для значення діапазонного модифікатора.
-     * 
+     *
      * @param modifierCode Код модифікатора
      * @param value Значення в діапазоні (відсоток)
      */
     record RangeModifierValue(String modifierCode, BigDecimal value) {}
-    
+
     /**
      * Запис для кількості фіксованого модифікатора.
-     * 
+     *
      * @param modifierCode Код модифікатора
      * @param quantity Кількість
      */
     record FixedModifierQuantity(String modifierCode, int quantity) {}
-    
+
     /**
      * Повертає рекомендовані модифікатори на основі забруднень та дефектів.
-     * 
+     *
      * @param stains список плям
      * @param defects список дефектів
      * @param categoryCode код категорії
@@ -83,14 +83,14 @@ public interface PriceCalculationService {
      * @return список рекомендованих модифікаторів
      */
     List<PriceModifierDTO> getRecommendedModifiersForItem(
-            Set<String> stains, 
-            Set<String> defects, 
-            String categoryCode, 
+            Set<String> stains,
+            Set<String> defects,
+            String categoryCode,
             String materialType);
-    
+
     /**
      * Отримує попередження про ризики для предмета.
-     * 
+     *
      * @param stains список плям
      * @param defects список дефектів
      * @param categoryCode код категорії
@@ -98,17 +98,17 @@ public interface PriceCalculationService {
      * @return список попереджень
      */
     List<String> getRiskWarningsForItem(
-            Set<String> stains, 
-            Set<String> defects, 
-            String categoryCode, 
+            Set<String> stains,
+            Set<String> defects,
+            String categoryCode,
             String materialType);
-    
+
     /**
      * Отримує рекомендовану одиницю виміру для товару.
-     * 
+     *
      * @param categoryCode Код категорії послуг
      * @param itemName Назва товару
      * @return Рекомендована одиниця виміру (шт, кг, кв.м, пара)
      */
     String getRecommendedUnitOfMeasure(String categoryCode, String itemName);
-} 
+}

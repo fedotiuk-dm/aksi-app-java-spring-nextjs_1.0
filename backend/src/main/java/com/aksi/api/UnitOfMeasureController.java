@@ -27,12 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class UnitOfMeasureController {
-    
+
     private final UnitOfMeasureService unitOfMeasureService;
-    
+
     /**
      * Отримати рекомендовану одиницю виміру для певної категорії та типу предмета.
-     * 
+     *
      * @param categoryId ID категорії послуг
      * @param itemName Назва предмета
      * @return Рекомендована одиниця виміру
@@ -40,30 +40,30 @@ public class UnitOfMeasureController {
     @GetMapping("/recommend")
     @Operation(summary = "Отримати рекомендовану одиницю виміру для предмета")
     public ResponseEntity<?> getRecommendedUnitOfMeasure(
-            @RequestParam UUID categoryId, 
+            @RequestParam UUID categoryId,
             @RequestParam String itemName) {
-        log.info("Запит на отримання рекомендованої одиниці виміру для категорії з ID: {} та предмета: {}", 
+        log.info("Запит на отримання рекомендованої одиниці виміру для категорії з ID: {} та предмета: {}",
                 categoryId, itemName);
-        
+
         try {
             String recommendedUnit = unitOfMeasureService.getRecommendedUnitOfMeasure(categoryId, itemName);
-            return ApiResponseUtils.ok(recommendedUnit, 
-                    "Отримано рекомендовану одиницю виміру '{}' для предмета: {}", 
+            return ApiResponseUtils.ok(recommendedUnit,
+                    "Отримано рекомендовану одиницю виміру '{}' для предмета: {}",
                     recommendedUnit, itemName);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Не знайдено рекомендовану одиницю виміру", 
-                    "Не знайдено рекомендовану одиницю виміру для категорії з ID: {} та предмета: {}. Причина: {}", 
+            return ApiResponseUtils.notFound("Не знайдено рекомендовану одиницю виміру",
+                    "Не знайдено рекомендовану одиницю виміру для категорії з ID: {} та предмета: {}. Причина: {}",
                     categoryId, itemName, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні рекомендованої одиниці виміру", 
-                    "Виникла помилка при отриманні рекомендованої одиниці виміру для категорії з ID: {} та предмета: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні рекомендованої одиниці виміру",
+                    "Виникла помилка при отриманні рекомендованої одиниці виміру для категорії з ID: {} та предмета: {}. Причина: {}",
                     categoryId, itemName, e.getMessage());
         }
     }
-    
+
     /**
      * Отримати всі доступні одиниці виміру для обраної категорії.
-     * 
+     *
      * @param categoryId ID категорії послуг
      * @return Список доступних одиниць виміру
      */
@@ -72,26 +72,26 @@ public class UnitOfMeasureController {
     public ResponseEntity<?> getAvailableUnitsForCategory(
             @PathVariable UUID categoryId) {
         log.info("Запит на отримання доступних одиниць виміру для категорії з ID: {}", categoryId);
-        
+
         try {
             List<String> availableUnits = unitOfMeasureService.getAvailableUnitsForCategory(categoryId);
-            return ApiResponseUtils.ok(availableUnits, 
-                    "Отримано {} доступних одиниць виміру для категорії з ID: {}", 
+            return ApiResponseUtils.ok(availableUnits,
+                    "Отримано {} доступних одиниць виміру для категорії з ID: {}",
                     availableUnits.size(), categoryId);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію не знайдено", 
-                    "Категорію з ID: {} не знайдено. Причина: {}", 
+            return ApiResponseUtils.notFound("Категорію не знайдено",
+                    "Категорію з ID: {} не знайдено. Причина: {}",
                     categoryId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні доступних одиниць виміру", 
-                    "Виникла помилка при отриманні доступних одиниць виміру для категорії з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні доступних одиниць виміру",
+                    "Виникла помилка при отриманні доступних одиниць виміру для категорії з ID: {}. Причина: {}",
                     categoryId, e.getMessage());
         }
     }
-    
+
     /**
      * Перевірити, чи підтримує предмет конкретну одиницю виміру.
-     * 
+     *
      * @param categoryId ID категорії послуг
      * @param itemName Назва предмета
      * @param unitOfMeasure Одиниця виміру для перевірки
@@ -100,26 +100,26 @@ public class UnitOfMeasureController {
     @GetMapping("/check-support")
     @Operation(summary = "Перевірити підтримку одиниці виміру для предмета")
     public ResponseEntity<?> isUnitSupportedForItem(
-            @RequestParam UUID categoryId, 
-            @RequestParam String itemName, 
+            @RequestParam UUID categoryId,
+            @RequestParam String itemName,
             @RequestParam String unitOfMeasure) {
-        log.info("Запит на перевірку підтримки одиниці виміру {} для категорії з ID: {} та предмета: {}", 
+        log.info("Запит на перевірку підтримки одиниці виміру {} для категорії з ID: {} та предмета: {}",
                 unitOfMeasure, categoryId, itemName);
-        
+
         try {
             boolean isSupported = unitOfMeasureService.isUnitSupportedForItem(categoryId, itemName, unitOfMeasure);
-            String message = isSupported 
-                ? "Одиниця виміру '{}' підтримується для предмета: {}" 
+            String message = isSupported
+                ? "Одиниця виміру '{}' підтримується для предмета: {}"
                 : "Одиниця виміру '{}' НЕ підтримується для предмета: {}";
-            
+
             return ApiResponseUtils.ok(isSupported, message, unitOfMeasure, itemName);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію або предмет не знайдено", 
-                    "Не вдалося перевірити підтримку одиниці виміру. Причина: {}", 
+            return ApiResponseUtils.notFound("Категорію або предмет не знайдено",
+                    "Не вдалося перевірити підтримку одиниці виміру. Причина: {}",
                     e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при перевірці підтримки одиниці виміру", 
-                    "Виникла помилка при перевірці підтримки одиниці виміру {} для категорії з ID: {} та предмета: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при перевірці підтримки одиниці виміру",
+                    "Виникла помилка при перевірці підтримки одиниці виміру {} для категорії з ID: {} та предмета: {}. Причина: {}",
                     unitOfMeasure, categoryId, itemName, e.getMessage());
         }
     }

@@ -15,19 +15,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdditionalRequirementsResponse {
-    
+
     /**
      * ID замовлення
      */
     private UUID orderId;
-    
+
     /**
      * Додаткові вимоги клієнта
      */
     private String additionalRequirements;
-    
+
     /**
      * Загальні примітки до замовлення
      */
     private String customerNotes;
-} 
+}

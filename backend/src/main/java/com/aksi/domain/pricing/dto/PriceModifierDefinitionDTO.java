@@ -22,13 +22,13 @@ import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierType
 @Schema(description = "Модифікатор ціни з каталогу (фіксований, відсотковий, діапазонний)")
 public class PriceModifierDefinitionDTO extends BasePriceModifierDTO {
     // Всі поля та методи успадковуються від BasePriceModifierDTO
-    
+
     /**
      * Конструктор з усіма параметрами для правильної роботи з MapStruct
      */
-    public PriceModifierDefinitionDTO(UUID id, String code, String name, String description, 
-                                     ModifierType modifierType, ModifierCategory category, 
-                                     BigDecimal value, BigDecimal minValue, BigDecimal maxValue, 
+    public PriceModifierDefinitionDTO(UUID id, String code, String name, String description,
+                                     ModifierType modifierType, ModifierCategory category,
+                                     BigDecimal value, BigDecimal minValue, BigDecimal maxValue,
                                      boolean active, Integer sortOrder) {
         super(id, code, name, description, modifierType, category, value, minValue, maxValue, active, sortOrder);
     }

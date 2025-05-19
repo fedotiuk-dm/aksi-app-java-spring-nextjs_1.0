@@ -22,13 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class FileStorageServiceImpl implements FileStorageService {
-    
+
     private final Path fileStorageLocation;
-    
+
     public FileStorageServiceImpl() {
         this.fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
     }
-    
+
     @PostConstruct
     public void init() {
         try {
@@ -38,17 +38,17 @@ public class FileStorageServiceImpl implements FileStorageService {
             log.error("Не вдалося створити директорію для зберігання файлів: {}", e.getMessage());
         }
     }
-    
+
     @Override
     public String storeFile(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Файл не може бути пустим");
         }
-        
+
         // Генеруємо унікальне ім'я файлу
         String originalFilename = file.getOriginalFilename();
         String fileExtension = "";
-        
+
         if (originalFilename != null && !originalFilename.isEmpty()) {
             String cleanName = StringUtils.cleanPath(originalFilename);
             int lastDotIndex = cleanName.lastIndexOf(".");
@@ -57,30 +57,30 @@ public class FileStorageServiceImpl implements FileStorageService {
             }
         }
         String fileName = UUID.randomUUID().toString() + fileExtension;
-        
+
         // Зберігаємо файл
         Path targetLocation = fileStorageLocation.resolve(fileName);
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-        
+
         log.info("Файл збережено: {}", fileName);
         return fileName;
     }
-    
+
     @Override
     public String getFileUrl(String fileName) {
         if (fileName == null || fileName.isEmpty()) {
             return null;
         }
-        
+
         return "/api/files/" + fileName;
     }
-    
+
     @Override
     public boolean deleteFile(String fileName) {
         if (fileName == null || fileName.isEmpty()) {
             return false;
         }
-        
+
         try {
             Path filePath = fileStorageLocation.resolve(fileName);
             return Files.deleteIfExists(filePath);
@@ -89,16 +89,16 @@ public class FileStorageServiceImpl implements FileStorageService {
             return false;
         }
     }
-    
+
     @Override
     public Resource getFileAsResource(String fileName) throws IOException {
         if (fileName == null || fileName.isEmpty()) {
             return null;
         }
-        
+
         Path filePath = fileStorageLocation.resolve(fileName).normalize();
         Resource resource = new UrlResource(filePath.toUri());
-        
+
         if (resource.exists()) {
             return resource;
         } else {

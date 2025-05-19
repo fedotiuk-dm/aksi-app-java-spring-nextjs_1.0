@@ -19,16 +19,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class AdminInitializer implements CommandLineRunner {
-    
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
+
     @Value("${admin.username:admin}")
     private String adminUsername;
-    
+
     @Value("${admin.password:admin}")
     private String adminPassword;
-    
+
     @Value("${admin.email:admin@aksi.com}")
     private String adminEmail;
 
@@ -47,9 +47,9 @@ public class AdminInitializer implements CommandLineRunner {
                     .position("Головний адміністратор")
                     .active(true)
                     .build();
-            
+
             userRepository.save(admin);
             log.info("Адміністратор '{}' створений", adminUsername);
         }
     }
-} 
+}

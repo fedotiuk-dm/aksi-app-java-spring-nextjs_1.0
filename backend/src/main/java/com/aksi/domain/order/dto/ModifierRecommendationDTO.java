@@ -13,32 +13,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ModifierRecommendationDTO {
-    
+
     /**
      * Ідентифікатор модифікатора
      */
     private String modifierId;
-    
+
     /**
      * Код модифікатора
      */
     private String code;
-    
+
     /**
      * Назва модифікатора
      */
     private String name;
-    
+
     /**
      * Опис причини рекомендації
      */
     private String reason;
-    
+
     /**
      * Рекомендоване значення модифікатора (якщо застосовується)
      */
     private Double recommendedValue;
-    
+
     /**
      * Рівень важливості рекомендації
      * HIGH - критично важливо застосувати
@@ -46,16 +46,16 @@ public class ModifierRecommendationDTO {
      * LOW - можливо застосувати
      */
     private RecommendationPriority priority;
-    
+
     /**
      * Сповіщення про ризик
      */
     private String riskWarning;
-    
+
     /**
      * Перелік пріоритетів рекомендацій
      */
     public enum RecommendationPriority {
         HIGH, MEDIUM, LOW
     }
-} 
+}

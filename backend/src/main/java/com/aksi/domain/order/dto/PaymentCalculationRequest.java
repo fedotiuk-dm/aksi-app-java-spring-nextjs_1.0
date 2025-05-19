@@ -20,22 +20,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentCalculationRequest {
-    
+
     /**
      * ID замовлення
      */
     @NotNull(message = "ID замовлення обов'язковий")
     private UUID orderId;
-    
+
     /**
      * Спосіб оплати
      */
     @NotNull(message = "Спосіб оплати обов'язковий")
     private PaymentMethod paymentMethod;
-    
+
     /**
      * Сума передоплати
      */
     @DecimalMin(value = "0.0", inclusive = true, message = "Сума передоплати не може бути від'ємною")
     private BigDecimal prepaymentAmount;
-} 
+}

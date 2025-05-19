@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CalculationDetailsDTO {
-    
+
     /**
      * Номер кроку в процесі розрахунку.
      * 1 - Базова ціна з прайсу
@@ -28,44 +28,44 @@ public class CalculationDetailsDTO {
      * 8 - Округлення результату
      */
     private int step;
-    
+
     /**
      * Назва кроку.
      */
     private String stepName;
-    
+
     /**
      * Опис дії на цьому кроці.
      */
     private String description;
-    
+
     /**
      * Код модифікатора (якщо є).
      */
     private String modifierCode;
-    
+
     /**
      * Назва модифікатора (якщо є).
      */
     private String modifierName;
-    
+
     /**
      * Значення модифікатора (наприклад, "+20%").
      */
     private String modifierValue;
-    
+
     /**
      * Ціна до застосування модифікатора.
      */
     private BigDecimal priceBefore;
-    
+
     /**
      * Ціна після застосування модифікатора.
      */
     private BigDecimal priceAfter;
-    
+
     /**
      * Різниця в ціні (priceAfter - priceBefore).
      */
     private BigDecimal priceDifference;
-} 
+}

@@ -13,18 +13,18 @@ import com.aksi.domain.order.entity.OrderItemPhotoEntity;
  */
 @Repository
 public interface OrderItemPhotoRepository extends JpaRepository<OrderItemPhotoEntity, UUID> {
-    
+
     /**
      * Знайти всі фотографії для вказаного предмета замовлення.
-     * 
+     *
      * @param itemId ID предмета замовлення
      * @return список фотографій
      */
     List<OrderItemPhotoEntity> findByOrderItemId(UUID itemId);
-    
+
     /**
      * Видалити всі фотографії для вказаного предмета замовлення.
-     * 
+     *
      * @param itemId ID предмета замовлення
      */
     void deleteByOrderItemId(UUID itemId);

@@ -17,19 +17,19 @@ public class ReceiptBranchInfoDTO {
      * Назва філії
      */
     private String branchName;
-    
+
     /**
      * Адреса філії
      */
     private String address;
-    
+
     /**
      * Телефон філії
      */
     private String phone;
-    
+
     /**
      * ПІБ оператора, який оформив замовлення
      */
     private String operatorName;
-} 
+}

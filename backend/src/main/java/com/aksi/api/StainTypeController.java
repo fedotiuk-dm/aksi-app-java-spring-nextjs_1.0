@@ -34,12 +34,12 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "StainType", description = "API для управління типами плям")
 @Slf4j
 public class StainTypeController {
-    
+
     private final StainTypeService stainTypeService;
-    
+
     /**
      * Отримати всі типи плям.
-     * 
+     *
      * @param activeOnly прапорець для отримання лише активних типів
      * @param riskLevel рівень ризику для фільтрації (опціонально)
      * @return список типів плям
@@ -49,9 +49,9 @@ public class StainTypeController {
     public ResponseEntity<List<StainTypeDTO>> getStainTypes(
             @RequestParam(name = "activeOnly", defaultValue = "true") boolean activeOnly,
             @RequestParam(name = "riskLevel", required = false) RiskLevel riskLevel) {
-        
+
         List<StainTypeDTO> stainTypes;
-        
+
         if (riskLevel != null) {
             stainTypes = stainTypeService.getStainTypesByRiskLevel(riskLevel);
             return ApiResponseUtils.ok(stainTypes, "REST запит на отримання типів плям з рівнем ризику: {}", riskLevel);
@@ -63,10 +63,10 @@ public class StainTypeController {
             return ApiResponseUtils.ok(stainTypes, "REST запит на отримання всіх типів плям");
         }
     }
-    
+
     /**
      * Отримати тип плями за ідентифікатором.
-     * 
+     *
      * @param id ідентифікатор типу плями
      * @return тип плями
      */
@@ -79,10 +79,10 @@ public class StainTypeController {
         }
         return ApiResponseUtils.ok(stainType, "REST запит на отримання типу плями за ID: {}", id);
     }
-    
+
     /**
      * Отримати тип плями за кодом.
-     * 
+     *
      * @param code код типу плями
      * @return тип плями
      */
@@ -95,10 +95,10 @@ public class StainTypeController {
         }
         return ApiResponseUtils.ok(stainType, "REST запит на отримання типу плями за кодом: {}", code);
     }
-    
+
     /**
      * Створити новий тип плями.
-     * 
+     *
      * @param stainTypeDTO дані нового типу плями
      * @return створений тип плями
      */
@@ -109,14 +109,14 @@ public class StainTypeController {
             StainTypeDTO createdStainType = stainTypeService.createStainType(stainTypeDTO);
             return ApiResponseUtils.created(createdStainType, "REST запит на створення нового типу плями: {}", stainTypeDTO);
         } catch (Exception e) {
-            return ApiResponseUtils.conflict("Неможливо створити тип плями", 
+            return ApiResponseUtils.conflict("Неможливо створити тип плями",
                     "Помилка при створенні типу плями: {}. Причина: {}", stainTypeDTO.getCode(), e.getMessage());
         }
     }
-    
+
     /**
      * Оновити існуючий тип плями.
-     * 
+     *
      * @param id ідентифікатор типу плями
      * @param stainTypeDTO нові дані типу плями
      * @return оновлений тип плями
@@ -124,20 +124,20 @@ public class StainTypeController {
     @PutMapping("/{id}")
     @Operation(summary = "Оновити тип плями", description = "Оновлює існуючий тип плями за вказаним ідентифікатором")
     public ResponseEntity<?> updateStainType(
-            @PathVariable UUID id, 
+            @PathVariable UUID id,
             @Valid @RequestBody StainTypeDTO stainTypeDTO) {
         try {
             StainTypeDTO updatedStainType = stainTypeService.updateStainType(id, stainTypeDTO);
             return ApiResponseUtils.ok(updatedStainType, "REST запит на оновлення типу плями з ID {}: {}", id, stainTypeDTO);
         } catch (Exception e) {
-            return ApiResponseUtils.notFound("Тип плями не знайдено або неможливо оновити", 
+            return ApiResponseUtils.notFound("Тип плями не знайдено або неможливо оновити",
                     "Помилка при оновленні типу плями з ID: {}. Причина: {}", id, e.getMessage());
         }
     }
-    
+
     /**
      * Видалити тип плями.
-     * 
+     *
      * @param id ідентифікатор типу плями
      * @return статус операції
      */
@@ -148,8 +148,8 @@ public class StainTypeController {
             stainTypeService.deleteStainType(id);
             return ApiResponseUtils.noContent("REST запит на деактивацію типу плями з ID: {}", id);
         } catch (Exception e) {
-            return ApiResponseUtils.notFound("Тип плями не знайдено або неможливо видалити", 
+            return ApiResponseUtils.notFound("Тип плями не знайдено або неможливо видалити",
                     "Помилка при видаленні типу плями з ID: {}. Причина: {}", id, e.getMessage());
         }
     }
-} 
+}

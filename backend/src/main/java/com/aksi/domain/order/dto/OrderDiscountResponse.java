@@ -19,49 +19,49 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDiscountResponse {
-    
+
     /**
      * ID замовлення
      */
     private UUID orderId;
-    
+
     /**
      * Тип знижки
      */
     private DiscountType discountType;
-    
+
     /**
      * Відсоток знижки
      */
     private Integer discountPercentage;
-    
+
     /**
      * Опис знижки (для користувацького типу знижки)
      */
     private String discountDescription;
-    
+
     /**
      * Загальна сума замовлення до знижки
      */
     private BigDecimal totalAmount;
-    
+
     /**
      * Сума знижки
      */
     private BigDecimal discountAmount;
-    
+
     /**
      * Фінальна сума замовлення зі знижкою
      */
     private BigDecimal finalAmount;
-    
+
     /**
      * Список категорій, до яких не застосовується знижка
      */
     private List<String> nonDiscountableCategories;
-    
+
     /**
      * Загальна сума елементів, до яких не застосовується знижка
      */
     private BigDecimal nonDiscountableAmount;
-} 
+}

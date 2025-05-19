@@ -95,4 +95,4 @@ public class ReceiptStyleConfig {
     public Font createFont(BaseFont baseFont, float size, int style, BaseColor color) {
         return new Font(baseFont != null ? baseFont : primaryBaseFont, size, style, color);
     }
-} 
+}

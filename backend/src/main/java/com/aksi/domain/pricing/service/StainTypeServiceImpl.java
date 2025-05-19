@@ -22,12 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class StainTypeServiceImpl extends AbstractStainTypeService<StainTypeRepository> implements StainTypeService {
-    
+
     private final StainTypeMapper stainTypeMapper;
 
     /**
      * Конструктор з параметрами.
-     * 
+     *
      * @param stainTypeRepository репозиторій для роботи з типами плям
      * @param stainTypeMapper мапер для конвертації між Entity та DTO
      */
@@ -94,14 +94,14 @@ public class StainTypeServiceImpl extends AbstractStainTypeService<StainTypeRepo
         if (stainTypeDTO.getId() != null && repository.existsById(stainTypeDTO.getId())) {
             throw new IllegalArgumentException("Тип плями з ID " + stainTypeDTO.getId() + " вже існує");
         }
-        
+
         if (repository.existsByCode(stainTypeDTO.getCode())) {
             throw new IllegalArgumentException("Тип плями з кодом " + stainTypeDTO.getCode() + " вже існує");
         }
-        
+
         StainTypeEntity entity = stainTypeMapper.toEntity(stainTypeDTO);
         entity = repository.save(entity);
-        
+
         log.info("Створено новий тип плями: {}", entity.getCode());
         return stainTypeMapper.toDto(entity);
     }
@@ -114,22 +114,22 @@ public class StainTypeServiceImpl extends AbstractStainTypeService<StainTypeRepo
     public StainTypeDTO updateStainType(UUID id, StainTypeDTO stainTypeDTO) {
         StainTypeEntity existingEntity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Тип плями з ID " + id + " не знайдено"));
-        
+
         // Перевіряємо, чи не існує інший запис з таким же кодом
-        if (!existingEntity.getCode().equals(stainTypeDTO.getCode()) && 
+        if (!existingEntity.getCode().equals(stainTypeDTO.getCode()) &&
                 repository.existsByCode(stainTypeDTO.getCode())) {
             throw new IllegalArgumentException("Тип плями з кодом " + stainTypeDTO.getCode() + " вже існує");
         }
-        
+
         // Оновлюємо поля
         existingEntity.setCode(stainTypeDTO.getCode());
         existingEntity.setName(stainTypeDTO.getName());
         existingEntity.setDescription(stainTypeDTO.getDescription());
         existingEntity.setRiskLevel(stainTypeDTO.getRiskLevel());
         existingEntity.setActive(stainTypeDTO.isActive());
-        
+
         existingEntity = repository.save(existingEntity);
-        
+
         log.info("Оновлено тип плями: {}", existingEntity.getCode());
         return stainTypeMapper.toDto(existingEntity);
     }
@@ -143,7 +143,7 @@ public class StainTypeServiceImpl extends AbstractStainTypeService<StainTypeRepo
         if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Тип плями з ID " + id + " не знайдено");
         }
-        
+
         repository.deleteById(id);
         log.info("Видалено тип плями з ID: {}", id);
     }
@@ -156,4 +156,4 @@ public class StainTypeServiceImpl extends AbstractStainTypeService<StainTypeRepo
     public List<StainTypeDTO> getStainTypesByRiskLevel(RiskLevel riskLevel) {
         return stainTypeMapper.toDtoList(repository.findByActiveTrueAndRiskLevel(riskLevel));
     }
-} 
+}

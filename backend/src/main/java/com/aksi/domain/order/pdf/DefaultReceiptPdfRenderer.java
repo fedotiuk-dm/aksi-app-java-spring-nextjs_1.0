@@ -31,32 +31,32 @@ import lombok.extern.slf4j.Slf4j;
 public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
 
     private final ReceiptPdfStyler styler;
-    
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     @Override
     public byte[] generatePdfReceipt(ReceiptDTO receiptData, boolean includeSignature) {
         log.info("Generating PDF receipt for order ID: {}", receiptData.getOrderId());
-        
+
         try {
             DocumentWriterPair pair = initializeDocument();
             Document document = pair.getDocument();
             PdfWriter writer = pair.getWriter();
             ByteArrayOutputStream outputStream = pair.getOutputStream();
-            
+
             // Додаємо лого і заголовок
             styler.addLogo(document);
             styler.addTitle(document, "КВИТАНЦІЯ");
-            
+
             // Номер квитанції
             Paragraph receiptInfo = new Paragraph(
-                    "Квитанція № " + receiptData.getReceiptNumber() + 
+                    "Квитанція № " + receiptData.getReceiptNumber() +
                     " від " + receiptData.getCreatedDate().format(DATE_FORMATTER),
                     styler.createPhrase("", com.itextpdf.text.Font.BOLD).getFont());
             receiptInfo.setAlignment(Element.ALIGN_CENTER);
             receiptInfo.setSpacingAfter(10);
             document.add(receiptInfo);
-            
+
             // Додаємо всі секції документа
             renderBranchInfo(document, writer, receiptData);
             renderClientInfo(document, writer, receiptData);
@@ -65,7 +65,7 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
             renderFinancialInfo(document, writer, receiptData);
             renderLegalInfo(document, writer, receiptData);
             renderSignature(document, writer, receiptData, includeSignature);
-            
+
             // Нижній колонтитул
             document.add(new Paragraph(" "));
             Paragraph footer = new Paragraph(
@@ -73,11 +73,11 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
                     styler.createPhrase("", com.itextpdf.text.Font.NORMAL).getFont());
             footer.setAlignment(Element.ALIGN_CENTER);
             document.add(footer);
-            
+
             document.close();
-            
+
             return outputStream.toByteArray();
-            
+
         } catch (com.itextpdf.text.DocumentException e) {
             log.error("Error in PDF document structure", e);
             throw new RuntimeException("Error generating PDF receipt", e);
@@ -96,7 +96,7 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
             Document document = new Document(PageSize.A4);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PdfWriter writer = PdfWriter.getInstance(document, outputStream);
-            
+
             document.open();
             return new DocumentWriterPair(document, writer, outputStream);
         } catch (com.itextpdf.text.DocumentException e) {
@@ -112,26 +112,26 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
     public void renderOrderInfo(Document document, PdfWriter writer, ReceiptDTO receiptData) {
         try {
             styler.addSectionHeader(document, "Деталі замовлення");
-            
+
             PdfPTable orderTable = new PdfPTable(2);
             orderTable.setWidthPercentage(100);
-            
+
             styler.addKeyValueRow(orderTable, "Номер замовлення:", receiptData.getReceiptNumber());
-            
+
             if (receiptData.getTagNumber() != null) {
                 styler.addKeyValueRow(orderTable, "Унікальна мітка:", receiptData.getTagNumber());
             }
-            
-            styler.addKeyValueRow(orderTable, "Дата створення:", 
+
+            styler.addKeyValueRow(orderTable, "Дата створення:",
                     receiptData.getCreatedDate().format(DATE_FORMATTER));
-            styler.addKeyValueRow(orderTable, "Очікувана дата завершення:", 
+            styler.addKeyValueRow(orderTable, "Очікувана дата завершення:",
                     receiptData.getExpectedCompletionDate().format(DATE_FORMATTER) + " (після 14:00)");
-            
+
             if (receiptData.getExpediteType() != null) {
-                styler.addKeyValueRow(orderTable, "Тип терміновості:", 
+                styler.addKeyValueRow(orderTable, "Тип терміновості:",
                         formatExpediteType(receiptData.getExpediteType().name()));
             }
-            
+
             document.add(orderTable);
             document.add(new Paragraph(" "));
         } catch (com.itextpdf.text.DocumentException e) {
@@ -145,15 +145,15 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
     public void renderBranchInfo(Document document, PdfWriter writer, ReceiptDTO receiptData) {
         try {
             styler.addSectionHeader(document, "Інформація про філію");
-            
+
             PdfPTable branchTable = new PdfPTable(2);
             branchTable.setWidthPercentage(100);
-            
+
             styler.addKeyValueRow(branchTable, "Назва:", receiptData.getBranchInfo().getBranchName());
             styler.addKeyValueRow(branchTable, "Адреса:", receiptData.getBranchInfo().getAddress());
             styler.addKeyValueRow(branchTable, "Телефон:", receiptData.getBranchInfo().getPhone());
             styler.addKeyValueRow(branchTable, "Оператор:", receiptData.getBranchInfo().getOperatorName());
-            
+
             document.add(branchTable);
             document.add(new Paragraph(" "));
         } catch (com.itextpdf.text.DocumentException e) {
@@ -167,23 +167,23 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
     public void renderClientInfo(Document document, PdfWriter writer, ReceiptDTO receiptData) {
         try {
             styler.addSectionHeader(document, "Інформація про клієнта");
-            
+
             PdfPTable clientTable = new PdfPTable(2);
             clientTable.setWidthPercentage(100);
-            
-            styler.addKeyValueRow(clientTable, "Клієнт:", 
-                    receiptData.getClientInfo().getLastName() + " " + 
+
+            styler.addKeyValueRow(clientTable, "Клієнт:",
+                    receiptData.getClientInfo().getLastName() + " " +
                     receiptData.getClientInfo().getFirstName());
             styler.addKeyValueRow(clientTable, "Телефон:", receiptData.getClientInfo().getPhone());
-            
+
             if (receiptData.getClientInfo().getEmail() != null) {
                 styler.addKeyValueRow(clientTable, "Email:", receiptData.getClientInfo().getEmail());
             }
-            
+
             if (receiptData.getClientInfo().getAddress() != null) {
                 styler.addKeyValueRow(clientTable, "Адреса:", receiptData.getClientInfo().getAddress());
             }
-            
+
             document.add(clientTable);
             document.add(new Paragraph(" "));
         } catch (com.itextpdf.text.DocumentException e) {
@@ -197,10 +197,10 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
     public void renderItemsTable(Document document, PdfWriter writer, ReceiptDTO receiptData) {
         try {
             styler.addSectionHeader(document, "Список предметів");
-            
+
             PdfPTable itemsTable = new PdfPTable(new float[] {0.3f, 2f, 1f, 0.8f, 1f, 1.5f});
             itemsTable.setWidthPercentage(100);
-            
+
             // Заголовки таблиці
             itemsTable.addCell(styler.createHeaderCell("№"));
             itemsTable.addCell(styler.createHeaderCell("Найменування"));
@@ -208,12 +208,12 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
             itemsTable.addCell(styler.createHeaderCell("Кіл-ть"));
             itemsTable.addCell(styler.createHeaderCell("Ціна"));
             itemsTable.addCell(styler.createHeaderCell("Сума"));
-            
+
             // Рядки з предметами
             boolean isAlternateRow = false;
             for (ReceiptItemDTO item : receiptData.getItems()) {
                 isAlternateRow = !isAlternateRow;
-                
+
                 itemsTable.addCell(styler.createCell(String.valueOf(item.getOrderNumber()), isAlternateRow));
                 itemsTable.addCell(styler.createCell(item.getName(), isAlternateRow));
                 itemsTable.addCell(styler.createCell(item.getServiceCategory(), isAlternateRow));
@@ -224,7 +224,7 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
                 itemsTable.addCell(styler.createCell(
                         formatCurrency(item.getFinalPrice()), isAlternateRow));
             }
-            
+
             document.add(itemsTable);
             document.add(new Paragraph(" "));
         } catch (com.itextpdf.text.DocumentException e) {
@@ -238,54 +238,54 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
     public void renderFinancialInfo(Document document, PdfWriter writer, ReceiptDTO receiptData) {
         try {
             styler.addSectionHeader(document, "Фінансова інформація");
-            
+
             PdfPTable financialTable = new PdfPTable(2);
             financialTable.setWidthPercentage(100);
-            
-            styler.addKeyValueRow(financialTable, "Загальна вартість:", 
+
+            styler.addKeyValueRow(financialTable, "Загальна вартість:",
                     formatCurrency(receiptData.getFinancialInfo().getTotalAmount()));
-            
-            if (receiptData.getFinancialInfo().getDiscountAmount() != null && 
+
+            if (receiptData.getFinancialInfo().getDiscountAmount() != null &&
                 receiptData.getFinancialInfo().getDiscountAmount().compareTo(java.math.BigDecimal.ZERO) > 0) {
-                
-                styler.addKeyValueRow(financialTable, 
-                        "Знижка (" + receiptData.getFinancialInfo().getDiscountType() + "):", 
+
+                styler.addKeyValueRow(financialTable,
+                        "Знижка (" + receiptData.getFinancialInfo().getDiscountType() + "):",
                         formatCurrency(receiptData.getFinancialInfo().getDiscountAmount()));
             }
-            
-            if (receiptData.getFinancialInfo().getExpediteSurcharge() != null && 
+
+            if (receiptData.getFinancialInfo().getExpediteSurcharge() != null &&
                 receiptData.getFinancialInfo().getExpediteSurcharge().compareTo(java.math.BigDecimal.ZERO) > 0) {
-                
-                styler.addKeyValueRow(financialTable, "Надбавка за терміновість:", 
+
+                styler.addKeyValueRow(financialTable, "Надбавка за терміновість:",
                         formatCurrency(receiptData.getFinancialInfo().getExpediteSurcharge()));
             }
-            
+
             // Фінальна сума виділяється жирним
-            PdfPCell keyCell = new PdfPCell(new Phrase("Фінальна сума:", 
+            PdfPCell keyCell = new PdfPCell(new Phrase("Фінальна сума:",
                     styler.createPhrase("", com.itextpdf.text.Font.BOLD).getFont()));
             keyCell.setBorder(0);
             financialTable.addCell(keyCell);
-            
+
             PdfPCell valueCell = new PdfPCell(new Phrase(
-                    formatCurrency(receiptData.getFinancialInfo().getFinalAmount()), 
+                    formatCurrency(receiptData.getFinancialInfo().getFinalAmount()),
                     styler.createPhrase("", com.itextpdf.text.Font.BOLD).getFont()));
             valueCell.setBorder(0);
             financialTable.addCell(valueCell);
-            
-            if (receiptData.getFinancialInfo().getPrepaymentAmount() != null && 
+
+            if (receiptData.getFinancialInfo().getPrepaymentAmount() != null &&
                 receiptData.getFinancialInfo().getPrepaymentAmount().compareTo(java.math.BigDecimal.ZERO) > 0) {
-                
-                styler.addKeyValueRow(financialTable, "Передоплата:", 
+
+                styler.addKeyValueRow(financialTable, "Передоплата:",
                         formatCurrency(receiptData.getFinancialInfo().getPrepaymentAmount()));
-                
-                styler.addKeyValueRow(financialTable, "Залишок до сплати:", 
+
+                styler.addKeyValueRow(financialTable, "Залишок до сплати:",
                         formatCurrency(receiptData.getFinancialInfo().getBalanceAmount()));
             }
-            
-            styler.addKeyValueRow(financialTable, "Спосіб оплати:", 
-                    receiptData.getPaymentMethod() != null ? 
+
+            styler.addKeyValueRow(financialTable, "Спосіб оплати:",
+                    receiptData.getPaymentMethod() != null ?
                     formatPaymentMethod(receiptData.getPaymentMethod().name()) : "Не вказано");
-            
+
             document.add(financialTable);
             document.add(new Paragraph(" "));
         } catch (com.itextpdf.text.DocumentException e) {
@@ -301,10 +301,10 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
     public void renderLegalInfo(Document document, PdfWriter writer, ReceiptDTO receiptData) {
         try {
             styler.addSectionHeader(document, "Юридична інформація");
-            
-            Paragraph legalParagraph = new Paragraph(receiptData.getLegalTerms(), 
+
+            Paragraph legalParagraph = new Paragraph(receiptData.getLegalTerms(),
                     styler.createPhrase("", com.itextpdf.text.Font.NORMAL).getFont());
-            
+
             document.add(legalParagraph);
             document.add(new Paragraph(" "));
         } catch (com.itextpdf.text.DocumentException e) {
@@ -318,7 +318,7 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
     public void renderSignature(Document document, PdfWriter writer, ReceiptDTO receiptData, boolean includeSignature) {
         try {
             styler.addSectionHeader(document, "Підписи");
-            
+
             // Місце для підпису клієнта
             if (includeSignature && receiptData.getCustomerSignatureData() != null) {
                 try {
@@ -340,8 +340,8 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
                 // Малюємо лінію для підпису
                 styler.drawSignatureLine(writer, 150);
             }
-            
-            Paragraph signText = new Paragraph("Підпис клієнта", 
+
+            Paragraph signText = new Paragraph("Підпис клієнта",
                     styler.createPhrase("", com.itextpdf.text.Font.NORMAL).getFont());
             signText.setAlignment(Element.ALIGN_LEFT);
             document.add(signText);
@@ -353,16 +353,16 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
             log.error("Invalid argument in signature rendering", e);
         }
     }
-    
+
     // Службові методи
-    
+
     private String formatCurrency(BigDecimal amount) {
         if (amount == null) {
             return "0.00 грн";
         }
         return String.format("%.2f грн", amount);
     }
-    
+
     private String formatExpediteType(String type) {
         return switch (type) {
             case "STANDARD" -> "Звичайне";
@@ -371,7 +371,7 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
             default -> type;
         };
     }
-    
+
     private String formatPaymentMethod(String method) {
         return switch (method) {
             case "CASH" -> "Готівка";
@@ -380,4 +380,4 @@ public class DefaultReceiptPdfRenderer implements ReceiptPdfRenderer {
             default -> method;
         };
     }
-} 
+}

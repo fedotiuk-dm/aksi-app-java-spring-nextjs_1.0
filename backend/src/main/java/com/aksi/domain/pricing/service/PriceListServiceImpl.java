@@ -25,11 +25,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class PriceListServiceImpl implements PriceListService {
-    
+
     private final PriceListItemRepository priceListItemRepository;
     private final ServiceCategoryRepository serviceCategoryRepository;
     private final PriceListMapper priceListMapper;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -37,12 +37,12 @@ public class PriceListServiceImpl implements PriceListService {
     @Transactional(readOnly = true)
     public List<PriceListItemDTO> getAllActiveItems() {
         log.debug("Отримання списку всіх активних елементів прайс-листа");
-        
+
         List<PriceListItemEntity> items = priceListItemRepository.findAllByActiveTrue();
-        
+
         return priceListMapper.toItemDtoList(items);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -50,15 +50,15 @@ public class PriceListServiceImpl implements PriceListService {
     @Transactional(readOnly = true)
     public List<PriceListItemDTO> getItemsByCategory(UUID categoryId) {
         log.debug("Отримання елементів прайс-листа за категорією з ID: {}", categoryId);
-        
+
         ServiceCategoryEntity category = serviceCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> EntityNotFoundException.withId(categoryId));
-        
+
         List<PriceListItemEntity> items = priceListItemRepository.findAllByCategoryOrderByCatalogNumberAsc(category);
-        
+
         return priceListMapper.toItemDtoList(items);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -66,15 +66,15 @@ public class PriceListServiceImpl implements PriceListService {
     @Transactional(readOnly = true)
     public List<PriceListItemDTO> getItemsByCategoryCode(String categoryCode) {
         log.debug("Отримання елементів прайс-листа за кодом категорії: {}", categoryCode);
-        
+
         ServiceCategoryEntity category = serviceCategoryRepository.findByCode(categoryCode)
                 .orElseThrow(() -> EntityNotFoundException.withMessage("Категорію послуг не знайдено за кодом: " + categoryCode));
-        
+
         List<PriceListItemEntity> items = priceListItemRepository.findAllByCategoryOrderByCatalogNumberAsc(category);
-        
+
         return priceListMapper.toItemDtoList(items);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -82,13 +82,13 @@ public class PriceListServiceImpl implements PriceListService {
     @Transactional(readOnly = true)
     public PriceListItemDTO getItemById(UUID id) {
         log.debug("Отримання елемента прайс-листа за ID: {}", id);
-        
+
         PriceListItemEntity item = priceListItemRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.withId(id));
-        
+
         return priceListMapper.toDto(item);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -96,12 +96,12 @@ public class PriceListServiceImpl implements PriceListService {
     @Transactional(readOnly = true)
     public List<String> getAvailableUnitsOfMeasure(UUID categoryId) {
         log.debug("Отримання доступних одиниць виміру для категорії з ID: {}", categoryId);
-        
+
         // Перевіряємо, чи існує категорія
         if (!serviceCategoryRepository.existsById(categoryId)) {
             throw EntityNotFoundException.withId(categoryId);
         }
-        
+
         // Отримуємо всі унікальні одиниці виміру для цієї категорії
         return priceListItemRepository.findAllByCategory(
                 ServiceCategoryEntity.builder().id(categoryId).build()

@@ -16,12 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 @Slf4j
 public class ApiResponseUtils {
-    
+
     // ========== 2XX: Успішні відповіді ==========
-    
+
     /**
      * Створює API-відповідь зі статусом 200 OK.
-     * 
+     *
      * @param <T> тип даних відповіді
      * @param data дані для включення у відповідь
      * @param logMessage повідомлення для логування (необов'язкове)
@@ -34,10 +34,10 @@ public class ApiResponseUtils {
         }
         return ResponseEntity.ok(data);
     }
-    
+
     /**
      * Створює API-відповідь зі статусом 201 Created.
-     * 
+     *
      * @param <T> тип даних відповіді
      * @param data дані для включення у відповідь
      * @param logMessage повідомлення для логування (необов'язкове)
@@ -50,10 +50,10 @@ public class ApiResponseUtils {
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
-    
+
     /**
      * Створює API-відповідь зі статусом 204 No Content.
-     * 
+     *
      * @param logMessage повідомлення для логування (необов'язкове)
      * @param logArgs аргументи для форматування повідомлення логування
      * @return ResponseEntity без тіла та зі статусом 204 No Content
@@ -64,10 +64,10 @@ public class ApiResponseUtils {
         }
         return ResponseEntity.noContent().build();
     }
-    
+
     /**
      * Створює API-відповідь зі статусом 202 Accepted.
-     * 
+     *
      * @param <T> тип даних відповіді
      * @param data дані для включення у відповідь (опціонально)
      * @param logMessage повідомлення для логування (необов'язкове)
@@ -80,12 +80,12 @@ public class ApiResponseUtils {
         }
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(data);
     }
-    
+
     // ========== 4XX: Помилки клієнта ==========
-    
+
     /**
      * Створює API-відповідь зі статусом 400 Bad Request.
-     * 
+     *
      * @param message повідомлення про помилку
      * @param logMessage повідомлення для логування (необов'язкове)
      * @param logArgs аргументи для форматування повідомлення логування
@@ -98,10 +98,10 @@ public class ApiResponseUtils {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap("error", message));
     }
-    
+
     /**
      * Створює API-відповідь зі статусом 401 Unauthorized.
-     * 
+     *
      * @param message повідомлення про помилку
      * @param logMessage повідомлення для логування (необов'язкове)
      * @param logArgs аргументи для форматування повідомлення логування
@@ -114,10 +114,10 @@ public class ApiResponseUtils {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Collections.singletonMap("error", message));
     }
-    
+
     /**
      * Створює API-відповідь зі статусом 403 Forbidden.
-     * 
+     *
      * @param message повідомлення про помилку
      * @param logMessage повідомлення для логування (необов'язкове)
      * @param logArgs аргументи для форматування повідомлення логування
@@ -130,10 +130,10 @@ public class ApiResponseUtils {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(Collections.singletonMap("error", message));
     }
-    
+
     /**
      * Створює API-відповідь зі статусом 404 Not Found.
-     * 
+     *
      * @param message повідомлення про помилку
      * @param logMessage повідомлення для логування (необов'язкове)
      * @param logArgs аргументи для форматування повідомлення логування
@@ -146,10 +146,10 @@ public class ApiResponseUtils {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Collections.singletonMap("error", message));
     }
-    
+
     /**
      * Створює API-відповідь зі статусом 409 Conflict.
-     * 
+     *
      * @param message повідомлення про помилку
      * @param logMessage повідомлення для логування (необов'язкове)
      * @param logArgs аргументи для форматування повідомлення логування
@@ -162,10 +162,10 @@ public class ApiResponseUtils {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap("error", message));
     }
-    
+
     /**
      * Створює API-відповідь зі статусом 422 Unprocessable Entity.
-     * 
+     *
      * @param validationErrors карта помилок валідації
      * @param logMessage повідомлення для логування (необов'язкове)
      * @param logArgs аргументи для форматування повідомлення логування
@@ -179,12 +179,12 @@ public class ApiResponseUtils {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(validationErrors);
     }
-    
+
     // ========== 5XX: Помилки сервера ==========
-    
+
     /**
      * Створює API-відповідь зі статусом 500 Internal Server Error.
-     * 
+     *
      * @param message повідомлення про помилку
      * @param logMessage повідомлення для логування (необов'язкове)
      * @param logArgs аргументи для форматування повідомлення логування
@@ -198,10 +198,10 @@ public class ApiResponseUtils {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Collections.singletonMap("error", message));
     }
-    
+
     /**
      * Створює API-відповідь зі статусом 503 Service Unavailable.
-     * 
+     *
      * @param message повідомлення про помилку
      * @param logMessage повідомлення для логування (необов'язкове)
      * @param logArgs аргументи для форматування повідомлення логування
@@ -215,12 +215,12 @@ public class ApiResponseUtils {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(Collections.singletonMap("error", message));
     }
-    
+
     // ========== Загальні методи ==========
-    
+
     /**
      * Створює API-відповідь з власним статусом.
-     * 
+     *
      * @param <T> тип даних відповіді
      * @param status HTTP статус для відповіді
      * @param data дані для включення у відповідь
@@ -240,4 +240,4 @@ public class ApiResponseUtils {
         }
         return ResponseEntity.status(status).body(data);
     }
-} 
+}

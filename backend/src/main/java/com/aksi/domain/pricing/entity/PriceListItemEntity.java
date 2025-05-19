@@ -33,7 +33,7 @@ public class PriceListItemEntity {
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private ServiceCategoryEntity category;
-    
+
     @Column(name = "catalog_number", nullable = false)
     private Integer catalogNumber;
 

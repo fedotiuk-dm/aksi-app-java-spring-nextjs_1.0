@@ -36,17 +36,17 @@ public class CustomerSignatureServiceImpl implements CustomerSignatureService {
     @Transactional
     public CustomerSignatureResponse saveSignature(CustomerSignatureRequest request) {
         log.info("Saving customer signature for order id: {}", request.getOrderId());
-        
+
         OrderEntity order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> EntityNotFoundException.withId(request.getOrderId()));
-                
+
         // Перевіряємо, чи існує вже підпис цього типу
-        Optional<CustomerSignatureEntity> existingSignature = 
+        Optional<CustomerSignatureEntity> existingSignature =
                 signatureRepository.findByOrderIdAndSignatureType(
                         request.getOrderId(), request.getSignatureType());
-        
+
         CustomerSignatureEntity signatureEntity;
-        
+
         if (existingSignature.isPresent()) {
             // Оновлюємо існуючий підпис
             signatureEntity = existingSignature.get();
@@ -62,11 +62,11 @@ public class CustomerSignatureServiceImpl implements CustomerSignatureService {
                     .signatureType(request.getSignatureType())
                     .build();
         }
-        
+
         CustomerSignatureEntity savedEntity = signatureRepository.save(signatureEntity);
-        
+
         log.info("Customer signature saved/updated successfully with id: {}", savedEntity.getId());
-        
+
         return signatureMapper.toResponse(savedEntity);
     }
 
@@ -74,7 +74,7 @@ public class CustomerSignatureServiceImpl implements CustomerSignatureService {
     @Transactional(readOnly = true)
     public Optional<CustomerSignatureResponse> getSignatureById(UUID signatureId) {
         log.info("Retrieving signature by id: {}", signatureId);
-        
+
         return signatureRepository.findById(signatureId)
                 .map(signatureMapper::toResponse);
     }
@@ -83,7 +83,7 @@ public class CustomerSignatureServiceImpl implements CustomerSignatureService {
     @Transactional(readOnly = true)
     public Optional<CustomerSignatureResponse> getSignatureByOrderIdAndType(UUID orderId, String signatureType) {
         log.info("Retrieving signature for order id: {} and type: {}", orderId, signatureType);
-        
+
         return signatureRepository.findByOrderIdAndSignatureType(orderId, signatureType)
                 .map(signatureMapper::toResponse);
     }
@@ -92,9 +92,9 @@ public class CustomerSignatureServiceImpl implements CustomerSignatureService {
     @Transactional(readOnly = true)
     public List<CustomerSignatureResponse> getAllSignaturesByOrderId(UUID orderId) {
         log.info("Retrieving all signatures for order id: {}", orderId);
-        
+
         return signatureRepository.findAllByOrderId(orderId).stream()
                 .map(signatureMapper::toResponse)
                 .collect(Collectors.toList());
     }
-} 
+}

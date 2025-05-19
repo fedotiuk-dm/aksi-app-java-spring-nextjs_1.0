@@ -29,45 +29,45 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItemPhotoEntity {
-    
+
     /**
      * Унікальний ідентифікатор фотографії.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    
+
     /**
      * Предмет замовлення, до якого відноситься фотографія.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     private OrderItemEntity orderItem;
-    
+
     /**
      * Шлях до файлу з фотографією.
      */
     @Column(name = "file_path", nullable = false)
     private String filePath;
-    
+
     /**
      * Шлях до мініатюри фотографії.
      */
     @Column(name = "thumbnail_path")
     private String thumbnailPath;
-    
+
     /**
      * JSON з анотаціями (маркуванням проблемних місць).
      */
     @Column(columnDefinition = "TEXT")
     private String annotations;
-    
+
     /**
      * Текстовий опис до фотографії.
      */
     @Column(length = 100)
     private String description;
-    
+
     /**
      * Дата і час створення фотографії.
      */

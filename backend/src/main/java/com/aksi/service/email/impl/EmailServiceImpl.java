@@ -52,14 +52,14 @@ public class EmailServiceImpl implements EmailService {
         try {
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            
+
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(content);
-            
+
             ByteArrayResource attachmentResource = new ByteArrayResource(attachmentData);
             helper.addAttachment(attachmentFilename, attachmentResource, attachmentContentType);
-            
+
             emailSender.send(message);
             log.info("Email with attachment successfully sent to {}", to);
             return true;

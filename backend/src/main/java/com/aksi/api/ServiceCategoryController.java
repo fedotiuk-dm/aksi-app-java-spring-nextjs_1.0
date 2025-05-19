@@ -27,9 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ServiceCategoryController {
-    
+
     private final ServiceCategoryService serviceCategoryService;
-    
+
     /**
      * Отримати список всіх активних категорій послуг.
      *
@@ -45,11 +45,11 @@ public class ServiceCategoryController {
             }
             return ApiResponseUtils.ok(categories, "REST запит на отримання списку всіх активних категорій послуг");
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні списку категорій", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні списку категорій",
                 "Помилка при отриманні списку активних категорій: {}", e.getMessage());
         }
     }
-    
+
     /**
      * Отримати категорію послуг за ID.
      *
@@ -62,16 +62,16 @@ public class ServiceCategoryController {
         try {
             ServiceCategoryDTO category = serviceCategoryService.getCategoryById(id);
             if (category == null) {
-                return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+                return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з ID: {} не знайдено", id);
             }
             return ApiResponseUtils.ok(category, "REST запит на отримання категорії послуг за ID: {}", id);
         } catch (Exception e) {
-            return ApiResponseUtils.badRequest("Помилка при отриманні категорії послуг", 
+            return ApiResponseUtils.badRequest("Помилка при отриманні категорії послуг",
                 "Помилка при отриманні категорії послуг з ID: {}. Причина: {}", id, e.getMessage());
         }
     }
-    
+
     /**
      * Отримати категорію послуг за кодом.
      *
@@ -84,12 +84,12 @@ public class ServiceCategoryController {
         try {
             ServiceCategoryDTO category = serviceCategoryService.getCategoryByCode(code);
             if (category == null) {
-                return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+                return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з кодом: {} не знайдено", code);
             }
             return ApiResponseUtils.ok(category, "REST запит на отримання категорії послуг за кодом: {}", code);
         } catch (Exception e) {
-            return ApiResponseUtils.badRequest("Помилка при отриманні категорії послуг", 
+            return ApiResponseUtils.badRequest("Помилка при отриманні категорії послуг",
                 "Помилка при отриманні категорії послуг з кодом: {}. Причина: {}", code, e.getMessage());
         }
     }

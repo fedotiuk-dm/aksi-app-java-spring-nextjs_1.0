@@ -22,53 +22,53 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
-    
+
     /**
      * Час виникнення помилки.
      */
     @Builder.Default
     private LocalDateTime timestamp = LocalDateTime.now();
-    
+
     /**
      * HTTP статус код.
      */
     private int status;
-    
+
     /**
      * Повідомлення про помилку.
      */
     private String message;
-    
+
     /**
      * Тип помилки (назва винятку).
      */
     private String errorType;
-    
+
     /**
      * Шлях до ресурсу.
      */
     private String path;
-    
+
     /**
      * HTTP метод запиту.
      */
     private String method;
-    
+
     /**
      * Унікальний ідентифікатор помилки.
      */
     private String errorId;
-    
+
     /**
      * Додаткові деталі помилки (зазвичай для валідації).
      */
     private Map<String, String> errors;
-    
+
     /**
      * Стек трейс помилки (тільки в dev середовищі).
      */
     private List<String> stackTrace;
-    
+
     /**
      * Додавання рядка стеку до списку.
      * @param line параметр line
@@ -79,7 +79,7 @@ public class ErrorResponse {
         }
         stackTrace.add(line);
     }
-    
+
     /**
      * Конструктор для простої помилки без деталей.
      * @param status HTTP статус код
@@ -90,7 +90,7 @@ public class ErrorResponse {
         this.status = status;
         this.message = message;
     }
-    
+
     /**
      * Конструктор для помилки з деталями валідації.
      * @param status HTTP статус код

@@ -16,46 +16,46 @@ import com.aksi.domain.order.model.OrderStatusEnum;
  */
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
-    
+
     /**
      * Знайти замовлення за статусами для активних замовлень (не чернеток).
      * @param statuses параметр statuses
      * @return список замовлень з вказаними статусами
      */
     List<OrderEntity> findByStatusInAndDraftFalse(List<OrderStatusEnum> statuses);
-    
+
     /**
      * Знайти всі чернетки замовлень.
      * @return список всіх чернеток замовлень
      */
     List<OrderEntity> findByDraftTrue();
-    
+
     /**
      * Знайти максимальний лічильник в номері квитанції за певним префіксом.
      * Наприклад, для номерів формату "202404-KYV-00001", "202404-KYV-00002" тощо,
      * при префіксі "202404-KYV-" метод поверне максимальний лічильник - 2.
-     * 
+     *
      * @param prefix префікс номера квитанції
      * @return максимальний номер лічильника або null, якщо немає замовлень з таким префіксом
      */
     @Query("SELECT MAX(CAST(SUBSTRING(o.receiptNumber, LENGTH(:prefix) + 1) AS integer)) " +
            "FROM OrderEntity o WHERE o.receiptNumber LIKE :prefix || '%'")
     Integer findMaxCounterByReceiptNumberPrefix(@Param("prefix") String prefix);
-    
+
     /**
      * Знайти замовлення за номером квитанції.
      * @param receiptNumber параметр receiptNumber
      * @return замовлення з вказаним номером квитанції або null
      */
     OrderEntity findByReceiptNumber(String receiptNumber);
-    
+
     /**
      * Знайти замовлення за ID клієнта.
      * @param clientId ідентифікатор
      * @return список всіх замовлень клієнта
      */
     List<OrderEntity> findByClientId(UUID clientId);
-    
+
     /**
      * Знайти замовлення за ID клієнта і статусом.
      * @param clientId ідентифікатор

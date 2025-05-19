@@ -25,7 +25,7 @@ import com.aksi.domain.order.entity.OrderItemEntity;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface OrderMapper {
-    
+
     /**
      * Перетворити OrderEntity у OrderDTO.
      * @param order параметр order
@@ -34,17 +34,17 @@ public interface OrderMapper {
     @Mapping(target = "clientId", source = "client.id")
     @Mapping(target = "branchLocationId", source = "branchLocation.id")
     OrderDTO toDTO(OrderEntity order);
-    
+
     /**
      * Перетворити CreateOrderRequest у OrderEntity.
      * Використовує спільний метод mapOrderCommonFields для наслідування анотацій.
-     * 
+     *
      * @param orderRequest запит на створення замовлення
      * @return сутність замовлення
      */
     @InheritConfiguration(name = "mapOrderCommonFields")
     OrderEntity toEntity(CreateOrderRequest orderRequest);
-    
+
     /**
      * Оновити замовлення з новими даними.
      * @param orderRequest запит на оновлення замовлення
@@ -52,21 +52,21 @@ public interface OrderMapper {
      */
     @InheritConfiguration(name = "mapOrderCommonFields")
     void updateOrderFromRequest(CreateOrderRequest orderRequest, @MappingTarget OrderEntity order);
-    
+
     /**
      * Перетворити OrderItemEntity у OrderItemDTO.
      * @param item параметр item
      * @return DTO елемента замовлення
      */
     OrderItemDTO toOrderItemDTO(OrderItemEntity item);
-    
+
     /**
      * Перетворити OrderItemDTO у OrderItemEntity.
      * @param dto об'єкт передачі даних
      * @return ентіті елемента замовлення
      */
     OrderItemEntity toOrderItemEntity(OrderItemDTO dto);
-    
+
     /**
      * Базове мапінгове налаштування для перетворення та оновлення OrderEntity.
      * Цей метод використовується для визначення спільного набору анотацій @Mapping,

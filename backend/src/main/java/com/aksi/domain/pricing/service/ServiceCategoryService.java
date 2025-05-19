@@ -9,14 +9,14 @@ import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
  * Сервіс для роботи з категоріями послуг.
  */
 public interface ServiceCategoryService {
-    
+
     /**
      * Отримати список всіх активних категорій послуг.
      *
      * @return Список категорій послуг
      */
     List<ServiceCategoryDTO> getAllActiveCategories();
-    
+
     /**
      * Отримати категорію послуг за ID.
      *
@@ -24,7 +24,7 @@ public interface ServiceCategoryService {
      * @return Категорія послуг
      */
     ServiceCategoryDTO getCategoryById(UUID id);
-    
+
     /**
      * Отримати категорію послуг за кодом.
      *

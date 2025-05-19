@@ -9,14 +9,14 @@ import com.aksi.domain.pricing.dto.PriceListItemDTO;
  * Сервіс для роботи з прайс-листом послуг.
  */
 public interface PriceListService {
-    
+
     /**
      * Отримати всі активні елементи прайс-листа.
      *
      * @return Список елементів прайс-листа
      */
     List<PriceListItemDTO> getAllActiveItems();
-    
+
     /**
      * Отримати елементи прайс-листа за категорією.
      *
@@ -24,7 +24,7 @@ public interface PriceListService {
      * @return Список елементів прайс-листа
      */
     List<PriceListItemDTO> getItemsByCategory(UUID categoryId);
-    
+
     /**
      * Отримати елементи прайс-листа за кодом категорії.
      *
@@ -32,7 +32,7 @@ public interface PriceListService {
      * @return Список елементів прайс-листа
      */
     List<PriceListItemDTO> getItemsByCategoryCode(String categoryCode);
-    
+
     /**
      * Отримати елемент прайс-листа за ID.
      *
@@ -40,7 +40,7 @@ public interface PriceListService {
      * @return Елемент прайс-листа
      */
     PriceListItemDTO getItemById(UUID id);
-    
+
     /**
      * Отримати одиниці виміру для певної категорії.
      *

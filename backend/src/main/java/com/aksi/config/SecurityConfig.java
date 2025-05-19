@@ -39,10 +39,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
-    
+
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
-    
+
     /**
      * Налаштування ланцюжка фільтрів безпеки.
      * @param http об'єкт HttpSecurity
@@ -53,9 +53,9 @@ public class SecurityConfig {
         log.info("Налаштування SecurityFilterChain");
         try {
             JwtAuthenticationFilter jwtAuthFilter = new JwtAuthenticationFilter(jwtUtils, userDetailsService());
-            
+
             // Відкриваємо всі API, Swagger, Actuator у dev
-            String activeProfile = System.getProperty("spring.profiles.active", 
+            String activeProfile = System.getProperty("spring.profiles.active",
                     System.getenv("SPRING_PROFILES_ACTIVE") != null ? System.getenv("SPRING_PROFILES_ACTIVE") : "dev");
             if ("dev".equals(activeProfile)) {
                 http
@@ -74,8 +74,8 @@ public class SecurityConfig {
                     .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(
-                            "/v3/api-docs/**", 
-                            "/swagger-ui/**", 
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
                             "/swagger-ui.html",
                             "/webjars/**",
                             "/swagger-resources/**").permitAll()
@@ -86,7 +86,7 @@ public class SecurityConfig {
                     .authenticationProvider(authenticationProvider())
                     .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
             }
-            
+
             log.info("SecurityFilterChain успішно налаштовано");
             return http.build();
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class SecurityConfig {
             throw e;
         }
     }
-    
+
     /**
      * Сервіс для завантаження користувача з бази даних.
      * @return реалізація UserDetailsService для автентифікації користувачів
@@ -103,7 +103,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         return new UserDetailsServiceImpl(userRepository);
     }
-    
+
     /**
      * Конфігурація CORS (Cross-Origin Resource Sharing).
      * @return джерело конфігурації CORS для забезпечення міждоменних запитів
@@ -111,26 +111,26 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
+
         configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization", 
-            "Content-Type", 
-            "X-Requested-With", 
-            "Accept", 
-            "Origin", 
-            "Access-Control-Request-Method", 
+            "Authorization",
+            "Content-Type",
+            "X-Requested-With",
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
             "Access-Control-Request-Headers"
         ));
         configuration.setAllowCredentials(false); // Змінюємо на false при allowedOrigins="*"
         configuration.setMaxAge(3600L);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-    
+
     /**
      * Провайдер автентифікації на основі DAO з BCrypt шифруванням паролів.
      * @return налаштований провайдер автентифікації на основі бази даних
@@ -142,7 +142,7 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-    
+
     /**
      * Менеджер автентифікації для логіну та реєстрації.
      * @param config конфігурація
@@ -152,7 +152,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    
+
     /**
      * Кодувальник паролів BCrypt.
      * @return реалізація PasswordEncoder на основі BCrypt алгоритму
@@ -161,4 +161,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-} 
+}

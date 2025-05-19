@@ -17,20 +17,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompletionDateResponse {
-    
+
     /**
      * Розрахована дата завершення замовлення
      */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime expectedCompletionDate;
-    
+
     /**
      * Стандартний час виконання (у годинах)
      */
     private Integer standardProcessingHours;
-    
+
     /**
      * Скорочений час виконання з урахуванням терміновості (у годинах)
      */
     private Integer expeditedProcessingHours;
-} 
+}

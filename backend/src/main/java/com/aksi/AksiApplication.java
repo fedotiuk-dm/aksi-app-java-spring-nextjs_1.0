@@ -10,5 +10,5 @@ public class AksiApplication {
         SpringApplication.run(AksiApplication.class, args);
     }
 
-} 
+}
 

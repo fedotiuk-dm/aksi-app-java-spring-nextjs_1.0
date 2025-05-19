@@ -23,19 +23,19 @@ public abstract class ItemIssueDTO {
 
     @Schema(description = "Унікальний ідентифікатор")
     private UUID id;
-    
+
     @Schema(description = "Код типу для програмного використання")
     private String code;
-    
+
     @Schema(description = "Назва типу")
     private String name;
-    
+
     @Schema(description = "Опис типу")
     private String description;
-    
+
     @Schema(description = "Рівень ризику: LOW, MEDIUM, HIGH")
     private RiskLevel riskLevel;
-    
+
     @Schema(description = "Чи активний запис")
     private boolean active;
-} 
+}

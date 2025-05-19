@@ -21,16 +21,16 @@ public class ReceiptGenerationRequest {
      */
     @NotNull(message = "ID замовлення обов'язкове")
     private UUID orderId;
-    
+
     /**
      * Формат квитанції (PDF, HTML)
      */
     @Builder.Default
     private String format = "PDF";
-    
+
     /**
      * Чи потрібно включати цифровий підпис
      */
     @Builder.Default
     private boolean includeSignature = true;
-} 
+}

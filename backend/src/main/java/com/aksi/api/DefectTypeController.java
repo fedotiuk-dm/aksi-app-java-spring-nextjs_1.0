@@ -34,12 +34,12 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "DefectType", description = "API для управління типами дефектів")
 @Slf4j
 public class DefectTypeController {
-    
+
     private final DefectTypeService defectTypeService;
-    
+
     /**
      * Отримати всі типи дефектів.
-     * 
+     *
      * @param activeOnly прапорець для отримання лише активних типів
      * @param riskLevel рівень ризику для фільтрації (опціонально)
      * @return список типів дефектів
@@ -49,9 +49,9 @@ public class DefectTypeController {
     public ResponseEntity<List<DefectTypeDTO>> getDefectTypes(
             @RequestParam(name = "activeOnly", defaultValue = "true") boolean activeOnly,
             @RequestParam(name = "riskLevel", required = false) RiskLevel riskLevel) {
-        
+
         List<DefectTypeDTO> defectTypes;
-        
+
         if (riskLevel != null) {
             defectTypes = defectTypeService.getDefectTypesByRiskLevel(riskLevel);
             return ApiResponseUtils.ok(defectTypes, "REST запит на отримання типів дефектів з рівнем ризику: {}", riskLevel);
@@ -63,10 +63,10 @@ public class DefectTypeController {
             return ApiResponseUtils.ok(defectTypes, "REST запит на отримання всіх типів дефектів");
         }
     }
-    
+
     /**
      * Отримати тип дефекту за ідентифікатором.
-     * 
+     *
      * @param id ідентифікатор типу дефекту
      * @return тип дефекту
      */
@@ -79,10 +79,10 @@ public class DefectTypeController {
         }
         return ApiResponseUtils.ok(defectType, "REST запит на отримання типу дефекту за ID: {}", id);
     }
-    
+
     /**
      * Отримати тип дефекту за кодом.
-     * 
+     *
      * @param code код типу дефекту
      * @return тип дефекту
      */
@@ -95,10 +95,10 @@ public class DefectTypeController {
         }
         return ApiResponseUtils.ok(defectType, "REST запит на отримання типу дефекту за кодом: {}", code);
     }
-    
+
     /**
      * Створити новий тип дефекту.
-     * 
+     *
      * @param defectTypeDTO дані нового типу дефекту
      * @return створений тип дефекту
      */
@@ -108,10 +108,10 @@ public class DefectTypeController {
         DefectTypeDTO createdDefectType = defectTypeService.createDefectType(defectTypeDTO);
         return ApiResponseUtils.created(createdDefectType, "REST запит на створення нового типу дефекту: {}", defectTypeDTO);
     }
-    
+
     /**
      * Оновити існуючий тип дефекту.
-     * 
+     *
      * @param id ідентифікатор типу дефекту
      * @param defectTypeDTO нові дані типу дефекту
      * @return оновлений тип дефекту
@@ -119,15 +119,15 @@ public class DefectTypeController {
     @PutMapping("/{id}")
     @Operation(summary = "Оновити тип дефекту", description = "Оновлює існуючий тип дефекту за вказаним ідентифікатором")
     public ResponseEntity<DefectTypeDTO> updateDefectType(
-            @PathVariable UUID id, 
+            @PathVariable UUID id,
             @Valid @RequestBody DefectTypeDTO defectTypeDTO) {
         DefectTypeDTO updatedDefectType = defectTypeService.updateDefectType(id, defectTypeDTO);
         return ApiResponseUtils.ok(updatedDefectType, "REST запит на оновлення типу дефекту з ID {}: {}", id, defectTypeDTO);
     }
-    
+
     /**
      * Видалити тип дефекту.
-     * 
+     *
      * @param id ідентифікатор типу дефекту
      * @return статус операції
      */
@@ -137,4 +137,4 @@ public class DefectTypeController {
         defectTypeService.deleteDefectType(id);
         return ApiResponseUtils.noContent("REST запит на деактивацію типу дефекту з ID: {}", id);
     }
-} 
+}

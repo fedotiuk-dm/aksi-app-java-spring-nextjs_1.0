@@ -19,24 +19,24 @@ public class ReceiptPriceModifierDTO {
      * Назва модифікатора
      */
     private String name;
-    
+
     /**
      * Опис модифікатора
      */
     private String description;
-    
+
     /**
      * Відсоток впливу на ціну
      */
     private Integer percentageValue;
-    
+
     /**
      * Фіксоване значення (якщо не відсоток)
      */
     private BigDecimal fixedValue;
-    
+
     /**
      * Фінальний вплив на ціну
      */
     private BigDecimal impact;
-} 
+}

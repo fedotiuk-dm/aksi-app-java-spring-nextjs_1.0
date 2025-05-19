@@ -32,12 +32,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderSummaryController {
-    
+
     private final OrderSummaryService orderSummaryService;
-    
+
     /**
      * Отримати детальний підсумок замовлення за його ID.
-     * 
+     *
      * @param orderId ID замовлення
      * @return детальний підсумок замовлення
      */
@@ -49,18 +49,18 @@ public class OrderSummaryController {
     )
     @ApiResponses(value = {
         @ApiResponse(
-            responseCode = "200", 
+            responseCode = "200",
             description = "Успішне отримання детального підсумку замовлення",
-            content = @Content(mediaType = "application/json", 
+            content = @Content(mediaType = "application/json",
                      schema = @Schema(implementation = OrderDetailedSummaryResponse.class))
         ),
         @ApiResponse(
-            responseCode = "404", 
+            responseCode = "404",
             description = "Замовлення не знайдено",
             content = @Content
         ),
         @ApiResponse(
-            responseCode = "500", 
+            responseCode = "500",
             description = "Внутрішня помилка сервера",
             content = @Content
         )
@@ -69,17 +69,17 @@ public class OrderSummaryController {
             @Parameter(description = "ID замовлення", example = "550e8400-e29b-41d4-a716-446655440000", required = true)
             @PathVariable UUID orderId) {
         log.info("Запит на отримання детального підсумку замовлення з ID: {}", orderId);
-        
+
         try {
             OrderDetailedSummaryResponse summary = orderSummaryService.getOrderDetailedSummary(orderId);
             return ApiResponseUtils.ok(summary, "Отримано детальний підсумок замовлення з ID: {}", orderId);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Замовлення не знайдено", 
+            return ApiResponseUtils.notFound("Замовлення не знайдено",
                     "Замовлення з ID: {} не знайдено. Причина: {}", orderId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні підсумку замовлення", 
-                    "Виникла помилка при отриманні детального підсумку замовлення з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні підсумку замовлення",
+                    "Виникла помилка при отриманні детального підсумку замовлення з ID: {}. Причина: {}",
                     orderId, e.getMessage());
         }
     }
-} 
+}

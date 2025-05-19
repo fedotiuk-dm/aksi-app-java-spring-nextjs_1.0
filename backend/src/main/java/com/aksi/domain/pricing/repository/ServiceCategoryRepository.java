@@ -15,7 +15,7 @@ public interface ServiceCategoryRepository extends JpaRepository<ServiceCategory
     Optional<ServiceCategoryEntity> findByCode(String code);
     List<ServiceCategoryEntity> findAllByOrderBySortOrderAsc();
     List<ServiceCategoryEntity> findByActiveIsTrueOrderBySortOrder();
-    
+
     /**
      * Знаходить максимальне значення поля sortOrder в таблиці категорій послуг.
      * @return Максимальне значення або null, якщо таблиця порожня

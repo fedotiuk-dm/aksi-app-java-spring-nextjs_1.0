@@ -11,11 +11,11 @@ import lombok.experimental.SuperBuilder;
 @Schema(description = "Інформація про тип плями")
 public class StainTypeDTO extends ItemIssueDTO {
     // Специфічні для плям поля можна додати тут
-    
+
     /**
      * Конструктор за замовчуванням.
      */
     public StainTypeDTO() {
         super();
     }
-} 
+}

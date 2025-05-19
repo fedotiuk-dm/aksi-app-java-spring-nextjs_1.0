@@ -20,58 +20,58 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItemDTO {
-    
+
     private UUID id;
-    
+
     /**
      * ID замовлення, до якого належить предмет.
      * Додане для зручності фронтенду.
      */
     private UUID orderId;
-    
+
     @NotBlank(message = "Назва предмету обов'язкова")
     @Size(max = 255, message = "Назва предмету не може перевищувати 255 символів")
     private String name;
-    
+
     @Size(max = 1000, message = "Опис не може перевищувати 1000 символів")
     private String description;
-    
+
     @NotNull(message = "Кількість обов'язкова")
     @Min(value = 1, message = "Кількість має бути не менше 1")
     private Integer quantity;
-    
+
     @NotNull(message = "Ціна за одиницю обов'язкова")
     private BigDecimal unitPrice;
-    
+
     private BigDecimal totalPrice;
-    
+
     private String category;
-    
+
     private String color;
-    
+
     private String material;
-    
+
     private String unitOfMeasure;
-    
+
     private String defects;
-    
+
     @Size(max = 500, message = "Спеціальні інструкції не можуть перевищувати 500 символів")
     private String specialInstructions;
-    
+
     private String fillerType;
-    
+
     private Boolean fillerCompressed;
-    
+
     private String wearDegree;
-    
+
     private String stains;
-    
+
     private String otherStains;
-    
+
     private String defectsAndRisks;
-    
+
     private String noGuaranteeReason;
-    
+
     @Size(max = 1000, message = "Примітки щодо дефектів не можуть перевищувати 1000 символів")
     private String defectsNotes;
 }

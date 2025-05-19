@@ -39,7 +39,7 @@ public class PriceListController {
             List<ServiceCategoryDTO> categories = priceListService.getAllCategories();
             return ApiResponseUtils.ok(categories, "Отримано {} категорій послуг", categories.size());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні категорій послуг", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні категорій послуг",
                     "Виникла помилка при отриманні категорій послуг. Причина: {}", e.getMessage());
         }
     }
@@ -53,11 +53,11 @@ public class PriceListController {
             ServiceCategoryDTO category = priceListService.getCategoryById(categoryId);
             return ApiResponseUtils.ok(category, "Отримано категорію послуг: {}", category.getName());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+            return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з ID: {} не знайдено. Причина: {}", categoryId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні категорії послуг", 
-                    "Виникла помилка при отриманні категорії послуг з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні категорії послуг",
+                    "Виникла помилка при отриманні категорії послуг з ID: {}. Причина: {}",
                     categoryId, e.getMessage());
         }
     }
@@ -71,15 +71,15 @@ public class PriceListController {
             ServiceCategoryDTO category = priceListService.getCategoryByCode(code);
             return ApiResponseUtils.ok(category, "Отримано категорію послуг: {}", category.getName());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+            return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з кодом: {} не знайдено. Причина: {}", code, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні категорії послуг", 
-                    "Виникла помилка при отриманні категорії послуг з кодом: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні категорії послуг",
+                    "Виникла помилка при отриманні категорії послуг з кодом: {}. Причина: {}",
                     code, e.getMessage());
         }
     }
-    
+
     @PostMapping("/category")
     @Operation(summary = "Створити нову категорію послуг")
     public ResponseEntity<?> createCategory(
@@ -87,21 +87,21 @@ public class PriceListController {
         log.info("Запит на створення нової категорії послуг: {}", categoryDto.getName());
         try {
             ServiceCategoryDTO createdCategory = priceListService.createServiceCategory(categoryDto);
-            return ApiResponseUtils.created(createdCategory, "Створено нову категорію послуг: {}", 
+            return ApiResponseUtils.created(createdCategory, "Створено нову категорію послуг: {}",
                     createdCategory.getName());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.badRequest("Некоректні дані для створення категорії", 
+            return ApiResponseUtils.badRequest("Некоректні дані для створення категорії",
                     "Не вдалося створити категорію послуг. Причина: {}", e.getMessage());
         } catch (Exception e) {
             if (e.getMessage() != null && e.getMessage().contains("вже існує")) {
-                return ApiResponseUtils.conflict("Категорія з таким кодом вже існує", 
+                return ApiResponseUtils.conflict("Категорія з таким кодом вже існує",
                         "Категорія з кодом: {} вже існує", categoryDto.getCode());
             }
-            return ApiResponseUtils.internalServerError("Помилка при створенні категорії послуг", 
+            return ApiResponseUtils.internalServerError("Помилка при створенні категорії послуг",
                     "Виникла помилка при створенні категорії послуг. Причина: {}", e.getMessage());
         }
     }
-    
+
     @PutMapping("/category/{categoryId}")
     @Operation(summary = "Оновити категорію послуг")
     public ResponseEntity<?> updateCategory(
@@ -110,22 +110,22 @@ public class PriceListController {
         log.info("Запит на оновлення категорії послуг з ID: {}", categoryId);
         try {
             ServiceCategoryDTO updatedCategory = priceListService.updateServiceCategory(categoryId, categoryDto);
-            return ApiResponseUtils.ok(updatedCategory, "Оновлено категорію послуг: {}", 
+            return ApiResponseUtils.ok(updatedCategory, "Оновлено категорію послуг: {}",
                     updatedCategory.getName());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+            return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з ID: {} не знайдено. Причина: {}", categoryId, e.getMessage());
         } catch (Exception e) {
             if (e.getMessage() != null && e.getMessage().contains("вже існує")) {
-                return ApiResponseUtils.conflict("Категорія з таким кодом вже існує", 
+                return ApiResponseUtils.conflict("Категорія з таким кодом вже існує",
                         "Категорія з кодом: {} вже існує", categoryDto.getCode());
             }
-            return ApiResponseUtils.internalServerError("Помилка при оновленні категорії послуг", 
-                    "Виникла помилка при оновленні категорії послуг з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при оновленні категорії послуг",
+                    "Виникла помилка при оновленні категорії послуг з ID: {}. Причина: {}",
                     categoryId, e.getMessage());
         }
     }
-    
+
     @PostMapping("/{categoryId}/item")
     @Operation(summary = "Створити новий елемент прайс-листа в категорії")
     public ResponseEntity<?> createPriceListItem(
@@ -134,22 +134,22 @@ public class PriceListController {
         log.info("Запит на створення нового елемента прайс-листа в категорії з ID: {}", categoryId);
         try {
             PriceListItemDTO createdItem = priceListService.createPriceListItem(categoryId, itemDto);
-            return ApiResponseUtils.created(createdItem, "Створено новий елемент прайс-листа: {}", 
+            return ApiResponseUtils.created(createdItem, "Створено новий елемент прайс-листа: {}",
                     createdItem.getName());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+            return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з ID: {} не знайдено. Причина: {}", categoryId, e.getMessage());
         } catch (Exception e) {
             if (e.getMessage() != null && e.getMessage().contains("вже існує")) {
-                return ApiResponseUtils.conflict("Елемент прайс-листа з таким іменем вже існує", 
+                return ApiResponseUtils.conflict("Елемент прайс-листа з таким іменем вже існує",
                         "Елемент прайс-листа з іменем: {} вже існує в категорії", itemDto.getName());
             }
-            return ApiResponseUtils.internalServerError("Помилка при створенні елемента прайс-листа", 
-                    "Виникла помилка при створенні елемента прайс-листа в категорії з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при створенні елемента прайс-листа",
+                    "Виникла помилка при створенні елемента прайс-листа в категорії з ID: {}. Причина: {}",
                     categoryId, e.getMessage());
         }
     }
-    
+
     @PutMapping("/item/{itemId}")
     @Operation(summary = "Оновити елемент прайс-листа")
     public ResponseEntity<?> updatePriceListItem(
@@ -158,18 +158,18 @@ public class PriceListController {
         log.info("Запит на оновлення елемента прайс-листа з ID: {}", itemId);
         try {
             PriceListItemDTO updatedItem = priceListService.updatePriceListItem(itemId, itemDto);
-            return ApiResponseUtils.ok(updatedItem, "Оновлено елемент прайс-листа: {}", 
+            return ApiResponseUtils.ok(updatedItem, "Оновлено елемент прайс-листа: {}",
                     updatedItem.getName());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Елемент прайс-листа не знайдено", 
+            return ApiResponseUtils.notFound("Елемент прайс-листа не знайдено",
                     "Елемент прайс-листа з ID: {} не знайдено. Причина: {}", itemId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при оновленні елемента прайс-листа", 
-                    "Виникла помилка при оновленні елемента прайс-листа з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при оновленні елемента прайс-листа",
+                    "Виникла помилка при оновленні елемента прайс-листа з ID: {}. Причина: {}",
                     itemId, e.getMessage());
         }
     }
-    
+
     @GetMapping("/category/{categoryId}/items")
     @Operation(summary = "Отримати всі елементи прайс-листа за категорією")
     public ResponseEntity<?> getItemsByCategory(
@@ -177,18 +177,18 @@ public class PriceListController {
         log.info("Запит на отримання елементів прайс-листа за категорією з ID: {}", categoryId);
         try {
             List<PriceListItemDTO> items = priceListService.getItemsByCategory(categoryId);
-            return ApiResponseUtils.ok(items, "Отримано {} елементів прайс-листа для категорії", 
+            return ApiResponseUtils.ok(items, "Отримано {} елементів прайс-листа для категорії",
                     items.size());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+            return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з ID: {} не знайдено. Причина: {}", categoryId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні елементів прайс-листа", 
-                    "Виникла помилка при отриманні елементів прайс-листа для категорії з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні елементів прайс-листа",
+                    "Виникла помилка при отриманні елементів прайс-листа для категорії з ID: {}. Причина: {}",
                     categoryId, e.getMessage());
         }
     }
-    
+
     @GetMapping("/category/code/{categoryCode}/items")
     @Operation(summary = "Отримати всі елементи прайс-листа за кодом категорії")
     public ResponseEntity<?> getItemsByCategoryCode(
@@ -196,18 +196,18 @@ public class PriceListController {
         log.info("Запит на отримання елементів прайс-листа за кодом категорії: {}", categoryCode);
         try {
             List<PriceListItemDTO> items = priceListService.getItemsByCategoryCode(categoryCode);
-            return ApiResponseUtils.ok(items, "Отримано {} елементів прайс-листа для категорії з кодом: {}", 
+            return ApiResponseUtils.ok(items, "Отримано {} елементів прайс-листа для категорії з кодом: {}",
                     items.size(), categoryCode);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+            return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з кодом: {} не знайдено. Причина: {}", categoryCode, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні елементів прайс-листа", 
-                    "Виникла помилка при отриманні елементів прайс-листа для категорії з кодом: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні елементів прайс-листа",
+                    "Виникла помилка при отриманні елементів прайс-листа для категорії з кодом: {}. Причина: {}",
                     categoryCode, e.getMessage());
         }
     }
-    
+
     @GetMapping("/item/{itemId}")
     @Operation(summary = "Отримати елемент прайс-листа за ID")
     public ResponseEntity<?> getItemById(
@@ -217,15 +217,15 @@ public class PriceListController {
             PriceListItemDTO item = priceListService.getItemById(itemId);
             return ApiResponseUtils.ok(item, "Отримано елемент прайс-листа: {}", item.getName());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Елемент прайс-листа не знайдено", 
+            return ApiResponseUtils.notFound("Елемент прайс-листа не знайдено",
                     "Елемент прайс-листа з ID: {} не знайдено. Причина: {}", itemId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні елемента прайс-листа", 
-                    "Виникла помилка при отриманні елемента прайс-листа з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні елемента прайс-листа",
+                    "Виникла помилка при отриманні елемента прайс-листа з ID: {}. Причина: {}",
                     itemId, e.getMessage());
         }
     }
-    
+
     @GetMapping("/category/{categoryId}/units-of-measure")
     @Operation(summary = "Отримати доступні одиниці виміру для категорії")
     public ResponseEntity<?> getAvailableUnitsOfMeasure(
@@ -235,15 +235,15 @@ public class PriceListController {
             List<String> units = priceListService.getAvailableUnitsOfMeasure(categoryId);
             return ApiResponseUtils.ok(units, "Отримано {} одиниць виміру для категорії", units.size());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+            return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з ID: {} не знайдено. Причина: {}", categoryId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні одиниць виміру", 
-                    "Виникла помилка при отриманні доступних одиниць виміру для категорії з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні одиниць виміру",
+                    "Виникла помилка при отриманні доступних одиниць виміру для категорії з ID: {}. Причина: {}",
                     categoryId, e.getMessage());
         }
     }
-    
+
     @GetMapping("/category/{categoryId}/item-names")
     @Operation(summary = "Отримати список найменувань виробів за категорією")
     public ResponseEntity<?> getItemNamesByCategory(
@@ -251,14 +251,14 @@ public class PriceListController {
         log.info("Запит на отримання списку найменувань виробів за категорією з ID: {}", categoryId);
         try {
             List<String> itemNames = priceListService.getItemNamesByCategory(categoryId);
-            return ApiResponseUtils.ok(itemNames, "Отримано {} найменувань виробів для категорії", 
+            return ApiResponseUtils.ok(itemNames, "Отримано {} найменувань виробів для категорії",
                     itemNames.size());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
+            return ApiResponseUtils.notFound("Категорію послуг не знайдено",
                     "Категорію послуг з ID: {} не знайдено. Причина: {}", categoryId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні найменувань виробів", 
-                    "Виникла помилка при отриманні найменувань виробів для категорії з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні найменувань виробів",
+                    "Виникла помилка при отриманні найменувань виробів для категорії з ID: {}. Причина: {}",
                     categoryId, e.getMessage());
         }
     }

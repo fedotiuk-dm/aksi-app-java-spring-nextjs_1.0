@@ -11,10 +11,10 @@ import com.aksi.domain.pricing.dto.PriceModifierDTO;
  * Інтерфейс сервісу для обчислень, пов'язаних з модифікаторами цін.
  */
 public interface PriceModifierCalculationService {
-    
+
     /**
      * Застосовує всі модифікатори до ціни у правильному порядку.
-     * 
+     *
      * @param basePrice Початкова ціна
      * @param modifiers Список модифікаторів
      * @param color Колір предмета
@@ -36,10 +36,10 @@ public interface PriceModifierCalculationService {
             BigDecimal expediteFactor,
             String categoryCode,
             List<CalculationDetailsDTO> calculationDetails);
-    
+
     /**
      * Застосовує модифікатори кольору, якщо потрібно.
-     * 
+     *
      * @param currentPrice Поточна ціна
      * @param modifiers Список модифікаторів
      * @param color Колір предмета
@@ -51,10 +51,10 @@ public interface PriceModifierCalculationService {
             List<PriceModifierDTO> modifiers,
             String color,
             List<CalculationDetailsDTO> calculationDetails);
-    
+
     /**
      * Застосовує особливі модифікатори, які можуть замінити базову ціну.
-     * 
+     *
      * @param currentPrice Поточна ціна
      * @param modifiers Список модифікаторів
      * @param calculationDetails Список для деталей розрахунку
@@ -64,10 +64,10 @@ public interface PriceModifierCalculationService {
             BigDecimal currentPrice,
             List<PriceModifierDTO> modifiers,
             List<CalculationDetailsDTO> calculationDetails);
-    
+
     /**
      * Застосовує відсоткові модифікатори.
-     * 
+     *
      * @param currentPrice Поточна ціна
      * @param modifiers Список модифікаторів
      * @param rangeModifierPercentages Мапа значень для діапазонних модифікаторів
@@ -79,10 +79,10 @@ public interface PriceModifierCalculationService {
             List<PriceModifierDTO> modifiers,
             Map<String, BigDecimal> rangeModifierPercentages,
             List<CalculationDetailsDTO> calculationDetails);
-    
+
     /**
      * Застосовує модифікатори з фіксованою ціною.
-     * 
+     *
      * @param currentPrice Поточна ціна
      * @param modifiers Список модифікаторів
      * @param fixedModifierQuantities Мапа кількостей для фіксованих модифікаторів
@@ -94,10 +94,10 @@ public interface PriceModifierCalculationService {
             List<PriceModifierDTO> modifiers,
             Map<String, Integer> fixedModifierQuantities,
             List<CalculationDetailsDTO> calculationDetails);
-    
+
     /**
      * Застосовує модифікатор терміновості, якщо потрібно.
-     * 
+     *
      * @param currentPrice Поточна ціна
      * @param isExpedited Чи термінове замовлення
      * @param expediteFactor Коефіцієнт терміновості
@@ -111,10 +111,10 @@ public interface PriceModifierCalculationService {
             BigDecimal expediteFactor,
             String categoryCode,
             List<CalculationDetailsDTO> calculationDetails);
-    
+
     /**
      * Застосовує модифікатор до ціни на основі його типу.
-     * 
+     *
      * @param price Поточна ціна
      * @param modifier Модифікатор
      * @param rangeValue Значення для діапазонного модифікатора
@@ -126,4 +126,4 @@ public interface PriceModifierCalculationService {
             PriceModifierDTO modifier,
             BigDecimal rangeValue,
             Integer fixedQuantity);
-} 
+}

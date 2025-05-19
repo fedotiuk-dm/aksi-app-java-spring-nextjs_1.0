@@ -28,11 +28,11 @@ public class PriceRecommendationServiceImpl implements PriceRecommendationServic
 
     private final ModifierRecommendationService recommendationService;
     private final CatalogPriceModifierService modifierService;
-    
+
     /**
      * Повертає рекомендовані модифікатори на основі забруднень та дефектів.
      * Враховує категорію послуг та тип матеріалу для більш точних рекомендацій.
-     * 
+     *
      * @param stains список плям для аналізу
      * @param defects список дефектів для аналізу
      * @param categoryCode код категорії послуг
@@ -41,33 +41,33 @@ public class PriceRecommendationServiceImpl implements PriceRecommendationServic
      */
     @Override
     public List<PriceModifierDTO> getRecommendedModifiersForItem(
-            Set<String> stains, 
-            Set<String> defects, 
-            String categoryCode, 
+            Set<String> stains,
+            Set<String> defects,
+            String categoryCode,
             String materialType) {
-        
+
         List<PriceModifierDTO> recommendedModifiers = new ArrayList<>();
-        
+
         // Отримуємо рекомендації на основі плям
         if (stains != null && !stains.isEmpty()) {
-            List<ModifierRecommendationDTO> stainRecommendations = 
+            List<ModifierRecommendationDTO> stainRecommendations =
                     recommendationService.getRecommendedModifiersForStains(stains, categoryCode, materialType);
             processModifierRecommendations(stainRecommendations, recommendedModifiers, false);
         }
-        
+
         // Отримуємо рекомендації на основі дефектів
         if (defects != null && !defects.isEmpty()) {
-            List<ModifierRecommendationDTO> defectRecommendations = 
+            List<ModifierRecommendationDTO> defectRecommendations =
                     recommendationService.getRecommendedModifiersForDefects(defects, categoryCode, materialType);
             processModifierRecommendations(defectRecommendations, recommendedModifiers, true);
         }
-        
+
         return recommendedModifiers;
     }
-    
+
     /**
      * Обробляє список рекомендацій та перетворює їх у модифікатори цін
-     * 
+     *
      * @param recommendations список рекомендацій для обробки
      * @param recommendedModifiers існуючий список рекомендованих модифікаторів
      * @param checkForDuplicates чи перевіряти наявність дублікатів
@@ -76,13 +76,13 @@ public class PriceRecommendationServiceImpl implements PriceRecommendationServic
             List<ModifierRecommendationDTO> recommendations,
             List<PriceModifierDTO> recommendedModifiers,
             boolean checkForDuplicates) {
-        
+
         recommendations.forEach(rec -> {
             // Перевіряємо, чи вже додано цей модифікатор, якщо потрібно
-            boolean shouldAdd = !checkForDuplicates || 
+            boolean shouldAdd = !checkForDuplicates ||
                     recommendedModifiers.stream()
                         .noneMatch(m -> m.getCode().equals(rec.getCode()));
-            
+
             if (shouldAdd) {
                 PriceModifierDTO modifier = modifierService.getModifierByCode(rec.getCode());
                 if (modifier != null) {
@@ -95,4 +95,4 @@ public class PriceRecommendationServiceImpl implements PriceRecommendationServic
             }
         });
     }
-} 
+}

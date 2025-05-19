@@ -39,7 +39,7 @@ public class BranchLocationDTO {
     /**
      * Контактний телефон пункту прийому.
      */
-    @Pattern(regexp = "^\\+?[0-9\\s-()]{10,15}$", message = "Неправильний формат телефону")
+    @Pattern(regexp = "^\\+ ? [0-9\\s-()]{10,15}$", message = "Неправильний формат телефону")
     private String phone;
 
     /**

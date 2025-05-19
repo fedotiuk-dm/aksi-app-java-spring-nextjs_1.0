@@ -62,17 +62,17 @@ public class ReceiptServiceImpl implements ReceiptService {
     @Transactional(readOnly = true)
     public ReceiptDTO generateReceipt(ReceiptGenerationRequest request) {
         log.info("Generating receipt for order ID: {}", request.getOrderId());
-        
+
         OrderEntity order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + request.getOrderId()));
-                
+
         ClientEntity client = order.getClient();
-        
+
         BranchLocationEntity branch = order.getBranchLocation();
-        
+
         // В даному випадку ми не маємо інформації про створення замовлення, використовуємо заглушку
         String operatorName = "Оператор AKSI";
-        
+
         ReceiptDTO receipt = new ReceiptDTO();
         receipt.setOrderId(order.getId());
         receipt.setReceiptNumber(order.getReceiptNumber());
@@ -82,11 +82,11 @@ public class ReceiptServiceImpl implements ReceiptService {
         receipt.setExpediteType(order.getExpediteType());
         receipt.setPaymentMethod(order.getPaymentMethod());
         receipt.setLegalTerms(DEFAULT_LEGAL_TERMS);
-        
+
         // Шукаємо підпис клієнта, якщо доступний
         customerSignatureRepository.findByOrderIdAndSignatureType(order.getId(), "CUSTOMER_ACCEPTANCE")
                 .ifPresent(signature -> receipt.setCustomerSignatureData(signature.getSignatureData()));
-        
+
         // Отримуємо інформацію про філію
         ReceiptBranchInfoDTO branchInfo = new ReceiptBranchInfoDTO();
         branchInfo.setBranchName(branch.getName());
@@ -94,26 +94,26 @@ public class ReceiptServiceImpl implements ReceiptService {
         branchInfo.setPhone(branch.getPhone());
         branchInfo.setOperatorName(operatorName);
         receipt.setBranchInfo(branchInfo);
-        
+
         // Отримуємо інформацію про клієнта
         ReceiptClientInfoDTO clientInfo = new ReceiptClientInfoDTO();
         clientInfo.setFirstName(client.getFirstName());
         clientInfo.setLastName(client.getLastName());
         clientInfo.setPhone(client.getPhone());
         clientInfo.setEmail(client.getEmail());
-        
+
         // Встановлюємо адресу, якщо є (спрощено без перевірки каналів комунікації)
         clientInfo.setAddress("Адреса клієнта");
-        
+
         receipt.setClientInfo(clientInfo);
-        
+
         // Отримуємо предмети замовлення
         List<OrderItemEntity> orderItems = orderItemRepository.findByOrderId(order.getId());
-        
+
         List<ReceiptItemDTO> itemsDTO = new ArrayList<>();
         for (int i = 0; i < orderItems.size(); i++) {
             OrderItemEntity item = orderItems.get(i);
-            
+
             ReceiptItemDTO itemDTO = new ReceiptItemDTO();
             itemDTO.setOrderNumber(i + 1);
             itemDTO.setName(item.getName());
@@ -122,7 +122,7 @@ public class ReceiptServiceImpl implements ReceiptService {
             itemDTO.setUnitOfMeasure(item.getUnitOfMeasure());
             itemDTO.setBasePrice(item.getUnitPrice());
             itemDTO.setFinalPrice(item.getTotalPrice());
-            
+
             // Додаємо модифікатори ціни, якщо є
             List<OrderItemPriceModifierEntity> modifiers = priceModifierRepository.findByOrderItemId(item.getId());
             if (modifiers != null && !modifiers.isEmpty()) {
@@ -131,50 +131,50 @@ public class ReceiptServiceImpl implements ReceiptService {
                             ReceiptPriceModifierDTO modifierDTO = new ReceiptPriceModifierDTO();
                             modifierDTO.setName(modifier.getName());
                             modifierDTO.setDescription(modifier.getDescription());
-                            
+
                             // Встановлюємо або відсоткове або фіксоване значення
                             if (modifier.getModifierType().name().contains("PERCENTAGE")) {
                                 modifierDTO.setPercentageValue(modifier.getValue().intValue());
                             } else {
                                 modifierDTO.setFixedValue(modifier.getValue());
                             }
-                            
+
                             modifierDTO.setImpact(modifier.getAmount());
                             return modifierDTO;
                         }).collect(Collectors.toList());
                 itemDTO.setPriceModifiers(modifiersDTO);
             }
-            
+
             itemsDTO.add(itemDTO);
         }
         receipt.setItems(itemsDTO);
-        
+
         // Фінансова інформація
         ReceiptFinancialInfoDTO financialInfo = new ReceiptFinancialInfoDTO();
         financialInfo.setTotalAmount(order.getTotalAmount());
-        
+
         // Якщо є знижка
         if (order.getDiscountType() != null && order.getDiscountAmount() != null) {
             financialInfo.setDiscountType(order.getDiscountType().name());
             financialInfo.setDiscountAmount(order.getDiscountAmount());
         }
-        
+
         // Якщо є надбавка за терміновість
         if (order.getExpediteType() != ExpediteType.STANDARD) {
             // При потребі тут можна було б розрахувати надбавку, якщо не зберігається в сутності
             financialInfo.setExpediteSurcharge(new BigDecimal("0.00"));
         }
-        
+
         financialInfo.setFinalAmount(order.getFinalAmount());
-        
+
         // Якщо є передоплата
         if (order.getPrepaymentAmount() != null && order.getPrepaymentAmount().compareTo(java.math.BigDecimal.ZERO) > 0) {
             financialInfo.setPrepaymentAmount(order.getPrepaymentAmount());
             financialInfo.setBalanceAmount(order.getBalanceAmount());
         }
-        
+
         receipt.setFinancialInfo(financialInfo);
-        
+
         return receipt;
     }
 
@@ -187,41 +187,41 @@ public class ReceiptServiceImpl implements ReceiptService {
     @Override
     public void emailReceipt(EmailReceiptRequest request) {
         log.info("Emailing receipt for order ID: {}", request.getOrderId());
-        
+
         // Створюємо запит на генерацію квитанції з ID замовлення
         ReceiptDTO receipt = generateReceipt(new ReceiptGenerationRequest(request.getOrderId(), "PDF", request.isIncludeSignature()));
-        
+
         try {
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            
+
             helper.setTo(request.getRecipientEmail());
             helper.setSubject(request.getSubject());
-            
+
             // Формуємо HTML-текст листа
             String emailText = "<html><body>"
                     + "<h2>Квитанція № " + receipt.getReceiptNumber() + "</h2>"
-                    + "<p>Шановний(а) " + receipt.getClientInfo().getFirstName() + " " 
+                    + "<p>Шановний(а) " + receipt.getClientInfo().getFirstName() + " "
                     + receipt.getClientInfo().getLastName() + ",</p>"
                     + "<p>Дякуємо за ваше замовлення. У прикріпленому файлі знаходиться квитанція.</p>"
-                    + "<p>Очікувана дата готовності: " 
-                    + receipt.getExpectedCompletionDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) 
+                    + "<p>Очікувана дата готовності: "
+                    + receipt.getExpectedCompletionDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
                     + " (після 14:00)</p>"
                     + "<p>З повагою,<br>Хімчистка AKSI</p>"
                     + "</body></html>";
-            
+
             // Використовуємо повідомлення з запиту, якщо воно є
             if (request.getMessage() != null && !request.getMessage().isEmpty()) {
                 emailText = request.getMessage();
             }
-            
+
             helper.setText(emailText, true);
-            
+
             // Додаємо PDF-квитанцію як вкладення
             byte[] pdfBytes = pdfRenderer.generatePdfReceipt(receipt, request.isIncludeSignature());
-            helper.addAttachment("receipt_" + receipt.getReceiptNumber() + ".pdf", 
+            helper.addAttachment("receipt_" + receipt.getReceiptNumber() + ".pdf",
                     new org.springframework.core.io.ByteArrayResource(pdfBytes));
-            
+
             emailSender.send(message);
             log.info("Receipt email sent successfully to: {}", request.getRecipientEmail());
         } catch (jakarta.mail.MessagingException e) {
@@ -235,4 +235,4 @@ public class ReceiptServiceImpl implements ReceiptService {
             throw new RuntimeException("Failed to generate receipt PDF", e);
         }
     }
-} 
+}

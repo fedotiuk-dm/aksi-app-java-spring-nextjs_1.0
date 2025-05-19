@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RefreshTokenRequest {
-    
+
     /**
      * Refresh токен.
      */
     @NotBlank(message = "Refresh токен не може бути пустим")
     private String refreshToken;
-} 
+}

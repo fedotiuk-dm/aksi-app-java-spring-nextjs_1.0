@@ -39,142 +39,142 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
             BigDecimal expediteFactor,
             String categoryCode,
             List<CalculationDetailsDTO> calculationDetails) {
-        
+
         BigDecimal currentPrice = basePrice;
-        
+
         // Крок 2: Перевірка кольорових виробів
         currentPrice = applyColorModifiers(currentPrice, modifiers, color, calculationDetails);
-        
+
         // Крок 3: Застосування особливих модифікаторів
         currentPrice = applySpecialModifiers(currentPrice, modifiers, calculationDetails);
-        
+
         // Крок 4: Застосування множників (відсоткових модифікаторів)
         currentPrice = applyPercentageModifiers(currentPrice, modifiers, rangeModifierValues, calculationDetails);
-        
+
         // Крок 5: Додавання фіксованих послуг
         currentPrice = applyFixedServiceModifiers(currentPrice, modifiers, fixedModifierQuantities, calculationDetails);
-        
+
         // Крок 6: Застосування терміновості
         currentPrice = applyExpediteModifier(currentPrice, isExpedited, expediteFactor, categoryCode, calculationDetails);
-        
+
         return currentPrice;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public BigDecimal applyColorModifiers(
-            BigDecimal currentPrice, 
-            List<PriceModifierDTO> modifiers, 
-            String color, 
+            BigDecimal currentPrice,
+            List<PriceModifierDTO> modifiers,
+            String color,
             List<CalculationDetailsDTO> calculationDetails) {
-        
+
         // Перевіряємо чи є модифікатор для кольору
         Optional<PriceModifierDTO> blackLightColorModifier = modifiers.stream()
                 .filter(m -> "black_light_colors".equals(m.getCode()))
                 .findFirst();
-        
-        if (blackLightColorModifier.isPresent() && color != null && 
-                (color.equalsIgnoreCase(PriceCalculationConstants.COLOR_BLACK) || 
+
+        if (blackLightColorModifier.isPresent() && color != null &&
+                (color.equalsIgnoreCase(PriceCalculationConstants.COLOR_BLACK) ||
                  color.equalsIgnoreCase(PriceCalculationConstants.COLOR_WHITE))) {
-            
+
             PriceModifierDTO modifier = blackLightColorModifier.get();
             BigDecimal priceBefore = currentPrice;
             BigDecimal priceAfter = applyModifier(currentPrice, modifier, null, null);
-            
+
             addCalculationDetail(
-                calculationDetails, 
-                2, 
-                "Перевірка кольору", 
-                "Застосування модифікатора для кольору: " + color, 
-                modifier, 
-                modifier.getChangeDescription(), 
-                priceBefore, 
+                calculationDetails,
+                2,
+                "Перевірка кольору",
+                "Застосування модифікатора для кольору: " + color,
+                modifier,
+                modifier.getChangeDescription(),
+                priceBefore,
                 priceAfter
             );
-            
+
             return priceAfter;
         }
-        
+
         return currentPrice;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public BigDecimal applySpecialModifiers(
-            BigDecimal currentPrice, 
-            List<PriceModifierDTO> modifiers, 
+            BigDecimal currentPrice,
+            List<PriceModifierDTO> modifiers,
             List<CalculationDetailsDTO> calculationDetails) {
-        
+
         // Особливі модифікатори, які змінюють базову ціну повністю (наприклад, "Фарбування після чистки деінде")
         Optional<PriceModifierDTO> specialModifier = modifiers.stream()
                 .filter(m -> "leather_coloring_after_other_cleaning".equals(m.getCode()))
                 .findFirst();
-        
+
         if (specialModifier.isPresent()) {
             PriceModifierDTO modifier = specialModifier.get();
             BigDecimal priceBefore = currentPrice;
             BigDecimal priceAfter = applyModifier(currentPrice, modifier, null, null);
-            
+
             addCalculationDetail(
-                calculationDetails, 
-                3, 
-                "Особливі модифікатори", 
-                "Застосування особливого модифікатора, який заміняє базову ціну", 
-                modifier, 
-                modifier.getChangeDescription(), 
-                priceBefore, 
+                calculationDetails,
+                3,
+                "Особливі модифікатори",
+                "Застосування особливого модифікатора, який заміняє базову ціну",
+                modifier,
+                modifier.getChangeDescription(),
+                priceBefore,
                 priceAfter
             );
-            
+
             return priceAfter;
         }
-        
+
         return currentPrice;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public BigDecimal applyPercentageModifiers(
-            BigDecimal currentPrice, 
-            List<PriceModifierDTO> modifiers, 
-            Map<String, BigDecimal> rangeModifierPercentages, 
+            BigDecimal currentPrice,
+            List<PriceModifierDTO> modifiers,
+            Map<String, BigDecimal> rangeModifierPercentages,
             List<CalculationDetailsDTO> calculationDetails) {
-        
+
         BigDecimal result = currentPrice;
-        
+
         // Фільтруємо лише відсоткові модифікатори
         List<PriceModifierDTO> percentageModifiers = filterPercentageModifiers(modifiers);
-        
+
         for (PriceModifierDTO modifier : percentageModifiers) {
             BigDecimal rangeValue = rangeModifierPercentages.get(modifier.getCode());
             BigDecimal priceBefore = result;
             BigDecimal priceAfter = applyModifier(result, modifier, rangeValue, null);
-            
+
             String modifierValue = rangeValue != null ? "+" + rangeValue + "%" : modifier.getChangeDescription();
-            
+
             addCalculationDetail(
-                calculationDetails, 
-                4, 
-                "Відсоткові модифікатори", 
-                "Застосування відсоткового модифікатора", 
-                modifier, 
-                modifierValue, 
-                priceBefore, 
+                calculationDetails,
+                4,
+                "Відсоткові модифікатори",
+                "Застосування відсоткового модифікатора",
+                modifier,
+                modifierValue,
+                priceBefore,
                 priceAfter
             );
-            
+
             result = priceAfter;
         }
-        
+
         return result;
     }
-    
+
     /**
      * Фільтрує список модифікаторів, залишаючи тільки відсоткові
      * @param modifiers список всіх модифікаторів
@@ -182,53 +182,53 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
      */
     private List<PriceModifierDTO> filterPercentageModifiers(List<PriceModifierDTO> modifiers) {
         return modifiers.stream()
-                .filter(m -> ModifierType.PERCENTAGE.equals(m.getModifierType()) 
+                .filter(m -> ModifierType.PERCENTAGE.equals(m.getModifierType())
                     || ModifierType.RANGE_PERCENTAGE.equals(m.getModifierType()))
                 .filter(m -> !"black_light_colors".equals(m.getCode()))  // Вже застосовано на кроці 2
                 .filter(m -> !"leather_coloring_after_other_cleaning".equals(m.getCode()))  // Вже застосовано на кроці 3
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public BigDecimal applyFixedServiceModifiers(
-            BigDecimal currentPrice, 
-            List<PriceModifierDTO> modifiers, 
-            Map<String, Integer> fixedModifierQuantities, 
+            BigDecimal currentPrice,
+            List<PriceModifierDTO> modifiers,
+            Map<String, Integer> fixedModifierQuantities,
             List<CalculationDetailsDTO> calculationDetails) {
-        
+
         BigDecimal result = currentPrice;
-        
+
         // Фільтруємо лише фіксовані модифікатори
         List<PriceModifierDTO> fixedModifiers = filterFixedModifiers(modifiers);
-        
+
         for (PriceModifierDTO modifier : fixedModifiers) {
             Integer quantity = fixedModifierQuantities.getOrDefault(modifier.getCode(), 1);
-            
+
             BigDecimal priceBefore = result;
             BigDecimal priceAfter = applyModifier(result, modifier, null, quantity);
-            
+
             String modifierValue = modifier.getChangeDescription() + " x " + quantity;
-            
+
             addCalculationDetail(
-                calculationDetails, 
-                5, 
-                "Фіксовані послуги", 
-                "Застосування фіксованого модифікатора, кількість: " + quantity, 
-                modifier, 
-                modifierValue, 
-                priceBefore, 
+                calculationDetails,
+                5,
+                "Фіксовані послуги",
+                "Застосування фіксованого модифікатора, кількість: " + quantity,
+                modifier,
+                modifierValue,
+                priceBefore,
                 priceAfter
             );
-            
+
             result = priceAfter;
         }
-        
+
         return result;
     }
-    
+
     /**
      * Фільтрує список модифікаторів, залишаючи тільки фіксовані
      * @param modifiers список всіх модифікаторів
@@ -239,7 +239,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
                 .filter(m -> ModifierType.FIXED.equals(m.getModifierType()) || ModifierType.ADDITION.equals(m.getModifierType()))
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -250,14 +250,14 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
             BigDecimal expediteFactor,
             String categoryCode,
             List<CalculationDetailsDTO> calculationDetails) {
-        
+
         // Перевіряємо, чи категорія може мати терміновість
         boolean canBeExpedited = !NonExpeditableCategory.isNonExpeditable(categoryCode);
-        
+
         if (isExpedited && expediteFactor != null && expediteFactor.compareTo(BigDecimal.ZERO) > 0 && canBeExpedited) {
             BigDecimal priceBefore = currentPrice;
             BigDecimal priceAfter = PriceCalculationConstants.applyPercentage(currentPrice, expediteFactor);
-            
+
             // Створюємо запис для деталей обчислення
             calculationDetails.add(CalculationDetailsDTO.builder()
                     .step(6)
@@ -267,7 +267,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
                     .priceAfter(priceAfter)
                     .priceDifference(priceAfter.subtract(priceBefore))
                     .build());
-            
+
             return priceAfter;
         } else if (isExpedited && !canBeExpedited) {
             // Додаємо інформацію, що категорія не підтримує терміновість
@@ -280,10 +280,10 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
                     .priceDifference(BigDecimal.ZERO)
                     .build());
         }
-        
+
         return currentPrice;
     }
-    
+
     /**
      * Додає деталі обчислення у список деталей обчислення з усіма необхідними параметрами
      * @param calculationDetails список деталей обчислення для доповнення
@@ -296,15 +296,15 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
      * @param priceAfter ціна після застосування модифікатора
      */
     private void addCalculationDetail(
-            List<CalculationDetailsDTO> calculationDetails, 
-            int step, 
-            String stepName, 
-            String description, 
-            PriceModifierDTO modifier, 
-            String modifierValue, 
-            BigDecimal priceBefore, 
+            List<CalculationDetailsDTO> calculationDetails,
+            int step,
+            String stepName,
+            String description,
+            PriceModifierDTO modifier,
+            String modifierValue,
+            BigDecimal priceBefore,
             BigDecimal priceAfter) {
-        
+
         calculationDetails.add(CalculationDetailsDTO.builder()
                 .step(step)
                 .stepName(stepName)
@@ -317,25 +317,25 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
                 .priceDifference(priceAfter.subtract(priceBefore))
                 .build());
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public BigDecimal applyModifier(
-            BigDecimal price, 
-            PriceModifierDTO modifier, 
-            BigDecimal rangeValue, 
+            BigDecimal price,
+            PriceModifierDTO modifier,
+            BigDecimal rangeValue,
             Integer fixedQuantity) {
-        
+
         if (price == null) {
             return PriceCalculationConstants.MIN_PRICE;
         }
-        
+
         if (modifier == null) {
             return price;
         }
-        
+
         BigDecimal result = switch (modifier.getModifierType()) {
             case PERCENTAGE -> {
                 // Відсотковий модифікатор (наприклад, +20% до вартості)
@@ -366,8 +366,8 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
             }
             default -> price;
         };
-        
+
         // Ціна не може бути менше мінімальної
         return result.compareTo(PriceCalculationConstants.MIN_PRICE) < 0 ? PriceCalculationConstants.MIN_PRICE : result;
     }
-} 
+}

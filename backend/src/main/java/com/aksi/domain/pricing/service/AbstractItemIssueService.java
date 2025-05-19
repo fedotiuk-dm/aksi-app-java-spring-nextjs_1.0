@@ -15,18 +15,18 @@ import com.aksi.domain.pricing.enums.RiskLevel;
 /**
  * Абстрактний базовий сервіс для типів проблем з предметами (дефекти, плями тощо).
  * Реалізує спільну бізнес-логіку для всіх типів проблем.
- * 
+ *
  * @param <T> тип сутності, що успадковується від AbstractItemIssueEntity
  * @param <R> тип репозиторію для сутності
  */
 public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity, R extends JpaRepository<T, UUID>> {
-    
+
     protected final R repository;
-    
+
     protected AbstractItemIssueService(R repository) {
         this.repository = repository;
     }
-    
+
     /**
      * Отримати всі активні записи.
      *
@@ -38,7 +38,7 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
                 .filter(AbstractItemIssueEntity::isActive)
                 .toList();
     }
-    
+
     /**
      * Отримати всі записи з пагінацією.
      *
@@ -49,7 +49,7 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
     public Page<T> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
-    
+
     /**
      * Отримати запис за ідентифікатором.
      *
@@ -60,7 +60,7 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
     public Optional<T> findById(UUID id) {
         return repository.findById(id);
     }
-    
+
     /**
      * Зберегти новий запис.
      *
@@ -71,7 +71,7 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
     public T save(T entity) {
         return repository.save(entity);
     }
-    
+
     /**
      * Оновити існуючий запис.
      *
@@ -87,7 +87,7 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
                     return repository.save(entity);
                 });
     }
-    
+
     /**
      * Деактивувати запис.
      *
@@ -104,7 +104,7 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
                 })
                 .orElse(false);
     }
-    
+
     /**
      * Активувати запис.
      *
@@ -121,7 +121,7 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
                 })
                 .orElse(false);
     }
-    
+
     /**
      * Отримати всі записи з вказаним рівнем ризику.
      *
@@ -134,10 +134,10 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
                 .filter(entity -> entity.getRiskLevel() == riskLevel && entity.isActive())
                 .toList();
     }
-    
+
     /**
      * Отримати зареєстровані записи за списком кодів.
-     * 
+     *
      * @param codes список кодів
      * @return список знайдених записів
      */
@@ -147,10 +147,10 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
                 .filter(entity -> entity.isActive() && codes.contains(entity.getCode()))
                 .toList();
     }
-    
+
     /**
      * Отримати зареєстровані записи за списком назв.
-     * 
+     *
      * @param names список назв
      * @return список знайдених записів
      */
@@ -160,4 +160,4 @@ public abstract class AbstractItemIssueService<T extends AbstractItemIssueEntity
                 .filter(entity -> entity.isActive() && names.contains(entity.getName()))
                 .toList();
     }
-} 
+}

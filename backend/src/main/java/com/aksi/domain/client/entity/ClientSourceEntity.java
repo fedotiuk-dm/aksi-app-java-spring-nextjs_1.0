@@ -8,17 +8,17 @@ public enum ClientSourceEntity {
      * Соціальна мережа Instagram.
      */
     INSTAGRAM,
-    
+
     /**
      * Пошукова система Google.
      */
     GOOGLE,
-    
+
     /**
      * Рекомендації від інших клієнтів.
      */
     RECOMMENDATION,
-    
+
     /**
      * Інше джерело (з уточненням).
      */

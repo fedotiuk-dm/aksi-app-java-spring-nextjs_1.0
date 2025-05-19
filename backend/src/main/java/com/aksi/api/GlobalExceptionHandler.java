@@ -47,10 +47,10 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
     private final Environment environment;
     private final HttpServletRequest request;
-    
+
     @Value("${spring.profiles.active:production}")
     private String activeProfile;
-    
+
     /**
      * Обробка помилок валідації полів
      */
@@ -59,25 +59,25 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleValidationExceptions(MethodArgumentNotValidException ex) {
         String errorId = generateErrorId();
         setMDC(errorId, HttpStatus.BAD_REQUEST);
-        
+
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        
+
         logException("Помилка валідації", ex);
-        
+
         return createErrorResponse(
-            HttpStatus.BAD_REQUEST, 
-            "Помилка валідації даних", 
+            HttpStatus.BAD_REQUEST,
+            "Помилка валідації даних",
             ex,
             errors,
             errorId
         );
     }
-    
+
     /**
      * Обробка помилок порушення обмежень
      */
@@ -86,29 +86,29 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleConstraintViolation(ConstraintViolationException ex) {
         String errorId = generateErrorId();
         setMDC(errorId, HttpStatus.BAD_REQUEST);
-        
+
         Map<String, String> errors = ex.getConstraintViolations().stream()
                 .collect(Collectors.toMap(
                         this::getPath,
                         ConstraintViolation::getMessage,
                         (error1, error2) -> error1
                 ));
-        
+
         logException("Помилка валідації обмежень", ex);
-        
+
         return createErrorResponse(
-            HttpStatus.BAD_REQUEST, 
-            "Помилка валідації даних", 
+            HttpStatus.BAD_REQUEST,
+            "Помилка валідації даних",
             ex,
             errors,
             errorId
         );
     }
-    
+
     private String getPath(ConstraintViolation<?> violation) {
         return violation.getPropertyPath().toString();
     }
-    
+
     /**
      * Обробка помилки відсутності сутності
      */
@@ -117,7 +117,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleEntityNotFoundException(EntityNotFoundException ex) {
         return handleStandardException(ex, HttpStatus.NOT_FOUND, "Сутність не знайдено", ex.getMessage());
     }
-    
+
     /**
      * Обробка помилки дублікату користувача
      */
@@ -126,7 +126,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
         return handleStandardException(ex, HttpStatus.CONFLICT, "Спроба створити дублікат користувача", ex.getMessage());
     }
-    
+
     /**
      * Обробка помилки автентифікації
      */
@@ -135,7 +135,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleAuthenticationException(AuthenticationException ex) {
         return handleStandardException(ex, HttpStatus.UNAUTHORIZED, "Помилка автентифікації", ex.getMessage());
     }
-    
+
     /**
      * Обробка помилки доступу
      */
@@ -144,7 +144,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleAccessDeniedException(AccessDeniedException ex) {
         return handleStandardException(ex, HttpStatus.FORBIDDEN, "Доступ заборонено", "Доступ заборонено");
     }
-    
+
     /**
      * Обробка Resource Not Found помилок
      */
@@ -153,7 +153,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException ex) {
         return handleStandardException(ex, HttpStatus.NOT_FOUND, "Ресурс не знайдено", ex.getMessage());
     }
-    
+
     /**
      * Обробка Bad Request помилок
      */
@@ -162,7 +162,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleBadRequestException(BadRequestException ex) {
         return handleStandardException(ex, HttpStatus.BAD_REQUEST, "Некоректний запит", ex.getMessage());
     }
-    
+
     /**
      * Обробка помилки некоректних даних
      */
@@ -171,7 +171,7 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex) {
         return handleStandardException(ex, HttpStatus.BAD_REQUEST, "Помилка некоректних даних", ex.getMessage());
     }
-    
+
     /**
      * Загальний метод для обробки стандартних винятків
      * @param ex виняток
@@ -183,11 +183,11 @@ public class GlobalExceptionHandler {
     private ErrorResponse handleStandardException(Exception ex, HttpStatus status, String logMessage, String responseMessage) {
         String errorId = generateErrorId();
         setMDC(errorId, status);
-        
+
         logException(logMessage, ex);
         return createErrorResponse(status, responseMessage, ex, errorId);
     }
-    
+
     /**
      * Обробка будь-яких інших помилок
      */
@@ -196,39 +196,39 @@ public class GlobalExceptionHandler {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         String errorId = generateErrorId();
         setMDC(errorId, status);
-        
+
         // Розширене логування для діагностики 500 помилок
         log.error("Внутрішня помилка сервера для запиту {} {}", request.getMethod(), request.getRequestURI(), ex);
-        
+
         // Додаткове логування класу, що викликав помилку
         logCallerInfo(ex);
-        
+
         // Логування запиту для діагностики
         logRequestDetails();
-        
+
         // Логування причини помилки, якщо вона є
         logCauseIfPresent(ex);
-        
+
         ErrorResponse errorResponse = createErrorResponse(
-            status, 
-            "Внутрішня помилка сервера", 
+            status,
+            "Внутрішня помилка сервера",
             ex,
             errorId
         );
-        
+
         // Додаємо стек трейс тільки для dev середовища
         if (isDevelopmentEnvironment()) {
             addStackTraceToResponse(ex, errorResponse);
         }
-        
+
         // Очистка MDC
         clearMDC();
-        
+
         return ResponseEntity
                 .status(status)
                 .body(errorResponse);
     }
-    
+
     /**
      * Обробляє помилки перетворення типів аргументів методу, включаючи невалідні UUID
      */
@@ -237,26 +237,26 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException ex) {
         String errorId = generateErrorId();
         setMDC(errorId, HttpStatus.BAD_REQUEST);
-        
+
         String paramName = ex.getName();
         String errorMessage;
-        
+
         // Перевіряємо, чи це помилка перетворення UUID
         Class<?> requiredType = ex.getRequiredType();
         if (requiredType != null && "UUID".equals(requiredType.getSimpleName())) {
             errorMessage = String.format(
                 "Параметр '%s' має бути валідним UUID у форматі 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'",
                 paramName);
-            log.warn("Помилка перетворення UUID для запиту {} {}: параметр={}, значення={}", 
+            log.warn("Помилка перетворення UUID для запиту {} {}: параметр={}, значення={}",
                 request.getMethod(), request.getRequestURI(), paramName, ex.getValue(), ex);
         } else {
             errorMessage = String.format(
-                "Параметр '%s' має недопустимий формат", 
+                "Параметр '%s' має недопустимий формат",
                 paramName);
-            log.warn("Загальна помилка перетворення типу для запиту {} {}: параметр={}, значення={}", 
+            log.warn("Загальна помилка перетворення типу для запиту {} {}: параметр={}, значення={}",
                 request.getMethod(), request.getRequestURI(), paramName, ex.getValue(), ex);
         }
-        
+
         Map<String, Object> response = new HashMap<>();
         response.put("status", "error");
         response.put("code", "INVALID_ARGUMENT");
@@ -266,20 +266,20 @@ public class GlobalExceptionHandler {
         response.put("statusCode", HttpStatus.BAD_REQUEST.value());
         response.put("uri", request.getRequestURI());
         response.put("method", request.getMethod());
-        
+
         // Очистка MDC
         clearMDC();
-        
+
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-    
+
     /**
      * Логування повідомлення про виняток зі стандартною інформацією про запит
      */
     private void logException(String message, Exception ex) {
         log.warn("{} для запиту {} {}", message, request.getMethod(), request.getRequestURI(), ex);
     }
-    
+
     /**
      * Встановлює контекст MDC для збору діагностичної інформації
      */
@@ -290,21 +290,21 @@ public class GlobalExceptionHandler {
         MDC.put("status", String.valueOf(status.value()));
         MDC.put("remoteAddr", request.getRemoteAddr());
         MDC.put("userAgent", request.getHeader("User-Agent"));
-        
+
         // Додаємо інформацію про користувача, якщо вона доступна
         Object principal = request.getUserPrincipal();
         if (principal != null) {
             MDC.put("user", principal.toString());
         }
     }
-    
+
     /**
      * Очищає MDC після обробки помилки
      */
     private void clearMDC() {
         MDC.clear();
     }
-    
+
     /**
      * Логування деталей запиту для кращої діагностики
      */
@@ -316,7 +316,7 @@ public class GlobalExceptionHandler {
           .append("  Query: ").append(request.getQueryString()).append("\n")
           .append("  Remote IP: ").append(request.getRemoteAddr()).append("\n")
           .append("  User-Agent: ").append(request.getHeader("User-Agent")).append("\n");
-        
+
         // Логування параметрів запиту
         Map<String, String[]> params = request.getParameterMap();
         if (!params.isEmpty()) {
@@ -329,7 +329,7 @@ public class GlobalExceptionHandler {
                 sb.append("\n");
             });
         }
-        
+
         // Спроба отримати тіло запиту (якщо можливо)
         ContentCachingRequestWrapper wrapper = WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
         if (wrapper != null) {
@@ -350,10 +350,10 @@ public class GlobalExceptionHandler {
                 sb.append("  Тіло запиту: ").append(payload).append("\n");
             }
         }
-        
+
         log.error(sb.toString());
     }
-    
+
     /**
      * Логування інформації про клас, який викликав помилку
      */
@@ -361,7 +361,7 @@ public class GlobalExceptionHandler {
         StackTraceElement[] stackTrace = ex.getStackTrace();
         if (stackTrace.length > 0) {
             StringBuilder sb = new StringBuilder("Стек помилки:\n");
-            
+
             // Виводимо першу частину стеку (до 5 елементів)
             int depth = Math.min(stackTrace.length, 5);
             for (int i = 0; i < depth; i++) {
@@ -373,11 +373,11 @@ public class GlobalExceptionHandler {
                     element.getFileName(),
                     element.getLineNumber()));
             }
-            
+
             log.error(sb.toString());
         }
     }
-    
+
     /**
      * Логування причини помилки, якщо вона є
      */
@@ -385,15 +385,15 @@ public class GlobalExceptionHandler {
         Throwable cause = ex.getCause();
         if (cause != null) {
             StringBuilder sb = new StringBuilder("Причина помилки: ").append(cause.getClass().getName());
-            
+
             if (cause.getMessage() != null) {
                 sb.append(" - ").append(cause.getMessage());
             }
-            
+
             sb.append("\nСтек причини:\n");
             StackTraceElement[] causeStack = cause.getStackTrace();
             int depth = Math.min(causeStack.length, 5);
-            
+
             for (int i = 0; i < depth; i++) {
                 StackTraceElement element = causeStack[i];
                 sb.append(String.format("  %d) %s.%s(%s:%d)\n",
@@ -403,18 +403,18 @@ public class GlobalExceptionHandler {
                     element.getFileName(),
                     element.getLineNumber()));
             }
-            
+
             log.error(sb.toString());
         }
     }
-    
+
     /**
      * Створення уніфікованої відповіді про помилку
      */
     private ErrorResponse createErrorResponse(HttpStatus status, String message, Exception ex, String errorId) {
         return createErrorResponse(status, message, ex, null, errorId);
     }
-    
+
     /**
      * Створення уніфікованої відповіді про помилку з детальними помилками
      */
@@ -426,78 +426,78 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .method(request.getMethod())
                 .errorId(errorId);
-                
+
         if (errors != null && !errors.isEmpty()) {
             builder.errors(errors);
         }
-        
+
         return builder.build();
     }
-    
+
     /**
      * Перевірка, чи це середовище розробки
      */
     private boolean isDevelopmentEnvironment() {
-        return Arrays.asList(environment.getActiveProfiles()).contains("dev") || 
+        return Arrays.asList(environment.getActiveProfiles()).contains("dev") ||
                "dev".equals(activeProfile) ||
                Arrays.asList(environment.getActiveProfiles()).contains("development") ||
                "development".equals(activeProfile) ||
                Arrays.asList(environment.getActiveProfiles()).contains("local") ||
                "local".equals(activeProfile);
     }
-    
+
     /**
      * Генерація унікального ідентифікатора помилки
      */
     private String generateErrorId() {
         return UUID.randomUUID().toString().substring(0, 8);
     }
-    
+
     /**
      * Додавання стеку помилки до відповіді (тільки для dev середовища)
      */
     private void addStackTraceToResponse(Exception ex, ErrorResponse errorResponse) {
         StackTraceElement[] stackTrace = ex.getStackTrace();
-        
+
         // Додаємо інформацію про виняток
         errorResponse.addStackTraceLine("Exception: " + ex.getClass().getName() + ": " + ex.getMessage());
-        
+
         // Додаємо стектрейс
         int maxStackTraceLines = Math.min(stackTrace.length, 15); // Збільшуємо кількість рядків
-        
+
         for (int i = 0; i < maxStackTraceLines; i++) {
             StackTraceElement element = stackTrace[i];
-            String line = String.format("%s.%s(%s:%d)", 
+            String line = String.format("%s.%s(%s:%d)",
                 element.getClassName(),
                 element.getMethodName(),
                 element.getFileName(),
                 element.getLineNumber());
             errorResponse.addStackTraceLine(line);
         }
-        
+
         // Додаємо інформацію про причину помилки
         Throwable cause = ex.getCause();
         int depth = 0;
-        
+
         while (cause != null && depth < 3) { // Обмежуємо глибину вкладених причин
             errorResponse.addStackTraceLine("Caused by: " + cause.getClass().getName() + ": " + cause.getMessage());
-            
+
             // Додаємо стектрейс причини
             StackTraceElement[] causeStack = cause.getStackTrace();
             int causeLines = Math.min(causeStack.length, 5);
-            
+
             for (int i = 0; i < causeLines; i++) {
                 StackTraceElement element = causeStack[i];
-                String line = String.format("    at %s.%s(%s:%d)", 
+                String line = String.format("    at %s.%s(%s:%d)",
                     element.getClassName(),
                     element.getMethodName(),
                     element.getFileName(),
                     element.getLineNumber());
                 errorResponse.addStackTraceLine(line);
             }
-            
+
             cause = cause.getCause();
             depth++;
         }
     }
-} 
+}

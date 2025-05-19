@@ -9,20 +9,20 @@ import com.aksi.domain.pricing.entity.StainTypeEntity;
 /**
  * Абстрактний сервіс для роботи з типами плям.
  * Розширює загальний AbstractItemIssueService для більш специфічної функціональності для плям.
- * 
+ *
  * @param <R> тип репозиторію для StainTypeEntity
  */
-public abstract class AbstractStainTypeService<R extends JpaRepository<StainTypeEntity, java.util.UUID>> 
+public abstract class AbstractStainTypeService<R extends JpaRepository<StainTypeEntity, java.util.UUID>>
         extends AbstractItemIssueService<StainTypeEntity, R> {
-    
+
     protected AbstractStainTypeService(R repository) {
         super(repository);
     }
-    
+
     /**
      * Отримати всі активні типи плям.
-     * 
+     *
      * @return список активних типів плям
      */
     public abstract List<com.aksi.domain.pricing.dto.StainTypeDTO> getActiveStainTypes();
-} 
+}

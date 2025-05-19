@@ -47,7 +47,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/v3/api-docs/**")
                 .addResourceLocations("classpath:/META-INF/resources/");
     }
-    
+
     @Override
     public void addViewControllers(@NonNull ViewControllerRegistry registry) {
         log.info("Налаштування контролерів для перенаправлення");
@@ -60,7 +60,7 @@ public class WebConfig implements WebMvcConfigurer {
         log.info("Створення CORS фільтра");
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
-        
+
         config.setAllowedOriginPatterns(Collections.singletonList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(
@@ -77,14 +77,14 @@ public class WebConfig implements WebMvcConfigurer {
         ));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
-        
+
         // Реєструємо конфігурацію для всіх URL-шляхів
         source.registerCorsConfiguration("/**", config);
         source.registerCorsConfiguration("/auth/**", config);
         source.registerCorsConfiguration("/swagger-ui/**", config);
         source.registerCorsConfiguration("/v3/api-docs/**", config);
-        
+
         return new CorsFilter(source);
     }
 
-} 
+}

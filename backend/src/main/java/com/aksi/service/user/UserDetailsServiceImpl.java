@@ -15,9 +15,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    
+
     private final UserRepository userRepository;
-    
+
     /**
      * Завантаження користувача за ім'ям або email.
      * @param username ім'я користувача або email
@@ -32,4 +32,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .or(() -> userRepository.findByEmail(username))
                 .orElseThrow(() -> new UsernameNotFoundException("Користувача не знайдено: " + username));
     }
-} 
+}

@@ -25,12 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemCharacteristicsController {
-    
+
     private final ItemCharacteristicsService itemCharacteristicsService;
-    
+
     /**
      * Отримати доступні матеріали для предметів.
-     * 
+     *
      * @param category Категорія предмета (опціонально)
      * @return Список доступних матеріалів
      */
@@ -40,18 +40,18 @@ public class ItemCharacteristicsController {
         log.info("Запит на отримання доступних матеріалів для категорії: {}", category);
         try {
             List<String> materials = itemCharacteristicsService.getMaterialsByCategory(category);
-            return ApiResponseUtils.ok(materials, "Отримано {} матеріалів для категорії: {}", 
+            return ApiResponseUtils.ok(materials, "Отримано {} матеріалів для категорії: {}",
                     materials.size(), category != null ? category : "всі категорії");
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні матеріалів", 
-                    "Не вдалося отримати матеріали для категорії: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні матеріалів",
+                    "Не вдалося отримати матеріали для категорії: {}. Причина: {}",
                     category != null ? category : "всі категорії", e.getMessage());
         }
     }
-    
+
     /**
      * Отримати базові кольори для предметів.
-     * 
+     *
      * @return Список базових кольорів
      */
     @GetMapping("/colors")
@@ -62,14 +62,14 @@ public class ItemCharacteristicsController {
             List<String> colors = itemCharacteristicsService.getAllColors();
             return ApiResponseUtils.ok(colors, "Отримано {} базових кольорів", colors.size());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні кольорів", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні кольорів",
                     "Не вдалося отримати базові кольори. Причина: {}", e.getMessage());
         }
     }
-    
+
     /**
      * Отримати типи наповнювачів для предметів.
-     * 
+     *
      * @return Список типів наповнювачів
      */
     @GetMapping("/filler-types")
@@ -80,14 +80,14 @@ public class ItemCharacteristicsController {
             List<String> fillerTypes = itemCharacteristicsService.getAllFillerTypes();
             return ApiResponseUtils.ok(fillerTypes, "Отримано {} типів наповнювачів", fillerTypes.size());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні типів наповнювачів", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні типів наповнювачів",
                     "Не вдалося отримати типи наповнювачів. Причина: {}", e.getMessage());
         }
     }
-    
+
     /**
      * Отримати ступені зносу для предметів.
-     * 
+     *
      * @return Список ступенів зносу
      */
     @GetMapping("/wear-degrees")
@@ -98,7 +98,7 @@ public class ItemCharacteristicsController {
             List<String> wearDegrees = itemCharacteristicsService.getAllWearDegrees();
             return ApiResponseUtils.ok(wearDegrees, "Отримано {} ступенів зносу", wearDegrees.size());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні ступенів зносу", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні ступенів зносу",
                     "Не вдалося отримати ступені зносу. Причина: {}", e.getMessage());
         }
     }
@@ -107,7 +107,7 @@ public class ItemCharacteristicsController {
 
     /**
      * Отримати типи плям для предметів.
-     * 
+     *
      * @return Список типів плям
      */
     @GetMapping("/stain-types")
@@ -118,14 +118,14 @@ public class ItemCharacteristicsController {
             List<String> stainTypes = itemCharacteristicsService.getAllStainTypes();
             return ApiResponseUtils.ok(stainTypes, "Отримано {} типів плям", stainTypes.size());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні типів плям", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні типів плям",
                     "Не вдалося отримати типи плям. Причина: {}", e.getMessage());
         }
     }
 
     /**
      * Отримати дефекти та ризики для предметів.
-     * 
+     *
      * @return Список дефектів і ризиків
      */
     @GetMapping("/defects-and-risks")
@@ -136,14 +136,14 @@ public class ItemCharacteristicsController {
             List<String> defectsAndRisks = itemCharacteristicsService.getAllDefectsAndRisks();
             return ApiResponseUtils.ok(defectsAndRisks, "Отримано {} дефектів та ризиків", defectsAndRisks.size());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні дефектів та ризиків", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні дефектів та ризиків",
                     "Не вдалося отримати дефекти та ризики. Причина: {}", e.getMessage());
         }
     }
 
     /**
      * Отримати тільки дефекти для предметів.
-     * 
+     *
      * @return Список дефектів
      */
     @GetMapping("/defects")
@@ -154,14 +154,14 @@ public class ItemCharacteristicsController {
             List<String> defects = itemCharacteristicsService.getDefects();
             return ApiResponseUtils.ok(defects, "Отримано {} дефектів", defects.size());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні дефектів", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні дефектів",
                     "Не вдалося отримати дефекти. Причина: {}", e.getMessage());
         }
     }
 
     /**
      * Отримати тільки ризики для предметів.
-     * 
+     *
      * @return Список ризиків
      */
     @GetMapping("/risks")
@@ -172,7 +172,7 @@ public class ItemCharacteristicsController {
             List<String> risks = itemCharacteristicsService.getRisks();
             return ApiResponseUtils.ok(risks, "Отримано {} ризиків", risks.size());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні ризиків", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні ризиків",
                     "Не вдалося отримати ризики. Причина: {}", e.getMessage());
         }
     }

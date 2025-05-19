@@ -41,10 +41,10 @@ public class ServiceCategoryEntity {
 
     @Column(name = "sort_order")
     private int sortOrder;
-    
+
     @Builder.Default
     private boolean active = true;
-    
+
     @Column(name = "standard_processing_days", nullable = false)
     @Builder.Default
     private int standardProcessingDays = 2;

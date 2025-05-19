@@ -31,10 +31,10 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderDiscountController {
 
     private final DiscountService discountService;
-    
+
     /**
      * Застосувати знижку до замовлення
-     * 
+     *
      * @param request дані про знижку
      * @return інформація про застосовану знижку
      */
@@ -47,19 +47,19 @@ public class OrderDiscountController {
             OrderDiscountResponse response = discountService.applyDiscount(request);
             return ApiResponseUtils.ok(response, "Знижку застосовано до замовлення: {}", request.getOrderId());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.badRequest("Неможливо застосувати знижку", 
-                "Неможливо застосувати знижку до замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.badRequest("Неможливо застосувати знижку",
+                "Неможливо застосувати знижку до замовлення: {}. Причина: {}",
                 request.getOrderId(), e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при застосуванні знижки", 
-                "Виникла помилка при застосуванні знижки до замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при застосуванні знижки",
+                "Виникла помилка при застосуванні знижки до замовлення: {}. Причина: {}",
                 request.getOrderId(), e.getMessage());
         }
     }
-    
+
     /**
      * Отримати інформацію про поточну знижку для замовлення
-     * 
+     *
      * @param orderId ідентифікатор замовлення
      * @return інформація про поточну знижку
      */
@@ -72,18 +72,18 @@ public class OrderDiscountController {
             OrderDiscountResponse response = discountService.getOrderDiscount(orderId);
             return ApiResponseUtils.ok(response, "Отримано інформацію про знижку для замовлення: {}", orderId);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Знижку не знайдено", 
+            return ApiResponseUtils.notFound("Знижку не знайдено",
                 "Для замовлення: {} не знайдено знижки. Причина: {}", orderId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні інформації про знижку", 
-                "Виникла помилка при отриманні інформації про знижку для замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні інформації про знижку",
+                "Виникла помилка при отриманні інформації про знижку для замовлення: {}. Причина: {}",
                 orderId, e.getMessage());
         }
     }
-    
+
     /**
      * Скасувати знижку для замовлення
-     * 
+     *
      * @param orderId ідентифікатор замовлення
      * @return оновлена інформація про замовлення без знижки
      */
@@ -96,12 +96,12 @@ public class OrderDiscountController {
             OrderDiscountResponse response = discountService.removeDiscount(orderId);
             return ApiResponseUtils.ok(response, "Знижку скасовано для замовлення: {}", orderId);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Знижку не знайдено для скасування", 
+            return ApiResponseUtils.notFound("Знижку не знайдено для скасування",
                 "Для замовлення: {} не знайдено знижки для скасування. Причина: {}", orderId, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при скасуванні знижки", 
-                "Виникла помилка при скасуванні знижки для замовлення: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при скасуванні знижки",
+                "Виникла помилка при скасуванні знижки для замовлення: {}. Причина: {}",
                 orderId, e.getMessage());
         }
     }
-} 
+}

@@ -19,7 +19,7 @@ import com.aksi.domain.order.entity.OrderItemPhotoEntity;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface OrderItemPhotoMapper {
-    
+
     /**
      * Перетворити OrderItemPhotoEntity у OrderItemPhotoDTO.
      * @param entity сутність фото предмета замовлення
@@ -27,7 +27,7 @@ public interface OrderItemPhotoMapper {
      */
     @Mapping(target = "itemId", source = "orderItem.id")
     OrderItemPhotoDTO toDto(OrderItemPhotoEntity entity);
-    
+
     /**
      * Перетворити OrderItemPhotoDTO у OrderItemPhotoEntity.
      * @param dto DTO фото предмета замовлення
@@ -35,11 +35,11 @@ public interface OrderItemPhotoMapper {
      */
     @Mapping(target = "orderItem", ignore = true)
     OrderItemPhotoEntity toEntity(OrderItemPhotoDTO dto);
-    
+
     /**
      * Перетворити список OrderItemPhotoEntity у список OrderItemPhotoDTO.
      * @param entities список сутностей фото предметів замовлення
      * @return список DTO фото предметів замовлення
      */
     List<OrderItemPhotoDTO> toDtoList(List<OrderItemPhotoEntity> entities);
-} 
+}

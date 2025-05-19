@@ -11,11 +11,11 @@ import lombok.experimental.SuperBuilder;
 @Schema(description = "Інформація про тип дефекту")
 public class DefectTypeDTO extends ItemIssueDTO {
     // Специфічні для дефектів поля можна додати тут
-    
+
     /**
      * Конструктор за замовчуванням.
      */
     public DefectTypeDTO() {
         super();
     }
-} 
+}

@@ -112,12 +112,12 @@ public class DefaultReceiptPdfStyler implements ReceiptPdfStyler {
         keyCell.setBorder(Rectangle.NO_BORDER);
         keyCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         keyCell.setPadding(styleConfig.getCellPadding());
-        
+
         PdfPCell valueCell = new PdfPCell(new Phrase(value, styleConfig.getNormalFont()));
         valueCell.setBorder(Rectangle.NO_BORDER);
         valueCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         valueCell.setPadding(styleConfig.getCellPadding());
-        
+
         table.addCell(keyCell);
         table.addCell(valueCell);
     }
@@ -138,7 +138,7 @@ public class DefaultReceiptPdfStyler implements ReceiptPdfStyler {
             container.setWidthPercentage(100);
             container.setSpacingBefore(10);
             container.setSpacingAfter(10);
-            
+
             // Заголовок секції
             PdfPCell titleCell = new PdfPCell(new Phrase(title, styleConfig.getHeaderFont()));
             titleCell.setBackgroundColor(styleConfig.getBrandPrimaryColor());
@@ -147,7 +147,7 @@ public class DefaultReceiptPdfStyler implements ReceiptPdfStyler {
             titleCell.setBorderColor(styleConfig.getBrandPrimaryColor());
             titleCell.setPadding(styleConfig.getSectionPadding());
             container.addCell(titleCell);
-            
+
             // Контент секції
             PdfPCell contentCell = new PdfPCell();
             contentCell.addElement(content);
@@ -155,7 +155,7 @@ public class DefaultReceiptPdfStyler implements ReceiptPdfStyler {
             contentCell.setBorderColor(styleConfig.getTableBorderColor());
             contentCell.setPadding(styleConfig.getSectionPadding());
             container.addCell(contentCell);
-            
+
             document.add(container);
             return true;
         } catch (com.itextpdf.text.DocumentException e) {
@@ -174,10 +174,10 @@ public class DefaultReceiptPdfStyler implements ReceiptPdfStyler {
     public Phrase createPhrase(String text, int fontStyle) {
         Font font = switch (fontStyle) {
             case Font.BOLD -> styleConfig.getBoldFont();
-            case Font.ITALIC -> styleConfig.createFont(styleConfig.getPrimaryBaseFont(), 
+            case Font.ITALIC -> styleConfig.createFont(styleConfig.getPrimaryBaseFont(),
                     styleConfig.getNormalFontSize(), Font.ITALIC, null);
             default -> styleConfig.getNormalFont();
         };
         return new Phrase(text, font);
     }
-} 
+}

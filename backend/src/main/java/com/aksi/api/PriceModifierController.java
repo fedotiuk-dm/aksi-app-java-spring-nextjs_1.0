@@ -34,12 +34,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class PriceModifierController {
-    
+
     private final CatalogPriceModifierService modifierService;
-    
+
     /**
      * Отримати всі активні модифікатори.
-     * 
+     *
      * @return Список активних модифікаторів
      */
     @GetMapping
@@ -50,14 +50,14 @@ public class PriceModifierController {
             List<PriceModifierDTO> modifiers = modifierService.getAllActiveModifiers();
             return ApiResponseUtils.ok(modifiers, "Отримано {} активних модифікаторів", modifiers.size());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікаторів", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікаторів",
                     "Виникла помилка при отриманні активних модифікаторів. Причина: {}", e.getMessage());
         }
     }
-    
+
     /**
      * Отримати модифікатор за ID.
-     * 
+     *
      * @param id ID модифікатора
      * @return Деталі модифікатора
      */
@@ -68,20 +68,20 @@ public class PriceModifierController {
         try {
             PriceModifierDTO modifier = modifierService.getModifierById(id);
             if (modifier == null) {
-                return ApiResponseUtils.notFound("Модифікатор не знайдено", 
+                return ApiResponseUtils.notFound("Модифікатор не знайдено",
                         "Модифікатор з ID: {} не знайдено", id);
             }
             return ApiResponseUtils.ok(modifier, "Отримано модифікатор: {}", modifier.getName());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікатора", 
-                    "Виникла помилка при отриманні модифікатора з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікатора",
+                    "Виникла помилка при отриманні модифікатора з ID: {}. Причина: {}",
                     id, e.getMessage());
         }
     }
-    
+
     /**
      * Отримати модифікатор за кодом.
-     * 
+     *
      * @param code Код модифікатора
      * @return Деталі модифікатора
      */
@@ -92,20 +92,20 @@ public class PriceModifierController {
         try {
             PriceModifierDTO modifier = modifierService.getModifierByCode(code);
             if (modifier == null) {
-                return ApiResponseUtils.notFound("Модифікатор не знайдено", 
+                return ApiResponseUtils.notFound("Модифікатор не знайдено",
                         "Модифікатор з кодом: {} не знайдено", code);
             }
             return ApiResponseUtils.ok(modifier, "Отримано модифікатор: {}", modifier.getName());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікатора", 
-                    "Виникла помилка при отриманні модифікатора з кодом: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікатора",
+                    "Виникла помилка при отриманні модифікатора з кодом: {}. Причина: {}",
                     code, e.getMessage());
         }
     }
-    
+
     /**
      * Отримати модифікатори для певної категорії послуг.
-     * 
+     *
      * @param categoryCode Код категорії
      * @return Список модифікаторів для категорії
      */
@@ -116,22 +116,22 @@ public class PriceModifierController {
         log.info("Запит на отримання модифікаторів для категорії послуг: {}", categoryCode);
         try {
             List<PriceModifierDTO> modifiers = modifierService.getModifiersForServiceCategory(categoryCode);
-            return ApiResponseUtils.ok(modifiers, "Отримано {} модифікаторів для категорії послуг: {}", 
+            return ApiResponseUtils.ok(modifiers, "Отримано {} модифікаторів для категорії послуг: {}",
                     modifiers.size(), categoryCode);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Категорію послуг не знайдено", 
-                    "Категорію послуг з кодом: {} не знайдено. Причина: {}", 
+            return ApiResponseUtils.notFound("Категорію послуг не знайдено",
+                    "Категорію послуг з кодом: {} не знайдено. Причина: {}",
                     categoryCode, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікаторів", 
-                    "Виникла помилка при отриманні модифікаторів для категорії послуг: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікаторів",
+                    "Виникла помилка при отриманні модифікаторів для категорії послуг: {}. Причина: {}",
                     categoryCode, e.getMessage());
         }
     }
-    
+
     /**
      * Отримати модифікатори за категорією (GENERAL, TEXTILE, LEATHER).
-     * 
+     *
      * @param category Категорія модифікатора
      * @return Список модифікаторів у категорії
      */
@@ -142,18 +142,18 @@ public class PriceModifierController {
         log.info("Запит на отримання модифікаторів за категорією: {}", category);
         try {
             List<PriceModifierDTO> modifiers = modifierService.getModifiersByCategory(category);
-            return ApiResponseUtils.ok(modifiers, "Отримано {} модифікаторів для категорії: {}", 
+            return ApiResponseUtils.ok(modifiers, "Отримано {} модифікаторів для категорії: {}",
                     modifiers.size(), category);
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікаторів", 
-                    "Виникла помилка при отриманні модифікаторів для категорії: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при отриманні модифікаторів",
+                    "Виникла помилка при отриманні модифікаторів для категорії: {}. Причина: {}",
                     category, e.getMessage());
         }
     }
-    
+
     /**
      * Створити новий модифікатор ціни.
-     * 
+     *
      * @param modifierDTO Дані нового модифікатора
      * @return Створений модифікатор
      */
@@ -164,24 +164,24 @@ public class PriceModifierController {
         log.info("Запит на створення нового модифікатора: {}", modifierDTO);
         try {
             PriceModifierDTO createdModifier = modifierService.createModifier(modifierDTO);
-            return ApiResponseUtils.created(createdModifier, "Створено новий модифікатор: {}", 
+            return ApiResponseUtils.created(createdModifier, "Створено новий модифікатор: {}",
                     createdModifier.getName());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.badRequest("Некоректні дані для модифікатора", 
+            return ApiResponseUtils.badRequest("Некоректні дані для модифікатора",
                     "Не вдалося створити модифікатор. Причина: {}", e.getMessage());
         } catch (Exception e) {
             if (e.getMessage() != null && e.getMessage().contains("вже існує")) {
-                return ApiResponseUtils.conflict("Модифікатор з таким кодом вже існує", 
+                return ApiResponseUtils.conflict("Модифікатор з таким кодом вже існує",
                         "Модифікатор з кодом: {} вже існує", modifierDTO.getCode());
             }
-            return ApiResponseUtils.internalServerError("Помилка при створенні модифікатора", 
+            return ApiResponseUtils.internalServerError("Помилка при створенні модифікатора",
                     "Виникла помилка при створенні модифікатора. Причина: {}", e.getMessage());
         }
     }
-    
+
     /**
      * Оновити існуючий модифікатор ціни.
-     * 
+     *
      * @param id ID модифікатора
      * @param modifierDTO Нові дані модифікатора
      * @return Оновлений модифікатор
@@ -189,30 +189,30 @@ public class PriceModifierController {
     @PutMapping("/{id}")
     @Operation(summary = "Оновити існуючий модифікатор ціни")
     public ResponseEntity<?> updateModifier(
-            @PathVariable UUID id, 
+            @PathVariable UUID id,
             @Valid @RequestBody PriceModifierDTO modifierDTO) {
         log.info("Запит на оновлення модифікатора з ID {}: {}", id, modifierDTO);
         try {
             PriceModifierDTO updatedModifier = modifierService.updateModifier(id, modifierDTO);
-            return ApiResponseUtils.ok(updatedModifier, "Оновлено модифікатор: {}", 
+            return ApiResponseUtils.ok(updatedModifier, "Оновлено модифікатор: {}",
                     updatedModifier.getName());
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Модифікатор не знайдено", 
+            return ApiResponseUtils.notFound("Модифікатор не знайдено",
                     "Модифікатор з ID: {} не знайдено. Причина: {}", id, e.getMessage());
         } catch (Exception e) {
             if (e.getMessage() != null && e.getMessage().contains("вже існує")) {
-                return ApiResponseUtils.conflict("Модифікатор з таким кодом вже існує", 
+                return ApiResponseUtils.conflict("Модифікатор з таким кодом вже існує",
                         "Модифікатор з кодом: {} вже існує", modifierDTO.getCode());
             }
-            return ApiResponseUtils.internalServerError("Помилка при оновленні модифікатора", 
-                    "Виникла помилка при оновленні модифікатора з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при оновленні модифікатора",
+                    "Виникла помилка при оновленні модифікатора з ID: {}. Причина: {}",
                     id, e.getMessage());
         }
     }
-    
+
     /**
      * Деактивувати модифікатор ціни.
-     * 
+     *
      * @param id ID модифікатора
      * @return Статус без вмісту
      */
@@ -224,12 +224,12 @@ public class PriceModifierController {
             modifierService.deactivateModifier(id);
             return ApiResponseUtils.noContent("Деактивовано модифікатор з ID: {}", id);
         } catch (IllegalArgumentException e) {
-            return ApiResponseUtils.notFound("Модифікатор не знайдено", 
+            return ApiResponseUtils.notFound("Модифікатор не знайдено",
                     "Модифікатор з ID: {} не знайдено. Причина: {}", id, e.getMessage());
         } catch (Exception e) {
-            return ApiResponseUtils.internalServerError("Помилка при деактивації модифікатора", 
-                    "Виникла помилка при деактивації модифікатора з ID: {}. Причина: {}", 
+            return ApiResponseUtils.internalServerError("Помилка при деактивації модифікатора",
+                    "Виникла помилка при деактивації модифікатора з ID: {}. Причина: {}",
                     id, e.getMessage());
         }
     }
-} 
+}

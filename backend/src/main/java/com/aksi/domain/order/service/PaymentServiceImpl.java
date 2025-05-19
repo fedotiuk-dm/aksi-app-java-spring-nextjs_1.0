@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentServiceImpl implements PaymentService {
 
     private final OrderRepository orderRepository;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -32,19 +32,19 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional(readOnly = true)
     public PaymentCalculationResponse calculatePayment(PaymentCalculationRequest request) {
         log.debug("Розрахунок оплати для замовлення: {}", request.getOrderId());
-        
+
         OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, request.getOrderId());
-        
+
         BigDecimal finalAmount = order.getFinalAmount();
-        BigDecimal prepaymentAmount = request.getPrepaymentAmount() != null 
-                ? request.getPrepaymentAmount() 
+        BigDecimal prepaymentAmount = request.getPrepaymentAmount() != null
+                ? request.getPrepaymentAmount()
                 : BigDecimal.ZERO;
-                
+
         BigDecimal balanceAmount = finalAmount.subtract(prepaymentAmount);
-        
+
         return buildPaymentResponse(order, request.getPaymentMethod(), prepaymentAmount, balanceAmount);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -52,29 +52,29 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public PaymentCalculationResponse applyPayment(PaymentCalculationRequest request) {
         log.debug("Застосування інформації про оплату для замовлення: {}", request.getOrderId());
-        
+
         OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, request.getOrderId());
-        
+
         // Встановлення способу оплати
         order.setPaymentMethod(request.getPaymentMethod());
-        
+
         // Встановлення суми передоплати
-        BigDecimal prepaymentAmount = request.getPrepaymentAmount() != null 
-                ? request.getPrepaymentAmount() 
+        BigDecimal prepaymentAmount = request.getPrepaymentAmount() != null
+                ? request.getPrepaymentAmount()
                 : BigDecimal.ZERO;
         order.setPrepaymentAmount(prepaymentAmount);
-        
+
         // Розрахунок суми боргу
         BigDecimal balanceAmount = order.getFinalAmount().subtract(prepaymentAmount);
         order.setBalanceAmount(balanceAmount);
-        
+
         // Збереження замовлення
         OrderEntity savedOrder = orderRepository.save(order);
-        
-        return buildPaymentResponse(savedOrder, savedOrder.getPaymentMethod(), 
+
+        return buildPaymentResponse(savedOrder, savedOrder.getPaymentMethod(),
                 savedOrder.getPrepaymentAmount(), savedOrder.getBalanceAmount());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -82,16 +82,16 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional(readOnly = true)
     public PaymentCalculationResponse getOrderPayment(UUID orderId) {
         log.debug("Отримання інформації про оплату для замовлення: {}", orderId);
-        
+
         OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, orderId);
-        
-        return buildPaymentResponse(order, order.getPaymentMethod(), 
+
+        return buildPaymentResponse(order, order.getPaymentMethod(),
                 order.getPrepaymentAmount(), order.getBalanceAmount());
     }
-    
+
     /**
      * Створює об'єкт відповіді з розрахунком оплати
-     * 
+     *
      * @param order замовлення
      * @param paymentMethod спосіб оплати
      * @param prepaymentAmount сума передоплати
@@ -99,11 +99,11 @@ public class PaymentServiceImpl implements PaymentService {
      * @return відповідь з розрахунком оплати
      */
     private PaymentCalculationResponse buildPaymentResponse(
-            OrderEntity order, 
+            OrderEntity order,
             com.aksi.domain.order.model.PaymentMethod paymentMethod,
             BigDecimal prepaymentAmount,
             BigDecimal balanceAmount) {
-        
+
         return PaymentCalculationResponse.builder()
                 .orderId(order.getId())
                 .paymentMethod(paymentMethod)
@@ -114,4 +114,4 @@ public class PaymentServiceImpl implements PaymentService {
                 .balanceAmount(balanceAmount)
                 .build();
     }
-} 
+}

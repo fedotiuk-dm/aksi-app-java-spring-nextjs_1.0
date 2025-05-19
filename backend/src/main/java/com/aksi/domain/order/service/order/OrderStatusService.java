@@ -9,7 +9,7 @@ import com.aksi.domain.order.model.OrderStatusEnum;
  * Сервіс для управління статусами замовлень.
  */
 public interface OrderStatusService {
-    
+
     /**
      * Оновити статус замовлення.
      * @param id ідентифікатор
@@ -17,17 +17,17 @@ public interface OrderStatusService {
      * @return оновлене замовлення
      */
     OrderDTO updateOrderStatus(UUID id, OrderStatusEnum status);
-    
+
     /**
      * Скасувати замовлення.
      * @param id ідентифікатор
      */
     void cancelOrder(UUID id);
-    
+
     /**
      * Відзначити замовлення як виконане.
      * @param id ідентифікатор
      * @return виконане замовлення
      */
     OrderDTO completeOrder(UUID id);
-} 
+}

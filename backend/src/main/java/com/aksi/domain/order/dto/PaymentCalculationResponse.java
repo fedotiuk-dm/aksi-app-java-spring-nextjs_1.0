@@ -18,39 +18,39 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentCalculationResponse {
-    
+
     /**
      * ID замовлення
      */
     private UUID orderId;
-    
+
     /**
      * Спосіб оплати
      */
     private PaymentMethod paymentMethod;
-    
+
     /**
      * Загальна сума замовлення
      */
     private BigDecimal totalAmount;
-    
+
     /**
      * Сума знижки (якщо є)
      */
     private BigDecimal discountAmount;
-    
+
     /**
      * Кінцева сума до оплати
      */
     private BigDecimal finalAmount;
-    
+
     /**
      * Сума передоплати
      */
     private BigDecimal prepaymentAmount;
-    
+
     /**
      * Сума боргу (залишок до оплати)
      */
     private BigDecimal balanceAmount;
-} 
+}

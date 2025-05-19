@@ -10,14 +10,14 @@ import com.aksi.domain.order.dto.OrderItemDTO;
  * Сервіс для управління предметами замовлення.
  */
 public interface OrderItemManagementService {
-    
+
     /**
      * Отримати всі предмети замовлення.
      * @param orderId ідентифікатор замовлення
      * @return список предметів замовлення
      */
     List<OrderItemDTO> getOrderItems(UUID orderId);
-    
+
     /**
      * Отримати конкретний предмет замовлення за ID.
      * @param orderId ідентифікатор замовлення
@@ -25,7 +25,7 @@ public interface OrderItemManagementService {
      * @return об'єкт Optional з предметом замовлення або пустий Optional
      */
     Optional<OrderItemDTO> getOrderItem(UUID orderId, UUID itemId);
-    
+
     /**
      * Додати новий предмет до замовлення.
      * @param orderId ідентифікатор замовлення
@@ -33,7 +33,7 @@ public interface OrderItemManagementService {
      * @return доданий предмет замовлення
      */
     OrderItemDTO addOrderItem(UUID orderId, OrderItemDTO itemDTO);
-    
+
     /**
      * Оновити існуючий предмет замовлення.
      * @param orderId ідентифікатор замовлення
@@ -42,11 +42,11 @@ public interface OrderItemManagementService {
      * @return оновлений предмет замовлення
      */
     OrderItemDTO updateOrderItem(UUID orderId, UUID itemId, OrderItemDTO itemDTO);
-    
+
     /**
      * Видалити предмет із замовлення.
      * @param orderId ідентифікатор замовлення
      * @param itemId ідентифікатор предмета
      */
     void deleteOrderItem(UUID orderId, UUID itemId);
-} 
+}

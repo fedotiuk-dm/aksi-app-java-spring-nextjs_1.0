@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderRequirementsServiceImpl implements OrderRequirementsService {
 
     private final OrderRepository orderRepository;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -31,19 +31,19 @@ public class OrderRequirementsServiceImpl implements OrderRequirementsService {
     @Transactional
     public AdditionalRequirementsResponse updateRequirements(AdditionalRequirementsRequest request) {
         log.debug("Оновлення додаткових вимог для замовлення: {}", request.getOrderId());
-        
+
         OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, request.getOrderId());
-        
+
         // Оновлення додаткових вимог та приміток
         order.setAdditionalRequirements(request.getAdditionalRequirements());
         order.setCustomerNotes(request.getCustomerNotes());
-        
+
         // Збереження замовлення
         OrderEntity savedOrder = orderRepository.save(order);
-        
+
         return buildRequirementsResponse(savedOrder);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -51,15 +51,15 @@ public class OrderRequirementsServiceImpl implements OrderRequirementsService {
     @Transactional(readOnly = true)
     public AdditionalRequirementsResponse getRequirements(UUID orderId) {
         log.debug("Отримання додаткових вимог для замовлення: {}", orderId);
-        
+
         OrderEntity order = OrderRepositoryUtils.getOrderById(orderRepository, orderId);
-        
+
         return buildRequirementsResponse(order);
     }
-    
+
     /**
      * Створює об'єкт відповіді з додатковими вимогами
-     * 
+     *
      * @param order замовлення
      * @return відповідь з додатковими вимогами
      */
@@ -70,4 +70,4 @@ public class OrderRequirementsServiceImpl implements OrderRequirementsService {
                 .customerNotes(order.getCustomerNotes())
                 .build();
     }
-} 
+}

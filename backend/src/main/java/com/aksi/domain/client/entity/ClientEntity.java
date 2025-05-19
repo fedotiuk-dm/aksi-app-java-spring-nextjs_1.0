@@ -64,7 +64,7 @@ public class ClientEntity {
      * Основний номер телефону клієнта.
      */
     @NotBlank(message = "Телефон не може бути пустим")
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Некоректний формат телефону")
+    @Pattern(regexp = "^\\+ ? [0-9]{10,15}$", message = "Некоректний формат телефону")
     @Column(nullable = false, unique = true)
     private String phone;
 
@@ -86,7 +86,7 @@ public class ClientEntity {
      */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "client_communication_channels", 
+            name = "client_communication_channels",
             joinColumns = @JoinColumn(name = "client_id")
     )
     @Enumerated(EnumType.STRING)

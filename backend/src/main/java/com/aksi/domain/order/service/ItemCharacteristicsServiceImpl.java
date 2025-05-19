@@ -20,12 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsService {
-    
+
     private final StainTypeService stainTypeService;
     private final DefectTypeService defectTypeService;
-    
+
     // ---------- Характеристики предмета ----------
-    
+
     /**
      * {@inheritDoc}
      */
@@ -34,7 +34,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
         log.debug("Отримання доступних матеріалів для категорії: {}", category);
         return ItemCharacteristicsConstants.Materials.getMaterialsByCategory(category);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -43,7 +43,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
         log.debug("Отримання всіх базових кольорів");
         return ItemCharacteristicsConstants.Colors.getAllColors();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -52,7 +52,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
         log.debug("Отримання типів наповнювачів");
         return ItemCharacteristicsConstants.FillerTypes.getAllFillerTypes();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -61,9 +61,9 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
         log.debug("Отримання ступенів зносу");
         return ItemCharacteristicsConstants.WearDegrees.getAllWearDegrees();
     }
-    
+
     // ---------- Забруднення та дефекти ----------
-    
+
     /**
      * {@inheritDoc}
      */
@@ -74,7 +74,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
                 .map(stainType -> stainType.getName())
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -85,7 +85,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
                 .map(defectType -> defectType.getName())
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -94,12 +94,12 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
         log.debug("Отримання тільки типів дефектів з бази даних");
         // Фільтруємо за типом ризику LOW і MEDIUM (вважаємо їх дефектами)
         return defectTypeService.getAllActiveDefectTypes().stream()
-                .filter(defectType -> defectType.getRiskLevel() == RiskLevel.LOW || 
+                .filter(defectType -> defectType.getRiskLevel() == RiskLevel.LOW ||
                                       defectType.getRiskLevel() == RiskLevel.MEDIUM)
                 .map(defectType -> defectType.getName())
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * {@inheritDoc}
      */

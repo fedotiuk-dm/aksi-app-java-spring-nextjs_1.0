@@ -67,22 +67,22 @@ public class RecommendationBaseService {
      */
     private Map<String, List<ModifierInfo>> initializeStainModifierMap() {
         final Map<String, List<ModifierInfo>> map = new HashMap<>();
-        
+
         // Базові модифікатори для плям різного рівня ризику
         map.put("HIGH", List.of(
             new ModifierInfo("VERY_DIRTY", 70.0, RecommendationPriority.HIGH),
             new ModifierInfo("MANUAL_CLEANING", null, RecommendationPriority.HIGH)
         ));
-        
+
         map.put("MEDIUM", List.of(
             new ModifierInfo("VERY_DIRTY", 50.0, RecommendationPriority.MEDIUM),
             new ModifierInfo("MANUAL_CLEANING", null, RecommendationPriority.MEDIUM)
         ));
-        
+
         map.put("LOW", List.of(
             new ModifierInfo("VERY_DIRTY", 30.0, RecommendationPriority.LOW)
         ));
-        
+
         return map;
     }
 
@@ -91,16 +91,16 @@ public class RecommendationBaseService {
      */
     private Map<String, List<ModifierInfo>> initializeDefectModifierMap() {
         final Map<String, List<ModifierInfo>> map = new HashMap<>();
-        
+
         // Базові модифікатори для дефектів різного рівня ризику
         map.put("HIGH", List.of(
             new ModifierInfo("MANUAL_CLEANING", null, RecommendationPriority.HIGH)
         ));
-        
+
         map.put("MEDIUM", List.of(
             new ModifierInfo("MANUAL_CLEANING", null, RecommendationPriority.MEDIUM)
         ));
-        
+
         return map;
     }
 
@@ -147,7 +147,7 @@ public class RecommendationBaseService {
                 // Отримуємо необхідні дані про елемент
                 final RiskLevel riskLevel = item.getRiskLevel();
                 final boolean isStain = item instanceof StainTypeDTO;
-                
+
                 // Отримуємо список рекомендованих модифікаторів на основі рівня ризику
                 final List<ModifierInfo> modifierInfos = getModifiersForRiskLevel(riskLevel, isStain);
 
@@ -209,9 +209,9 @@ public class RecommendationBaseService {
         if (modifier == null) {
             return false;
         }
-        
+
         final ModifierCategory category = modifier.getCategory();
-        
+
         if (category == ModifierCategory.GENERAL) {
             return true; // Загальні модифікатори доступні для всіх категорій
         }
@@ -219,7 +219,7 @@ public class RecommendationBaseService {
         if (categoryCode == null || categoryCode.isEmpty()) {
             return false;
         }
-        
+
         final String categoryUpper = categoryCode.toUpperCase();
 
         // Для текстильних модифікаторів
@@ -270,4 +270,4 @@ public class RecommendationBaseService {
 
         return new ArrayList<>(mergedMap.values());
     }
-} 
+}

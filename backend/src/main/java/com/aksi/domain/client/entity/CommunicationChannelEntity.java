@@ -8,12 +8,12 @@ public enum CommunicationChannelEntity {
      * Телефонні дзвінки.
      */
     PHONE,
-    
+
     /**
      * SMS-повідомлення.
      */
     SMS,
-    
+
     /**
      * Viber-повідомлення.
      */

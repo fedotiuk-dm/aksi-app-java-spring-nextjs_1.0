@@ -20,16 +20,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompletionDateCalculationRequest {
-    
+
     /**
      * Список ID категорій послуг у замовленні
      */
     @NotEmpty(message = "Список категорій послуг не може бути порожнім")
     private List<UUID> serviceCategoryIds;
-    
+
     /**
      * Тип термінового виконання
      */
     @NotNull(message = "Тип термінового виконання обов'язковий")
     private ExpediteType expediteType;
-} 
+}

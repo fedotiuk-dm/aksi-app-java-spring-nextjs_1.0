@@ -35,33 +35,33 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItemPriceModifierEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_item_id", nullable = false)
     @ToString.Exclude
     private OrderItemEntity orderItem;
-    
+
     @Column(name = "name", nullable = false)
     private String name;
-    
+
     @Column(name = "description")
     private String description;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "modifier_type", nullable = false)
     private ModifierType modifierType;
-    
+
     @Column(name = "value", nullable = false, precision = 10, scale = 2)
     private BigDecimal value;
-    
+
     @Column(name = "amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
-    
+
     @CreationTimestamp
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
-} 
+}

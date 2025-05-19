@@ -23,67 +23,67 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderStatusServiceImpl implements OrderStatusService {
-    
+
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    
+
     @Override
     @Transactional
     public OrderDTO updateOrderStatus(UUID id, OrderStatusEnum status) {
         log.debug("Оновлення статусу замовлення {} на {}", id, status);
-        
+
         OrderEntity order = orderRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
                     "Замовлення не знайдено", id
                 ));
-        
+
         order.setStatus(status);
         order.setUpdatedDate(LocalDateTime.now());
-        
+
         if (status == OrderStatusEnum.COMPLETED) {
             order.setCompletedDate(LocalDateTime.now());
         }
-        
+
         OrderEntity updatedOrder = orderRepository.save(order);
         log.info("Оновлено статус замовлення {} на {}", id, status);
-        
+
         return orderMapper.toDTO(updatedOrder);
     }
-    
+
     @Override
     @Transactional
     public void cancelOrder(UUID id) {
         log.debug("Скасування замовлення: {}", id);
-        
+
         OrderEntity order = orderRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
                     "Замовлення не знайдено", id
                 ));
-        
+
         order.setStatus(OrderStatusEnum.CANCELLED);
         order.setUpdatedDate(LocalDateTime.now());
-        
+
         orderRepository.save(order);
         log.info("Замовлення {} скасовано", id);
     }
-    
+
     @Override
     @Transactional
     public OrderDTO completeOrder(UUID id) {
         log.debug("Відзначення замовлення як виконане: {}", id);
-        
+
         OrderEntity order = orderRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.withTypeAndId(
                     "Замовлення не знайдено", id
                 ));
-        
+
         order.setStatus(OrderStatusEnum.COMPLETED);
         order.setCompletedDate(LocalDateTime.now());
         order.setUpdatedDate(LocalDateTime.now());
-        
+
         OrderEntity completedOrder = orderRepository.save(order);
         log.info("Замовлення {} відзначено як виконане", id);
-        
+
         return orderMapper.toDTO(completedOrder);
     }
-} 
+}

@@ -23,28 +23,28 @@ public class EmailReceiptRequest {
      */
     @NotNull(message = "ID замовлення обов'язкове")
     private UUID orderId;
-    
+
     /**
      * Email отримувача
      */
     @NotBlank(message = "Email отримувача обов'язковий")
     @Email(message = "Некоректний формат email")
     private String recipientEmail;
-    
+
     /**
      * Тема листа
      */
     @Builder.Default
     private String subject = "Квитанція замовлення хімчистки AKSI";
-    
+
     /**
      * Текст повідомлення
      */
     private String message;
-    
+
     /**
      * Чи включати цифровий підпис у PDF
      */
     @Builder.Default
     private boolean includeSignature = false;
-} 
+}

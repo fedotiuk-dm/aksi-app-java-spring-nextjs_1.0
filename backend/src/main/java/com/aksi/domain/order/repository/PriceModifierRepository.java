@@ -13,12 +13,12 @@ import com.aksi.domain.order.entity.OrderItemPriceModifierEntity;
  */
 @Repository
 public interface PriceModifierRepository extends JpaRepository<OrderItemPriceModifierEntity, UUID> {
-    
+
     /**
      * Знаходить всі модифікатори ціни для конкретного предмета замовлення.
-     * 
+     *
      * @param orderItemId ID предмета замовлення
      * @return список модифікаторів ціни
      */
     List<OrderItemPriceModifierEntity> findByOrderItemId(UUID orderItemId);
-} 
+}

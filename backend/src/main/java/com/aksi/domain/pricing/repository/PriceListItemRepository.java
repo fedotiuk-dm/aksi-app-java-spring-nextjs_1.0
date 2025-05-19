@@ -18,7 +18,7 @@ public interface PriceListItemRepository extends JpaRepository<PriceListItemEnti
     List<PriceListItemEntity> findAllByCategory(ServiceCategoryEntity category);
     List<PriceListItemEntity> findAllByCategoryOrderByCatalogNumberAsc(ServiceCategoryEntity category);
     List<PriceListItemEntity> findAllByActiveTrue();
-    
+
     /**
      * Знаходить елемент прайс-листа за категорією та назвою.
      * @param categoryId ідентифікатор
@@ -26,7 +26,7 @@ public interface PriceListItemRepository extends JpaRepository<PriceListItemEnti
      * @return Елемент прайс-листа
      */
     Optional<PriceListItemEntity> findByCategoryIdAndName(UUID categoryId, String name);
-    
+
     /**
      * Знаходить елемент прайс-листа за кодом категорії та назвою предмета.
      * @param categoryCode код категорії
@@ -35,9 +35,9 @@ public interface PriceListItemRepository extends JpaRepository<PriceListItemEnti
      */
     @Query("SELECT pli FROM PriceListItemEntity pli WHERE pli.category.code = :categoryCode AND pli.name = :itemName")
     Optional<PriceListItemEntity> findByCategoryCodeAndItemName(
-            @Param("categoryCode") String categoryCode, 
+            @Param("categoryCode") String categoryCode,
             @Param("itemName") String itemName);
-    
+
     /**
      * Знаходить максимальний номер в каталозі для вказаної категорії.
      * @param categoryId ID категорії

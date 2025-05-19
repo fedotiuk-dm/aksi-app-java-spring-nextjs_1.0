@@ -16,7 +16,7 @@ public class EntityNotFoundException extends RuntimeException {
     private final Object entityId;
     private final String entityType;
     private final Map<String, Object> metadata;
-    
+
     /**
      * Базовий конструктор з усіма параметрами (приватний, щоб заохочувати використання статичних фабричних методів)
      */
@@ -26,14 +26,14 @@ public class EntityNotFoundException extends RuntimeException {
         this.entityId = entityId;
         this.metadata = metadata != null ? new HashMap<>(metadata) : new HashMap<>();
     }
-    
+
     /**
      * Публічний конструктор для зворотної сумісності
      */
     public EntityNotFoundException(String message) {
         this(message, null, null, null);
     }
-    
+
     /**
      * Публічний конструктор для зворотної сумісності
      */
@@ -63,7 +63,7 @@ public class EntityNotFoundException extends RuntimeException {
         String message = String.format("Сутність типу %s з ідентифікатором %s не знайдена", entityType, id);
         return new EntityNotFoundException(message, entityType, id, null);
     }
-    
+
     /**
      * Додає метадані до виключення
      */

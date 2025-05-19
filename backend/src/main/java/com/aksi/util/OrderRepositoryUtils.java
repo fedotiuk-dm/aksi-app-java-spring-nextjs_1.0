@@ -16,10 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 @Slf4j
 public class OrderRepositoryUtils {
-    
+
     /**
      * Отримати замовлення за ID
-     * 
+     *
      * @param orderRepository репозиторій замовлень
      * @param orderId ID замовлення
      * @return сутність замовлення
@@ -32,4 +32,4 @@ public class OrderRepositoryUtils {
                     return EntityNotFoundException.withTypeAndId("Замовлення", orderId.toString());
                 });
     }
-} 
+}

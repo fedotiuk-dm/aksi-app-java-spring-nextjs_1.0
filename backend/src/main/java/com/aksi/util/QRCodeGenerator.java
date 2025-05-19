@@ -22,7 +22,7 @@ public class QRCodeGenerator {
 
     /**
      * Генерує QR-код з вказаним текстом.
-     * 
+     *
      * @param text текст для QR-коду
      * @param width ширина QR-коду
      * @param height висота QR-коду
@@ -37,7 +37,7 @@ public class QRCodeGenerator {
 
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height, hints);
-            
+
             return MatrixToImageWriter.toBufferedImage(bitMatrix);
         } catch (WriterException e) {
             log.error("Error generating QR code: {}", e.getMessage(), e);

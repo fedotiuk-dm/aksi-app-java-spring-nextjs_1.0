@@ -7,17 +7,17 @@ public interface EmailService {
 
     /**
      * Відправляє простий текстовий лист.
-     * 
+     *
      * @param to адреса отримувача
      * @param subject тема листа
      * @param content текст листа
      * @return true якщо лист успішно відправлено
      */
     boolean sendEmail(String to, String subject, String content);
-    
+
     /**
      * Відправляє лист з вкладенням.
-     * 
+     *
      * @param to адреса отримувача
      * @param subject тема листа
      * @param content текст листа

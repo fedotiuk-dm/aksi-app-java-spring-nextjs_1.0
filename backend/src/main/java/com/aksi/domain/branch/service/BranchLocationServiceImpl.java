@@ -26,10 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class BranchLocationServiceImpl implements BranchLocationService {
-    
+
     private final BranchLocationRepository branchLocationRepository;
     private final BranchLocationMapper branchLocationMapper;
-    
+
     @Override
     @Transactional(readOnly = true)
     public List<BranchLocationDTO> getAllBranchLocations() {
@@ -38,7 +38,7 @@ public class BranchLocationServiceImpl implements BranchLocationService {
                 .map(branchLocationMapper::toDto)
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public List<BranchLocationDTO> getActiveBranchLocations() {
@@ -47,7 +47,7 @@ public class BranchLocationServiceImpl implements BranchLocationService {
                 .map(branchLocationMapper::toDto)
                 .collect(Collectors.toList());
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public BranchLocationDTO getBranchLocationById(UUID id) {
@@ -55,7 +55,7 @@ public class BranchLocationServiceImpl implements BranchLocationService {
         BranchLocationEntity entity = findEntityById(id);
         return branchLocationMapper.toDto(entity);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public BranchLocationDTO getBranchLocationByCode(String code) {
@@ -64,71 +64,71 @@ public class BranchLocationServiceImpl implements BranchLocationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Пункт прийому з кодом " + code + " не знайдено"));
         return branchLocationMapper.toDto(entity);
     }
-    
+
     @Override
     @Transactional
     public BranchLocationDTO createBranchLocation(BranchLocationCreateRequest request) {
         log.debug("Створення нового пункту прийому замовлень: {}", request);
-        
+
         // Перевірка унікальності коду
         if (branchLocationRepository.existsByCode(request.getCode())) {
             throw new DuplicateResourceException("Пункт прийому з кодом " + request.getCode() + " вже існує");
         }
-        
+
         BranchLocationEntity entity = branchLocationMapper.toEntity(request);
         BranchLocationEntity savedEntity = branchLocationRepository.save(entity);
-        
+
         log.info("Створено новий пункт прийому замовлень з ID: {}", savedEntity.getId());
         return branchLocationMapper.toDto(savedEntity);
     }
-    
+
     @Override
     @Transactional
     public BranchLocationDTO updateBranchLocation(UUID id, BranchLocationUpdateRequest request) {
         log.debug("Оновлення пункту прийому замовлень з ID: {}, дані: {}", id, request);
-        
+
         BranchLocationEntity entity = findEntityById(id);
-        
+
         // Перевірка унікальності коду, якщо він змінюється
-        if (!entity.getCode().equals(request.getCode()) && 
+        if (!entity.getCode().equals(request.getCode()) &&
             branchLocationRepository.existsByCodeAndIdNot(request.getCode(), id)) {
             throw new DuplicateResourceException("Пункт прийому з кодом " + request.getCode() + " вже існує");
         }
-        
+
         branchLocationMapper.updateEntity(request, entity);
         BranchLocationEntity updatedEntity = branchLocationRepository.save(entity);
-        
+
         log.info("Оновлено пункт прийому замовлень з ID: {}", id);
         return branchLocationMapper.toDto(updatedEntity);
     }
-    
+
     @Override
     @Transactional
     public BranchLocationDTO setActive(UUID id, boolean active) {
         log.debug("Зміна статусу активності пункту прийому замовлень з ID: {} на: {}", id, active);
-        
+
         BranchLocationEntity entity = findEntityById(id);
         entity.setActive(active);
         BranchLocationEntity updatedEntity = branchLocationRepository.save(entity);
-        
+
         log.info("Змінено статус активності пункту прийому замовлень з ID: {} на: {}", id, active);
         return branchLocationMapper.toDto(updatedEntity);
     }
-    
+
     @Override
     @Transactional
     public void deleteBranchLocation(UUID id) {
         log.debug("Видалення пункту прийому замовлень з ID: {}", id);
-        
+
         BranchLocationEntity entity = findEntityById(id);
         branchLocationRepository.delete(entity);
-        
+
         log.info("Видалено пункт прийому замовлень з ID: {}", id);
     }
-    
+
     /**
      * Знаходить сутність пункту прийому за ідентифікатором.
-     * 
+     *
      * @param id ідентифікатор пункту прийому
      * @return сутність пункту прийому
      * @throws ResourceNotFoundException якщо пункт прийому не знайдено

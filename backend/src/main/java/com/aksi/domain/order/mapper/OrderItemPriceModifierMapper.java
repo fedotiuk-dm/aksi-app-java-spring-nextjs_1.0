@@ -19,7 +19,7 @@ import com.aksi.domain.order.entity.OrderItemPriceModifierEntity;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface OrderItemPriceModifierMapper {
-    
+
     /**
      * Перетворити PriceModifierEntity у PriceModifierDTO.
      * @param entity сутність модифікатора ціни
@@ -27,7 +27,7 @@ public interface OrderItemPriceModifierMapper {
      */
     @Mapping(target = "type", source = "modifierType")
     PriceModifierDTO toDto(OrderItemPriceModifierEntity entity);
-    
+
     /**
      * Перетворити PriceModifierDTO у PriceModifierEntity.
      * @param dto DTO модифікатора ціни
@@ -38,18 +38,18 @@ public interface OrderItemPriceModifierMapper {
     @Mapping(target = "orderItem", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     OrderItemPriceModifierEntity toEntity(PriceModifierDTO dto);
-    
+
     /**
      * Перетворити список PriceModifierEntity у список PriceModifierDTO.
      * @param entities список сутностей модифікаторів ціни
      * @return список DTO модифікаторів ціни
      */
     List<PriceModifierDTO> toDtoList(List<OrderItemPriceModifierEntity> entities);
-    
+
     /**
      * Перетворити список PriceModifierDTO у список PriceModifierEntity.
      * @param dtos список DTO модифікаторів ціни
      * @return список сутностей модифікаторів ціни
      */
     List<OrderItemPriceModifierEntity> toEntityList(List<PriceModifierDTO> dtos);
-} 
+}

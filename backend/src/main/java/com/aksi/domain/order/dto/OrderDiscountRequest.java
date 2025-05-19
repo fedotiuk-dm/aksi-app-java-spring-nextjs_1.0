@@ -21,19 +21,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDiscountRequest {
-    
+
     /**
      * ID замовлення
      */
     @NotNull(message = "ID замовлення обов'язковий")
     private UUID orderId;
-    
+
     /**
      * Тип знижки
      */
     @NotNull(message = "Тип знижки обов'язковий")
     private DiscountType discountType;
-    
+
     /**
      * Відсоток знижки (для користувацького типу знижки)
      * Діапазон від 0 до 100
@@ -41,10 +41,10 @@ public class OrderDiscountRequest {
     @Min(value = 0, message = "Відсоток знижки не може бути меншим за 0")
     @Max(value = 100, message = "Відсоток знижки не може бути більшим за 100")
     private Integer discountPercentage;
-    
+
     /**
      * Опис знижки (для користувацького типу знижки)
      */
     @Size(max = 255, message = "Опис знижки не може перевищувати 255 символів")
     private String discountDescription;
-} 
+}

@@ -19,16 +19,16 @@ import io.jsonwebtoken.security.Keys;
  */
 @Component
 public class JwtUtils {
-    
+
     @Value("${jwt.secret}")
     private String jwtSecret;
-    
+
     @Value("${jwt.expiration}")
     private long jwtExpiration;
-    
+
     @Value("${jwt.refresh.expiration:604800000}")
     private long refreshTokenExpiration;
-    
+
     /**
      * Витягує ім'я користувача з JWT токена.
      * @param token JWT токен
@@ -37,7 +37,7 @@ public class JwtUtils {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-    
+
     /**
      * Витягує довільне поле з JWT токена.
      * @param token JWT токен
@@ -49,7 +49,7 @@ public class JwtUtils {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-    
+
     /**
      * Генерує JWT токен для користувача.
      * @param userDetails дані користувача
@@ -58,7 +58,7 @@ public class JwtUtils {
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
-    
+
     /**
      * Генерує JWT токен з додатковими полями.
      * @param extraClaims додаткові поля
@@ -74,7 +74,7 @@ public class JwtUtils {
                 .signWith(getSignInKey())
                 .compact();
     }
-    
+
     /**
      * Перевіряє дійсність JWT токена.
      * @param token JWT токен
@@ -85,7 +85,7 @@ public class JwtUtils {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !tokenExpired(token);
     }
-    
+
     /**
      * Перевіряє чи закінчився термін дії токена.
      * @param token JWT токен
@@ -94,7 +94,7 @@ public class JwtUtils {
     private boolean tokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
-    
+
     /**
      * Витягує дату закінчення терміну дії токена.
      * @param token JWT токен
@@ -103,7 +103,7 @@ public class JwtUtils {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-    
+
     /**
      * Витягує всі поля з JWT токена.
      * @param token JWT токен
@@ -116,7 +116,7 @@ public class JwtUtils {
                 .parseSignedClaims(token)
                 .getPayload();
     }
-    
+
     /**
      * Отримує ключ для підпису JWT.
      * @return ключ
@@ -125,7 +125,7 @@ public class JwtUtils {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-    
+
     /**
      * Повертає час життя токена в секундах.
      * @return час життя в секундах
@@ -133,7 +133,7 @@ public class JwtUtils {
     public long getExpirationInSeconds() {
         return jwtExpiration / 1000;
     }
-    
+
     /**
      * Генерує refresh token для користувача.
      * @param userDetails дані користувача
@@ -147,7 +147,7 @@ public class JwtUtils {
                 .signWith(getSignInKey())
                 .compact();
     }
-    
+
     /**
      * Повертає час життя refresh токена в секундах.
      * @return час життя в секундах
@@ -155,4 +155,4 @@ public class JwtUtils {
     public long getRefreshExpirationInSeconds() {
         return refreshTokenExpiration / 1000;
     }
-} 
+}

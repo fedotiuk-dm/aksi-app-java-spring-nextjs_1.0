@@ -37,10 +37,10 @@ public class CorsConfig {
         source.registerCorsConfiguration("/**", config);
 
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-        
+
         // Надаємо високий пріоритет, щоб фільтр виконувався перед усіма іншими
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        
+
         return bean;
     }
-} 
+}

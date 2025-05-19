@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Slf4j
 public class JacksonConfig {
-    
+
     /**
      * Налаштування ObjectMapper для більш предбачуваної серіалізації.
      * @return налаштований ObjectMapper для серіалізації/десеріалізації JSON
@@ -25,16 +25,16 @@ public class JacksonConfig {
     public ObjectMapper objectMapper() {
         log.info("Налаштування ObjectMapper");
         ObjectMapper mapper = new ObjectMapper();
-        
+
         // Додаємо підтримку Java 8 Date/Time API (LocalDateTime, LocalDate, тощо)
         mapper.registerModule(new JavaTimeModule());
-        
+
         // Вимикаємо серіалізацію дат як масиви timestamp
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        
+
         // Не включати null поля
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        
+
         return mapper;
     }
 }

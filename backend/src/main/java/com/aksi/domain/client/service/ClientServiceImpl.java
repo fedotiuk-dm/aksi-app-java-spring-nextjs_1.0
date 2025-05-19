@@ -57,11 +57,11 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public ClientResponse createClient(CreateClientRequest request) {
         log.debug("Створення нового клієнта: {} {}", request.getFirstName(), request.getLastName());
-        
+
         validateUniquePhone(null, request.getPhone());
         validateUniqueEmail(null, request.getEmail());
         validateSourceDetails(request.getSource(), request.getSourceDetails());
-        
+
         ClientEntity client = ClientEntity.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -72,10 +72,10 @@ public class ClientServiceImpl implements ClientService {
                 .source(request.getSource())
                 .sourceDetails(request.getSourceDetails())
                 .build();
-        
+
         ClientEntity savedClient = clientRepository.save(client);
         log.info("Створено нового клієнта з ID: {}", savedClient.getId());
-        
+
         return mapToResponse(savedClient);
     }
 
@@ -83,19 +83,19 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public ClientResponse updateClient(UUID id, UpdateClientRequest request) {
         log.debug("Оновлення клієнта з ID: {}", id);
-        
+
         ClientEntity client = clientRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Client", id));
-        
+
         validateUniquePhone(client, request.getPhone());
         validateUniqueEmail(client, request.getEmail());
         validateSourceDetails(request.getSource(), request.getSourceDetails());
-        
+
         updateClientFields(client, request);
-        
+
         ClientEntity updatedClient = clientRepository.save(client);
         log.info("Оновлено клієнта з ID: {}", updatedClient.getId());
-        
+
         return mapToResponse(updatedClient);
     }
 
@@ -103,15 +103,15 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     public void deleteClient(UUID id) {
         log.debug("Видалення клієнта з ID: {}", id);
-        
+
         if (!clientRepository.existsById(id)) {
             throw EntityNotFoundException.withMessage("Клієнта з ID " + id + " не знайдено");
         }
-        
+
         clientRepository.deleteById(id);
         log.info("Видалено клієнта з ID: {}", id);
     }
-    
+
     /**
      * Перевіряє унікальність телефону клієнта.
      * @param client існуючий клієнт (може бути null для нового клієнта)
@@ -121,15 +121,15 @@ public class ClientServiceImpl implements ClientService {
         if (phone == null) {
             return;
         }
-        
+
         boolean isPhoneChanged = client != null && !phone.equals(client.getPhone());
         boolean isNewClient = client == null;
-        
+
         if ((isNewClient || isPhoneChanged) && clientRepository.existsByPhone(phone)) {
             throw new IllegalArgumentException("Клієнт з телефоном " + phone + " вже існує");
         }
     }
-    
+
     /**
      * Перевіряє унікальність email клієнта.
      * @param client існуючий клієнт (може бути null для нового клієнта)
@@ -139,15 +139,15 @@ public class ClientServiceImpl implements ClientService {
         if (email == null || email.isEmpty()) {
             return;
         }
-        
+
         boolean isEmailChanged = client != null && !email.equals(client.getEmail());
         boolean isNewClient = client == null;
-        
+
         if ((isNewClient || isEmailChanged) && clientRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Клієнт з email " + email + " вже існує");
         }
     }
-    
+
     /**
      * Перевіряє наявність деталей джерела, якщо вибрано "Інше".
      * @param source джерело
@@ -158,7 +158,7 @@ public class ClientServiceImpl implements ClientService {
             throw new IllegalArgumentException("Для джерела 'Інше' необхідно вказати деталі");
         }
     }
-    
+
     /**
      * Оновлює поля клієнтської сутності з DTO запиту.
      * @param client сутність для оновлення
@@ -171,11 +171,11 @@ public class ClientServiceImpl implements ClientService {
         Optional.ofNullable(request.getEmail()).ifPresent(client::setEmail);
         Optional.ofNullable(request.getAddress()).ifPresent(client::setAddress);
         Optional.ofNullable(request.getCommunicationChannels()).ifPresent(client::setCommunicationChannels);
-        
+
         // Особлива логіка для джерела інформації
         Optional.ofNullable(request.getSource()).ifPresent(source -> {
             client.setSource(source);
-            
+
             if (source != ClientSourceEntity.OTHER) {
                 client.setSourceDetails(null);
             } else if (request.getSourceDetails() != null) {
@@ -183,7 +183,7 @@ public class ClientServiceImpl implements ClientService {
             }
         });
     }
-    
+
     /**
      * Конвертує сутність клієнта в DTO для відповіді.
      * @param client сутність клієнта

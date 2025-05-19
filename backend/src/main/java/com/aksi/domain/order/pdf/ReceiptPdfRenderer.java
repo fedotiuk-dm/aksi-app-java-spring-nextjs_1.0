@@ -20,14 +20,14 @@ public interface ReceiptPdfRenderer {
      * @return масив байтів з PDF-документом
      */
     byte[] generatePdfReceipt(ReceiptDTO receiptData, boolean includeSignature);
-    
+
     /**
      * Ініціалізує документ PDF.
      *
      * @return створений документ PDF та пов'язаний з ним writer
      */
     DocumentWriterPair initializeDocument();
-    
+
     /**
      * Додає інформацію про замовлення до документа.
      *
@@ -36,7 +36,7 @@ public interface ReceiptPdfRenderer {
      * @param receiptData дані квитанції
      */
     void renderOrderInfo(Document document, PdfWriter writer, ReceiptDTO receiptData);
-    
+
     /**
      * Додає інформацію про філію до документа.
      *
@@ -45,7 +45,7 @@ public interface ReceiptPdfRenderer {
      * @param receiptData дані квитанції
      */
     void renderBranchInfo(Document document, PdfWriter writer, ReceiptDTO receiptData);
-    
+
     /**
      * Додає інформацію про клієнта до документа.
      *
@@ -54,7 +54,7 @@ public interface ReceiptPdfRenderer {
      * @param receiptData дані квитанції
      */
     void renderClientInfo(Document document, PdfWriter writer, ReceiptDTO receiptData);
-    
+
     /**
      * Додає таблицю предметів замовлення до документа.
      *
@@ -63,7 +63,7 @@ public interface ReceiptPdfRenderer {
      * @param receiptData дані квитанції
      */
     void renderItemsTable(Document document, PdfWriter writer, ReceiptDTO receiptData);
-    
+
     /**
      * Додає фінансову інформацію до документа.
      *
@@ -72,7 +72,7 @@ public interface ReceiptPdfRenderer {
      * @param receiptData дані квитанції
      */
     void renderFinancialInfo(Document document, PdfWriter writer, ReceiptDTO receiptData);
-    
+
     /**
      * Додає юридичну інформацію до документа.
      *
@@ -81,7 +81,7 @@ public interface ReceiptPdfRenderer {
      * @param receiptData дані квитанції
      */
     void renderLegalInfo(Document document, PdfWriter writer, ReceiptDTO receiptData);
-    
+
     /**
      * Додає підпис клієнта до документа.
      *
@@ -91,7 +91,7 @@ public interface ReceiptPdfRenderer {
      * @param includeSignature включати електронний підпис, якщо доступний
      */
     void renderSignature(Document document, PdfWriter writer, ReceiptDTO receiptData, boolean includeSignature);
-    
+
     /**
      * Клас для повернення пари документ/writer.
      */
@@ -99,23 +99,23 @@ public interface ReceiptPdfRenderer {
         private final Document document;
         private final PdfWriter writer;
         private final ByteArrayOutputStream outputStream;
-        
+
         public DocumentWriterPair(Document document, PdfWriter writer, ByteArrayOutputStream outputStream) {
             this.document = document;
             this.writer = writer;
             this.outputStream = outputStream;
         }
-        
+
         public Document getDocument() {
             return document;
         }
-        
+
         public PdfWriter getWriter() {
             return writer;
         }
-        
+
         public ByteArrayOutputStream getOutputStream() {
             return outputStream;
         }
     }
-} 
+}

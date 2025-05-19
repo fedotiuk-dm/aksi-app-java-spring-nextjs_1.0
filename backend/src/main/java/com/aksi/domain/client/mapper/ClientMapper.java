@@ -10,7 +10,7 @@ import com.aksi.domain.client.entity.ClientEntity;
  */
 @Component
 public class ClientMapper {
-    
+
     /**
      * Перетворити ClientEntity у ClientResponse.
      * @param client параметр client
@@ -20,7 +20,7 @@ public class ClientMapper {
         if (client == null) {
             return null;
         }
-        
+
         return ClientResponse.builder()
                 .id(client.getId())
                 .firstName(client.getFirstName())

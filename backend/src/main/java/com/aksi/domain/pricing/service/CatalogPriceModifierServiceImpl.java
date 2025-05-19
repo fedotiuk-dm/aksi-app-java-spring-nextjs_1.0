@@ -27,11 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierService {
-    
+
     private final CatalogPriceModifierRepository modifierRepository;
     private final CatalogPriceModifierMapper modifierMapper;
     private final ServiceCategoryModifierMapper categoryModifierMapper;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -43,7 +43,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
                 .map(modifierMapper::toDto)
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -55,7 +55,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
                 .map(modifierMapper::toDto)
                 .orElse(null);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -67,7 +67,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
                 .map(modifierMapper::toDto)
                 .orElse(null);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -75,16 +75,16 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     @Transactional(readOnly = true)
     public List<PriceModifierDTO> getModifiersForServiceCategory(String categoryCode) {
         log.debug("Отримання модифікаторів для категорії послуг: {}", categoryCode);
-        
+
         // Використовуємо мапер для отримання категорії модифікатора
         ModifierCategory modifierCategory = categoryModifierMapper.mapServiceToModifierCategory(categoryCode);
-        
+
         // Отримуємо модифікатори для цієї категорії
         return modifierRepository.findModifiersForServiceCategory(modifierCategory).stream()
                 .map(modifierMapper::toDto)
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -92,24 +92,24 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     @Transactional
     public PriceModifierDTO createModifier(PriceModifierDTO modifierDTO) {
         log.debug("Створення нового модифікатора: {}", modifierDTO);
-        
+
         // Перевіряємо, чи не існує вже модифікатор з таким кодом
         Optional<PriceModifierDefinitionEntity> existingModifier = modifierRepository.findByCode(modifierDTO.getCode());
         if (existingModifier.isPresent()) {
             log.warn("Модифікатор з кодом {} вже існує", modifierDTO.getCode());
             throw new IllegalArgumentException("Модифікатор з кодом " + modifierDTO.getCode() + " вже існує");
         }
-        
+
         // Створюємо новий модифікатор
         PriceModifierDefinitionEntity entity = modifierMapper.toEntity(modifierDTO);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
-        
+
         // Зберігаємо і повертаємо
         PriceModifierDefinitionEntity savedEntity = modifierRepository.save(entity);
         return modifierMapper.toDto(savedEntity);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -117,11 +117,11 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     @Transactional
     public PriceModifierDTO updateModifier(UUID id, PriceModifierDTO modifierDTO) {
         log.debug("Оновлення модифікатора з ID {}: {}", id, modifierDTO);
-        
+
         // Знаходимо існуючий модифікатор
         PriceModifierDefinitionEntity existingEntity = modifierRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Модифікатор з ID " + id + " не знайдено"));
-        
+
         // Перевіряємо унікальність коду, якщо він змінюється
         if (!existingEntity.getCode().equals(modifierDTO.getCode())) {
             Optional<PriceModifierDefinitionEntity> entityWithSameCode = modifierRepository.findByCode(modifierDTO.getCode());
@@ -130,7 +130,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
                 throw new IllegalArgumentException("Модифікатор з кодом " + modifierDTO.getCode() + " вже існує");
             }
         }
-        
+
         // Оновлюємо поля
         existingEntity.setCode(modifierDTO.getCode());
         existingEntity.setName(modifierDTO.getName());
@@ -143,12 +143,12 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
         existingEntity.setActive(modifierDTO.isActive());
         existingEntity.setSortOrder(modifierDTO.getSortOrder());
         existingEntity.setUpdatedAt(LocalDateTime.now());
-        
+
         // Зберігаємо і повертаємо
         PriceModifierDefinitionEntity updatedEntity = modifierRepository.save(existingEntity);
         return modifierMapper.toDto(updatedEntity);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -156,18 +156,18 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     @Transactional
     public void deactivateModifier(UUID id) {
         log.debug("Деактивація модифікатора з ID: {}", id);
-        
+
         // Знаходимо існуючий модифікатор
         PriceModifierDefinitionEntity existingEntity = modifierRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Модифікатор з ID " + id + " не знайдено"));
-        
+
         // Деактивуємо (soft delete)
         existingEntity.setActive(false);
         existingEntity.setUpdatedAt(LocalDateTime.now());
-        
+
         modifierRepository.save(existingEntity);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -179,7 +179,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
                 .map(modifierMapper::toDto)
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -189,10 +189,10 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
         if (codes == null || codes.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         log.debug("Отримання модифікаторів за кодами: {}", codes);
         return modifierRepository.findByCodeInAndActiveTrue(codes).stream()
                 .map(modifierMapper::toDto)
                 .collect(Collectors.toList());
     }
-} 
+}
