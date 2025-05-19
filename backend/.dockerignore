@@ -6,6 +6,9 @@
 target/
 
 # IDE files
+.cursor/
+.windsurf/
+.vscode/
 .idea/
 *.iml
 *.ipr
@@ -19,6 +22,7 @@ target/
 
 # Test sources (not needed for running the app)
 src/test/
+target/
 
 # Operating System files
 .DS_Store

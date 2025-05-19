@@ -28,7 +28,7 @@ export const $CreateClientRequest = {
         phone: {
             type: 'string',
             minLength: 1,
-            pattern: '^\\+?[0-9]{10,15}$',
+            pattern: '^\\+ ? [0-9]{10,15}$',
         },
         source: {
             type: 'Enum',

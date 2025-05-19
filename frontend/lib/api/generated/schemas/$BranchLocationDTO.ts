@@ -29,7 +29,7 @@ export const $BranchLocationDTO = {
         },
         phone: {
             type: 'string',
-            pattern: '^\\+?[0-9\\s-()]{10,15}$',
+            pattern: '^\\+ ? [0-9\\s-()]{10,15}$',
         },
         updatedAt: {
             type: 'string',

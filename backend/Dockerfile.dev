@@ -23,7 +23,7 @@ EXPOSE 8080 5005
 
 # Створюємо директорії з дозволами для запису
 RUN mkdir -p /root/.m2 && chmod -R 777 /root/.m2
-RUN mkdir -p /app/target && chmod -R 777 /app/target
+#RUN mkdir -p /app/target && chmod -R 777 /app/target - не треба явно створювати, Maven зробить це сам
 
 # Для вирішення проблем з правами доступу запускаємо як root
 # ВИДАЛЕНО jvmArguments з відладкою, тому що ці параметри встановлені в docker-compose.yml

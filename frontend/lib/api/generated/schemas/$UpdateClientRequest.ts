@@ -25,7 +25,7 @@ export const $UpdateClientRequest = {
         },
         phone: {
             type: 'string',
-            pattern: '^\\+?[0-9]{10,15}$',
+            pattern: '^\\+ ? [0-9]{10,15}$',
         },
         source: {
             type: 'Enum',

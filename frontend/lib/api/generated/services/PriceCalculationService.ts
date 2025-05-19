@@ -67,14 +67,14 @@ export class PriceCalculationService {
     /**
      * Розрахувати ціну з урахуванням вибраних модифікаторів
      * Детальний розрахунок ціни з урахуванням базової ціни, модифікаторів, знижок та терміновості
-     * @returns any Успішний розрахунок ціни
+     * @returns PriceCalculationResponseDTO Успішний розрахунок ціни
      * @throws ApiError
      */
     public static calculatePrice({
         requestBody,
     }: {
         requestBody: PriceCalculationRequestDTO,
-    }): CancelablePromise<(Record<string, any> | PriceCalculationResponseDTO)> {
+    }): CancelablePromise<PriceCalculationResponseDTO> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/price-calculation/calculate',
