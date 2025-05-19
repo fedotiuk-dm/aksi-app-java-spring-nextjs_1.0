@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
 
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
 import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 import com.aksi.domain.pricing.repository.ServiceCategoryRepository;
 

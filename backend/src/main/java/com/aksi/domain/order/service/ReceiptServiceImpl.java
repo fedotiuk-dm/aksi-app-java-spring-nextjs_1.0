@@ -23,7 +23,7 @@ import com.aksi.domain.order.dto.receipt.ReceiptItemDTO;
 import com.aksi.domain.order.dto.receipt.ReceiptPriceModifierDTO;
 import com.aksi.domain.order.entity.OrderEntity;
 import com.aksi.domain.order.entity.OrderItemEntity;
-import com.aksi.domain.order.entity.PriceModifierEntity;
+import com.aksi.domain.order.entity.OrderItemPriceModifierEntity;
 import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.pdf.ReceiptPdfRenderer;
 import com.aksi.domain.order.repository.CustomerSignatureRepository;
@@ -124,7 +124,7 @@ public class ReceiptServiceImpl implements ReceiptService {
             itemDTO.setFinalPrice(item.getTotalPrice());
             
             // Додаємо модифікатори ціни, якщо є
-            List<PriceModifierEntity> modifiers = priceModifierRepository.findByOrderItemId(item.getId());
+            List<OrderItemPriceModifierEntity> modifiers = priceModifierRepository.findByOrderItemId(item.getId());
             if (modifiers != null && !modifiers.isEmpty()) {
                 List<ReceiptPriceModifierDTO> modifiersDTO = modifiers.stream()
                         .map(modifier -> {

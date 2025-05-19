@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CompletionDateCalculationRequest } from '../models/CompletionDateCalculationRequest';
-import type { CompletionDateResponse } from '../models/CompletionDateResponse';
 import type { OrderCompletionUpdateRequest } from '../models/OrderCompletionUpdateRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -12,14 +11,14 @@ export class OrderCompletionService {
     /**
      * Розрахувати очікувану дату завершення замовлення
      * Розраховує дату завершення на основі категорій послуг та типу терміновості
-     * @returns CompletionDateResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static calculateCompletionDate({
         requestBody,
     }: {
         requestBody: CompletionDateCalculationRequest,
-    }): CancelablePromise<CompletionDateResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/orders/completion/calculate',
@@ -44,7 +43,7 @@ export class OrderCompletionService {
         requestBody,
     }: {
         requestBody: OrderCompletionUpdateRequest,
-    }): CancelablePromise<any> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'PUT',
             url: '/orders/completion/update',

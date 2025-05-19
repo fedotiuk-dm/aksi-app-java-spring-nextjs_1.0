@@ -10,10 +10,10 @@ import { request as __request } from '../core/request';
 export class PriceListService {
     /**
      * Отримати всі категорії послуг
-     * @returns ServiceCategoryDTO OK
+     * @returns any OK
      * @throws ApiError
      */
-    public static getAllCategories(): CancelablePromise<Array<ServiceCategoryDTO>> {
+    public static getAllCategories(): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/price-list',
@@ -28,14 +28,14 @@ export class PriceListService {
     }
     /**
      * Створити нову категорію послуг
-     * @returns ServiceCategoryDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static createCategory({
         requestBody,
     }: {
         requestBody: ServiceCategoryDTO,
-    }): CancelablePromise<ServiceCategoryDTO> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/price-list/category',
@@ -52,14 +52,14 @@ export class PriceListService {
     }
     /**
      * Отримати всі елементи прайс-листа за кодом категорії
-     * @returns PriceListItemDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getItemsByCategoryCode({
         categoryCode,
     }: {
         categoryCode: string,
-    }): CancelablePromise<Array<PriceListItemDTO>> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/price-list/category/code/{categoryCode}/items',
@@ -77,7 +77,7 @@ export class PriceListService {
     }
     /**
      * Оновити категорію послуг
-     * @returns ServiceCategoryDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static updateCategory({
@@ -86,7 +86,7 @@ export class PriceListService {
     }: {
         categoryId: string,
         requestBody: ServiceCategoryDTO,
-    }): CancelablePromise<ServiceCategoryDTO> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'PUT',
             url: '/price-list/category/{categoryId}',
@@ -106,14 +106,14 @@ export class PriceListService {
     }
     /**
      * Отримати список найменувань виробів за категорією
-     * @returns string OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getItemNamesByCategory({
         categoryId,
     }: {
         categoryId: string,
-    }): CancelablePromise<Array<string>> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/price-list/category/{categoryId}/item-names',
@@ -131,14 +131,14 @@ export class PriceListService {
     }
     /**
      * Отримати всі елементи прайс-листа за категорією
-     * @returns PriceListItemDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getItemsByCategory({
         categoryId,
     }: {
         categoryId: string,
-    }): CancelablePromise<Array<PriceListItemDTO>> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/price-list/category/{categoryId}/items',
@@ -156,14 +156,14 @@ export class PriceListService {
     }
     /**
      * Отримати доступні одиниці виміру для категорії
-     * @returns string OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getAvailableUnitsOfMeasure({
         categoryId,
     }: {
         categoryId: string,
-    }): CancelablePromise<Array<string>> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/price-list/category/{categoryId}/units-of-measure',
@@ -181,14 +181,14 @@ export class PriceListService {
     }
     /**
      * Отримати категорію послуг за кодом
-     * @returns ServiceCategoryDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getCategoryByCode1({
         code,
     }: {
         code: string,
-    }): CancelablePromise<ServiceCategoryDTO> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/price-list/category/{code}',
@@ -206,14 +206,14 @@ export class PriceListService {
     }
     /**
      * Отримати елемент прайс-листа за ID
-     * @returns PriceListItemDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getItemById({
         itemId,
     }: {
         itemId: string,
-    }): CancelablePromise<PriceListItemDTO> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/price-list/item/{itemId}',
@@ -231,7 +231,7 @@ export class PriceListService {
     }
     /**
      * Оновити елемент прайс-листа
-     * @returns PriceListItemDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static updatePriceListItem({
@@ -240,7 +240,7 @@ export class PriceListService {
     }: {
         itemId: string,
         requestBody: PriceListItemDTO,
-    }): CancelablePromise<PriceListItemDTO> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'PUT',
             url: '/price-list/item/{itemId}',
@@ -260,14 +260,14 @@ export class PriceListService {
     }
     /**
      * Отримати категорію послуг за ідентифікатором
-     * @returns ServiceCategoryDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getCategoryById1({
         categoryId,
     }: {
         categoryId: string,
-    }): CancelablePromise<ServiceCategoryDTO> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/price-list/{categoryId}',
@@ -285,7 +285,7 @@ export class PriceListService {
     }
     /**
      * Створити новий елемент прайс-листа в категорії
-     * @returns PriceListItemDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static createPriceListItem({
@@ -294,7 +294,7 @@ export class PriceListService {
     }: {
         categoryId: string,
         requestBody: PriceListItemDTO,
-    }): CancelablePromise<PriceListItemDTO> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/price-list/{categoryId}/item',

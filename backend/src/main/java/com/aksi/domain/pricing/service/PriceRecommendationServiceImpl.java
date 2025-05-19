@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PriceRecommendationServiceImpl implements PriceRecommendationService {
 
     private final ModifierRecommendationService recommendationService;
-    private final PriceModifierService modifierService;
+    private final CatalogPriceModifierService modifierService;
     
     /**
      * Повертає рекомендовані модифікатори на основі забруднень та дефектів.

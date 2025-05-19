@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.UUID;
 
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
 
 /**
- * Сервіс для роботи з модифікаторами цін.
+ * Сервіс для роботи з модифікаторами цін каталогу.
  */
-public interface PriceModifierService {
+public interface CatalogPriceModifierService {
     
     /**
      * Отримати всі активні модифікатори цін.

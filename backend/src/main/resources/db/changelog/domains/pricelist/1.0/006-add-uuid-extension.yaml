@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: pricelist-1.0-006
+      author: fedotiuk-dm
+      comment: Add UUID extension for PostgreSQL
+      dbms: postgresql
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

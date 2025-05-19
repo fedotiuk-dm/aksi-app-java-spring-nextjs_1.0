@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RestController
 @RequestMapping("/modifier-recommendations")
-@Tag(name = "Рекомендації модифікаторів", description = "API для отримання рекомендацій щодо застосування цінових модифікаторів")
+@Tag(name = "ModifierRecommendation", description = "API для отримання рекомендацій щодо застосування цінових модифікаторів")
 @RequiredArgsConstructor
 @Slf4j
 public class ModifierRecommendationController {

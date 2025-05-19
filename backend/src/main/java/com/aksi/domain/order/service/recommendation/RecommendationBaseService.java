@@ -14,10 +14,10 @@ import com.aksi.domain.order.dto.ModifierRecommendationDTO;
 import com.aksi.domain.order.dto.ModifierRecommendationDTO.RecommendationPriority;
 import com.aksi.domain.pricing.dto.ItemIssueDTO;
 import com.aksi.domain.pricing.dto.StainTypeDTO;
-import com.aksi.domain.pricing.entity.PriceModifierEntity;
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
 import com.aksi.domain.pricing.enums.RiskLevel;
-import com.aksi.domain.pricing.repository.PriceModifierRepository;
+import com.aksi.domain.pricing.repository.CatalogPriceModifierRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RecommendationBaseService {
 
-    private final PriceModifierRepository modifierRepository;
+    private final CatalogPriceModifierRepository modifierRepository;
 
     /**
      * Інформація про модифікатор для рекомендацій.
@@ -53,7 +53,7 @@ public class RecommendationBaseService {
      */
     @FunctionalInterface
     public interface ReasonProvider {
-        String getReason(String itemName, PriceModifierEntity entity, ModifierInfo info);
+        String getReason(String itemName, PriceModifierDefinitionEntity entity, ModifierInfo info);
     }
 
     /**
@@ -205,7 +205,7 @@ public class RecommendationBaseService {
     /**
      * Перевіряє, чи сумісний модифікатор з категорією предмета.
      */
-    private boolean isCategoryCompatible(final PriceModifierEntity modifier, final String categoryCode) {
+    private boolean isCategoryCompatible(final PriceModifierDefinitionEntity modifier, final String categoryCode) {
         if (modifier == null) {
             return false;
         }
@@ -243,7 +243,7 @@ public class RecommendationBaseService {
     /**
      * Створює об'єкт рекомендації з сутності модифікатора та допоміжної інформації.
      */
-    private ModifierRecommendationDTO createRecommendation(final PriceModifierEntity entity, final ModifierInfo info, final String reason) {
+    private ModifierRecommendationDTO createRecommendation(final PriceModifierDefinitionEntity entity, final ModifierInfo info, final String reason) {
         return ModifierRecommendationDTO.builder()
                 .modifierId(entity.getId().toString())
                 .code(entity.getCode())

@@ -11,25 +11,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
-import com.aksi.domain.pricing.entity.PriceModifierEntity;
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
-import com.aksi.domain.pricing.mapper.PriceModifierMapper;
-import com.aksi.domain.pricing.repository.PriceModifierRepository;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
+import com.aksi.domain.pricing.mapper.CatalogPriceModifierMapper;
+import com.aksi.domain.pricing.repository.CatalogPriceModifierRepository;
 import com.aksi.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Реалізація сервісу для роботи з модифікаторами цін.
+ * Реалізація сервісу для роботи з модифікаторами цін з каталогу.
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PriceModifierServiceImpl implements PriceModifierService {
+public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierService {
     
-    private final PriceModifierRepository modifierRepository;
-    private final PriceModifierMapper modifierMapper;
+    private final CatalogPriceModifierRepository modifierRepository;
+    private final CatalogPriceModifierMapper modifierMapper;
     private final ServiceCategoryModifierMapper categoryModifierMapper;
     
     /**
@@ -94,19 +94,19 @@ public class PriceModifierServiceImpl implements PriceModifierService {
         log.debug("Створення нового модифікатора: {}", modifierDTO);
         
         // Перевіряємо, чи не існує вже модифікатор з таким кодом
-        Optional<PriceModifierEntity> existingModifier = modifierRepository.findByCode(modifierDTO.getCode());
+        Optional<PriceModifierDefinitionEntity> existingModifier = modifierRepository.findByCode(modifierDTO.getCode());
         if (existingModifier.isPresent()) {
             log.warn("Модифікатор з кодом {} вже існує", modifierDTO.getCode());
             throw new IllegalArgumentException("Модифікатор з кодом " + modifierDTO.getCode() + " вже існує");
         }
         
         // Створюємо новий модифікатор
-        PriceModifierEntity entity = modifierMapper.toEntity(modifierDTO);
+        PriceModifierDefinitionEntity entity = modifierMapper.toEntity(modifierDTO);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
         
         // Зберігаємо і повертаємо
-        PriceModifierEntity savedEntity = modifierRepository.save(entity);
+        PriceModifierDefinitionEntity savedEntity = modifierRepository.save(entity);
         return modifierMapper.toDto(savedEntity);
     }
     
@@ -119,12 +119,12 @@ public class PriceModifierServiceImpl implements PriceModifierService {
         log.debug("Оновлення модифікатора з ID {}: {}", id, modifierDTO);
         
         // Знаходимо існуючий модифікатор
-        PriceModifierEntity existingEntity = modifierRepository.findById(id)
+        PriceModifierDefinitionEntity existingEntity = modifierRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Модифікатор з ID " + id + " не знайдено"));
         
         // Перевіряємо унікальність коду, якщо він змінюється
         if (!existingEntity.getCode().equals(modifierDTO.getCode())) {
-            Optional<PriceModifierEntity> entityWithSameCode = modifierRepository.findByCode(modifierDTO.getCode());
+            Optional<PriceModifierDefinitionEntity> entityWithSameCode = modifierRepository.findByCode(modifierDTO.getCode());
             if (entityWithSameCode.isPresent()) {
                 log.warn("Модифікатор з кодом {} вже існує", modifierDTO.getCode());
                 throw new IllegalArgumentException("Модифікатор з кодом " + modifierDTO.getCode() + " вже існує");
@@ -145,7 +145,7 @@ public class PriceModifierServiceImpl implements PriceModifierService {
         existingEntity.setUpdatedAt(LocalDateTime.now());
         
         // Зберігаємо і повертаємо
-        PriceModifierEntity updatedEntity = modifierRepository.save(existingEntity);
+        PriceModifierDefinitionEntity updatedEntity = modifierRepository.save(existingEntity);
         return modifierMapper.toDto(updatedEntity);
     }
     
@@ -158,7 +158,7 @@ public class PriceModifierServiceImpl implements PriceModifierService {
         log.debug("Деактивація модифікатора з ID: {}", id);
         
         // Знаходимо існуючий модифікатор
-        PriceModifierEntity existingEntity = modifierRepository.findById(id)
+        PriceModifierDefinitionEntity existingEntity = modifierRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Модифікатор з ID " + id + " не знайдено"));
         
         // Деактивуємо (soft delete)

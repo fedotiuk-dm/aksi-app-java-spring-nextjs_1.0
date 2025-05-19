@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.pricing.dto.PriceCalculationResponseDTO;
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
+import com.aksi.domain.pricing.service.CatalogPriceModifierService;
 import com.aksi.domain.pricing.service.PriceCalculationService;
 import com.aksi.domain.pricing.service.PriceCalculationService.FixedModifierQuantity;
 import com.aksi.domain.pricing.service.PriceCalculationService.RangeModifierValue;
-import com.aksi.domain.pricing.service.PriceModifierService;
 import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PriceCalculationController {
     
     private final PriceCalculationService priceCalculationService;
-    private final PriceModifierService priceModifierService;
+    private final CatalogPriceModifierService priceModifierService;
     
     /**
      * Отримати базову ціну для предмету з прайс-листа.

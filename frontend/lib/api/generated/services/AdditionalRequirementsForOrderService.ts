@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AdditionalRequirementsRequest } from '../models/AdditionalRequirementsRequest';
-import type { AdditionalRequirementsResponse } from '../models/AdditionalRequirementsResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -11,14 +10,14 @@ export class AdditionalRequirementsForOrderService {
     /**
      * Отримати додаткові вимоги та примітки до замовлення
      * Повертає поточні додаткові вимоги та примітки клієнта до замовлення
-     * @returns AdditionalRequirementsResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getRequirements({
         orderId,
     }: {
         orderId: string,
-    }): CancelablePromise<AdditionalRequirementsResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/orders/{orderId}/requirements',
@@ -37,7 +36,7 @@ export class AdditionalRequirementsForOrderService {
     /**
      * Оновити додаткові вимоги та примітки до замовлення
      * Зберігає додаткові вимоги та примітки клієнта до замовлення
-     * @returns AdditionalRequirementsResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static updateRequirements({
@@ -46,7 +45,7 @@ export class AdditionalRequirementsForOrderService {
     }: {
         orderId: string,
         requestBody: AdditionalRequirementsRequest,
-    }): CancelablePromise<AdditionalRequirementsResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/orders/{orderId}/requirements',

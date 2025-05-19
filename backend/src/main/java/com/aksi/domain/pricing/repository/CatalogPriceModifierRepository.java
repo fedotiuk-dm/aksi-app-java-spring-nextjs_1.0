@@ -9,14 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.aksi.domain.pricing.entity.PriceModifierEntity;
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
 
 /**
- * Репозиторій для роботи з модифікаторами цін.
+ * Репозиторій для роботи з модифікаторами цін каталогу.
  */
 @Repository
-public interface PriceModifierRepository extends JpaRepository<PriceModifierEntity, UUID> {
+public interface CatalogPriceModifierRepository extends JpaRepository<PriceModifierDefinitionEntity, UUID> {
     
     /**
      * Знайти модифікатор за кодом.
@@ -24,14 +24,14 @@ public interface PriceModifierRepository extends JpaRepository<PriceModifierEnti
      * @param code Код модифікатора
      * @return Опціональний модифікатор
      */
-    Optional<PriceModifierEntity> findByCode(String code);
+    Optional<PriceModifierDefinitionEntity> findByCode(String code);
     
     /**
      * Отримати всі активні модифікатори.
      * 
      * @return Список активних модифікаторів
      */
-    List<PriceModifierEntity> findByActiveTrue();
+    List<PriceModifierDefinitionEntity> findByActiveTrue();
     
     /**
      * Отримати всі активні модифікатори певної категорії.
@@ -39,7 +39,7 @@ public interface PriceModifierRepository extends JpaRepository<PriceModifierEnti
      * @param category Категорія модифікатора (GENERAL, TEXTILE, LEATHER)
      * @return Список активних модифікаторів категорії
      */
-    List<PriceModifierEntity> findByActiveTrueAndCategory(ModifierCategory category);
+    List<PriceModifierDefinitionEntity> findByActiveTrueAndCategory(ModifierCategory category);
     
     /**
      * Отримати модифікатори для категорії послуг.
@@ -49,12 +49,12 @@ public interface PriceModifierRepository extends JpaRepository<PriceModifierEnti
      * @param serviceCategory Код категорії послуг
      * @return Список модифікаторів для категорії послуг
      */
-    @Query("SELECT m FROM PriceModifierEntity m " + 
+    @Query("SELECT m FROM PriceModifierDefinitionEntity m " + 
            "WHERE m.active = true AND " + 
-           "(m.category = com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory.GENERAL " + 
+           "(m.category = com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory.GENERAL " + 
            "OR (m.category = :category)) " +
            "ORDER BY m.sortOrder ASC, m.name ASC")
-    List<PriceModifierEntity> findModifiersForServiceCategory(@Param("category") ModifierCategory category);
+    List<PriceModifierDefinitionEntity> findModifiersForServiceCategory(@Param("category") ModifierCategory category);
     
     /**
      * Знайти модифікатори за списком кодів.
@@ -62,5 +62,5 @@ public interface PriceModifierRepository extends JpaRepository<PriceModifierEnti
      * @param codes Список кодів модифікаторів
      * @return Список модифікаторів
      */
-    List<PriceModifierEntity> findByCodeInAndActiveTrue(List<String> codes);
+    List<PriceModifierDefinitionEntity> findByCodeInAndActiveTrue(List<String> codes);
 } 

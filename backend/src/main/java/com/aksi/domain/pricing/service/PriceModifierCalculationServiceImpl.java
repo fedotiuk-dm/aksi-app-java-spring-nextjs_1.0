@@ -12,7 +12,7 @@ import com.aksi.domain.order.model.NonExpeditableCategory;
 import com.aksi.domain.pricing.constants.PriceCalculationConstants;
 import com.aksi.domain.pricing.dto.CalculationDetailsDTO;
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierType;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -2,17 +2,16 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ServiceCategoryDTO } from '../models/ServiceCategoryDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class ServiceCategoryService {
     /**
      * Отримати список всіх активних категорій послуг
-     * @returns ServiceCategoryDTO OK
+     * @returns any OK
      * @throws ApiError
      */
-    public static getAllActiveCategories(): CancelablePromise<Array<ServiceCategoryDTO>> {
+    public static getAllActiveCategories(): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/service-categories',
@@ -27,14 +26,14 @@ export class ServiceCategoryService {
     }
     /**
      * Отримати категорію послуг за кодом
-     * @returns ServiceCategoryDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getCategoryByCode({
         code,
     }: {
         code: string,
-    }): CancelablePromise<ServiceCategoryDTO> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/service-categories/code/{code}',
@@ -52,14 +51,14 @@ export class ServiceCategoryService {
     }
     /**
      * Отримати категорію послуг за ID
-     * @returns ServiceCategoryDTO OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getCategoryById({
         id,
     }: {
         id: string,
-    }): CancelablePromise<ServiceCategoryDTO> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/service-categories/{id}',

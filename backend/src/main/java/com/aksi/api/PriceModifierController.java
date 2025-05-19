@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
-import com.aksi.domain.pricing.service.PriceModifierService;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
+import com.aksi.domain.pricing.service.CatalogPriceModifierService;
 import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PriceModifierController {
     
-    private final PriceModifierService modifierService;
+    private final CatalogPriceModifierService modifierService;
     
     /**
      * Отримати всі активні модифікатори.

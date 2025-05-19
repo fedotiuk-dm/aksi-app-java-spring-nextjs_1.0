@@ -2,19 +2,20 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { PriceModifierDTO } from '../models/PriceModifierDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class ItemCharacteristicsService {
+export class PriceModifiersService {
     /**
-     * Отримати базові кольори для предметів
+     * Отримати всі активні модифікатори
      * @returns any OK
      * @throws ApiError
      */
-    public static getColors(): CancelablePromise<Record<string, any>> {
+    public static getAllModifiers(): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/item-characteristics/colors',
+            url: '/price-modifiers',
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,
@@ -25,14 +26,20 @@ export class ItemCharacteristicsService {
         });
     }
     /**
-     * Отримати тільки дефекти для предметів
+     * Створити новий модифікатор ціни
      * @returns any OK
      * @throws ApiError
      */
-    public static getDefects(): CancelablePromise<Record<string, any>> {
+    public static createModifier({
+        requestBody,
+    }: {
+        requestBody: PriceModifierDTO,
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
-            method: 'GET',
-            url: '/item-characteristics/defects',
+            method: 'POST',
+            url: '/price-modifiers',
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,
@@ -43,54 +50,18 @@ export class ItemCharacteristicsService {
         });
     }
     /**
-     * Отримати дефекти та ризики для предметів
+     * Отримати модифікатори за категорією
      * @returns any OK
      * @throws ApiError
      */
-    public static getDefectsAndRisks(): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/item-characteristics/defects-and-risks',
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати типи наповнювачів для предметів
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getFillerTypes(): CancelablePromise<Record<string, any>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/item-characteristics/filler-types',
-            errors: {
-                400: `Bad Request`,
-                401: `Unauthorized`,
-                403: `Forbidden`,
-                404: `Not Found`,
-                409: `Conflict`,
-            },
-        });
-    }
-    /**
-     * Отримати доступні матеріали для предметів
-     * @returns any OK
-     * @throws ApiError
-     */
-    public static getMaterials({
+    public static getModifiersByCategory({
         category,
     }: {
-        category?: string,
+        category: 'GENERAL' | 'TEXTILE' | 'LEATHER',
     }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/item-characteristics/materials',
+            url: '/price-modifiers/category',
             query: {
                 'category': category,
             },
@@ -104,14 +75,21 @@ export class ItemCharacteristicsService {
         });
     }
     /**
-     * Отримати тільки ризики для предметів
+     * Отримати модифікатор за кодом
      * @returns any OK
      * @throws ApiError
      */
-    public static getRisks(): CancelablePromise<Record<string, any>> {
+    public static getModifierByCode({
+        code,
+    }: {
+        code: string,
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/item-characteristics/risks',
+            url: '/price-modifiers/code/{code}',
+            path: {
+                'code': code,
+            },
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,
@@ -122,14 +100,21 @@ export class ItemCharacteristicsService {
         });
     }
     /**
-     * Отримати типи плям для предметів
+     * Отримати модифікатори для категорії послуг
      * @returns any OK
      * @throws ApiError
      */
-    public static getStainTypes1(): CancelablePromise<Record<string, any>> {
+    public static getModifiersForServiceCategory({
+        categoryCode,
+    }: {
+        categoryCode: string,
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/item-characteristics/stain-types',
+            url: '/price-modifiers/service-category/{categoryCode}',
+            path: {
+                'categoryCode': categoryCode,
+            },
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,
@@ -140,14 +125,75 @@ export class ItemCharacteristicsService {
         });
     }
     /**
-     * Отримати ступені зносу для предметів
+     * Деактивувати модифікатор ціни
      * @returns any OK
      * @throws ApiError
      */
-    public static getWearDegrees(): CancelablePromise<Record<string, any>> {
+    public static deactivateModifier({
+        id,
+    }: {
+        id: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/price-modifiers/{id}',
+            path: {
+                'id': id,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримати модифікатор за ID
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static getModifierById({
+        id,
+    }: {
+        id: string,
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/item-characteristics/wear-degrees',
+            url: '/price-modifiers/{id}',
+            path: {
+                'id': id,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Оновити існуючий модифікатор ціни
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static updateModifier({
+        id,
+        requestBody,
+    }: {
+        id: string,
+        requestBody: PriceModifierDTO,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/price-modifiers/{id}',
+            path: {
+                'id': id,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,

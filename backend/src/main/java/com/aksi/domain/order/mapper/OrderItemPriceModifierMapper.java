@@ -8,7 +8,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import com.aksi.domain.order.dto.PriceModifierDTO;
-import com.aksi.domain.order.entity.PriceModifierEntity;
+import com.aksi.domain.order.entity.OrderItemPriceModifierEntity;
 
 /**
  * Маппер для перетворення між PriceModifierEntity і PriceModifierDTO.
@@ -18,7 +18,7 @@ import com.aksi.domain.order.entity.PriceModifierEntity;
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface PriceModifierMapper {
+public interface OrderItemPriceModifierMapper {
     
     /**
      * Перетворити PriceModifierEntity у PriceModifierDTO.
@@ -26,7 +26,7 @@ public interface PriceModifierMapper {
      * @return DTO модифікатора ціни
      */
     @Mapping(target = "type", source = "modifierType")
-    PriceModifierDTO toDto(PriceModifierEntity entity);
+    PriceModifierDTO toDto(OrderItemPriceModifierEntity entity);
     
     /**
      * Перетворити PriceModifierDTO у PriceModifierEntity.
@@ -37,19 +37,19 @@ public interface PriceModifierMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "orderItem", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
-    PriceModifierEntity toEntity(PriceModifierDTO dto);
+    OrderItemPriceModifierEntity toEntity(PriceModifierDTO dto);
     
     /**
      * Перетворити список PriceModifierEntity у список PriceModifierDTO.
      * @param entities список сутностей модифікаторів ціни
      * @return список DTO модифікаторів ціни
      */
-    List<PriceModifierDTO> toDtoList(List<PriceModifierEntity> entities);
+    List<PriceModifierDTO> toDtoList(List<OrderItemPriceModifierEntity> entities);
     
     /**
      * Перетворити список PriceModifierDTO у список PriceModifierEntity.
      * @param dtos список DTO модифікаторів ціни
      * @return список сутностей модифікаторів ціни
      */
-    List<PriceModifierEntity> toEntityList(List<PriceModifierDTO> dtos);
+    List<OrderItemPriceModifierEntity> toEntityList(List<PriceModifierDTO> dtos);
 } 

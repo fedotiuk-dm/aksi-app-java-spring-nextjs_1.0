@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { OrderDiscountRequest } from '../models/OrderDiscountRequest';
-import type { OrderDiscountResponse } from '../models/OrderDiscountResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -11,14 +10,14 @@ export class OrderDiscountsService {
     /**
      * Застосувати знижку до замовлення
      * Застосовує знижку до замовлення з урахуванням обмежень на категорії
-     * @returns OrderDiscountResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static applyDiscount1({
         requestBody,
     }: {
         requestBody: OrderDiscountRequest,
-    }): CancelablePromise<OrderDiscountResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/orders/discounts/apply',
@@ -36,14 +35,14 @@ export class OrderDiscountsService {
     /**
      * Скасувати знижку
      * Видаляє знижку з замовлення
-     * @returns OrderDiscountResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static removeDiscount({
         orderId,
     }: {
         orderId: string,
-    }): CancelablePromise<OrderDiscountResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'DELETE',
             url: '/orders/discounts/{orderId}',
@@ -62,14 +61,14 @@ export class OrderDiscountsService {
     /**
      * Отримати інформацію про знижку
      * Повертає детальну інформацію про знижку до замовлення
-     * @returns OrderDiscountResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getOrderDiscount({
         orderId,
     }: {
         orderId: string,
-    }): CancelablePromise<OrderDiscountResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/orders/discounts/{orderId}',

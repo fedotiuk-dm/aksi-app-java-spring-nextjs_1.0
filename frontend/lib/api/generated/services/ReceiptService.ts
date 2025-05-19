@@ -19,7 +19,7 @@ export class ReceiptService {
         requestBody,
     }: {
         requestBody: EmailReceiptRequest,
-    }): CancelablePromise<any> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/receipts/email',
@@ -37,14 +37,14 @@ export class ReceiptService {
     /**
      * Згенерувати PDF-квитанцію
      * Генерує PDF-квитанцію для замовлення з вказаними параметрами
-     * @returns string PDF-квитанція успішно згенерована
+     * @returns any PDF-квитанція успішно згенерована
      * @throws ApiError
      */
     public static generatePdfReceipt({
         requestBody,
     }: {
         requestBody: ReceiptGenerationRequest,
-    }): CancelablePromise<string> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/receipts/pdf',

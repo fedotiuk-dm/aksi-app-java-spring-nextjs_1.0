@@ -15,6 +15,9 @@ databaseChangeLog:
       file: 1.0/005-update-categories-processing-days.yaml
       relativeToChangelogFile: true
   - include:
+      file: 1.0/006-add-uuid-extension.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 1.0/007-create-price-modifier-definitions.yaml
       relativeToChangelogFile: true
   - include:

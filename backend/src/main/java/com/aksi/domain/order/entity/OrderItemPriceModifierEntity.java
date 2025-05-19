@@ -34,7 +34,7 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PriceModifierEntity {
+public class OrderItemPriceModifierEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

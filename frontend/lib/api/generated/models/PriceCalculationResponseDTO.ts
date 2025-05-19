@@ -2,13 +2,14 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ModifierCalculationDetail } from './ModifierCalculationDetail';
+import type { CalculationDetailsDTO } from './CalculationDetailsDTO';
 export type PriceCalculationResponseDTO = {
     baseTotalPrice?: number;
     baseUnitPrice?: number;
-    calculationDetails?: Array<ModifierCalculationDetail>;
+    calculationDetails?: Array<CalculationDetailsDTO>;
     finalTotalPrice?: number;
     finalUnitPrice?: number;
     quantity?: number;
+    unitOfMeasure?: string;
 };
 

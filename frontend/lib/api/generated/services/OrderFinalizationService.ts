@@ -22,7 +22,7 @@ export class OrderFinalizationService {
     }): CancelablePromise<OrderDTO> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/orders/finalization/complete',
+            url: '/orders/finalization/complete',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -49,10 +49,10 @@ export class OrderFinalizationService {
          */
         orderId: string,
         requestBody: EmailReceiptRequest,
-    }): CancelablePromise<any> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/orders/finalization/{orderId}/email-receipt',
+            url: '/orders/finalization/{orderId}/email-receipt',
             path: {
                 'orderId': orderId,
             },
@@ -70,7 +70,7 @@ export class OrderFinalizationService {
     /**
      * Отримати PDF-чек замовлення
      * Повертає PDF-файл з чеком для завантаження
-     * @returns binary PDF-чек успішно згенеровано
+     * @returns any PDF-чек успішно згенеровано
      * @throws ApiError
      */
     public static getOrderReceipt({
@@ -85,10 +85,10 @@ export class OrderFinalizationService {
          * Включати підпис клієнта
          */
         includeSignature?: boolean,
-    }): CancelablePromise<Blob> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/orders/finalization/{orderId}/receipt',
+            url: '/orders/finalization/{orderId}/receipt',
             path: {
                 'orderId': orderId,
             },

@@ -19,7 +19,7 @@ import com.aksi.domain.pricing.dto.CalculationDetailsDTO;
 import com.aksi.domain.pricing.dto.PriceCalculationResponseDTO;
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
 import com.aksi.domain.pricing.entity.PriceListItemEntity;
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
 import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 import com.aksi.domain.pricing.repository.PriceListItemRepository;
 import com.aksi.domain.pricing.repository.ServiceCategoryRepository;
@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PriceCalculationServiceImpl implements PriceCalculationService {
 
     private final PriceListItemRepository priceListItemRepository;
-    private final PriceModifierService modifierService;
+    private final CatalogPriceModifierService modifierService;
     private final UnitOfMeasureService unitOfMeasureService;
     private final DiscountService discountService;
     private final ModifierRecommendationService recommendationService;

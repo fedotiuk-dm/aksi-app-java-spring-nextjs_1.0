@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PriceModifierEntity {
+public class PriceModifierDefinitionEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

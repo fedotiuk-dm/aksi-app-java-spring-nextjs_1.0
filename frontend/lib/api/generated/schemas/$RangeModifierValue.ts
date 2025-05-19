@@ -2,16 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $FixedModifierQuantityDTO = {
+export const $RangeModifierValue = {
     properties: {
-        modifierId: {
+        modifierCode: {
             type: 'string',
-            minLength: 1,
         },
-        quantity: {
+        value: {
             type: 'number',
-            isRequired: true,
-            format: 'int32',
         },
     },
 } as const;

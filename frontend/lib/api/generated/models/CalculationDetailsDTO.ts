@@ -2,13 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ModifierCalculationDetail = {
-    changeDescription?: string;
-    modifierDescription?: string;
-    modifierId?: string;
+export type CalculationDetailsDTO = {
+    description?: string;
+    modifierCode?: string;
     modifierName?: string;
+    modifierValue?: string;
     priceAfter?: number;
     priceBefore?: number;
     priceDifference?: number;
+    step?: number;
+    stepName?: string;
 };
 

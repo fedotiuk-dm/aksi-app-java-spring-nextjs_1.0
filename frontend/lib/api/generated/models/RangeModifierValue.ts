@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type FixedModifierQuantityDTO = {
-    modifierId?: string;
-    quantity: number;
+export type RangeModifierValue = {
+    modifierCode?: string;
+    value?: number;
 };
 

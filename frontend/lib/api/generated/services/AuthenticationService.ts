@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AuthResponse } from '../models/AuthResponse';
 import type { LoginRequest } from '../models/LoginRequest';
 import type { RegisterRequest } from '../models/RegisterRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -12,14 +11,14 @@ export class AuthenticationService {
     /**
      * Вхід користувача
      * Автентифікує користувача і повертає JWT токен
-     * @returns AuthResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static login({
         requestBody,
     }: {
         requestBody: LoginRequest,
-    }): CancelablePromise<AuthResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/auth/login',
@@ -37,14 +36,14 @@ export class AuthenticationService {
     /**
      * Оновлення токена
      * Оновлює JWT токен за допомогою refresh токена
-     * @returns AuthResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static refreshToken({
         requestBody,
     }: {
         requestBody: string,
-    }): CancelablePromise<AuthResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/auth/refresh-token',
@@ -62,14 +61,14 @@ export class AuthenticationService {
     /**
      * Реєстрація нового користувача
      * Створює нового користувача і повертає JWT токен
-     * @returns AuthResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static register({
         requestBody,
     }: {
         requestBody: RegisterRequest,
-    }): CancelablePromise<AuthResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/auth/register',
@@ -85,6 +84,8 @@ export class AuthenticationService {
         });
     }
     /**
+     * Перевірка доступності
+     * Тестовий ендпоінт для перевірки доступності API аутентифікації
      * @returns string OK
      * @throws ApiError
      */

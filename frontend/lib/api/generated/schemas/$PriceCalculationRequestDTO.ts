@@ -3,22 +3,41 @@
 /* tslint:disable */
 /* eslint-disable */
 export const $PriceCalculationRequestDTO = {
+    description: `Запит на розрахунок ціни для предмета`,
     properties: {
         categoryCode: {
             type: 'string',
-            minLength: 1,
+            description: `Код категорії послуги`,
+            isRequired: true,
+        },
+        color: {
+            type: 'string',
+            description: `Колір предмету`,
+        },
+        discountPercent: {
+            type: 'number',
+            description: `Відсоток знижки`,
+        },
+        expeditePercent: {
+            type: 'number',
+            description: `Відсоток надбавки за терміновість`,
+        },
+        expedited: {
+            type: 'boolean',
+            description: `Чи термінове замовлення`,
         },
         fixedModifierQuantities: {
             type: 'array',
             contains: {
-                type: 'FixedModifierQuantityDTO',
+                type: 'FixedModifierQuantity',
             },
         },
         itemName: {
             type: 'string',
-            minLength: 1,
+            description: `Найменування предмету з прайс-листа`,
+            isRequired: true,
         },
-        modifierIds: {
+        modifierCodes: {
             type: 'array',
             contains: {
                 type: 'string',
@@ -26,13 +45,14 @@ export const $PriceCalculationRequestDTO = {
         },
         quantity: {
             type: 'number',
+            description: `Кількість предметів`,
             isRequired: true,
             format: 'int32',
         },
         rangeModifierValues: {
             type: 'array',
             contains: {
-                type: 'RangeModifierValueDTO',
+                type: 'RangeModifierValue',
             },
         },
     },

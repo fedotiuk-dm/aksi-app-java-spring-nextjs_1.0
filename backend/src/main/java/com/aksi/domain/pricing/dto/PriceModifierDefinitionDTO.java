@@ -14,14 +14,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для передачі даних про модифікатори цін.
+ * DTO для передачі даних про модифікатори цін з каталогу.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Модифікатор ціни (фіксований, відсотковий, діапазонний)")
-public class PriceModifierDTO {
+@Schema(description = "Модифікатор ціни з каталогу (фіксований, відсотковий, діапазонний)")
+public class PriceModifierDefinitionDTO {
     
     @Schema(description = "Унікальний ідентифікатор модифікатора")
     private UUID id;

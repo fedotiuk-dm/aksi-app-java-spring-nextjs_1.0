@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { PaymentCalculationRequest } from '../models/PaymentCalculationRequest';
-import type { PaymentCalculationResponse } from '../models/PaymentCalculationResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -11,14 +10,14 @@ export class PaymentForOrderService {
     /**
      * Отримати інформацію про оплату замовлення
      * Повертає поточні дані про оплату замовлення
-     * @returns PaymentCalculationResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static getOrderPayment({
         orderId,
     }: {
         orderId: string,
-    }): CancelablePromise<PaymentCalculationResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/orders/{orderId}/payment',
@@ -37,7 +36,7 @@ export class PaymentForOrderService {
     /**
      * Застосувати інформацію про оплату до замовлення
      * Зберігає інформацію про оплату та розраховує фінальні суми
-     * @returns PaymentCalculationResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static applyPayment({
@@ -46,7 +45,7 @@ export class PaymentForOrderService {
     }: {
         orderId: string,
         requestBody: PaymentCalculationRequest,
-    }): CancelablePromise<PaymentCalculationResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/orders/{orderId}/payment',
@@ -67,7 +66,7 @@ export class PaymentForOrderService {
     /**
      * Розрахувати деталі оплати замовлення
      * Розраховує суми оплати на основі вказаних параметрів без збереження у базі даних
-     * @returns PaymentCalculationResponse OK
+     * @returns any OK
      * @throws ApiError
      */
     public static calculatePayment({
@@ -76,7 +75,7 @@ export class PaymentForOrderService {
     }: {
         orderId: string,
         requestBody: PaymentCalculationRequest,
-    }): CancelablePromise<PaymentCalculationResponse> {
+    }): CancelablePromise<Record<string, any>> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/orders/{orderId}/payment/calculate',

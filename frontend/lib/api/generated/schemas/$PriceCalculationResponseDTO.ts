@@ -13,7 +13,7 @@ export const $PriceCalculationResponseDTO = {
         calculationDetails: {
             type: 'array',
             contains: {
-                type: 'ModifierCalculationDetail',
+                type: 'CalculationDetailsDTO',
             },
         },
         finalTotalPrice: {
@@ -25,6 +25,9 @@ export const $PriceCalculationResponseDTO = {
         quantity: {
             type: 'number',
             format: 'int32',
+        },
+        unitOfMeasure: {
+            type: 'string',
         },
     },
 } as const;

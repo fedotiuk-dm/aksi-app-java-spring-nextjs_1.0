@@ -2,18 +2,18 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $ModifierCalculationDetail = {
+export const $CalculationDetailsDTO = {
     properties: {
-        changeDescription: {
+        description: {
             type: 'string',
         },
-        modifierDescription: {
-            type: 'string',
-        },
-        modifierId: {
+        modifierCode: {
             type: 'string',
         },
         modifierName: {
+            type: 'string',
+        },
+        modifierValue: {
             type: 'string',
         },
         priceAfter: {
@@ -24,6 +24,13 @@ export const $ModifierCalculationDetail = {
         },
         priceDifference: {
             type: 'number',
+        },
+        step: {
+            type: 'number',
+            format: 'int32',
+        },
+        stepName: {
+            type: 'string',
         },
     },
 } as const;

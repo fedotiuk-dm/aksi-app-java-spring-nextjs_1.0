@@ -19,9 +19,9 @@ import com.aksi.domain.order.dto.PriceModifierDTO;
 import com.aksi.domain.order.entity.OrderEntity;
 import com.aksi.domain.order.entity.OrderItemEntity;
 import com.aksi.domain.order.entity.OrderItemPhotoEntity;
-import com.aksi.domain.order.entity.PriceModifierEntity;
+import com.aksi.domain.order.entity.OrderItemPriceModifierEntity;
 import com.aksi.domain.order.mapper.OrderItemPhotoMapper;
-import com.aksi.domain.order.mapper.PriceModifierMapper;
+import com.aksi.domain.order.mapper.OrderItemPriceModifierMapper;
 import com.aksi.domain.order.model.ExpediteType;
 import com.aksi.domain.order.model.ModifierType;
 import com.aksi.domain.order.repository.OrderItemPhotoRepository;
@@ -47,7 +47,7 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
     private final ClientMapper clientMapper;
     private final BranchLocationMapper branchLocationMapper;
     private final OrderItemPhotoMapper orderItemPhotoMapper;
-    private final PriceModifierMapper priceModifierMapper;
+    private final OrderItemPriceModifierMapper priceModifierMapper;
 
     /**
      * {@inheritDoc}
@@ -111,7 +111,7 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
                     .collect(Collectors.toList());
             
             // Отримання модифікаторів ціни з бази даних
-            List<PriceModifierEntity> modifierEntities = priceModifierRepository.findByOrderItemId(item.getId());
+            List<OrderItemPriceModifierEntity> modifierEntities = priceModifierRepository.findByOrderItemId(item.getId());
             List<PriceModifierDTO> priceModifiers;
             
             // Якщо в базі даних є модифікатори, використовуємо їх, інакше створюємо модельні
@@ -163,7 +163,7 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
      * @param modifiers модифікатори ціни
      */
     private void saveModifiersToDatabase(OrderItemEntity item, List<PriceModifierDTO> modifiers) {
-        List<PriceModifierEntity> entities = priceModifierMapper.toEntityList(modifiers);
+        List<OrderItemPriceModifierEntity> entities = priceModifierMapper.toEntityList(modifiers);
         
         // Встановлюємо відношення до предмета замовлення
         entities.forEach(entity -> entity.setOrderItem(item));

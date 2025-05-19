@@ -4,14 +4,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-import com.aksi.domain.pricing.dto.PriceModifierDTO;
-import com.aksi.domain.pricing.entity.PriceModifierEntity;
+import com.aksi.domain.pricing.dto.PriceModifierDefinitionDTO;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity;
 
 /**
- * Mapper для перетворення між Entity та DTO для модифікаторів цін.
+ * Mapper для перетворення між Entity та DTO для модифікаторів цін з каталогу.
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface PriceModifierMapper {
+public interface PriceModifierDefinitionMapper {
     
     /**
      * Перетворює Entity на DTO.
@@ -19,7 +19,7 @@ public interface PriceModifierMapper {
      * @param entity Entity модифікатора
      * @return DTO модифікатора
      */
-    PriceModifierDTO toDto(PriceModifierEntity entity);
+    PriceModifierDefinitionDTO toDto(PriceModifierDefinitionEntity entity);
     
     /**
      * Перетворює DTO на Entity.
@@ -29,5 +29,5 @@ public interface PriceModifierMapper {
      */
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    PriceModifierEntity toEntity(PriceModifierDTO dto);
+    PriceModifierDefinitionEntity toEntity(PriceModifierDefinitionDTO dto);
 } 

@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/defect-types")
 @RequiredArgsConstructor
-@Tag(name = "Типи дефектів", description = "API для управління типами дефектів")
+@Tag(name = "DefectType", description = "API для управління типами дефектів")
 @Slf4j
 public class DefectTypeController {
     

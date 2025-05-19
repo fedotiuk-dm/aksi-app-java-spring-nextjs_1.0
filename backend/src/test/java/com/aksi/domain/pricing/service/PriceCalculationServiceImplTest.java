@@ -27,7 +27,7 @@ import com.aksi.domain.order.service.DiscountService;
 import com.aksi.domain.pricing.dto.PriceCalculationResponseDTO;
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
 import com.aksi.domain.pricing.entity.PriceListItemEntity;
-import com.aksi.domain.pricing.entity.PriceModifierEntity.ModifierCategory;
+import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
 import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 import com.aksi.domain.pricing.repository.PriceListItemRepository;
 import com.aksi.domain.pricing.repository.ServiceCategoryRepository;
@@ -41,7 +41,7 @@ class PriceCalculationServiceImplTest {
     private PriceListItemRepository priceListItemRepository;
     
     @Mock
-    private PriceModifierService modifierService;
+    private CatalogPriceModifierService modifierService;
     
     @Mock
     private UnitOfMeasureService unitOfMeasureService;
