@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Контролер для управління знижками до замовлень
+ * Контролер для управління знижками до замовлень.
  */
 @RestController
 @RequestMapping("/orders/discounts")
@@ -33,7 +33,7 @@ public class OrderDiscountController {
     private final DiscountService discountService;
 
     /**
-     * Застосувати знижку до замовлення
+     * Застосувати знижку до замовлення.
      *
      * @param request дані про знижку
      * @return інформація про застосовану знижку
@@ -58,7 +58,7 @@ public class OrderDiscountController {
     }
 
     /**
-     * Отримати інформацію про поточну знижку для замовлення
+     * Отримати інформацію про поточну знижку для замовлення.
      *
      * @param orderId ідентифікатор замовлення
      * @return інформація про поточну знижку
@@ -82,7 +82,7 @@ public class OrderDiscountController {
     }
 
     /**
-     * Скасувати знижку для замовлення
+     * Скасувати знижку для замовлення.
      *
      * @param orderId ідентифікатор замовлення
      * @return оновлена інформація про замовлення без знижки

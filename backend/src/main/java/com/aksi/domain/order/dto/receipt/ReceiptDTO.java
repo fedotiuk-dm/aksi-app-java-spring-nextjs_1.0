@@ -14,7 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для представлення структури квитанції
+ * DTO для представлення структури квитанції.
  */
 @Data
 @Builder
@@ -22,79 +22,79 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReceiptDTO {
     /**
-     * ID замовлення
+     * ID замовлення.
      */
     private UUID orderId;
 
     /**
-     * Номер квитанції
+     * Номер квитанції.
      */
     private String receiptNumber;
 
     /**
-     * Номер унікальної мітки
+     * Номер унікальної мітки.
      */
     private String tagNumber;
 
     /**
-     * Дата створення замовлення
+     * Дата створення замовлення.
      */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdDate;
 
     /**
-     * Орієнтовна дата видачі
+     * Орієнтовна дата видачі.
      */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime expectedCompletionDate;
 
     /**
-     * Тип термінового виконання
+     * Тип термінового виконання.
      */
     private ExpediteType expediteType;
 
     /**
-     * Інформація про філію
+     * Інформація про філію.
      */
     private ReceiptBranchInfoDTO branchInfo;
 
     /**
-     * Інформація про клієнта
+     * Інформація про клієнта.
      */
     private ReceiptClientInfoDTO clientInfo;
 
     /**
-     * Список предметів у замовленні
+     * Список предметів у замовленні.
      */
     private List<ReceiptItemDTO> items;
 
     /**
-     * Фінансова інформація
+     * Фінансова інформація.
      */
     private ReceiptFinancialInfoDTO financialInfo;
 
     /**
-     * Юридична інформація та умови надання послуг
+     * Юридична інформація та умови надання послуг.
      */
     private String legalTerms;
 
     /**
-     * Дані підпису клієнта (base64)
+     * Дані підпису клієнта (base64).
      */
     private String customerSignatureData;
 
     /**
-     * Підтвердження прийняття умов
+     * Підтвердження прийняття умов.
      */
     private boolean termsAccepted;
 
     /**
-     * Додаткові примітки до замовлення
+     * Додаткові примітки до замовлення.
      */
     private String additionalNotes;
 
     /**
-     * Спосіб оплати
+     * Спосіб оплати.
      */
     private PaymentMethod paymentMethod;
 }

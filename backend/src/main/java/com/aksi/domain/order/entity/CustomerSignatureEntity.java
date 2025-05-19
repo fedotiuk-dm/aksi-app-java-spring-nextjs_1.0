@@ -20,7 +20,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Сутність для зберігання цифрового підпису клієнта
+ * Сутність для зберігання цифрового підпису клієнта.
  */
 @Entity
 @Table(name = "customer_signatures")

@@ -12,7 +12,7 @@ import com.aksi.domain.order.model.ExpediteType;
 public interface OrderCompletionService {
 
     /**
-     * Оновити параметри виконання замовлення
+     * Оновити параметри виконання замовлення.
      *
      * @param orderId ідентифікатор замовлення
      * @param expediteType тип термінового виконання

@@ -15,32 +15,32 @@ import lombok.NoArgsConstructor;
 public class ModifierRecommendationDTO {
 
     /**
-     * Ідентифікатор модифікатора
+     * Ідентифікатор модифікатора.
      */
     private String modifierId;
 
     /**
-     * Код модифікатора
+     * Код модифікатора.
      */
     private String code;
 
     /**
-     * Назва модифікатора
+     * Назва модифікатора.
      */
     private String name;
 
     /**
-     * Опис причини рекомендації
+     * Опис причини рекомендації.
      */
     private String reason;
 
     /**
-     * Рекомендоване значення модифікатора (якщо застосовується)
+     * Рекомендоване значення модифікатора (якщо застосовується).
      */
     private Double recommendedValue;
 
     /**
-     * Рівень важливості рекомендації
+     * Рівень важливості рекомендації.
      * HIGH - критично важливо застосувати
      * MEDIUM - рекомендовано застосувати
      * LOW - можливо застосувати
@@ -48,12 +48,12 @@ public class ModifierRecommendationDTO {
     private RecommendationPriority priority;
 
     /**
-     * Сповіщення про ризик
+     * Сповіщення про ризик.
      */
     private String riskWarning;
 
     /**
-     * Перелік пріоритетів рекомендацій
+     * Перелік пріоритетів рекомендацій.
      */
     public enum RecommendationPriority {
         HIGH, MEDIUM, LOW

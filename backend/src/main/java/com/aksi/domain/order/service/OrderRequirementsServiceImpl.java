@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Імплементація сервісу для роботи з додатковими вимогами та примітками до замовлення
+ * Імплементація сервісу для роботи з додатковими вимогами та примітками до замовлення.
  */
 @Service
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class OrderRequirementsServiceImpl implements OrderRequirementsService {
     private final OrderRepository orderRepository;
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional
@@ -45,7 +45,7 @@ public class OrderRequirementsServiceImpl implements OrderRequirementsService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -58,7 +58,7 @@ public class OrderRequirementsServiceImpl implements OrderRequirementsService {
     }
 
     /**
-     * Створює об'єкт відповіді з додатковими вимогами
+     * Створює об'єкт відповіді з додатковими вимогами.
      *
      * @param order замовлення
      * @return відповідь з додатковими вимогами

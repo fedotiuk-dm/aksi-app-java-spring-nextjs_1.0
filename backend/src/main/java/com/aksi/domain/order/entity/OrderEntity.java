@@ -75,7 +75,7 @@ public class OrderEntity {
     private BigDecimal discountAmount;
 
     /**
-     * Тип знижки
+     * Тип знижки.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "discount_type")
@@ -83,13 +83,13 @@ public class OrderEntity {
     private DiscountType discountType = DiscountType.NO_DISCOUNT;
 
     /**
-     * Відсоток знижки (для користувацького типу знижки)
+     * Відсоток знижки (для користувацького типу знижки).
      */
     @Column(name = "discount_percentage")
     private Integer discountPercentage;
 
     /**
-     * Опис знижки (для користувацького типу знижки)
+     * Опис знижки (для користувацького типу знижки).
      */
     @Column(name = "discount_description", length = 255)
     private String discountDescription;
@@ -98,26 +98,26 @@ public class OrderEntity {
     private BigDecimal finalAmount;
 
     /**
-     * Спосіб оплати
+     * Спосіб оплати.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
     /**
-     * Сума передоплати
+     * Сума передоплати.
      */
     @Column(name = "prepayment_amount")
     private BigDecimal prepaymentAmount;
 
     /**
-     * Сума до сплати (борг)
+     * Сума до сплати (борг).
      */
     @Column(name = "balance_amount")
     private BigDecimal balanceAmount;
 
     /**
-     * Пункт прийому замовлення
+     * Пункт прийому замовлення.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_location_id", nullable = false)
@@ -143,25 +143,25 @@ public class OrderEntity {
     private LocalDateTime completedDate;
 
     /**
-     * Загальні примітки до замовлення
+     * Загальні примітки до замовлення.
      */
     @Column(name = "customer_notes", length = 1000)
     private String customerNotes;
 
     /**
-     * Додаткові вимоги клієнта
+     * Додаткові вимоги клієнта.
      */
     @Column(name = "additional_requirements", length = 1000)
     private String additionalRequirements;
 
     /**
-     * Внутрішні примітки (для персоналу)
+     * Внутрішні примітки (для персоналу).
      */
     @Column(name = "internal_notes", length = 1000)
     private String internalNotes;
 
     /**
-     * Тип термінового виконання
+     * Тип термінового виконання.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "expedite_type", nullable = false)

@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Відповідь з розрахованою датою завершення замовлення
+ * Відповідь з розрахованою датою завершення замовлення.
  */
 @Data
 @Builder
@@ -19,18 +19,18 @@ import lombok.NoArgsConstructor;
 public class CompletionDateResponse {
 
     /**
-     * Розрахована дата завершення замовлення
+     * Розрахована дата завершення замовлення.
      */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime expectedCompletionDate;
 
     /**
-     * Стандартний час виконання (у годинах)
+     * Стандартний час виконання (у годинах).
      */
     private Integer standardProcessingHours;
 
     /**
-     * Скорочений час виконання з урахуванням терміновості (у годинах)
+     * Скорочений час виконання з урахуванням терміновості (у годинах).
      */
     private Integer expeditedProcessingHours;
 }

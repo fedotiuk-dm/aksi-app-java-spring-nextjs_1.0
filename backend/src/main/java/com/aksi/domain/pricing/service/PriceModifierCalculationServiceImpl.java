@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PriceModifierCalculationServiceImpl implements PriceModifierCalculationService {
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public BigDecimal applyAllModifiers(
@@ -61,7 +61,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public BigDecimal applyColorModifiers(
@@ -101,7 +101,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public BigDecimal applySpecialModifiers(
@@ -137,7 +137,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public BigDecimal applyPercentageModifiers(
@@ -176,7 +176,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
     }
 
     /**
-     * Фільтрує список модифікаторів, залишаючи тільки відсоткові
+     * Фільтрує список модифікаторів, залишаючи тільки відсоткові.
      * @param modifiers список всіх модифікаторів
      * @return відфільтрований список відсоткових модифікаторів
      */
@@ -190,7 +190,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public BigDecimal applyFixedServiceModifiers(
@@ -230,7 +230,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
     }
 
     /**
-     * Фільтрує список модифікаторів, залишаючи тільки фіксовані
+     * Фільтрує список модифікаторів, залишаючи тільки фіксовані.
      * @param modifiers список всіх модифікаторів
      * @return відфільтрований список фіксованих модифікаторів
      */
@@ -241,7 +241,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public BigDecimal applyExpediteModifier(
@@ -285,7 +285,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
     }
 
     /**
-     * Додає деталі обчислення у список деталей обчислення з усіма необхідними параметрами
+     * Додає деталі обчислення у список деталей обчислення з усіма необхідними параметрами.
      * @param calculationDetails список деталей обчислення для доповнення
      * @param step крок обчислення
      * @param stepName назва кроку
@@ -319,7 +319,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public BigDecimal applyModifier(

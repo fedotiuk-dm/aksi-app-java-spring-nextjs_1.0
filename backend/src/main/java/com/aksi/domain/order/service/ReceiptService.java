@@ -5,12 +5,12 @@ import com.aksi.domain.order.dto.receipt.ReceiptDTO;
 import com.aksi.domain.order.dto.receipt.ReceiptGenerationRequest;
 
 /**
- * Сервіс для роботи з квитанціями замовлень
+ * Сервіс для роботи з квитанціями замовлень.
  */
 public interface ReceiptService {
 
     /**
-     * Згенерувати дані для квитанції
+     * Згенерувати дані для квитанції.
      *
      * @param request запит з параметрами генерації
      * @return DTO з даними квитанції
@@ -18,7 +18,7 @@ public interface ReceiptService {
     ReceiptDTO generateReceipt(ReceiptGenerationRequest request);
 
     /**
-     * Згенерувати PDF-квитанцію
+     * Згенерувати PDF-квитанцію.
      *
      * @param request запит з параметрами генерації
      * @return масив байтів з PDF-документом
@@ -26,7 +26,7 @@ public interface ReceiptService {
     byte[] generatePdfReceipt(ReceiptGenerationRequest request);
 
     /**
-     * Відправити квитанцію на email
+     * Відправити квитанцію на email.
      *
      * @param request запит з параметрами відправки
      */

@@ -27,7 +27,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     // ---------- Характеристики предмета ----------
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<String> getMaterialsByCategory(String category) {
@@ -36,7 +36,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<String> getAllColors() {
@@ -45,7 +45,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<String> getAllFillerTypes() {
@@ -54,7 +54,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<String> getAllWearDegrees() {
@@ -65,7 +65,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     // ---------- Забруднення та дефекти ----------
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<String> getAllStainTypes() {
@@ -76,7 +76,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<String> getAllDefectsAndRisks() {
@@ -87,7 +87,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<String> getDefects() {
@@ -101,7 +101,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<String> getRisks() {

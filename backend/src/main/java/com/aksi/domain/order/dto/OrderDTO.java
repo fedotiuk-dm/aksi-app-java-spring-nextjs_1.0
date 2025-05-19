@@ -86,7 +86,7 @@ public class OrderDTO {
     private String internalNotes;
 
     /**
-     * Тип термінового виконання
+     * Тип термінового виконання.
      */
     @Builder.Default
     private ExpediteType expediteType = ExpediteType.STANDARD;

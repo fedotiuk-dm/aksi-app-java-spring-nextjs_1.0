@@ -41,6 +41,7 @@
         <itextpdf.version>5.5.13.4</itextpdf.version>
         <zxing.version>3.5.3</zxing.version>
         <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
+        <jackson-datatype-jsr310.version>2.19.0</jackson-datatype-jsr310.version>
         <!-- Кодування для всього проекту -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -131,6 +132,13 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${org.springdoc.version}</version>
         </dependency>
+
+        <!-- Jackson JSR-310 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson-datatype-jsr310.version}</version>
+        </dependency>   
 
         <!-- Monitoring -->
         <dependency>

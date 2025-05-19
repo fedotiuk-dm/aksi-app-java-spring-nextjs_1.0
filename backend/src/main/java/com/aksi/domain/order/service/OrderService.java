@@ -148,7 +148,7 @@ public interface OrderService {
     void deleteOrderItem(UUID orderId, UUID itemId);
 
     /**
-     * Оновити параметри виконання замовлення
+     * Оновити параметри виконання замовлення.
      *
      * @param orderId ідентифікатор замовлення
      * @param expediteType тип термінового виконання

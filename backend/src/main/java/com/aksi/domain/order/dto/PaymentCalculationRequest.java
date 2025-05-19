@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для запиту розрахунку оплати замовлення
+ * DTO для запиту розрахунку оплати замовлення.
  */
 @Data
 @Builder
@@ -22,19 +22,19 @@ import lombok.NoArgsConstructor;
 public class PaymentCalculationRequest {
 
     /**
-     * ID замовлення
+     * ID замовлення.
      */
     @NotNull(message = "ID замовлення обов'язковий")
     private UUID orderId;
 
     /**
-     * Спосіб оплати
+     * Спосіб оплати.
      */
     @NotNull(message = "Спосіб оплати обов'язковий")
     private PaymentMethod paymentMethod;
 
     /**
-     * Сума передоплати
+     * Сума передоплати.
      */
     @DecimalMin(value = "0.0", inclusive = true, message = "Сума передоплати не може бути від'ємною")
     private BigDecimal prepaymentAmount;

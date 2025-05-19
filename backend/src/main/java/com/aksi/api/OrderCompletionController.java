@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Контролер для управління датами завершення замовлень
+ * Контролер для управління датами завершення замовлень.
  */
 @RestController
 @RequestMapping("/orders/completion")
@@ -34,7 +34,7 @@ public class OrderCompletionController {
     private final OrderService orderService;
 
     /**
-     * Розрахувати очікувану дату завершення замовлення
+     * Розрахувати очікувану дату завершення замовлення.
      *
      * @param request запит з категоріями послуг та типом терміновості
      * @return відповідь з розрахованою датою завершення
@@ -64,7 +64,7 @@ public class OrderCompletionController {
     }
 
     /**
-     * Оновити параметри виконання замовлення
+     * Оновити параметри виконання замовлення.
      *
      * @param request запит з параметрами виконання
      * @return статус операції

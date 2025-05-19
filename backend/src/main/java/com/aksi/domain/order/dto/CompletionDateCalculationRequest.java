@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Запит на розрахунок очікуваної дати завершення замовлення
+ * Запит на розрахунок очікуваної дати завершення замовлення.
  */
 @Data
 @Builder
@@ -22,13 +22,13 @@ import lombok.NoArgsConstructor;
 public class CompletionDateCalculationRequest {
 
     /**
-     * Список ID категорій послуг у замовленні
+     * Список ID категорій послуг у замовленні.
      */
     @NotEmpty(message = "Список категорій послуг не може бути порожнім")
     private List<UUID> serviceCategoryIds;
 
     /**
-     * Тип термінового виконання
+     * Тип термінового виконання.
      */
     @NotNull(message = "Тип термінового виконання обов'язковий")
     private ExpediteType expediteType;

@@ -7,7 +7,7 @@ import com.aksi.domain.order.dto.OrderFinalizationRequest;
 import com.aksi.domain.order.dto.receipt.EmailReceiptRequest;
 
 /**
- * Сервіс для завершення процесу оформлення замовлення
+ * Сервіс для завершення процесу оформлення замовлення.
  */
 public interface OrderFinalizationService {
 
@@ -23,14 +23,14 @@ public interface OrderFinalizationService {
     OrderDTO finalizeOrder(OrderFinalizationRequest request);
 
     /**
-     * Надіслати чек клієнту електронною поштою
+     * Надіслати чек клієнту електронною поштою.
      *
      * @param request запит на відправку чеку
      */
     void sendReceiptByEmail(EmailReceiptRequest request);
 
     /**
-     * Отримати згенерований PDF чек замовлення
+     * Отримати згенерований PDF чек замовлення.
      *
      * @param orderId ID замовлення
      * @param includeSignature включати підпис клієнта

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Константи для обчислення цін
+ * Константи для обчислення цін.
  */
 public final class PriceCalculationConstants {
     private PriceCalculationConstants() {

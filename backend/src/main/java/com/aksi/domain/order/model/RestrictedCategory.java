@@ -11,13 +11,13 @@ import java.util.Set;
  */
 public interface RestrictedCategory {
     /**
-     * Стандартні категорії з обмеженнями: прасування, прання, фарбування
+     * Стандартні категорії з обмеженнями: прасування, прання, фарбування.
      */
     Set<String> RESTRICTED_CATEGORY_CODES = Collections.unmodifiableSet(
             new HashSet<>(Arrays.asList("IRONING", "WASHING", "DYEING")));
 
     /**
-     * Перевіряє, чи входить категорія у список обмежених
+     * Перевіряє, чи входить категорія у список обмежених.
      *
      * @param categoryCode код категорії послуги
      * @return true, якщо категорія має обмеження

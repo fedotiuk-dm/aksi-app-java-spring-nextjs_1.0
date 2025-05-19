@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Імплементація сервісу для розрахунку дати завершення замовлення
+ * Імплементація сервісу для розрахунку дати завершення замовлення.
  */
 @Service
 @RequiredArgsConstructor

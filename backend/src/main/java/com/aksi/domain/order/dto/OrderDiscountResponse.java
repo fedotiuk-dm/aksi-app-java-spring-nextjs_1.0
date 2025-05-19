@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для відповіді з даними про знижку до замовлення
+ * DTO для відповіді з даними про знижку до замовлення.
  */
 @Data
 @Builder
@@ -21,47 +21,47 @@ import lombok.NoArgsConstructor;
 public class OrderDiscountResponse {
 
     /**
-     * ID замовлення
+     * ID замовлення.
      */
     private UUID orderId;
 
     /**
-     * Тип знижки
+     * Тип знижки.
      */
     private DiscountType discountType;
 
     /**
-     * Відсоток знижки
+     * Відсоток знижки.
      */
     private Integer discountPercentage;
 
     /**
-     * Опис знижки (для користувацького типу знижки)
+     * Опис знижки (для користувацького типу знижки).
      */
     private String discountDescription;
 
     /**
-     * Загальна сума замовлення до знижки
+     * Загальна сума замовлення до знижки.
      */
     private BigDecimal totalAmount;
 
     /**
-     * Сума знижки
+     * Сума знижки.
      */
     private BigDecimal discountAmount;
 
     /**
-     * Фінальна сума замовлення зі знижкою
+     * Фінальна сума замовлення зі знижкою.
      */
     private BigDecimal finalAmount;
 
     /**
-     * Список категорій, до яких не застосовується знижка
+     * Список категорій, до яких не застосовується знижка.
      */
     private List<String> nonDiscountableCategories;
 
     /**
-     * Загальна сума елементів, до яких не застосовується знижка
+     * Загальна сума елементів, до яких не застосовується знижка.
      */
     private BigDecimal nonDiscountableAmount;
 }

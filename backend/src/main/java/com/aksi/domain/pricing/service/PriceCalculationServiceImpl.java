@@ -48,7 +48,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
     private final ServiceCategoryModifierMapper categoryModifierMapper;
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -180,7 +180,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -205,7 +205,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -228,7 +228,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<PriceModifierDTO> getRecommendedModifiersForItem(
@@ -241,7 +241,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public List<String> getRiskWarningsForItem(
@@ -254,7 +254,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)

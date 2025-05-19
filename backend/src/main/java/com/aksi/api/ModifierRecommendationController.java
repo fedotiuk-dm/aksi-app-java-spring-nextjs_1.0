@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * REST API для отримання рекомендацій модифікаторів
+ * REST API для отримання рекомендацій модифікаторів.
  */
 @RestController
 @RequestMapping("/modifier-recommendations")

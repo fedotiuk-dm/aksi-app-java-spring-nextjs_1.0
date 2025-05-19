@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для відповіді з розрахунком оплати замовлення
+ * DTO для відповіді з розрахунком оплати замовлення.
  */
 @Data
 @Builder
@@ -20,37 +20,37 @@ import lombok.NoArgsConstructor;
 public class PaymentCalculationResponse {
 
     /**
-     * ID замовлення
+     * ID замовлення.
      */
     private UUID orderId;
 
     /**
-     * Спосіб оплати
+     * Спосіб оплати.
      */
     private PaymentMethod paymentMethod;
 
     /**
-     * Загальна сума замовлення
+     * Загальна сума замовлення.
      */
     private BigDecimal totalAmount;
 
     /**
-     * Сума знижки (якщо є)
+     * Сума знижки (якщо є).
      */
     private BigDecimal discountAmount;
 
     /**
-     * Кінцева сума до оплати
+     * Кінцева сума до оплати.
      */
     private BigDecimal finalAmount;
 
     /**
-     * Сума передоплати
+     * Сума передоплати.
      */
     private BigDecimal prepaymentAmount;
 
     /**
-     * Сума боргу (залишок до оплати)
+     * Сума боргу (залишок до оплати).
      */
     private BigDecimal balanceAmount;
 }

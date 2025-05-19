@@ -18,7 +18,7 @@ public class EntityNotFoundException extends RuntimeException {
     private final Map<String, Object> metadata;
 
     /**
-     * Базовий конструктор з усіма параметрами (приватний, щоб заохочувати використання статичних фабричних методів)
+     * Базовий конструктор з усіма параметрами (приватний, щоб заохочувати використання статичних фабричних методів).
      */
     private EntityNotFoundException(String message, String entityType, Object entityId, Map<String, Object> metadata) {
         super(message);
@@ -28,21 +28,21 @@ public class EntityNotFoundException extends RuntimeException {
     }
 
     /**
-     * Публічний конструктор для зворотної сумісності
+     * Публічний конструктор для зворотної сумісності.
      */
     public EntityNotFoundException(String message) {
         this(message, null, null, null);
     }
 
     /**
-     * Публічний конструктор для зворотної сумісності
+     * Публічний конструктор для зворотної сумісності.
      */
     public EntityNotFoundException(String message, String entityType, Object entityId) {
         this(message, entityType, entityId, null);
     }
 
     /**
-     * Створює виключення з повідомленням та ідентифікатором сутності
+     * Створює виключення з повідомленням та ідентифікатором сутності.
      */
     public static EntityNotFoundException withId(Object id) {
         String message = String.format("Сутність з ідентифікатором %s не знайдена", id);
@@ -50,14 +50,14 @@ public class EntityNotFoundException extends RuntimeException {
     }
 
     /**
-     * Створює виключення з вказаним повідомленням
+     * Створює виключення з вказаним повідомленням.
      */
     public static EntityNotFoundException withMessage(String message) {
         return new EntityNotFoundException(message, null, null, null);
     }
 
     /**
-     * Створює виключення з типом сутності та ідентифікатором
+     * Створює виключення з типом сутності та ідентифікатором.
      */
     public static EntityNotFoundException withTypeAndId(String entityType, Object id) {
         String message = String.format("Сутність типу %s з ідентифікатором %s не знайдена", entityType, id);
@@ -65,7 +65,7 @@ public class EntityNotFoundException extends RuntimeException {
     }
 
     /**
-     * Додає метадані до виключення
+     * Додає метадані до виключення.
      */
     public EntityNotFoundException withMetadata(String key, Object value) {
         metadata.put(key, value);

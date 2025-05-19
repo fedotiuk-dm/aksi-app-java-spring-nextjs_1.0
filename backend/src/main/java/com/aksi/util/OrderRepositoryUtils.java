@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderRepositoryUtils {
 
     /**
-     * Отримати замовлення за ID
+     * Отримати замовлення за ID.
      *
      * @param orderRepository репозиторій замовлень
      * @param orderId ID замовлення

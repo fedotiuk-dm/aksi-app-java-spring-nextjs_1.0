@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для інформації про філію у квитанції
+ * DTO для інформації про філію у квитанції.
  */
 @Data
 @Builder
@@ -14,22 +14,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReceiptBranchInfoDTO {
     /**
-     * Назва філії
+     * Назва філії.
      */
     private String branchName;
 
     /**
-     * Адреса філії
+     * Адреса філії.
      */
     private String address;
 
     /**
-     * Телефон філії
+     * Телефон філії.
      */
     private String phone;
 
     /**
-     * ПІБ оператора, який оформив замовлення
+     * ПІБ оператора, який оформив замовлення.
      */
     private String operatorName;
 }

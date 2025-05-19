@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * REST контролер для операцій з підписами клієнтів
+ * REST контролер для операцій з підписами клієнтів.
  */
 @RestController
 @RequestMapping("/signatures")

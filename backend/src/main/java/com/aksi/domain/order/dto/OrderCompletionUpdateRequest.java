@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Запит на оновлення параметрів виконання замовлення
+ * Запит на оновлення параметрів виконання замовлення.
  */
 @Data
 @Builder
@@ -22,19 +22,19 @@ import lombok.NoArgsConstructor;
 public class OrderCompletionUpdateRequest {
 
     /**
-     * ID замовлення
+     * ID замовлення.
      */
     @NotNull(message = "ID замовлення обов'язковий")
     private UUID orderId;
 
     /**
-     * Тип термінового виконання
+     * Тип термінового виконання.
      */
     @NotNull(message = "Тип термінового виконання обов'язковий")
     private ExpediteType expediteType;
 
     /**
-     * Очікувана дата завершення замовлення
+     * Очікувана дата завершення замовлення.
      */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @NotNull(message = "Очікувана дата завершення обов'язкова")

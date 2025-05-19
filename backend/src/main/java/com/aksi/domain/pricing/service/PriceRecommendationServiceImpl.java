@@ -66,7 +66,7 @@ public class PriceRecommendationServiceImpl implements PriceRecommendationServic
     }
 
     /**
-     * Обробляє список рекомендацій та перетворює їх у модифікатори цін
+     * Обробляє список рекомендацій та перетворює їх у модифікатори цін.
      *
      * @param recommendations список рекомендацій для обробки
      * @param recommendedModifiers існуючий список рекомендованих модифікаторів

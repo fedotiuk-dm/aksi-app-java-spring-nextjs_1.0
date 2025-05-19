@@ -6,7 +6,7 @@ import java.util.Set;
 import com.aksi.domain.order.dto.ModifierRecommendationDTO;
 
 /**
- * Сервіс для генерації рекомендацій модифікаторів
+ * Сервіс для генерації рекомендацій модифікаторів.
  * на основі характеристик предмета (плями, дефекти, матеріал тощо).
  */
 public interface ModifierRecommendationService {

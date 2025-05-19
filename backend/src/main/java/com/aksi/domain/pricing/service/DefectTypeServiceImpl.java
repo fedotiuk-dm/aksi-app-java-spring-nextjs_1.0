@@ -37,7 +37,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -46,7 +46,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -55,7 +55,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -64,7 +64,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -75,7 +75,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -86,7 +86,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional
@@ -107,7 +107,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional
@@ -135,7 +135,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional
@@ -149,7 +149,7 @@ public class DefectTypeServiceImpl extends AbstractDefectTypeService<DefectTypeR
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)

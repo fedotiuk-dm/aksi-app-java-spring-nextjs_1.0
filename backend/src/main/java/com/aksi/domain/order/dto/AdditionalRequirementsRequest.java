@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для запиту на оновлення додаткових вимог замовлення
+ * DTO для запиту на оновлення додаткових вимог замовлення.
  */
 @Data
 @Builder
@@ -19,19 +19,19 @@ import lombok.NoArgsConstructor;
 public class AdditionalRequirementsRequest {
 
     /**
-     * ID замовлення
+     * ID замовлення.
      */
     @NotNull(message = "ID замовлення обов'язковий")
     private UUID orderId;
 
     /**
-     * Додаткові вимоги клієнта
+     * Додаткові вимоги клієнта.
      */
     @Size(max = 1000, message = "Довжина додаткових вимог не повинна перевищувати 1000 символів")
     private String additionalRequirements;
 
     /**
-     * Загальні примітки до замовлення
+     * Загальні примітки до замовлення.
      */
     @Size(max = 1000, message = "Довжина приміток не повинна перевищувати 1000 символів")
     private String customerNotes;

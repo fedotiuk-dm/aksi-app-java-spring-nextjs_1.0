@@ -31,7 +31,7 @@ public class PriceListServiceImpl implements PriceListService {
     private final PriceListMapper priceListMapper;
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -44,7 +44,7 @@ public class PriceListServiceImpl implements PriceListService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -60,7 +60,7 @@ public class PriceListServiceImpl implements PriceListService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -76,7 +76,7 @@ public class PriceListServiceImpl implements PriceListService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -90,7 +90,7 @@ public class PriceListServiceImpl implements PriceListService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)

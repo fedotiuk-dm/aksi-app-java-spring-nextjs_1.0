@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для представлення предметів замовлення у квитанції
+ * DTO для представлення предметів замовлення у квитанції.
  */
 @Data
 @Builder
@@ -18,82 +18,82 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReceiptItemDTO {
     /**
-     * ID предмета
+     * ID предмета.
      */
     private UUID id;
 
     /**
-     * Порядковий номер у квитанції
+     * Порядковий номер у квитанції.
      */
     private int orderNumber;
 
     /**
-     * Найменування предмета
+     * Найменування предмета.
      */
     private String name;
 
     /**
-     * Категорія послуги
+     * Категорія послуги.
      */
     private String serviceCategory;
 
     /**
-     * Кількість або вага
+     * Кількість або вага.
      */
     private BigDecimal quantity;
 
     /**
-     * Одиниця виміру (шт/кг)
+     * Одиниця виміру (шт/кг).
      */
     private String unitOfMeasure;
 
     /**
-     * Матеріал
+     * Матеріал.
      */
     private String material;
 
     /**
-     * Колір
+     * Колір.
      */
     private String color;
 
     /**
-     * Наповнювач (якщо є)
+     * Наповнювач (якщо є).
      */
     private String filler;
 
     /**
-     * Ступінь зносу (%)
+     * Ступінь зносу (%).
      */
     private Integer wearPercentage;
 
     /**
-     * Базова вартість
+     * Базова вартість.
      */
     private BigDecimal basePrice;
 
     /**
-     * Фінальна ціна після модифікаторів
+     * Фінальна ціна після модифікаторів.
      */
     private BigDecimal finalPrice;
 
     /**
-     * Список модифікаторів ціни
+     * Список модифікаторів ціни.
      */
     private List<ReceiptPriceModifierDTO> priceModifiers;
 
     /**
-     * Список забруднень (плям)
+     * Список забруднень (плям).
      */
     private List<String> stains;
 
     /**
-     * Список дефектів
+     * Список дефектів.
      */
     private List<String> defects;
 
     /**
-     * Примітки (включаючи "Без гарантій")
+     * Примітки (включаючи "Без гарантій").
      */
     private String notes;
 }

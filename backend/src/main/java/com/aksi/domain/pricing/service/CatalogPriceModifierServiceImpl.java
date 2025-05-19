@@ -33,7 +33,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     private final ServiceCategoryModifierMapper categoryModifierMapper;
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -45,7 +45,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -57,7 +57,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -69,7 +69,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -86,7 +86,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional
@@ -111,7 +111,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional
@@ -150,7 +150,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional
@@ -169,7 +169,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -181,7 +181,7 @@ public class CatalogPriceModifierServiceImpl implements CatalogPriceModifierServ
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)

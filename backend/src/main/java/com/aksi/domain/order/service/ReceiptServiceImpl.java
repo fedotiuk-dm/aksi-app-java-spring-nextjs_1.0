@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Імплементація сервісу для роботи з квитанціями
+ * Імплементація сервісу для роботи з квитанціями.
  */
 @Service
 @Slf4j

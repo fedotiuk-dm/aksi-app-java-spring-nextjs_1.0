@@ -1,21 +1,21 @@
 package com.aksi.domain.order.model;
 
 /**
- * Категорії послуг, на які не поширюються знижки
+ * Категорії послуг, на які не поширюються знижки.
  */
 public enum NonDiscountableCategory implements RestrictedCategory {
     /**
-     * Прасування (не підлягає знижкам)
+     * Прасування (не підлягає знижкам).
      */
     IRONING("IRONING"),
 
     /**
-     * Прання (не підлягає знижкам)
+     * Прання (не підлягає знижкам).
      */
     WASHING("WASHING"),
 
     /**
-     * Фарбування текстилю (не підлягає знижкам)
+     * Фарбування текстилю (не підлягає знижкам).
      */
     DYEING("DYEING");
 
@@ -30,7 +30,7 @@ public enum NonDiscountableCategory implements RestrictedCategory {
     }
 
     /**
-     * Перевіряє, чи входить категорія у список тих, що не піддаються знижкам
+     * Перевіряє, чи входить категорія у список тих, що не піддаються знижкам.
      *
      * @param categoryCode код категорії послуги
      * @return true, якщо категорія не піддається знижкам
@@ -40,7 +40,7 @@ public enum NonDiscountableCategory implements RestrictedCategory {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public boolean isRestricted(String categoryCode) {

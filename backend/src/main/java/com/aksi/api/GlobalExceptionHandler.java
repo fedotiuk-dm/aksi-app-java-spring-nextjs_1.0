@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Глобальний обробник винятків для API
+ * Глобальний обробник винятків для API.
  * Забезпечує уніфікований формат відповіді на помилки для фронтенду
  */
 @RestControllerAdvice
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     private String activeProfile;
 
     /**
-     * Обробка помилок валідації полів
+     * Обробка помилок валідації полів.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробка помилок порушення обмежень
+     * Обробка помилок порушення обмежень.
      */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -110,7 +110,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробка помилки відсутності сутності
+     * Обробка помилки відсутності сутності.
      */
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -119,7 +119,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробка помилки дублікату користувача
+     * Обробка помилки дублікату користувача.
      */
     @ExceptionHandler(UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -128,7 +128,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробка помилки автентифікації
+     * Обробка помилки автентифікації.
      */
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -137,7 +137,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробка помилки доступу
+     * Обробка помилки доступу.
      */
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -146,7 +146,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробка Resource Not Found помилок
+     * Обробка Resource Not Found помилок.
      */
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -155,7 +155,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробка Bad Request помилок
+     * Обробка Bad Request помилок.
      */
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -164,7 +164,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробка помилки некоректних даних
+     * Обробка помилки некоректних даних.
      */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -173,7 +173,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Загальний метод для обробки стандартних винятків
+     * Загальний метод для обробки стандартних винятків.
      * @param ex виняток
      * @param status HTTP статус відповіді
      * @param logMessage повідомлення для журналу
@@ -189,7 +189,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробка будь-яких інших помилок
+     * Обробка будь-яких інших помилок.
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
@@ -230,7 +230,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обробляє помилки перетворення типів аргументів методу, включаючи невалідні UUID
+     * Обробляє помилки перетворення типів аргументів методу, включаючи невалідні UUID.
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, Object>> handleMethodArgumentTypeMismatch(
@@ -274,14 +274,14 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Логування повідомлення про виняток зі стандартною інформацією про запит
+     * Логування повідомлення про виняток зі стандартною інформацією про запит.
      */
     private void logException(String message, Exception ex) {
         log.warn("{} для запиту {} {}", message, request.getMethod(), request.getRequestURI(), ex);
     }
 
     /**
-     * Встановлює контекст MDC для збору діагностичної інформації
+     * Встановлює контекст MDC для збору діагностичної інформації.
      */
     private void setMDC(String errorId, HttpStatus status) {
         MDC.put("errorId", errorId);
@@ -299,14 +299,14 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Очищає MDC після обробки помилки
+     * Очищає MDC після обробки помилки.
      */
     private void clearMDC() {
         MDC.clear();
     }
 
     /**
-     * Логування деталей запиту для кращої діагностики
+     * Логування деталей запиту для кращої діагностики.
      */
     private void logRequestDetails() {
         StringBuilder sb = new StringBuilder();
@@ -355,7 +355,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Логування інформації про клас, який викликав помилку
+     * Логування інформації про клас, який викликав помилку.
      */
     private void logCallerInfo(Exception ex) {
         StackTraceElement[] stackTrace = ex.getStackTrace();
@@ -379,7 +379,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Логування причини помилки, якщо вона є
+     * Логування причини помилки, якщо вона є.
      */
     private void logCauseIfPresent(Exception ex) {
         Throwable cause = ex.getCause();
@@ -409,14 +409,14 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Створення уніфікованої відповіді про помилку
+     * Створення уніфікованої відповіді про помилку.
      */
     private ErrorResponse createErrorResponse(HttpStatus status, String message, Exception ex, String errorId) {
         return createErrorResponse(status, message, ex, null, errorId);
     }
 
     /**
-     * Створення уніфікованої відповіді про помилку з детальними помилками
+     * Створення уніфікованої відповіді про помилку з детальними помилками.
      */
     private ErrorResponse createErrorResponse(HttpStatus status, String message, Exception ex, Map<String, String> errors, String errorId) {
         ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder()
@@ -435,7 +435,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Перевірка, чи це середовище розробки
+     * Перевірка, чи це середовище розробки.
      */
     private boolean isDevelopmentEnvironment() {
         return Arrays.asList(environment.getActiveProfiles()).contains("dev") ||
@@ -447,14 +447,14 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Генерація унікального ідентифікатора помилки
+     * Генерація унікального ідентифікатора помилки.
      */
     private String generateErrorId() {
         return UUID.randomUUID().toString().substring(0, 8);
     }
 
     /**
-     * Додавання стеку помилки до відповіді (тільки для dev середовища)
+     * Додавання стеку помилки до відповіді (тільки для dev середовища).
      */
     private void addStackTraceToResponse(Exception ex, ErrorResponse errorResponse) {
         StackTraceElement[] stackTrace = ex.getStackTrace();

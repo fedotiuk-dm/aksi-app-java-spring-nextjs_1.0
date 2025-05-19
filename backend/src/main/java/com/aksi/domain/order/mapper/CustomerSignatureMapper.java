@@ -8,13 +8,13 @@ import com.aksi.domain.order.dto.CustomerSignatureResponse;
 import com.aksi.domain.order.entity.CustomerSignatureEntity;
 
 /**
- * Маппер для перетворення між сутностями та DTO підпису клієнта
+ * Маппер для перетворення між сутностями та DTO підпису клієнта.
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CustomerSignatureMapper {
 
     /**
-     * Перетворити сутність на DTO відповіді
+     * Перетворити сутність на DTO відповіді.
      *
      * @param entity сутність підпису
      * @return DTO відповіді

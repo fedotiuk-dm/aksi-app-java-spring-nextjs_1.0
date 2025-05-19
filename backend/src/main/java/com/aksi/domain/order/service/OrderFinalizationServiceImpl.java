@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Імплементація сервісу для завершення процесу оформлення замовлення
+ * Імплементація сервісу для завершення процесу оформлення замовлення.
  */
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class OrderFinalizationServiceImpl implements OrderFinalizationService {
     private final ReceiptService receiptService;
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional
@@ -112,7 +112,7 @@ public class OrderFinalizationServiceImpl implements OrderFinalizationService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public void sendReceiptByEmail(EmailReceiptRequest request) {
@@ -127,7 +127,7 @@ public class OrderFinalizationServiceImpl implements OrderFinalizationService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public byte[] getOrderReceipt(UUID orderId, boolean includeSignature) {

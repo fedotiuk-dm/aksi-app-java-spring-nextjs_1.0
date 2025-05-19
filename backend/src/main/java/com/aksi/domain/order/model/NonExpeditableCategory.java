@@ -1,21 +1,21 @@
 package com.aksi.domain.order.model;
 
 /**
- * Категорії послуг, на які не поширюється терміновість виконання
+ * Категорії послуг, на які не поширюється терміновість виконання.
  */
 public enum NonExpeditableCategory implements RestrictedCategory {
     /**
-     * Прасування (не підлягає терміновості)
+     * Прасування (не підлягає терміновості).
      */
     IRONING("IRONING"),
 
     /**
-     * Прання (не підлягає терміновості)
+     * Прання (не підлягає терміновості).
      */
     WASHING("WASHING"),
 
     /**
-     * Фарбування текстилю (не підлягає терміновості)
+     * Фарбування текстилю (не підлягає терміновості).
      */
     DYEING("DYEING");
 
@@ -30,7 +30,7 @@ public enum NonExpeditableCategory implements RestrictedCategory {
     }
 
     /**
-     * Перевіряє, чи входить категорія у список тих, що не піддаються терміновості
+     * Перевіряє, чи входить категорія у список тих, що не піддаються терміновості.
      *
      * @param categoryCode код категорії послуги
      * @return true, якщо категорія не піддається терміновості
@@ -40,7 +40,7 @@ public enum NonExpeditableCategory implements RestrictedCategory {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     public boolean isRestricted(String categoryCode) {

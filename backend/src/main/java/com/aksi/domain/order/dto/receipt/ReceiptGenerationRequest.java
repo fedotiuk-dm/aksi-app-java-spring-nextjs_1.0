@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для запиту генерації квитанції
+ * DTO для запиту генерації квитанції.
  */
 @Data
 @Builder
@@ -17,19 +17,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReceiptGenerationRequest {
     /**
-     * ID замовлення, для якого потрібно згенерувати квитанцію
+     * ID замовлення, для якого потрібно згенерувати квитанцію.
      */
     @NotNull(message = "ID замовлення обов'язкове")
     private UUID orderId;
 
     /**
-     * Формат квитанції (PDF, HTML)
+     * Формат квитанції (PDF, HTML).
      */
     @Builder.Default
     private String format = "PDF";
 
     /**
-     * Чи потрібно включати цифровий підпис
+     * Чи потрібно включати цифровий підпис.
      */
     @Builder.Default
     private boolean includeSignature = true;

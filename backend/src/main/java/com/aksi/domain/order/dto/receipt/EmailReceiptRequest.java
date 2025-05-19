@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для запиту відправки квитанції на email
+ * DTO для запиту відправки квитанції на email.
  */
 @Data
 @Builder
@@ -19,31 +19,31 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EmailReceiptRequest {
     /**
-     * ID замовлення, для якого потрібно відправити квитанцію
+     * ID замовлення, для якого потрібно відправити квитанцію.
      */
     @NotNull(message = "ID замовлення обов'язкове")
     private UUID orderId;
 
     /**
-     * Email отримувача
+     * Email отримувача.
      */
     @NotBlank(message = "Email отримувача обов'язковий")
     @Email(message = "Некоректний формат email")
     private String recipientEmail;
 
     /**
-     * Тема листа
+     * Тема листа.
      */
     @Builder.Default
     private String subject = "Квитанція замовлення хімчистки AKSI";
 
     /**
-     * Текст повідомлення
+     * Текст повідомлення.
      */
     private String message;
 
     /**
-     * Чи включати цифровий підпис у PDF
+     * Чи включати цифровий підпис у PDF.
      */
     @Builder.Default
     private boolean includeSignature = false;

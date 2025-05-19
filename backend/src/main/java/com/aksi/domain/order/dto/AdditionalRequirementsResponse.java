@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для відповіді з додатковими вимогами замовлення
+ * DTO для відповіді з додатковими вимогами замовлення.
  */
 @Data
 @Builder
@@ -17,17 +17,17 @@ import lombok.NoArgsConstructor;
 public class AdditionalRequirementsResponse {
 
     /**
-     * ID замовлення
+     * ID замовлення.
      */
     private UUID orderId;
 
     /**
-     * Додаткові вимоги клієнта
+     * Додаткові вимоги клієнта.
      */
     private String additionalRequirements;
 
     /**
-     * Загальні примітки до замовлення
+     * Загальні примітки до замовлення.
      */
     private String customerNotes;
 }

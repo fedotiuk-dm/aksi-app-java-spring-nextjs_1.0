@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для представлення модифікаторів ціни у квитанції
+ * DTO для представлення модифікаторів ціни у квитанції.
  */
 @Data
 @Builder
@@ -16,27 +16,27 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReceiptPriceModifierDTO {
     /**
-     * Назва модифікатора
+     * Назва модифікатора.
      */
     private String name;
 
     /**
-     * Опис модифікатора
+     * Опис модифікатора.
      */
     private String description;
 
     /**
-     * Відсоток впливу на ціну
+     * Відсоток впливу на ціну.
      */
     private Integer percentageValue;
 
     /**
-     * Фіксоване значення (якщо не відсоток)
+     * Фіксоване значення (якщо не відсоток).
      */
     private BigDecimal fixedValue;
 
     /**
-     * Фінальний вплив на ціну
+     * Фінальний вплив на ціну.
      */
     private BigDecimal impact;
 }

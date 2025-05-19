@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для фінансової інформації у квитанції
+ * DTO для фінансової інформації у квитанції.
  */
 @Data
 @Builder
@@ -16,37 +16,37 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReceiptFinancialInfoDTO {
     /**
-     * Вартість послуг до знижок
+     * Вартість послуг до знижок.
      */
     private BigDecimal totalAmount;
 
     /**
-     * Сума знижки
+     * Сума знижки.
      */
     private BigDecimal discountAmount;
 
     /**
-     * Тип знижки
+     * Тип знижки.
      */
     private String discountType;
 
     /**
-     * Надбавка за терміновість
+     * Надбавка за терміновість.
      */
     private BigDecimal expediteSurcharge;
 
     /**
-     * Загальна вартість після знижок та надбавок
+     * Загальна вартість після знижок та надбавок.
      */
     private BigDecimal finalAmount;
 
     /**
-     * Сплачена сума (передоплата)
+     * Сплачена сума (передоплата).
      */
     private BigDecimal prepaymentAmount;
 
     /**
-     * Залишок до сплати при отриманні
+     * Залишок до сплати при отриманні.
      */
     private BigDecimal balanceAmount;
 }

@@ -27,7 +27,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     private final PriceListMapper priceListMapper;
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -40,7 +40,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -54,7 +54,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)

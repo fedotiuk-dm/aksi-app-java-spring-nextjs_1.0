@@ -5,21 +5,21 @@ import java.math.BigDecimal;
 import com.aksi.domain.pricing.constants.PriceCalculationConstants;
 
 /**
- * Типи термінового виконання замовлення
+ * Типи термінового виконання замовлення.
  */
 public enum ExpediteType {
     /**
-     * Звичайне (без націнки)
+     * Звичайне (без націнки).
      */
     STANDARD(BigDecimal.ZERO),
 
     /**
-     * +50% за 48 год
+     * +50% за 48 год.
      */
     EXPRESS_48H(PriceCalculationConstants.EXPEDITE_48H_PERCENTAGE),
 
     /**
-     * +100% за 24 год
+     * +100% за 24 год.
      */
     EXPRESS_24H(PriceCalculationConstants.EXPEDITE_24H_PERCENTAGE);
 
@@ -30,7 +30,7 @@ public enum ExpediteType {
     }
 
     /**
-     * Отримати відсоток надбавки за терміновість
+     * Отримати відсоток надбавки за терміновість.
      *
      * @return відсоток надбавки
      */
@@ -39,7 +39,7 @@ public enum ExpediteType {
     }
 
     /**
-     * Перевіряє, чи може бути застосована терміновість до категорії послуг
+     * Перевіряє, чи може бути застосована терміновість до категорії послуг.
      *
      * @param categoryCode код категорії послуг
      * @return true, якщо терміновість може бути застосована

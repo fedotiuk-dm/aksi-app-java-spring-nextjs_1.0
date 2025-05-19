@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Імплементація сервісу оплати замовлень
+ * Імплементація сервісу оплати замовлень.
  */
 @Service
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepository;
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -46,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional
@@ -76,7 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -90,7 +90,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     /**
-     * Створює об'єкт відповіді з розрахунком оплати
+     * Створює об'єкт відповіді з розрахунком оплати.
      *
      * @param order замовлення
      * @param paymentMethod спосіб оплати

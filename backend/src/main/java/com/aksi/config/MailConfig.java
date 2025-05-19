@@ -9,7 +9,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
- * Конфігурація для відправки електронної пошти
+ * Конфігурація для відправки електронної пошти.
  */
 @Configuration
 public class MailConfig {

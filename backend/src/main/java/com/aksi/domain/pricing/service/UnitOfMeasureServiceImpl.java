@@ -70,7 +70,7 @@ public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
     );
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -124,7 +124,7 @@ public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
@@ -167,7 +167,7 @@ public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)

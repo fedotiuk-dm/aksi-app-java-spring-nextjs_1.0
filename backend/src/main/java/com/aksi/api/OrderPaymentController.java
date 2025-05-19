@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Контролер для роботи з оплатою замовлень
+ * Контролер для роботи з оплатою замовлень.
  */
 @RestController
 @RequestMapping("/orders/{orderId}/payment")
@@ -34,7 +34,7 @@ public class OrderPaymentController {
     private final PaymentService paymentService;
 
     /**
-     * Розрахувати деталі оплати замовлення
+     * Розрахувати деталі оплати замовлення.
      *
      * @param orderId ID замовлення
      * @param request запит з інформацією про оплату
@@ -66,7 +66,7 @@ public class OrderPaymentController {
     }
 
     /**
-     * Застосувати інформацію про оплату до замовлення
+     * Застосувати інформацію про оплату до замовлення.
      *
      * @param orderId ID замовлення
      * @param request запит з інформацією про оплату
@@ -98,7 +98,7 @@ public class OrderPaymentController {
     }
 
     /**
-     * Отримати інформацію про оплату замовлення
+     * Отримати інформацію про оплату замовлення.
      *
      * @param orderId ID замовлення
      * @return відповідь з даними про оплату

@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Контролер для роботи з додатковими вимогами замовлення
+ * Контролер для роботи з додатковими вимогами замовлення.
  */
 @RestController
 @RequestMapping("/orders/{orderId}/requirements")
@@ -34,7 +34,7 @@ public class OrderRequirementsController {
     private final OrderRequirementsService orderRequirementsService;
 
     /**
-     * Оновити додаткові вимоги та примітки до замовлення
+     * Оновити додаткові вимоги та примітки до замовлення.
      *
      * @param orderId ID замовлення
      * @param request запит з додатковими вимогами
@@ -59,7 +59,7 @@ public class OrderRequirementsController {
     }
 
     /**
-     * Отримати додаткові вимоги та примітки до замовлення
+     * Отримати додаткові вимоги та примітки до замовлення.
      *
      * @param orderId ID замовлення
      * @return відповідь з даними

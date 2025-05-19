@@ -6,12 +6,12 @@ import com.aksi.domain.order.dto.OrderDiscountRequest;
 import com.aksi.domain.order.dto.OrderDiscountResponse;
 
 /**
- * Сервіс для роботи зі знижками
+ * Сервіс для роботи зі знижками.
  */
 public interface DiscountService {
 
     /**
-     * Застосувати знижку до замовлення
+     * Застосувати знижку до замовлення.
      *
      * @param request дані про знижку
      * @return інформація про застосовану знижку
@@ -19,7 +19,7 @@ public interface DiscountService {
     OrderDiscountResponse applyDiscount(OrderDiscountRequest request);
 
     /**
-     * Отримати інформацію про поточну знижку для замовлення
+     * Отримати інформацію про поточну знижку для замовлення.
      *
      * @param orderId ідентифікатор замовлення
      * @return інформація про поточну знижку
@@ -27,7 +27,7 @@ public interface DiscountService {
     OrderDiscountResponse getOrderDiscount(String orderId);
 
     /**
-     * Скасувати знижку для замовлення
+     * Скасувати знижку для замовлення.
      *
      * @param orderId ідентифікатор замовлення
      * @return оновлена інформація про замовлення без знижки
@@ -35,7 +35,7 @@ public interface DiscountService {
     OrderDiscountResponse removeDiscount(String orderId);
 
     /**
-     * Перевіряє, чи можна застосувати знижку до категорії послуг
+     * Перевіряє, чи можна застосувати знижку до категорії послуг.
      *
      * @param categoryCode код категорії послуг
      * @return true, якщо знижка може бути застосована, false - інакше
@@ -43,7 +43,7 @@ public interface DiscountService {
     boolean isDiscountApplicable(String categoryCode);
 
     /**
-     * Застосовує знижку до ціни, якщо це можливо для категорії
+     * Застосовує знижку до ціни, якщо це можливо для категорії.
      *
      * @param price ціна без знижки
      * @param discountPercent відсоток знижки

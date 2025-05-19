@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для інформації про клієнта у квитанції
+ * DTO для інформації про клієнта у квитанції.
  */
 @Data
 @Builder
@@ -16,32 +16,32 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReceiptClientInfoDTO {
     /**
-     * Прізвище клієнта
+     * Прізвище клієнта.
      */
     private String lastName;
 
     /**
-     * Ім'я клієнта
+     * Ім'я клієнта.
      */
     private String firstName;
 
     /**
-     * Телефон клієнта
+     * Телефон клієнта.
      */
     private String phone;
 
     /**
-     * Email клієнта
+     * Email клієнта.
      */
     private String email;
 
     /**
-     * Адреса клієнта
+     * Адреса клієнта.
      */
     private String address;
 
     /**
-     * Обрані способи зв'язку
+     * Обрані способи зв'язку.
      */
     private List<String> communicationChannels;
 }

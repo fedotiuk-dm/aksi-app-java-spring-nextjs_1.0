@@ -8,12 +8,12 @@ import com.aksi.domain.order.dto.CustomerSignatureRequest;
 import com.aksi.domain.order.dto.CustomerSignatureResponse;
 
 /**
- * Інтерфейс сервісу для роботи з підписами клієнтів
+ * Інтерфейс сервісу для роботи з підписами клієнтів.
  */
 public interface CustomerSignatureService {
 
     /**
-     * Зберегти підпис клієнта
+     * Зберегти підпис клієнта.
      *
      * @param request дані підпису
      * @return збережений підпис
@@ -21,7 +21,7 @@ public interface CustomerSignatureService {
     CustomerSignatureResponse saveSignature(CustomerSignatureRequest request);
 
     /**
-     * Отримати підпис за ID
+     * Отримати підпис за ID.
      *
      * @param signatureId ID підпису
      * @return підпис, якщо існує
@@ -29,7 +29,7 @@ public interface CustomerSignatureService {
     Optional<CustomerSignatureResponse> getSignatureById(UUID signatureId);
 
     /**
-     * Отримати підпис за ID замовлення та типом підпису
+     * Отримати підпис за ID замовлення та типом підпису.
      *
      * @param orderId ID замовлення
      * @param signatureType тип підпису
@@ -38,7 +38,7 @@ public interface CustomerSignatureService {
     Optional<CustomerSignatureResponse> getSignatureByOrderIdAndType(UUID orderId, String signatureType);
 
     /**
-     * Отримати всі підписи для замовлення
+     * Отримати всі підписи для замовлення.
      *
      * @param orderId ID замовлення
      * @return список підписів

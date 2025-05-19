@@ -167,7 +167,7 @@ public class AuthService {
     }
 
     /**
-     * Створення AuthResponse на основі даних користувача та токенів
+     * Створення AuthResponse на основі даних користувача та токенів.
      *
      * @param user Користувач
      * @param accessToken JWT токен доступу
@@ -189,7 +189,7 @@ public class AuthService {
     }
 
     /**
-     * Генерація пари токенів (access та refresh) для користувача
+     * Генерація пари токенів (access та refresh) для користувача.
      *
      * @param user Користувач
      * @return Пара токенів (ключ "accessToken" для JWT токену, "refreshToken" для refresh токену)

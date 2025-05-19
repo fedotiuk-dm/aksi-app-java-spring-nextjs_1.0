@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * REST контролер для операцій завершення замовлення
+ * REST контролер для операцій завершення замовлення.
  */
 @RestController
 @RequestMapping("/orders/finalization")
@@ -43,7 +43,7 @@ public class OrderFinalizationController {
     private final OrderFinalizationService orderFinalizationService;
 
     /**
-     * Завершення оформлення замовлення
+     * Завершення оформлення замовлення.
      *
      * @param request запит з даними для завершення замовлення
      * @return дані оновленого замовлення
@@ -73,7 +73,7 @@ public class OrderFinalizationController {
     }
 
     /**
-     * Отримання PDF-чеку замовлення
+     * Отримання PDF-чеку замовлення.
      *
      * @param orderId ID замовлення
      * @param includeSignature включати підпис клієнта в чек
@@ -116,7 +116,7 @@ public class OrderFinalizationController {
     }
 
     /**
-     * Відправка чеку замовлення електронною поштою
+     * Відправка чеку замовлення електронною поштою.
      *
      * @param request запит з даними для відправки
      * @return статус відправки

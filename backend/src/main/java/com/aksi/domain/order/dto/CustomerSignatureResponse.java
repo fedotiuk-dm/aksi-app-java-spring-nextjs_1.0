@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO для відповіді з даними підпису клієнта
+ * DTO для відповіді з даними підпису клієнта.
  */
 @Data
 @Builder
@@ -20,38 +20,38 @@ import lombok.NoArgsConstructor;
 public class CustomerSignatureResponse {
 
     /**
-     * ID підпису
+     * ID підпису.
      */
     private UUID id;
 
     /**
-     * ID замовлення
+     * ID замовлення.
      */
     private UUID orderId;
 
     /**
-     * Дані підпису у форматі base64
+     * Дані підпису у форматі base64.
      */
     private String signatureData;
 
     /**
-     * Прапорець прийняття умов надання послуг
+     * Прапорець прийняття умов надання послуг.
      */
     private boolean termsAccepted;
 
     /**
-     * Тип підпису
+     * Тип підпису.
      */
     private String signatureType;
 
     /**
-     * Дата створення
+     * Дата створення.
      */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
     /**
-     * Дата оновлення
+     * Дата оновлення.
      */
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;

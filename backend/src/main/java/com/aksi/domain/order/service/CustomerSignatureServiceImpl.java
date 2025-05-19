@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Імплементація сервісу для роботи з підписами клієнтів
+ * Імплементація сервісу для роботи з підписами клієнтів.
  */
 @Service
 @RequiredArgsConstructor

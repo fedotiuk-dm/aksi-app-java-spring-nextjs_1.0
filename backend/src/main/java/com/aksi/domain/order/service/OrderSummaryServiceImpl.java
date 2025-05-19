@@ -50,7 +50,7 @@ public class OrderSummaryServiceImpl implements OrderSummaryService {
     private final OrderItemPriceModifierMapper priceModifierMapper;
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc}.
      */
     @Override
     @Transactional(readOnly = true)
