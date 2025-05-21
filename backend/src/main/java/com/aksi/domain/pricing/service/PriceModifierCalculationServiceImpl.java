@@ -13,6 +13,10 @@ import com.aksi.domain.pricing.constants.PriceCalculationConstants;
 import com.aksi.domain.pricing.dto.CalculationDetailsDTO;
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
 import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierType;
+import com.aksi.domain.pricing.exception.InvalidPriceCalculationParameterException;
+import com.aksi.domain.pricing.exception.PriceCalculationException;
+import com.aksi.domain.pricing.model.PriceCalculationParams;
+import com.aksi.domain.pricing.strategy.PriceModifierManager;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +29,128 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PriceModifierCalculationServiceImpl implements PriceModifierCalculationService {
 
+    private final PriceModifierManager priceModifierManager;
+
     /**
      * {@inheritDoc}.
      */
+    /**
+     * Застосовує всі модифікатори до ціни у правильному порядку з використанням доменного об'єкта параметрів.
+     * 
+     * @param params Доменний об'єкт з усіма параметрами для обчислення ціни
+     * @return Фінальна ціна після застосування всіх модифікаторів
+     */
     @Override
+    public BigDecimal calculatePrice(PriceCalculationParams params) {
+        // Валідація параметрів
+        validateCalculationParams(params);
+        
+        try {
+            // Послідовне застосування модифікаторів
+            BigDecimal currentPrice = params.getBasePrice();
+            
+            // Модифікатори кольору
+            currentPrice = applyColorModifiers(
+                    currentPrice, 
+                    params.getModifiers(), 
+                    params.getColor(), 
+                    params.getCalculationDetails());
+            
+            // Особливі модифікатори
+            currentPrice = applySpecialModifiers(
+                    currentPrice, 
+                    params.getModifiers(), 
+                    params.getCalculationDetails());
+            
+            // Відсоткові модифікатори
+            currentPrice = applyPercentageModifiers(
+                    currentPrice, 
+                    params.getModifiers(), 
+                    params.getRangeModifierValues(), 
+                    params.getCalculationDetails());
+            
+            // Фіксовані модифікатори
+            currentPrice = applyFixedServiceModifiers(
+                    currentPrice, 
+                    params.getModifiers(), 
+                    params.getFixedModifierQuantities(), 
+                    params.getCalculationDetails());
+            
+            // Модифікатор терміновості
+            currentPrice = applyExpediteModifier(
+                    currentPrice, 
+                    params.isExpedited(), 
+                    params.getExpediteFactor(), 
+                    params.getCategoryCode(), 
+                    params.getCalculationDetails());
+            
+            return currentPrice;
+        } catch (Exception e) {
+            // Перехоплення та обробка помилок
+            return handleCalculationError(e);
+        }
+    }
+    
+    /**
+     * Валідує параметри для розрахунку ціни
+     * 
+     * @param params параметри для валідації
+     * @throws InvalidPriceCalculationParameterException якщо параметри недійсні
+     */
+    private void validateCalculationParams(PriceCalculationParams params) {
+        if (params == null) {
+            throw new InvalidPriceCalculationParameterException("Calculation parameters cannot be null");
+        }
+        
+        if (params.getBasePrice() == null) {
+            throw new InvalidPriceCalculationParameterException("Base price cannot be null");
+        }
+        
+        if (params.getModifiers() == null) {
+            throw new InvalidPriceCalculationParameterException("Modifiers list cannot be null");
+        }
+        
+        if (params.getCalculationDetails() == null) {
+            throw new InvalidPriceCalculationParameterException("Calculation details list cannot be null");
+        }
+        
+        if (params.getRangeModifierValues() == null) {
+            throw new InvalidPriceCalculationParameterException("Range modifier values map cannot be null");
+        }
+        
+        if (params.getFixedModifierQuantities() == null) {
+            throw new InvalidPriceCalculationParameterException("Fixed modifier quantities map cannot be null");
+        }
+    }
+    
+    /**
+     * Обробляє помилки, що виникають під час розрахунку ціни
+     * 
+     * @param e виняток, що виник
+     * @return ніколи не повертає значення, завжди кидає виняток
+     * @throws PriceCalculationException перетворений виняток
+     */
+    private BigDecimal handleCalculationError(Exception e) {
+        if (e == null) {
+            log.error("Unexpected null exception during price calculation");
+            throw new PriceCalculationException("Error during price calculation: null exception");
+        }
+        
+        if (!(e instanceof PriceCalculationException)) {
+            String errorMessage = e.getMessage() != null ? e.getMessage() : "Unknown error";
+            log.error("Unexpected error during price calculation: {}", errorMessage, e);
+            throw new PriceCalculationException("Error during price calculation: " + errorMessage, e);
+        }
+        throw (PriceCalculationException) e;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @deprecated Використовуйте метод calculatePrice(PriceCalculationParams) замість цього
+     */
+    @Override
+    @Deprecated
     public BigDecimal applyAllModifiers(
             BigDecimal basePrice,
             List<PriceModifierDTO> modifiers,
@@ -39,25 +161,21 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
             BigDecimal expediteFactor,
             String categoryCode,
             List<CalculationDetailsDTO> calculationDetails) {
-
-        BigDecimal currentPrice = basePrice;
-
-        // Крок 2: Перевірка кольорових виробів
-        currentPrice = applyColorModifiers(currentPrice, modifiers, color, calculationDetails);
-
-        // Крок 3: Застосування особливих модифікаторів
-        currentPrice = applySpecialModifiers(currentPrice, modifiers, calculationDetails);
-
-        // Крок 4: Застосування множників (відсоткових модифікаторів)
-        currentPrice = applyPercentageModifiers(currentPrice, modifiers, rangeModifierValues, calculationDetails);
-
-        // Крок 5: Додавання фіксованих послуг
-        currentPrice = applyFixedServiceModifiers(currentPrice, modifiers, fixedModifierQuantities, calculationDetails);
-
-        // Крок 6: Застосування терміновості
-        currentPrice = applyExpediteModifier(currentPrice, isExpedited, expediteFactor, categoryCode, calculationDetails);
-
-        return currentPrice;
+            
+        // Створюємо об'єкт параметрів і використовуємо новий метод
+        PriceCalculationParams params = PriceCalculationParams.builder()
+                .basePrice(basePrice)
+                .modifiers(modifiers)
+                .color(color)
+                .rangeModifierValues(rangeModifierValues)
+                .fixedModifierQuantities(fixedModifierQuantities)
+                .expedited(isExpedited)
+                .expediteFactor(expediteFactor)
+                .categoryCode(categoryCode)
+                .calculationDetails(calculationDetails)
+                .build();
+        
+        return calculatePrice(params);
     }
 
     /**
@@ -258,27 +376,27 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
             BigDecimal priceBefore = currentPrice;
             BigDecimal priceAfter = PriceCalculationConstants.applyPercentage(currentPrice, expediteFactor);
 
-            // Створюємо запис для деталей обчислення
-            calculationDetails.add(CalculationDetailsDTO.builder()
-                    .step(6)
-                    .stepName("Терміновість")
-                    .description("Застосування коефіцієнта терміновості: +" + expediteFactor + "%")
-                    .priceBefore(priceBefore)
-                    .priceAfter(priceAfter)
-                    .priceDifference(priceAfter.subtract(priceBefore))
-                    .build());
+            // Використовуємо спрощену версію методу addCalculationDetail
+            addCalculationDetail(
+                    calculationDetails,
+                    6,
+                    "Терміновість",
+                    "Застосування коефіцієнта терміновості: +" + expediteFactor + "%",
+                    priceBefore,
+                    priceAfter,
+                    expediteFactor + "%");
 
             return priceAfter;
         } else if (isExpedited && !canBeExpedited) {
             // Додаємо інформацію, що категорія не підтримує терміновість
-            calculationDetails.add(CalculationDetailsDTO.builder()
-                    .step(6)
-                    .stepName("Терміновість")
-                    .description("Категорія " + categoryCode + " не підтримує терміновість")
-                    .priceBefore(currentPrice)
-                    .priceAfter(currentPrice)
-                    .priceDifference(BigDecimal.ZERO)
-                    .build());
+            addCalculationDetail(
+                    calculationDetails,
+                    6,
+                    "Терміновість",
+                    "Категорія " + categoryCode + " не підтримує терміновість",
+                    currentPrice,
+                    currentPrice,
+                    null);
         }
 
         return currentPrice;
@@ -305,21 +423,53 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
             BigDecimal priceBefore,
             BigDecimal priceAfter) {
 
-        calculationDetails.add(CalculationDetailsDTO.builder()
+        CalculationDetailsDTO.CalculationDetailsDTOBuilder builder = CalculationDetailsDTO.builder()
                 .step(step)
                 .stepName(stepName)
                 .description(description)
-                .modifierName(modifier.getName())
-                .modifierCode(modifier.getCode())
-                .modifierValue(modifierValue)
                 .priceBefore(priceBefore)
                 .priceAfter(priceAfter)
-                .priceDifference(priceAfter.subtract(priceBefore))
-                .build());
+                .priceDifference(priceAfter.subtract(priceBefore));
+        
+        // Додаємо інформацію про модифікатор, якщо він існує
+        if (modifier != null) {
+            builder.modifierName(modifier.getName())
+                   .modifierCode(modifier.getCode())
+                   .modifierValue(modifierValue);
+        } else if (modifierValue != null) {
+            builder.modifierValue(modifierValue);
+        }
+        
+        calculationDetails.add(builder.build());
+    }
+
+    /**
+     * Спрощена версія методу addCalculationDetail без модифікатора.
+     * @param calculationDetails список деталей обчислення для доповнення
+     * @param step крок обчислення
+     * @param stepName назва кроку
+     * @param description опис операції
+     * @param priceBefore ціна до застосування модифікатора
+     * @param priceAfter ціна після застосування модифікатора
+     * @param modifierValue опціональне значення модифікатора
+     */
+    private void addCalculationDetail(
+            List<CalculationDetailsDTO> calculationDetails,
+            int step,
+            String stepName,
+            String description,
+            BigDecimal priceBefore,
+            BigDecimal priceAfter,
+            String modifierValue) {
+
+        addCalculationDetail(calculationDetails, step, stepName, description, 
+                         null, modifierValue, priceBefore, priceAfter);
     }
 
     /**
      * {@inheritDoc}.
+     *
+     * Використовує патерн "Стратегія" для вибору та застосування відповідного модифікатора ціни.
      */
     @Override
     public BigDecimal applyModifier(
@@ -328,46 +478,7 @@ public class PriceModifierCalculationServiceImpl implements PriceModifierCalcula
             BigDecimal rangeValue,
             Integer fixedQuantity) {
 
-        if (price == null) {
-            return PriceCalculationConstants.MIN_PRICE;
-        }
-
-        if (modifier == null) {
-            return price;
-        }
-
-        BigDecimal result = switch (modifier.getModifierType()) {
-            case PERCENTAGE -> {
-                // Відсотковий модифікатор (наприклад, +20% до вартості)
-                BigDecimal percentValue = modifier.getValue();
-                yield PriceCalculationConstants.applyPercentage(price, percentValue);
-            }
-            case RANGE_PERCENTAGE -> {
-                // Модифікатор з діапазоном (наприклад, від +20% до +100%)
-                BigDecimal percentToUse;
-                if (rangeValue != null) {
-                    // Використовуємо вказане значення
-                    percentToUse = rangeValue;
-                } else {
-                    // За замовчуванням беремо середнє значення діапазону
-                    percentToUse = modifier.getMinValue().add(modifier.getMaxValue())
-                            .divide(BigDecimal.valueOf(2), PriceCalculationConstants.SCALE, PriceCalculationConstants.ROUNDING_MODE);
-                }
-                yield PriceCalculationConstants.applyPercentage(price, percentToUse);
-            }
-            case FIXED -> modifier.getValue(); // Фіксований модифікатор замінює базову ціну
-            case ADDITION -> {
-                // Додавання фіксованої суми
-                BigDecimal valueToAdd = modifier.getValue();
-                if (fixedQuantity != null && fixedQuantity > 1) {
-                    valueToAdd = valueToAdd.multiply(new BigDecimal(fixedQuantity));
-                }
-                yield price.add(valueToAdd);
-            }
-            default -> price;
-        };
-
-        // Ціна не може бути менше мінімальної
-        return result.compareTo(PriceCalculationConstants.MIN_PRICE) < 0 ? PriceCalculationConstants.MIN_PRICE : result;
+        // Використовуємо стратегію для вибору та застосування відповідного модифікатора
+        return priceModifierManager.applyModifier(price, modifier, rangeValue, fixedQuantity);
     }
 }

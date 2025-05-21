@@ -1,7 +1,6 @@
 package com.aksi.domain.order.service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +16,7 @@ import com.aksi.domain.order.entity.OrderItemEntity;
 import com.aksi.domain.order.model.DiscountType;
 import com.aksi.domain.order.model.NonDiscountableCategory;
 import com.aksi.domain.order.repository.OrderRepository;
+import com.aksi.domain.pricing.constants.PriceCalculationConstants;
 import com.aksi.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -159,10 +159,10 @@ public class DiscountServiceImpl implements DiscountService {
                 .map(OrderItemEntity::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Розраховуємо суму знижки
+        // Розраховуємо суму знижки з використанням констант
         BigDecimal discountAmount = discountableAmount
                 .multiply(BigDecimal.valueOf(discountPercentage))
-                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                .divide(PriceCalculationConstants.HUNDRED, PriceCalculationConstants.SCALE, PriceCalculationConstants.ROUNDING_MODE);
 
         // Встановлюємо суму знижки для замовлення
         order.setDiscountAmount(discountAmount);
@@ -233,12 +233,16 @@ public class DiscountServiceImpl implements DiscountService {
             return price; // Для категорій, що не підлягають знижкам, повертаємо оригінальну ціну
         }
 
-        // Обчислюємо знижку
-        BigDecimal discountMultiplier = BigDecimal.ONE.subtract(
-                discountPercent.divide(new BigDecimal("100"), 10, RoundingMode.HALF_UP));
+        // Обчислюємо знижку з використанням констант з PriceCalculationConstants
+        BigDecimal discountFactor = discountPercent.divide(
+                PriceCalculationConstants.HUNDRED, 
+                PriceCalculationConstants.SCALE, 
+                PriceCalculationConstants.ROUNDING_MODE);
+                
+        BigDecimal discountMultiplier = BigDecimal.ONE.subtract(discountFactor);
 
-        // Застосовуємо знижку
+        // Застосовуємо знижку та округлюємо результат
         return price.multiply(discountMultiplier)
-                .setScale(2, RoundingMode.HALF_UP);
+                .setScale(PriceCalculationConstants.SCALE, PriceCalculationConstants.ROUNDING_MODE);
     }
 }

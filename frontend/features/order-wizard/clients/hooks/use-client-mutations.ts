@@ -1,16 +1,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { Client } from '@/features/order-wizard/clients/types/client.types';
 import {
   ClientsService,
   CreateClientRequest,
   UpdateClientRequest,
 } from '@/lib/api';
-import { Client } from '@/features/order-wizard/model/types/types';
+
+import { clientSchema } from '../schemas/client.schema';
 import {
   mapApiClientToModelClient,
   mapSourceToApiSource,
   formatAddress,
 } from '../utils/client.mappers';
-import { clientSchema } from '../schemas/client.schema';
 
 const QUERY_KEYS = {
   all: ['clients'] as const,
@@ -37,15 +39,16 @@ export const useCreateClient = () => {
         );
       }
 
+      // Перевірка, що обов'язкові поля існують (вони вже валідовані через zod схему вище)
       const requestBody: CreateClientRequest = {
-        firstName: clientData.firstName,
-        lastName: clientData.lastName,
+        firstName: clientData.firstName || '',
+        lastName: clientData.lastName || '',
+        phone: clientData.phone || '',
         email: clientData.email,
-        phone: clientData.phone,
-        address: formatAddress(clientData.address),
+        address: clientData.address ? formatAddress(clientData.address) : undefined,
         communicationChannels: clientData.communicationChannels,
-        source: mapSourceToApiSource(clientData.source?.source || 'OTHER'),
-        sourceDetails: clientData.source?.details,
+        source: mapSourceToApiSource(clientData.source || 'OTHER'),
+        sourceDetails: clientData.sourceDetails,
       };
       const response = await ClientsService.createClient({ requestBody });
       return mapApiClientToModelClient(response);
@@ -66,7 +69,7 @@ export const useCreateClient = () => {
 
       return { previousClients };
     },
-    onError: (err, newClient, context) => {
+    onError: (_err, _newClient, context) => {
       if (context?.previousClients) {
         queryClient.setQueryData(QUERY_KEYS.all, context.previousClients);
       }
@@ -101,14 +104,14 @@ export const useUpdateClient = () => {
       }
 
       const requestBody: UpdateClientRequest = {
-        firstName: clientData.firstName,
-        lastName: clientData.lastName,
+        firstName: clientData.firstName || '',
+        lastName: clientData.lastName || '',
+        phone: clientData.phone || '',
         email: clientData.email,
-        phone: clientData.phone,
-        address: formatAddress(clientData.address),
+        address: clientData.address ? formatAddress(clientData.address) : undefined,
         communicationChannels: clientData.communicationChannels,
-        source: mapSourceToApiSource(clientData.source?.source || 'OTHER'),
-        sourceDetails: clientData.source?.details,
+        source: mapSourceToApiSource(clientData.source || 'OTHER'),
+        sourceDetails: clientData.sourceDetails,
       };
       const response = await ClientsService.updateClient({
         id: clientData.id,

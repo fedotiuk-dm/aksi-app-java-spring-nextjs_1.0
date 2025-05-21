@@ -1,37 +1,38 @@
-import { ClientResponse } from '@/lib/api';
 import {
   Client,
-  ClientSource,
   ClientAddress,
-} from '@/features/order-wizard/model/types/types';
-import { UUID } from 'node:crypto';
+  ClientSource,
+} from '@/features/order-wizard/clients/types/client.types';
+import { ClientResponse, CreateClientRequest, UpdateClientRequest } from '@/lib/api';
 
+/**
+ * Форматування структурованої адреси для відображення
+ */
 export const formatAddress = (
   address?: Client['address']
 ): string | undefined => {
   if (!address) return undefined;
 
-  const hasAddressData =
-    address.street ||
-    address.city ||
-    address.postalCode ||
-    address.additionalInfo;
-  if (!hasAddressData) return undefined;
-
-  if (typeof address === 'object') {
-    const addressParts = [
-      address.street || '',
-      address.city || '',
-      address.postalCode || '',
-      address.additionalInfo || '',
-    ].filter(Boolean);
-
-    return addressParts.join(', ');
+  // Якщо адреса - це рядок, просто повертаємо її
+  if (typeof address === 'string') {
+    return address;
   }
 
-  return address;
+  // Якщо адреса - це об'єкт, формуємо рядок
+  const addressParts = [
+    address.street || '',
+    address.city || '',
+    address.postalCode || '',
+    address.additionalInfo || '',
+  ].filter(Boolean);
+
+  return addressParts.length > 0 ? addressParts.join(', ') : undefined;
 };
 
+/**
+ * Перетворення рядка адреси в об'єкт адреси
+ * Примітка: використовуйте цю функцію лише для відображення, бекенд очікує адресу як рядок
+ */
 export const parseAddress = (addressString: string): ClientAddress => {
   if (!addressString) {
     return {
@@ -52,56 +53,59 @@ export const parseAddress = (addressString: string): ClientAddress => {
   };
 };
 
-export const mapApiSourceToModelSource = (apiSource: string): ClientSource => {
-  switch (apiSource) {
-    case ClientResponse.source.INSTAGRAM:
-      return 'INSTAGRAM';
-    case ClientResponse.source.GOOGLE:
-      return 'GOOGLE';
-    case ClientResponse.source.RECOMMENDATION:
-      return 'RECOMMENDATION';
-    default:
-      return 'OTHER';
-  }
+/**
+ * Мапінг джерела з API в модель
+ */
+export const mapApiSourceToModelSource = (apiSource?: ClientResponse['source']): ClientSource => {
+  return apiSource as ClientSource;
 };
 
-export const mapSourceToApiSource = (
-  source: ClientSource
-): ClientResponse.source => {
-  switch (source) {
-    case 'INSTAGRAM':
-      return ClientResponse.source.INSTAGRAM;
-    case 'GOOGLE':
-      return ClientResponse.source.GOOGLE;
-    case 'RECOMMENDATION':
-      return ClientResponse.source.RECOMMENDATION;
-    default:
-      return ClientResponse.source.OTHER;
-  }
+/**
+ * Мапінг модельного джерела в API формат
+ */
+export const mapSourceToApiSource = (source?: ClientSource): ClientResponse['source'] => {
+  return source as ClientResponse['source'];
 };
 
-export const mapApiClientToModelClient = (
-  apiClient: ClientResponse
-): Client => {
-  const address: ClientAddress | undefined = apiClient.address
-    ? typeof apiClient.address === 'string'
-      ? parseAddress(apiClient.address)
-      : (apiClient.address as unknown as ClientAddress)
-    : undefined;
-
-  const communicationChannels = apiClient.communicationChannels || [];
-
+/**
+ * Підготовка даних клієнта з API для відображення
+ */
+export const mapApiClientToModelClient = (apiClient: ClientResponse): Client => {
   return {
-    id: apiClient.id as UUID | undefined,
+    ...apiClient,
     firstName: apiClient.firstName || '',
     lastName: apiClient.lastName || '',
-    email: apiClient.email,
     phone: apiClient.phone || '',
-    address,
-    communicationChannels,
-    source: {
-      source: mapApiSourceToModelSource(apiClient.source || ''),
-      details: apiClient.sourceDetails,
-    },
+    // Для відображення можемо парсити адресу як об'єкт
+    address: apiClient.address ? parseAddress(apiClient.address) : undefined,
+    communicationChannels: apiClient.communicationChannels || [],
+    source: apiClient.source,
+    sourceDetails: apiClient.sourceDetails,
+    createdAt: apiClient.createdAt,
+    updatedAt: apiClient.updatedAt,
   };
 };
+
+/**
+ * Підготовка даних клієнта для відправки на бекенд
+ */
+export const prepareClientForApi = (client: Partial<Client>): Partial<CreateClientRequest | UpdateClientRequest> => {
+  // Якщо адреса - об'єкт, перетворюємо її на рядок, тому що бекенд очікує рядок
+  const address = client.address
+    ? typeof client.address === 'string'
+      ? client.address
+      : formatAddress(client.address)
+    : undefined;
+
+  return {
+    firstName: client.firstName,
+    lastName: client.lastName,
+    phone: client.phone,
+    email: client.email,
+    address,
+    communicationChannels: client.communicationChannels,
+    source: client.source,
+    sourceDetails: client.sourceDetails,
+  };
+};
+

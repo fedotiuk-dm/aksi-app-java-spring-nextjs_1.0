@@ -1,9 +1,13 @@
-import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { ClientsService } from '@/lib/api';
-import { Client } from '@/features/order-wizard/model/types/types';
-import { mapApiClientToModelClient } from '../utils/client.mappers';
+import { useState, useCallback } from 'react';
+
+import { Client } from '@/features/order-wizard/clients/types/client.types';
 import { useDebounce } from '@/features/order-wizard/shared/hooks/useDebounce';
+import { ClientsService } from '@/lib/api';
+
+import { mapApiClientToModelClient } from '../utils/client.mappers';
+
+
 
 const QUERY_KEYS = {
   search: (keyword: string) => ['clients', 'search', keyword] as const,

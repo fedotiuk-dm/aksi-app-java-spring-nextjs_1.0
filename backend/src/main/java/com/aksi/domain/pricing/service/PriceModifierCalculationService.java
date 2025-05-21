@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.aksi.domain.pricing.dto.CalculationDetailsDTO;
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
+import com.aksi.domain.pricing.model.PriceCalculationParams;
 
 /**
  * Інтерфейс сервісу для обчислень, пов'язаних з модифікаторами цін.
@@ -13,8 +14,17 @@ import com.aksi.domain.pricing.dto.PriceModifierDTO;
 public interface PriceModifierCalculationService {
 
     /**
+     * Застосовує всі модифікатори до ціни у правильному порядку з використанням доменного об'єкта параметрів.
+     * 
+     * @param params Доменний об'єкт з усіма параметрами для обчислення ціни
+     * @return Фінальна ціна після застосування всіх модифікаторів
+     */
+    BigDecimal calculatePrice(PriceCalculationParams params);
+    
+    /**
      * Застосовує всі модифікатори до ціни у правильному порядку.
-     *
+     * 
+     * @deprecated Використовуйте метод calculatePrice(PriceCalculationParams) замість цього
      * @param basePrice Початкова ціна
      * @param modifiers Список модифікаторів
      * @param color Колір предмета
@@ -26,6 +36,7 @@ public interface PriceModifierCalculationService {
      * @param calculationDetails Список для деталей розрахунку
      * @return Фінальна ціна після застосування модифікаторів
      */
+    @Deprecated
     BigDecimal applyAllModifiers(
             BigDecimal basePrice,
             List<PriceModifierDTO> modifiers,

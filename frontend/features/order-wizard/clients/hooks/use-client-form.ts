@@ -36,7 +36,9 @@ export const useClientForm = (initialData?: Partial<Client>) => {
     }
   }, [initialData]);
 
-  const validateField = (field: keyof Client, value: any) => {
+  type ClientSchemaKeys = keyof typeof clientSchema.shape;
+
+  const validateField = (field: ClientSchemaKeys, value: unknown) => {
     try {
       const fieldSchema = clientSchema.shape[field];
       if (fieldSchema) {
@@ -53,10 +55,14 @@ export const useClientForm = (initialData?: Partial<Client>) => {
     return true;
   };
 
-  const handleChange = (field: keyof Client, value: any) => {
+  const handleChange = (field: keyof Client, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setIsDirty(true);
-    validateField(field, value);
+
+    // Перевіряємо, чи поле є в схемі валідації перед викликом validateField
+    if (field in clientSchema.shape) {
+      validateField(field as ClientSchemaKeys, value);
+    }
   };
 
   const validateForm = () => {

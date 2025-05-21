@@ -8,6 +8,7 @@
 .project
 .settings/
 .cursor/
+./windsurf/
 
 # Бекенд
 backend/target/
@@ -41,7 +42,7 @@ docker/pgadmin/pgpass
 docker/pgadmin/data/
 docker/volumes/
 docker/postgres_data/
-docker-compose.override.yml 
+docker-compose.override.yml
 
 # Завантажені файли
 uploads/
@@ -73,4 +74,4 @@ temp/
 .DS_Store
 Thumbs.db
 logs/
-*.log 
+*.log

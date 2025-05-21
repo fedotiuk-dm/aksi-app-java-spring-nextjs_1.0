@@ -1,7 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
+
+import { Client } from '@/features/order-wizard/clients/types/client.types';
 import { ClientsService } from '@/lib/api';
-import { Client } from '@/features/order-wizard/model/types/types';
+
+
 import { mapApiClientToModelClient } from '../utils/client.mappers';
+
+
 
 const QUERY_KEYS = {
   all: ['clients'] as const,

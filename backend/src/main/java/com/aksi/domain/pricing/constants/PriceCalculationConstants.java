@@ -32,6 +32,11 @@ public final class PriceCalculationConstants {
 
     // Константи для ручної чистки
     public static final BigDecimal MANUAL_CLEANING_PERCENTAGE = new BigDecimal("20");
+    
+    // Ваговий коефіцієнт за замовчуванням для модифікаторів з діапазоном
+    // Використовується для розрахунку зваженого середнього в діапазоні значень
+    // 0.5 - середнє арифметичне, менші значення наближають до мінімуму, більші - до максимуму
+    public static final BigDecimal DEFAULT_RANGE_WEIGHT_FACTOR = new BigDecimal("0.33");
 
     // Методи-утиліти для обчислень
     public static BigDecimal calculatePercentage(BigDecimal base, BigDecimal percentage) {

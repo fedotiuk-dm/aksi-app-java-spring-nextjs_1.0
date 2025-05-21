@@ -21,6 +21,7 @@ import com.aksi.domain.pricing.dto.PriceModifierDTO;
 import com.aksi.domain.pricing.entity.PriceListItemEntity;
 import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
 import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
+import com.aksi.domain.pricing.model.PriceCalculationParams;
 import com.aksi.domain.pricing.repository.PriceListItemRepository;
 import com.aksi.domain.pricing.repository.ServiceCategoryRepository;
 import com.aksi.exception.EntityNotFoundException;
@@ -109,49 +110,53 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
             // Отримуємо всі обрані модифікатори з БД
             List<PriceModifierDTO> modifiers = modifierService.getModifiersByCodes(modifierCodes);
 
-            // Делегуємо обчислення модифікаторів спеціалізованому сервісу
-            currentPrice = modifierCalculationService.applyAllModifiers(
-                    currentPrice,
-                    modifiers,
-                    color,
-                    rangeModifierPercentages,
-                    fixedModifierQuantitiesMap,
-                    isExpedited,
-                    expediteFactor,
-                    categoryCode,
-                    calculationDetails);
+            // Створюємо об'єкт параметрів для обчислення ціни
+            PriceCalculationParams calculationParams = PriceCalculationParams.builder()
+                    .basePrice(currentPrice)
+                    .modifiers(modifiers)
+                    .color(color)
+                    .rangeModifierValues(rangeModifierPercentages)
+                    .fixedModifierQuantities(fixedModifierQuantitiesMap)
+                    .expedited(isExpedited)
+                    .expediteFactor(expediteFactor)
+                    .categoryCode(categoryCode)
+                    .calculationDetails(calculationDetails)
+                    .build();
+            
+            // Використовуємо новий метод з доменним об'єктом
+            currentPrice = modifierCalculationService.calculatePrice(calculationParams);
+        }
 
-            // Крок 7: Застосування знижок
-            if (discountPercent != null && discountPercent.compareTo(BigDecimal.ZERO) > 0) {
-                BigDecimal priceBefore = currentPrice;
+        // Крок 7: Застосування знижок
+        if (discountPercent != null && discountPercent.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal priceBefore = currentPrice;
 
-                // Застосовуємо знижку лише якщо категорія дозволяє знижки
-                BigDecimal priceAfter = discountService.applyDiscountIfApplicable(currentPrice, discountPercent, categoryCode);
+            // Застосовуємо знижку лише якщо категорія дозволяє знижки
+            BigDecimal priceAfter = discountService.applyDiscountIfApplicable(currentPrice, discountPercent, categoryCode);
 
-                // Додаємо деталі розрахунку лише якщо знижка була застосована
-                if (priceAfter.compareTo(priceBefore) != 0) {
-                    calculationDetails.add(CalculationDetailsDTO.builder()
-                            .step(7)
-                            .stepName("Знижка")
-                            .description("Застосування знижки: -" + discountPercent + "%")
-                            .priceBefore(priceBefore)
-                            .priceAfter(priceAfter)
-                            .priceDifference(priceAfter.subtract(priceBefore))
-                            .build());
-                } else {
-                    // Якщо знижка не застосована, пояснюємо причину
-                    calculationDetails.add(CalculationDetailsDTO.builder()
-                            .step(7)
-                            .stepName("Знижка")
-                            .description("Знижка не застосовується до цієї категорії послуг")
-                            .priceBefore(priceBefore)
-                            .priceAfter(priceAfter)
-                            .priceDifference(BigDecimal.ZERO)
-                            .build());
-                }
-
-                currentPrice = priceAfter;
+            // Додаємо деталі розрахунку лише якщо знижка була застосована
+            if (priceAfter.compareTo(priceBefore) != 0) {
+                calculationDetails.add(CalculationDetailsDTO.builder()
+                        .step(7)
+                        .stepName("Знижка")
+                        .description("Застосування знижки: -" + discountPercent + "%")
+                        .priceBefore(priceBefore)
+                        .priceAfter(priceAfter)
+                        .priceDifference(priceAfter.subtract(priceBefore))
+                        .build());
+            } else {
+                // Якщо знижка не застосована, пояснюємо причину
+                calculationDetails.add(CalculationDetailsDTO.builder()
+                        .step(7)
+                        .stepName("Знижка")
+                        .description("Знижка не застосовується до цієї категорії послуг")
+                        .priceBefore(priceBefore)
+                        .priceAfter(priceAfter)
+                        .priceDifference(BigDecimal.ZERO)
+                        .build());
             }
+
+            currentPrice = priceAfter;
         }
 
         // 8. Округлення результату
