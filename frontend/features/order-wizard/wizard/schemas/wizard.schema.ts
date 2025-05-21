@@ -3,8 +3,12 @@ import { z } from 'zod';
 import { orderBasicFormSchema } from '../../basic-info/schemas';
 import { branchSelectionFormSchema } from '../../branch-selection/schemas';
 import { clientSelectionFormSchema } from '../../client-selection/schemas';
-import { finalizationFormSchema } from '../../finalization/schemas';
-import { orderDiscountFormSchema, prepaymentFormSchema } from '../../pricing/schemas';
+import { itemBasicFormSchema } from '../../item-wizard/sub-basic-info/schemas';
+import { defectsStainsFormSchema } from '../../item-wizard/sub-defects-stains/schemas';
+import { itemPropertiesFormSchema } from '../../item-wizard/sub-item-properties/schemas';
+import { itemPhotoUploadFormSchema } from '../../item-wizard/sub-photo-documentation/schemas';
+import { orderDiscountFormSchema, prepaymentFormSchema } from '../../item-wizard/sub-price-calculator/schemas';
+import { orderConfirmationFormSchema } from '../../order-confirmation/schemas';
 import { WizardStep } from '../store/navigation/navigation.types';
 
 /**
@@ -55,8 +59,8 @@ export const wizardStateSchema = z.object({
     balanceAmount: z.number().optional()
   }),
 
-  // Дані фіналізації, заповнюються на кроці FINALIZATION
-  finalizationData: z.object({
+  // Дані підтвердження, заповнюються на кроці ORDER_CONFIRMATION
+  orderConfirmationData: z.object({
     termsAccepted: z.boolean().optional(),
     sendReceiptByEmail: z.boolean().optional(),
     generatePrintableReceipt: z.boolean().optional(),
@@ -72,14 +76,15 @@ export const WIZARD_STEP_SCHEMAS: Partial<Record<WizardStep, z.ZodType<unknown>>
   [WizardStep.CLIENT_SELECTION]: clientSelectionFormSchema,
   [WizardStep.BRANCH_SELECTION]: branchSelectionFormSchema,
   [WizardStep.BASIC_INFO]: orderBasicFormSchema,
-  [WizardStep.ITEM_BASIC_INFO]: z.object({}), // Ця схема буде визначена окремо для UI форми
-  [WizardStep.ITEM_PROPERTIES]: z.object({}), // Ця схема буде визначена окремо для UI форми
-  [WizardStep.DEFECTS_STAINS]: z.object({}), // Ця схема буде визначена окремо для UI форми
+  [WizardStep.ITEM_BASIC_INFO]: itemBasicFormSchema,
+  [WizardStep.ITEM_PROPERTIES]: itemPropertiesFormSchema,
+  [WizardStep.DEFECTS_STAINS]: defectsStainsFormSchema,
+  [WizardStep.PHOTO_DOCUMENTATION]: itemPhotoUploadFormSchema,
   [WizardStep.PRICE_CALCULATOR]: z.object({
     discount: orderDiscountFormSchema,
     prepayment: prepaymentFormSchema.optional()
   }),
-  [WizardStep.ORDER_CONFIRMATION]: finalizationFormSchema
+  [WizardStep.ORDER_CONFIRMATION]: orderConfirmationFormSchema
 };
 
 /**
