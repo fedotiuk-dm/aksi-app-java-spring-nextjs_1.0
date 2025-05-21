@@ -1,133 +1,132 @@
-'use client';
-
 import { useCallback } from 'react';
 
-import { useWizardStore } from '../store/wizard.store';
-import { ItemWizardSubStep, WizardMainStep } from '../types/wizard.types';
-
-// Константи для назв етапів візарда
-const ITEM_WIZARD = 'item-wizard' as const;
-const ITEM_MANAGER = 'item-manager' as const;
-const CLIENT_SELECTION = 'client-selection' as const;
-const BASIC_INFO = 'basic-info' as const;
-const PHOTO_DOCUMENTATION = 'photo-documentation' as const;
+import { useNavigationStore, WizardStep } from '../store/navigation';
 
 /**
- * Хук для навігації по Order Wizard
+ * Хук для роботи з навігацією в OrderWizard
+ * Надає зручний інтерфейс для керування переходами між кроками
  */
 export const useWizardNavigation = () => {
-  // Отримуємо стан та дії з Zustand стору
-  const currentStep = useWizardStore((state) => state.currentStep);
-  const goToStep = useWizardStore((state) => state.goToStep);
-  const goToNextMainStep = useWizardStore((state) => state.goToNextMainStep);
-  const goToPreviousMainStep = useWizardStore((state) => state.goToPreviousMainStep);
-  const goToNextItemSubStep = useWizardStore((state) => state.goToNextItemSubStep);
-  const goToPreviousItemSubStep = useWizardStore((state) => state.goToPreviousItemSubStep);
-  const stepsConfig = useWizardStore((state) => state.stepsConfig);
+  const {
+    currentStep,
+    stepHistory,
+    availability,
+    isItemWizardActive,
+    isBackAllowed,
+    isForwardAllowed,
+    goToStep,
+    goBack,
+    goForward,
+    startItemWizard,
+    finishItemWizard,
+    updateStepAvailability,
+    resetNavigation
+  } = useNavigationStore();
 
   /**
-   * Перевірка, чи можна перейти до наступного кроку
+   * Перевірка, чи є крок поточним
    */
-  const canGoNext = useCallback(() => {
-    // Останній крок в основних кроках
-    if (currentStep.mainStep === ITEM_WIZARD && !currentStep.itemSubStep) {
-      return false;
-    }
-
-    // Перевіряємо, чи це останній підетап візарда предметів
-    if (currentStep.mainStep === ITEM_WIZARD && currentStep.itemSubStep) {
-      return currentStep.itemSubStep !== PHOTO_DOCUMENTATION;
-    }
-
-    return true;
-  }, [currentStep]);
+  const isCurrentStep = useCallback(
+    (step: WizardStep) => currentStep === step,
+    [currentStep]
+  );
 
   /**
-   * Перевірка, чи можна повернутись до попереднього кроку
+   * Перевірка, чи доступний крок для переходу
    */
-  const canGoBack = useCallback(() => {
-    // Повертаємо false тільки для першого кроку візарда
-    return !(currentStep.mainStep === CLIENT_SELECTION && !currentStep.itemSubStep);
-  }, [currentStep]);
+  const isStepAvailable = useCallback(
+    (step: WizardStep) => !!availability[step],
+    [availability]
+  );
 
   /**
-   * Отримання інформації про поточний крок
+   * Встановлює доступність кроку та всіх наступних етапів
+   * Корисно, коли ми хочемо відкрити наступний крок після валідації
    */
-  const getCurrentStepInfo = useCallback(() => {
-    // Якщо ми на підетапі візарда предметів
-    if (currentStep.itemSubStep && currentStep.mainStep === ITEM_WIZARD) {
-      return stepsConfig.itemSubSteps[currentStep.itemSubStep];
-    }
+  const unlockNextStep = useCallback(
+    (currentStep: WizardStep) => {
+      let nextStep: WizardStep | null = null;
 
-    // Інакше повертаємо інформацію про основний етап
-    return stepsConfig.mainSteps[currentStep.mainStep];
-  }, [currentStep, stepsConfig]);
+      // Визначаємо наступний крок на основі поточного
+      switch (currentStep) {
+        case WizardStep.CLIENT_SELECTION:
+          nextStep = WizardStep.BASIC_INFO;
+          break;
+        case WizardStep.BASIC_INFO:
+          nextStep = WizardStep.ITEM_MANAGER;
+          break;
+        case WizardStep.ITEM_MANAGER:
+          nextStep = WizardStep.ORDER_PARAMETERS;
+          break;
+        case WizardStep.ORDER_PARAMETERS:
+          nextStep = WizardStep.ORDER_CONFIRMATION;
+          break;
+        // Навігація в рамках підкроків візарда предметів
+        case WizardStep.ITEM_BASIC_INFO:
+          nextStep = WizardStep.ITEM_PROPERTIES;
+          break;
+        case WizardStep.ITEM_PROPERTIES:
+          nextStep = WizardStep.DEFECTS_STAINS;
+          break;
+        case WizardStep.DEFECTS_STAINS:
+          nextStep = WizardStep.PRICE_CALCULATOR;
+          break;
+        case WizardStep.PRICE_CALCULATOR:
+          nextStep = WizardStep.PHOTO_DOCUMENTATION;
+          break;
+        default:
+          break;
+      }
 
-  /**
-   * Обгортка для переходу до наступного кроку з урахуванням контексту
-   */
-  const handleNext = useCallback(() => {
-    // Якщо ми на підетапі візарда предметів
-    if (currentStep.mainStep === ITEM_WIZARD && currentStep.itemSubStep) {
-      goToNextItemSubStep();
-    } else {
-      goToNextMainStep();
-    }
-  }, [currentStep, goToNextItemSubStep, goToNextMainStep]);
-
-  /**
-   * Обгортка для переходу до попереднього кроку з урахуванням контексту
-   */
-  const handleBack = useCallback(() => {
-    // Якщо ми на підетапі візарда предметів (не на першому)
-    if (currentStep.mainStep === ITEM_WIZARD && currentStep.itemSubStep) {
-      goToPreviousItemSubStep();
-    } else {
-      goToPreviousMainStep();
-    }
-  }, [currentStep, goToPreviousItemSubStep, goToPreviousMainStep]);
-
-  /**
-   * Перехід до початку роботи з новим предметом
-   */
-  const startNewItem = useCallback(() => {
-    goToStep(ITEM_WIZARD, BASIC_INFO);
-  }, [goToStep]);
-
-  /**
-   * Перехід до менеджера предметів
-   */
-  const goToItemManager = useCallback(() => {
-    goToStep(ITEM_MANAGER, null);
-  }, [goToStep]);
+      if (nextStep) {
+        updateStepAvailability(nextStep, true);
+      }
+    },
+    [updateStepAvailability]
+  );
 
   /**
-   * Перехід до конкретного підетапу предмета
+   * Завершення поточного кроку та перехід до наступного
    */
-  const goToItemSubStep = useCallback((subStep: ItemWizardSubStep) => {
-    goToStep(ITEM_WIZARD, subStep);
-  }, [goToStep]);
+  const completeCurrentStep = useCallback(() => {
+    // Розблоковуємо наступний крок
+    unlockNextStep(currentStep);
+
+    // Переходимо вперед
+    goForward();
+  }, [currentStep, goForward, unlockNextStep]);
 
   /**
-   * Перехід до конкретного основного етапу
+   * Завершення додавання предмета та повернення до менеджера предметів
    */
-  const goToMainStep = useCallback((mainStep: WizardMainStep) => {
-    // Якщо переходимо до візарда предметів, встановлюємо перший підетап
-    const itemSubStep = mainStep === ITEM_WIZARD ? BASIC_INFO : null;
-    goToStep(mainStep, itemSubStep);
-  }, [goToStep]);
+  const completeItemAddition = useCallback(
+    (saveItem: boolean = true) => {
+      finishItemWizard(saveItem);
+    },
+    [finishItemWizard]
+  );
 
   return {
+    // Стан
     currentStep,
-    canGoNext,
-    canGoBack,
-    handleNext,
-    handleBack,
-    getCurrentStepInfo,
-    startNewItem,
-    goToItemManager,
-    goToItemSubStep,
-    goToMainStep,
+    stepHistory,
+    availability,
+    isItemWizardActive,
+    isBackAllowed,
+    isForwardAllowed,
+
+    // Утиліти та перевірки
+    isCurrentStep,
+    isStepAvailable,
+    unlockNextStep,
+
+    // Дії для навігації
     goToStep,
+    goBack,
+    goForward,
+    startItemWizard,
+    completeCurrentStep,
+    completeItemAddition,
+    resetNavigation
   };
 };

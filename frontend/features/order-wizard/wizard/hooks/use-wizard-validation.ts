@@ -1,107 +1,155 @@
-'use client';
-
 import { useCallback } from 'react';
 
-import { useWizardStore } from '../store/wizard.store';
-import { ItemWizardSubStep, StepValidationStatus, WizardMainStep } from '../types/wizard.types';
-
-// Константа для назви етапу візарда предметів
-const ITEM_WIZARD_STEP = 'item-wizard' as const;
+import { WizardStep } from '../store/navigation';
+import {
+  useValidationStore,
+  ValidationStatus,
+  StepValidation,
+  ValidationErrors
+} from '../store/validation';
 
 /**
- * Хук для управління валідацією кроків Order Wizard
+ * Хук для роботи з валідацією в OrderWizard
+ * Надає зручний інтерфейс для керування валідацією кроків
  */
 export const useWizardValidation = () => {
-  // Отримуємо стан та дії з Zustand стору
-  const stepsConfig = useWizardStore((state) => state.stepsConfig);
-  const setStepValidationStatus = useWizardStore((state) => state.setStepValidationStatus);
-  const currentStep = useWizardStore((state) => state.currentStep);
+  const {
+    validationMap,
+    isWizardValid,
+    activeValidation,
+    setStepValidation,
+    validateStep,
+    resetStepValidation,
+    resetAllValidation,
+    updateWizardValidStatus
+  } = useValidationStore();
 
   /**
-   * Перевірка, чи крок валідний
-   * @param mainStep Основний крок
-   * @param itemSubStep Підкрок (опціонально)
+   * Отримання статусу валідації для конкретного кроку
+   */
+  const getStepValidation = useCallback(
+    (step: WizardStep): StepValidation | undefined => {
+      return validationMap[step];
+    },
+    [validationMap]
+  );
+
+  /**
+   * Перевірка, чи валідний конкретний крок
    */
   const isStepValid = useCallback(
-    (mainStep: WizardMainStep, itemSubStep?: ItemWizardSubStep): boolean => {
-      if (itemSubStep) {
-        return stepsConfig.itemSubSteps[itemSubStep].validationStatus === 'valid';
-      }
-
-      return stepsConfig.mainSteps[mainStep].validationStatus === 'valid';
+    (step: WizardStep): boolean => {
+      const stepValidation = validationMap[step];
+      return stepValidation?.status === ValidationStatus.VALID;
     },
-    [stepsConfig]
+    [validationMap]
   );
 
   /**
-   * Встановлення статусу валідації для поточного кроку
-   * @param status Статус валідації
+   * Перевірка, чи був крок вже раніше валідований
    */
-  const setCurrentStepValidationStatus = useCallback(
-    (status: StepValidationStatus) => {
-      if (currentStep.itemSubStep && currentStep.mainStep === ITEM_WIZARD_STEP) {
-        setStepValidationStatus(currentStep.mainStep, status, currentStep.itemSubStep);
-      } else {
-        setStepValidationStatus(currentStep.mainStep, status);
-      }
+  const isStepValidated = useCallback(
+    (step: WizardStep): boolean => {
+      return step in validationMap;
     },
-    [currentStep, setStepValidationStatus]
+    [validationMap]
   );
 
   /**
-   * Встановлення валідного статусу для поточного кроку
+   * Створення об'єкта валідації для кроку
    */
-  const validateCurrentStep = useCallback(() => {
-    setCurrentStepValidationStatus('valid');
-  }, [setCurrentStepValidationStatus]);
+  const createStepValidation = useCallback(
+    (status: ValidationStatus, errors: ValidationErrors = {}, isComplete: boolean = false): StepValidation => {
+      return {
+        status,
+        errors,
+        isComplete,
+        timestamp: Date.now()
+      };
+    },
+    []
+  );
 
   /**
-   * Встановлення невалідного статусу для поточного кроку
+   * Встановлення валідного статусу для кроку
    */
-  const invalidateCurrentStep = useCallback(() => {
-    setCurrentStepValidationStatus('invalid');
-  }, [setCurrentStepValidationStatus]);
+  const setStepValid = useCallback(
+    (step: WizardStep) => {
+      const validation = createStepValidation(ValidationStatus.VALID, {}, true);
+      setStepValidation(step, validation);
+    },
+    [createStepValidation, setStepValidation]
+  );
 
   /**
-   * Перевірка, чи всі підкроки предмета валідні
+   * Встановлення невалідного статусу для кроку з помилками
    */
-  const areAllItemSubStepsValid = useCallback((): boolean => {
-    return Object.entries(stepsConfig.itemSubSteps).every(
-      ([, stepInfo]) => stepInfo.validationStatus === 'valid'
-    );
-  }, [stepsConfig]);
+  const setStepInvalid = useCallback(
+    (step: WizardStep, errors: ValidationErrors) => {
+      const validation = createStepValidation(ValidationStatus.INVALID, errors, false);
+      setStepValidation(step, validation);
+    },
+    [createStepValidation, setStepValidation]
+  );
 
   /**
-   * Перевірка, чи всі основні кроки валідні
+   * Встановлення статусу "в процесі" для кроку (наприклад, під час асинхронної валідації)
    */
-  const areAllMainStepsValid = useCallback((): boolean => {
-    return Object.entries(stepsConfig.mainSteps).every(
-      ([, stepInfo]) => stepInfo.validationStatus === 'valid'
-    );
-  }, [stepsConfig]);
+  const setStepPending = useCallback(
+    (step: WizardStep) => {
+      const currentValidation = validationMap[step];
+      const validation = createStepValidation(
+        ValidationStatus.PENDING,
+        currentValidation?.errors || {},
+        currentValidation?.isComplete || false
+      );
+      setStepValidation(step, validation);
+    },
+    [createStepValidation, setStepValidation, validationMap]
+  );
 
   /**
-   * Скидання валідації для всіх кроків
+   * Отримання помилок валідації для конкретного кроку
    */
-  const resetAllValidation = useCallback(() => {
-    // Скидаємо валідацію для основних кроків
-    Object.keys(stepsConfig.mainSteps).forEach((step) => {
-      setStepValidationStatus(step as WizardMainStep, 'not-validated');
-    });
+  const getStepErrors = useCallback(
+    (step: WizardStep): ValidationErrors => {
+      return validationMap[step]?.errors || {};
+    },
+    [validationMap]
+  );
 
-    // Скидаємо валідацію для підкроків
-    Object.keys(stepsConfig.itemSubSteps).forEach((step) => {
-      setStepValidationStatus(ITEM_WIZARD_STEP, 'not-validated', step as ItemWizardSubStep);
-    });
-  }, [stepsConfig, setStepValidationStatus]);
+  /**
+   * Перевірка, чи є помилки валідації для конкретного кроку
+   */
+  const hasStepErrors = useCallback(
+    (step: WizardStep): boolean => {
+      const errors = getStepErrors(step);
+      return Object.keys(errors).length > 0;
+    },
+    [getStepErrors]
+  );
 
   return {
+    // Стан
+    validationMap,
+    isWizardValid,
+    activeValidation,
+
+    // Утиліти та перевірки
+    getStepValidation,
     isStepValid,
-    setStepValidationStatus,
-    validateCurrentStep,
-    invalidateCurrentStep,
-    areAllItemSubStepsValid,
-    areAllMainStepsValid,
+    isStepValidated,
+    createStepValidation,
+    getStepErrors,
+    hasStepErrors,
+
+    // Дії для встановлення статусу валідації
+    setStepValid,
+    setStepInvalid,
+    setStepPending,
+    validateStep,
+    resetStepValidation,
     resetAllValidation,
+    updateWizardValidStatus
   };
 };

@@ -1,225 +1,198 @@
-/**
- * Утиліти для OrderWizard
- * Містять допоміжні функції для перевірки умов та бізнес-правил
- */
-
-import { WizardMainStep, ItemWizardSubStep } from '../types/wizard.types';
+import { WizardStep } from '../store/navigation';
+import { WizardStepConfig } from '../types';
 
 /**
- * Інтерфейси для даних різних кроків
+ * Конфігурація кроків для OrderWizard
+ * Описує всі можливі кроки та їх властивості
  */
-interface ClientData {
-  id?: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  email?: string;
-}
-
-interface ItemData {
-  id?: string;
-  name?: string;
-  category?: string;
-  material?: string;
-  color?: string;
-  defects?: Array<{type: string; description: string}>;
-  hasPhotos?: boolean;
-}
-
-interface OrderData {
-  client?: ClientData;
-  items?: ItemData[];
-  branch?: { id: string; name: string };
-  expedited?: boolean;
-  specialNotes?: string;
-}
-
-interface WizardData {
-  currentStep: {
-    mainStep: WizardMainStep;
-    itemSubStep: ItemWizardSubStep | null;
-  };
-  order: OrderData;
-}
+export const WIZARD_STEPS_CONFIG: Record<WizardStep, WizardStepConfig> = {
+  // Основні кроки
+  [WizardStep.CLIENT_SELECTION]: {
+    id: WizardStep.CLIENT_SELECTION,
+    title: 'Вибір клієнта',
+    description: 'Виберіть існуючого або створіть нового клієнта',
+    order: 1,
+    isSubstep: false
+  },
+  [WizardStep.BRANCH_SELECTION]: {
+    id: WizardStep.BRANCH_SELECTION,
+    title: 'Вибір філії',
+    description: 'Виберіть пункт прийому (філію)',
+    order: 2,
+    isSubstep: false
+  },
+  [WizardStep.BASIC_INFO]: {
+    id: WizardStep.BASIC_INFO,
+    title: 'Базова інформація',
+    description: 'Вкажіть основну інформацію про замовлення',
+    order: 3,
+    isSubstep: false
+  },
+  [WizardStep.ITEM_MANAGER]: {
+    id: WizardStep.ITEM_MANAGER,
+    title: 'Управління предметами',
+    description: 'Додайте предмети в замовлення',
+    order: 4,
+    isSubstep: false
+  },
+  [WizardStep.ORDER_PARAMETERS]: {
+    id: WizardStep.ORDER_PARAMETERS,
+    title: 'Параметри замовлення',
+    description: 'Вкажіть загальні параметри замовлення',
+    order: 5,
+    isSubstep: false
+  },
+  [WizardStep.ORDER_CONFIRMATION]: {
+    id: WizardStep.ORDER_CONFIRMATION,
+    title: 'Підтвердження',
+    description: 'Перевірте та підтвердіть замовлення',
+    order: 6,
+    isSubstep: false
+  },
+  
+  // Підкроки візарда предметів
+  [WizardStep.ITEM_BASIC_INFO]: {
+    id: WizardStep.ITEM_BASIC_INFO,
+    title: 'Основна інформація предмета',
+    description: 'Вкажіть основну інформацію про предмет',
+    order: 1,
+    isSubstep: true,
+    parentStep: WizardStep.ITEM_MANAGER
+  },
+  [WizardStep.ITEM_PROPERTIES]: {
+    id: WizardStep.ITEM_PROPERTIES,
+    title: 'Характеристики предмета',
+    description: 'Вкажіть характеристики предмета',
+    order: 2,
+    isSubstep: true,
+    parentStep: WizardStep.ITEM_MANAGER
+  },
+  [WizardStep.DEFECTS_STAINS]: {
+    id: WizardStep.DEFECTS_STAINS,
+    title: 'Дефекти та забруднення',
+    description: 'Вкажіть дефекти та забруднення предмета',
+    order: 3,
+    isSubstep: true,
+    parentStep: WizardStep.ITEM_MANAGER
+  },
+  [WizardStep.PRICE_CALCULATOR]: {
+    id: WizardStep.PRICE_CALCULATOR,
+    title: 'Калькулятор ціни',
+    description: 'Розрахуйте ціну за послуги',
+    order: 4,
+    isSubstep: true,
+    parentStep: WizardStep.ITEM_MANAGER
+  },
+  [WizardStep.PHOTO_DOCUMENTATION]: {
+    id: WizardStep.PHOTO_DOCUMENTATION,
+    title: 'Фотодокументація',
+    description: 'Додайте фотографії предмета',
+    order: 5,
+    isSubstep: true,
+    parentStep: WizardStep.ITEM_MANAGER
+  }
+};
 
 /**
- * Перевірки для навігації між кроками
+ * Отримати наступний крок після поточного
  */
-
-/**
- * Перевірка можливості переходу до наступного кроку
- * @param currentStep Поточний крок
- * @param orderData Дані замовлення
- */
-export const canProceedToNextStep = (currentStep: WizardMainStep, orderData: OrderData): boolean => {
+export const getNextStep = (currentStep: WizardStep): WizardStep | null => {
   switch (currentStep) {
-    case 'client-selection':
-      return !!orderData.client && isClientSelectionComplete(orderData.client);
-    case 'basic-info':
-      return !!orderData.branch;
-    case 'item-manager':
-      return Array.isArray(orderData.items) && orderData.items.length > 0;
-    case 'item-wizard':
-      // Для візарда предметів логіка знаходиться в окремій функції isItemWizardStepComplete
-      return true;
+    case WizardStep.CLIENT_SELECTION:
+      return WizardStep.BRANCH_SELECTION;
+    case WizardStep.BRANCH_SELECTION:
+      return WizardStep.BASIC_INFO;
+    case WizardStep.BASIC_INFO:
+      return WizardStep.ITEM_MANAGER;
+    case WizardStep.ITEM_MANAGER:
+      return WizardStep.ORDER_PARAMETERS;
+    case WizardStep.ORDER_PARAMETERS:
+      return WizardStep.ORDER_CONFIRMATION;
+    case WizardStep.ITEM_BASIC_INFO:
+      return WizardStep.ITEM_PROPERTIES;
+    case WizardStep.ITEM_PROPERTIES:
+      return WizardStep.DEFECTS_STAINS;
+    case WizardStep.DEFECTS_STAINS:
+      return WizardStep.PRICE_CALCULATOR;
+    case WizardStep.PRICE_CALCULATOR:
+      return WizardStep.PHOTO_DOCUMENTATION;
+    case WizardStep.PHOTO_DOCUMENTATION:
+      return null; // Останній підкрок
+    case WizardStep.ORDER_CONFIRMATION:
+      return null; // Останній крок
     default:
-      return true;
+      return null;
   }
 };
 
 /**
- * Перевірка заповненості даних клієнта
- * @param clientData Дані клієнта
+ * Отримати попередній крок перед поточним
  */
-export const isClientSelectionComplete = (clientData: ClientData): boolean => {
-  // Якщо є ID, вважаємо що обрано існуючого клієнта
-  if (clientData.id) return true;
-  
-  // Інакше перевіряємо обов'язкові поля для нового клієнта
-  return !!(
-    clientData.firstName && 
-    clientData.lastName && 
-    clientData.phone && 
-    clientData.phone.length >= 10
-  );
-};
-
-/**
- * Перевірка валідності форми предмета для конкретного підкроку
- * @param itemData Дані предмета
- * @param subStep Поточний підкрок візарда предметів
- */
-export const isItemFormValid = (itemData: ItemData, subStep: ItemWizardSubStep): boolean => {
-  switch (subStep) {
-    case 'basic-info':
-      return !!(itemData.name && itemData.category);
-    case 'item-properties':
-      return !!(itemData.material && itemData.color);
-    case 'defects-stains':
-      return true; // Необов'язковий крок
-    case 'price-calculator':
-      return true; // Завжди валідний, оскільки ціна розраховується автоматично
-    case 'photo-documentation':
-      return true; // Необов'язковий крок
+export const getPreviousStep = (currentStep: WizardStep): WizardStep | null => {
+  switch (currentStep) {
+    case WizardStep.BRANCH_SELECTION:
+      return WizardStep.CLIENT_SELECTION;
+    case WizardStep.BASIC_INFO:
+      return WizardStep.BRANCH_SELECTION;
+    case WizardStep.ITEM_MANAGER:
+      return WizardStep.BASIC_INFO;
+    case WizardStep.ORDER_PARAMETERS:
+      return WizardStep.ITEM_MANAGER;
+    case WizardStep.ORDER_CONFIRMATION:
+      return WizardStep.ORDER_PARAMETERS;
+    case WizardStep.ITEM_PROPERTIES:
+      return WizardStep.ITEM_BASIC_INFO;
+    case WizardStep.DEFECTS_STAINS:
+      return WizardStep.ITEM_PROPERTIES;
+    case WizardStep.PRICE_CALCULATOR:
+      return WizardStep.DEFECTS_STAINS;
+    case WizardStep.PHOTO_DOCUMENTATION:
+      return WizardStep.PRICE_CALCULATOR;
+    case WizardStep.CLIENT_SELECTION:
+      return null; // Перший крок
+    case WizardStep.ITEM_BASIC_INFO:
+      return null; // Перший підкрок
     default:
-      return false;
+      return null;
   }
 };
 
 /**
- * Перевірка валідності всіх підкроків візарда предметів
- * @param itemData Дані предмета
+ * Отримати конфігурацію кроку за його ідентифікатором
  */
-export const isItemWizardComplete = (itemData: ItemData): boolean => {
-  return !!(
-    itemData.name &&
-    itemData.category &&
-    itemData.material &&
-    itemData.color
-    // Інші обов'язкові поля по потребі
-  );
+export const getStepConfig = (step: WizardStep): WizardStepConfig => {
+  return WIZARD_STEPS_CONFIG[step];
 };
 
 /**
- * Перевірки доступності кроків
+ * Отримати всі основні кроки (не підкроки)
  */
-
-/**
- * Перевірка чи доступний крок оплати
- * @param orderData Дані замовлення
- */
-export const isPaymentStepAvailable = (orderData: OrderData): boolean => {
-  return Array.isArray(orderData.items) && 
-         orderData.items.length > 0 && 
-         !!orderData.client && 
-         !!orderData.branch;
+export const getMainSteps = (): WizardStepConfig[] => {
+  return Object.values(WIZARD_STEPS_CONFIG)
+    .filter(step => !step.isSubstep)
+    .sort((a, b) => a.order - b.order);
 };
 
 /**
- * Перевірка чи доступне завантаження фото для предмета
- * @param itemData Дані предмета
+ * Отримати всі підкроки для вказаного батьківського кроку
  */
-export const isPhotoUploadAllowed = (itemData: ItemData): boolean => {
-  // Для прикладу: припустимо, що тільки певні категорії підтримують фото
-  const categoriesWithPhotoSupport = ['coat', 'suit', 'dress', 'jacket', 'leather'];
-  return !!itemData.category && categoriesWithPhotoSupport.includes(itemData.category);
+export const getSubsteps = (parentStep: WizardStep): WizardStepConfig[] => {
+  return Object.values(WIZARD_STEPS_CONFIG)
+    .filter(step => step.isSubstep && step.parentStep === parentStep)
+    .sort((a, b) => a.order - b.order);
 };
 
 /**
- * Перевірка чи потрібно пропустити крок вибору філії
- * @param branchesCount Кількість доступних філій
+ * Перевірити, чи є крок підкроком
  */
-export const shouldSkipBranchStep = (branchesCount: number): boolean => {
-  // Якщо є лише одна філія, автоматично вибираємо її
-  return branchesCount === 1;
+export const isSubstep = (step: WizardStep): boolean => {
+  return WIZARD_STEPS_CONFIG[step].isSubstep || false;
 };
 
 /**
- * Перевірка чи можна завершити створення замовлення
- * @param wizardData Дані візарда
+ * Отримати батьківський крок для підкроку
  */
-export const canCompleteOrder = (wizardData: WizardData): boolean => {
-  const { order } = wizardData;
-  
-  return !!(
-    order.client &&
-    order.branch &&
-    Array.isArray(order.items) &&
-    order.items.length > 0 &&
-    order.items.every(isItemWizardComplete)
-  );
-};
-
-/**
- * Перевірки бізнес-правил
- */
-
-/**
- * Перевірка чи можна застосувати термінову чистку до категорії
- * @param itemCategory Категорія предмета
- */
-export const canApplyExpressService = (itemCategory?: string): boolean => {
-  if (!itemCategory) return false;
-  
-  // Категорії, що не підтримують термінову чистку
-  const nonExpeditableCategories = ['leather', 'suede', 'fur', 'wedding_dress'];
-  return !nonExpeditableCategories.includes(itemCategory);
-};
-
-/**
- * Перевірка чи можна застосувати модифікатор кольору
- * @param itemData Дані предмета
- */
-export const canApplyColorModifier = (itemData: ItemData): boolean => {
-  // Для прикладу: модифікатор кольору застосовується тільки для чорних або білих предметів
-  return itemData.color === 'black' || itemData.color === 'white';
-};
-
-/**
- * Перевірка чи можна застосувати знижку
- * @param orderData Дані замовлення
- */
-export const isDiscountApplicable = (orderData: OrderData): boolean => {
-  // Для прикладу: знижка застосовується, якщо в замовленні більше 3 предметів
-  return Array.isArray(orderData.items) && orderData.items.length > 3;
-};
-
-/**
- * Перевірка чи доступна додаткова послуга для типу предмета
- * @param itemType Тип предмета
- * @param serviceName Назва послуги
- */
-export const isAdditionalServiceAvailable = (itemType?: string, serviceName?: string): boolean => {
-  if (!itemType || !serviceName) return false;
-  
-  // Мапа доступних послуг для різних типів предметів
-  const availableServicesByType: Record<string, string[]> = {
-    'coat': ['waterproofing', 'ironing', 'repair'],
-    'suit': ['ironing', 'repair', 'steam_cleaning'],
-    'dress': ['ironing', 'stain_removal', 'repair'],
-    'leather': ['coloring', 'repair', 'waterproofing'],
-    'suede': ['brushing', 'waterproofing'],
-  };
-  
-  return availableServicesByType[itemType]?.includes(serviceName) || false;
+export const getParentStep = (step: WizardStep): WizardStep | null => {
+  const parentStepId = WIZARD_STEPS_CONFIG[step].parentStep;
+  return parentStepId ? parentStepId as WizardStep : null;
 };

@@ -1,109 +1,47 @@
 /**
- * Типи для управління станом Order Wizard
+ * Загальні типи для Order Wizard, які використовуються
+ * в різних модулях та компонентах
  */
 
 /**
- * Типи етапів Order Wizard
+ * Структура кроку wizard для відображення у навігації
  */
-export type WizardMainStep =
-  | 'client-selection'     // Етап 1: Вибір клієнта
-  | 'basic-info'          // Етап 2: Основна інформація замовлення
-  | 'item-manager'        // Етап 3: Менеджер предметів
-  | 'item-wizard';        // Етап 4: Візард додавання/редагування предмета - циклічний процес.
-
-/**
- * Типи підетапів для візарда предметів (Етап 4)
- */
-export type ItemWizardSubStep =
-  | 'basic-info'           // Підетап 1: Основна інформація предмета
-  | 'item-properties'      // Підетап 2: Властивості предмета
-  | 'defects-stains'       // Підетап 3: Дефекти та плями
-  | 'price-calculator'     // Підетап 4: Калькулятор ціни
-  | 'photo-documentation'; // Підетап 5: Фотодокументація
-
-/**
- * Статус валідації для кроку
- */
-export type StepValidationStatus =
-  | 'not-validated'      // Крок ще не валідувався
-  | 'valid'              // Крок валідний
-  | 'invalid';           // Крок невалідний
-
-/**
- * Інтерфейс для інформації про крок
- */
-export interface WizardStepInfo {
-  title: string;          // Заголовок кроку
-  description: string;    // Опис кроку
-  validationStatus: StepValidationStatus; // Статус валідації кроку
+export interface WizardStepConfig {
+  id: string;              // Ідентифікатор кроку
+  title: string;           // Назва кроку для відображення
+  description?: string;    // Опис кроку
+  icon?: string;           // Іконка кроку
+  order: number;           // Порядковий номер для відображення
+  isSubstep?: boolean;     // Чи є підкроком
+  parentStep?: string;     // Посилання на батьківський крок (для підкроків)
 }
 
 /**
- * Інтерфейс конфігурації кроків візарда
+ * Загальні статуси для різних станів у Wizard
  */
-export interface WizardStepsConfig {
-  mainSteps: Record<WizardMainStep, WizardStepInfo>;
-  itemSubSteps: Record<ItemWizardSubStep, WizardStepInfo>;
+export enum WizardStatus {
+  IDLE = 'idle',
+  LOADING = 'loading',
+  SUBMITTING = 'submitting',
+  SUCCESS = 'success',
+  ERROR = 'error'
 }
 
 /**
- * Інтерфейс поточного стану кроку візарда
+ * Тип режиму для OrderWizard
  */
-export interface WizardCurrentStep {
-  mainStep: WizardMainStep;
-  itemSubStep: ItemWizardSubStep | null;
+export enum WizardMode {
+  CREATE = 'create',  // Режим створення нового замовлення
+  EDIT = 'edit'       // Режим редагування існуючого замовлення
 }
 
 /**
- * Історія кроків для навігації назад
+ * Базовий інтерфейс для сторів кроків
  */
-export interface WizardHistory {
-  steps: WizardCurrentStep[];
-  currentIndex: number;
+export interface BaseStepStore {
+  status: WizardStatus;
+  setStatus: (status: WizardStatus) => void;
+  reset: () => void;
+  hasUnsavedChanges: boolean;
+  setHasUnsavedChanges: (value: boolean) => void;
 }
-
-/**
- * Стан стору візарда
- */
-export interface WizardState {
-  // Поточний крок
-  currentStep: WizardCurrentStep;
-  // Конфігурація кроків
-  stepsConfig: WizardStepsConfig;
-  // Історія кроків для навігації назад
-  history: WizardHistory;
-  // Статус збереження візарда
-  isSaving: boolean;
-  // Помилки візарда
-  error: string | null;
-}
-
-/**
- * Типи дій для модуля візарда
- */
-export interface WizardActions {
-  // Навігація
-  goToStep: (mainStep: WizardMainStep, itemSubStep?: ItemWizardSubStep | null) => void;
-  goToNextMainStep: () => void;
-  goToPreviousMainStep: () => void;
-  goToNextItemSubStep: () => void;
-  goToPreviousItemSubStep: () => void;
-
-  // Валідація
-  setStepValidationStatus: (
-    mainStep: WizardMainStep,
-    status: StepValidationStatus,
-    itemSubStep?: ItemWizardSubStep
-  ) => void;
-
-  // Скидання стану
-  resetWizard: () => void;
-
-  // Обробка помилок
-  setError: (error: string | null) => void;
-}
-
-/**
- * Повний стор візарда
- */
-export interface WizardStore extends WizardState, WizardActions {}
