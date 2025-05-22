@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.aksi.domain.client.entity.ClientSourceEntity;
 import com.aksi.domain.client.entity.CommunicationChannelEntity;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientResponse {
 
     /**
@@ -52,9 +54,15 @@ public class ClientResponse {
     private String email;
 
     /**
-     * Адреса клієнта.
+     * Адреса клієнта в рядковому форматі.
      */
     private String address;
+    
+    /**
+     * Структурована адреса клієнта для фронтенду.
+     * Заповнюється на основі рядкової адреси при маппінгу.
+     */
+    private AddressDTO structuredAddress;
 
     /**
      * Канали комунікації з клієнтом.

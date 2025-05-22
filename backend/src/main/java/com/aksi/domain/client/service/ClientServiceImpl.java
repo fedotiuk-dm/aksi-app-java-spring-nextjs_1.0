@@ -1,18 +1,31 @@
 package com.aksi.domain.client.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aksi.domain.client.dto.ClientPageResponse;
 import com.aksi.domain.client.dto.ClientResponse;
+import com.aksi.domain.client.dto.ClientSearchRequest;
 import com.aksi.domain.client.dto.CreateClientRequest;
 import com.aksi.domain.client.dto.UpdateClientRequest;
+import com.aksi.domain.client.entity.AddressEntity;
 import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.client.entity.ClientSourceEntity;
+import com.aksi.domain.client.event.ClientAddressChangedEvent;
+import com.aksi.domain.client.event.ClientCreatedEvent;
+import com.aksi.domain.client.event.ClientUpdatedEvent;
+import com.aksi.domain.client.mapper.AddressMapper;
+import com.aksi.domain.client.mapper.ClientMapper;
 import com.aksi.domain.client.repository.ClientRepository;
 import com.aksi.exception.EntityNotFoundException;
 
@@ -28,12 +41,15 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
+    private final AddressMapper addressMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public List<ClientResponse> getAllClients() {
         log.debug("Отримання списку всіх клієнтів");
         return clientRepository.findAll().stream()
-                .map(this::mapToResponse)
+                .map(clientMapper::toClientResponse)
                 .collect(Collectors.toList());
     }
 
@@ -42,15 +58,56 @@ public class ClientServiceImpl implements ClientService {
         log.debug("Отримання клієнта за ID: {}", id);
         ClientEntity client = clientRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Client", id));
-        return mapToResponse(client);
+        return clientMapper.toClientResponse(client);
     }
 
     @Override
     public List<ClientResponse> searchClients(String keyword) {
         log.debug("Пошук клієнтів за ключовим словом: {}", keyword);
         return clientRepository.searchByKeyword(keyword).stream()
-                .map(this::mapToResponse)
+                .map(clientMapper::toClientResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ClientPageResponse searchClients(ClientSearchRequest request) {
+        log.debug("Пошук клієнтів з пагінацією: {}", request);
+
+        String keyword = request.getQuery() != null ? request.getQuery().trim() : "";
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+
+        Page<ClientEntity> clientsPage;
+        if (keyword.isEmpty()) {
+            clientsPage = clientRepository.findAll(pageable);
+        } else {
+            // Використовуємо розширений пошук з урахуванням адреси
+            clientsPage = clientRepository.fullTextSearch(keyword, pageable);
+        }
+
+        List<ClientResponse> clientResponses = clientsPage.getContent().stream()
+                .map(clientMapper::toClientResponse)
+                .collect(Collectors.toList());
+
+        return buildClientPageResponse(clientsPage, clientResponses);
+    }
+
+    /**
+     * Допоміжний метод для побудови відповіді з пагінацією.
+     *
+     * @param clientsPage сторінка з клієнтами
+     * @param clientResponses перетворені відповіді
+     * @return об'єкт відповіді з пагінацією
+     */
+    private ClientPageResponse buildClientPageResponse(Page<ClientEntity> clientsPage, List<ClientResponse> clientResponses) {
+        return ClientPageResponse.builder()
+                .content(clientResponses)
+                .totalElements(clientsPage.getTotalElements())
+                .totalPages(clientsPage.getTotalPages())
+                .pageNumber(clientsPage.getNumber())
+                .pageSize(clientsPage.getSize())
+                .hasPrevious(clientsPage.hasPrevious())
+                .hasNext(clientsPage.hasNext())
+                .build();
     }
 
     @Override
@@ -58,25 +115,15 @@ public class ClientServiceImpl implements ClientService {
     public ClientResponse createClient(CreateClientRequest request) {
         log.debug("Створення нового клієнта: {} {}", request.getFirstName(), request.getLastName());
 
-        validateUniquePhone(null, request.getPhone());
-        validateUniqueEmail(null, request.getEmail());
-        validateSourceDetails(request.getSource(), request.getSourceDetails());
+        validateClientData(null, request.getPhone(), request.getEmail(), request.getSource(), request.getSourceDetails());
 
-        ClientEntity client = ClientEntity.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .phone(request.getPhone())
-                .email(request.getEmail())
-                .address(request.getAddress())
-                .communicationChannels(request.getCommunicationChannels())
-                .source(request.getSource())
-                .sourceDetails(request.getSourceDetails())
-                .build();
-
+        ClientEntity client = clientMapper.createEntityFromRequest(request, addressMapper);
         ClientEntity savedClient = clientRepository.save(client);
-        log.info("Створено нового клієнта з ID: {}", savedClient.getId());
 
-        return mapToResponse(savedClient);
+        // Публікуємо подію створення клієнта
+        eventPublisher.publishEvent(new ClientCreatedEvent(savedClient));
+
+        return clientMapper.toClientResponse(savedClient);
     }
 
     @Override
@@ -87,122 +134,146 @@ public class ClientServiceImpl implements ClientService {
         ClientEntity client = clientRepository.findById(id)
                 .orElseThrow(() -> EntityNotFoundException.withTypeAndId("Client", id));
 
-        validateUniquePhone(client, request.getPhone());
-        validateUniqueEmail(client, request.getEmail());
-        validateSourceDetails(request.getSource(), request.getSourceDetails());
+        validateClientData(client, request.getPhone(), request.getEmail(), request.getSource(), request.getSourceDetails());
 
-        updateClientFields(client, request);
+        // Перевіряємо зміну адреси для публікації події
+        AddressEntity oldAddress = client.getAddress();
 
-        ClientEntity updatedClient = clientRepository.save(client);
-        log.info("Оновлено клієнта з ID: {}", updatedClient.getId());
+        // Оновлюємо клієнта
+        ClientEntity updatedClient = clientMapper.updateEntityFromUpdateRequest(request, client, addressMapper);
+        updatedClient = clientRepository.save(updatedClient);
 
-        return mapToResponse(updatedClient);
+        // Публікуємо події про зміни
+        publishUpdateEvents(client, request, oldAddress, updatedClient.getAddress());
+
+        return clientMapper.toClientResponse(updatedClient);
+    }
+
+    /**
+     * Публікує події про зміни в клієнті.
+     *
+     * @param originalClient оригінальний клієнт до змін
+     * @param request запит на оновлення
+     * @param oldAddress стара адреса
+     * @param newAddress нова адреса
+     */
+    private void publishUpdateEvents(ClientEntity originalClient, UpdateClientRequest request,
+                                    AddressEntity oldAddress, AddressEntity newAddress) {
+        // Перевіряємо зміну адреси
+        if (addressChanged(oldAddress, newAddress)) {
+            eventPublisher.publishEvent(new ClientAddressChangedEvent(originalClient, oldAddress, newAddress));
+        }
+
+        // Перевіряємо зміну основних даних клієнта
+        if (request.getFirstName() != null && !request.getFirstName().equals(originalClient.getFirstName())) {
+            eventPublisher.publishEvent(new ClientUpdatedEvent(
+                originalClient, "firstName", originalClient.getFirstName(), request.getFirstName()));
+        }
+
+        if (request.getLastName() != null && !request.getLastName().equals(originalClient.getLastName())) {
+            eventPublisher.publishEvent(new ClientUpdatedEvent(
+                originalClient, "lastName", originalClient.getLastName(), request.getLastName()));
+        }
+
+        if (request.getPhone() != null && !request.getPhone().equals(originalClient.getPhone())) {
+            eventPublisher.publishEvent(new ClientUpdatedEvent(
+                originalClient, "phone", originalClient.getPhone(), request.getPhone()));
+        }
+
+        if (request.getEmail() != null && !request.getEmail().equals(originalClient.getEmail())) {
+            eventPublisher.publishEvent(new ClientUpdatedEvent(
+                originalClient, "email", originalClient.getEmail() != null ? originalClient.getEmail() : "",
+                request.getEmail()));
+        }
+    }
+
+    /**
+     * Перевіряє, чи змінилася адреса.
+     *
+     * @param oldAddress стара адреса
+     * @param newAddress нова адреса
+     * @return true, якщо адреса змінилася
+     */
+    private boolean addressChanged(AddressEntity oldAddress, AddressEntity newAddress) {
+        if (oldAddress == null && newAddress == null) {
+            return false;
+        }
+
+        if (oldAddress == null || newAddress == null) {
+            return true;
+        }
+
+        // Порівнюємо адреси за вмістом, безпечно до null
+        return !Objects.equals(oldAddress.formatFullAddress(), newAddress.formatFullAddress());
     }
 
     @Override
     @Transactional
     public void deleteClient(UUID id) {
         log.debug("Видалення клієнта з ID: {}", id);
-
         if (!clientRepository.existsById(id)) {
-            throw EntityNotFoundException.withMessage("Клієнта з ID " + id + " не знайдено");
+            throw EntityNotFoundException.withTypeAndId("Client", id);
         }
-
         clientRepository.deleteById(id);
         log.info("Видалено клієнта з ID: {}", id);
     }
 
     /**
-     * Перевіряє унікальність телефону клієнта.
-     * @param client існуючий клієнт (може бути null для нового клієнта)
-     * @param phone новий телефон для перевірки
+     * Валідація даних клієнта.
+     *
+     * @param client поточний клієнт (може бути null для нового клієнта)
+     * @param phone номер телефону
+     * @param email email
+     * @param source джерело
+     * @param sourceDetails деталі джерела
+     */
+    private void validateClientData(ClientEntity client, String phone, String email,
+                                    ClientSourceEntity source, String sourceDetails) {
+        validateUniquePhone(client, phone);
+        validateUniqueEmail(client, email);
+        validateSourceDetails(source, sourceDetails);
+    }
+
+    /**
+     * Перевіряє унікальність телефону.
+     * @param client поточний клієнт (може бути null для нового клієнта)
+     * @param phone номер телефону для перевірки
      */
     private void validateUniquePhone(ClientEntity client, String phone) {
-        if (phone == null) {
+        if (phone == null || phone.isEmpty()) {
             return;
         }
 
-        boolean isPhoneChanged = client != null && !phone.equals(client.getPhone());
-        boolean isNewClient = client == null;
-
-        if ((isNewClient || isPhoneChanged) && clientRepository.existsByPhone(phone)) {
-            throw new IllegalArgumentException("Клієнт з телефоном " + phone + " вже існує");
+        Optional<ClientEntity> existingClient = clientRepository.findByPhone(phone);
+        if (existingClient.isPresent() && (client == null || !existingClient.get().getId().equals(client.getId()))) {
+            throw new IllegalArgumentException("Клієнт з таким номером телефону вже існує");
         }
     }
 
     /**
-     * Перевіряє унікальність email клієнта.
-     * @param client існуючий клієнт (може бути null для нового клієнта)
-     * @param email новий email для перевірки
+     * Перевіряє унікальність email.
+     * @param client поточний клієнт (може бути null для нового клієнта)
+     * @param email email для перевірки
      */
     private void validateUniqueEmail(ClientEntity client, String email) {
         if (email == null || email.isEmpty()) {
             return;
         }
 
-        boolean isEmailChanged = client != null && !email.equals(client.getEmail());
-        boolean isNewClient = client == null;
-
-        if ((isNewClient || isEmailChanged) && clientRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Клієнт з email " + email + " вже існує");
+        Optional<ClientEntity> existingClient = clientRepository.findByEmail(email);
+        if (existingClient.isPresent() && (client == null || !existingClient.get().getId().equals(client.getId()))) {
+            throw new IllegalArgumentException("Клієнт з таким email вже існує");
         }
     }
 
     /**
-     * Перевіряє наявність деталей джерела, якщо вибрано "Інше".
-     * @param source джерело
+     * Перевіряє, чи надано деталі джерела, якщо вибрано "Інше".
+     * @param source тип джерела
      * @param sourceDetails деталі джерела
      */
     private void validateSourceDetails(ClientSourceEntity source, String sourceDetails) {
         if (source == ClientSourceEntity.OTHER && (sourceDetails == null || sourceDetails.isEmpty())) {
-            throw new IllegalArgumentException("Для джерела 'Інше' необхідно вказати деталі");
+            throw new IllegalArgumentException("Деталі джерела обов'язкові, якщо вибрано 'Інше'");
         }
-    }
-
-    /**
-     * Оновлює поля клієнтської сутності з DTO запиту.
-     * @param client сутність для оновлення
-     * @param request DTO з новими даними
-     */
-    private void updateClientFields(ClientEntity client, UpdateClientRequest request) {
-        Optional.ofNullable(request.getFirstName()).ifPresent(client::setFirstName);
-        Optional.ofNullable(request.getLastName()).ifPresent(client::setLastName);
-        Optional.ofNullable(request.getPhone()).ifPresent(client::setPhone);
-        Optional.ofNullable(request.getEmail()).ifPresent(client::setEmail);
-        Optional.ofNullable(request.getAddress()).ifPresent(client::setAddress);
-        Optional.ofNullable(request.getCommunicationChannels()).ifPresent(client::setCommunicationChannels);
-
-        // Особлива логіка для джерела інформації
-        Optional.ofNullable(request.getSource()).ifPresent(source -> {
-            client.setSource(source);
-
-            if (source != ClientSourceEntity.OTHER) {
-                client.setSourceDetails(null);
-            } else if (request.getSourceDetails() != null) {
-                client.setSourceDetails(request.getSourceDetails());
-            }
-        });
-    }
-
-    /**
-     * Конвертує сутність клієнта в DTO для відповіді.
-     * @param client сутність клієнта
-     * @return DTO клієнта
-     */
-    private ClientResponse mapToResponse(ClientEntity client) {
-        return ClientResponse.builder()
-                .id(client.getId())
-                .firstName(client.getFirstName())
-                .lastName(client.getLastName())
-                .fullName(client.getLastName() + " " + client.getFirstName())
-                .phone(client.getPhone())
-                .email(client.getEmail())
-                .address(client.getAddress())
-                .communicationChannels(client.getCommunicationChannels())
-                .source(client.getSource())
-                .sourceDetails(client.getSourceDetails())
-                .createdAt(client.getCreatedAt())
-                .updatedAt(client.getUpdatedAt())
-                .build();
     }
 }

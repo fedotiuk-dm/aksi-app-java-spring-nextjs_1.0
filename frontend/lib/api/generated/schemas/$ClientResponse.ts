@@ -26,6 +26,9 @@ export const $ClientResponse = {
         address: {
             type: 'string',
         },
+        structuredAddress: {
+            type: 'AddressDTO',
+        },
         communicationChannels: {
             type: 'array',
             contains: {

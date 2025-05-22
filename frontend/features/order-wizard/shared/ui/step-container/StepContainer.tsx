@@ -1,7 +1,7 @@
 'use client';
 
-import React, { ReactNode } from 'react';
 import { Box, Paper, Typography } from '@mui/material';
+import React, { ReactNode } from 'react';
 
 interface StepContainerProps {
   title: string;
@@ -25,13 +25,13 @@ export const StepContainer: React.FC<StepContainerProps> = ({
       <Typography variant="h6" gutterBottom>
         {title}
       </Typography>
-      
+
       {subtitle && (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {subtitle}
         </Typography>
       )}
-      
+
       <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
         {children}
       </Paper>

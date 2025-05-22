@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
 import { Box, Button, Paper, Typography, Stack } from '@mui/material';
+import React, { useRef, useState, useEffect } from 'react';
 
 interface SignaturePadProps {
   onSignatureChange?: (signatureData: string | null) => void;
@@ -33,7 +33,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     context.lineWidth = 2;
     context.lineCap = 'round';
     context.strokeStyle = '#000000';
-    
+
     // Очищаємо полотно
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -50,7 +50,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     setHasSignature(true);
 
     let clientX, clientY;
-    
+
     if ('touches' in e) {
       // Touch event
       clientX = e.touches[0].clientX;
@@ -79,12 +79,12 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     if (!context) return;
 
     let clientX, clientY;
-    
+
     if ('touches' in e) {
       // Touch event
       clientX = e.touches[0].clientX;
       clientY = e.touches[0].clientY;
-      
+
       // Запобігаємо скролінгу сторінки під час малювання
       e.preventDefault();
     } else {
@@ -103,14 +103,14 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
 
   const endDrawing = () => {
     if (!isDrawing) return;
-    
+
     setIsDrawing(false);
-    
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const signatureData = canvas.toDataURL('image/png');
-    
+
     if (onSignatureChange) {
       onSignatureChange(signatureData);
     }
@@ -125,9 +125,9 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
 
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     setHasSignature(false);
-    
+
     if (onSignatureChange) {
       onSignatureChange(null);
     }
@@ -138,11 +138,11 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
       <Typography variant="h6" gutterBottom>
         {label}
       </Typography>
-      
+
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Будь ласка, поставте підпис у полі нижче за допомогою миші або сенсорного екрану
       </Typography>
-      
+
       <Paper
         variant="outlined"
         sx={{
@@ -167,11 +167,11 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
           style={{ width: '100%', height: '100%', cursor: 'crosshair' }}
         />
       </Paper>
-      
+
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button 
-          variant="outlined" 
-          color="error" 
+        <Button
+          variant="outlined"
+          color="error"
           onClick={clearSignature}
           disabled={!hasSignature}
         >

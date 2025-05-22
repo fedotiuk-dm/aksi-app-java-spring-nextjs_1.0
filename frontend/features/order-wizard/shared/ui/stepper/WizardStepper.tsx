@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
 import { Stepper, Step, StepLabel, Box } from '@mui/material';
+import React from 'react';
 
 interface WizardStepperProps {
   steps: string[];
@@ -11,11 +11,11 @@ interface WizardStepperProps {
 
 /**
  * Компонент для відображення кроків візарда
- * 
+ *
  * @param steps Масив назв кроків
  * @param activeStep Індекс активного кроку
  */
-export const WizardStepper: React.FC<WizardStepperProps> = ({ 
+export const WizardStepper: React.FC<WizardStepperProps> = ({
   steps,
   activeStep,
   className

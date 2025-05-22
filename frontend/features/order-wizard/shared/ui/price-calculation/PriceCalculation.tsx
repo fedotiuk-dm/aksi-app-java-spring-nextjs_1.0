@@ -1,16 +1,16 @@
 'use client';
 
-import React from 'react';
-import { 
-  Box, 
-  Paper, 
-  Typography, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
+import {
+  Box,
+  Paper,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
   TableRow} from '@mui/material';
+import React from 'react';
 
 interface PriceModifier {
   id: string;
@@ -30,7 +30,7 @@ interface PriceCalculationProps {
 /**
  * Компонент для відображення розрахунку ціни з деталізацією
  * Використовується на підетапі 2.4 та на етапі підтвердження замовлення
- * 
+ *
  * Важливо: сам розрахунок відбувається на бекенді, компонент лише відображає результати
  */
 export const PriceCalculation: React.FC<PriceCalculationProps> = ({

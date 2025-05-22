@@ -2,7 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ClientPageResponse } from '../models/ClientPageResponse';
 import type { ClientResponse } from '../models/ClientResponse';
+import type { ClientSearchRequest } from '../models/ClientSearchRequest';
 import type { CreateClientRequest } from '../models/CreateClientRequest';
 import type { UpdateClientRequest } from '../models/UpdateClientRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -145,6 +147,32 @@ export class ClientsService {
         });
     }
     /**
+     * Пошук клієнтів з пагінацією
+     * Пошук клієнтів за запитом з підтримкою пагінації
+     * @returns ClientPageResponse Успішно отримано результати пошуку з пагінацією
+     * @throws ApiError
+     */
+    public static searchClientsWithPagination({
+        requestBody,
+    }: {
+        requestBody: ClientSearchRequest,
+    }): CancelablePromise<ClientPageResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/clients/search/pagination',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * @deprecated
      * Пошук клієнтів
      * Пошук клієнтів за ключовим словом
      * @returns ClientResponse Успішно отримано результати пошуку

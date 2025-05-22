@@ -45,9 +45,15 @@ public abstract class BaseClientRequest {
     private String email;
 
     /**
-     * Адреса клієнта.
+     * Адреса клієнта в рядковому форматі (для зворотної сумісності).
      */
     private String address;
+
+    /**
+     * Структурована адреса клієнта.
+     * Якщо надано structuredAddress, пріоритет надається її даним над рядковим address.
+     */
+    private AddressDTO structuredAddress;
 
     /**
      * Канали комунікації з клієнтом.

@@ -3,7 +3,9 @@ package com.aksi.domain.client.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.aksi.domain.client.dto.ClientPageResponse;
 import com.aksi.domain.client.dto.ClientResponse;
+import com.aksi.domain.client.dto.ClientSearchRequest;
 import com.aksi.domain.client.dto.CreateClientRequest;
 import com.aksi.domain.client.dto.UpdateClientRequest;
 
@@ -29,8 +31,17 @@ public interface ClientService {
      * Пошук клієнтів за ключовим словом.
      * @param keyword ключове слово для пошуку
      * @return список знайдених клієнтів
+     * @deprecated Використовуйте searchClients(ClientSearchRequest) для підтримки пагінації
      */
+    @Deprecated
     List<ClientResponse> searchClients(String keyword);
+    
+    /**
+     * Пошук клієнтів з пагінацією.
+     * @param request параметри пошуку і пагінації
+     * @return сторінка з клієнтами
+     */
+    ClientPageResponse searchClients(ClientSearchRequest request);
 
     /**
      * Створення нового клієнта.

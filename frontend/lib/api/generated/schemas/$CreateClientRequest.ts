@@ -27,6 +27,9 @@ export const $CreateClientRequest = {
         address: {
             type: 'string',
         },
+        structuredAddress: {
+            type: 'AddressDTO',
+        },
         communicationChannels: {
             type: 'array',
             contains: {

@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddressDTO } from './AddressDTO';
 /**
  * Дані для оновлення клієнта
  */
@@ -11,6 +12,7 @@ export type UpdateClientRequest = {
     phone?: string;
     email?: string;
     address?: string;
+    structuredAddress?: AddressDTO;
     communicationChannels?: Array<'PHONE' | 'SMS' | 'VIBER'>;
     source?: UpdateClientRequest.source;
     sourceDetails?: string;

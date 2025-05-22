@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aksi.domain.client.dto.ClientPageResponse;
 import com.aksi.domain.client.dto.ClientResponse;
+import com.aksi.domain.client.dto.ClientSearchRequest;
 import com.aksi.domain.client.dto.CreateClientRequest;
 import com.aksi.domain.client.dto.UpdateClientRequest;
 import com.aksi.domain.client.service.ClientService;
@@ -76,6 +78,7 @@ public class ClientsController {
     @Operation(summary = "Пошук клієнтів", description = "Пошук клієнтів за ключовим словом")
     @ApiResponse(responseCode = "200", description = "Успішно отримано результати пошуку",
             content = @Content(schema = @Schema(implementation = ClientResponse.class)))
+    @Deprecated
     public ResponseEntity<?> searchClients(
             @Parameter(description = "Ключове слово для пошуку") @RequestParam String keyword) {
         try {
@@ -84,6 +87,23 @@ public class ClientsController {
         } catch (Exception e) {
             return ApiResponseUtils.badRequest("Помилка при пошуку клієнтів",
                 "Не вдалося виконати пошук клієнтів за ключовим словом: {}. Причина: {}", keyword, e.getMessage());
+        }
+    }
+
+    @PostMapping("/search/pagination")
+    @Operation(summary = "Пошук клієнтів з пагінацією",
+              description = "Пошук клієнтів за запитом з підтримкою пагінації")
+    @ApiResponse(responseCode = "200", description = "Успішно отримано результати пошуку з пагінацією",
+            content = @Content(schema = @Schema(implementation = ClientPageResponse.class)))
+    public ResponseEntity<?> searchClientsWithPagination(
+            @Parameter(description = "Параметри пошуку та пагінації", required = true)
+            @Valid @RequestBody ClientSearchRequest request) {
+        try {
+            ClientPageResponse clients = clientService.searchClients(request);
+            return ApiResponseUtils.ok(clients, "REST запит на пошук клієнтів з пагінацією: {}", request);
+        } catch (Exception e) {
+            return ApiResponseUtils.badRequest("Помилка при пошуку клієнтів з пагінацією",
+                "Не вдалося виконати пошук клієнтів з пагінацією. Причина: {}", e.getMessage());
         }
     }
 

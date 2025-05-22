@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
       file: 1.0/002-create-client-communication-channels.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/003-create-addresses-table.yaml
+      relativeToChangelogFile: true

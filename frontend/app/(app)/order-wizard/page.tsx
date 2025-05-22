@@ -1,6 +1,8 @@
-import React from 'react';
-import OrderWizard from '@/features/order-wizard/ui/OrderWizard';
 import { Container, Typography, Paper } from '@mui/material';
+import React from 'react';
+
+import OrderWizard from '@/features/order-wizard/shared/ui/order-wizard';
+
 
 /**
  * Сторінка з майстром створення замовлення
@@ -16,7 +18,7 @@ export default function OrderWizardPage() {
           Додайте нове замовлення, заповнивши всі необхідні поля нижче
         </Typography>
       </Paper>
-      
+
       <OrderWizard />
     </Container>
   );

@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddressDTO } from './AddressDTO';
 export type ClientResponse = {
     id?: string;
     lastName?: string;
@@ -10,6 +11,7 @@ export type ClientResponse = {
     phone?: string;
     email?: string;
     address?: string;
+    structuredAddress?: AddressDTO;
     communicationChannels?: Array<'PHONE' | 'SMS' | 'VIBER'>;
     source?: ClientResponse.source;
     sourceDetails?: string;
