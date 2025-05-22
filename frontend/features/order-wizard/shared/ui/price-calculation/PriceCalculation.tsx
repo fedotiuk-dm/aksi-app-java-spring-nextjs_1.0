@@ -9,7 +9,8 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow} from '@mui/material';
+  TableRow,
+} from '@mui/material';
 import React from 'react';
 
 interface PriceModifier {
@@ -38,7 +39,7 @@ export const PriceCalculation: React.FC<PriceCalculationProps> = ({
   modifiers,
   totalPrice,
   currency = 'грн',
-  className
+  className,
 }) => {
   const formatPrice = (price: number) => {
     return `${price.toFixed(2)} ${currency}`;
@@ -78,10 +79,12 @@ export const PriceCalculation: React.FC<PriceCalculationProps> = ({
                   {modifier.name}
                 </TableCell>
                 <TableCell align="right">
-                  {getModifierSign(modifier.percentage)}{modifier.percentage}%
+                  {getModifierSign(modifier.percentage)}
+                  {modifier.percentage}%
                 </TableCell>
                 <TableCell align="right">
-                  {getModifierSign(modifier.amount)}{formatPrice(modifier.amount)}
+                  {getModifierSign(modifier.amount)}
+                  {formatPrice(modifier.amount)}
                 </TableCell>
               </TableRow>
             ))}

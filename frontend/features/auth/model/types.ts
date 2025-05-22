@@ -49,7 +49,7 @@ export const convertToAuthUser = (response: AuthResponse): AuthUser => {
   if (!response.id || !response.username || !response.name || !response.email || !response.role) {
     throw new Error('Отримано неповні дані користувача від сервера');
   }
-  
+
   return {
     id: response.id,
     username: response.username,

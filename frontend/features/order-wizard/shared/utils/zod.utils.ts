@@ -10,33 +10,36 @@ import { ValidationErrors } from '../schemas/common.schema';
 /**
  * Перетворює строку дати в об'єкт Date
  */
-export const dateTransformer = () => z.preprocess((val) => {
-  if (typeof val === 'string') {
-    return dayjs(val).toDate();
-  }
-  return val;
-}, z.date());
+export const dateTransformer = () =>
+  z.preprocess((val) => {
+    if (typeof val === 'string') {
+      return dayjs(val).toDate();
+    }
+    return val;
+  }, z.date());
 
 /**
  * Перетворює строкове представлення числа в число
  */
-export const numberTransformer = () => z.preprocess((val) => {
-  if (typeof val === 'string') {
-    const parsed = parseFloat(val);
-    return isNaN(parsed) ? undefined : parsed;
-  }
-  return val;
-}, z.number());
+export const numberTransformer = () =>
+  z.preprocess((val) => {
+    if (typeof val === 'string') {
+      const parsed = parseFloat(val);
+      return isNaN(parsed) ? undefined : parsed;
+    }
+    return val;
+  }, z.number());
 
 /**
  * Перетворює строкове представлення булевого значення в булеве
  */
-export const booleanTransformer = () => z.preprocess((val) => {
-  if (typeof val === 'string') {
-    return val.toLowerCase() === 'true';
-  }
-  return val;
-}, z.boolean());
+export const booleanTransformer = () =>
+  z.preprocess((val) => {
+    if (typeof val === 'string') {
+      return val.toLowerCase() === 'true';
+    }
+    return val;
+  }, z.boolean());
 
 /**
  * Утиліти для обробки даних форм
@@ -52,7 +55,9 @@ export const removeEmptyStrings = <T extends Record<string, unknown>>(data: T): 
     if (typeof value === 'string' && value.trim() === '') {
       (result as Record<string, unknown>)[key] = undefined;
     } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      (result as Record<string, unknown>)[key] = removeEmptyStrings(value as Record<string, unknown>);
+      (result as Record<string, unknown>)[key] = removeEmptyStrings(
+        value as Record<string, unknown>
+      );
     }
   });
 
@@ -72,13 +77,19 @@ export const convertDayjsDatesToISOStrings = <T extends Record<string, unknown>>
 
   Object.entries(result).forEach(([key, value]) => {
     // Перевіряємо, чи є значення об'єктом dayjs
-    if (value && typeof value === 'object' && 'isValid' in value && 
-        typeof (value as DayjsLike).isValid === 'function') {
+    if (
+      value &&
+      typeof value === 'object' &&
+      'isValid' in value &&
+      typeof (value as DayjsLike).isValid === 'function'
+    ) {
       if ((value as DayjsLike).isValid()) {
         (result as Record<string, unknown>)[key] = (value as DayjsLike).toISOString();
       }
     } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      (result as Record<string, unknown>)[key] = convertDayjsDatesToISOStrings(value as Record<string, unknown>);
+      (result as Record<string, unknown>)[key] = convertDayjsDatesToISOStrings(
+        value as Record<string, unknown>
+      );
     }
   });
 
@@ -98,7 +109,9 @@ export const convertISOStringsToDayjsDates = <T extends Record<string, unknown>>
         (result as Record<string, unknown>)[key] = date;
       }
     } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      (result as Record<string, unknown>)[key] = convertISOStringsToDayjsDates(value as Record<string, unknown>);
+      (result as Record<string, unknown>)[key] = convertISOStringsToDayjsDates(
+        value as Record<string, unknown>
+      );
     }
   });
 

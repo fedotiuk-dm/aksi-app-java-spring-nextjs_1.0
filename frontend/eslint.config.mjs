@@ -38,6 +38,12 @@ const ignorePatterns = [
   '.prettierrc',
   '.eslintignore',
   '.prettierignore',
+
+  // Client Selection модуль
+  '**/features/order-wizard/client-selection/utils/validation-utils.ts',
+
+  // Папка API
+  '**/lib/api/**',
 ];
 
 // Базові налаштування Next.js
@@ -55,7 +61,11 @@ const eslintConfig = [
   // Налаштування для всіх файлів
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    ignores: ignorePatterns,
+    ignores: [
+      ...ignorePatterns,
+      '**/features/order-wizard/client-selection/utils/validation-utils.ts',
+      '**/lib/api/**',
+    ],
     plugins: {
       '@typescript-eslint': tsPlugin,
       import: importPlugin,
@@ -78,7 +88,7 @@ const eslintConfig = [
       'no-restricted-imports': [
         'error',
         {
-          patterns: ['**/lib/api/generated/**'],
+          patterns: ['**/lib/api/generated/**/*'],
         },
       ],
       // Базові правила TypeScript

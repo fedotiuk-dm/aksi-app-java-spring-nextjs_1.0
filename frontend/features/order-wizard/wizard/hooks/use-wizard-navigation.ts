@@ -20,24 +20,18 @@ export const useWizardNavigation = () => {
     startItemWizard,
     finishItemWizard,
     updateStepAvailability,
-    resetNavigation
+    resetNavigation,
   } = useNavigationStore();
 
   /**
    * Перевірка, чи є крок поточним
    */
-  const isCurrentStep = useCallback(
-    (step: WizardStep) => currentStep === step,
-    [currentStep]
-  );
+  const isCurrentStep = useCallback((step: WizardStep) => currentStep === step, [currentStep]);
 
   /**
    * Перевірка, чи доступний крок для переходу
    */
-  const isStepAvailable = useCallback(
-    (step: WizardStep) => !!availability[step],
-    [availability]
-  );
+  const isStepAvailable = useCallback((step: WizardStep) => !!availability[step], [availability]);
 
   /**
    * Встановлює доступність кроку та всіх наступних етапів
@@ -127,6 +121,6 @@ export const useWizardNavigation = () => {
     startItemWizard,
     completeCurrentStep,
     completeItemAddition,
-    resetNavigation
+    resetNavigation,
   };
 };

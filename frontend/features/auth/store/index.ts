@@ -12,7 +12,7 @@ interface AuthState {
   position: string | null;
   loading: boolean;
   error: AuthError | null;
-  
+
   // Методи для керування авторизацією на стороні клієнта
   setUser: (user: AuthUser | null) => void;
   setError: (error: AuthError | null) => void;
@@ -33,7 +33,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   position: null,
   loading: false,
   error: null,
-  
+
   /**
    * Встановлює інформацію про користувача
    */
@@ -54,36 +54,37 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       get().logout();
     }
   },
-  
+
   /**
    * Встановлює стан помилки
    */
   setError: (error: AuthError | null) => set({ error }),
-  
+
   /**
    * Очищає помилку
    */
   clearError: () => set({ error: null }),
-  
+
   /**
    * Встановлює стан завантаження
    */
   setLoading: (loading: boolean) => set({ loading }),
-  
+
   /**
    * Виконує вихід користувача - очищає всі дані сесії
    */
-  logout: () => set({
-    isLoggedIn: false,
-    username: null,
-    name: null,
-    email: null,
-    role: null,
-    userId: null,
-    position: null,
-    error: null,
-  }),
-  
+  logout: () =>
+    set({
+      isLoggedIn: false,
+      username: null,
+      name: null,
+      email: null,
+      role: null,
+      userId: null,
+      position: null,
+      error: null,
+    }),
+
   /**
    * Перевіряє, чи користувач має певну роль
    */
@@ -91,7 +92,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { isLoggedIn, role: userRole } = get();
     return isLoggedIn && userRole === role;
   },
-  
+
   /**
    * Перевіряє, чи користувач залогінений
    */

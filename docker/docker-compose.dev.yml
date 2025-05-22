@@ -1,7 +1,7 @@
 services:
   # Traefik - зворотний проксі для маршрутизації
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3.4
     container_name: traefik
     ports:
       - "80:80"     # HTTP порт
@@ -126,7 +126,7 @@ services:
       # Правило маршрутизації - всі запити на /api/* спрямовуються на бекенд
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
       # Вказуємо на якому порті працює сервіс
-      - "traefik.http.services.backend.loadbalancer.server.port=8080"      
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
       # Високий пріоритет для /api маршрутів
       - "traefik.http.routers.backend.priority=100"
 

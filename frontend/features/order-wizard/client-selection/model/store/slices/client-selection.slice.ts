@@ -1,31 +1,28 @@
-import { StateCreator } from 'zustand';
-
 import { ClientResponse } from '@/lib/api';
 
-import { NavigationActions, WizardStep } from '../../../wizard/store/navigation';
-import { ClientSelectionMode, ClientStore } from '../types';
+import { WizardStep } from '../../../../wizard/store/navigation';
+import { ClientSelectionActions, ClientSelectionMode, ClientStore } from '../../types';
+import { createSlice, StoreModules } from '../utils/slice-factory';
 
 /**
  * Слайс стору для функціональності вибору клієнта
- * @template State - тип стану стору
- * @template Middlewares - тип middleware для Zustand
- * @template Extenders - тип екстендерів для Zustand
- * @template Selection - тип вибраних методів та властивостей
  */
-export const createClientSelectionSlice: StateCreator<
-  ClientStore,
-  [],
-  [],
-  Pick<ClientStore, 'selectClient' | 'clearSelectedClient' | 'setMode'>
-> = (set, store) => ({
-  selectClient: (client: ClientResponse) => {
+export const createClientSelectionSlice = createSlice<
+  Pick<ClientStore, keyof ClientSelectionActions>
+>('clientSelection', (set, get, store) => ({
+  selectClient: (client: ClientResponse | null) => {
+    if (client === null) {
+      set({ selectedClient: null });
+      return;
+    }
+
     set({
       selectedClient: client,
       mode: 'existing',
     });
 
     // Доступ до навігаційних дій загального стору
-    const wizardStore = store as unknown as { navigation?: NavigationActions };
+    const wizardStore = store as unknown as StoreModules;
     if (wizardStore.navigation) {
       // Розблоковуємо наступний крок, коли клієнт вибраний
       wizardStore.navigation.updateStepAvailability(WizardStep.BRANCH_SELECTION, true);
@@ -38,7 +35,7 @@ export const createClientSelectionSlice: StateCreator<
     });
 
     // Доступ до навігаційних дій загального стору
-    const wizardStore = store as unknown as { navigation?: NavigationActions };
+    const wizardStore = store as unknown as StoreModules;
     if (wizardStore.navigation) {
       // Блокуємо наступний крок, коли клієнт не вибраний
       wizardStore.navigation.updateStepAvailability(WizardStep.BRANCH_SELECTION, false);
@@ -63,4 +60,24 @@ export const createClientSelectionSlice: StateCreator<
       }));
     }
   },
-});
+
+  confirmClientSelection: () => {
+    const state = get();
+
+    // Перевіряємо, чи є вибраний клієнт або заповнена форма нового клієнта
+    const isClientValid =
+      state.mode === 'existing' ? !!state.selectedClient : state.validateAndProceed();
+
+    if (isClientValid) {
+      // Доступ до навігаційних дій загального стору
+      const wizardStore = store as unknown as StoreModules;
+      if (wizardStore.navigation) {
+        // Переходимо до наступного кроку (вибір філії)
+        wizardStore.navigation.goToStep(WizardStep.BRANCH_SELECTION);
+      }
+      return true;
+    }
+
+    return false;
+  },
+}));

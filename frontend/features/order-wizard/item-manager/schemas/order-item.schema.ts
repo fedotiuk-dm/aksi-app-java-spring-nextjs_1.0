@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
-import { nonEmptyString, uuidSchema, positiveNumber, priceNumber, shortText, longText } from '../../shared/schemas/common.schema';
+import {
+  nonEmptyString,
+  uuidSchema,
+  positiveNumber,
+  priceNumber,
+  shortText,
+  longText,
+} from '../../shared/schemas/common.schema';
 
 /**
  * Схема для базових характеристик предмета замовлення
@@ -13,7 +20,7 @@ export const orderItemBaseSchema = z.object({
   category: shortText.optional(),
   color: shortText.optional(),
   material: shortText.optional(),
-  unitOfMeasure: z.string().optional()
+  unitOfMeasure: z.string().optional(),
 });
 
 /**
@@ -26,7 +33,7 @@ export const orderItemDefectsSchema = z.object({
   otherStains: longText.optional(),
   defectsAndRisks: longText.optional(),
   noGuaranteeReason: longText.optional(),
-  defectsNotes: longText.optional()
+  defectsNotes: longText.optional(),
 });
 
 /**
@@ -35,7 +42,7 @@ export const orderItemDefectsSchema = z.object({
 export const orderItemFillerSchema = z.object({
   fillerType: shortText.optional(),
   fillerCompressed: z.boolean().default(false),
-  wearDegree: shortText.optional()
+  wearDegree: shortText.optional(),
 });
 
 /**
@@ -47,7 +54,7 @@ export const orderItemSchema = orderItemBaseSchema
   .extend({
     id: uuidSchema.optional(),
     orderId: uuidSchema.optional(),
-    totalPrice: priceNumber.optional()
+    totalPrice: priceNumber.optional(),
   });
 
 /**

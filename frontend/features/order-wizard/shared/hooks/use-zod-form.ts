@@ -30,9 +30,12 @@ type UseZodFormReturn<TFormValues extends FieldValues> = UseFormReturn<TFormValu
  * @param onValid - колбек, що викликається при успішній валідації
  * @param onInvalid - колбек, що викликається при помилках валідації
  */
-export function useZodForm<TFormValues extends FieldValues>(
-  { schema, formOptions = {}, onValid, onInvalid }: UseZodFormProps<TFormValues>
-): UseZodFormReturn<TFormValues> {
+export function useZodForm<TFormValues extends FieldValues>({
+  schema,
+  formOptions = {},
+  onValid,
+  onInvalid,
+}: UseZodFormProps<TFormValues>): UseZodFormReturn<TFormValues> {
   const [formErrors, setFormErrors] = useState<ValidationErrors>({});
 
   // Підключаємо Zod через zodResolver до React Hook Form
@@ -61,7 +64,12 @@ export function useZodForm<TFormValues extends FieldValues>(
       (errors) => {
         // Перевіряємо, чи є помилки від Zod
         const zodErrors = errors.zodError;
-        if (zodErrors && typeof zodErrors === 'object' && 'issues' in zodErrors && Array.isArray(zodErrors.issues)) {
+        if (
+          zodErrors &&
+          typeof zodErrors === 'object' &&
+          'issues' in zodErrors &&
+          Array.isArray(zodErrors.issues)
+        ) {
           const formattedErrors = formatZodErrors(zodErrors.issues);
           setFormErrors(formattedErrors);
           if (onInvalid) {
@@ -81,7 +89,7 @@ export function useZodForm<TFormValues extends FieldValues>(
     ...formMethods,
     formErrors,
     clearErrors,
-    onSubmit
+    onSubmit,
   };
 }
 

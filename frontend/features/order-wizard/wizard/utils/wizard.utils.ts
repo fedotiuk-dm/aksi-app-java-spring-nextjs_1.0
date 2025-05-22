@@ -12,44 +12,44 @@ export const WIZARD_STEPS_CONFIG: Record<WizardStep, WizardStepConfig> = {
     title: 'Вибір клієнта',
     description: 'Виберіть існуючого або створіть нового клієнта',
     order: 1,
-    isSubstep: false
+    isSubstep: false,
   },
   [WizardStep.BRANCH_SELECTION]: {
     id: WizardStep.BRANCH_SELECTION,
     title: 'Вибір філії',
     description: 'Виберіть пункт прийому (філію)',
     order: 2,
-    isSubstep: false
+    isSubstep: false,
   },
   [WizardStep.BASIC_INFO]: {
     id: WizardStep.BASIC_INFO,
     title: 'Базова інформація',
     description: 'Вкажіть основну інформацію про замовлення',
     order: 3,
-    isSubstep: false
+    isSubstep: false,
   },
   [WizardStep.ITEM_MANAGER]: {
     id: WizardStep.ITEM_MANAGER,
     title: 'Управління предметами',
     description: 'Додайте предмети в замовлення',
     order: 4,
-    isSubstep: false
+    isSubstep: false,
   },
   [WizardStep.ORDER_PARAMETERS]: {
     id: WizardStep.ORDER_PARAMETERS,
     title: 'Параметри замовлення',
     description: 'Вкажіть загальні параметри замовлення',
     order: 5,
-    isSubstep: false
+    isSubstep: false,
   },
   [WizardStep.ORDER_CONFIRMATION]: {
     id: WizardStep.ORDER_CONFIRMATION,
     title: 'Підтвердження',
     description: 'Перевірте та підтвердіть замовлення',
     order: 6,
-    isSubstep: false
+    isSubstep: false,
   },
-  
+
   // Підкроки візарда предметів
   [WizardStep.ITEM_BASIC_INFO]: {
     id: WizardStep.ITEM_BASIC_INFO,
@@ -57,7 +57,7 @@ export const WIZARD_STEPS_CONFIG: Record<WizardStep, WizardStepConfig> = {
     description: 'Вкажіть основну інформацію про предмет',
     order: 1,
     isSubstep: true,
-    parentStep: WizardStep.ITEM_MANAGER
+    parentStep: WizardStep.ITEM_MANAGER,
   },
   [WizardStep.ITEM_PROPERTIES]: {
     id: WizardStep.ITEM_PROPERTIES,
@@ -65,7 +65,7 @@ export const WIZARD_STEPS_CONFIG: Record<WizardStep, WizardStepConfig> = {
     description: 'Вкажіть характеристики предмета',
     order: 2,
     isSubstep: true,
-    parentStep: WizardStep.ITEM_MANAGER
+    parentStep: WizardStep.ITEM_MANAGER,
   },
   [WizardStep.DEFECTS_STAINS]: {
     id: WizardStep.DEFECTS_STAINS,
@@ -73,7 +73,7 @@ export const WIZARD_STEPS_CONFIG: Record<WizardStep, WizardStepConfig> = {
     description: 'Вкажіть дефекти та забруднення предмета',
     order: 3,
     isSubstep: true,
-    parentStep: WizardStep.ITEM_MANAGER
+    parentStep: WizardStep.ITEM_MANAGER,
   },
   [WizardStep.PRICE_CALCULATOR]: {
     id: WizardStep.PRICE_CALCULATOR,
@@ -81,7 +81,7 @@ export const WIZARD_STEPS_CONFIG: Record<WizardStep, WizardStepConfig> = {
     description: 'Розрахуйте ціну за послуги',
     order: 4,
     isSubstep: true,
-    parentStep: WizardStep.ITEM_MANAGER
+    parentStep: WizardStep.ITEM_MANAGER,
   },
   [WizardStep.PHOTO_DOCUMENTATION]: {
     id: WizardStep.PHOTO_DOCUMENTATION,
@@ -89,8 +89,8 @@ export const WIZARD_STEPS_CONFIG: Record<WizardStep, WizardStepConfig> = {
     description: 'Додайте фотографії предмета',
     order: 5,
     isSubstep: true,
-    parentStep: WizardStep.ITEM_MANAGER
-  }
+    parentStep: WizardStep.ITEM_MANAGER,
+  },
 };
 
 /**
@@ -169,7 +169,7 @@ export const getStepConfig = (step: WizardStep): WizardStepConfig => {
  */
 export const getMainSteps = (): WizardStepConfig[] => {
   return Object.values(WIZARD_STEPS_CONFIG)
-    .filter(step => !step.isSubstep)
+    .filter((step) => !step.isSubstep)
     .sort((a, b) => a.order - b.order);
 };
 
@@ -178,7 +178,7 @@ export const getMainSteps = (): WizardStepConfig[] => {
  */
 export const getSubsteps = (parentStep: WizardStep): WizardStepConfig[] => {
   return Object.values(WIZARD_STEPS_CONFIG)
-    .filter(step => step.isSubstep && step.parentStep === parentStep)
+    .filter((step) => step.isSubstep && step.parentStep === parentStep)
     .sort((a, b) => a.order - b.order);
 };
 
@@ -194,5 +194,5 @@ export const isSubstep = (step: WizardStep): boolean => {
  */
 export const getParentStep = (step: WizardStep): WizardStep | null => {
   const parentStepId = WIZARD_STEPS_CONFIG[step].parentStep;
-  return parentStepId ? parentStepId as WizardStep : null;
+  return parentStepId ? (parentStepId as WizardStep) : null;
 };

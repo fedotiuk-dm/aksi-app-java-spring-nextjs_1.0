@@ -13,10 +13,7 @@ interface LoginFormProps {
 /**
  * Компонент форми входу користувача у систему
  */
-export const LoginForm: React.FC<LoginFormProps> = ({
-  onSuccess,
-  redirectTo = '/dashboard',
-}) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, redirectTo = '/dashboard' }) => {
   const [formData, setFormData] = useState<LoginRequest>({
     username: '',
     password: '',
@@ -34,7 +31,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       await login(formData, redirectTo);
       if (onSuccess) {
@@ -52,7 +49,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           {error}
         </Alert>
       )}
-      
+
       <Grid container spacing={2}>
         <Grid size={12}>
           <TextField
@@ -69,7 +66,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             disabled={isLoading}
           />
         </Grid>
-        
+
         <Grid size={12}>
           <TextField
             margin="normal"
@@ -85,7 +82,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             disabled={isLoading}
           />
         </Grid>
-        
+
         <Grid size={12}>
           <Button
             type="button"

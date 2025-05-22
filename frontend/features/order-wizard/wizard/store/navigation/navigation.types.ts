@@ -15,7 +15,7 @@ export enum WizardStep {
   ITEM_PROPERTIES = 'item-properties',
   DEFECTS_STAINS = 'defects-stains',
   PRICE_CALCULATOR = 'price-calculator',
-  PHOTO_DOCUMENTATION = 'photo-documentation'
+  PHOTO_DOCUMENTATION = 'photo-documentation',
 }
 
 /**

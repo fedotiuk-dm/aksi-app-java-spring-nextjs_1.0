@@ -18,7 +18,7 @@ export const validationStateSchema = z.record(
   z.object({
     isValid: z.boolean(),
     isValidated: z.boolean(),
-    errors: validationErrorsSchema.optional()
+    errors: validationErrorsSchema.optional(),
   })
 );
 
@@ -38,7 +38,7 @@ export const isStepValid = (state: ValidationState, step: WizardStep): boolean =
   if (!state[step]) {
     return true; // Якщо немає інформації про валідацію, вважаємо крок валідним
   }
-  
+
   return state[step].isValid || !state[step].isValidated;
 };
 
@@ -79,11 +79,11 @@ export const formatZodErrors = (zodErrors: z.ZodFormattedError<unknown>): Valida
  */
 export const createInitialValidationState = (): ValidationState => {
   const steps = Object.values(WizardStep);
-  
+
   return steps.reduce((acc, step) => {
     acc[step] = {
       isValid: false,
-      isValidated: false
+      isValidated: false,
     };
     return acc;
   }, {} as ValidationState);

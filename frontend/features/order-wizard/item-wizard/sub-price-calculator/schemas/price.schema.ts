@@ -11,7 +11,7 @@ export const itemPriceSchema = z.object({
   discountPercentage: percentageNumber.optional(),
   additionalChargePercentage: percentageNumber.optional(),
   additionalChargeReason: shortText.optional(),
-  totalPrice: priceNumber
+  totalPrice: priceNumber,
 });
 
 /**
@@ -20,7 +20,7 @@ export const itemPriceSchema = z.object({
 export const itemDiscountSchema = z.object({
   itemId: z.string().uuid(),
   discountPercentage: percentageNumber.default(0),
-  discountReason: shortText.optional()
+  discountReason: shortText.optional(),
 });
 
 /**
@@ -31,7 +31,7 @@ export const itemPriceFormSchema = z.object({
   quantity: itemPriceSchema.shape.quantity,
   discountPercentage: itemPriceSchema.shape.discountPercentage,
   additionalChargePercentage: itemPriceSchema.shape.additionalChargePercentage,
-  additionalChargeReason: itemPriceSchema.shape.additionalChargeReason
+  additionalChargeReason: itemPriceSchema.shape.additionalChargeReason,
 });
 
 /**

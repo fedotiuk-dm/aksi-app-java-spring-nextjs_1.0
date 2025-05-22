@@ -49,10 +49,10 @@ declare module '@mui/material/Typography' {
 
 // Розширення для Grid у MUI v7
 declare module '@mui/material/Grid' {
-  import * as React from 'react';
-  import { SystemProps } from '@mui/system';
   import { Theme } from '@mui/material/styles';
-  import { SxProps } from '@mui/system';
+  import * as React from 'react';
+
+  import type { SxProps } from '@mui/material/styles';
 
   type GridDirection = 'row' | 'row-reverse' | 'column' | 'column-reverse';
   type GridSpacing = number | string;
@@ -67,7 +67,15 @@ declare module '@mui/material/Grid' {
     xl?: GridSize;
   }
 
-  interface GridProps extends SystemProps {
+  interface GridOffsetObject {
+    xs?: GridSize | 'auto';
+    sm?: GridSize | 'auto';
+    md?: GridSize | 'auto';
+    lg?: GridSize | 'auto';
+    xl?: GridSize | 'auto';
+  }
+
+  interface GridProps {
     children?: React.ReactNode;
     container?: boolean;
     direction?: GridDirection;
@@ -75,9 +83,14 @@ declare module '@mui/material/Grid' {
     spacing?: GridSpacing | Record<string, GridSpacing>;
     rowSpacing?: GridSpacing | Record<string, GridSpacing>;
     columnSpacing?: GridSpacing | Record<string, GridSpacing>;
+    columns?: number;
     size?: GridSize | GridSizeObject;
-    offset?: GridSize | GridSizeObject | 'auto';
+    offset?: GridSize | 'auto' | GridOffsetObject;
     sx?: SxProps<Theme>;
+    display?: string;
+    justifyContent?: string;
+    alignItems?: string;
+    minHeight?: number | string;
   }
 
   const Grid: React.FC<GridProps>;

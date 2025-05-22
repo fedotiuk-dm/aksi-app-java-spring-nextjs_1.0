@@ -18,7 +18,7 @@ export const StepContainer: React.FC<StepContainerProps> = ({
   title,
   children,
   subtitle,
-  className
+  className,
 }) => {
   return (
     <Box className={className}>

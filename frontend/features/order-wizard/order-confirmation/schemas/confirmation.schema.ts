@@ -7,19 +7,19 @@ import { longText } from '@features/order-wizard/shared';
  */
 export const orderConfirmationSchema = z.object({
   termsAccepted: z.boolean().refine((val) => val === true, {
-    message: 'Необхідно погодитись з умовами обслуговування'
+    message: 'Необхідно погодитись з умовами обслуговування',
   }),
-  signatureData: z.string().min(1, 'Підпис обов\'язковий'),
+  signatureData: z.string().min(1, "Підпис обов'язковий"),
   sendReceiptByEmail: z.boolean().default(false),
   generatePrintableReceipt: z.boolean().default(true),
-  comments: longText.optional()
+  comments: longText.optional(),
 });
 
 /**
  * Схема для цифрового підпису
  */
 export const signatureSchema = z.object({
-  signatureData: z.string().min(1, 'Підпис обов\'язковий')
+  signatureData: z.string().min(1, "Підпис обов'язковий"),
 });
 
 /**
@@ -29,7 +29,7 @@ export const orderConfirmationFormSchema = z.object({
   termsAccepted: orderConfirmationSchema.shape.termsAccepted,
   sendReceiptByEmail: orderConfirmationSchema.shape.sendReceiptByEmail,
   generatePrintableReceipt: orderConfirmationSchema.shape.generatePrintableReceipt,
-  comments: orderConfirmationSchema.shape.comments
+  comments: orderConfirmationSchema.shape.comments,
 });
 
 /**

@@ -1,5 +1,13 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, ThemeOptions } from '@mui/material/styles';
 import { Geist } from 'next/font/google';
+
+// Завантаження шрифту Geist із Google Fonts
+export const geistSans = Geist({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  fallback: ['sans-serif'],
+});
 
 // Основні кольори додатку
 const colors = {
@@ -36,14 +44,8 @@ const colors = {
   },
 };
 
-const geistSans = Geist({
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-  fallback: ['sans-serif'],
-});
-
-export const theme = createTheme({
+// Конфігурація теми
+const themeOptions: ThemeOptions = {
   palette: {
     primary: colors.primary,
     secondary: colors.secondary,
@@ -150,4 +152,7 @@ export const theme = createTheme({
       },
     },
   },
-});
+};
+
+// Створення темою із типізованою конфігурацією
+export const theme = createTheme(themeOptions);

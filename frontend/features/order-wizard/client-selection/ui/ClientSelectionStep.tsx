@@ -7,7 +7,7 @@ import { ClientResponse } from '@/lib/api';
 
 // Імпорти з відповідних шарів згідно FSD
 import { useWizardNavigation } from '../../wizard/hooks';
-import { useClientForm, useClientSearch } from '../hooks';
+import { useClientForm } from '../hooks';
 import ClientForm from './ClientForm';
 import ClientList from './ClientList';
 import ClientSearchForm from './ClientSearchForm';
@@ -18,7 +18,7 @@ import { useClientStore } from '../model/store';
  */
 export const ClientSelectionStep: React.FC = () => {
   // Хуки для взаємодії з API та стейт-менеджментом
-  const { selectedClient, selectClient, getClientDataForWizard } = useClientStore();
+  const { selectedClient, selectClient } = useClientStore();
   const { goForward } = useWizardNavigation();
 
   // Локальний стан компонента (тільки для UI)
@@ -26,7 +26,7 @@ export const ClientSelectionStep: React.FC = () => {
   const [clientToEdit, setClientToEdit] = useState<ClientResponse | null>(null);
 
   // Хук для роботи з формою клієнта (model-шар)
-  const { onSubmit, isSubmitting, error } = useClientForm({
+  const {} = useClientForm({
     type: clientToEdit ? 'edit' : 'create',
     onSuccess: (client) => {
       handleClientSelect(client);
@@ -41,9 +41,6 @@ export const ClientSelectionStep: React.FC = () => {
     selectClient(client);
     setClientToEdit(null);
     setShowCreateForm(false);
-
-    // Логуємо доступні дані для глобального стану візарда
-    console.log('Клієнт обраний, доступний для наступних кроків:', getClientDataForWizard());
   };
 
   // Обробка редагування клієнта
@@ -55,8 +52,6 @@ export const ClientSelectionStep: React.FC = () => {
   // Перехід на наступний крок
   const handleNext = () => {
     if (selectedClient) {
-      // Перед переходом логуємо дані клієнта
-      console.log('Дані клієнта перед переходом:', getClientDataForWizard());
       goForward();
     }
   };

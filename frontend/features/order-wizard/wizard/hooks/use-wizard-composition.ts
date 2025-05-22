@@ -66,6 +66,6 @@ export const useWizardComposition = () => {
     // Додаткові методи для композиції
     validateAndProceed,
     markValidAndProceed,
-    resetWizard
+    resetWizard,
   };
 };

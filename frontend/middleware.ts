@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { jwtDecode } from 'jwt-decode';
+import { NextRequest, NextResponse } from 'next/server';
+
 import { JwtPayload, UserRole } from '@/features/auth/model/types';
 
 // Публічні шляхи, які не потребують автентифікації
@@ -14,11 +15,7 @@ const publicPaths = [
 // Перевірка, чи шлях є публічним
 const isPublic = (path: string) => {
   // Перевіряємо точний збіг або чи починається з публічного шляху
-  if (
-    publicPaths.some(
-      (publicPath) => path === publicPath || path.startsWith(`${publicPath}/`)
-    )
-  ) {
+  if (publicPaths.some((publicPath) => path === publicPath || path.startsWith(`${publicPath}/`))) {
     return true;
   }
 
@@ -67,10 +64,7 @@ export async function middleware(request: NextRequest) {
   if (!authToken || !isTokenValid(authToken)) {
     // Якщо це API запит, повертаємо помилку "Unauthorized"
     if (path.startsWith('/api/')) {
-      return NextResponse.json(
-        { message: 'Необхідно авторизуватися' },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: 'Необхідно авторизуватися' }, { status: 401 });
     }
 
     // Інакше, перенаправляємо на сторінку логіну з вказанням callback URL
@@ -92,10 +86,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Розділи менеджера - для ADMIN та MANAGER
-    if (
-      path.startsWith('/manager') &&
-      ![UserRole.ADMIN, UserRole.MANAGER].includes(userRole)
-    ) {
+    if (path.startsWith('/manager') && ![UserRole.ADMIN, UserRole.MANAGER].includes(userRole)) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 

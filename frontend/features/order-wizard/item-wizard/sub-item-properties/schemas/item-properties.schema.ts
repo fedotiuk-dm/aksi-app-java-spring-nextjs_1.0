@@ -10,7 +10,7 @@ export const itemPropertiesSchema = z.object({
   material: shortText.optional(),
   fillerType: z.string().optional(),
   fillerCompressed: z.boolean().default(false),
-  wearDegree: z.string().optional()
+  wearDegree: z.string().optional(),
 });
 
 /**

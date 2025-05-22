@@ -1,26 +1,16 @@
-/**
- * Тип для помилки валідації поля
- */
-interface FieldValidationError {
-  message?: string;
-  type?: string;
-}
-
-/**
- * Тип для помилок валідації форми
- */
-type FormErrors<T> = Record<string, FieldValidationError | undefined>;
+import {
+  ValidationErrors,
+  hasFieldError as hasError,
+  getFieldError,
+} from '../../shared/schemas/common.schema';
 
 /**
  * Перевіряє наявність помилок у конкретному полі
  * @param errors Об'єкт помилок з React Hook Form
  * @param fieldName Назва поля
  */
-export function hasFieldError<T extends Record<string, any>>(
-  errors: FormErrors<T>,
-  fieldName: keyof T
-): boolean {
-  return !!errors[fieldName as string];
+export function hasFieldError(errors: ValidationErrors, fieldName: string): boolean {
+  return hasError(errors, fieldName);
 }
 
 /**
@@ -28,33 +18,34 @@ export function hasFieldError<T extends Record<string, any>>(
  * @param errors Об'єкт помилок з React Hook Form
  * @param fieldName Назва поля
  */
-export function getFieldErrorMessage<T extends Record<string, any>>(
-  errors: FormErrors<T>,
-  fieldName: keyof T
+export function getFieldErrorMessage(
+  errors: ValidationErrors,
+  fieldName: string
 ): string | undefined {
-  const error = errors[fieldName as string];
-  if (!error) return undefined;
-
-  // Повертаємо повідомлення про помилку
-  return error.message;
+  return getFieldError(errors, fieldName) || undefined;
 }
 
 /**
  * Форматує список помилок валідації для відображення у компоненті Alert
  * @param errors Об'єкт помилок з React Hook Form
  */
-export function formatValidationErrors<T extends Record<string, any>>(
-  errors: FormErrors<T>
-): string[] {
+export function formatValidationErrors(errors: ValidationErrors): string[] {
   const result: string[] = [];
 
-  // Перебираємо всі поля з помилками та додаємо їх у результат
-  Object.entries(errors).forEach(([field, error]) => {
-    if (error && error.message) {
-      result.push(error.message);
-    }
-  });
+  // Функція для рекурсивного проходження по об'єкту помилок
+  const processErrors = (errObj: ValidationErrors, prefix = ''): void => {
+    Object.entries(errObj).forEach(([field, error]) => {
+      const fieldName = prefix ? `${prefix}.${field}` : field;
 
+      if (typeof error === 'string') {
+        result.push(`${field}: ${error}`);
+      } else if (error && typeof error === 'object') {
+        processErrors(error as ValidationErrors, fieldName);
+      }
+    });
+  };
+
+  processErrors(errors);
   return result;
 }
 

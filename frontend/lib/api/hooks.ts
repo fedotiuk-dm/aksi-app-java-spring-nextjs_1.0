@@ -1,9 +1,9 @@
-import { 
-  useMutation, 
-  useQuery, 
-  UseQueryOptions, 
+import {
+  useMutation,
+  useQuery,
+  UseQueryOptions,
   UseMutationOptions,
-  QueryClient
+  QueryClient,
 } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { ApiError } from './generated';
@@ -29,8 +29,8 @@ export function configureQueryClient(queryClient: QueryClient) {
         if (error instanceof ApiError) {
           toast.error(error.message || 'Помилка при виконанні запиту');
         }
-      }
-    }
+      },
+    },
   });
 }
 

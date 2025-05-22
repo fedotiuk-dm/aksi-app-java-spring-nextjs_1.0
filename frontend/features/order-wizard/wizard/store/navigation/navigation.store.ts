@@ -1,11 +1,7 @@
 import { create } from 'zustand';
 
 import { initialNavigationState } from './navigation.initial';
-import {
-  NavigationStore,
-  WizardStep,
-  StepHistoryEntry
-} from './navigation.types';
+import { NavigationStore, WizardStep, StepHistoryEntry } from './navigation.types';
 
 /**
  * Store для навігації між кроками OrderWizard
@@ -35,14 +31,14 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
     // Створюємо новий запис в історії
     const historyEntry: StepHistoryEntry = {
       step,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     set((state) => ({
       currentStep: step,
       stepHistory: [...state.stepHistory, historyEntry],
       isBackAllowed: true, // Після переходу на новий крок завжди можна вернутися
-      isForwardAllowed: false // Стан forward буде оновлено через валідацію
+      isForwardAllowed: false, // Стан forward буде оновлено через валідацію
     }));
   },
 
@@ -65,7 +61,7 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
       currentStep: previousStep,
       stepHistory: previousSteps,
       isBackAllowed: previousSteps.length > 1, // Можемо повертатися, якщо є куди
-      isForwardAllowed: true // Оскільки ми повернулися, то можемо йти вперед
+      isForwardAllowed: true, // Оскільки ми повернулися, то можемо йти вперед
     });
   },
 
@@ -124,14 +120,14 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
     // Створюємо новий запис в історії
     const historyEntry: StepHistoryEntry = {
       step: nextStep,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     set((state) => ({
       currentStep: nextStep,
       stepHistory: [...state.stepHistory, historyEntry],
       isBackAllowed: true,
-      isForwardAllowed: false // Буде оновлено через валідацію
+      isForwardAllowed: false, // Буде оновлено через валідацію
     }));
   },
 
@@ -146,9 +142,9 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
       stepHistory: [
         {
           step: WizardStep.ITEM_BASIC_INFO,
-          timestamp: Date.now()
-        }
-      ]
+          timestamp: Date.now(),
+        },
+      ],
     });
 
     // Активуємо перший крок, інші будуть активовані по мірі заповнення
@@ -159,8 +155,8 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
         [WizardStep.ITEM_PROPERTIES]: false,
         [WizardStep.DEFECTS_STAINS]: false,
         [WizardStep.PRICE_CALCULATOR]: false,
-        [WizardStep.PHOTO_DOCUMENTATION]: false
-      }
+        [WizardStep.PHOTO_DOCUMENTATION]: false,
+      },
     }));
   },
 
@@ -180,9 +176,9 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
       stepHistory: [
         {
           step: WizardStep.ITEM_MANAGER,
-          timestamp: Date.now()
-        }
-      ]
+          timestamp: Date.now(),
+        },
+      ],
     });
   },
 
@@ -193,8 +189,8 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
     set((state) => ({
       availability: {
         ...state.availability,
-        [step]: isAvailable
-      }
+        [step]: isAvailable,
+      },
     }));
   },
 
@@ -203,5 +199,5 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
    */
   resetNavigation: () => {
     set(initialNavigationState);
-  }
+  },
 }));

@@ -197,8 +197,12 @@ public class AuthService {
     private Map<String, String> generateTokenPair(UserEntity user) {
         Map<String, String> tokens = new HashMap<>();
 
-        // Генерація JWT токена
-        tokens.put("accessToken", jwtUtils.generateToken(user));
+        // Додавання ролі користувача до claims
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRole().name());
+
+        // Генерація JWT токена з роллю
+        tokens.put("accessToken", jwtUtils.generateToken(claims, user));
 
         // Генерація refresh токена
         tokens.put("refreshToken", jwtUtils.generateRefreshToken(user));

@@ -8,11 +8,12 @@ import { useWizardValidation } from './use-wizard-validation';
 import { WizardStep } from '../store/navigation/navigation.types';
 import { ValidationErrors } from '../store/validation';
 
-
 /**
  * Функція для конвертації помилок Zod у формат ValidationErrors
  */
-function zodErrorsToValidationErrors<T>(zodErrors: z.ZodFormattedError<T, string> | Record<string, unknown>): ValidationErrors {
+function zodErrorsToValidationErrors<T>(
+  zodErrors: z.ZodFormattedError<T, string> | Record<string, unknown>
+): ValidationErrors {
   // Створюємо результат
   const result: ValidationErrors = {};
 
@@ -57,12 +58,12 @@ export function validateWithZod<T>(
       const formattedErrors = error.format();
       return {
         success: false,
-        errors: zodErrorsToValidationErrors(formattedErrors)
+        errors: zodErrorsToValidationErrors(formattedErrors),
       };
     }
     return {
       success: false,
-      errors: { _errors: ['Невідома помилка валідації'] }
+      errors: { _errors: ['Невідома помилка валідації'] },
     };
   }
 }
@@ -108,7 +109,9 @@ interface ZodValidationWrapperProps<T extends Record<string, unknown>> {
 /**
  * Компонент-обгортка для інтеграції Zod валідації з майстром
  */
-export function ZodValidationWrapper<T extends Record<string, unknown>>(props: ZodValidationWrapperProps<T>) {
+export function ZodValidationWrapper<T extends Record<string, unknown>>(
+  props: ZodValidationWrapperProps<T>
+) {
   const { schema, data, children } = props;
   useZodValidation<T>(schema, data);
 

@@ -77,9 +77,7 @@ export interface PageResponse<T> {
  * Адаптує формат відповіді з бекенду до зручного для використання на фронтенді
  * Типізований коректно для роботи з будь-яким типом Page з OpenAPI
  */
-export const adaptPageResponse = <T, P extends PageResponse<T>>(
-  response: P
-) => {
+export const adaptPageResponse = <T, P extends PageResponse<T>>(response: P) => {
   return {
     items: response.content || [],
     pagination: {

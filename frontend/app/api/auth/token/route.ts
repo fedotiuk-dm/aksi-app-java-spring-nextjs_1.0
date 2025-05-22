@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 /**
  * API роут для отримання JWT токена для клієнтських OpenAPI запитів
@@ -11,10 +11,7 @@ export async function GET() {
     const authToken = cookieStore.get('auth_token')?.value;
 
     if (!authToken) {
-      return NextResponse.json(
-        { message: 'Не знайдено токен авторизації' },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: 'Не знайдено токен авторизації' }, { status: 401 });
     }
 
     // Повертаємо токен у безпечному форматі

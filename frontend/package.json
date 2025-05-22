@@ -31,9 +31,17 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{js,jsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,md}": ["prettier --write"]
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -57,7 +65,7 @@
     "openapi-typescript-fetch": "^2.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hook-form": "^7.55.0",
+    "react-hook-form": "^7.56.4",
     "react-hot-toast": "^2.5.2",
     "use-immer": "^0.11.0",
     "uuid": "^11.1.0",

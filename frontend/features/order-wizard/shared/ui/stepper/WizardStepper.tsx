@@ -15,11 +15,7 @@ interface WizardStepperProps {
  * @param steps Масив назв кроків
  * @param activeStep Індекс активного кроку
  */
-export const WizardStepper: React.FC<WizardStepperProps> = ({
-  steps,
-  activeStep,
-  className
-}) => {
+export const WizardStepper: React.FC<WizardStepperProps> = ({ steps, activeStep, className }) => {
   return (
     <Box className={className} sx={{ mb: 4 }}>
       <Stepper activeStep={activeStep}>

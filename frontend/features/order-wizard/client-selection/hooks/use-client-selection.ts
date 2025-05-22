@@ -12,27 +12,24 @@ import { clientSelectionSchema, ClientSelection } from '../schemas';
  * Інкапсулює логіку вибору клієнта, зміни режиму та валідацію вибору
  */
 export const useClientSelection = () => {
-  const {
-    mode,
-    selectedClient,
-    selectClient,
-    clearSelectedClient,
-    setMode
-  } = useClientStore();
+  const { mode, selectedClient, selectClient, clearSelectedClient, setMode } = useClientStore();
 
   // Форма для валідації вибору клієнта
   const form = useForm<ClientSelection>({
     resolver: zodResolver(clientSelectionSchema),
     defaultValues: {
-      clientId: selectedClient?.id || ''
-    }
+      clientId: selectedClient?.id || '',
+    },
   });
 
   // Обробник вибору клієнта
-  const handleSelectClient = useCallback((client: ClientResponse) => {
-    selectClient(client);
-    form.setValue('clientId', client.id || '');
-  }, [selectClient, form]);
+  const handleSelectClient = useCallback(
+    (client: ClientResponse) => {
+      selectClient(client);
+      form.setValue('clientId', client.id || '');
+    },
+    [selectClient, form]
+  );
 
   // Обробник скидання вибору клієнта
   const handleClearSelection = useCallback(() => {
@@ -41,13 +38,16 @@ export const useClientSelection = () => {
   }, [clearSelectedClient, form]);
 
   // Обробник зміни режиму
-  const handleSetMode = useCallback((newMode: 'existing' | 'new' | 'edit') => {
-    setMode(newMode);
-    if (newMode === 'new') {
-      clearSelectedClient();
-      form.setValue('clientId', '');
-    }
-  }, [setMode, clearSelectedClient, form]);
+  const handleSetMode = useCallback(
+    (newMode: 'existing' | 'new' | 'edit') => {
+      setMode(newMode);
+      if (newMode === 'new') {
+        clearSelectedClient();
+        form.setValue('clientId', '');
+      }
+    },
+    [setMode, clearSelectedClient, form]
+  );
 
   // Ініціювання редагування вибраного клієнта
   const handleEditSelected = useCallback(() => {
@@ -61,7 +61,7 @@ export const useClientSelection = () => {
     if (!selectedClient) {
       form.setError('clientId', {
         type: 'manual',
-        message: 'Будь ласка, виберіть клієнта'
+        message: 'Будь ласка, виберіть клієнта',
       });
       return false;
     }
@@ -80,6 +80,6 @@ export const useClientSelection = () => {
     confirmSelection,
     isExistingMode: mode === 'existing',
     isNewMode: mode === 'new',
-    isEditMode: mode === 'edit'
+    isEditMode: mode === 'edit',
   };
 };

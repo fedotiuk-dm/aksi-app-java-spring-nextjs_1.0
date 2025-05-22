@@ -1,12 +1,7 @@
 import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
 import { AuthenticationService, OpenAPI } from '@/lib/api';
-import {
-  AuthUser,
-  JwtPayload,
-  UserRole,
-  convertToAuthUser,
-} from '../model/types';
+import { AuthUser, JwtPayload, UserRole, convertToAuthUser } from '../model/types';
 import type { LoginRequest } from '@/lib/api/generated/models/LoginRequest';
 import type { RegisterRequest } from '@/lib/api/generated/models/RegisterRequest';
 

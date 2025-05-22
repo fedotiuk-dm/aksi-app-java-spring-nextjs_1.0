@@ -1,6 +1,6 @@
 /**
  * Правила формування API URL в проекті:
- * 
+ *
  * 1. Важливо! Spring Boot має контекстний шлях /api
  *
  * 2. Для запитів з Next.js API роутів до бекенду:
@@ -15,13 +15,13 @@
 // Контекстний шлях API - Spring Boot налаштований з /api префіксом
 
 // URL для серверних запитів (Next.js API → Java Backend)
-export const SERVER_API_URL = 
+export const SERVER_API_URL =
   // Використовуємо змінну середовища, якщо вона визначена, інакше використовуємо значення за замовчуванням
-  process.env.NEXT_PUBLIC_API_URL 
+  process.env.NEXT_PUBLIC_API_URL
     ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') // Видаляємо '/api' з кінця для формування базового URL
-    : (process.env.NODE_ENV === 'production'
+    : process.env.NODE_ENV === 'production'
       ? 'http://backend:8080' // Docker service name in production
-      : 'http://localhost:8080'); // Local development
+      : 'http://localhost:8080'; // Local development
 
 /**
  * Отримати базовий URL сервера API
@@ -37,7 +37,9 @@ export const getServerApiUrl = (): string => {
  */
 export const getFullApiUrl = (path: string): string => {
   // Перевіряємо, чи шлях уже містить /api
-  const apiPath = path.startsWith('/api') ? path : `/api${path.startsWith('/') ? path : `/${path}`}`;
+  const apiPath = path.startsWith('/api')
+    ? path
+    : `/api${path.startsWith('/') ? path : `/${path}`}`;
   return `${SERVER_API_URL}${apiPath}`;
 };
 

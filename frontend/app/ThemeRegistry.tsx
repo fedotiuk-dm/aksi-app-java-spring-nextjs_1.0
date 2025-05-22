@@ -8,4 +8,3 @@ import { ThemeRegistry as LibThemeRegistry } from '@/lib/theme-registry';
 export default function ThemeRegistry({ children }: { children: React.ReactNode }) {
   return <LibThemeRegistry>{children}</LibThemeRegistry>;
 }
-

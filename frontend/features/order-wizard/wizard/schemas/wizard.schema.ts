@@ -7,7 +7,10 @@ import { itemBasicFormSchema } from '../../item-wizard/sub-basic-info/schemas';
 import { defectsStainsFormSchema } from '../../item-wizard/sub-defects-stains/schemas';
 import { itemPropertiesFormSchema } from '../../item-wizard/sub-item-properties/schemas';
 import { itemPhotoUploadFormSchema } from '../../item-wizard/sub-photo-documentation/schemas';
-import { orderDiscountFormSchema, prepaymentFormSchema } from '../../item-wizard/sub-price-calculator/schemas';
+import {
+  orderDiscountFormSchema,
+  prepaymentFormSchema,
+} from '../../item-wizard/sub-price-calculator/schemas';
 import { orderConfirmationFormSchema } from '../../order-confirmation/schemas';
 import { WizardStep } from '../store/navigation/navigation.types';
 
@@ -19,13 +22,13 @@ export const wizardStateSchema = z.object({
   clientData: z.object({
     mode: z.enum(['existing', 'new']),
     clientId: z.string().uuid().optional(),
-    client: z.record(z.unknown()).optional()
+    client: z.record(z.unknown()).optional(),
   }),
 
   // Дані для філії, заповнюються на кроці BRANCH_SELECTION
   branchData: z.object({
     branchId: z.string().uuid().optional(),
-    branch: z.record(z.unknown()).optional()
+    branch: z.record(z.unknown()).optional(),
   }),
 
   // Основні дані замовлення, заповнюються на кроці BASIC_INFO
@@ -37,7 +40,7 @@ export const wizardStateSchema = z.object({
     express: z.boolean().optional(),
     customerNotes: z.string().optional(),
     internalNotes: z.string().optional(),
-    termsAccepted: z.boolean().optional()
+    termsAccepted: z.boolean().optional(),
   }),
 
   // Предмети замовлення, заповнюються на кроках ITEM_*
@@ -51,12 +54,14 @@ export const wizardStateSchema = z.object({
     totalAmount: z.number().optional(),
     discountAmount: z.number().optional(),
     finalAmount: z.number().optional(),
-    discountType: z.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']).optional(),
+    discountType: z
+      .enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM'])
+      .optional(),
     discountPercentage: z.number().optional(),
     discountDescription: z.string().optional(),
     prepaymentAmount: z.number().optional(),
     paymentMethod: z.enum(['CASH', 'CARD', 'TRANSFER']).optional(),
-    balanceAmount: z.number().optional()
+    balanceAmount: z.number().optional(),
   }),
 
   // Дані підтвердження, заповнюються на кроці ORDER_CONFIRMATION
@@ -65,8 +70,8 @@ export const wizardStateSchema = z.object({
     sendReceiptByEmail: z.boolean().optional(),
     generatePrintableReceipt: z.boolean().optional(),
     comments: z.string().optional(),
-    signatureData: z.string().optional()
-  })
+    signatureData: z.string().optional(),
+  }),
 });
 
 /**
@@ -82,9 +87,9 @@ export const WIZARD_STEP_SCHEMAS: Partial<Record<WizardStep, z.ZodType<unknown>>
   [WizardStep.PHOTO_DOCUMENTATION]: itemPhotoUploadFormSchema,
   [WizardStep.PRICE_CALCULATOR]: z.object({
     discount: orderDiscountFormSchema,
-    prepayment: prepaymentFormSchema.optional()
+    prepayment: prepaymentFormSchema.optional(),
   }),
-  [WizardStep.ORDER_CONFIRMATION]: orderConfirmationFormSchema
+  [WizardStep.ORDER_CONFIRMATION]: orderConfirmationFormSchema,
 };
 
 /**
@@ -97,7 +102,10 @@ export const getStepSchema = (step: WizardStep): z.ZodType<unknown> => {
 /**
  * Утиліта для валідації даних кроку
  */
-export const validateStepData = (step: WizardStep, data: unknown): { success: boolean; errors?: z.ZodFormattedError<unknown> } => {
+export const validateStepData = (
+  step: WizardStep,
+  data: unknown
+): { success: boolean; errors?: z.ZodFormattedError<unknown> } => {
   const schema = getStepSchema(step);
 
   try {
@@ -107,7 +115,7 @@ export const validateStepData = (step: WizardStep, data: unknown): { success: bo
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        errors: error.format()
+        errors: error.format(),
       };
     }
     return { success: false, errors: { _errors: ['Невідома помилка валідації'] } };

@@ -15,7 +15,7 @@ export const clientSourceOptions = [
  */
 export const getClientSourceLabel = (sourceValue?: string): string => {
   if (!sourceValue) return '';
-  
-  const source = clientSourceOptions.find(option => option.value === sourceValue);
+
+  const source = clientSourceOptions.find((option) => option.value === sourceValue);
   return source?.label || '';
 };

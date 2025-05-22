@@ -43,12 +43,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
   return (
     <Stack direction="row" spacing={2} className={className}>
       {onCancel && (
-        <Button
-          variant="text"
-          color="error"
-          onClick={onCancel}
-          size={buttonSize}
-        >
+        <Button variant="text" color="error" onClick={onCancel} size={buttonSize}>
           {cancelLabel}
         </Button>
       )}
@@ -62,23 +57,13 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
       <div style={{ flexGrow: 1 }} />
 
       {!hideBackButton && onBack && (
-        <Button
-          variant="outlined"
-          onClick={onBack}
-          disabled={isBackDisabled}
-          size={buttonSize}
-        >
+        <Button variant="outlined" onClick={onBack} disabled={isBackDisabled} size={buttonSize}>
           {backLabel}
         </Button>
       )}
 
       {!hideNextButton && onNext && (
-        <Button
-          variant="contained"
-          onClick={onNext}
-          disabled={isNextDisabled}
-          size={buttonSize}
-        >
+        <Button variant="contained" onClick={onNext} disabled={isNextDisabled} size={buttonSize}>
           {nextLabel}
         </Button>
       )}

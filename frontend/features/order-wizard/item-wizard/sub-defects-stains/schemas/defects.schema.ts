@@ -12,7 +12,7 @@ export const defectsStainsSchema = z.object({
   defectsAndRisks: longText.optional(),
   noGuaranteeReason: longText.optional(),
   defectsNotes: longText.optional(),
-  specialInstructions: longText.optional()
+  specialInstructions: longText.optional(),
 });
 
 /**

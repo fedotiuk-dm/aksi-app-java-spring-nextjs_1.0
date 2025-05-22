@@ -11,7 +11,7 @@ export const itemPhotoSchema = z.object({
   fileUrl: z.string().url('Невірний формат URL фото').optional(),
   thumbnailUrl: z.string().url('Невірний формат URL мініатюри').optional(),
   description: shortText.optional(),
-  annotations: z.string().optional()
+  annotations: z.string().optional(),
 });
 
 /**
@@ -20,7 +20,7 @@ export const itemPhotoSchema = z.object({
 export const itemPhotoUploadFormSchema = z.object({
   itemId: uuidSchema,
   file: z.instanceof(File, { message: 'Виберіть файл для завантаження' }),
-  description: shortText.optional()
+  description: shortText.optional(),
 });
 
 /**

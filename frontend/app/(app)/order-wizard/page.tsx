@@ -3,7 +3,6 @@ import React from 'react';
 
 import OrderWizard from '@/features/order-wizard/shared/ui/order-wizard';
 
-
 /**
  * Сторінка з майстром створення замовлення
  */

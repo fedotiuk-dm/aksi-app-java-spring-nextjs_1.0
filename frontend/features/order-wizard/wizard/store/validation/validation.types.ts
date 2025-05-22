@@ -4,10 +4,10 @@ import { WizardStep } from '../navigation/navigation.types';
  * Статус валідації окремого кроку
  */
 export enum ValidationStatus {
-  INVALID = 'invalid',     // Дані невалідні, переходити далі не можна
-  VALID = 'valid',         // Дані валідні, можна переходити далі
-  PENDING = 'pending',     // Валідація в процесі (наприклад, асинхронна перевірка)
-  NOT_STARTED = 'not_started' // Валідація ще не починалася (наприклад, для кроків, які ще не були відвідані)
+  INVALID = 'invalid', // Дані невалідні, переходити далі не можна
+  VALID = 'valid', // Дані валідні, можна переходити далі
+  PENDING = 'pending', // Валідація в процесі (наприклад, асинхронна перевірка)
+  NOT_STARTED = 'not_started', // Валідація ще не починалася (наприклад, для кроків, які ще не були відвідані)
 }
 
 /**
@@ -23,8 +23,8 @@ export type ValidationErrors = {
 export type StepValidation = {
   status: ValidationStatus;
   errors: ValidationErrors;
-  isComplete: boolean;     // Чи повністю заповнені обов'язкові поля на цьому кроці
-  timestamp: number;       // Час останньої валідації
+  isComplete: boolean; // Чи повністю заповнені обов'язкові поля на цьому кроці
+  timestamp: number; // Час останньої валідації
 };
 
 /**
@@ -39,8 +39,8 @@ export type ValidationMap = {
  */
 export interface ValidationState {
   validationMap: ValidationMap;
-  isWizardValid: boolean;       // Чи валідний весь візард (всі відвідані кроки)
-  activeValidation: boolean;    // Чи активна валідація в даний момент
+  isWizardValid: boolean; // Чи валідний весь візард (всі відвідані кроки)
+  activeValidation: boolean; // Чи активна валідація в даний момент
 }
 
 /**

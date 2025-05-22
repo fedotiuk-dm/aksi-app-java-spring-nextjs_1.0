@@ -5,7 +5,7 @@ import {
   useValidationStore,
   ValidationStatus,
   StepValidation,
-  ValidationErrors
+  ValidationErrors,
 } from '../store/validation';
 
 /**
@@ -21,7 +21,7 @@ export const useWizardValidation = () => {
     validateStep,
     resetStepValidation,
     resetAllValidation,
-    updateWizardValidStatus
+    updateWizardValidStatus,
   } = useValidationStore();
 
   /**
@@ -59,12 +59,16 @@ export const useWizardValidation = () => {
    * Створення об'єкта валідації для кроку
    */
   const createStepValidation = useCallback(
-    (status: ValidationStatus, errors: ValidationErrors = {}, isComplete: boolean = false): StepValidation => {
+    (
+      status: ValidationStatus,
+      errors: ValidationErrors = {},
+      isComplete: boolean = false
+    ): StepValidation => {
       return {
         status,
         errors,
         isComplete,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     },
     []
@@ -150,6 +154,6 @@ export const useWizardValidation = () => {
     validateStep,
     resetStepValidation,
     resetAllValidation,
-    updateWizardValidStatus
+    updateWizardValidStatus,
   };
 };

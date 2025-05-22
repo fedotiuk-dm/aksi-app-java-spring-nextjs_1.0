@@ -1,6 +1,5 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import {
@@ -9,8 +8,6 @@ import {
   IconButton,
   InputAdornment,
   TextField,
-  useMediaQuery,
-  useTheme,
   Typography,
   Alert,
   Button,
@@ -25,8 +22,6 @@ import { useClientSearch } from '../hooks';
  * Компонент форми пошуку клієнтів
  */
 export const ClientSearchForm: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [showError, setShowError] = useState(false);
 
   // Використовуємо хук для пошуку клієнтів

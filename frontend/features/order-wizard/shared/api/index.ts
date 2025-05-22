@@ -53,4 +53,3 @@ export type {
   PriceListItemDTO as PriceListItemResponse,
   ServiceCategoryDTO as ServiceCategoryResponse,
 };
-

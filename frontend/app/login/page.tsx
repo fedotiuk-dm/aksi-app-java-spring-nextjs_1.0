@@ -1,9 +1,10 @@
 'use client';
 
 import { Box, Container, Paper, Typography } from '@mui/material';
-import { LoginForm } from '@/features/auth/ui/LoginForm';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
+
+import { LoginForm } from '@/features/auth/ui/LoginForm';
 
 /**
  * Сторінка авторизації
@@ -17,9 +18,7 @@ function LoginPageContent() {
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
   // Перевіряємо, щоб callbackUrl не був API маршрутом
-  const safeCallbackUrl = callbackUrl.startsWith('/api/')
-    ? '/dashboard'
-    : callbackUrl;
+  const safeCallbackUrl = callbackUrl.startsWith('/api/') ? '/dashboard' : callbackUrl;
 
   // Захист від прямої відправки POST на /login через встановлення event listener
   useEffect(() => {
@@ -38,10 +37,7 @@ function LoginPageContent() {
     document.addEventListener('submit', interceptFormSubmit as EventListener);
 
     return () => {
-      document.removeEventListener(
-        'submit',
-        interceptFormSubmit as EventListener
-      );
+      document.removeEventListener('submit', interceptFormSubmit as EventListener);
     };
   }, []);
 

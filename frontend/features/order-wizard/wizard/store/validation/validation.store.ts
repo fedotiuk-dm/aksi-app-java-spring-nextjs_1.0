@@ -1,11 +1,7 @@
 import { create } from 'zustand';
 
 import { initialValidationState } from './validation.initial';
-import {
-  ValidationStore,
-  ValidationStatus,
-  StepValidation
-} from './validation.types';
+import { ValidationStore, ValidationStatus, StepValidation } from './validation.types';
 import { WizardStep } from '../navigation';
 
 /**
@@ -23,9 +19,9 @@ export const useValidationStore = create<ValidationStore>((set, get) => ({
     set((state) => ({
       validationMap: {
         ...state.validationMap,
-        [step]: validation
+        [step]: validation,
       },
-      activeValidation: false
+      activeValidation: false,
     }));
 
     // Оновлюємо загальний статус валідації візарда
@@ -50,7 +46,7 @@ export const useValidationStore = create<ValidationStore>((set, get) => ({
         status: forcedStatus,
         errors: currentStep?.errors || {},
         isComplete: forcedStatus === ValidationStatus.VALID,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       get().setStepValidation(step, updatedValidation);
@@ -71,7 +67,7 @@ export const useValidationStore = create<ValidationStore>((set, get) => ({
 
       return {
         validationMap: updatedMap,
-        activeValidation: false
+        activeValidation: false,
       };
     });
 
@@ -86,7 +82,7 @@ export const useValidationStore = create<ValidationStore>((set, get) => ({
     set({
       validationMap: {},
       isWizardValid: false,
-      activeValidation: false
+      activeValidation: false,
     });
   },
 
@@ -109,5 +105,5 @@ export const useValidationStore = create<ValidationStore>((set, get) => ({
     );
 
     set({ isWizardValid: allStepsValid });
-  }
+  },
 }));

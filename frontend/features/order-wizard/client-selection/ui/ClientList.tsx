@@ -145,14 +145,7 @@ export const ClientList: React.FC<ClientListProps> = ({ onClientSelect, onClient
         <Typography variant="body2" color="text.secondary" paragraph>
           За запитом &quot;{search.query}&quot; не знайдено жодного клієнта
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<PersonAddIcon />}
-          onClick={() => {
-            /* Цю логіку має обробляти батьківський компонент */
-          }}
-        >
+        <Button variant="contained" color="primary" startIcon={<PersonAddIcon />}>
           Створити клієнта
         </Button>
       </Paper>

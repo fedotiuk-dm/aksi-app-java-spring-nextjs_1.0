@@ -7,10 +7,10 @@ import { percentageNumber, priceNumber, shortText } from '@features/order-wizard
  */
 export const orderDiscountFormSchema = z.object({
   discountType: z.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM'], {
-    required_error: 'Виберіть тип знижки'
+    required_error: 'Виберіть тип знижки',
   }),
   discountPercentage: percentageNumber.optional(),
-  discountDescription: shortText.optional()
+  discountDescription: shortText.optional(),
 });
 
 /**
@@ -18,7 +18,7 @@ export const orderDiscountFormSchema = z.object({
  */
 export const prepaymentFormSchema = z.object({
   prepaymentAmount: priceNumber.optional(),
-  paymentMethod: z.enum(['CASH', 'CARD', 'TRANSFER']).optional()
+  paymentMethod: z.enum(['CASH', 'CARD', 'TRANSFER']).optional(),
 });
 
 /**

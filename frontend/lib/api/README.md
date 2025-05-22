@@ -22,6 +22,7 @@ import { ClientDTO } from '@/lib/api/generated/models/ClientDTO';
 ### 3. Структура імпортів відповідно до Feature-Sliced Design
 
 - **В хуках API**: імпортуємо сервіси та типи безпосередньо з `@/lib/api`
+
   ```typescript
   // У файлі /features/clients/api/hooks/useClients.ts
   import { ClientsService, ClientDTO } from '@/lib/api';

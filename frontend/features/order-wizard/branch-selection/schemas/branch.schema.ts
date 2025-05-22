@@ -10,7 +10,7 @@ export const branchBaseSchema = z.object({
   address: nonEmptyString.min(5, 'Адреса філії повинна містити мінімум 5 символів'),
   phone: phoneSchema.optional(),
   code: nonEmptyString.min(2, 'Код філії повинен містити мінімум 2 символи'),
-  active: z.boolean().optional()
+  active: z.boolean().optional(),
 });
 
 /**
@@ -19,14 +19,14 @@ export const branchBaseSchema = z.object({
 export const branchSchema = branchBaseSchema.extend({
   id: uuidSchema,
   createdAt: z.string().optional(),
-  updatedAt: z.string().optional()
+  updatedAt: z.string().optional(),
 });
 
 /**
  * Схема для форми вибору філії
  */
 export const branchSelectionFormSchema = z.object({
-  branchId: uuidSchema
+  branchId: uuidSchema,
 });
 
 /**

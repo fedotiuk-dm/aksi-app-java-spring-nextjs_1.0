@@ -16,7 +16,7 @@ interface SignaturePadProps {
 export const SignaturePad: React.FC<SignaturePadProps> = ({
   onSignatureChange,
   className,
-  label = 'Підпис клієнта'
+  label = 'Підпис клієнта',
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -39,7 +39,9 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     context.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const startDrawing = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -150,7 +152,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
           mb: 2,
           width: '100%',
           height: 200,
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
         }}
       >
         <canvas
@@ -169,12 +171,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
       </Paper>
 
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={clearSignature}
-          disabled={!hasSignature}
-        >
+        <Button variant="outlined" color="error" onClick={clearSignature} disabled={!hasSignature}>
           Очистити
         </Button>
       </Stack>

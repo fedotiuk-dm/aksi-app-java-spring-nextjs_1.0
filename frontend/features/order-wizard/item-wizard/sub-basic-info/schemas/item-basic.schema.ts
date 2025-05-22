@@ -11,7 +11,7 @@ export const itemBasicSchema = z.object({
   quantity: positiveNumber.int('Кількість повинна бути цілим числом'),
   unitPrice: priceNumber,
   category: z.string().optional(),
-  unitOfMeasure: z.string().optional()
+  unitOfMeasure: z.string().optional(),
 });
 
 /**

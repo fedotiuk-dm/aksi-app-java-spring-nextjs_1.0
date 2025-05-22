@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { serverAuth } from '@/features/auth/server/serverAuth';
 
 /**
@@ -9,7 +10,7 @@ export async function POST() {
   try {
     // Оновлюємо токен через serverAuth
     const user = await serverAuth.refreshToken();
-    
+
     // Якщо не вдалося оновити токен
     if (!user) {
       return NextResponse.json(
@@ -17,14 +18,14 @@ export async function POST() {
         { status: 401 }
       );
     }
-    
+
     // Токени вже оновлені в cookies через serverAuth.refreshToken
-    
+
     // Повертаємо дані користувача
     return NextResponse.json(user);
   } catch (error: unknown) {
     console.error('Помилка при оновленні токена:', error);
-    
+
     // Повертаємо помилку з відповідним статус-кодом
     return NextResponse.json(
       { message: (error as Error).message || 'Помилка при оновленні токена' },

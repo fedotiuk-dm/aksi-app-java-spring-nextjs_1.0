@@ -20,9 +20,9 @@ interface PhotoUploadProps {
 export const PhotoUpload: React.FC<PhotoUploadProps> = ({
   onPhotosChange,
   maxPhotos = 5,
-  className
+  className,
 }) => {
-  const [photos, setPhotos] = useState<Array<{ file: File, preview: string }>>([]);
+  const [photos, setPhotos] = useState<Array<{ file: File; preview: string }>>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -30,14 +30,14 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
 
       const newPhotos = newFiles.map((file) => ({
         file,
-        preview: URL.createObjectURL(file)
+        preview: URL.createObjectURL(file),
       }));
 
       const updatedPhotos = [...photos, ...newPhotos];
       setPhotos(updatedPhotos);
 
       if (onPhotosChange) {
-        onPhotosChange(updatedPhotos.map(photo => photo.file));
+        onPhotosChange(updatedPhotos.map((photo) => photo.file));
       }
     }
   };
@@ -49,7 +49,7 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
     setPhotos(updatedPhotos);
 
     if (onPhotosChange) {
-      onPhotosChange(updatedPhotos.map(photo => photo.file));
+      onPhotosChange(updatedPhotos.map((photo) => photo.file));
     }
   };
 
@@ -122,7 +122,7 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
                   height: 200,
                   borderRadius: 1,
                   overflow: 'hidden',
-                  boxShadow: 1
+                  boxShadow: 1,
                 }}
               >
                 <Image
@@ -137,7 +137,7 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
                     top: 8,
                     right: 8,
                     bgcolor: 'rgba(255, 255, 255, 0.7)',
-                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' }
+                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' },
                   }}
                   onClick={() => handleDelete(index)}
                   size="small"

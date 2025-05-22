@@ -45,7 +45,7 @@ interface ClientFormProps {
  */
 const ClientForm: React.FC<ClientFormProps> = ({ onSave, onCancel, isEditing = false }) => {
   // Використовуємо хук для форми клієнта
-  const { form, isSubmitting, error, onSubmit, showSourceDetails } = useClientForm({
+  const { form, isSubmitting, error, showSourceDetails, handleSubmit } = useClientForm({
     type: isEditing ? 'edit' : 'create',
     onSuccess: (client) => {
       if (onSave) onSave(client);
@@ -64,7 +64,14 @@ const ClientForm: React.FC<ClientFormProps> = ({ onSave, onCancel, isEditing = f
   });
 
   return (
-    <Box component="form" onSubmit={onSubmit} noValidate>
+    <Box
+      component="form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+      noValidate
+    >
       <Typography variant="h6" gutterBottom>
         {isEditing ? 'Редагування клієнта' : 'Створення нового клієнта'}
       </Typography>

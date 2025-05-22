@@ -24,7 +24,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   const { isLoggedIn, role } = useAuth();
   const setUser = useAuthStore((state) => state.setUser);
   const clearError = useAuthStore((state) => state.clearError);
-  
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -34,17 +34,17 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     // Очищуємо помилки при монтуванні
     clearError();
     setAuthError(null);
-    
+
     const verifySession = async () => {
       try {
         // Перевіряємо сесію користувача через /api/auth/me
-        const response = await fetch('/api/auth/me', { 
+        const response = await fetch('/api/auth/me', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          cache: 'no-store' // важливо: не кешувати цей запит
+          cache: 'no-store', // важливо: не кешувати цей запит
         });
-        
+
         if (response.ok) {
           // Є авторизація - оновлюємо дані користувача в стані
           const userData = await response.json();
@@ -64,10 +64,10 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
         setIsLoading(false);
       }
     };
-    
+
     // Запускаємо перевірку сесії негайно
     verifySession();
-    
+
     return () => {
       // Очищення при розмонтуванні
     };
@@ -84,7 +84,9 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       role &&
       !allowedRoles.includes(role)
     ) {
-      console.log(`Користувач не має необхідної ролі [${role}], потрібна одна з: [${allowedRoles.join(', ')}]`);
+      console.log(
+        `Користувач не має необхідної ролі [${role}], потрібна одна з: [${allowedRoles.join(', ')}]`
+      );
       router.push('/forbidden');
     }
   }, [isLoading, isLoggedIn, router, role, allowedRoles]);
@@ -104,7 +106,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       </Grid>
     );
   }
-  
+
   // Якщо є помилка авторизації
   if (authError) {
     return (

@@ -9,41 +9,59 @@ export const stringSchema = z.string();
 export const numberSchema = z.number();
 export const booleanSchema = z.boolean();
 export const dateSchema = z.string().refine((value) => !isNaN(Date.parse(value)), {
-  message: 'Невірний формат дати'
+  message: 'Невірний формат дати',
 });
 export const uuidSchema = z.string().uuid({
-  message: 'Невірний формат UUID'
+  message: 'Невірний формат UUID',
 });
 
 // Валідаційні правила для тексту
 export const nonEmptyString = z.string().min(1, 'Поле не може бути порожнім');
-export const shortText = z.string().min(1, 'Поле не може бути більшим 100 символів').max(100, 'Текст занадто довгий');
-export const longText = z.string().min(1, 'Поле не може бути більшим 1000 символів').max(1000, 'Текст занадто довгий');
+export const shortText = z
+  .string()
+  .min(1, 'Поле не може бути більшим 100 символів')
+  .max(100, 'Текст занадто довгий');
+export const longText = z
+  .string()
+  .min(1, 'Поле не може бути більшим 1000 символів')
+  .max(1000, 'Текст занадто довгий');
 
 // Валідаційні правила для контактів
-export const emailSchema = z.string().email('Невірний формат email').or(z.string().length(0).optional());
+export const emailSchema = z
+  .string()
+  .email('Невірний формат email')
+  .or(z.string().length(0).optional());
 export const phoneSchema = z.string().regex(/^\+?[0-9]{10,15}$/, 'Невірний формат телефону');
 
 // Валідаційні правила для чисел
 export const positiveNumber = z.number().positive('Число повинно бути більше нуля');
-export const nonNegativeNumber = z.number().min(0, 'Число не може бути від\'ємним');
-export const percentageNumber = z.number().min(0, 'Відсоток не може бути від\'ємним').max(100, 'Відсоток не може бути більше 100');
-export const priceNumber = z.number().min(0, 'Ціна не може бути від\'ємною').max(1000000, 'Ціна занадто велика');
+export const nonNegativeNumber = z.number().min(0, "Число не може бути від'ємним");
+export const percentageNumber = z
+  .number()
+  .min(0, "Відсоток не може бути від'ємним")
+  .max(100, 'Відсоток не може бути більше 100');
+export const priceNumber = z
+  .number()
+  .min(0, "Ціна не може бути від'ємною")
+  .max(1000000, 'Ціна занадто велика');
 
 // Валідаційні правила для дат
 export const pastDate = z.date().refine((date) => date < new Date(), {
-  message: 'Дата повинна бути в минулому'
+  message: 'Дата повинна бути в минулому',
 });
 export const futureDate = z.date().refine((date) => date > new Date(), {
-  message: 'Дата повинна бути в майбутньому'
+  message: 'Дата повинна бути в майбутньому',
 });
-export const todayOrFutureDate = z.date().refine((date) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return date >= today;
-}, {
-  message: 'Дата повинна бути сьогодні або в майбутньому'
-});
+export const todayOrFutureDate = z.date().refine(
+  (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date >= today;
+  },
+  {
+    message: 'Дата повинна бути сьогодні або в майбутньому',
+  }
+);
 
 /**
  * Утиліти для роботи з помилками валідації

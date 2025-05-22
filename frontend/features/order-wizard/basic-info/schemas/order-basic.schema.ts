@@ -1,30 +1,28 @@
 import { z } from 'zod';
 
-import { nonEmptyString, uuidSchema, dateSchema, shortText, longText } from '../../shared/schemas/common.schema';
+import {
+  nonEmptyString,
+  uuidSchema,
+  dateSchema,
+  shortText,
+  longText,
+} from '../../shared/schemas/common.schema';
 
 /**
  * Схема для статусу замовлення
  */
-export const orderStatusSchema = z.enum([
-  'DRAFT',
-  'NEW',
-  'IN_PROGRESS',
-  'COMPLETED',
-  'DELIVERED',
-  'CANCELLED'
-], {
-  errorMap: () => ({ message: 'Виберіть статус замовлення' })
-});
+export const orderStatusSchema = z.enum(
+  ['DRAFT', 'NEW', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED'],
+  {
+    errorMap: () => ({ message: 'Виберіть статус замовлення' }),
+  }
+);
 
 /**
  * Схема для типу терміновості замовлення
  */
-export const expediteTypeSchema = z.enum([
-  'STANDARD',
-  'EXPRESS_48H',
-  'EXPRESS_24H'
-], {
-  errorMap: () => ({ message: 'Виберіть тип терміновості' })
+export const expediteTypeSchema = z.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H'], {
+  errorMap: () => ({ message: 'Виберіть тип терміновості' }),
 });
 
 /**
@@ -46,7 +44,7 @@ export const orderBasicSchema = z.object({
   // Приховані системні поля (для повної сумісності з API)
   clientId: uuidSchema,
   branchLocationId: uuidSchema,
-  status: orderStatusSchema.default('DRAFT')
+  status: orderStatusSchema.default('DRAFT'),
 });
 
 /**
@@ -61,7 +59,7 @@ export const orderBasicFormSchema = z.object({
   express: orderBasicSchema.shape.express,
   customerNotes: orderBasicSchema.shape.customerNotes,
   internalNotes: orderBasicSchema.shape.internalNotes,
-  termsAccepted: orderBasicSchema.shape.termsAccepted
+  termsAccepted: orderBasicSchema.shape.termsAccepted,
 });
 
 /**

@@ -16,8 +16,8 @@ export const orderParametersSchema = z.object({
   balanceAmount: priceNumber.optional(),
   express: z.boolean().default(false),
   expediteType: z.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H'], {
-    errorMap: () => ({ message: 'Виберіть тип терміновості' })
-  })
+    errorMap: () => ({ message: 'Виберіть тип терміновості' }),
+  }),
 });
 
 /**
@@ -28,7 +28,7 @@ export const orderParametersFormSchema = z.object({
   customerNotes: orderParametersSchema.shape.customerNotes,
   internalNotes: orderParametersSchema.shape.internalNotes,
   express: orderParametersSchema.shape.express,
-  expediteType: orderParametersSchema.shape.expediteType
+  expediteType: orderParametersSchema.shape.expediteType,
 });
 
 /**

@@ -98,7 +98,7 @@ export const canNavigateBetweenSteps = (
     WizardStep.ITEM_PROPERTIES,
     WizardStep.DEFECTS_STAINS,
     WizardStep.PRICE_CALCULATOR,
-    WizardStep.PHOTO_DOCUMENTATION
+    WizardStep.PHOTO_DOCUMENTATION,
   ];
 
   // Перехід між підкроками
@@ -125,7 +125,7 @@ export const getNextStepFromState = (
     WizardStep.BASIC_INFO,
     WizardStep.ITEM_MANAGER,
     WizardStep.ORDER_PARAMETERS,
-    WizardStep.ORDER_CONFIRMATION
+    WizardStep.ORDER_CONFIRMATION,
   ];
 
   // Підкроки візарда предметів
@@ -134,7 +134,7 @@ export const getNextStepFromState = (
     WizardStep.ITEM_PROPERTIES,
     WizardStep.DEFECTS_STAINS,
     WizardStep.PRICE_CALCULATOR,
-    WizardStep.PHOTO_DOCUMENTATION
+    WizardStep.PHOTO_DOCUMENTATION,
   ];
 
   // Наступний крок в основному візарді
