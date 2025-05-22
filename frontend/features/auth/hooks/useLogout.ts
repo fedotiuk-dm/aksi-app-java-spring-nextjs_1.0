@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '../store';
+import { useState } from 'react';
+
 import { useLogout as useApiLogout } from '../api';
+import { useAuthStore } from '../store';
 
 /**
  * Хук для виходу користувача із системи

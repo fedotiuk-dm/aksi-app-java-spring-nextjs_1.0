@@ -1,9 +1,12 @@
-import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
+import { cookies } from 'next/headers';
+
 import { AuthenticationService, OpenAPI } from '@/lib/api';
-import { AuthUser, JwtPayload, UserRole, convertToAuthUser } from '../model/types';
-import type { LoginRequest } from '@/lib/api/generated/models/LoginRequest';
-import type { RegisterRequest } from '@/lib/api/generated/models/RegisterRequest';
+
+import { AuthResponse, AuthUser, JwtPayload, UserRole, convertToAuthUser } from '../model/types';
+
+import type { LoginRequest } from '@/lib/api';
+import type { RegisterRequest } from '@/lib/api';
 
 // Налаштовуємо базовий URL для серверних запитів
 // Оскільки виконується в Next.js API роуті, то використовуємо Docker ім'я сервісу
@@ -27,9 +30,12 @@ export const serverAuth = {
       console.log('Виконуємо запит до бекенду для логіну');
 
       // Отримуємо JWT токен від бекенду
-      const authResponse = await AuthenticationService.login({
+      const apiResponse = await AuthenticationService.login({
         requestBody: credentials,
       });
+
+      // Конвертуємо динамічну відповідь API в типізовану AuthResponse
+      const authResponse = apiResponse as unknown as AuthResponse;
 
       if (!authResponse.accessToken || !authResponse.refreshToken) {
         throw new Error('Не отримано токени автентифікації');
@@ -75,9 +81,12 @@ export const serverAuth = {
       console.log('Виконуємо запит для реєстрації');
 
       // Отримуємо JWT токен від бекенду
-      const authResponse = await AuthenticationService.register({
+      const apiResponse = await AuthenticationService.register({
         requestBody: registerData,
       });
+
+      // Конвертуємо динамічну відповідь API в типізовану AuthResponse
+      const authResponse = apiResponse as unknown as AuthResponse;
 
       if (!authResponse.accessToken || !authResponse.refreshToken) {
         throw new Error('Не отримано токени автентифікації');
@@ -126,9 +135,12 @@ export const serverAuth = {
       }
 
       // Викликаємо API для оновлення токену
-      const authResponse = await AuthenticationService.refreshToken({
+      const apiResponse = await AuthenticationService.refreshToken({
         requestBody: refreshToken,
       });
+
+      // Конвертуємо динамічну відповідь API в типізовану AuthResponse
+      const authResponse = apiResponse as unknown as AuthResponse;
 
       if (!authResponse.accessToken) {
         console.warn('Не отримано новий access token');

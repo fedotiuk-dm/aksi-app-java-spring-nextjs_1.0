@@ -41,53 +41,47 @@ export const useClientFormStore = ({ type, onSuccess }: UseClientFormStoreProps)
   /**
    * Обробник для створення клієнта
    */
-  const handleCreateClient = useCallback(
-    async () => {
-      // Виклик акції з стору
-      const result = await storeCreateClient();
+  const handleCreateClient = useCallback(async () => {
+    // Виклик акції з стору
+    const result = await storeCreateClient();
 
-      // Створюємо типізований результат
-      const apiResult: ApiResult = {
-        client: result ? result.client || null : null,
-        errors: result && result.errors ? result.errors : null
-      };
+    // Створюємо типізований результат
+    const apiResult: ApiResult = {
+      client: result ? result.client || null : null,
+      errors: result && result.errors ? result.errors : null,
+    };
 
-      if (apiResult.client && !apiResult.errors && onSuccess) {
-        onSuccess(apiResult.client);
-      }
+    if (apiResult.client && !apiResult.errors && onSuccess) {
+      onSuccess(apiResult.client);
+    }
 
-      return apiResult;
-    },
-    [storeCreateClient, onSuccess]
-  );
+    return apiResult;
+  }, [storeCreateClient, onSuccess]);
 
   /**
    * Обробник для оновлення клієнта
    */
-  const handleUpdateClient = useCallback(
-    async () => {
-      // Перевіряємо, що є обраний клієнт і ID
-      if (!selectedClient?.id) {
-        return { errors: { general: 'Не вибрано клієнта для редагування' }, client: null };
-      }
+  const handleUpdateClient = useCallback(async () => {
+    // Перевіряємо, що є обраний клієнт і ID
+    if (!selectedClient?.id) {
+      return { errors: { general: 'Не вибрано клієнта для редагування' }, client: null };
+    }
 
-      // Виклик акції з стору
-      const result = await storeSaveEditedClient();
+    // Виклик акції з стору
+    const result = await storeSaveEditedClient();
 
-      // Створюємо типізований результат
-      const apiResult: ApiResult = {
-        client: result ? result.client || null : null,
-        errors: result && result.errors ? result.errors : null
-      };
+    // Створюємо типізований результат
+    const apiResult: ApiResult = {
+      client: result ? result.client || null : null,
+      errors: result && result.errors ? result.errors : null,
+    };
 
-      if (apiResult.client && !apiResult.errors && onSuccess) {
-        onSuccess(apiResult.client);
-      }
+    if (apiResult.client && !apiResult.errors && onSuccess) {
+      onSuccess(apiResult.client);
+    }
 
-      return apiResult;
-    },
-    [selectedClient, storeSaveEditedClient, onSuccess]
-  );
+    return apiResult;
+  }, [selectedClient, storeSaveEditedClient, onSuccess]);
 
   /**
    * Обробник для початку редагування клієнта

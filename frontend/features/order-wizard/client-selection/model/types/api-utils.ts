@@ -1,8 +1,4 @@
-import {
-  ClientResponse,
-  CreateClientRequest,
-  UpdateClientRequest,
-} from '@/lib/api';
+import { ClientResponse, CreateClientRequest, UpdateClientRequest } from '@/lib/api';
 
 import { CommunicationChannel, ClientSource } from './common-types';
 import { ClientFormData } from './form-types';
@@ -27,8 +23,8 @@ export function clientResponseToFormData(client: ClientResponse): ClientFormData
     source: Array.isArray(client.source)
       ? client.source.map((s: string) => s as ClientSource)
       : client.source
-      ? [client.source as unknown as ClientSource]
-      : [],
+        ? [client.source as unknown as ClientSource]
+        : [],
     sourceDetails: client.sourceDetails || null,
     isLoading: false,
     error: null,
@@ -84,5 +80,3 @@ function sanitizeEmptyString(value: string | null | undefined): string | null {
   }
   return value;
 }
-
-

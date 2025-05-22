@@ -21,8 +21,8 @@ interface UseClientFormInitializationProps {
  * Хук для ініціалізації форм клієнта
  * Відповідає тільки за створення і налаштування форм
  */
-export const useClientFormInitialization = ({ 
-  type = 'create' 
+export const useClientFormInitialization = ({
+  type = 'create',
 }: UseClientFormInitializationProps = {}) => {
   const { newClient, editClient } = useClientStore();
 

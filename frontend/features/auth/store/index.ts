@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import { AuthUser, UserRole, AuthError } from '../model/types';
 
 interface AuthState {

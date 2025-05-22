@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { Button, CircularProgress } from '@mui/material';
+import React from 'react';
+
 import { useLogout } from '../hooks/useLogout';
 
 interface LogoutButtonProps {

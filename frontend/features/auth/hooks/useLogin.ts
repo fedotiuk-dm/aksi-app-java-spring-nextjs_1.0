@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '../store';
+import { useState } from 'react';
+
 import { useLogin as useApiLogin } from '../api';
-import type { LoginRequest } from '@/lib/api/generated/models/LoginRequest';
+import { useAuthStore } from '../store';
+
+import type { LoginRequest } from '@/lib/api';
 
 /**
  * Клієнтський хук для входу користувача у систему

@@ -1,14 +1,40 @@
-// API
-export * from './api';
+/**
+ * Експорти модуля вибору клієнта
+ * Об'єднує та експортує функціональність для вибору/створення клієнта
+ */
 
-// Hooks
+// UI компоненти
+export * from './ui';
+
+// Реекспортуємо хуки для роботи з клієнтами
 export * from './hooks';
 
-// Model
-export * from './model';
+// Типи та константи з моделі
+export * from './model/types';
+export * from './model/constants';
+export * from './model/client-sources';
 
-// Schemas
-export * from './schemas';
+// Експортуємо стор з його функціями
+export * from './model/store';
 
-// UI
-export * from './ui';
+// Експортуємо тільки схеми валідації з schemas,
+// але не типи (використовуємо типи з model/types)
+export {
+  // Схеми для джерел та каналів
+  clientSourceItemSchema,
+  clientSourceSchema,
+  communicationChannelSchema,
+
+  // Схеми для даних клієнта
+  addressSchema,
+  simpleClientSchema,
+  clientBaseSchema,
+
+  // Схеми для форм
+  clientFormSchema,
+  createClientSchema,
+  editClientSchema,
+  clientSelectionFormSchema,
+  clientSelectionSchema,
+  clientSearchSchema,
+} from './schemas/client.schema';

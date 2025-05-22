@@ -8,7 +8,10 @@ interface FormError {
   message: string;
 }
 
-type FormType = ReturnType<typeof useForm<CreateClient>> | ReturnType<typeof useForm<EditClient>> | ReturnType<typeof useForm<SimpleClient>>;
+type FormType =
+  | ReturnType<typeof useForm<CreateClient>>
+  | ReturnType<typeof useForm<EditClient>>
+  | ReturnType<typeof useForm<SimpleClient>>;
 
 interface UseClientFormValidationProps {
   form: FormType;

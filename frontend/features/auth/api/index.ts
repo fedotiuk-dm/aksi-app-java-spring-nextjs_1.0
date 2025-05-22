@@ -1,6 +1,8 @@
 import { useApiMutation } from '@/lib/api/hooks';
-import type { LoginRequest } from '@/lib/api';
+
 import { AuthUser } from '../model/types';
+
+import type { LoginRequest } from '@/lib/api';
 
 /**
  * Хук для авторизації користувача

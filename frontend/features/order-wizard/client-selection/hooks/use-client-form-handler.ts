@@ -8,7 +8,10 @@ import { arrayIncludes } from '../utils';
 import { useClientFormFieldProcessor } from './use-client-form-field-processor';
 import { ClientFormType } from './use-client-form-types';
 
-type FormType = ReturnType<typeof useForm<CreateClient>> | ReturnType<typeof useForm<EditClient>> | ReturnType<typeof useForm<SimpleClient>>;
+type FormType =
+  | ReturnType<typeof useForm<CreateClient>>
+  | ReturnType<typeof useForm<EditClient>>
+  | ReturnType<typeof useForm<SimpleClient>>;
 
 interface UseClientFormHandlerProps {
   form: FormType;
@@ -30,10 +33,14 @@ export const useClientFormHandler = ({ form, type }: UseClientFormHandlerProps) 
   // Розрахунок showSourceDetails залежно від типу форми
   let showSourceDetails = false;
   if (type === 'create') {
-    const sourceValue = (form as ReturnType<typeof useForm<CreateClient>>).watch('source') as string[] | undefined;
+    const sourceValue = (form as ReturnType<typeof useForm<CreateClient>>).watch('source') as
+      | string[]
+      | undefined;
     showSourceDetails = sourceValue ? arrayIncludes(sourceValue, 'OTHER') : false;
   } else if (type === 'edit') {
-    const sourceValue = (form as ReturnType<typeof useForm<EditClient>>).watch('source') as string[] | undefined;
+    const sourceValue = (form as ReturnType<typeof useForm<EditClient>>).watch('source') as
+      | string[]
+      | undefined;
     showSourceDetails = sourceValue ? arrayIncludes(sourceValue, 'OTHER') : false;
   }
 
@@ -42,10 +49,10 @@ export const useClientFormHandler = ({ form, type }: UseClientFormHandlerProps) 
    */
   const setFormValue = (fieldName: string, value: unknown) => {
     const options = { shouldDirty: true, shouldValidate: true };
-    
+
     if (type === 'create') {
       const typedForm = form as ReturnType<typeof useForm<CreateClient>>;
-      
+
       if (fieldName === 'communicationChannels') {
         typedForm.setValue(fieldName, value as CommunicationChannel[], options);
       } else if (fieldName === 'source') {
@@ -55,7 +62,7 @@ export const useClientFormHandler = ({ form, type }: UseClientFormHandlerProps) 
       }
     } else if (type === 'edit') {
       const typedForm = form as ReturnType<typeof useForm<EditClient>>;
-      
+
       if (fieldName === 'communicationChannels') {
         typedForm.setValue(fieldName, value as CommunicationChannel[], options);
       } else if (fieldName === 'source') {
@@ -72,37 +79,48 @@ export const useClientFormHandler = ({ form, type }: UseClientFormHandlerProps) 
   /**
    * Обробка змін полів форми
    */
-  const handleFieldChange = (
-    field: string,
-    rawValue: unknown
-  ) => {
+  const handleFieldChange = (field: string, rawValue: unknown) => {
     let valueForFormSetValue: unknown;
 
     // Обробка значення залежно від типу поля
     if (field === 'communicationChannels') {
       valueForFormSetValue = fieldProcessor.processCommunicationChannels(
-        rawValue, type, updateNewClientField, updateEditClientField
+        rawValue,
+        type,
+        updateNewClientField,
+        updateEditClientField
       );
     } else if (field === 'source') {
       valueForFormSetValue = fieldProcessor.processSource(
-        rawValue, type, updateNewClientField, updateEditClientField
+        rawValue,
+        type,
+        updateNewClientField,
+        updateEditClientField
       );
     } else if (field === 'address') {
       const addressResult = fieldProcessor.processAddress(
-        rawValue, type, updateNewClientField, updateEditClientField
+        rawValue,
+        type,
+        updateNewClientField,
+        updateEditClientField
       );
       valueForFormSetValue = addressResult.valueForForm;
     } else if (field === 'id') {
-      valueForFormSetValue = fieldProcessor.processIdField(
-        rawValue, type, updateEditClientField
-      );
+      valueForFormSetValue = fieldProcessor.processIdField(rawValue, type, updateEditClientField);
     } else {
       // Привести field до конкретного типу, який очікує processGenericField
-      const genericField = field as Extract<keyof ClientFormData, 'firstName' | 'lastName' | 'phone' | 'email' | 'sourceDetails'>;
+      const genericField = field as Extract<
+        keyof ClientFormData,
+        'firstName' | 'lastName' | 'phone' | 'email' | 'sourceDetails'
+      >;
       valueForFormSetValue = fieldProcessor.processGenericField(
         genericField,
-        rawValue, type, updateNewClientField, updateEditClientField,
-        newClient, editClient
+        rawValue,
+        type,
+        updateNewClientField,
+        updateEditClientField,
+        newClient,
+        editClient
       );
     }
 

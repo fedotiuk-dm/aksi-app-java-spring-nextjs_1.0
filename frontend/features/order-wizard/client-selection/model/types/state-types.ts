@@ -43,4 +43,3 @@ export interface ClientState {
  * Поєднує стан та дії в одному інтерфейсі
  */
 export interface ClientStore extends ClientState, ClientActions {}
-

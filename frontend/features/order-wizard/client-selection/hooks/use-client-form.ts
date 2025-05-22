@@ -10,21 +10,17 @@ import { useClientFormValidation } from './use-client-form-validation';
 import { useClientMutations } from './use-client-mutations';
 
 /**
- * Основний хук для роботи з формою клієнта
- * Об'єднує всі частини для роботи з формою клієнта
- */
-/**
  * Головний хук для роботи з формою клієнта
  * Об'єднує всі складові частини для повної функціональності форми
  */
 export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps = {}) => {
   // Ініціалізація форми
   const { form } = useClientFormInitialization({ type });
-  
+
   // Інтеграція зі стором
-  const { 
+  const {
     selectedClient,
-    newClient, 
+    newClient,
     editClient,
     handleCreateClient: storeHandleCreateClient,
     handleUpdateClient: storeHandleUpdateClient,
@@ -41,20 +37,14 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
     handleFieldChange,
     showSourceDetails,
   } = useClientFormHandler({ form, type });
-  
+
   // Валідація форми
-  const {
-    getValidationErrors,
-    isFormValid,
-    getFieldError,
-    isDirty,
-  } = useClientFormValidation({ form });
+  const { getValidationErrors, isFormValid, getFieldError, isDirty } = useClientFormValidation({
+    form,
+  });
 
   // Хук для роботи з API
-  const {
-    isCreating,
-    isUpdating,
-  } = useClientMutations();
+  const { isCreating, isUpdating } = useClientMutations();
 
   // Обробник для створення клієнта
   const handleCreateClient = useCallback(
@@ -62,23 +52,23 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
       try {
         setIsSubmitting(true);
         setFormError(null);
-        
+
         // Заповнюємо поля форми з даних
         Object.entries(data).forEach(([key, value]) => {
           handleFieldChange(key, value);
         });
-        
+
         // Перевіряємо валідність форми
         if (!isFormValid()) {
           const errors = getValidationErrors();
-          setFormError(`Виправте помилки у формі: ${errors.map(e => e.message).join(', ')}`);
+          setFormError(`Виправте помилки у формі: ${errors.map((e) => e.message).join(', ')}`);
           return;
         }
-        
+
         // Викликаємо створення через стор
         // Функція не приймає аргументів, оскільки вона використовує дані з стору
         const result = await storeHandleCreateClient();
-        
+
         if (result?.errors) {
           // Якщо є помилки валідації полів, встановлюємо їх у формі
           // Якщо є загальна помилка, встановлюємо її як загальну помилку форми
@@ -87,20 +77,38 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
           } else {
             // Встановлюємо помилки валідації для полів
             Object.entries(result.errors).forEach(([field, message]) => {
-              form.setError(field as any, { message });
+              // Перевіряємо, чи поле є допустимим для форми
+              const allowedFields = ['firstName', 'lastName', 'phone', 'email'];
+              if (allowedFields.includes(field)) {
+                form.setError(field as 'firstName' | 'lastName' | 'phone' | 'email', { message });
+              } else {
+                // Якщо поле не дозволене, встановлюємо загальну помилку
+                setFormError(`Помилка в полі ${field}: ${message}`);
+              }
             });
           }
         }
-        
+
         return result;
       } catch (error) {
         setFormError(error instanceof Error ? error.message : 'Помилка при створенні клієнта');
-        return { error: error instanceof Error ? error.message : 'Помилка при створенні клієнта', client: null };
+        return {
+          error: error instanceof Error ? error.message : 'Помилка при створенні клієнта',
+          client: null,
+        };
       } finally {
         setIsSubmitting(false);
       }
     },
-    [handleFieldChange, isFormValid, getValidationErrors, storeHandleCreateClient, setFormError, setIsSubmitting]
+    [
+      setIsSubmitting,
+      setFormError,
+      isFormValid,
+      storeHandleCreateClient,
+      handleFieldChange,
+      getValidationErrors,
+      form,
+    ]
   );
 
   // Обробник для оновлення клієнта
@@ -109,19 +117,19 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
       try {
         setIsSubmitting(true);
         setFormError(null);
-        
+
         // Заповнюємо поля форми з даних
         Object.entries(data).forEach(([key, value]) => {
           handleFieldChange(key, value);
         });
-        
+
         // Перевіряємо валідність форми
         if (!isFormValid()) {
           const errors = getValidationErrors();
-          setFormError(`Виправте помилки у формі: ${errors.map(e => e.message).join(', ')}`);
+          setFormError(`Виправте помилки у формі: ${errors.map((e) => e.message).join(', ')}`);
           return;
         }
-        
+
         // Викликаємо оновлення через стор
         const result = await storeHandleUpdateClient();
 
@@ -132,20 +140,38 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
           } else {
             // Встановлюємо помилки валідації для полів
             Object.entries(result.errors).forEach(([field, message]) => {
-              form.setError(field as any, { message });
+              // Перевіряємо, чи поле є допустимим для форми
+              const allowedFields = ['firstName', 'lastName', 'phone', 'email'];
+              if (allowedFields.includes(field)) {
+                form.setError(field as 'firstName' | 'lastName' | 'phone' | 'email', { message });
+              } else {
+                // Якщо поле не дозволене, встановлюємо загальну помилку
+                setFormError(`Помилка в полі ${field}: ${message}`);
+              }
             });
           }
         }
-        
+
         return result;
       } catch (error) {
         setFormError(error instanceof Error ? error.message : 'Помилка при оновленні клієнта');
-        return { error: error instanceof Error ? error.message : 'Помилка при оновленні клієнта', client: null };
+        return {
+          error: error instanceof Error ? error.message : 'Помилка при оновленні клієнта',
+          client: null,
+        };
       } finally {
         setIsSubmitting(false);
       }
     },
-    [handleFieldChange, isFormValid, getValidationErrors, storeHandleUpdateClient, setFormError, setIsSubmitting]
+    [
+      setIsSubmitting,
+      setFormError,
+      isFormValid,
+      storeHandleUpdateClient,
+      handleFieldChange,
+      getValidationErrors,
+      form,
+    ]
   );
 
   // Обробник для створення клієнта з простої форми
@@ -181,7 +207,7 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
   const handleSubmit = useCallback(async () => {
     try {
       setIsSubmitting(true);
-      
+
       // Перевіряємо, чи валідна форма
       if (!isFormValid()) {
         const validationErrors = getValidationErrors();
@@ -191,13 +217,22 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
           // Типізуємо поле як відповідне до типу форми
           if (type === 'create') {
             const typedForm = form as ReturnType<typeof useForm<CreateClient>>;
-            typedForm.setError(errorItem.field as keyof CreateClient, { message: errorItem.message, type: 'manual' });
+            typedForm.setError(errorItem.field as keyof CreateClient, {
+              message: errorItem.message,
+              type: 'manual',
+            });
           } else if (type === 'edit') {
             const typedForm = form as ReturnType<typeof useForm<EditClient>>;
-            typedForm.setError(errorItem.field as keyof EditClient, { message: errorItem.message, type: 'manual' });
+            typedForm.setError(errorItem.field as keyof EditClient, {
+              message: errorItem.message,
+              type: 'manual',
+            });
           } else {
             const typedForm = form as ReturnType<typeof useForm<SimpleClient>>;
-            typedForm.setError(errorItem.field as keyof SimpleClient, { message: errorItem.message, type: 'manual' });
+            typedForm.setError(errorItem.field as keyof SimpleClient, {
+              message: errorItem.message,
+              type: 'manual',
+            });
           }
         }
         return;
@@ -213,12 +248,12 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
       // Обробляємо відповідно до типу форми
       switch (type) {
         case 'create':
-          await handleCreateClient({ 
+          await handleCreateClient({
             firstName,
             lastName,
             phone,
             email,
-            communicationChannels: ['PHONE']
+            communicationChannels: ['PHONE'],
           });
           break;
         case 'edit':
@@ -228,7 +263,7 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
             phone,
             email,
             communicationChannels: ['PHONE'],
-            id: selectedClient?.id
+            id: selectedClient?.id,
           });
           break;
         case 'simple':
@@ -236,7 +271,7 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
             firstName,
             lastName,
             phone,
-            email
+            email,
           });
           break;
       }
@@ -246,7 +281,18 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
     } finally {
       setIsSubmitting(false);
     }
-  }, [type, isFormValid, getValidationErrors, setFormError, handleCreateClient, handleUpdateClient, handleSimpleCreate, setIsSubmitting, form, selectedClient]);
+  }, [
+    type,
+    isFormValid,
+    getValidationErrors,
+    setFormError,
+    handleCreateClient,
+    handleUpdateClient,
+    handleSimpleCreate,
+    setIsSubmitting,
+    form,
+    selectedClient,
+  ]);
 
   // Повертаємо API форми для використання у компоненті
   return {
@@ -258,29 +304,29 @@ export const useClientForm = ({ type = 'create', onSuccess }: UseClientFormProps
 
     // Стан форми
     isDirty,
-    
+
     // Помилки та валідація
     error,
     isSubmitting,
     showSourceDetails,
     isCreating,
     isUpdating,
-    
+
     // Обробники полів
     handleFieldChange,
-    
+
     // Валідація
     getValidationErrors,
     isFormValid,
     getFieldError,
-    
+
     // Обробники форми
     handleCreateClient,
     handleUpdateClient,
     handleStartEditingClient,
     handleCancelEditing,
     handleSubmit,
-    
+
     // Дані
     selectedClient,
     newClient,

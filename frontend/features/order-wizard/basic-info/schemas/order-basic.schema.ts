@@ -4,7 +4,6 @@ import {
   nonEmptyString,
   uuidSchema,
   dateSchema,
-  shortText,
   longText,
 } from '../../shared/schemas/common.schema';
 

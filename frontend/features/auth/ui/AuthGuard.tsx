@@ -1,8 +1,9 @@
 'use client';
 
-import React, { ReactNode, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CircularProgress, Grid, Box, Typography } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import React, { ReactNode, useEffect, useState } from 'react';
+
 import { useAuth } from '../hooks/useAuth';
 import { useAuthStore } from '../store';
 

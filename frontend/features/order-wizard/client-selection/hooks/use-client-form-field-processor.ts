@@ -14,8 +14,14 @@ export const useClientFormFieldProcessor = () => {
   const processCommunicationChannels = (
     currentRawValue: unknown,
     formType: ClientFormType,
-    updateFnNew: (field: keyof ClientState['newClient'], value: ClientState['newClient'][keyof ClientState['newClient']]) => void,
-    updateFnEdit: (field: keyof ClientState['editClient'], value: ClientState['editClient'][keyof ClientState['editClient']]) => void
+    updateFnNew: (
+      field: keyof ClientState['newClient'],
+      value: ClientState['newClient'][keyof ClientState['newClient']]
+    ) => void,
+    updateFnEdit: (
+      field: keyof ClientState['editClient'],
+      value: ClientState['editClient'][keyof ClientState['editClient']]
+    ) => void
   ): Array<'PHONE' | 'SMS' | 'VIBER'> => {
     const defaultValue: Array<'PHONE' | 'SMS' | 'VIBER'> = [];
     let finalValue: Array<'PHONE' | 'SMS' | 'VIBER'>;
@@ -23,9 +29,8 @@ export const useClientFormFieldProcessor = () => {
     if (currentRawValue === null || currentRawValue === undefined || currentRawValue === '') {
       finalValue = defaultValue;
     } else if (Array.isArray(currentRawValue)) {
-      finalValue = currentRawValue.filter(
-        (item: string): item is 'PHONE' | 'SMS' | 'VIBER' =>
-          ['PHONE', 'SMS', 'VIBER'].includes(item)
+      finalValue = currentRawValue.filter((item: string): item is 'PHONE' | 'SMS' | 'VIBER' =>
+        ['PHONE', 'SMS', 'VIBER'].includes(item)
       );
     } else {
       console.warn(
@@ -48,8 +53,14 @@ export const useClientFormFieldProcessor = () => {
   const processSource = (
     currentRawValue: unknown,
     formType: ClientFormType,
-    updateFnNew: (field: keyof ClientState['newClient'], value: ClientState['newClient'][keyof ClientState['newClient']]) => void,
-    updateFnEdit: (field: keyof ClientState['editClient'], value: ClientState['editClient'][keyof ClientState['editClient']]) => void
+    updateFnNew: (
+      field: keyof ClientState['newClient'],
+      value: ClientState['newClient'][keyof ClientState['newClient']]
+    ) => void,
+    updateFnEdit: (
+      field: keyof ClientState['editClient'],
+      value: ClientState['editClient'][keyof ClientState['editClient']]
+    ) => void
   ): Array<CreateClientRequest.source> => {
     const defaultValue: Array<CreateClientRequest.source> = [];
     let finalValue: Array<CreateClientRequest.source>;
@@ -57,11 +68,8 @@ export const useClientFormFieldProcessor = () => {
     if (currentRawValue === null || currentRawValue === undefined || currentRawValue === '') {
       finalValue = defaultValue;
     } else if (Array.isArray(currentRawValue)) {
-      finalValue = currentRawValue.filter(
-        (item: string): item is CreateClientRequest.source =>
-          Object.values(CreateClientRequest.source).includes(
-            item as CreateClientRequest.source
-          )
+      finalValue = currentRawValue.filter((item: string): item is CreateClientRequest.source =>
+        Object.values(CreateClientRequest.source).includes(item as CreateClientRequest.source)
       );
     } else {
       console.warn(
@@ -84,8 +92,14 @@ export const useClientFormFieldProcessor = () => {
   const processAddress = (
     currentRawValue: unknown,
     formType: ClientFormType,
-    updateFnNew: (field: keyof ClientState['newClient'], value: ClientState['newClient'][keyof ClientState['newClient']]) => void,
-    updateFnEdit: (field: keyof ClientState['editClient'], value: ClientState['editClient'][keyof ClientState['editClient']]) => void
+    updateFnNew: (
+      field: keyof ClientState['newClient'],
+      value: ClientState['newClient'][keyof ClientState['newClient']]
+    ) => void,
+    updateFnEdit: (
+      field: keyof ClientState['editClient'],
+      value: ClientState['editClient'][keyof ClientState['editClient']]
+    ) => void
   ) => {
     type AddressType = string | null;
     type AddressFormValue = string;
@@ -128,13 +142,19 @@ export const useClientFormFieldProcessor = () => {
    * Обробка інших полів форми
    */
   const processGenericField = <
-    F extends Exclude<keyof ClientFormData, 'communicationChannels' | 'source' | 'address' | 'id'>
+    F extends Exclude<keyof ClientFormData, 'communicationChannels' | 'source' | 'address' | 'id'>,
   >(
     fieldKey: F,
     currentRawValue: unknown,
     formType: ClientFormType,
-    updateFnNew: (field: keyof ClientState['newClient'], value: ClientState['newClient'][keyof ClientState['newClient']]) => void,
-    updateFnEdit: (field: keyof ClientState['editClient'], value: ClientState['editClient'][keyof ClientState['editClient']]) => void,
+    updateFnNew: (
+      field: keyof ClientState['newClient'],
+      value: ClientState['newClient'][keyof ClientState['newClient']]
+    ) => void,
+    updateFnEdit: (
+      field: keyof ClientState['editClient'],
+      value: ClientState['editClient'][keyof ClientState['editClient']]
+    ) => void,
     currentNewClientState: ClientState['newClient'],
     currentEditClientState: ClientState['editClient']
   ): unknown => {
@@ -143,25 +163,32 @@ export const useClientFormFieldProcessor = () => {
       valueToUpdateWith = null;
     }
 
-    const valueForForm = currentRawValue === undefined || currentRawValue === null ? '' : currentRawValue;
+    const valueForForm =
+      currentRawValue === undefined || currentRawValue === null ? '' : currentRawValue;
 
     if (formType === 'create') {
-      if (fieldKey in currentNewClientState) { // Runtime check for safety
+      if (fieldKey in currentNewClientState) {
+        // Runtime check for safety
         updateFnNew(
           fieldKey as unknown as keyof ClientState['newClient'],
           valueToUpdateWith as ClientState['newClient'][keyof ClientState['newClient']]
         );
       } else {
-        console.warn(`processGenericField: Field ${String(fieldKey)} not in newClient schema or unhandled.`);
+        console.warn(
+          `processGenericField: Field ${String(fieldKey)} not in newClient schema or unhandled.`
+        );
       }
     } else if (formType === 'edit') {
-      if (fieldKey in currentEditClientState) { // Runtime check for safety
+      if (fieldKey in currentEditClientState) {
+        // Runtime check for safety
         updateFnEdit(
           fieldKey as unknown as keyof ClientState['editClient'],
           valueToUpdateWith as ClientState['editClient'][keyof ClientState['editClient']]
         );
       } else {
-        console.warn(`processGenericField: Field ${String(fieldKey)} not in editClient schema or unhandled.`);
+        console.warn(
+          `processGenericField: Field ${String(fieldKey)} not in editClient schema or unhandled.`
+        );
       }
     }
     return valueForForm;
@@ -173,12 +200,16 @@ export const useClientFormFieldProcessor = () => {
   const processIdField = (
     rawValue: unknown,
     formType: ClientFormType,
-    updateFnEdit: (field: keyof ClientState['editClient'], value: ClientState['editClient'][keyof ClientState['editClient']]) => void
+    updateFnEdit: (
+      field: keyof ClientState['editClient'],
+      value: ClientState['editClient'][keyof ClientState['editClient']]
+    ) => void
   ): string => {
     if (formType === 'create') {
       console.warn("processIdField: 'id' field cannot be set for a new client.");
       return '';
-    } else { // type === 'edit'
+    } else {
+      // type === 'edit'
       const idValue = typeof rawValue === 'string' || rawValue === null ? rawValue : null;
       updateFnEdit('id', idValue);
       return idValue === null ? '' : idValue;

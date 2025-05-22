@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
 import { TextField, Button, Grid, Box, Alert, CircularProgress } from '@mui/material';
+import React, { useState } from 'react';
+
 import { useLogin } from '../hooks/useLogin';
-import type { LoginRequest } from '@/lib/api/generated/models/LoginRequest';
+
+import type { LoginRequest } from '@/lib/api';
 
 interface LoginFormProps {
   onSuccess?: () => void;
