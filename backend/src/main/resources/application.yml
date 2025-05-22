@@ -31,19 +31,22 @@ spring:
     password: 1911
     driver-class-name: org.postgresql.Driver
     schema: public
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-        # Діалект PostgreSQL автоматично визначається Hibernate
-        hbm2ddl:
-          auto: update
+        jdbc:
+          time_zone: UTC
     open-in-view: false
-    # Видалено налаштування автоматичної генерації схеми
-    # Вимкнено globally_quoted_identifiers, бо це може спричиняти проблеми з валідацією
   web:
     cors:
       allowed-origins: 'http://localhost:3000,http://127.0.0.1:3000'
@@ -54,6 +57,9 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
 
 server:
   port: 8080
@@ -64,6 +70,14 @@ server:
     include-binding-errors: always
     include-stacktrace: never
     include-exception: false
+  tomcat:
+    connection-timeout: 30000 # 30 секунд
+    max-http-header-size: 65536 # 64KB
+    max-swallow-size: 10485760 # 10MB
+  compression:
+    enabled: true # Увімкнути стиснення відповідей
+    mime-types: application/json,application/xml,text/html,text/plain
+    min-response-size: 2048 # Стискати відповіді більше 2KB
 
 # Налаштування JWT
 jwt:
@@ -113,11 +127,9 @@ logging:
     org.springframework: INFO
     org.springframework.web: DEBUG
     com.aksi: DEBUG
-    # Розширені налаштування для логування Swagger/OpenAPI
-    # springdoc: TRACE
-    # org.springdoc: TRACE
-    # io.swagger.v3: TRACE
-    com.aksi.config: TRACE
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.aksi.config: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR
   file:
@@ -128,21 +140,21 @@ logging:
 
 # Налаштування OpenAPI/Swagger
 springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
-    operationsSorter: method
-    tagsSorter: alpha
-    doc-expansion: none
-    filter: true
-    disable-swagger-default-url: true
-    display-request-duration: true
-    default-models-expand-depth: -1
-  api-docs:
-    path: /v3/api-docs
     enabled: true
+    doc-expansion: none
   packages-to-scan: com.aksi.api
+  paths-to-match: /**
+  operationsSorter: method
+  disable-swagger-default-url: true
+  display-request-duration: true
+  default-models-expand-depth: -1
+  try-it-out-enabled: true
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-  paths-to-match: /**
   cache:
-    disabled: true
+    disabled: true # Вимкнено кешування для виправлення помилок

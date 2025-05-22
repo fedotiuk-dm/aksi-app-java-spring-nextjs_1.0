@@ -37,6 +37,9 @@ OpenAPI.BASE = BASE_API_URL; // Використовуємо повний URL д
 OpenAPI.WITH_CREDENTIALS = true; // Дозволяє передавати cookies з токенами
 OpenAPI.CREDENTIALS = 'include'; // Дозволяє включати cookies в крос-доменні запити
 
+// Активуємо режим налагодження для OpenAPI запитів
+const DEBUG_API = true;
+
 // Кеш для токена авторизації
 let cachedToken: string | undefined;
 let tokenExpiryTime: number = 0;
@@ -89,9 +92,9 @@ OpenAPI.HEADERS = async () => {
   if (token) {
     // Критично важливо: додаємо токен в заголовок Authorization
     headers['Authorization'] = `Bearer ${token}`;
-    console.log('JWT токен додано в заголовок запиту');
+    if (DEBUG_API) console.log('JWT токен додано в заголовок запиту');
   } else {
-    console.warn('Не знайдено JWT токен - перевірте авторизацію');
+    if (DEBUG_API) console.warn('Не знайдено JWT токен - перевірте авторизацію');
   }
 
   return headers;
@@ -108,26 +111,125 @@ const axiosInstance = axios.create({
   },
 });
 
-// Додаємо перехоплювач відповідей для обробки 403 помилок
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    if (error.response && error.response.status === 403) {
-      console.error(
-        'Помилка авторизації (403). Спробуйте перезавантажити сторінку або заново увійти в систему.'
-      );
-
-      // Тут можна додати логіку автоматичного оновлення токена
-      // наприклад, запит на '/api/auth/refresh-token'
-
-      // Показуємо повідомлення про помилку
-      if (typeof window !== 'undefined') {
-        console.log('URL запиту, що викликав 403:', error.config?.url);
+// Додаємо перехоплювач запитів для логування
+axiosInstance.interceptors.request.use(
+  (config) => {
+    if (DEBUG_API) {
+      console.log(`🔍 ДІАГНОСТИКА API ЗАПИТУ:`);
+      console.log(`- URL: ${config.url}`);
+      console.log(`- Метод: ${config.method?.toUpperCase()}`);
+      console.log(`- Заголовки:`, config.headers);
+      if (config.data) {
+        try {
+          console.log(
+            `- Дані:`,
+            typeof config.data === 'string' ? JSON.parse(config.data) : config.data
+          );
+        } catch (e) {
+          console.log(`- Дані:`, config.data);
+        }
       }
+    }
+    return config;
+  },
+  (error) => {
+    if (DEBUG_API) {
+      console.error(`❌ Помилка при створенні запиту:`, error);
     }
     return Promise.reject(error);
   }
 );
+
+// Додаємо перехоплювач відповідей для логування та обробки помилок
+axiosInstance.interceptors.response.use(
+  (response) => {
+    if (DEBUG_API) {
+      console.log(`✅ ДІАГНОСТИКА API ВІДПОВІДІ:`);
+      console.log(`- URL: ${response.config.url}`);
+      console.log(`- Статус: ${response.status} ${response.statusText}`);
+      console.log(`- Заголовки:`, response.headers);
+      if (response.data) {
+        console.log(`- Дані:`, response.data);
+      }
+    }
+    return response;
+  },
+  (error: AxiosError) => {
+    logApiError(error);
+    handleAuthError(error);
+    handleBadRequestError(error);
+    return Promise.reject(error);
+  }
+);
+
+// Функція для логування помилок API
+const logApiError = (error: AxiosError): void => {
+  if (!DEBUG_API) return;
+
+  console.error(`❌ ДІАГНОСТИКА API ПОМИЛКИ:`);
+  console.error(`- URL: ${error.config?.url}`);
+  console.error(`- Метод: ${error.config?.method?.toUpperCase()}`);
+
+  if (error.response) {
+    console.error(`- Статус: ${error.response.status} ${error.response.statusText}`);
+    console.error(`- Дані відповіді:`, error.response.data);
+  } else {
+    console.error(`- Помилка без відповіді:`, error.message);
+  }
+
+  console.error(`- Стек:`, error.stack);
+};
+
+// Функція для обробки помилок авторизації
+const handleAuthError = (error: AxiosError): void => {
+  if (!error.response || error.response.status !== 403) return;
+
+  console.error(
+    'Помилка авторизації (403). Спробуйте перезавантажити сторінку або заново увійти в систему.'
+  );
+
+  // Тут можна додати логіку автоматичного оновлення токена
+  // наприклад, запит на '/api/auth/refresh-token'
+
+  if (typeof window !== 'undefined') {
+    console.log('URL запиту, що викликав 403:', error.config?.url);
+  }
+};
+
+// Функція для обробки Bad Request помилок
+const handleBadRequestError = (error: AxiosError): void => {
+  if (!error.response || error.response.status !== 400) return;
+
+  console.error('Помилка 400 Bad Request - перевірка форматів даних:');
+
+  try {
+    const requestData = parseRequestData(error);
+
+    console.error('- Запит:', requestData);
+    console.error('- Відповідь:', error.response.data);
+
+    logRequestDataTypes(requestData);
+  } catch (e) {
+    console.error('- Помилка при аналізі даних запиту:', e);
+  }
+};
+
+// Парсинг даних запиту
+const parseRequestData = (error: AxiosError): any => {
+  if (!error.config?.data) return null;
+
+  return typeof error.config.data === 'string' ? JSON.parse(error.config.data) : error.config.data;
+};
+
+// Логування типів даних запиту
+const logRequestDataTypes = (requestData: any): void => {
+  if (!requestData) return;
+
+  console.error('- Типи даних запиту:');
+  Object.entries(requestData).forEach(([key, value]) => {
+    console.error(`  ${key}: ${typeof value} (${value})`);
+  });
+};
 
 // Додати axios інтерцептор для обробки помилок
 axios.interceptors.response.use(
@@ -223,6 +325,32 @@ axiosInstance.interceptors.request.use(
       config.method = 'post';
       processRequestData(config);
     }
+
+    // Для діагностики проблем з пошуком клієнтів
+    if (config.url?.includes('/clients/search')) {
+      if (DEBUG_API) {
+        console.log(`🔎 ПОШУК КЛІЄНТІВ - ДІАГНОСТИКА:`);
+        console.log(`- URL: ${config.url}`);
+        console.log(`- Метод: ${config.method?.toUpperCase()}`);
+
+        try {
+          const requestData =
+            typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
+          console.log(`- Дані запиту:`, requestData);
+
+          // Перевірка типів даних page і size
+          if (requestData) {
+            console.log(`- Типи даних у запиті:`);
+            Object.entries(requestData).forEach(([key, value]) => {
+              console.log(`  ${key}: ${typeof value} (${value})`);
+            });
+          }
+        } catch (e) {
+          console.log(`- Помилка при аналізі даних запиту:`, e);
+        }
+      }
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -232,6 +360,10 @@ axiosInstance.interceptors.request.use(
 if (typeof window !== 'undefined') {
   (window as unknown as ExtendedWindow).axios = axiosInstance;
 }
+
+// Інтеграція з OpenAPI
+// @ts-ignore
+OpenAPI.axios = axiosInstance;
 
 // Завантажити всі генеровані файли OpenAPI
 export * from './generated';

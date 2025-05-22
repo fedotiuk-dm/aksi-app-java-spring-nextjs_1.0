@@ -53,6 +53,7 @@ export type { ReceiptPriceModifierDTO } from './models/ReceiptPriceModifierDTO';
 export { RegisterRequest } from './models/RegisterRequest';
 export type { ServiceCategoryDTO } from './models/ServiceCategoryDTO';
 export { StainTypeDTO } from './models/StainTypeDTO';
+export type { TestResponse } from './models/TestResponse';
 export { UpdateClientRequest } from './models/UpdateClientRequest';
 
 export { $AdditionalRequirementsRequest } from './schemas/$AdditionalRequirementsRequest';
@@ -101,6 +102,7 @@ export { $ReceiptPriceModifierDTO } from './schemas/$ReceiptPriceModifierDTO';
 export { $RegisterRequest } from './schemas/$RegisterRequest';
 export { $ServiceCategoryDTO } from './schemas/$ServiceCategoryDTO';
 export { $StainTypeDTO } from './schemas/$StainTypeDTO';
+export { $TestResponse } from './schemas/$TestResponse';
 export { $UpdateClientRequest } from './schemas/$UpdateClientRequest';
 
 export { AdditionalRequirementsForOrderService } from './services/AdditionalRequirementsForOrderService';
@@ -109,6 +111,7 @@ export { BranchLocationsApiService } from './services/BranchLocationsApiService'
 export { ClientsService } from './services/ClientsService';
 export { CustomerSignatureService } from './services/CustomerSignatureService';
 export { DefectTypeService } from './services/DefectTypeService';
+export { HealthCheckControllerService } from './services/HealthCheckControllerService';
 export { ItemCharacteristicsService } from './services/ItemCharacteristicsService';
 export { ModifierRecommendationService } from './services/ModifierRecommendationService';
 export { OrderCompletionService } from './services/OrderCompletionService';
@@ -124,4 +127,5 @@ export { PriceModifiersService } from './services/PriceModifiersService';
 export { ReceiptService } from './services/ReceiptService';
 export { ServiceCategoryService } from './services/ServiceCategoryService';
 export { StainTypeService } from './services/StainTypeService';
+export { TestService } from './services/TestService';
 export { UnitOfMeasureService } from './services/UnitOfMeasureService';

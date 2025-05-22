@@ -27,8 +27,8 @@ import React from 'react';
 import { ClientResponse } from '@/lib/api';
 
 import { useClientSearch } from '../hooks';
+import { useClientStore } from '../model';
 import { clientSourceOptions } from '../model/client-sources';
-import { useClientStore } from '../store';
 
 // Інтерфейс для властивостей компонента
 interface ClientListProps {
@@ -39,10 +39,7 @@ interface ClientListProps {
 /**
  * Компонент для відображення результатів пошуку клієнтів
  */
-export const ClientList: React.FC<ClientListProps> = ({
-  onClientSelect,
-  onClientEdit,
-}) => {
+export const ClientList: React.FC<ClientListProps> = ({ onClientSelect, onClientEdit }) => {
   // Отримуємо дані про клієнтів і стани з хуків
   const { clients = [], isLoading, search } = useClientSearch();
   const { selectedClient } = useClientStore();
@@ -53,17 +50,13 @@ export const ClientList: React.FC<ClientListProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Визначення розміру сітки залежно від розміру екрану
-  const gridSize = isMobile
-    ? { xs: 12 }
-    : isTablet
-    ? { xs: 6 }
-    : { xs: 4 };
+  const gridSize = isMobile ? { xs: 12 } : isTablet ? { xs: 6 } : { xs: 4 };
 
   // Функція для відображення джерела клієнта
   const getSourceLabel = (source?: ClientResponse.source): string => {
     if (!source) return 'Невідомо';
 
-    const sourceOption = clientSourceOptions.find(option => option.value === source);
+    const sourceOption = clientSourceOptions.find((option) => option.value === source);
     return sourceOption?.label || 'Невідомо';
   };
 
@@ -116,7 +109,7 @@ export const ClientList: React.FC<ClientListProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
-          py: 4
+          py: 4,
         }}
       >
         <PersonAddIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
@@ -143,7 +136,7 @@ export const ClientList: React.FC<ClientListProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
-          py: 4
+          py: 4,
         }}
       >
         <Typography variant="h6" gutterBottom>
@@ -156,7 +149,9 @@ export const ClientList: React.FC<ClientListProps> = ({
           variant="contained"
           color="primary"
           startIcon={<PersonAddIcon />}
-          onClick={() => {/* Цю логіку має обробляти батьківський компонент */}}
+          onClick={() => {
+            /* Цю логіку має обробляти батьківський компонент */
+          }}
         >
           Створити клієнта
         </Button>
@@ -168,15 +163,11 @@ export const ClientList: React.FC<ClientListProps> = ({
   return (
     <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
       <Typography variant="h6" gutterBottom>
-        {search.query
-          ? `Результати пошуку за запитом "${search.query}"`
-          : 'Список клієнтів'}
+        {search.query ? `Результати пошуку за запитом "${search.query}"` : 'Список клієнтів'}
       </Typography>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        {clients.length === 1
-          ? 'Знайдено 1 клієнта'
-          : `Знайдено ${clients.length} клієнтів`}
+        {clients.length === 1 ? 'Знайдено 1 клієнта' : `Знайдено ${clients.length} клієнтів`}
       </Typography>
 
       <Grid container spacing={2}>
@@ -218,7 +209,7 @@ export const ClientList: React.FC<ClientListProps> = ({
                         sx={{
                           bgcolor: isSelected ? 'primary.main' : 'primary.light',
                           width: 40,
-                          height: 40
+                          height: 40,
                         }}
                       >
                         {getClientInitials(client)}
@@ -235,24 +226,10 @@ export const ClientList: React.FC<ClientListProps> = ({
                           sx={{
                             height: 22,
                             fontSize: '0.75rem',
-                            mt: 0.5
+                            mt: 0.5,
                           }}
                         />
                       </Box>
-
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onClientEdit(client);
-                        }}
-                        sx={{
-                          alignSelf: 'flex-start',
-                          '&:hover': { color: 'primary.main' }
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
                     </Box>
 
                     <Divider sx={{ mb: 1.5 }} />
@@ -297,6 +274,29 @@ export const ClientList: React.FC<ClientListProps> = ({
                     </Box>
                   </CardContent>
                 </CardActionArea>
+
+                {/* Винесення кнопки редагування за межі CardActionArea */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    zIndex: 2,
+                  }}
+                >
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClientEdit(client);
+                    }}
+                    sx={{
+                      '&:hover': { color: 'primary.main' },
+                    }}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                </Box>
               </Card>
             </Grid>
           );

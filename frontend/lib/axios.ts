@@ -1,9 +1,11 @@
 'use client';
 
 import axios from 'axios';
+
+import { useAuthStore } from '@/features/auth/store';
+
 import type { AxiosError } from 'axios';
 import type { AxiosResponse, AxiosRequestConfig } from 'axios';
-import { useAuthStore } from '@/features/auth/store';
 
 /**
  * Інтерфейс для розширеної відповіді помилки з бекенду
@@ -201,6 +203,98 @@ interface QueueItem {
 // Черга запитів, що очікують завершення оновлення токена
 let failedQueue: QueueItem[] = [];
 
+// Оновлення токена авторизації
+async function handleTokenRefresh() {
+  const refreshToken = authTokenManager.getRefreshToken();
+  
+  if (!refreshToken) {
+    return null;
+  }
+  
+  try {
+    const response = await apiClient.post(
+      '/auth/refresh-token',
+      refreshToken,
+      {
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      }
+    );
+
+    // Отримуємо нові токени
+    const {
+      token,
+      refreshToken: newRefreshToken,
+      expiresAt,
+    } = response.data;
+
+    // Оновлюємо токени
+    authTokenManager.setTokens(token, newRefreshToken, expiresAt);
+    
+    return token;
+  } catch {
+    // Ігноруємо помилку, повертаємо null для обробки в основній функції
+    return null;
+  }
+}
+
+// Обробка запитів у черзі після оновлення токена
+function processQueue(token: string | null) {
+  if (!token) {
+    // Відхиляємо всі запити у черзі, якщо токен не оновлено
+    failedQueue.forEach((req) => {
+      req.reject(new Error('Помилка оновлення токена'));
+    });
+  } else {
+    // Оновлюємо заголовки та виконуємо запити
+    failedQueue.forEach((req) => {
+      if (req.originalRequest.headers) {
+        req.originalRequest.headers.Authorization = `Bearer ${token}`;
+      }
+      req.resolve(apiClient(req.originalRequest));
+    });
+  }
+  
+  // Очищуємо чергу
+  failedQueue = [];
+}
+
+// Детальне логування помилок API
+function logApiError(error: AxiosError) {
+  if (!error.response?.data) {
+    if (error.request) {
+      // Запит був зроблений, але відповіді немає
+      console.error('Немає відповіді від сервера', {
+        url: error.config?.url,
+        method: error.config?.method?.toUpperCase(),
+        message: error.message,
+      });
+    } else {
+      // Помилка налаштування запиту
+      console.error('Помилка налаштування запиту:', error.message);
+    }
+    return;
+  }
+  
+  // Логування деталей помилки
+  const errorData = error.response.data as Partial<ApiErrorResponse>;
+  console.error('Деталі помилки:', {
+    status: error.response.status,
+    message: errorData.message || 'Помилка без повідомлення',
+    errorId: errorData.errorId,
+    path: errorData.path || error.config?.url,
+    method: errorData.method || error.config?.method?.toUpperCase(),
+    errors: errorData.errors,
+    timestamp: errorData.timestamp,
+  });
+
+  // Виводимо стек трейс у режимі розробки
+  if (process.env.NEXT_PUBLIC_DEBUG === 'true' && errorData.stackTrace) {
+    console.error('Стек трейс помилки:', errorData.stackTrace);
+  }
+}
+
 // Обробка помилок відповіді
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
@@ -212,142 +306,99 @@ apiClient.interceptors.response.use(
     // Створюємо розширену помилку API для кращого логування
     const apiError = ApiError.fromAxiosError(error);
 
-    // Детальне логування в консоль із форматуванням
+    // Базове логування помилки
     if (process.env.NEXT_PUBLIC_DEBUG === 'true') {
       apiError.logToConsole();
     } else {
       console.error('API Error:', error.message, error.config?.url);
     }
 
-    const originalRequest = error.config;
-
-    // Доступ до localStorage лише на клієнті
+    // Без доступу до window на сервері пропускаємо решту обробки
     if (typeof window === 'undefined') {
       return Promise.reject(error);
     }
 
-    // Обробка 401 Unauthorized помилки (закінчився термін дії токена)
-    if (error.response?.status === 401 && originalRequest) {
-      const refreshToken = authTokenManager.getRefreshToken();
-
-      // Якщо немає токена оновлення або вже йде процес оновлення
-      if (!refreshToken || isRefreshing) {
-        // Перевіряємо, чи це не запит на оновлення токена
-        if (originalRequest.url?.includes('refresh-token')) {
-          // Виходимо з системи, якщо refresh token невалідний
-          authTokenManager.clearTokens();
-          window.location.href = '/login';
-          return Promise.reject(error);
-        }
-
-        // Додаємо запит до черги очікування
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject, originalRequest });
-        });
-      }
-
-      isRefreshing = true;
-
-      try {
-        // Запит на оновлення токена
-        const response = await apiClient.post(
-          '/auth/refresh-token',
-          refreshToken,
-          {
-            headers: {
-              'Content-Type': 'text/plain',
-            },
-          }
-        );
-
-        // Отримуємо нові токени
-        const {
-          token,
-          refreshToken: newRefreshToken,
-          expiresAt,
-        } = response.data;
-
-        // Оновлюємо токени в сторі
-        authTokenManager.setTokens(token, newRefreshToken, expiresAt);
-
-        // Оновлюємо заголовок оригінального запиту та запитів у черзі
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-        }
-
-        // Виконуємо запити з черги з новим токеном
-        failedQueue.forEach((req) => {
-          if (req.originalRequest.headers) {
-            req.originalRequest.headers.Authorization = `Bearer ${token}`;
-          }
-          req.resolve(apiClient(req.originalRequest));
-        });
-
-        failedQueue = [];
-
-        // Повторюємо оригінальний запит з новим токеном
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        // Помилка оновлення токена - виходимо з системи
-        failedQueue.forEach((req) => {
-          req.reject(refreshError);
-        });
-
-        failedQueue = [];
-
-        // Очищуємо дані автентифікації та перенаправляємо на сторінку входу
-        authTokenManager.clearTokens();
-        window.location.href = '/login';
-
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
+    const originalRequest = error.config;
+    if (!originalRequest) {
+      return Promise.reject(error);
     }
-
-    // Перевіряємо статус 403 (Forbidden)
-    if (error.response?.status === 403) {
-      // Зберігаємо поточний URL для повернення після логіну
-      const callbackUrl = window.location.pathname + window.location.search;
-      // Перенаправляємо на сторінку логіну з параметром повернення
-      window.location.href = `/login?callbackUrl=${encodeURIComponent(
-        callbackUrl
-      )}`;
-    }
-
-    // Детальне логування структурованих помилок
-    if (error.response?.data) {
-      // Виводимо детальні дані про помилку
-      const errorData = error.response.data as Partial<ApiErrorResponse>;
-      console.error('Деталі помилки:', {
-        status: error.response.status,
-        message: errorData.message || 'Помилка без повідомлення',
-        errorId: errorData.errorId,
-        path: errorData.path || error.config?.url,
-        method: errorData.method || error.config?.method?.toUpperCase(),
-        errors: errorData.errors,
-        timestamp: errorData.timestamp,
-      });
-
-      // Виводимо стек трейс якщо він є та налаштований режим розробки
-      if (process.env.NEXT_PUBLIC_DEBUG === 'true' && errorData.stackTrace) {
-        console.error('Стек трейс помилки:', errorData.stackTrace);
-      }
-    } else if (error.request) {
-      // Запит був зроблений, але відповіді немає (мережева помилка)
-      console.error('Немає відповіді від сервера', {
-        url: error.config?.url,
-        method: error.config?.method?.toUpperCase(),
-        message: error.message,
-      });
-    } else {
-      // Сталася помилка при налаштуванні запиту
-      console.error('Помилка налаштування запиту:', error.message);
-    }
-
-    return Promise.reject(error);
+    
+    // Обробка HTTP-статусів
+    return handleErrorByStatus(error, originalRequest);
   }
 );
+
+/**
+ * Обробка помилок за HTTP статусами
+ */
+async function handleErrorByStatus(error: AxiosError, originalRequest: AxiosRequestConfig) {
+  // Обробка 401 Unauthorized помилки
+  if (error.response?.status === 401) {
+    return handleUnauthorizedError(error, originalRequest);
+  }
+
+  // Обробка 403 Forbidden
+  if (error.response?.status === 403) {
+    const callbackUrl = window.location.pathname + window.location.search;
+    window.location.href = `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+  }
+
+  // Логування деталей помилки
+  logApiError(error);
+
+  return Promise.reject(error);
+}
+
+/**
+ * Обробка 401 Unauthorized помилки
+ */
+async function handleUnauthorizedError(error: AxiosError, originalRequest: AxiosRequestConfig) {
+  // Перевіряємо, чи це не запит на оновлення токена
+  if (originalRequest.url?.includes('refresh-token')) {
+    authTokenManager.clearTokens();
+    window.location.href = '/login';
+    return Promise.reject(error);
+  }
+  
+  // Додаємо запит до черги, якщо вже йде оновлення токена
+  if (isRefreshing) {
+    return new Promise((resolve, reject) => {
+      failedQueue.push({ resolve, reject, originalRequest });
+    });
+  }
+  
+  // Починаємо процес оновлення токена
+  isRefreshing = true;
+  
+  try {
+    const token = await handleTokenRefresh();
+    
+    // Оновлюємо заголовок оригінального запиту
+    if (token && originalRequest.headers) {
+      originalRequest.headers.Authorization = `Bearer ${token}`;
+    }
+    
+    // Обробляємо чергу запитів
+    processQueue(token);
+    
+    // Повторюємо запит або перенаправляємо на логін
+    if (token) {
+      return apiClient(originalRequest);
+    } 
+    
+    // Перенаправляємо на логін
+    authTokenManager.clearTokens();
+    window.location.href = '/login';
+    return Promise.reject(error);
+  } catch (refreshError) {
+    processQueue(null);
+    authTokenManager.clearTokens();
+    window.location.href = '/login';
+    return Promise.reject(refreshError);
+  } finally {
+    isRefreshing = false;
+  }
+}
 
 // Допоміжні функції для роботи з API
 export const api = {

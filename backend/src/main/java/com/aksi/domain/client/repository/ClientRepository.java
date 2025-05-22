@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.aksi.domain.client.dto.ClientProjection;
 import com.aksi.domain.client.entity.ClientEntity;
 
 /**
@@ -92,6 +93,16 @@ public interface ClientRepository extends JpaRepository<ClientEntity, UUID> {
     Page<ClientEntity> fullTextSearch(@Param("keyword") String keyword, Pageable pageable);
 
     /**
+     * Оптимізований пошук клієнтів за всіма полями, включаючи ім'я.
+     *
+     * @param firstName ім'я або його частина
+     * @param pageable параметри пагінації
+     * @return сторінка клієнтів
+     */
+    @Query("SELECT c FROM ClientEntity c WHERE LOWER(c.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))")
+    Page<ClientEntity> findByFirstNameContainingIgnoreCase(@Param("firstName") String firstName, Pageable pageable);
+
+    /**
      * Оптимізований пошук клієнтів за прізвищем для використання індексу.
      *
      * @param lastName прізвище або його частина
@@ -120,4 +131,39 @@ public interface ClientRepository extends JpaRepository<ClientEntity, UUID> {
      */
     @Query("SELECT c FROM ClientEntity c WHERE LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%'))")
     Page<ClientEntity> findByEmailContainingIgnoreCase(@Param("email") String email, Pageable pageable);
+
+    /**
+     * Оптимізований пошук клієнтів з використанням проекції для уникнення проблем lazy loading.
+     * Повертає тільки необхідні поля клієнта без завантаження колекцій.
+     *
+     * @param keyword ключове слово для пошуку
+     * @param pageable параметри пагінації
+     * @return сторінка проекцій клієнтів
+     */
+    @Query("SELECT c.id as id, c.firstName as firstName, c.lastName as lastName, " +
+           "c.phone as phone, c.email as email FROM ClientEntity c WHERE " +
+           "LOWER(c.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(c.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "c.phone LIKE CONCAT('%', :keyword, '%') OR " +
+           "LOWER(c.email) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<ClientProjection> searchClientsProjection(@Param("keyword") String keyword, Pageable pageable);
+
+    /**
+     * Розширений пошук клієнтів з використанням проекції, включаючи пошук за адресою.
+     *
+     * @param keyword ключове слово для пошуку
+     * @param pageable параметри пагінації
+     * @return сторінка проекцій клієнтів
+     */
+    @Query("SELECT c.id as id, c.firstName as firstName, c.lastName as lastName, " +
+           "c.phone as phone, c.email as email FROM ClientEntity c LEFT JOIN c.address a WHERE " +
+           "LOWER(c.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(c.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "c.phone LIKE CONCAT('%', :keyword, '%') OR " +
+           "LOWER(c.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(a.city) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(a.street) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(a.building) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(a.fullAddress) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<ClientProjection> fullTextSearchProjection(@Param("keyword") String keyword, Pageable pageable);
 }

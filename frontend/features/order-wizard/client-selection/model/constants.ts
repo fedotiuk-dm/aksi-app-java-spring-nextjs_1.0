@@ -1,4 +1,6 @@
-import { ClientState } from './client.types';
+import { CreateClientRequest } from '@/lib/api';
+
+import { ClientState } from './types';
 
 /**
  * Початковий стан для пошуку клієнтів
@@ -6,15 +8,15 @@ import { ClientState } from './client.types';
 export const initialSearchState: ClientState['search'] = {
   // Поля з ClientSearchRequest
   query: '',
-  pageNumber: 0,
-  pageSize: 10,
+  page: 0,
+  size: 10,
   // Додаткові поля для інтерфейсу
   totalElements: 0,
   totalPages: 0,
   isLoading: false,
   error: null,
   hasNext: false,
-  hasPrevious: false
+  hasPrevious: false,
 };
 
 /**
@@ -25,12 +27,16 @@ export const initialNewClientState: ClientState['newClient'] = {
   lastName: '',
   phone: '',
   email: null,
+  address: null,
+  communicationChannels: ['PHONE'],
+  source: [CreateClientRequest.source.INSTAGRAM],
+  sourceDetails: null,
   isLoading: false,
-  error: null
+  error: null,
 };
 
 /**
- * Початковий стан для редагування існуючого клієнта
+ * Початковий стан для редагування клієнта
  */
 export const initialEditClientState: ClientState['editClient'] = {
   id: null,
@@ -38,8 +44,12 @@ export const initialEditClientState: ClientState['editClient'] = {
   lastName: '',
   phone: '',
   email: null,
+  address: null,
+  communicationChannels: ['PHONE'],
+  source: [CreateClientRequest.source.INSTAGRAM],
+  sourceDetails: null,
   isLoading: false,
-  error: null
+  error: null,
 };
 
 /**
@@ -51,5 +61,5 @@ export const initialClientState: ClientState = {
   clients: [],
   selectedClient: null,
   newClient: initialNewClientState,
-  editClient: initialEditClientState
+  editClient: initialEditClientState,
 };

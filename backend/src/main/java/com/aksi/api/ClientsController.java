@@ -102,9 +102,17 @@ public class ClientsController {
             @Parameter(description = "Параметри пошуку та пагінації", required = true)
             @Valid @RequestBody ClientSearchRequest request) {
         try {
+            log.info("ДІАГНОСТИКА API: отримано запит на пошук клієнтів з параметрами: query='{}', page={}, size={}",
+                request.getQuery(), request.getPage(), request.getSize());
+
             ClientPageResponse clients = clientService.searchClients(request);
+
+            log.info("ДІАГНОСТИКА API: пошук клієнтів з пагінацією: запит='{}', знайдено {} елементів із загальних {}",
+                request.getQuery(), clients.getContent().size(), clients.getTotalElements());
+
             return ApiResponseUtils.ok(clients, "REST запит на пошук клієнтів з пагінацією: {}", request);
         } catch (Exception e) {
+            log.error("ДІАГНОСТИКА API: помилка при пошуку клієнтів з пагінацією: {}", e.getMessage(), e);
             return ApiResponseUtils.badRequest("Помилка при пошуку клієнтів з пагінацією",
                 "Не вдалося виконати пошук клієнтів з пагінацією. Причина: {}", e.getMessage());
         }

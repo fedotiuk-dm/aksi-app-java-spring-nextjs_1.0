@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.domain.client.dto.ClientPageResponse;
+import com.aksi.domain.client.dto.ClientProjection;
 import com.aksi.domain.client.dto.ClientResponse;
 import com.aksi.domain.client.dto.ClientSearchRequest;
 import com.aksi.domain.client.dto.CreateClientRequest;
@@ -89,53 +90,86 @@ public class ClientServiceImpl implements ClientService {
         String keyword = request.getQuery() != null ? request.getQuery().trim() : "";
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
 
-        Page<ClientEntity> clientsPage;
-        if (keyword.isEmpty()) {
-            // Якщо запит порожній, повертаємо всі записи з пагінацією
-            clientsPage = clientRepository.findAll(pageable);
-        } else if (isPhoneNumber(keyword)) {
-            // Якщо схоже на телефон, використовуємо індекс по телефону
-            log.debug("Використовуємо пошук за телефоном для запиту: {}", keyword);
-            clientsPage = clientRepository.findByPhoneContaining(keyword, pageable);
-        } else if (isEmail(keyword)) {
-            // Якщо схоже на email, використовуємо індекс по email
-            log.debug("Використовуємо пошук за email для запиту: {}", keyword);
-            clientsPage = clientRepository.findByEmailContainingIgnoreCase(keyword, pageable);
-        } else if (keyword.length() >= 2 && !keyword.contains(" ")) {
-            // Якщо запит має вигляд одного слова і довжиною >= 2, можливо це прізвище
-            log.debug("Використовуємо пошук за прізвищем для запиту: {}", keyword);
-            clientsPage = clientRepository.findByLastNameContainingIgnoreCase(keyword, pageable);
-        } else {
-            // В інших випадках використовуємо повнотекстовий пошук
-            log.debug("Використовуємо повнотекстовий пошук для запиту: {}", keyword);
-            clientsPage = clientRepository.fullTextSearch(keyword, pageable);
-        }
+        log.info("ДІАГНОСТИКА ПОШУКУ з ПАГІНАЦІЄЮ: запит='{}', сторінка={}, розмір={}",
+                keyword, request.getPage(), request.getSize());
+        log.info("ДІАГНОСТИКА ПОШУКУ: створено Pageable з параметрами: сторінка={}, розмір={}, offset={}",
+                pageable.getPageNumber(), pageable.getPageSize(), pageable.getOffset());
 
-        List<ClientResponse> clientResponses = clientsPage.getContent().stream()
-                .map(clientMapper::toClientResponse)
+        // Використовуємо проекцію, щоб уникнути проблем з lazy loading
+        Page<ClientProjection> clientsProjectionPage;
+
+        if (keyword.isEmpty()) {
+            // Порожній запит - повертаємо пусту сторінку
+            log.info("ДІАГНОСТИКА ПОШУКУ: запит порожній, повертаємо пусту сторінку");
+            return ClientPageResponse.builder()
+                    .content(List.of())
+                    .totalElements(0)
+                    .totalPages(0)
+                    .pageNumber(request.getPage())
+                    .pageSize(request.getSize())
+                    .hasNext(false)
+                    .hasPrevious(false)
+                    .build();
+        } else if (keyword.length() < 2) {
+            // Запит закороткий - повертаємо пусту сторінку
+            log.info("ДІАГНОСТИКА ПОШУКУ: запит '{}' закороткий (менше 2 символів), повертаємо пусту сторінку", keyword);
+            return ClientPageResponse.builder()
+                    .content(List.of())
+                    .totalElements(0)
+                    .totalPages(0)
+                    .pageNumber(request.getPage())
+                    .pageSize(request.getSize())
+                    .hasNext(false)
+                    .hasPrevious(false)
+                    .build();
+        } else {
+            // Використовуємо розширений пошук з проекцією, включно з адресою
+            log.info("ДІАГНОСТИКА ПОШУКУ: використовуємо розширений пошук з проекцією для запиту '{}'", keyword);
+            clientsProjectionPage = clientRepository.fullTextSearchProjection(keyword, pageable);
+
+            // Логування результатів пошуку
+            log.info("ДІАГНОСТИКА ПОШУКУ: запит='{}', знайдено {} клієнтів із загальних {}",
+                    keyword, clientsProjectionPage.getContent().size(), clientsProjectionPage.getTotalElements());
+            log.info("ДІАГНОСТИКА ПАГІНАЦІЇ: номер сторінки={}, розмір сторінки={}, всього сторінок={}, hasNext={}, hasPrevious={}",
+                    clientsProjectionPage.getNumber(), clientsProjectionPage.getSize(),
+                    clientsProjectionPage.getTotalPages(), clientsProjectionPage.hasNext(),
+                    clientsProjectionPage.hasPrevious());
+
+            if (clientsProjectionPage.isEmpty()) {
+                log.warn("ДІАГНОСТИКА ПОШУКУ: запит '{}' не дав результатів. Перевірте налаштування пошуку", keyword);
+            }
+
+            // Конвертуємо проекцію в відповідь
+            return convertToClientPageResponse(clientsProjectionPage);
+        }
+    }
+
+    /**
+     * Конвертує сторінку проекцій клієнтів у відповідь ClientPageResponse.
+     *
+     * @param projectionPage сторінка проекцій клієнтів
+     * @return відповідь з клієнтами
+     */
+    private ClientPageResponse convertToClientPageResponse(Page<ClientProjection> projectionPage) {
+        List<ClientResponse> clientResponses = projectionPage.getContent().stream()
+                .map(projection -> ClientResponse.builder()
+                        .id(projection.getId())
+                        .firstName(projection.getFirstName())
+                        .lastName(projection.getLastName())
+                        .phone(projection.getPhone())
+                        .email(projection.getEmail())
+                        .build())
                 .collect(Collectors.toList());
 
-        return buildClientPageResponse(clientsPage, clientResponses);
-    }
-
-    /**
-     * Перевіряє, чи схожий рядок на номер телефону.
-     * @param text рядок для перевірки
-     * @return true, якщо схожий на телефон
-     */
-    private boolean isPhoneNumber(String text) {
-        // Перевіряємо, чи містить рядок лише цифри, +, -, ( або )
-        return text.matches("^[0-9+()\\-\\s]+$");
-    }
-
-    /**
-     * Перевіряє, чи схожий рядок на email.
-     * @param text рядок для перевірки
-     * @return true, якщо схожий на email
-     */
-    private boolean isEmail(String text) {
-        // Проста перевірка на наявність @ в рядку
-        return text.contains("@");
+        return ClientPageResponse.builder()
+                .content(clientResponses)
+                .totalElements(projectionPage.getTotalElements())
+                .totalPages(projectionPage.getTotalPages())
+                .pageNumber(projectionPage.getNumber())
+                .pageSize(projectionPage.getSize())
+                .hasNext(projectionPage.hasNext())
+                .hasPrevious(projectionPage.hasPrevious())
+                .build();
     }
 
     /**

@@ -5,141 +5,147 @@ import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
-  TextField,
-  InputAdornment,
-  IconButton,
-  Typography,
   CircularProgress,
-  useTheme,
+  IconButton,
+  InputAdornment,
+  TextField,
   useMediaQuery,
+  useTheme,
+  Typography,
+  Alert,
+  Button,
+  Collapse,
 } from '@mui/material';
-import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useCallback, useState, useEffect } from 'react';
+import { Controller } from 'react-hook-form';
 
 import { useClientSearch } from '../hooks';
-import { clientSearchSchema } from '../schemas';
 
 /**
- * Компонент форми для пошуку клієнтів
+ * Компонент форми пошуку клієнтів
  */
 export const ClientSearchForm: React.FC = () => {
-  // Хук для логіки пошуку клієнтів
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [showError, setShowError] = useState(false);
+
+  // Використовуємо хук для пошуку клієнтів
   const {
-    search,
+    form,
+    isSearching,
     isLoading,
-    searchClients
+    validationMessage,
+    error,
+    handleSearch,
+    handleQueryChange,
+    handleClearSearch,
+    search,
   } = useClientSearch();
 
-  // Медіа-запити для адаптивного дизайну
-  const theme = useTheme();
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
-
-  // Типи та форма з валідацією
-  type ClientSearchFormType = {
-    query: string;
-    pageNumber?: number;
-    pageSize?: number;
-  };
-
-  const form = useForm<ClientSearchFormType>({
-    resolver: zodResolver(clientSearchSchema),
-    defaultValues: {
-      query: search.query,
-      pageNumber: search.pageNumber,
-      pageSize: search.pageSize
+  // Відображення помилки з затримкою для кращого UX
+  useEffect(() => {
+    if (error) {
+      setShowError(true);
+    } else {
+      setShowError(false);
     }
-  });
+  }, [error]);
 
-  // Обробник очищення пошуку
-  const handleClearSearch = () => {
-    form.setValue('query', '');
-    form.handleSubmit(() => {
-      // В хуку useClientSearch параметри беруться з форми
-      searchClients();
-    })();
-  };
+  // Використовуємо форму з хука
+  const {
+    control,
+    formState: { errors },
+  } = form;
 
-  // Обробник зміни запиту
-  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    form.setValue('query', value, { shouldValidate: true });
+  // Обробник зміни тексту з затримкою
+  const handleInputChange = useCallback(
+    (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+      onChange: (value: string) => void
+    ) => {
+      const value = e.target.value;
+      onChange(value);
+      handleQueryChange(value);
 
-    // Автоматичний пошук після вводу
-    if (value.length >= 2 || value.length === 0) {
-      // В хуку useClientSearch параметри беруться з форми
-      searchClients();
-    }
-  };
+      // Скидаємо помилку при зміні вводу
+      if (error) {
+        setShowError(false);
+      }
+    },
+    [handleQueryChange, error]
+  );
 
   return (
-    <Box>
-      <Typography
-        variant={isTablet ? 'h6' : 'subtitle1'}
-        fontWeight={isTablet ? 600 : 500}
-        color="primary.dark"
-        gutterBottom
-      >
-        Пошук клієнтів
-      </Typography>
-
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ mb: 2 }}
-      >
-        Знайдіть клієнта за прізвищем, телефоном або email
-      </Typography>
-
+    <Box component="form" onSubmit={handleSearch} noValidate>
       <Controller
         name="query"
-        control={form.control}
-        render={({ field, fieldState }) => (
+        control={control}
+        render={({ field }) => (
           <TextField
             {...field}
             fullWidth
-            label="Пошук клієнта"
             variant="outlined"
-            error={!!fieldState.error}
-            helperText={fieldState.error?.message}
-            onChange={handleQueryChange}
-            disabled={isLoading}
-            size={isTablet ? 'medium' : 'small'}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-                fontSize: isTablet ? '1.1rem' : '1rem',
-              },
-              '& .MuiInputLabel-root': {
-                fontSize: isTablet ? '1.1rem' : '1rem',
-              },
-            }}
+            placeholder="Введіть прізвище клієнта для пошуку"
+            error={!!errors.query || !!error}
+            helperText={validationMessage || errors.query?.message}
+            onChange={(e) => handleInputChange(e, field.onChange)}
+            disabled={isSearching}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon color="primary" fontSize={isTablet ? 'medium' : 'small'} />
+                  <SearchIcon color="action" />
                 </InputAdornment>
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  {isLoading ? (
-                    <CircularProgress size={isTablet ? 24 : 20} />
-                  ) : field.value ? (
+                  {(isSearching || isLoading) && <CircularProgress size={20} color="primary" />}
+                  {field.value && !isSearching && (
                     <IconButton
-                      aria-label="Очистити пошук"
+                      aria-label="clear search"
                       onClick={handleClearSearch}
                       edge="end"
-                      size={isTablet ? 'medium' : 'small'}
+                      disabled={isSearching || isLoading}
                     >
                       <ClearIcon />
                     </IconButton>
-                  ) : null}
+                  )}
                 </InputAdornment>
               ),
             }}
-            placeholder="Прізвище, телефон або email"
+            sx={{ mb: 1 }}
+            onKeyDown={(e) => {
+              // Запобігаємо багаторазовому натисканню Enter
+              if (e.key === 'Enter' && (isSearching || isLoading)) {
+                e.preventDefault();
+              }
+            }}
           />
         )}
       />
+
+      <Collapse in={showError}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setShowError(false)}>
+            {error}
+          </Alert>
+        )}
+      </Collapse>
+
+      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+        Пошук здійснюється за прізвищем клієнта. Введіть мінімум 2 символи.
+      </Typography>
+
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          startIcon={<SearchIcon />}
+          disabled={isSearching || isLoading || search.query.length < 2}
+        >
+          {isSearching || isLoading ? 'Пошук...' : 'Знайти'}
+        </Button>
+      </Box>
     </Box>
   );
 };

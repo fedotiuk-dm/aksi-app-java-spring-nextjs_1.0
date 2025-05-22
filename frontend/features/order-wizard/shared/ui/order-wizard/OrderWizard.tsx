@@ -1,18 +1,54 @@
 'use client';
 
-import { Box, Paper } from '@mui/material';
+import SignalWifiOffIcon from '@mui/icons-material/SignalWifiOff';
+import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar4Bar';
+import { Box, Paper, Chip, Typography, Divider } from '@mui/material';
+import { useEffect } from 'react';
 
 import { ClientSelectionStep } from '@/features/order-wizard/client-selection/ui/ClientSelectionStep';
 import { useWizardNavigation } from '@/features/order-wizard/wizard/hooks';
 import { WizardStep } from '@/features/order-wizard/wizard/store/navigation';
+import useHealthCheck from '@/features/system-status/hooks/useHealthCheck';
 
 /**
  * Головний компонент OrderWizard, який керує відображенням різних кроків
  * та навігацією між ними
  */
 export default function OrderWizard() {
+  // Перевіряємо стан з'єднання з API
+  const { data: apiHealth, isLoading: isApiCheckLoading } = useHealthCheck();
+
   // Використовуємо існуючий хук для навігації між кроками
   const { isCurrentStep } = useWizardNavigation();
+
+  // Виводимо інформацію про API в консоль при запуску
+  useEffect(() => {
+    console.log('OrderWizard initialized');
+  }, []);
+
+  /**
+   * Відображення статусу з'єднання з API
+   */
+  const renderApiStatus = () => {
+    if (isApiCheckLoading) {
+      return <Chip size="small" label="Перевірка з'єднання..." color="default" />;
+    }
+
+    if (apiHealth?.status === 'UP') {
+      return (
+        <Chip
+          size="small"
+          icon={<SignalWifiStatusbar4BarIcon />}
+          label="API з'єднання активне"
+          color="success"
+        />
+      );
+    }
+
+    return (
+      <Chip size="small" icon={<SignalWifiOffIcon />} label="Немає з'єднання з API" color="error" />
+    );
+  };
 
   /**
    * Рендеринг поточного кроку візарда
@@ -79,9 +115,21 @@ export default function OrderWizard() {
       sx={{
         p: { xs: 2, md: 3 },
         borderRadius: 2,
-        overflow: 'hidden'
+        overflow: 'hidden',
       }}
     >
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>{renderApiStatus()}</Box>
+
+      {apiHealth?.status !== 'UP' && (
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="body2" color="error" gutterBottom>
+            Немає з&apos;єднання з сервером API. Перевірте підключення до інтернету або зверніться
+            до адміністратора.
+          </Typography>
+          <Divider sx={{ my: 1 }} />
+        </Box>
+      )}
+
       {renderCurrentStep()}
     </Paper>
   );

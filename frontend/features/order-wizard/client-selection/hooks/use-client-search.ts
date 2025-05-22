@@ -6,8 +6,46 @@ import { ClientsService } from '@/lib/api';
 
 // Використовуємо тільки схему і створюємо власний тип
 // щоб уникнути невідповідності типів після регенерації API
+import { useClientStore } from '../model/store';
 import { clientSearchSchema } from '../schemas';
-import { useClientStore } from '../store';
+import { useDebounceSearch } from './use-debounce-search';
+
+/**
+ * Альтернативні формати запиту для тестування API
+ * @param query Пошуковий запит
+ * @param page Номер сторінки
+ * @param size Розмір сторінки
+ */
+const getRequestVariants = (query: string, page: number, size: number) => {
+  return [
+    // Стандартний формат
+    {
+      query: query.trim(),
+      page,
+      size,
+    },
+    // Рядкові значення для page і size
+    {
+      query: query.trim(),
+      page: String(page),
+      size: String(size),
+    },
+    // Тільки запит (без пагінації)
+    {
+      query: query.trim(),
+    },
+    // Без page, з size
+    {
+      query: query.trim(),
+      size,
+    },
+    // З page, без size
+    {
+      query: query.trim(),
+      page,
+    },
+  ];
+};
 
 /**
  * Хук для пошуку клієнтів
@@ -18,8 +56,8 @@ export const useClientSearch = () => {
     search,
     clients,
     setSearchQuery,
-    searchClients,
-    setPage
+    searchClients: storeSearchClients,
+    setPage,
   } = useClientStore();
 
   /**
@@ -27,43 +65,133 @@ export const useClientSearch = () => {
    */
   type ClientSearchFormType = {
     query: string;
-    pageNumber?: number; // Опціональне поле відповідно до Zod схеми з дефолтним значенням
-    pageSize?: number; // Опціональне поле відповідно до Zod схеми з дефолтним значенням
+    page?: string | number; // Допускає як рядок, так і число
+    size?: string | number; // Допускає як рядок, так і число
   };
-  
+
   // Форма для валідації пошукових параметрів
   const form = useForm<ClientSearchFormType>({
     resolver: zodResolver(clientSearchSchema),
     defaultValues: {
       query: search.query,
       // Задаємо значення але не зобов'язуємо поля бути обов'язковими
-      pageNumber: search.pageNumber,
-      pageSize: search.pageSize
-    }
+      page: search.page,
+      size: search.size,
+    },
   });
+
+  // Функція пошуку для передачі в useDebounceSearch
+  const performSearch = async (query: string): Promise<void> => {
+    setSearchQuery(query);
+    await storeSearchClients();
+  };
+
+  // Використовуємо хук для debounce пошуку
+  const { query, setQuery, isSearching, validationMessage, executeSearchNow, clearSearch } =
+    useDebounceSearch(performSearch);
+
+  // Ініціалізуємо query з форми
+  const watchedQuery = form.watch('query');
+  if (watchedQuery !== query) {
+    setQuery(watchedQuery);
+  }
 
   // Запит на пошук клієнтів з TanStack Query
   const searchQuery = useQuery({
-    queryKey: ['clients', 'search', search.query, search.pageNumber, search.pageSize],
-    queryFn: () => ClientsService.searchClientsWithPagination({
-      requestBody: {
-        query: search.query,
-        pageNumber: search.pageNumber,
-        pageSize: search.pageSize
+    queryKey: ['clients', 'search', search.query, search.page, search.size],
+    queryFn: async () => {
+      // Мінімальна перевірка довжини запиту
+      if (!search.query || search.query.length < 2) {
+        return {
+          content: [],
+          totalElements: 0,
+          totalPages: 0,
+          pageNumber: 0,
+          pageSize: 10,
+          hasPrevious: false,
+          hasNext: false,
+        };
       }
-    }),
-    enabled: search.query.length >= 2 // Запит активується тільки якщо довжина запиту >= 2 символів
+
+      // Виклик OpenAPI напряму
+      try {
+        console.log(`TANSACK QUERY - Пошук клієнтів:`, {
+          query: search.query,
+          page: search.page,
+          size: search.size,
+        });
+
+        // Отримуємо різні варіанти форматів запиту
+        const requestVariants = getRequestVariants(
+          search.query,
+          search.page ?? 0,
+          search.size ?? 10
+        );
+
+        // Спробуємо різні формати запиту, доки не отримаємо успішну відповідь
+        let lastError = null;
+
+        for (let i = 0; i < requestVariants.length; i++) {
+          const variant = requestVariants[i];
+          console.log(`TANSACK QUERY - Спроба ${i + 1}/${requestVariants.length}:`, variant);
+
+          try {
+            const response = await ClientsService.searchClientsWithPagination({
+              // @ts-ignore - ігноруємо помилки типів для тестування
+              requestBody: variant,
+            });
+
+            console.log(`TANSACK QUERY - Успішно! Знайдено ${response.totalElements} клієнтів`);
+            return response;
+          } catch (err) {
+            console.error(`TANSACK QUERY - Помилка у спробі ${i + 1}:`, err);
+            lastError = err;
+          }
+        }
+
+        // Якщо всі спроби невдалі, викидаємо останню помилку
+        throw lastError || new Error('Всі спроби пошуку клієнтів невдалі');
+      } catch (error) {
+        console.error('Помилка при TanStack Query пошуку:', error);
+        throw error;
+      }
+    },
+    enabled: search.query.length >= 2, // Запит активується тільки якщо довжина запиту >= 2 символів
+    retry: 1, // Спробуємо перезапитати лише один раз
   });
 
   // Обробник відправки форми
-  const handleSearch = form.handleSubmit(async (data) => {
-    // Використовуємо тільки query, оскільки пагінація керується окремо
-    setSearchQuery(data.query);
-    await searchClients();
+  const handleSearch = form.handleSubmit(async () => {
+    await executeSearchNow();
   });
+
+  // Обробник зміни пошукового запиту
+  const handleQueryChange = (value: string) => {
+    form.setValue('query', value);
+    setQuery(value);
+  };
+
+  // Обробник очищення пошукового запиту
+  const handleClearSearch = async () => {
+    form.setValue('query', '');
+    await clearSearch();
+  };
 
   // Обробник зміни сторінки
   const handlePageChange = (page: number) => {
+    // Оновлюємо значення сторінки в формі (для валідації)
+    form.setValue('page', page);
+
+    console.log(`ДІАГНОСТИКА ПАГІНАЦІЇ: Зміна сторінки на ${page}`);
+    console.log(`- Поточний запит: "${search.query}"`);
+    console.log(`- Поточний стан пошуку:`, {
+      page: search.page,
+      size: search.size,
+      totalElements: search.totalElements,
+      totalPages: search.totalPages,
+    });
+
+    // Змінюємо сторінку в стані та виконуємо пошук
     setPage(page);
   };
 
@@ -73,12 +201,16 @@ export const useClientSearch = () => {
     search,
     clients,
     isLoading: search.isLoading || searchQuery.isLoading,
+    isSearching,
     error: search.error,
+    validationMessage,
     totalPages: search.totalPages,
     hasNext: search.hasNext,
     hasPrevious: search.hasPrevious,
     handleSearch,
+    handleQueryChange,
+    handleClearSearch,
     handlePageChange,
-    searchClients
+    searchClients: storeSearchClients,
   };
 };

@@ -71,7 +71,7 @@ public class ClientEntity {
      * Основний номер телефону клієнта.
      */
     @NotBlank(message = "Телефон не може бути пустим")
-    @Pattern(regexp = "^\\+ ? [0-9]{10,15}$", message = "Некоректний формат телефону")
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Некоректний формат телефону")
     @Column(nullable = false, unique = true)
     private String phone;
 
@@ -128,7 +128,7 @@ public class ClientEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
+
     /**
      * Категорія клієнта (Стандарт, Постійний, VIP, Корпоративний).
      */
@@ -136,14 +136,14 @@ public class ClientEntity {
     @Column(name = "category")
     @Builder.Default
     private ClientCategoryEntity category = ClientCategoryEntity.STANDARD;
-    
+
     /**
      * Історія замовлень клієнта.
      */
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderEntity> orders = new ArrayList<>();
-    
+
     /**
      * Переваги клієнта.
      */

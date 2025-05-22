@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 
 import { ClientResponse } from '@/lib/api';
 
+import { useClientStore } from '../model';
 import { clientSelectionSchema, ClientSelection } from '../schemas';
-import { useClientStore } from '../store';
 
 /**
  * Хук для вибору клієнта

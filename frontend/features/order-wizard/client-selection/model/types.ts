@@ -1,4 +1,9 @@
-import { ClientPageResponse, ClientResponse, ClientSearchRequest } from '@/lib/api';
+import {
+  ClientPageResponse,
+  ClientResponse,
+  ClientSearchRequest,
+  CreateClientRequest,
+} from '@/lib/api';
 
 /**
  * Режим вибору клієнта
@@ -36,10 +41,14 @@ export interface ClientState {
     lastName: string;
     phone: string;
     email: string | null;
+    address: string | null | { fullAddress?: string };
+    communicationChannels: Array<'PHONE' | 'SMS' | 'VIBER'>;
+    source: Array<CreateClientRequest.source>;
+    sourceDetails: string | null;
     isLoading: boolean;
     error: string | null;
   };
-  
+
   // Дані для редагування існуючого клієнта
   editClient: {
     id: string | null;
@@ -47,9 +56,31 @@ export interface ClientState {
     lastName: string;
     phone: string;
     email: string | null;
+    address: string | null | { fullAddress?: string };
+    communicationChannels: Array<'PHONE' | 'SMS' | 'VIBER'>;
+    source: Array<CreateClientRequest.source>;
+    sourceDetails: string | null;
     isLoading: boolean;
     error: string | null;
   };
+}
+
+/**
+ * Тип даних для форми клієнта
+ * Об'єднує всі можливі структури даних, які використовуються в формах клієнта
+ */
+export type ClientFormData =
+  | ClientState['newClient']
+  | ClientState['editClient']
+  | { firstName: string; lastName: string; phone: string; email: string | null };
+
+/**
+ * Інтерфейс для глобального стану візарда
+ */
+export interface WizardGlobalState {
+  client?: ClientResponse;
+  clientMode?: ClientSelectionMode;
+  [key: string]: unknown;
 }
 
 /**
@@ -74,7 +105,7 @@ export interface ClientActions {
     value: ClientState['newClient'][K]
   ) => void;
   createClient: () => Promise<ClientResponse | null>;
-  
+
   // Дії для редагування клієнта
   startEditingClient: (client: ClientResponse) => void;
   updateEditClientField: <K extends keyof ClientState['editClient']>(
@@ -84,6 +115,10 @@ export interface ClientActions {
   saveEditedClient: () => Promise<ClientResponse | null>;
   cancelEditing: () => void;
 
+  // Інтеграція з глобальним станом
+  syncWithGlobalState: (wizardState: WizardGlobalState) => void;
+  getClientDataForWizard: () => ClientResponse | null;
+
   // Дія для скидання стану
   resetState: () => void;
 }
@@ -92,4 +127,3 @@ export interface ClientActions {
  * Повний тип стору клієнтів
  */
 export type ClientStore = ClientState & ClientActions;
-
