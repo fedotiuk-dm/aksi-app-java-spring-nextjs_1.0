@@ -54,6 +54,19 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    public ClientPageResponse getAllClientsPaged(int page, int size) {
+        log.debug("Отримання списку всіх клієнтів з пагінацією: сторінка {}, розмір {}", page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ClientEntity> clientsPage = clientRepository.findAll(pageable);
+
+        List<ClientResponse> clientResponses = clientsPage.getContent().stream()
+                .map(clientMapper::toClientResponse)
+                .collect(Collectors.toList());
+
+        return buildClientPageResponse(clientsPage, clientResponses);
+    }
+
+    @Override
     public ClientResponse getClientById(UUID id) {
         log.debug("Отримання клієнта за ID: {}", id);
         ClientEntity client = clientRepository.findById(id)
@@ -78,9 +91,23 @@ public class ClientServiceImpl implements ClientService {
 
         Page<ClientEntity> clientsPage;
         if (keyword.isEmpty()) {
+            // Якщо запит порожній, повертаємо всі записи з пагінацією
             clientsPage = clientRepository.findAll(pageable);
+        } else if (isPhoneNumber(keyword)) {
+            // Якщо схоже на телефон, використовуємо індекс по телефону
+            log.debug("Використовуємо пошук за телефоном для запиту: {}", keyword);
+            clientsPage = clientRepository.findByPhoneContaining(keyword, pageable);
+        } else if (isEmail(keyword)) {
+            // Якщо схоже на email, використовуємо індекс по email
+            log.debug("Використовуємо пошук за email для запиту: {}", keyword);
+            clientsPage = clientRepository.findByEmailContainingIgnoreCase(keyword, pageable);
+        } else if (keyword.length() >= 2 && !keyword.contains(" ")) {
+            // Якщо запит має вигляд одного слова і довжиною >= 2, можливо це прізвище
+            log.debug("Використовуємо пошук за прізвищем для запиту: {}", keyword);
+            clientsPage = clientRepository.findByLastNameContainingIgnoreCase(keyword, pageable);
         } else {
-            // Використовуємо розширений пошук з урахуванням адреси
+            // В інших випадках використовуємо повнотекстовий пошук
+            log.debug("Використовуємо повнотекстовий пошук для запиту: {}", keyword);
             clientsPage = clientRepository.fullTextSearch(keyword, pageable);
         }
 
@@ -89,6 +116,26 @@ public class ClientServiceImpl implements ClientService {
                 .collect(Collectors.toList());
 
         return buildClientPageResponse(clientsPage, clientResponses);
+    }
+
+    /**
+     * Перевіряє, чи схожий рядок на номер телефону.
+     * @param text рядок для перевірки
+     * @return true, якщо схожий на телефон
+     */
+    private boolean isPhoneNumber(String text) {
+        // Перевіряємо, чи містить рядок лише цифри, +, -, ( або )
+        return text.matches("^[0-9+()\\-\\s]+$");
+    }
+
+    /**
+     * Перевіряє, чи схожий рядок на email.
+     * @param text рядок для перевірки
+     * @return true, якщо схожий на email
+     */
+    private boolean isEmail(String text) {
+        // Проста перевірка на наявність @ в рядку
+        return text.contains("@");
     }
 
     /**

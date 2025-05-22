@@ -48,10 +48,13 @@ public class ClientsController {
     @Operation(summary = "Отримати всіх клієнтів", description = "Повертає список всіх клієнтів")
     @ApiResponse(responseCode = "200", description = "Успішно отримано список клієнтів",
             content = @Content(schema = @Schema(implementation = ClientResponse.class)))
-    public ResponseEntity<?> getAllClients() {
+    public ResponseEntity<?> getAllClients(
+            @Parameter(description = "Номер сторінки (з 0)") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Розмір сторінки") @RequestParam(defaultValue = "20") int size
+    ) {
         try {
-            List<ClientResponse> clients = clientService.getAllClients();
-            return ApiResponseUtils.ok(clients, "REST запит на отримання всіх клієнтів");
+            ClientPageResponse clients = clientService.getAllClientsPaged(page, size);
+            return ApiResponseUtils.ok(clients, "REST запит на отримання всіх клієнтів з пагінацією");
         } catch (Exception e) {
             return ApiResponseUtils.internalServerError("Помилка при отриманні списку клієнтів",
                 "Не вдалося отримати список клієнтів. Причина: {}", e.getMessage());

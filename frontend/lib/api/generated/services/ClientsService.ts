@@ -108,10 +108,26 @@ export class ClientsService {
      * @returns ClientResponse Успішно отримано список клієнтів
      * @throws ApiError
      */
-    public static getAllClients(): CancelablePromise<ClientResponse> {
+    public static getAllClients({
+        page,
+        size = 20,
+    }: {
+        /**
+         * Номер сторінки (з 0)
+         */
+        page?: number,
+        /**
+         * Розмір сторінки
+         */
+        size?: number,
+    }): CancelablePromise<ClientResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/clients',
+            query: {
+                'page': page,
+                'size': size,
+            },
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,

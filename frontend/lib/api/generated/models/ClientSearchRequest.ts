@@ -7,7 +7,7 @@
  */
 export type ClientSearchRequest = {
     query: string;
-    pageNumber?: number;
-    pageSize?: number;
+    page?: number;
+    size?: number;
 };
 

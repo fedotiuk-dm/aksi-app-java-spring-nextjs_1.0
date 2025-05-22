@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.0.5
+      author: aksi
+      comment: 'Додавання індексів для оптимізації пошуку клієнтів'
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            - indexExists:
+                indexName: idx_clients_last_name
+      changes:
+        - createIndex:
+            indexName: idx_clients_last_name
+            tableName: clients
+            columns:
+              - column:
+                  name: last_name
+            clustered: false
+
+  - changeSet:
+      id: 1.0.6
+      author: aksi
+      comment: 'Додавання унікального індексу для телефону'
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            - indexExists:
+                indexName: idx_clients_phone
+      changes:
+        - createIndex:
+            indexName: idx_clients_phone
+            tableName: clients
+            columns:
+              - column:
+                  name: phone
+            unique: true
+            clustered: false
+
+  - changeSet:
+      id: 1.0.7
+      author: aksi
+      comment: 'Додавання унікального індексу для email'
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            - indexExists:
+                indexName: idx_clients_email
+      changes:
+        - createIndex:
+            indexName: idx_clients_email
+            tableName: clients
+            columns:
+              - column:
+                  name: email
+            unique: true
+            clustered: false

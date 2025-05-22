@@ -1,11 +1,15 @@
 package com.aksi.domain.client.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import com.aksi.domain.client.entity.ClientSourceEntity;
 import com.aksi.domain.client.entity.CommunicationChannelEntity;
+import com.aksi.domain.order.dto.OrderSummaryDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -88,4 +92,26 @@ public class ClientResponse {
      * Дата останнього оновлення запису.
      */
     private LocalDateTime updatedAt;
+    
+    /**
+     * Категорія клієнта (Стандарт, Постійний, VIP, Корпоративний).
+     */
+    private ClientCategoryDTO category;
+    
+    /**
+     * Переваги клієнта.
+     */
+    @Builder.Default
+    private Set<ClientPreferenceDTO> preferences = new HashSet<>();
+    
+    /**
+     * Коротка історія замовлень (останні 5 замовлень).
+     */
+    @Builder.Default
+    private List<OrderSummaryDTO> recentOrders = new ArrayList<>();
+    
+    /**
+     * Загальна кількість замовлень клієнта.
+     */
+    private Integer orderCount;
 }

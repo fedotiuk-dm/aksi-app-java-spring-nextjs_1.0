@@ -3,6 +3,9 @@ package com.aksi.domain.client.dto;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,32 +25,43 @@ public class AddressDTO {
     /**
      * Місто.
      */
+    @Size(min = 2, max = 100, message = "Назва міста повинна містити від 2 до 100 символів")
+    @Pattern(regexp = "^[\\p{L}\\s.,\\-']+$", message = "Некоректний формат назви міста")
     private String city;
 
     /**
      * Вулиця.
      */
+    @Size(min = 2, max = 150, message = "Назва вулиці повинна містити від 2 до 150 символів")
+    @Pattern(regexp = "^[\\p{L}\\s0-9.,\\-']+$", message = "Некоректний формат назви вулиці")
     private String street;
 
     /**
      * Будинок.
      */
+    @Size(max = 20, message = "Номер будинку не може перевищувати 20 символів")
+    @Pattern(regexp = "^[\\p{L}\\s0-9.,\\-'/]+$", message = "Некоректний формат номера будинку")
     private String building;
 
     /**
      * Квартира або офіс.
      */
+    @Size(max = 20, message = "Номер квартири не може перевищувати 20 символів")
+    @Pattern(regexp = "^[\\p{L}\\s0-9.,\\-'/]+$", message = "Некоректний формат номера квартири")
     private String apartment;
 
     /**
      * Поштовий індекс.
      */
+    @Size(max = 10, message = "Поштовий індекс не може перевищувати 10 символів")
+    @Pattern(regexp = "^[0-9\\-]+$", message = "Поштовий індекс повинен містити лише цифри та тире")
     private String postalCode;
 
     /**
      * Повна адреса як єдиний рядок.
      * Використовується, якщо структурована інформація не вказана або для зворотної сумісності.
      */
+    @Size(min = 5, max = 500, message = "Адреса повинна містити від 5 до 500 символів")
     private String fullAddress;
 
     /**

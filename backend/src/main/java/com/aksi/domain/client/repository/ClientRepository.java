@@ -90,4 +90,34 @@ public interface ClientRepository extends JpaRepository<ClientEntity, UUID> {
            "LOWER(a.building) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(a.fullAddress) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<ClientEntity> fullTextSearch(@Param("keyword") String keyword, Pageable pageable);
+
+    /**
+     * Оптимізований пошук клієнтів за прізвищем для використання індексу.
+     *
+     * @param lastName прізвище або його частина
+     * @param pageable параметри пагінації
+     * @return сторінка клієнтів
+     */
+    @Query("SELECT c FROM ClientEntity c WHERE LOWER(c.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))")
+    Page<ClientEntity> findByLastNameContainingIgnoreCase(@Param("lastName") String lastName, Pageable pageable);
+
+    /**
+     * Оптимізований пошук клієнтів за номером телефону для використання індексу.
+     *
+     * @param phone номер телефону або його частина
+     * @param pageable параметри пагінації
+     * @return сторінка клієнтів
+     */
+    @Query("SELECT c FROM ClientEntity c WHERE c.phone LIKE CONCAT('%', :phone, '%')")
+    Page<ClientEntity> findByPhoneContaining(@Param("phone") String phone, Pageable pageable);
+
+    /**
+     * Оптимізований пошук клієнтів за email для використання індексу.
+     *
+     * @param email email або його частина
+     * @param pageable параметри пагінації
+     * @return сторінка клієнтів
+     */
+    @Query("SELECT c FROM ClientEntity c WHERE LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%'))")
+    Page<ClientEntity> findByEmailContainingIgnoreCase(@Param("email") String email, Pageable pageable);
 }

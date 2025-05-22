@@ -13,7 +13,9 @@ export type { BranchLocationCreateRequest } from './models/BranchLocationCreateR
 export type { BranchLocationDTO } from './models/BranchLocationDTO';
 export type { BranchLocationUpdateRequest } from './models/BranchLocationUpdateRequest';
 export type { CalculationDetailsDTO } from './models/CalculationDetailsDTO';
+export type { ClientCategoryDTO } from './models/ClientCategoryDTO';
 export type { ClientPageResponse } from './models/ClientPageResponse';
+export type { ClientPreferenceDTO } from './models/ClientPreferenceDTO';
 export { ClientResponse } from './models/ClientResponse';
 export type { ClientSearchRequest } from './models/ClientSearchRequest';
 export { CompletionDateCalculationRequest } from './models/CompletionDateCalculationRequest';
@@ -34,6 +36,7 @@ export type { OrderFinalizationRequest } from './models/OrderFinalizationRequest
 export type { OrderItemDetailedDTO } from './models/OrderItemDetailedDTO';
 export type { OrderItemDTO } from './models/OrderItemDTO';
 export type { OrderItemPhotoDTO } from './models/OrderItemPhotoDTO';
+export { OrderSummaryDTO } from './models/OrderSummaryDTO';
 export { PaymentCalculationRequest } from './models/PaymentCalculationRequest';
 export type { PriceCalculationRequestDTO } from './models/PriceCalculationRequestDTO';
 export type { PriceCalculationResponseDTO } from './models/PriceCalculationResponseDTO';
@@ -58,7 +61,9 @@ export { $BranchLocationCreateRequest } from './schemas/$BranchLocationCreateReq
 export { $BranchLocationDTO } from './schemas/$BranchLocationDTO';
 export { $BranchLocationUpdateRequest } from './schemas/$BranchLocationUpdateRequest';
 export { $CalculationDetailsDTO } from './schemas/$CalculationDetailsDTO';
+export { $ClientCategoryDTO } from './schemas/$ClientCategoryDTO';
 export { $ClientPageResponse } from './schemas/$ClientPageResponse';
+export { $ClientPreferenceDTO } from './schemas/$ClientPreferenceDTO';
 export { $ClientResponse } from './schemas/$ClientResponse';
 export { $ClientSearchRequest } from './schemas/$ClientSearchRequest';
 export { $CompletionDateCalculationRequest } from './schemas/$CompletionDateCalculationRequest';
@@ -79,6 +84,7 @@ export { $OrderFinalizationRequest } from './schemas/$OrderFinalizationRequest';
 export { $OrderItemDetailedDTO } from './schemas/$OrderItemDetailedDTO';
 export { $OrderItemDTO } from './schemas/$OrderItemDTO';
 export { $OrderItemPhotoDTO } from './schemas/$OrderItemPhotoDTO';
+export { $OrderSummaryDTO } from './schemas/$OrderSummaryDTO';
 export { $PaymentCalculationRequest } from './schemas/$PaymentCalculationRequest';
 export { $PriceCalculationRequestDTO } from './schemas/$PriceCalculationRequestDTO';
 export { $PriceCalculationResponseDTO } from './schemas/$PriceCalculationResponseDTO';

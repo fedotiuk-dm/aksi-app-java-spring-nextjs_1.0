@@ -7,9 +7,9 @@ import type { AddressDTO } from './AddressDTO';
  * Дані для оновлення клієнта
  */
 export type UpdateClientRequest = {
-    lastName?: string;
-    firstName?: string;
-    phone?: string;
+    lastName: string;
+    firstName: string;
+    phone: string;
     email?: string;
     address?: string;
     structuredAddress?: AddressDTO;

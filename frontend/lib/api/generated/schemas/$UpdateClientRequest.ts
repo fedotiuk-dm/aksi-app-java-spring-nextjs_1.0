@@ -7,13 +7,23 @@ export const $UpdateClientRequest = {
     properties: {
         lastName: {
             type: 'string',
+            isRequired: true,
+            maxLength: 50,
+            minLength: 2,
+            pattern: '^[\\p{L}\\s\\-\']+$',
         },
         firstName: {
             type: 'string',
+            isRequired: true,
+            maxLength: 50,
+            minLength: 2,
+            pattern: '^[\\p{L}\\s\\-\']+$',
         },
         phone: {
             type: 'string',
-            pattern: '^\\+ ? [0-9]{10,15}$',
+            isRequired: true,
+            minLength: 1,
+            pattern: '^\\+?[0-9]{10,15}$',
         },
         email: {
             type: 'string',

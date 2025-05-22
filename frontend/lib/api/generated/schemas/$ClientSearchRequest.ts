@@ -10,11 +10,11 @@ export const $ClientSearchRequest = {
             isRequired: true,
             minLength: 1,
         },
-        pageNumber: {
+        page: {
             type: 'number',
             format: 'int32',
         },
-        pageSize: {
+        size: {
             type: 'number',
             format: 'int32',
             minimum: 1,

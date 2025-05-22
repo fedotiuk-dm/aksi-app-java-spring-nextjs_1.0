@@ -6,7 +6,9 @@ import com.aksi.domain.client.entity.ClientSourceEntity;
 import com.aksi.domain.client.entity.CommunicationChannelEntity;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,17 +27,24 @@ public abstract class BaseClientRequest {
     /**
      * Прізвище клієнта.
      */
+    @NotBlank(message = "Прізвище не може бути порожнім")
+    @Size(min = 2, max = 50, message = "Прізвище повинно містити від 2 до 50 символів")
+    @Pattern(regexp = "^[\\p{L}\\s\\-']+$", message = "Прізвище може містити лише літери, пробіли, дефіси та апострофи")
     private String lastName;
 
     /**
      * Ім'я клієнта.
      */
+    @NotBlank(message = "Ім'я не може бути порожнім")
+    @Size(min = 2, max = 50, message = "Ім'я повинно містити від 2 до 50 символів")
+    @Pattern(regexp = "^[\\p{L}\\s\\-']+$", message = "Ім'я може містити лише літери, пробіли, дефіси та апострофи")
     private String firstName;
 
     /**
      * Номер телефону клієнта.
      */
-    @Pattern(regexp = "^\\+ ? [0-9]{10,15}$", message = "Некоректний формат телефону")
+    @NotBlank(message = "Номер телефону не може бути порожнім")
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Некоректний формат телефону")
     private String phone;
 
     /**

@@ -49,5 +49,24 @@ export const $ClientResponse = {
             type: 'string',
             format: 'date-time',
         },
+        category: {
+            type: 'ClientCategoryDTO',
+        },
+        preferences: {
+            type: 'array',
+            contains: {
+                type: 'ClientPreferenceDTO',
+            },
+        },
+        recentOrders: {
+            type: 'array',
+            contains: {
+                type: 'OrderSummaryDTO',
+            },
+        },
+        orderCount: {
+            type: 'number',
+            format: 'int32',
+        },
     },
 } as const;

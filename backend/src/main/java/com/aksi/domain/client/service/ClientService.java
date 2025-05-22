@@ -17,8 +17,18 @@ public interface ClientService {
     /**
      * Отримання всіх клієнтів.
      * @return список всіх клієнтів
+     * @deprecated Використовуйте getAllClientsPaged для підтримки пагінації
      */
+    @Deprecated
     List<ClientResponse> getAllClients();
+
+    /**
+     * Отримання всіх клієнтів з пагінацією.
+     * @param page номер сторінки (з 0)
+     * @param size розмір сторінки
+     * @return сторінка з клієнтами
+     */
+    ClientPageResponse getAllClientsPaged(int page, int size);
 
     /**
      * Отримання клієнта за ідентифікатором.
@@ -35,7 +45,7 @@ public interface ClientService {
      */
     @Deprecated
     List<ClientResponse> searchClients(String keyword);
-    
+
     /**
      * Пошук клієнтів з пагінацією.
      * @param request параметри пошуку і пагінації

@@ -1,12 +1,16 @@
 package com.aksi.domain.client.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.aksi.domain.order.entity.OrderEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -20,6 +24,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -123,4 +128,26 @@ public class ClientEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    /**
+     * Категорія клієнта (Стандарт, Постійний, VIP, Корпоративний).
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    @Builder.Default
+    private ClientCategoryEntity category = ClientCategoryEntity.STANDARD;
+    
+    /**
+     * Історія замовлень клієнта.
+     */
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<OrderEntity> orders = new ArrayList<>();
+    
+    /**
+     * Переваги клієнта.
+     */
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<ClientPreferenceEntity> preferences = new HashSet<>();
 }

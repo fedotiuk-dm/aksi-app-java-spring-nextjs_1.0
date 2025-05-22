@@ -1,5 +1,12 @@
 package com.aksi.domain.client.mapper;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,16 +16,22 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.aksi.domain.client.dto.AddressDTO;
 import com.aksi.domain.client.dto.BaseClientRequest;
+import com.aksi.domain.client.dto.ClientCategoryDTO;
+import com.aksi.domain.client.dto.ClientPreferenceDTO;
 import com.aksi.domain.client.dto.ClientResponse;
 import com.aksi.domain.client.dto.CreateClientRequest;
 import com.aksi.domain.client.dto.UpdateClientRequest;
 import com.aksi.domain.client.entity.AddressEntity;
+import com.aksi.domain.client.entity.ClientCategoryEntity;
 import com.aksi.domain.client.entity.ClientEntity;
+import com.aksi.domain.client.entity.ClientPreferenceEntity;
+import com.aksi.domain.order.dto.OrderSummaryDTO;
+import com.aksi.domain.order.entity.OrderEntity;
 
 /**
  * Маппер для перетворення між ClientEntity і ClientResponse.
  */
-@Mapper(componentModel = "spring", uses = {AddressMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressMapper.class}, imports = {ArrayList.class, HashSet.class})
 public interface ClientMapper {
 
     /**
@@ -29,6 +42,10 @@ public interface ClientMapper {
     @Mapping(target = "fullName", expression = "java(client.getLastName() + \" \" + client.getFirstName())")
     @Mapping(target = "structuredAddress", source = "address")
     @Mapping(target = "address", source = "address", qualifiedByName = "addressEntityToString")
+    @Mapping(target = "category", expression = "java(mapClientCategory(client.getCategory()))")
+    @Mapping(target = "preferences", expression = "java(mapClientPreferences(client.getPreferences()))")
+    @Mapping(target = "recentOrders", expression = "java(mapRecentOrders(client.getOrders()))")
+    @Mapping(target = "orderCount", expression = "java(client.getOrders() != null ? client.getOrders().size() : 0)")
     ClientResponse toClientResponse(ClientEntity client);
 
     /**
@@ -41,6 +58,9 @@ public interface ClientMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "address", source = "structuredAddress")
+    @Mapping(target = "category", constant = "STANDARD")
+    @Mapping(target = "preferences", expression = "java(new HashSet<>())")
+    @Mapping(target = "orders", expression = "java(new ArrayList<>())")
     ClientEntity toEntity(CreateClientRequest request);
 
     /**
@@ -54,6 +74,9 @@ public interface ClientMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "address", source = "structuredAddress")
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "preferences", ignore = true)
+    @Mapping(target = "orders", ignore = true)
     void updateFromCreateRequest(CreateClientRequest request, @MappingTarget ClientEntity entity);
 
     /**
@@ -68,6 +91,9 @@ public interface ClientMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "address", source = "structuredAddress")
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "preferences", ignore = true)
+    @Mapping(target = "orders", ignore = true)
     void updateFromUpdateRequest(UpdateClientRequest request, @MappingTarget ClientEntity entity);
 
     /**
@@ -169,5 +195,61 @@ public interface ClientMapper {
             return null;
         }
         return addressMapper.toDto(entity);
+    }
+
+    /**
+     * Мапить категорію клієнта в DTO.
+     *
+     * @param category категорія клієнта
+     * @return DTO категорії клієнта
+     */
+    default ClientCategoryDTO mapClientCategory(ClientCategoryEntity category) {
+        return ClientCategoryDTO.fromEntity(category);
+    }
+
+    /**
+     * Мапить переваги клієнта в DTO.
+     *
+     * @param preferences набір переваг клієнта
+     * @return набір DTO переваг клієнта
+     */
+    default Set<ClientPreferenceDTO> mapClientPreferences(Set<ClientPreferenceEntity> preferences) {
+        if (preferences == null || preferences.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        return preferences.stream()
+                .map(pref -> ClientPreferenceDTO.builder()
+                        .id(pref.getId())
+                        .key(pref.getKey())
+                        .value(pref.getValue())
+                        .build())
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Отримує останні 5 замовлень клієнта та перетворює їх у короткий формат DTO.
+     *
+     * @param orders список замовлень клієнта
+     * @return список коротких DTO замовлень
+     */
+    default List<OrderSummaryDTO> mapRecentOrders(List<OrderEntity> orders) {
+        if (orders == null || orders.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return orders.stream()
+                .sorted(Comparator.comparing(OrderEntity::getCreatedDate).reversed())
+                .limit(5)
+                .map(order -> OrderSummaryDTO.builder()
+                        .id(order.getId())
+                        .receiptNumber(order.getReceiptNumber())
+                        .status(order.getStatus())
+                        .totalAmount(order.getTotalAmount())
+                        .createdAt(order.getCreatedDate())
+                        .completionDate(order.getCompletedDate())
+                        .itemCount(order.getItems() != null ? order.getItems().size() : 0)
+                        .build())
+                .collect(Collectors.toList());
     }
 }

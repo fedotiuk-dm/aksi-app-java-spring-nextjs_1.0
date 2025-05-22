@@ -3,6 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AddressDTO } from './AddressDTO';
+import type { ClientCategoryDTO } from './ClientCategoryDTO';
+import type { ClientPreferenceDTO } from './ClientPreferenceDTO';
+import type { OrderSummaryDTO } from './OrderSummaryDTO';
 export type ClientResponse = {
     id?: string;
     lastName?: string;
@@ -17,6 +20,10 @@ export type ClientResponse = {
     sourceDetails?: string;
     createdAt?: string;
     updatedAt?: string;
+    category?: ClientCategoryDTO;
+    preferences?: Array<ClientPreferenceDTO>;
+    recentOrders?: Array<OrderSummaryDTO>;
+    orderCount?: number;
 };
 export namespace ClientResponse {
     export enum source {
