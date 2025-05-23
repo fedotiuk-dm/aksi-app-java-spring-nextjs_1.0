@@ -3,6 +3,25 @@ import { create } from 'zustand';
 import { ClientEntity } from '../entities';
 import { ClientRepository } from '../repositories';
 
+// Додаємо імпорт wizard типів та store
+// Використовуємо lazy import щоб уникнути циклічних залежностей
+let wizardStoreModule: any = null;
+const getWizardStore = async () => {
+  if (!wizardStoreModule) {
+    wizardStoreModule = await import('../../wizard/store/wizard.store');
+  }
+  return wizardStoreModule.useWizardStore;
+};
+
+const getWizardStep = async () => {
+  if (!wizardStoreModule) {
+    const wizardTypesModule = await import('../../wizard/types');
+    return wizardTypesModule.WizardStep;
+  }
+  const wizardTypesModule = await import('../../wizard/types');
+  return wizardTypesModule.WizardStep;
+};
+
 interface ClientSelectionState {
   // Дані
   selectedClientId: string | null;
@@ -40,6 +59,15 @@ export const useClientSelectionStore = create<ClientSelectionState>((set, get) =
     selectClient: async (clientId: string) => {
       if (!clientId) {
         set({ selectedClientId: null, selectedClient: null });
+
+        // Відключаємо availability для наступного кроку
+        try {
+          const useWizardStore = await getWizardStore();
+          const WizardStep = await getWizardStep();
+          useWizardStore.getState().updateStepAvailability(WizardStep.BRANCH_SELECTION, false);
+        } catch (error) {
+          console.warn('Помилка оновлення wizard availability:', error);
+        }
         return;
       }
 
@@ -47,21 +75,32 @@ export const useClientSelectionStore = create<ClientSelectionState>((set, get) =
         isLoading: true,
         isError: false,
         error: null,
-        selectedClientId: clientId
+        selectedClientId: clientId,
       });
 
       try {
         const client = await clientRepository.getById(clientId);
         set({
           selectedClient: client,
-          isLoading: false
+          isLoading: false,
         });
+
+        // Увімкнаємо availability для наступного кроку після успішного вибору
+        try {
+          const useWizardStore = await getWizardStore();
+          const WizardStep = await getWizardStep();
+          console.log('Client Selection Store: оновлюємо wizard availability для BRANCH_SELECTION');
+          useWizardStore.getState().updateStepAvailability(WizardStep.BRANCH_SELECTION, true);
+          console.log('Client Selection Store: availability оновлено успішно');
+        } catch (error) {
+          console.warn('Помилка оновлення wizard availability:', error);
+        }
       } catch (error) {
         set({
           isLoading: false,
           isError: true,
           error: error instanceof Error ? error : new Error('Помилка отримання клієнта'),
-          selectedClient: null
+          selectedClient: null,
         });
       }
     },
@@ -72,8 +111,19 @@ export const useClientSelectionStore = create<ClientSelectionState>((set, get) =
         selectedClient: null,
         isLoading: false,
         isError: false,
-        error: null
+        error: null,
       });
+
+      // Відключаємо availability для наступного кроку
+      getWizardStore()
+        .then((useWizardStore) => {
+          return getWizardStep().then((WizardStep) => {
+            useWizardStore.getState().updateStepAvailability(WizardStep.BRANCH_SELECTION, false);
+          });
+        })
+        .catch((error) => {
+          console.warn('Помилка оновлення wizard availability при очищенні:', error);
+        });
     },
 
     isClientSelected: () => {
@@ -91,13 +141,13 @@ export const useClientSelectionStore = create<ClientSelectionState>((set, get) =
         isError: false,
         error: null,
         selectedClientId: null,
-        selectedClient: null
+        selectedClient: null,
       });
 
       try {
         await clientRepository.delete(clientId);
         set({
-          isLoading: false
+          isLoading: false,
         });
       } catch (error) {
         set({
@@ -105,9 +155,9 @@ export const useClientSelectionStore = create<ClientSelectionState>((set, get) =
           isError: true,
           error: error instanceof Error ? error : new Error('Помилка видалення клієнта'),
           selectedClientId: null,
-          selectedClient: null
+          selectedClient: null,
         });
       }
-    }
+    },
   };
 });

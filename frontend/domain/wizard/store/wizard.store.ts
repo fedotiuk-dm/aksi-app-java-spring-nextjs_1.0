@@ -163,7 +163,13 @@ export const useWizardStore = create<WizardStore>((set, get): WizardStore => {
 
     validateStep: (step: WizardStep) => {
       const { wizard } = get();
-      return wizard ? navigation.canNavigateToStep(step, wizard.availability) : false;
+      const result = wizard ? navigation.canNavigateToStep(step, wizard.availability) : false;
+      console.log(`Wizard Store: validateStep(${step}) = ${result}`, {
+        'wizard exists': !!wizard,
+        'wizard.availability': wizard?.availability,
+        'navigation.canNavigateToStep result': result,
+      });
+      return result;
     },
 
     calculateProgress: () => {
@@ -258,9 +264,16 @@ export const useWizardStore = create<WizardStore>((set, get): WizardStore => {
 
     updateStepAvailability: (step: WizardStep, isAvailable: boolean) => {
       const context = getErrorContext();
+      console.log(`Wizard Store: updateStepAvailability викликано для ${step} = ${isAvailable}`);
       executeSafely(() => {
         const { wizard } = get();
-        wizard?.updateStepAvailability(step, isAvailable);
+        if (wizard) {
+          console.log(`Wizard Store: поточна availability для ${step}:`, wizard.availability[step]);
+          wizard?.updateStepAvailability(step, isAvailable);
+          console.log(`Wizard Store: нова availability для ${step}:`, wizard.availability[step]);
+        } else {
+          console.warn('Wizard Store: wizard не ініціалізований');
+        }
       }, context);
     },
 

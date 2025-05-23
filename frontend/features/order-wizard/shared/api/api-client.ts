@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 import { OpenAPI } from '@/lib/api';
-import { ServiceCategoryService } from '@/lib/api';
+import { HealthCheckControllerService } from '@/lib/api';
 
 import { createOrderWizardApiLogger } from './logger';
 
@@ -107,11 +107,11 @@ export async function testApiConnection() {
     console.group(`%cOrderWizard API Connection Test`, LOG_STYLES.title);
     console.log('Testing connection to:', OpenAPI.BASE);
 
-    // Замість /health використовуємо надійний ендпоінт для перевірки з'єднання
-    const response = await ServiceCategoryService.getAllActiveCategories();
+    // Використовуємо health check ендпоінт для перевірки статусу API
+    const response = await HealthCheckControllerService.healthCheck();
     console.log(
-      'Connection successful! Service categories received:',
-      Array.isArray(response) ? response.length : 'API available'
+      'Connection successful! API health status:',
+      response ? 'API is working' : 'API available'
     );
 
     console.groupEnd();

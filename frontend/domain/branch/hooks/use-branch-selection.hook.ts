@@ -3,6 +3,20 @@ import { useCallback, useEffect } from 'react';
 import { useBranchSelectionStore } from '../store';
 import { Branch, BranchSearchParams } from '../types';
 
+// Додаємо імпорт wizard для оновлення availability
+let wizardStoreModule: any = null;
+const getWizardStore = async () => {
+  if (!wizardStoreModule) {
+    wizardStoreModule = await import('../../wizard/store/wizard.store');
+  }
+  return wizardStoreModule.useWizardStore;
+};
+
+const getWizardStep = async () => {
+  const wizardTypesModule = await import('../../wizard/types');
+  return wizardTypesModule.WizardStep;
+};
+
 /**
  * Хук для вибору приймального пункту
  * Інкапсулює доступ до стору та забезпечує зручний API для UI компонентів
@@ -54,13 +68,33 @@ export const useBranchSelection = () => {
   );
 
   const handleBranchSelectObject = useCallback(
-    (branch: Branch | null) => {
+    async (branch: Branch | null) => {
       if (!branch) {
         clearSelection();
+
+        // Відключаємо availability для наступного кроку
+        try {
+          const useWizardStore = await getWizardStore();
+          const WizardStep = await getWizardStep();
+          useWizardStore.getState().updateStepAvailability(WizardStep.ITEM_MANAGER, false);
+          console.log('Branch Selection: відключено availability для ITEM_MANAGER');
+        } catch (error) {
+          console.warn('Помилка оновлення wizard availability при очищенні:', error);
+        }
         return;
       }
 
       selectBranchObject(branch);
+
+      // Увімкнаємо availability для наступного кроку після успішного вибору
+      try {
+        const useWizardStore = await getWizardStore();
+        const WizardStep = await getWizardStep();
+        useWizardStore.getState().updateStepAvailability(WizardStep.ITEM_MANAGER, true);
+        console.log('Branch Selection: увімкнено availability для ITEM_MANAGER');
+      } catch (error) {
+        console.warn('Помилка оновлення wizard availability при виборі філії:', error);
+      }
     },
     [selectBranchObject, clearSelection]
   );
@@ -149,6 +183,21 @@ export const useBranchSelection = () => {
   // Валідація вибору
   const isSelectionValid = Boolean(selectedBranch?.id && selectedBranch?.active);
 
+  // Обертка для clearSelection з оновленням wizard availability
+  const handleClearSelection = useCallback(async () => {
+    clearSelection();
+
+    // Відключаємо availability для наступного кроку
+    try {
+      const useWizardStore = await getWizardStore();
+      const WizardStep = await getWizardStep();
+      useWizardStore.getState().updateStepAvailability(WizardStep.ITEM_MANAGER, false);
+      console.log('Branch Selection: відключено availability для ITEM_MANAGER при очищенні');
+    } catch (error) {
+      console.warn('Помилка оновлення wizard availability при очищенні:', error);
+    }
+  }, [clearSelection]);
+
   return {
     // Стан даних
     availableBranches,
@@ -171,7 +220,7 @@ export const useBranchSelection = () => {
     // Методи
     selectBranch: handleBranchSelect,
     selectBranchObject: handleBranchSelectObject,
-    clearSelection,
+    clearSelection: handleClearSelection,
     search: handleSearch,
     clearSearch,
     toggleActiveFilter,

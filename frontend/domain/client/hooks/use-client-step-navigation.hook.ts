@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
+import { useClientSelection } from './use-client-selection.hook';
 import { useWizardStore } from '../../wizard/store/wizard.store';
 import { WizardStep } from '../../wizard/types';
 import { Client } from '../types';
@@ -13,21 +14,29 @@ import { Client } from '../types';
  * - Dependency Inversion: залежить від wizard store абстракції
  */
 export const useClientStepNavigation = () => {
-  const { goToStep, validateStep } = useWizardStore();
+  const { goToStep } = useWizardStore();
+
+  // Додаємо client selection для перевірки стану
+  const { hasSelection } = useClientSelection();
 
   /**
    * Перевірка можливості переходу до наступного кроку
+   * Тепер безпосередньо перевіряємо чи клієнт вибраний
    */
   const canProceedToNext = useMemo(() => {
-    return validateStep(WizardStep.BRANCH_SELECTION);
-  }, [validateStep]);
+    console.log('Navigation: canProceedToNext перевірка, hasSelection:', hasSelection);
+    return hasSelection;
+  }, [hasSelection]);
 
   /**
    * Перехід до наступного кроку
    */
   const proceedToNext = useCallback(() => {
     if (canProceedToNext) {
+      console.log('Navigation: переходимо до BRANCH_SELECTION');
       goToStep(WizardStep.BRANCH_SELECTION);
+    } else {
+      console.log('Navigation: не можу перейти - клієнт не вибраний');
     }
   }, [canProceedToNext, goToStep]);
 
@@ -37,8 +46,11 @@ export const useClientStepNavigation = () => {
   const proceedWithClient = useCallback(
     (client: Client, onComplete?: (client: Client) => void) => {
       if (canProceedToNext) {
+        console.log('Navigation: переходимо до BRANCH_SELECTION з клієнтом:', client);
         goToStep(WizardStep.BRANCH_SELECTION);
         onComplete?.(client);
+      } else {
+        console.log('Navigation: не можу перейти з клієнтом - перевірка не пройдена');
       }
     },
     [canProceedToNext, goToStep]

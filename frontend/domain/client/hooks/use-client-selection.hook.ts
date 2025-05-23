@@ -3,6 +3,8 @@ import { useCallback, useEffect } from 'react';
 import { ClientResponse } from '@/lib/api';
 
 import { eventBus } from '../../shared/events/event-bus';
+import { useWizardStore } from '../../wizard/store/wizard.store';
+import { WizardStep } from '../../wizard/types';
 import { ClientEventFactory } from '../events';
 import { useClientSelectionStore } from '../store/client-selection.store';
 import { Client } from '../types';
@@ -43,6 +45,9 @@ export const useClientSelection = (props: UseClientSelectionProps = {}) => {
     selectClient: storeSelectClient,
     clearSelection: storeClearSelection,
   } = useClientSelectionStore();
+
+  // Додаємо wizard store для оновлення availability
+  const { updateStepAvailability } = useWizardStore();
 
   /**
    * Конвертуємо ClientEntity в Client через ClientAdapter
@@ -96,11 +101,14 @@ export const useClientSelection = (props: UseClientSelectionProps = {}) => {
 
       await storeSelectClient(client.id);
 
+      // Оновлюємо доступність наступного кроку в wizard
+      updateStepAvailability(WizardStep.BRANCH_SELECTION, true);
+
       // Створюємо та публікуємо доменну подію (Event Sourcing)
       const event = ClientEventFactory.createClientSelectedEvent(client);
       await eventBus.publish(event);
     },
-    [storeSelectClient]
+    [storeSelectClient, updateStepAvailability]
   );
 
   /**
@@ -121,13 +129,16 @@ export const useClientSelection = (props: UseClientSelectionProps = {}) => {
   const handleClearSelection = useCallback(async () => {
     storeClearSelection();
 
+    // Відключаємо доступність наступного кроку в wizard
+    updateStepAvailability(WizardStep.BRANCH_SELECTION, false);
+
     // Створюємо та публікуємо подію очищення вибору (Domain Event)
     const event = ClientEventFactory.createClientSelectionClearedEvent();
     await eventBus.publish(event);
 
     // Викликаємо callback очищення (UI notification)
     onClear?.();
-  }, [storeClearSelection, onClear]);
+  }, [storeClearSelection, updateStepAvailability, onClear]);
 
   /**
    * Перевірка, чи клієнт вибраний за ID

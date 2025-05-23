@@ -7,8 +7,11 @@ import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar
 import { Box, Paper, Chip, Typography, Divider, Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+import { useClientSelection } from '@/domain/client';
 import { useWizard, WizardStep, WizardMode, WizardContext } from '@/domain/wizard';
+import { BranchSelectionStep } from '@/features/order-wizard/branch-selection/ui/BranchSelectionStep';
 import { ClientSelectionStep } from '@/features/order-wizard/client-selection/ui/ClientSelectionStep';
+import { ItemManagerStep } from '@/features/order-wizard/item-manager';
 import useHealthCheck from '@/features/system-status/hooks/useHealthCheck';
 
 import { testApiConnection, initOrderWizardApi } from '../../api';
@@ -41,6 +44,9 @@ export default function OrderWizard() {
   const wizard = useWizard();
   const { initializeWizard } = wizard;
 
+  // Додаємо client selection для синхронізації стану
+  const clientSelection = useClientSelection();
+
   // Ініціалізуємо візард при першому завантаженні
   useEffect(() => {
     if (!wizard.isInitialized && !wizard.hasErrors) {
@@ -63,6 +69,26 @@ export default function OrderWizard() {
       }
     }
   }, [wizard.isInitialized, wizard.hasErrors, initializeWizard]);
+
+  // Синхронізуємо стан клієнта з wizard availability після ініціалізації
+  useEffect(() => {
+    if (wizard.isInitialized && clientSelection.hasSelection) {
+      console.log('Синхронізація: клієнт вибраний, оновлюємо availability для BRANCH_SELECTION');
+      wizard.updateStepAvailability(WizardStep.BRANCH_SELECTION, true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wizard.isInitialized, clientSelection.hasSelection]);
+
+  // Логування для діагностики (тимчасово)
+  useEffect(() => {
+    console.log('OrderWizard діагностика:', {
+      'wizard.isInitialized': wizard.isInitialized,
+      'clientSelection.hasSelection': clientSelection.hasSelection,
+      'wizard.availability[BRANCH_SELECTION]': wizard.isStepAvailable(WizardStep.BRANCH_SELECTION),
+      'wizard.currentStep': wizard.currentStep,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wizard.isInitialized, clientSelection.hasSelection, wizard.currentStep]);
 
   // Автоматично тестуємо Order Wizard API при завантаженні (тільки в development)
   useEffect(() => {
@@ -213,30 +239,12 @@ export default function OrderWizard() {
 
     // Відображаємо крок вибору філії
     if (isCurrentStep(WizardStep.BRANCH_SELECTION)) {
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Вибір філії
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (буде додано пізніше)
-          </Typography>
-        </Box>
-      );
+      return <BranchSelectionStep />;
     }
 
     // Відображаємо крок основної інформації
     if (isCurrentStep(WizardStep.ITEM_MANAGER)) {
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Управління предметами
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (буде додано пізніше)
-          </Typography>
-        </Box>
-      );
+      return <ItemManagerStep />;
     }
 
     // Відображаємо крок параметрів замовлення

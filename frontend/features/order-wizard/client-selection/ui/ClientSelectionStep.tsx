@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import React from 'react';
 
 import { useClientStep, Client, ClientMode } from '@/domain/client';
+import { useWizard } from '@/domain/wizard';
 
 import {
   ClientCreateForm,
@@ -40,15 +41,41 @@ export const ClientSelectionStep: React.FC = () => {
       console.log('Клієнт вибраний для замовлення:', client);
     },
   });
+  const wizard = useWizard();
 
-  // Додаємо логування для діагностики (тимчасово)
-  console.log('ClientSelectionStep render:', {
-    mode: clientStep.mode,
+  // Логування для діагностики
+  console.log('ClientSelectionStep render - canProceed:', {
+    canProceed: clientStep.canProceed,
+    'clientStep.state.isStepComplete': clientStep.state.isStepComplete,
+    'clientStep.navigation.canProceedToNext': clientStep.navigation.canProceedToNext,
     hasSelectedClient: clientStep.stepInfo.hasSelectedClient,
-    selectedClient: clientStep.selectedClient,
-    isLoading: clientStep.isLoading,
-    error: clientStep.error,
+    selectedClientId: clientStep.selectedClient?.id,
+    'clientStep.selectedClient': !!clientStep.selectedClient,
   });
+
+  /**
+   * Обробник переходу до наступного кроку
+   */
+  const handleNext = async () => {
+    console.log('handleNext викликано, canProceed:', clientStep.canProceed);
+
+    if (!clientStep.canProceed) {
+      console.log('Не можна продовжити - клієнт не вибраний');
+      return;
+    }
+
+    if (clientStep.canProceed) {
+      console.log('Перехід до наступного кроку з клієнтом:', clientStep.selectedClient);
+
+      // Переходимо до наступного кроку через wizard
+      const result = wizard.navigateForward();
+      if (result.success) {
+        console.log('Успішно перейшли до вибору філії');
+      } else {
+        console.error('Помилка переходу:', result.errors);
+      }
+    }
+  };
 
   /**
    * Рендер контенту залежно від режиму
@@ -113,30 +140,33 @@ export const ClientSelectionStep: React.FC = () => {
               />
             )}
 
-            <ClientSearchPanel
-              searchTerm={clientStep.clientSearch.searchTerm}
-              results={clientStep.searchResults}
-              onSearchTermChange={clientStep.clientSearch.setSearchQuery}
-              onSearch={clientStep.search}
-              onSelectClient={clientStep.selectAndComplete}
-              onEditClient={(client) => {
-                console.log('Редагування клієнта з пошуку:', client);
-                clientStep.startEditing(client);
-              }}
-              onDeleteClient={(client) => {
-                if (
-                  client.id &&
-                  confirm(
-                    `Ви впевнені, що хочете видалити клієнта ${client.firstName} ${client.lastName}?`
-                  )
-                ) {
-                  console.log('Видалення клієнта з пошуку:', client);
-                  clientStep.deleteClient(client.id);
-                }
-              }}
-              isLoading={clientStep.isLoading}
-              error={clientStep.error}
-            />
+            {/* Показуємо пошук тільки якщо клієнт ще не вибраний */}
+            {!clientStep.stepInfo.hasSelectedClient && (
+              <ClientSearchPanel
+                searchTerm={clientStep.clientSearch.searchTerm}
+                results={clientStep.searchResults}
+                onSearchTermChange={clientStep.clientSearch.setSearchQuery}
+                onSearch={clientStep.search}
+                onSelectClient={clientStep.selectAndComplete}
+                onEditClient={(client) => {
+                  console.log('Редагування клієнта з пошуку:', client);
+                  clientStep.startEditing(client);
+                }}
+                onDeleteClient={(client) => {
+                  if (
+                    client.id &&
+                    confirm(
+                      `Ви впевнені, що хочете видалити клієнта ${client.firstName} ${client.lastName}?`
+                    )
+                  ) {
+                    console.log('Видалення клієнта з пошуку:', client);
+                    clientStep.deleteClient(client.id);
+                  }
+                }}
+                isLoading={clientStep.isLoading}
+                error={clientStep.error}
+              />
+            )}
           </>
         );
     }
@@ -150,9 +180,14 @@ export const ClientSelectionStep: React.FC = () => {
       <Box sx={{ minHeight: '400px' }}>{renderContent()}</Box>
 
       <StepNavigation
-        onNext={clientStep.canProceed ? clientStep.proceedToNext : undefined}
-        nextLabel="Продовжити до вибору філії"
+        onNext={handleNext}
+        nextLabel={
+          clientStep.stepInfo.hasSelectedClient
+            ? 'Продовжити до вибору філії'
+            : 'Спочатку оберіть клієнта'
+        }
         isNextDisabled={!clientStep.canProceed}
+        nextLoading={clientStep.isLoading}
         hideBackButton
       />
     </StepContainer>
