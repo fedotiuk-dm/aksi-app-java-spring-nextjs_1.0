@@ -24,6 +24,7 @@ export const useClientStepActions = () => {
     startClientEditing,
     startClientCreation,
     startClientSelection,
+    startClientSearch,
     deleteClient,
   } = useClientDomainStore();
 
@@ -90,6 +91,7 @@ export const useClientStepActions = () => {
     switchToCreate: startClientCreation,
     switchToEdit: startClientEditing,
     switchToSelect: startClientSelection,
+    switchToSearch: startClientSearch,
 
     // Операції створення
     createClient,

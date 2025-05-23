@@ -93,7 +93,9 @@ export {
   useOrderParametersPaymentParams,
   useOrderParametersAdditionalInfo,
   useOrderParametersStatus,
+  useItemWizardStore,
 } from './store';
+export type { ItemWizardData as ItemWizardStoreData } from './store';
 
 // Утиліти
 export { OrderUtils } from './utils/order.utils';

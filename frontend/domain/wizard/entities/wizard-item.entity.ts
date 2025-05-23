@@ -45,6 +45,8 @@ export class WizardItemEntity {
     this.state.updateStepAvailability(WizardStep.ITEM_PROPERTIES, true);
     // Інші кроки залишаються недоступними до поступового переходу
     this.resetRemainingItemWizardAvailability();
+
+    console.log('WizardItemEntity: Item Wizard запущено');
   }
 
   finishItemWizard(saveItem: boolean): void {
@@ -52,12 +54,16 @@ export class WizardItemEntity {
       throw new Error('Item Wizard не активний');
     }
 
+    console.log('WizardItemEntity: завершення Item Wizard', { saveItem });
+
     this.state.setItemWizardActive(false);
     this.state.updateCurrentStep(WizardStep.ITEM_MANAGER);
 
     // Відновлюємо історію основного wizard
     this.navigation.reset();
     this.navigation.navigateToStep(WizardStep.ITEM_MANAGER);
+
+    console.log('WizardItemEntity: Item Wizard завершено, повернення до ITEM_MANAGER');
   }
 
   // Приватні методи

@@ -29,7 +29,25 @@ export class WizardNavigationEntity {
 
   get canGoForward(): boolean {
     const nextStep = this.getNextStep();
-    return nextStep !== null && this.state.availability[nextStep];
+
+    if (nextStep === null) {
+      return false;
+    }
+
+    // Для Item Wizard дозволяємо перехід навіть якщо крок ще не активований
+    // (активація відбудеться в goForward)
+    if (this.state.isItemWizardActive) {
+      return true;
+    }
+
+    // Для основного wizard перевіряємо доступність
+    const result = this.state.availability[nextStep];
+    console.log('WizardNavigationEntity: canGoForward (main wizard)', {
+      currentStep: this.state.currentStep,
+      nextStep,
+      nextStepAvailable: result,
+    });
+    return result;
   }
 
   get previousStep(): WizardStep | null {
@@ -44,13 +62,11 @@ export class WizardNavigationEntity {
     const previousStep = this.state.currentStep;
     this.state.updateCurrentStep(step);
 
-    // Автоматично активуємо наступний крок якщо це item wizard
-    if (this.state.isItemWizardActive) {
-      const nextStep = this.getNextStep();
-      if (nextStep) {
-        this.state.updateStepAvailability(nextStep, true);
-      }
-    }
+    console.log('WizardNavigationEntity: navigateToStep', {
+      previousStep,
+      currentStep: step,
+      isItemWizardActive: this.state.isItemWizardActive,
+    });
 
     const historyEntry: StepHistoryEntry = {
       step,
@@ -74,7 +90,30 @@ export class WizardNavigationEntity {
 
   goForward(): void {
     const nextStep = this.getNextStep();
-    if (nextStep === null || !this.canGoForward) {
+    console.log('WizardNavigationEntity: goForward', {
+      currentStep: this.state.currentStep,
+      nextStep,
+      isItemWizardActive: this.state.isItemWizardActive,
+      availability: this.state.availability,
+    });
+
+    if (nextStep === null) {
+      console.error('WizardNavigationEntity: Немає наступного кроку');
+      throw new Error('Неможливо перейти до наступного кроку');
+    }
+
+    // Для Item Wizard автоматично активуємо наступний крок перед переходом
+    if (this.state.isItemWizardActive && !this.state.availability[nextStep]) {
+      console.log('WizardNavigationEntity: Активуємо наступний крок перед переходом:', nextStep);
+      this.state.updateStepAvailability(nextStep, true);
+    }
+
+    // Тепер перевіряємо доступність після можливої активації
+    if (!this.state.availability[nextStep]) {
+      console.error('WizardNavigationEntity: Крок недоступний для переходу', {
+        nextStep,
+        available: this.state.availability[nextStep],
+      });
       throw new Error('Неможливо перейти до наступного кроку');
     }
 
@@ -94,12 +133,19 @@ export class WizardNavigationEntity {
 
   // Приватні методи
   private validateStepTransition(from: WizardStep, to: WizardStep): void {
-    if (!this.state.availability[to]) {
-      throw new Error(`Крок ${to} недоступний для переходу`);
-    }
-
     if (from === to) {
       return; // Дозволяємо залишатися на тому ж кроці
+    }
+
+    // Для Item Wizard пропускаємо перевірку доступності
+    // (доступність управляється у goForward)
+    if (this.state.isItemWizardActive) {
+      return;
+    }
+
+    // Для основного wizard перевіряємо доступність
+    if (!this.state.availability[to]) {
+      throw new Error(`Крок ${to} недоступний для переходу`);
     }
   }
 

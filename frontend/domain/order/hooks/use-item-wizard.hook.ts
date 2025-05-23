@@ -3,11 +3,12 @@
  * Інтегрує Item Wizard стан з React та бізнес-логікою
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { useWizard, WizardStep } from '@/domain/wizard';
 
 import { OrderItemService } from '../services/order-item.service';
+import { useItemWizardStore, type ItemWizardData } from '../store';
 
 import type {
   OrderItem,
@@ -17,42 +18,7 @@ import type {
   StainType,
 } from '../types';
 
-/**
- * Дані предмета в процесі створення/редагування
- */
-export interface ItemWizardData {
-  // Основна інформація (2.1)
-  name: string;
-  category: string;
-  quantity: number;
-  unitOfMeasure: string;
-  unitPrice: number;
-  description?: string;
-
-  // Характеристики (2.2)
-  material?: MaterialType;
-  color?: string;
-  fillerType?: string;
-  fillerCompressed?: boolean;
-  wearDegree?: string;
-
-  // Дефекти та плями (2.3)
-  defects?: DefectType[];
-  stains?: StainType[];
-  defectsNotes?: string;
-  noWarranty?: boolean;
-  noWarrantyReason?: string;
-
-  // Додаткові модифікатори (2.4)
-  childSized?: boolean;
-  manualCleaning?: boolean;
-  heavilySoiled?: boolean;
-  heavilySoiledPercentage?: number;
-
-  // Фото (2.5)
-  photos?: File[];
-  hasPhotos?: boolean;
-}
+// ItemWizardData тепер імпортується з store
 
 /**
  * Стан валідації для кожного підкроку
@@ -105,45 +71,30 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
   const { orderId, editingItemId, autoSave: _autoSave = false } = config;
   const wizard = useWizard();
 
-  // Початковий стан предмета
-  const initialItemData: ItemWizardData = useMemo(
-    () => ({
-      name: '',
-      category: '',
-      quantity: 1,
-      unitOfMeasure: 'шт',
-      unitPrice: 0,
-      description: '',
-      material: undefined,
-      color: '',
-      fillerType: undefined,
-      fillerCompressed: false,
-      wearDegree: undefined,
-      defects: [],
-      stains: [],
-      defectsNotes: '',
-      noWarranty: false,
-      noWarrantyReason: '',
-      childSized: false,
-      manualCleaning: false,
-      heavilySoiled: false,
-      heavilySoiledPercentage: 0,
-      photos: [],
-      hasPhotos: false,
-    }),
-    []
-  );
-
-  // TODO: Інтегрувати з Zustand store для збереження стану
-  // Поки що використовуємо локальний стан
-  const [itemData, setItemData] = useState<ItemWizardData>(initialItemData);
+  // Використовуємо Zustand store замість локального стану
+  const {
+    itemData,
+    isEditing,
+    editingItemId: storeEditingItemId,
+    updateBasicInfo: storeUpdateBasicInfo,
+    updateProperties: storeUpdateProperties,
+    updateDefectsStains: storeUpdateDefectsStains,
+    updatePriceModifiers: storeUpdatePriceModifiers,
+    updatePhotos: storeUpdatePhotos,
+    resetItemData,
+    startEditing,
+    stopEditing,
+  } = useItemWizardStore();
 
   // === COMPUTED VALUES ===
 
   /**
    * Перевірка чи редагуємо існуючий предмет
    */
-  const isEditing = useMemo(() => Boolean(editingItemId), [editingItemId]);
+  const isEditingComputed = useMemo(
+    () => Boolean(editingItemId || storeEditingItemId),
+    [editingItemId, storeEditingItemId]
+  );
 
   /**
    * Перевірка чи Item Wizard активний
@@ -218,9 +169,9 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
         >
       >
     ) => {
-      setItemData((prev) => ({ ...prev, ...updates }));
+      storeUpdateBasicInfo(updates);
     },
-    []
+    [storeUpdateBasicInfo]
   );
 
   /**
@@ -235,9 +186,9 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
         >
       >
     ) => {
-      setItemData((prev) => ({ ...prev, ...updates }));
+      storeUpdateProperties(updates);
     },
-    []
+    [storeUpdateProperties]
   );
 
   /**
@@ -252,9 +203,9 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
         >
       >
     ) => {
-      setItemData((prev) => ({ ...prev, ...updates }));
+      storeUpdateDefectsStains(updates);
     },
-    []
+    [storeUpdateDefectsStains]
   );
 
   /**
@@ -269,9 +220,9 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
         >
       >
     ) => {
-      setItemData((prev) => ({ ...prev, ...updates }));
+      storeUpdatePriceModifiers(updates);
     },
-    []
+    [storeUpdatePriceModifiers]
   );
 
   /**
@@ -279,9 +230,9 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
    */
   const updatePhotos = useCallback(
     (updates: Partial<Pick<ItemWizardData, 'photos' | 'hasPhotos'>>) => {
-      setItemData((prev) => ({ ...prev, ...updates }));
+      storeUpdatePhotos(updates);
     },
-    []
+    [storeUpdatePhotos]
   );
 
   /**
@@ -349,7 +300,7 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
 
       if (result.success) {
         // Очищуємо стан після успішного збереження
-        setItemData(initialItemData);
+        resetItemData();
         return { success: true, item: result.item };
       } else {
         return { success: false, error: result.error };
@@ -358,14 +309,14 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
       const errorMessage = error instanceof Error ? error.message : 'Невідома помилка збереження';
       return { success: false, error: errorMessage };
     }
-  }, [orderId, editingItemId, isEditing, isReadyToSave, itemData, initialItemData]);
+  }, [orderId, editingItemId, isEditingComputed, isReadyToSave, itemData, resetItemData]);
 
   /**
    * Скасування та очищення стану
    */
   const cancelWizard = useCallback(() => {
-    setItemData(initialItemData);
-  }, [initialItemData]);
+    resetItemData();
+  }, [resetItemData]);
 
   /**
    * Завантаження існуючого предмета для редагування
@@ -379,7 +330,7 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
         if (result.success && result.item) {
           // Конвертуємо OrderItem в ItemWizardData
           const item = result.item;
-          setItemData({
+          startEditing(itemId, {
             name: item.name,
             category: item.category || '',
             quantity: item.quantity,
@@ -420,7 +371,7 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
 
     // === СТАН ===
     isActive,
-    isEditing,
+    isEditing: isEditingComputed,
     canProceed,
     isReadyToSave,
 

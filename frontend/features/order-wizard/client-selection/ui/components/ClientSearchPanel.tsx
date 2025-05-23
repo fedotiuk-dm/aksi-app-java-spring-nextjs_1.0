@@ -1,7 +1,7 @@
 'use client';
 
-import { Person, Edit, Phone, Email, Delete } from '@mui/icons-material';
-import { Avatar, IconButton, Box } from '@mui/material';
+import { Person, Edit, Phone, Email, Delete, ArrowBack } from '@mui/icons-material';
+import { Avatar, IconButton, Box, Button } from '@mui/material';
 import React from 'react';
 
 import { SearchInput, DataList } from '@/shared/ui';
@@ -26,6 +26,7 @@ interface ClientSearchPanelProps {
   onSelectClient: (client: Client) => void;
   onEditClient?: (client: Client) => void;
   onDeleteClient?: (client: Client) => void;
+  onBack?: () => void;
   className?: string;
   maxHeight?: number;
   showEditButton?: boolean;
@@ -46,6 +47,7 @@ export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
   onSelectClient,
   onEditClient,
   onDeleteClient,
+  onBack,
   className,
   maxHeight = 400,
   showEditButton = true,
@@ -130,6 +132,14 @@ export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
 
   return (
     <Box className={className}>
+      {onBack && (
+        <Box sx={{ mb: 2 }}>
+          <Button variant="outlined" startIcon={<ArrowBack />} onClick={onBack} size="small">
+            Назад до вибору
+          </Button>
+        </Box>
+      )}
+
       <Box sx={{ mb: 2 }}>
         <SearchInput
           value={searchTerm}

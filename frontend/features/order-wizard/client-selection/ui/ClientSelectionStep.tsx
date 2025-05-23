@@ -15,7 +15,6 @@ import {
   SelectedClientInfo,
 } from './components';
 
-
 /**
  * Головний компонент для CLIENT_SELECTION кроку Order Wizard
  *
@@ -107,17 +106,9 @@ export const ClientSelectionStep: React.FC = () => {
           />
         );
 
-      case ClientMode.SELECT:
-      default:
+      case ClientMode.SEARCH:
         return (
           <>
-            <ClientModeSelector
-              currentMode={clientStep.mode}
-              onSwitchToCreate={clientStep.switchToCreate}
-              onSwitchToSearch={clientStep.switchToSelect}
-              hasSelectedClient={clientStep.stepInfo.hasSelectedClient}
-            />
-
             {clientStep.stepInfo.hasSelectedClient && clientStep.selectedClient && (
               <SelectedClientInfo
                 client={clientStep.selectedClient}
@@ -140,7 +131,7 @@ export const ClientSelectionStep: React.FC = () => {
               />
             )}
 
-            {/* Показуємо пошук тільки якщо клієнт ще не вибраний */}
+            {/* Показуємо пошук якщо клієнт ще не вибраний */}
             {!clientStep.stepInfo.hasSelectedClient && (
               <ClientSearchPanel
                 searchTerm={clientStep.clientSearch.searchTerm}
@@ -163,8 +154,47 @@ export const ClientSelectionStep: React.FC = () => {
                     clientStep.deleteClient(client.id);
                   }
                 }}
+                onBack={clientStep.switchToSelect}
                 isLoading={clientStep.isLoading}
                 error={clientStep.error}
+              />
+            )}
+          </>
+        );
+
+      case ClientMode.SELECT:
+      default:
+        return (
+          <>
+            {/* Показуємо селектор якщо клієнт ще не вибраний */}
+            {!clientStep.stepInfo.hasSelectedClient && (
+              <ClientModeSelector
+                currentMode={clientStep.mode}
+                onSwitchToCreate={clientStep.switchToCreate}
+                onSwitchToSearch={clientStep.switchToSearch}
+                hasSelectedClient={clientStep.stepInfo.hasSelectedClient}
+              />
+            )}
+
+            {clientStep.stepInfo.hasSelectedClient && clientStep.selectedClient && (
+              <SelectedClientInfo
+                client={clientStep.selectedClient}
+                onEdit={() => {
+                  console.log('Редагування клієнта:', clientStep.selectedClient);
+                  if (clientStep.selectedClient) {
+                    clientStep.startEditing(clientStep.selectedClient);
+                  }
+                }}
+                onClear={clientStep.clearSelection}
+                onDelete={() => {
+                  if (
+                    clientStep.selectedClient?.id &&
+                    confirm('Ви впевнені, що хочете видалити цього клієнта?')
+                  ) {
+                    console.log('Видалення клієнта:', clientStep.selectedClient);
+                    clientStep.deleteClient(clientStep.selectedClient.id);
+                  }
+                }}
               />
             )}
           </>

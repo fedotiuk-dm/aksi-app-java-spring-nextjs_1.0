@@ -5,6 +5,7 @@ export enum ClientMode {
   CREATE = 'create',
   EDIT = 'edit',
   SELECT = 'select',
+  SEARCH = 'search',
   VIEW = 'view',
 }
 

@@ -83,11 +83,10 @@ export const ClientModeSelector: React.FC<ClientModeSelectorProps> = ({
 
       <Grid size={{ xs: 12, sm: 6 }}>
         <Card
-          variant={currentMode === ClientMode.SELECT ? 'outlined' : 'elevation'}
+          variant="elevation"
           sx={{
             cursor: 'pointer',
-            backgroundColor:
-              currentMode === ClientMode.SELECT ? 'action.selected' : 'background.paper',
+            backgroundColor: 'background.paper',
             '&:hover': { backgroundColor: 'action.hover' },
             transition: 'all 0.2s ease-in-out',
           }}
@@ -102,7 +101,7 @@ export const ClientModeSelector: React.FC<ClientModeSelectorProps> = ({
               {searchDescription}
             </Typography>
             <Button
-              variant={currentMode === ClientMode.SELECT ? 'contained' : 'outlined'}
+              variant="outlined"
               startIcon={<Search />}
               size={buttonSize}
               onClick={(e) => {

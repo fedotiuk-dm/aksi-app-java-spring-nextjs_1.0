@@ -39,6 +39,7 @@ interface ClientDomainActions {
   startClientCreation: () => void;
   startClientEditing: (client: Client) => void;
   startClientSelection: () => void;
+  startClientSearch: () => void;
 
   // Інтеграційні методи для wizard з правильними типами
   createAndSelect: (formData: CreateClientFormData) => Promise<void>;
@@ -56,7 +57,7 @@ type ClientDomainStore = ClientDomainState & ClientDomainActions;
  * Початковий стан домену
  */
 const initialState: ClientDomainState = {
-  mode: ClientMode.SELECT, // Змінюю на SELECT для wizard
+  mode: ClientMode.SELECT, // Початковий режим - показуємо селектор
   isGlobalLoading: false,
   globalError: null,
 };
@@ -120,6 +121,12 @@ export const useClientDomainStore = create<ClientDomainStore>((set, get) => ({
 
   startClientSelection: () => {
     set({ mode: ClientMode.SELECT, globalError: null });
+    useClientCreationStore.getState().resetForm();
+    useClientEditingStore.getState().cancelEditing();
+  },
+
+  startClientSearch: () => {
+    set({ mode: ClientMode.SEARCH, globalError: null });
     useClientCreationStore.getState().resetForm();
     useClientEditingStore.getState().cancelEditing();
   },
