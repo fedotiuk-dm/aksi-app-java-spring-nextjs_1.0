@@ -12,6 +12,9 @@ import { useWizard, WizardStep, WizardMode, WizardContext } from '@/domain/wizar
 import { BranchSelectionStep } from '@/features/order-wizard/branch-selection/ui/BranchSelectionStep';
 import { ClientSelectionStep } from '@/features/order-wizard/client-selection/ui/ClientSelectionStep';
 import { ItemManagerStep } from '@/features/order-wizard/item-manager';
+import { ItemWizardStep } from '@/features/order-wizard/item-wizard';
+import { OrderConfirmationStep } from '@/features/order-wizard/order-confirmation';
+import { OrderParametersStep } from '@/features/order-wizard/order-parameters';
 import useHealthCheck from '@/features/system-status/hooks/useHealthCheck';
 
 import { testApiConnection, initOrderWizardApi } from '../../api';
@@ -249,96 +252,23 @@ export default function OrderWizard() {
 
     // Відображаємо крок параметрів замовлення
     if (isCurrentStep(WizardStep.ORDER_PARAMETERS)) {
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Параметри замовлення
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (буде додано пізніше)
-          </Typography>
-        </Box>
-      );
+      return <OrderParametersStep />;
     }
 
     // Відображаємо крок підтвердження замовлення
     if (isCurrentStep(WizardStep.ORDER_CONFIRMATION)) {
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Підтвердження замовлення
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (буде додано пізніше)
-          </Typography>
-        </Box>
-      );
+      return <OrderConfirmationStep />;
     }
 
-    // Якщо активний підвізард предметів, показуємо відповідний крок
-    if (isCurrentStep(WizardStep.ITEM_BASIC_INFO)) {
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Основна інформація про предмет
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (буде додано пізніше)
-          </Typography>
-        </Box>
-      );
-    }
-
-    if (isCurrentStep(WizardStep.ITEM_PROPERTIES)) {
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Властивості предмету
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (буде додано пізніше)
-          </Typography>
-        </Box>
-      );
-    }
-
-    if (isCurrentStep(WizardStep.DEFECTS_STAINS)) {
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Дефекти та плями
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (буде додано пізніше)
-          </Typography>
-        </Box>
-      );
-    }
-
-    if (isCurrentStep(WizardStep.PRICE_CALCULATOR)) {
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Розрахунок ціни
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (буде додано пізніше)
-          </Typography>
-        </Box>
-      );
-    }
-
-    if (isCurrentStep(WizardStep.PHOTO_DOCUMENTATION)) {
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Фотодокументація
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (буде додано пізніше)
-          </Typography>
-        </Box>
-      );
+    // Якщо активний підвізард предметів, показуємо ItemWizardStep
+    if (
+      isCurrentStep(WizardStep.ITEM_BASIC_INFO) ||
+      isCurrentStep(WizardStep.ITEM_PROPERTIES) ||
+      isCurrentStep(WizardStep.DEFECTS_STAINS) ||
+      isCurrentStep(WizardStep.PRICE_CALCULATOR) ||
+      isCurrentStep(WizardStep.PHOTO_DOCUMENTATION)
+    ) {
+      return <ItemWizardStep />;
     }
 
     // Якщо крок не визначено, показуємо помилку

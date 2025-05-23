@@ -26,6 +26,7 @@ export type {
   FinancialOperationResponse,
   DiscountOperationResponse,
   PaymentCalculationResponse,
+  OrderParametersValidation,
 } from './order.types';
 
 export * from './order-form.types';

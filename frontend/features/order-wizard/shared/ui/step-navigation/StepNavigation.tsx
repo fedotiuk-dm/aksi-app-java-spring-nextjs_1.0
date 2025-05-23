@@ -28,6 +28,7 @@ interface StepNavigationProps {
   nextLoadingText?: string;
   backLoadingText?: string;
   showIcons?: boolean;
+  additionalActions?: React.ReactNode;
 }
 
 /**
@@ -61,6 +62,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
   nextLoadingText = 'Обробка...',
   backLoadingText = 'Повернення...',
   showIcons = true,
+  additionalActions,
 }) => {
   return (
     <Stack direction="row" spacing={2} className={className}>
@@ -90,6 +92,8 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
       )}
 
       <div style={{ flexGrow: 1 }} />
+
+      {additionalActions}
 
       {!hideBackButton && onBack && (
         <ActionButton

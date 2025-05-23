@@ -348,3 +348,16 @@ export interface OrderPaymentInfo {
   transactionId?: string;
   receiptNumber?: string;
 }
+
+/**
+ * Валідація параметрів замовлення
+ */
+export interface OrderParametersValidation {
+  executionDate?: string;
+  urgencyOption?: string;
+  discountPercentage?: string;
+  prepaymentAmount?: string;
+  paymentMethod?: string;
+  orderNotes?: string;
+  [key: string]: string | undefined;
+}

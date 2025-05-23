@@ -32,10 +32,24 @@ export { DiscountType, PaymentMethod, PaymentStatus } from './financial.types';
 // === COMPLETION ===
 export type {
   OrderCompletion,
+  UpdateCompletionRequest,
   CompletionCalculationParams,
   BusinessHours,
-  ReadinessStatus,
+  DayHours,
+  CompletionCalculationResult,
+  CompletionBreakdown,
+  OrderReadiness,
+  OrderReminder,
+  OrderSchedule,
+  OrderMilestone,
+  OrderDependency,
+  ResourceAllocation,
+  CompletionStats,
+  CompletionTypeStats,
+  UrgencyOption,
 } from './completion.types';
+
+export { ReadinessStatus } from './completion.types';
 
 // === PHOTO ===
 export type { OrderItemPhoto, PhotoAnnotation, PhotoMetadata, CameraInfo } from './photo.types';

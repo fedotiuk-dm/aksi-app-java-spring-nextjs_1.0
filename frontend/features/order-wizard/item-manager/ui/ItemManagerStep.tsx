@@ -4,6 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Box, Button, Typography, Paper, Chip } from '@mui/material';
 import React from 'react';
 
+import { useOrderItems } from '@/domain/order';
 import { useWizard } from '@/domain/wizard';
 
 import { ItemsTable, ItemsSummary } from './components';
@@ -31,10 +32,20 @@ export const ItemManagerStep: React.FC = () => {
   // Отримуємо wizard функціональність
   const wizard = useWizard();
 
+  // TODO: Отримати orderId з wizard state
+  const orderId = 'temp-order-id'; // Тимчасове значення
+
+  // Отримуємо дані предметів з domain layer
+  const { hasItems, canProceed, isLoading, isOperating } = useOrderItems({ orderId });
+
   // Логування для діагностики
   console.log('ItemManagerStep render:', {
     currentStep: wizard.currentStep,
     isItemWizardActive: wizard.isItemWizardActive,
+    hasItems,
+    canProceed,
+    isLoading,
+    isOperating,
   });
 
   /**
@@ -55,9 +66,6 @@ export const ItemManagerStep: React.FC = () => {
    * Обробник переходу до наступного кроку
    */
   const handleNext = async () => {
-    // TODO: Перевірити чи є хоча б один предмет
-    const hasItems = false; // Тимчасово, буде отримуватися з domain
-
     if (!hasItems) {
       console.log('Не можна продовжити - немає жодного предмета');
       return;
@@ -88,9 +96,8 @@ export const ItemManagerStep: React.FC = () => {
 
   /**
    * Перевірка чи можна перейти до наступного кроку
-   * Для тестування поки що дозволяємо завжди
    */
-  const canProceed = true; // TODO: Змінити на перевірку наявності предметів
+  const canNavigateNext = canProceed && hasItems && !isLoading && !isOperating;
 
   return (
     <StepContainer
@@ -109,7 +116,7 @@ export const ItemManagerStep: React.FC = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleAddItem}
-            disabled={wizard.isItemWizardActive}
+            disabled={wizard.isItemWizardActive || isLoading || isOperating}
             size="large"
           >
             Додати предмет
@@ -118,13 +125,15 @@ export const ItemManagerStep: React.FC = () => {
           {wizard.isItemWizardActive && (
             <Chip label="Підвізард активний" color="primary" variant="outlined" />
           )}
+
+          {isOperating && <Chip label="Збереження..." color="secondary" variant="outlined" />}
         </Box>
 
         {/* Таблиця предметів */}
         <ItemsTable />
 
         {/* Підказка якщо немає предметів */}
-        {!wizard.isItemWizardActive && (
+        {!hasItems && !isLoading && !wizard.isItemWizardActive && (
           <Paper
             variant="outlined"
             sx={{
@@ -147,15 +156,25 @@ export const ItemManagerStep: React.FC = () => {
             </Button>
           </Paper>
         )}
+
+        {/* Інформація про вимоги */}
+        {!hasItems && (
+          <Paper variant="outlined" sx={{ p: 2, mt: 2, bgcolor: 'info.light' }}>
+            <Typography variant="body2" color="info.dark">
+              <strong>Важливо:</strong> Для продовження до наступного етапу необхідно додати
+              принаймні один предмет до замовлення.
+            </Typography>
+          </Paper>
+        )}
       </Box>
 
       <StepNavigation
-        onNext={handleNext}
+        onNext={canNavigateNext ? handleNext : undefined}
         onBack={handleBack}
         nextLabel="Продовжити до параметрів"
         backLabel="Назад до філії"
-        isNextDisabled={!canProceed}
-        nextLoading={false}
+        isNextDisabled={!canNavigateNext}
+        nextLoading={isLoading || isOperating}
       />
     </StepContainer>
   );

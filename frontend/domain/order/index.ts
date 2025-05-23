@@ -19,7 +19,12 @@ export type {
   DayHours,
   OrderItemModifier,
   OrderItemPriceCalculation,
+  OrderItemCharacteristics,
+  OrderItemStats,
+  OrderItemSearchParams,
   OrderFinancials,
+  UrgencyOption,
+  OrderParametersValidation,
 } from './types';
 
 export {
@@ -31,22 +36,49 @@ export {
   MaterialType,
   WearDegree,
   FillerType,
+  DefectType,
+  StainType,
 } from './types';
 
 // Сутності
 export { OrderEntity } from './entities';
+export { OrderItemEntity } from './entities/modules/order-item.entity';
 
 // Репозиторії
 export { OrderRepository, type IOrderRepository } from './repositories';
 
 // Сервіси
 export { OrderService } from './services';
+export { OrderParametersService } from './services/order-parameters.service';
+export { OrderItemService } from './services/order-item.service';
 
 // Хуки
-export { useOrder, useOrderSearch } from './hooks';
+export {
+  useOrder,
+  useOrderSearch,
+  useOrderParameters,
+  useOrderConfirmation,
+  useOrderItems,
+  useOrderItem,
+  useItemWizard,
+} from './hooks';
+export type {
+  ItemWizardData,
+  ItemWizardOperationResult,
+  OrderConfirmationData,
+  OrderConfirmationActions,
+} from './hooks';
 
 // Сторі
-export { useOrderStore } from './store';
+export {
+  useOrderStore,
+  useOrderParametersStore,
+  useOrderParametersExecutionParams,
+  useOrderParametersDiscountParams,
+  useOrderParametersPaymentParams,
+  useOrderParametersAdditionalInfo,
+  useOrderParametersStatus,
+} from './store';
 
 // Утиліти
 export { OrderUtils } from './utils/order.utils';
@@ -56,6 +88,7 @@ export { CompletionCalculator } from './utils/completion.calculator';
 export { OrderItemAdapter } from './utils/order-item.adapter';
 export { FinancialAdapter } from './utils/financial.adapter';
 export { OrderAdapter } from './utils';
+export { OrderParametersUtils } from './utils/order-parameters.utils';
 
 // Схеми валідації
 export {

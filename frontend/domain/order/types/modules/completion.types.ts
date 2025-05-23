@@ -5,6 +5,15 @@
 import type { ExpediteType } from '../order.types';
 
 /**
+ * Варіанти терміновості замовлення
+ */
+export type UrgencyOption =
+  | 'STANDARD' // Звичайне виконання
+  | 'URGENT_48H' // Терміново за 48 годин (+50%)
+  | 'URGENT_24H' // Терміново за 24 години (+100%)
+  | 'CUSTOM'; // Індивідуальний термін
+
+/**
  * Інформація про завершення замовлення
  */
 export interface OrderCompletion {

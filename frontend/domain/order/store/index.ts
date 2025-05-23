@@ -1,5 +1,6 @@
 /**
- * Експорт сторів Order домену
+ * Експорт Order stores
  */
 
-export { useOrderStore } from './order.store';
+export * from './order.store';
+export * from './order-parameters.store';

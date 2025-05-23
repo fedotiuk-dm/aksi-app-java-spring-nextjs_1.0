@@ -14,22 +14,12 @@ import {
   Typography,
   Box,
   Chip,
+  Alert,
 } from '@mui/material';
 import React from 'react';
 
-/**
- * Інтерфейс для предмета в таблиці
- */
-interface ItemTableData {
-  id: string;
-  name: string;
-  category: string;
-  quantity: number;
-  unit: 'шт' | 'кг';
-  material: string;
-  color: string;
-  price: number;
-}
+import { useOrderItems } from '@/domain/order';
+import { useWizard } from '@/domain/wizard';
 
 /**
  * Компонент для відображення таблиці предметів
@@ -44,8 +34,20 @@ interface ItemTableData {
  * - Кнопки дій (Редагувати, Видалити)
  */
 export const ItemsTable: React.FC = () => {
-  // TODO: Отримувати дані з domain layer
-  const items: ItemTableData[] = []; // Тимчасово порожній масив
+  // Отримуємо wizard для доступу до поточного замовлення
+  const wizard = useWizard();
+
+  // TODO: Отримати orderId з wizard state або контексту
+  const orderId = 'temp-order-id'; // Тимчасове значення
+
+  // Отримуємо дані предметів з domain layer
+  const {
+    items,
+    isLoading,
+    error,
+    deleteItem,
+    mutations: { delete: deleteMutation },
+  } = useOrderItems({ orderId });
 
   /**
    * Обробник редагування предмета
@@ -53,16 +55,64 @@ export const ItemsTable: React.FC = () => {
   const handleEditItem = (itemId: string) => {
     console.log('Редагування предмета:', itemId);
     // TODO: Запустити item wizard в режимі редагування
+    // Це потребує додаткової логіки в wizard домені для режиму редагування
+    wizard.startItemWizardFlow();
   };
 
   /**
    * Обробник видалення предмета
    */
-  const handleDeleteItem = (itemId: string) => {
+  const handleDeleteItem = async (itemId: string) => {
     console.log('Видалення предмета:', itemId);
-    // TODO: Реалізувати видалення через domain layer
+
+    // Запитуємо підтвердження
+    if (window.confirm('Ви впевнені, що хочете видалити цей предмет?')) {
+      const result = await deleteItem(itemId);
+      if (!result.success) {
+        console.error('Помилка видалення предмета:', result.error);
+        // TODO: Показати toast з помилкою
+      }
+    }
   };
 
+  /**
+   * Форматування кольору для відображення
+   */
+  const formatColor = (color?: string) => {
+    if (!color) return 'Не вказано';
+    return color;
+  };
+
+  /**
+   * Форматування матеріалу для відображення
+   */
+  const formatMaterial = (material?: string) => {
+    if (!material) return 'Не вказано';
+    // TODO: Використати енум для перекладу матеріалів
+    return material;
+  };
+
+  // Показуємо помилку завантаження
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ my: 2 }}>
+        Помилка завантаження предметів: {error}
+      </Alert>
+    );
+  }
+
+  // Показуємо індикатор завантаження
+  if (isLoading) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Typography variant="body1" color="text.secondary">
+          Завантаження предметів...
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Показуємо повідомлення коли немає предметів
   if (items.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -103,14 +153,24 @@ export const ItemsTable: React.FC = () => {
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                   {item.name}
                 </Typography>
+                {item.description && (
+                  <Typography variant="caption" color="text.secondary">
+                    {item.description}
+                  </Typography>
+                )}
               </TableCell>
               <TableCell>
-                <Chip label={item.category} size="small" variant="outlined" />
+                <Chip
+                  label={item.category || 'Без категорії'}
+                  size="small"
+                  variant="outlined"
+                  color={item.category ? 'primary' : 'default'}
+                />
               </TableCell>
               <TableCell>
-                {item.quantity} {item.unit}
+                {item.quantity} {item.unitOfMeasure || 'шт'}
               </TableCell>
-              <TableCell>{item.material}</TableCell>
+              <TableCell>{formatMaterial(item.material)}</TableCell>
               <TableCell>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box
@@ -123,29 +183,31 @@ export const ItemsTable: React.FC = () => {
                       borderColor: 'grey.400',
                     }}
                   />
-                  {item.color}
+                  {formatColor(item.color)}
                 </Box>
               </TableCell>
               <TableCell align="right">
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  {item.price.toFixed(2)} грн
+                  {(item.totalPrice || 0).toFixed(2)} грн
                 </Typography>
               </TableCell>
               <TableCell align="center">
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
                   <IconButton
                     size="small"
-                    onClick={() => handleEditItem(item.id)}
+                    onClick={() => handleEditItem(item.id || '')}
                     color="primary"
                     title="Редагувати предмет"
+                    disabled={wizard.isItemWizardActive}
                   >
                     <EditIcon fontSize="small" />
                   </IconButton>
                   <IconButton
                     size="small"
-                    onClick={() => handleDeleteItem(item.id)}
+                    onClick={() => handleDeleteItem(item.id || '')}
                     color="error"
                     title="Видалити предмет"
+                    disabled={deleteMutation.isPending || wizard.isItemWizardActive}
                   >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
