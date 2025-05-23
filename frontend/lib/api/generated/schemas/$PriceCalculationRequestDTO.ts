@@ -9,21 +9,28 @@ export const $PriceCalculationRequestDTO = {
             type: 'string',
             description: `Код категорії послуги`,
             isRequired: true,
+            minLength: 1,
+            pattern: '^[A-Z_]+$',
         },
         itemName: {
             type: 'string',
             description: `Найменування предмету з прайс-листа`,
             isRequired: true,
+            maxLength: 255,
+            minLength: 1,
         },
         color: {
             type: 'string',
             description: `Колір предмету`,
+            maxLength: 100,
         },
         quantity: {
             type: 'number',
             description: `Кількість предметів`,
             isRequired: true,
             format: 'int32',
+            maximum: 1000,
+            minimum: 1,
         },
         modifierCodes: {
             type: 'array',
@@ -50,10 +57,12 @@ export const $PriceCalculationRequestDTO = {
         expeditePercent: {
             type: 'number',
             description: `Відсоток надбавки за терміновість`,
+            maximum: 200,
         },
         discountPercent: {
             type: 'number',
             description: `Відсоток знижки`,
+            maximum: 50,
         },
     },
 } as const;

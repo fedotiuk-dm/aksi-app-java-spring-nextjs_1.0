@@ -32,3 +32,12 @@ databaseChangeLog:
   - include:
       file: 1.0/011-add-expedite-price-modifiers.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/012-create-reference-data-tables.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/013-populate-reference-data.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/014-update-service-categories.yaml
+      relativeToChangelogFile: true

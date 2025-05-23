@@ -41,3 +41,6 @@ databaseChangeLog:
   - include:
       file: 1.0/014-add-order-completion-fields.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/015-add-reference-data-fields.yaml
+      relativeToChangelogFile: true

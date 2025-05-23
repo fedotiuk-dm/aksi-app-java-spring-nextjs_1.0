@@ -1,0 +1,201 @@
+databaseChangeLog:
+  - changeSet:
+      id: pricelist-1.0-012
+      author: system
+      comment: Create reference data tables for enhanced frontend support
+      changes:
+        # Таблиця для кольорів предметів
+        - createTable:
+            tableName: item_colors
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name_ua
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hex_color
+                  type: varchar(7)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValueNumeric: 0
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueDate: now()
+
+        # Таблиця для матеріалів предметів
+        - createTable:
+            tableName: item_materials
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name_ua
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: care_instructions
+                  type: text
+                  constraints:
+                    nullable: true
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValueNumeric: 0
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueDate: now()
+
+        # Таблиця для розмірів одягу
+        - createTable:
+            tableName: clothing_sizes
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: size_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                  remarks: 'standard, numeric, shoe'
+              - column:
+                  name: size_value
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValueNumeric: 0
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueDate: now()
+
+        # Таблиця для станів предметів
+        - createTable:
+            tableName: item_conditions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name_ua
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: condition_order
+                  type: int
+                  constraints:
+                    nullable: false
+                  remarks: '1=найкращий, 6=найгірший'
+              - column:
+                  name: affects_price
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueDate: now()
+
+        # Індекси для оптимізації запитів
+        - createIndex:
+            indexName: idx_item_colors_active_sort
+            tableName: item_colors
+            columns:
+              - column:
+                  name: active
+              - column:
+                  name: sort_order
+
+        - createIndex:
+            indexName: idx_item_materials_active_sort
+            tableName: item_materials
+            columns:
+              - column:
+                  name: active
+              - column:
+                  name: sort_order
+
+        - createIndex:
+            indexName: idx_clothing_sizes_type_sort
+            tableName: clothing_sizes
+            columns:
+              - column:
+                  name: size_type
+              - column:
+                  name: sort_order
+
+        - createIndex:
+            indexName: idx_item_conditions_order
+            tableName: item_conditions
+            columns:
+              - column:
+                  name: condition_order
+              - column:
+                  name: active

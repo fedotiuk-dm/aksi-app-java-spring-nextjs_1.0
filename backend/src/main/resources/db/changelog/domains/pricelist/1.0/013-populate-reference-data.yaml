@@ -1,0 +1,427 @@
+databaseChangeLog:
+  - changeSet:
+      id: pricelist-1.0-013
+      author: system
+      comment: Populate reference data tables with constants from PricingConstants
+      changes:
+        # Заповнення кольорів предметів
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'black' }
+              - column: { name: name_ua, value: 'чорний' }
+              - column: { name: hex_color, value: '#000000' }
+              - column: { name: sort_order, valueNumeric: 1 }
+
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'white' }
+              - column: { name: name_ua, value: 'білий' }
+              - column: { name: hex_color, value: '#FFFFFF' }
+              - column: { name: sort_order, valueNumeric: 2 }
+
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'blue' }
+              - column: { name: name_ua, value: 'синій' }
+              - column: { name: hex_color, value: '#0000FF' }
+              - column: { name: sort_order, valueNumeric: 3 }
+
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'red' }
+              - column: { name: name_ua, value: 'червоний' }
+              - column: { name: hex_color, value: '#FF0000' }
+              - column: { name: sort_order, valueNumeric: 4 }
+
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'green' }
+              - column: { name: name_ua, value: 'зелений' }
+              - column: { name: hex_color, value: '#008000' }
+              - column: { name: sort_order, valueNumeric: 5 }
+
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'yellow' }
+              - column: { name: name_ua, value: 'жовтий' }
+              - column: { name: hex_color, value: '#FFFF00' }
+              - column: { name: sort_order, valueNumeric: 6 }
+
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'brown' }
+              - column: { name: name_ua, value: 'коричневий' }
+              - column: { name: hex_color, value: '#A52A2A' }
+              - column: { name: sort_order, valueNumeric: 7 }
+
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'gray' }
+              - column: { name: name_ua, value: 'сірий' }
+              - column: { name: hex_color, value: '#808080' }
+              - column: { name: sort_order, valueNumeric: 8 }
+
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'pink' }
+              - column: { name: name_ua, value: 'рожевий' }
+              - column: { name: hex_color, value: '#FFC0CB' }
+              - column: { name: sort_order, valueNumeric: 9 }
+
+        - insert:
+            tableName: item_colors
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'purple' }
+              - column: { name: name_ua, value: 'фіолетовий' }
+              - column: { name: hex_color, value: '#800080' }
+              - column: { name: sort_order, valueNumeric: 10 }
+
+        # Заповнення матеріалів предметів
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'cotton' }
+              - column: { name: name_ua, value: 'бавовна' }
+              - column:
+                  { name: care_instructions, value: 'Машинне прання до 40°C' }
+              - column: { name: sort_order, valueNumeric: 1 }
+
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'wool' }
+              - column: { name: name_ua, value: 'вовна' }
+              - column:
+                  {
+                    name: care_instructions,
+                    value: 'Делікатне прання або хімчистка',
+                  }
+              - column: { name: sort_order, valueNumeric: 2 }
+
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'silk' }
+              - column: { name: name_ua, value: 'шовк' }
+              - column:
+                  {
+                    name: care_instructions,
+                    value: 'Тільки хімчистка або ручне прання',
+                  }
+              - column: { name: sort_order, valueNumeric: 3 }
+
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'polyester' }
+              - column: { name: name_ua, value: 'поліестер' }
+              - column:
+                  { name: care_instructions, value: 'Машинне прання до 60°C' }
+              - column: { name: sort_order, valueNumeric: 4 }
+
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'leather' }
+              - column: { name: name_ua, value: 'шкіра' }
+              - column:
+                  {
+                    name: care_instructions,
+                    value: 'Спеціальна обробка для шкіряних виробів',
+                  }
+              - column: { name: sort_order, valueNumeric: 5 }
+
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'suede' }
+              - column: { name: name_ua, value: 'замша' }
+              - column:
+                  {
+                    name: care_instructions,
+                    value: 'Спеціальна обробка для замшевих виробів',
+                  }
+              - column: { name: sort_order, valueNumeric: 6 }
+
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'denim' }
+              - column: { name: name_ua, value: 'джинс' }
+              - column:
+                  { name: care_instructions, value: 'Машинне прання до 40°C' }
+              - column: { name: sort_order, valueNumeric: 7 }
+
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'linen' }
+              - column: { name: name_ua, value: 'льон' }
+              - column:
+                  {
+                    name: care_instructions,
+                    value: 'Машинне прання до 40°C або хімчистка',
+                  }
+              - column: { name: sort_order, valueNumeric: 8 }
+
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'cashmere' }
+              - column: { name: name_ua, value: 'кашемір' }
+              - column:
+                  {
+                    name: care_instructions,
+                    value: 'Тільки делікатна хімчистка',
+                  }
+              - column: { name: sort_order, valueNumeric: 9 }
+
+        - insert:
+            tableName: item_materials
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'velvet' }
+              - column: { name: name_ua, value: 'оксамит' }
+              - column: { name: care_instructions, value: 'Тільки хімчистка' }
+              - column: { name: sort_order, valueNumeric: 10 }
+
+  - changeSet:
+      id: pricelist-1.0-013-part2
+      author: system
+      comment: Populate clothing sizes and item conditions
+      changes:
+        # Стандартні розміри одягу
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'standard' }
+              - column: { name: size_value, value: 'XS' }
+              - column: { name: sort_order, valueNumeric: 1 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'standard' }
+              - column: { name: size_value, value: 'S' }
+              - column: { name: sort_order, valueNumeric: 2 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'standard' }
+              - column: { name: size_value, value: 'M' }
+              - column: { name: sort_order, valueNumeric: 3 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'standard' }
+              - column: { name: size_value, value: 'L' }
+              - column: { name: sort_order, valueNumeric: 4 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'standard' }
+              - column: { name: size_value, value: 'XL' }
+              - column: { name: sort_order, valueNumeric: 5 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'standard' }
+              - column: { name: size_value, value: 'XXL' }
+              - column: { name: sort_order, valueNumeric: 6 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'standard' }
+              - column: { name: size_value, value: 'XXXL' }
+              - column: { name: sort_order, valueNumeric: 7 }
+
+        # Числові розміри (приклад для найпоширеніших)
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'numeric' }
+              - column: { name: size_value, value: '38' }
+              - column: { name: sort_order, valueNumeric: 10 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'numeric' }
+              - column: { name: size_value, value: '40' }
+              - column: { name: sort_order, valueNumeric: 11 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'numeric' }
+              - column: { name: size_value, value: '42' }
+              - column: { name: sort_order, valueNumeric: 12 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'numeric' }
+              - column: { name: size_value, value: '44' }
+              - column: { name: sort_order, valueNumeric: 13 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'numeric' }
+              - column: { name: size_value, value: '46' }
+              - column: { name: sort_order, valueNumeric: 14 }
+
+        # Розміри взуття (приклад)
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'shoe' }
+              - column: { name: size_value, value: '38' }
+              - column: { name: sort_order, valueNumeric: 20 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'shoe' }
+              - column: { name: size_value, value: '40' }
+              - column: { name: sort_order, valueNumeric: 21 }
+
+        - insert:
+            tableName: clothing_sizes
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: size_type, value: 'shoe' }
+              - column: { name: size_value, value: '42' }
+              - column: { name: sort_order, valueNumeric: 22 }
+
+        # Стани предметів
+        - insert:
+            tableName: item_conditions
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'new' }
+              - column: { name: name_ua, value: 'новий' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Предмет у відмінному стані, без видимих дефектів',
+                  }
+              - column: { name: condition_order, valueNumeric: 1 }
+              - column: { name: affects_price, valueBoolean: false }
+
+        - insert:
+            tableName: item_conditions
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'like_new' }
+              - column: { name: name_ua, value: 'як новий' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Предмет у відмінному стані з мінімальними слідами носіння',
+                  }
+              - column: { name: condition_order, valueNumeric: 2 }
+              - column: { name: affects_price, valueBoolean: false }
+
+        - insert:
+            tableName: item_conditions
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'good' }
+              - column: { name: name_ua, value: 'хороший' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Предмет у хорошому стані з легкими слідами носіння',
+                  }
+              - column: { name: condition_order, valueNumeric: 3 }
+              - column: { name: affects_price, valueBoolean: false }
+
+        - insert:
+            tableName: item_conditions
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'fair' }
+              - column: { name: name_ua, value: 'задовільний' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Предмет у задовільному стані з помітними слідами носіння',
+                  }
+              - column: { name: condition_order, valueNumeric: 4 }
+              - column: { name: affects_price, valueBoolean: true }
+
+        - insert:
+            tableName: item_conditions
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'worn' }
+              - column: { name: name_ua, value: 'зношений' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Предмет значно зношений, потребує особливої обробки',
+                  }
+              - column: { name: condition_order, valueNumeric: 5 }
+              - column: { name: affects_price, valueBoolean: true }
+
+        - insert:
+            tableName: item_conditions
+            columns:
+              - column: { name: id, valueComputed: 'gen_random_uuid()' }
+              - column: { name: code, value: 'damaged' }
+              - column: { name: name_ua, value: 'пошкоджений' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Предмет має значні пошкодження або дефекти',
+                  }
+              - column: { name: condition_order, valueNumeric: 6 }
+              - column: { name: affects_price, valueBoolean: true }

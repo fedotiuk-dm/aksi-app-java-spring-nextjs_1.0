@@ -3,6 +3,8 @@ package com.aksi.domain.pricing.constants;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static com.aksi.domain.pricing.constants.PricingConstants.CURRENCY_DECIMAL_PLACES;
+
 /**
  * Константи для обчислення цін.
  */
@@ -11,9 +13,9 @@ public final class PriceCalculationConstants {
         // Приватний конструктор для запобігання створенню екземплярів
     }
 
-    // Загальні константи для обчислень
+    // Загальні константи для обчислень (централізовано)
     public static final BigDecimal MIN_PRICE = BigDecimal.ONE;
-    public static final int SCALE = 2;
+    public static final int SCALE = CURRENCY_DECIMAL_PLACES;
     public static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
     public static final BigDecimal HUNDRED = new BigDecimal("100");
 
@@ -32,7 +34,7 @@ public final class PriceCalculationConstants {
 
     // Константи для ручної чистки
     public static final BigDecimal MANUAL_CLEANING_PERCENTAGE = new BigDecimal("20");
-    
+
     // Ваговий коефіцієнт за замовчуванням для модифікаторів з діапазоном
     // Використовується для розрахунку зваженого середнього в діапазоні значень
     // 0.5 - середнє арифметичне, менші значення наближають до мінімуму, більші - до максимуму

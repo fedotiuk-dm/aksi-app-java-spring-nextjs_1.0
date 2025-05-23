@@ -3,6 +3,7 @@ package com.aksi.domain.pricing.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,40 +16,51 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Результат розрахунку ціни для предмета")
 public class PriceCalculationResponseDTO {
 
-    /**
-     * Початкова базова ціна за одиницю з прайс-листа.
-     */
+    @Schema(
+        description = "Початкова базова ціна за одиницю з прайс-листа",
+        example = "150.00",
+        minimum = "0"
+    )
     private BigDecimal baseUnitPrice;
 
-    /**
-     * Кількість предметів.
-     */
+    @Schema(
+        description = "Кількість предметів",
+        example = "2",
+        minimum = "1"
+    )
     private Integer quantity;
 
-    /**
-     * Сума базових цін за всі предмети без модифікаторів.
-     */
+    @Schema(
+        description = "Сума базових цін за всі предмети без модифікаторів",
+        example = "300.00",
+        minimum = "0"
+    )
     private BigDecimal baseTotalPrice;
 
-    /**
-     * Одиниця виміру (шт, кг, кв.м, пара).
-     */
+    @Schema(
+        description = "Одиниця виміру",
+        example = "шт",
+        allowableValues = {"шт", "кг", "кв.м", "пара"}
+    )
     private String unitOfMeasure;
 
-    /**
-     * Кінцева ціна за одиницю з урахуванням всіх модифікаторів.
-     */
+    @Schema(
+        description = "Кінцева ціна за одиницю з урахуванням всіх модифікаторів",
+        example = "180.00",
+        minimum = "0"
+    )
     private BigDecimal finalUnitPrice;
 
-    /**
-     * Загальна кінцева ціна за всі предмети з урахуванням всіх модифікаторів.
-     */
+    @Schema(
+        description = "Загальна кінцева ціна за всі предмети з урахуванням всіх модифікаторів",
+        example = "360.00",
+        minimum = "0"
+    )
     private BigDecimal finalTotalPrice;
 
-    /**
-     * Список деталей розрахунку для кожного кроку обчислення.
-     */
+    @Schema(description = "Список деталей розрахунку для кожного кроку обчислення")
     private List<CalculationDetailsDTO> calculationDetails;
 }

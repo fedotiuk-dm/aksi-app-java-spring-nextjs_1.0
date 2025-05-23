@@ -1,0 +1,86 @@
+databaseChangeLog:
+  - changeSet:
+      id: pricelist-1.0-014
+      author: system
+      comment: Update existing service categories and modifier types (without changing existing price structure)
+      changes:
+        # Не змінюємо категорії послуг - вони вже існують з правильною структурою
+        # Тільки оновлюємо типи модифікаторів
+
+        # Додання нових типів модифікаторів якщо їх ще немає
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column: { name: id, valueComputed: 'uuid_generate_v4()' }
+              - column: { name: code, value: 'material_surcharge' }
+              - column: { name: name, value: 'Доплата за матеріал' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Додаткова плата за складний матеріал',
+                  }
+              - column: { name: modifier_type, value: 'PERCENTAGE' }
+              - column: { name: category, value: 'GENERAL' }
+              - column: { name: active, valueBoolean: true }
+            where: "NOT EXISTS (SELECT 1 FROM price_modifier_definitions WHERE code = 'material_surcharge')"
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column: { name: id, valueComputed: 'uuid_generate_v4()' }
+              - column: { name: code, value: 'size_modifier' }
+              - column: { name: name, value: 'Модифікатор розміру' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Коригування ціни за розмір предмета',
+                  }
+              - column: { name: modifier_type, value: 'PERCENTAGE' }
+              - column: { name: category, value: 'GENERAL' }
+              - column: { name: active, valueBoolean: true }
+            where: "NOT EXISTS (SELECT 1 FROM price_modifier_definitions WHERE code = 'size_modifier')"
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column: { name: id, valueComputed: 'uuid_generate_v4()' }
+              - column: { name: code, value: 'condition_modifier' }
+              - column: { name: name, value: 'Стан предмета' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Коригування ціни в залежності від стану предмета',
+                  }
+              - column: { name: modifier_type, value: 'PERCENTAGE' }
+              - column: { name: category, value: 'GENERAL' }
+              - column: { name: active, valueBoolean: true }
+            where: "NOT EXISTS (SELECT 1 FROM price_modifier_definitions WHERE code = 'condition_modifier')"
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column: { name: id, valueComputed: 'uuid_generate_v4()' }
+              - column: { name: code, value: 'special_treatment' }
+              - column: { name: name, value: 'Спеціальна обробка' }
+              - column:
+                  {
+                    name: description,
+                    value: 'Додаткові послуги спеціальної обробки',
+                  }
+              - column: { name: modifier_type, value: 'PERCENTAGE' }
+              - column: { name: category, value: 'GENERAL' }
+              - column: { name: active, valueBoolean: true }
+            where: "NOT EXISTS (SELECT 1 FROM price_modifier_definitions WHERE code = 'special_treatment')"
+
+        - insert:
+            tableName: price_modifier_definitions
+            columns:
+              - column: { name: id, valueComputed: 'uuid_generate_v4()' }
+              - column: { name: code, value: 'seasonal_discount' }
+              - column: { name: name, value: 'Сезонна знижка' }
+              - column:
+                  { name: description, value: 'Знижка залежно від сезону' }
+              - column: { name: modifier_type, value: 'PERCENTAGE' }
+              - column: { name: category, value: 'GENERAL' }
+              - column: { name: active, valueBoolean: true }
+            where: "NOT EXISTS (SELECT 1 FROM price_modifier_definitions WHERE code = 'seasonal_discount')"
