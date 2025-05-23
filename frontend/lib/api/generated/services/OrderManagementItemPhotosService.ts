@@ -6,7 +6,7 @@ import type { OrderItemPhotoDTO } from '../models/OrderItemPhotoDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class OrderItemPhotosService {
+export class OrderManagementItemPhotosService {
     /**
      * Оновити анотації фотографії
      * Оновлює анотації (позначки) та опис для вказаної фотографії

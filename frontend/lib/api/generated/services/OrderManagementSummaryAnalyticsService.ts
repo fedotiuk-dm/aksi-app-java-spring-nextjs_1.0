@@ -6,7 +6,7 @@ import type { OrderDetailedSummaryResponse } from '../models/OrderDetailedSummar
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class OrderSummaryService {
+export class OrderManagementSummaryAnalyticsService {
     /**
      * Отримати детальний підсумок замовлення
      * Повертає детальний підсумок замовлення з розрахунком вартості для перегляду та підтвердження. Включає інформацію про клієнта, список предметів з деталізацією вартості, загальні суми та дати.
@@ -23,7 +23,7 @@ export class OrderSummaryService {
     }): CancelablePromise<OrderDetailedSummaryResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/orders/{orderId}/detailed-summary',
+            url: '/orders/summary/{orderId}/detailed-summary',
             path: {
                 'orderId': orderId,
             },

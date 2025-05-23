@@ -26,8 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/orders/discounts")
 @RequiredArgsConstructor
-@Tag(name = "Order Discounts", description = "API для управління знижками до замовлень")
 @Slf4j
+@Tag(name = "Order Management - Financial",
+     description = "Фінансові операції: знижки, розрахунки, платежі")
 public class OrderDiscountController {
 
     private final DiscountService discountService;
@@ -39,8 +40,11 @@ public class OrderDiscountController {
      * @return інформація про застосовану знижку
      */
     @PostMapping("/apply")
-    @Operation(summary = "Застосувати знижку до замовлення",
-               description = "Застосовує знижку до замовлення з урахуванням обмежень на категорії")
+    @Operation(
+        summary = "Застосувати знижку до замовлення",
+        description = "Застосовує знижку до замовлення з урахуванням обмежень на категорії",
+        tags = {"Order Management - Financial"}
+    )
     public ResponseEntity<?> applyDiscount(
             @RequestBody @Validated OrderDiscountRequest request) {
         try {
@@ -64,8 +68,11 @@ public class OrderDiscountController {
      * @return інформація про поточну знижку
      */
     @GetMapping("/{orderId}")
-    @Operation(summary = "Отримати інформацію про знижку",
-               description = "Повертає детальну інформацію про знижку до замовлення")
+    @Operation(
+        summary = "Отримати інформацію про знижку",
+        description = "Повертає детальну інформацію про знижку до замовлення",
+        tags = {"Order Management - Financial"}
+    )
     public ResponseEntity<?> getOrderDiscount(
             @PathVariable String orderId) {
         try {
@@ -88,8 +95,11 @@ public class OrderDiscountController {
      * @return оновлена інформація про замовлення без знижки
      */
     @DeleteMapping("/{orderId}")
-    @Operation(summary = "Скасувати знижку",
-               description = "Видаляє знижку з замовлення")
+    @Operation(
+        summary = "Скасувати знижку",
+        description = "Видаляє знижку з замовлення",
+        tags = {"Order Management - Financial"}
+    )
     public ResponseEntity<?> removeDiscount(
             @PathVariable String orderId) {
         try {

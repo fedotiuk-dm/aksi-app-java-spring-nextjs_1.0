@@ -40,13 +40,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/orders")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Orders", description = "API для управління замовленнями")
+@Tag(name = "Order Management - Basic Operations",
+     description = "Основні операції з замовленнями: створення, редагування, отримання списків")
 public class OrderController {
 
     private final OrderService orderService;
 
     @GetMapping
-    @Operation(summary = "Отримати всі замовлення", description = "Повертає список всіх замовлень")
+    @Operation(
+        summary = "Отримати всі замовлення",
+        description = "Повертає список всіх замовлень",
+        tags = {"Order Management - Basic Operations"}
+    )
     @ApiResponse(responseCode = "200", description = "Успішно отримано список замовлень",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderDTO.class))))
     public ResponseEntity<?> getAllOrders() {
@@ -64,7 +69,11 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Отримати замовлення за ID", description = "Повертає замовлення за його ID")
+    @Operation(
+        summary = "Отримати замовлення за ID",
+        description = "Повертає замовлення за його ID",
+        tags = {"Order Management - Basic Operations"}
+    )
     @ApiResponse(responseCode = "200", description = "Замовлення знайдено",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
@@ -92,7 +101,11 @@ public class OrderController {
     }
 
     @PostMapping
-    @Operation(summary = "Створити нове замовлення", description = "Створює нове замовлення")
+    @Operation(
+        summary = "Створити нове замовлення",
+        description = "Створює нове замовлення",
+        tags = {"Order Management - Basic Operations"}
+    )
     @ApiResponse(responseCode = "201", description = "Замовлення успішно створено",
             content = @Content(schema = @Schema(implementation = OrderDTO.class)))
     public ResponseEntity<?> createOrder(
@@ -388,8 +401,11 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/items")
-    @Operation(summary = "Отримати всі предмети замовлення",
-               description = "Повертає список всіх предметів для конкретного замовлення")
+    @Operation(
+        summary = "Отримати всі предмети замовлення",
+        description = "Повертає список всіх предметів для конкретного замовлення",
+        tags = {"Order Management - Items"}
+    )
     @ApiResponse(responseCode = "200", description = "Успішно отримано список предметів замовлення",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderItemDTO.class))))
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")

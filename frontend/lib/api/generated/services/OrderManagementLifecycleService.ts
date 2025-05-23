@@ -2,13 +2,40 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CompletionDateCalculationRequest } from '../models/CompletionDateCalculationRequest';
 import type { EmailReceiptRequest } from '../models/EmailReceiptRequest';
+import type { OrderCompletionUpdateRequest } from '../models/OrderCompletionUpdateRequest';
 import type { OrderDTO } from '../models/OrderDTO';
 import type { OrderFinalizationRequest } from '../models/OrderFinalizationRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class OrderFinalizationService {
+export class OrderManagementLifecycleService {
+    /**
+     * Оновити параметри виконання замовлення
+     * Оновлює тип терміновості та очікувану дату завершення замовлення
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static updateOrderCompletion({
+        requestBody,
+    }: {
+        requestBody: OrderCompletionUpdateRequest,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/orders/completion/update',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
     /**
      * Відправити чек на email
      * Відправляє PDF-чек замовлення на email клієнта
@@ -63,6 +90,31 @@ export class OrderFinalizationService {
                 401: `Unauthorized`,
                 403: `Forbidden`,
                 404: `Замовлення не знайдено`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Розрахувати очікувану дату завершення замовлення
+     * Розраховує дату завершення на основі категорій послуг та типу терміновості
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static calculateCompletionDate({
+        requestBody,
+    }: {
+        requestBody: CompletionDateCalculationRequest,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/orders/completion/calculate',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
                 409: `Conflict`,
             },
         });

@@ -25,10 +25,11 @@ import lombok.extern.slf4j.Slf4j;
  * Контролер для роботи з оплатою замовлень.
  */
 @RestController
-@RequestMapping("/orders/{orderId}/payment")
+@RequestMapping("/orders/payment")
 @RequiredArgsConstructor
+@Tag(name = "Order Management - Financial",
+     description = "Фінансові операції: знижки, розрахунки, платежі")
 @Slf4j
-@Tag(name = "Payment for Order", description = "API для роботи з оплатою замовлень")
 public class OrderPaymentController {
 
     private final PaymentService paymentService;

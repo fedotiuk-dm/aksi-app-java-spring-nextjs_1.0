@@ -27,9 +27,10 @@ import lombok.extern.slf4j.Slf4j;
  * Використовується для етапу перегляду замовлення з детальним розрахунком.
  */
 @RestController
-@RequestMapping("/orders")
-@Tag(name = "Order Summary", description = "API для отримання детального підсумку замовлення")
+@RequestMapping("/orders/summary")
 @RequiredArgsConstructor
+@Tag(name = "Order Management - Summary & Analytics",
+     description = "Аналітика та зведення по замовленнях")
 @Slf4j
 public class OrderSummaryController {
 

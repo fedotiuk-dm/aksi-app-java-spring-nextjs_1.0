@@ -36,7 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/receipts")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Receipt", description = "API для роботи з квитанціями замовлень")
+@Tag(name = "Order Management - Documents",
+     description = "Управління документами: квитанції, звіти, експорт")
 public class ReceiptController {
 
     private final ReceiptService receiptService;

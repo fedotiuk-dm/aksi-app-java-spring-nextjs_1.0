@@ -8,7 +8,7 @@ import type { OrderItemDTO } from '../models/OrderItemDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class OrdersService {
+export class OrderManagementBasicOperationsService {
     /**
      * Отримати конкретний предмет замовлення
      * Повертає предмет замовлення за його ID

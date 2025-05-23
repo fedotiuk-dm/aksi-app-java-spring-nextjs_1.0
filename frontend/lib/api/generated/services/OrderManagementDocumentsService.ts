@@ -8,7 +8,7 @@ import type { ReceiptGenerationRequest } from '../models/ReceiptGenerationReques
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class ReceiptService {
+export class OrderManagementDocumentsService {
     /**
      * Згенерувати PDF-квитанцію
      * Генерує PDF-квитанцію для замовлення з вказаними параметрами
