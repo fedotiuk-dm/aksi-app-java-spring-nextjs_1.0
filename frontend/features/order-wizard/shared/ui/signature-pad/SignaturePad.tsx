@@ -1,149 +1,181 @@
 'use client';
 
-import { Box, Button, Paper, Typography, Stack } from '@mui/material';
+import { Clear, Done } from '@mui/icons-material';
+import { Box, Paper, Typography, Stack } from '@mui/material';
 import React, { useRef, useState, useEffect } from 'react';
+
+import { ActionButton } from '../action-buttons';
 
 interface SignaturePadProps {
   onSignatureChange?: (signatureData: string | null) => void;
   className?: string;
-  label?: string;
+  title?: string;
+  subtitle?: string;
+  width?: number;
+  height?: number;
+  strokeColor?: string;
+  strokeWidth?: number;
+  backgroundColor?: string;
+  buttonSize?: 'small' | 'medium' | 'large';
+  showSaveButton?: boolean;
+  saveLabel?: string;
+  clearLabel?: string;
+  disabled?: boolean;
 }
 
 /**
- * Компонент для збору цифрового підпису клієнта
+ * Універсальний компонент для збору цифрового підпису
  * Використовується на етапі 4.2 для юридичного підтвердження
+ *
+ * Особливості:
+ * - Підтримка миші та сенсорного введення
+ * - Настройка кольорів та розмірів
+ * - Експорт у base64 формат
+ * - Консистентний стиль з іншими shared компонентами
  */
 export const SignaturePad: React.FC<SignaturePadProps> = ({
   onSignatureChange,
   className,
-  label = 'Підпис клієнта',
+  title = 'Підпис клієнта',
+  subtitle = 'Будь ласка, поставте підпис у полі нижче за допомогою миші або сенсорного екрану',
+  width = 550,
+  height = 180,
+  strokeColor = '#000000',
+  strokeWidth = 2,
+  backgroundColor = '#ffffff',
+  buttonSize = 'medium',
+  showSaveButton = false,
+  saveLabel = 'Зберегти підпис',
+  clearLabel = 'Очистити',
+  disabled = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const initializeCanvas = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-    const context = canvas.getContext('2d');
-    if (!context) return;
+      const context = canvas.getContext('2d');
+      if (!context) return;
 
-    // Ініціалізуємо полотно
-    context.lineWidth = 2;
-    context.lineCap = 'round';
-    context.strokeStyle = '#000000';
+      // Ініціалізуємо налаштування малювання
+      context.lineWidth = strokeWidth;
+      context.lineCap = 'round';
+      context.lineJoin = 'round';
+      context.strokeStyle = strokeColor;
 
-    // Очищаємо полотно
-    context.fillStyle = '#ffffff';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-  }, []);
+      // Очищаємо та встановлюємо фон
+      context.fillStyle = backgroundColor;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+    };
 
-  const startDrawing = (
+    initializeCanvas();
+  }, [backgroundColor, strokeColor, strokeWidth]);
+
+  const getEventCoordinates = (
     e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-  ) => {
+  ): { x: number; y: number } => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return { x: 0, y: 0 };
 
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    setIsDrawing(true);
-    setHasSignature(true);
-
+    const rect = canvas.getBoundingClientRect();
     let clientX, clientY;
 
     if ('touches' in e) {
-      // Touch event
       clientX = e.touches[0].clientX;
       clientY = e.touches[0].clientY;
     } else {
-      // Mouse event
       clientX = e.clientX;
       clientY = e.clientY;
     }
 
-    const rect = canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+    };
+  };
 
+  const startDrawing = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    if (disabled) return;
+
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext('2d');
+    if (!canvas || !context) return;
+
+    setIsDrawing(true);
+    setHasSignature(true);
+
+    const { x, y } = getEventCoordinates(e);
     context.beginPath();
     context.moveTo(x, y);
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
+    if (!isDrawing || disabled) return;
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const context = canvas?.getContext('2d');
+    if (!canvas || !context) return;
 
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    let clientX, clientY;
-
+    // Запобігаємо скролінгу на touch пристроях
     if ('touches' in e) {
-      // Touch event
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-
-      // Запобігаємо скролінгу сторінки під час малювання
       e.preventDefault();
-    } else {
-      // Mouse event
-      clientX = e.clientX;
-      clientY = e.clientY;
     }
 
-    const rect = canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
+    const { x, y } = getEventCoordinates(e);
     context.lineTo(x, y);
     context.stroke();
   };
 
   const endDrawing = () => {
-    if (!isDrawing) return;
+    if (!isDrawing || disabled) return;
 
     setIsDrawing(false);
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const signatureData = canvas.toDataURL('image/png');
-
-    if (onSignatureChange) {
-      onSignatureChange(signatureData);
+    // Автоматично викликаємо callback якщо не показуємо кнопку збереження
+    if (!showSaveButton) {
+      handleSaveSignature();
     }
   };
 
-  const clearSignature = () => {
+  const handleSaveSignature = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !hasSignature) return;
 
-    const context = canvas.getContext('2d');
-    if (!context) return;
+    const signatureData = canvas.toDataURL('image/png');
+    onSignatureChange?.(signatureData);
+  };
 
-    context.fillStyle = '#ffffff';
+  const clearSignature = () => {
+    if (disabled) return;
+
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext('2d');
+    if (!canvas || !context) return;
+
+    context.fillStyle = backgroundColor;
     context.fillRect(0, 0, canvas.width, canvas.height);
 
     setHasSignature(false);
-
-    if (onSignatureChange) {
-      onSignatureChange(null);
-    }
+    onSignatureChange?.(null);
   };
 
   return (
     <Box className={className}>
       <Typography variant="h6" gutterBottom>
-        {label}
+        {title}
       </Typography>
 
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Будь ласка, поставте підпис у полі нижче за допомогою миші або сенсорного екрану
-      </Typography>
+      {subtitle && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          {subtitle}
+        </Typography>
+      )}
 
       <Paper
         variant="outlined"
@@ -151,14 +183,16 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
           p: 1,
           mb: 2,
           width: '100%',
-          height: 200,
-          backgroundColor: '#ffffff',
+          height: height + 20,
+          backgroundColor: backgroundColor,
+          opacity: disabled ? 0.6 : 1,
+          cursor: disabled ? 'not-allowed' : 'crosshair',
         }}
       >
         <canvas
           ref={canvasRef}
-          width={550}
-          height={180}
+          width={width}
+          height={height}
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={endDrawing}
@@ -166,14 +200,38 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
           onTouchStart={startDrawing}
           onTouchMove={draw}
           onTouchEnd={endDrawing}
-          style={{ width: '100%', height: '100%', cursor: 'crosshair' }}
+          style={{
+            width: '100%',
+            height: '100%',
+            cursor: disabled ? 'not-allowed' : 'crosshair',
+            pointerEvents: disabled ? 'none' : 'auto',
+          }}
         />
       </Paper>
 
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button variant="outlined" color="error" onClick={clearSignature} disabled={!hasSignature}>
-          Очистити
-        </Button>
+        <ActionButton
+          variant="outlined"
+          color="error"
+          onClick={clearSignature}
+          disabled={!hasSignature || disabled}
+          startIcon={<Clear />}
+          size={buttonSize}
+        >
+          {clearLabel}
+        </ActionButton>
+
+        {showSaveButton && (
+          <ActionButton
+            variant="contained"
+            onClick={handleSaveSignature}
+            disabled={!hasSignature || disabled}
+            startIcon={<Done />}
+            size={buttonSize}
+          >
+            {saveLabel}
+          </ActionButton>
+        )}
       </Stack>
     </Box>
   );

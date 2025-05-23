@@ -1,4 +1,5 @@
-export { default as ClientForm } from './ClientForm';
-export { default as ClientList } from './ClientList';
-export { default as ClientSearchForm } from './ClientSearchForm';
+// Основний компонент кроку
 export { ClientSelectionStep } from './ClientSelectionStep';
+
+// Підкомпоненти з папки components
+export * from './components';
