@@ -5,8 +5,10 @@
 
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { useWizard } from '@/domain/wizard';
+import { useWizard, WizardStep } from '@/domain/wizard';
+
 import { OrderItemService } from '../services/order-item.service';
+
 import type {
   OrderItem,
   OrderItemCharacteristics,
@@ -100,7 +102,7 @@ export interface ItemWizardOperationResult {
  * Хук для управління Item Wizard підвізардом
  */
 export const useItemWizard = (config: UseItemWizardConfig = {}) => {
-  const { orderId, editingItemId, autoSave = false } = config;
+  const { orderId, editingItemId, autoSave: _autoSave = false } = config;
   const wizard = useWizard();
 
   // Початковий стан предмета
@@ -174,15 +176,15 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
    */
   const canProceed = useMemo(() => {
     switch (currentSubStep) {
-      case 'ITEM_BASIC_INFO':
+      case WizardStep.ITEM_BASIC_INFO:
         return validation.basicInfo.isValid;
-      case 'ITEM_PROPERTIES':
+      case WizardStep.ITEM_PROPERTIES:
         return validation.properties.isValid;
-      case 'DEFECTS_STAINS':
+      case WizardStep.DEFECTS_STAINS:
         return validation.defectsStains.isValid;
-      case 'PRICE_CALCULATOR':
+      case WizardStep.PRICE_CALCULATOR:
         return validation.priceCalculator.isValid;
-      case 'PHOTO_DOCUMENTATION':
+      case WizardStep.PHOTO_DOCUMENTATION:
         return validation.photoDocumentation.isValid;
       default:
         return false;
@@ -337,7 +339,10 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
 
       let result;
       if (isEditing) {
-        result = await OrderItemService.updateOrderItem(orderId, editingItemId!, orderItem);
+        if (!editingItemId) {
+          return { success: false, error: 'Відсутній ID предмета для редагування' };
+        }
+        result = await OrderItemService.updateOrderItem(orderId, editingItemId, orderItem);
       } else {
         result = await OrderItemService.addOrderItem(orderId, orderItem);
       }
@@ -381,7 +386,7 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
             unitOfMeasure: item.unitOfMeasure || 'шт',
             unitPrice: item.unitPrice || 0,
             description: item.description || '',
-            material: item.material,
+            material: item.material as MaterialType,
             color: item.color || '',
             // TODO: додати інші поля
             fillerType: undefined,

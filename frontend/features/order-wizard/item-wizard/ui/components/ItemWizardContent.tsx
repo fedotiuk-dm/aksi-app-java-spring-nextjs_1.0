@@ -6,11 +6,11 @@ import React from 'react';
 import { WizardStep } from '@/domain/wizard';
 
 // Імпорт реальних компонентів підкроків
+import { DefectsStainsStep } from '../defects-stains';
 import { ItemBasicInfoStep } from '../item-basic-info';
 import { ItemPropertiesStep } from '../item-properties';
-import { DefectsStainsStep } from '../defects-stains';
-import { PriceCalculatorStep } from '../price-calculator';
 import { PhotoDocumentationStep } from '../photo-documentation';
+import { PriceCalculatorStep } from '../price-calculator';
 
 interface ItemWizardContentProps {
   currentStep: WizardStep;

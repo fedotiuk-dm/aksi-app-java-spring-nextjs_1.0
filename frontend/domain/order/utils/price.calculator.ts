@@ -232,7 +232,7 @@ export class PriceCalculator {
   /**
    * Отримує модифікатори для текстильних виробів
    */
-  private static getTextileModifiers(item: OrderItem, basePrice: number): OrderItemModifier[] {
+  private static getTextileModifiers(item: OrderItem, _basePrice: number): OrderItemModifier[] {
     const modifiers: OrderItemModifier[] = [];
 
     // Чистка виробів з хутряними комірами та манжетами +30%
@@ -343,7 +343,7 @@ export class PriceCalculator {
   /**
    * Отримує модифікатори для шкіряних виробів
    */
-  private static getLeatherModifiers(item: OrderItem, basePrice: number): OrderItemModifier[] {
+  private static getLeatherModifiers(item: OrderItem, _basePrice: number): OrderItemModifier[] {
     const modifiers: OrderItemModifier[] = [];
 
     // Прасування шкіряних виробів 70% від вартості чистки

@@ -4,7 +4,15 @@ import { Person, Edit, Phone, Email, Delete } from '@mui/icons-material';
 import { Avatar, IconButton, Box } from '@mui/material';
 import React from 'react';
 
-import { SearchInput, DataList, DataListItem } from '@/features/order-wizard/shared/ui';
+import { SearchInput, DataList } from '@/shared/ui';
+
+interface DataListItem {
+  id: string;
+  primary: React.ReactNode;
+  secondary?: React.ReactNode;
+  avatar?: React.ReactNode;
+  actions?: React.ReactNode;
+}
 
 import type { Client } from '@/domain/client';
 

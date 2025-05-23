@@ -61,12 +61,27 @@ export {
   useOrderItems,
   useOrderItem,
   useItemWizard,
+  useItemBasicInfo,
+  useDefectsStains,
+  useItemProperties,
+  usePhotoDocumentation,
+  usePriceCalculator,
 } from './hooks';
 export type {
   ItemWizardData,
   ItemWizardOperationResult,
   OrderConfirmationData,
   OrderConfirmationActions,
+  DefectOption,
+  StainOption,
+  MaterialOption,
+  FillerOption,
+  WearLevelOption,
+  PhotoDocumentationConstants,
+  PhotoItem,
+  PriceModifier,
+  ModifierCategory,
+  PriceCalculationData,
 } from './hooks';
 
 // Сторі

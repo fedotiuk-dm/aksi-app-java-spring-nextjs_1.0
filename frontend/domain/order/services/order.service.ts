@@ -5,7 +5,6 @@
 
 import { OrderStatus, ExpediteType, DiscountType } from '../types';
 import { CompletionCalculator } from '../utils/completion.calculator';
-import { FinancialAdapter } from '../utils/financial.adapter';
 import { OrderUtils } from '../utils/order.utils';
 import { OrderValidator } from '../utils/order.validator';
 import { PriceCalculator } from '../utils/price.calculator';
@@ -16,7 +15,6 @@ import type {
   OrderOperationResult,
   OrderSearchParams,
   OrderSearchResult,
-  OrderFinancials,
   OrderSummary,
 } from '../types';
 
@@ -142,7 +140,9 @@ export class OrderService {
         calculatedPrice: priceCalculation.finalPrice,
         totalPrice: priceCalculation.finalPrice,
         discountApplied: priceCalculation.discountAmount,
-        modifiersApplied: priceCalculation.modifiers.map((m) => m.id),
+        modifiersApplied: priceCalculation.modifiers
+          .map((m) => m.id)
+          .filter((id): id is string => id !== undefined),
         isComplete: false,
       };
 

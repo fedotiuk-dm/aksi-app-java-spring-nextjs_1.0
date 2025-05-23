@@ -39,9 +39,12 @@ export class WizardItemEntity {
     this.navigation.reset();
     this.navigation.navigateToStep(WizardStep.ITEM_BASIC_INFO);
 
-    // Активуємо тільки перший крок Item Wizard
+    // Активуємо перший крок Item Wizard
     this.state.updateStepAvailability(WizardStep.ITEM_BASIC_INFO, true);
-    this.resetItemWizardAvailability();
+    // Активуємо наступний крок для можливості переходу
+    this.state.updateStepAvailability(WizardStep.ITEM_PROPERTIES, true);
+    // Інші кроки залишаються недоступними до поступового переходу
+    this.resetRemainingItemWizardAvailability();
   }
 
   finishItemWizard(saveItem: boolean): void {
@@ -61,6 +64,18 @@ export class WizardItemEntity {
   private resetItemWizardAvailability(): void {
     const itemSteps = [
       WizardStep.ITEM_PROPERTIES,
+      WizardStep.DEFECTS_STAINS,
+      WizardStep.PRICE_CALCULATOR,
+      WizardStep.PHOTO_DOCUMENTATION,
+    ];
+
+    itemSteps.forEach((step) => {
+      this.state.updateStepAvailability(step, false);
+    });
+  }
+
+  private resetRemainingItemWizardAvailability(): void {
+    const itemSteps = [
       WizardStep.DEFECTS_STAINS,
       WizardStep.PRICE_CALCULATOR,
       WizardStep.PHOTO_DOCUMENTATION,

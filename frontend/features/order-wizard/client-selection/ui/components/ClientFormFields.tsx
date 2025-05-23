@@ -3,10 +3,6 @@
 import {
   TextField,
   Grid,
-  FormControlLabel,
-  Checkbox,
-  FormGroup,
-  FormLabel,
   Select,
   MenuItem,
   FormControl,
@@ -19,7 +15,7 @@ import React from 'react';
 
 import { CreateClientFormData, UpdateClientFormData, Address } from '@/domain/client/types';
 import { ClientSource, CommunicationChannel } from '@/domain/client/types/client-enums';
-import { AddressFields } from '@/features/order-wizard/shared/ui';
+import { AddressFields, MultiSelectCheckboxGroup } from '@/shared/ui';
 
 interface ClientFormFieldsProps {
   formData: CreateClientFormData | UpdateClientFormData | Partial<UpdateClientFormData>;
@@ -54,16 +50,8 @@ export const ClientFormFields: React.FC<ClientFormFieldsProps> = ({
   showAllFields = true,
   className,
 }) => {
-  const handleChannelChange = (channel: CommunicationChannel, checked: boolean) => {
-    const current = formData.communicationChannels || [];
-    if (checked) {
-      onChange('communicationChannels', [...current, channel]);
-    } else {
-      onChange(
-        'communicationChannels',
-        current.filter((c) => c !== channel)
-      );
-    }
+  const handleChannelChange = (values: string[]) => {
+    onChange('communicationChannels', values as CommunicationChannel[]);
   };
 
   const sourceOptions = [
@@ -190,25 +178,16 @@ export const ClientFormFields: React.FC<ClientFormFieldsProps> = ({
 
             {/* Способи зв'язку */}
             <Grid size={{ xs: 12 }}>
-              <FormLabel component="legend" sx={{ mb: 1 }}>
-                Способи зв&apos;язку
-              </FormLabel>
-              <FormGroup row>
-                {channelOptions.map((option) => (
-                  <FormControlLabel
-                    key={option.value}
-                    control={
-                      <Checkbox
-                        checked={formData.communicationChannels?.includes(option.value) || false}
-                        onChange={(e) => handleChannelChange(option.value, e.target.checked)}
-                        disabled={disabled}
-                        size={size}
-                      />
-                    }
-                    label={option.label}
-                  />
-                ))}
-              </FormGroup>
+              <MultiSelectCheckboxGroup
+                label="Способи зв'язку"
+                options={channelOptions}
+                selectedValues={formData.communicationChannels || []}
+                onChange={handleChannelChange}
+                disabled={disabled}
+                size={size}
+                orientation="row"
+                showSelectedTags={false}
+              />
             </Grid>
 
             {/* Джерело інформації */}

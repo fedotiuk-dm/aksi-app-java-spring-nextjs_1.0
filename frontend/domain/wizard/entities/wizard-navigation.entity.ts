@@ -1,4 +1,4 @@
-import { WizardStep, StepHistoryEntry, NavigationDirection, WizardEventType } from '../types';
+import { WizardStep, StepHistoryEntry, NavigationDirection } from '../types';
 import { WizardStateEntity } from './wizard-state.entity';
 
 /**
@@ -43,6 +43,14 @@ export class WizardNavigationEntity {
 
     const previousStep = this.state.currentStep;
     this.state.updateCurrentStep(step);
+
+    // Автоматично активуємо наступний крок якщо це item wizard
+    if (this.state.isItemWizardActive) {
+      const nextStep = this.getNextStep();
+      if (nextStep) {
+        this.state.updateStepAvailability(nextStep, true);
+      }
+    }
 
     const historyEntry: StepHistoryEntry = {
       step,

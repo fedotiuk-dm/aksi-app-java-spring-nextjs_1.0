@@ -119,7 +119,7 @@ export class OrderItemService {
       const newItem: OrderItem = {
         id: crypto.randomUUID(),
         orderId,
-        name: itemData.name!,
+        name: itemData.name || 'Предмет без назви',
         category: itemData.category,
         quantity: itemData.quantity || 1,
         unitPrice: itemData.unitPrice || 0,
@@ -260,8 +260,8 @@ export class OrderItemService {
       totalItems: items.length,
       totalValue: 0,
       averagePrice: 0,
-      byCategory: {},
-      byMaterial: {},
+      byCategory: {} as Record<string, number>,
+      byMaterial: {} as Record<string, number>,
       withDefects: 0,
       withStains: 0,
       withPhotos: 0,
@@ -278,7 +278,8 @@ export class OrderItemService {
 
       // За матеріалами
       if (item.material) {
-        stats.byMaterial[item.material] = (stats.byMaterial[item.material] || 0) + 1;
+        (stats.byMaterial as Record<string, number>)[item.material] =
+          ((stats.byMaterial as Record<string, number>)[item.material] || 0) + 1;
       }
 
       // З дефектами
@@ -308,62 +309,74 @@ export class OrderItemService {
    */
   static filterItems(items: OrderItem[], searchParams: OrderItemSearchParams): OrderItem[] {
     return items.filter((item) => {
-      // Пошук за ключовим словом
-      if (searchParams.keyword) {
-        const keyword = searchParams.keyword.toLowerCase();
-        const searchableText = [
-          item.name,
-          item.description,
-          item.category,
-          item.color,
-          item.material,
-        ]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
-
-        if (!searchableText.includes(keyword)) {
-          return false;
-        }
-      }
-
-      // Фільтр за категорією
-      if (searchParams.category && item.category !== searchParams.category) {
-        return false;
-      }
-
-      // Фільтр за матеріалом
-      if (searchParams.material && item.material !== searchParams.material) {
-        return false;
-      }
-
-      // Фільтр за наявністю дефектів
-      if (searchParams.hasDefects !== undefined) {
-        const hasDefects = Boolean(item.defects && item.defects.length > 0);
-        if (hasDefects !== searchParams.hasDefects) {
-          return false;
-        }
-      }
-
-      // Фільтр за наявністю плям
-      if (searchParams.hasStains !== undefined) {
-        const hasStains = Boolean(item.stains && item.stains.length > 0);
-        if (hasStains !== searchParams.hasStains) {
-          return false;
-        }
-      }
-
-      // Фільтр за діапазоном цін
-      if (searchParams.priceRange) {
-        const [minPrice, maxPrice] = searchParams.priceRange;
-        const itemPrice = item.totalPrice || 0;
-        if (itemPrice < minPrice || itemPrice > maxPrice) {
-          return false;
-        }
-      }
-
-      return true;
+      return (
+        this.matchesKeyword(item, searchParams.keyword) &&
+        this.matchesCategory(item, searchParams.category) &&
+        this.matchesMaterial(item, searchParams.material) &&
+        this.matchesDefects(item, searchParams.hasDefects) &&
+        this.matchesStains(item, searchParams.hasStains) &&
+        this.matchesPriceRange(item, searchParams.priceRange)
+      );
     });
+  }
+
+  /**
+   * Перевірка відповідності ключовому слову
+   */
+  private static matchesKeyword(item: OrderItem, keyword?: string): boolean {
+    if (!keyword) return true;
+
+    const searchableText = [item.name, item.description, item.category, item.color, item.material]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    return searchableText.includes(keyword.toLowerCase());
+  }
+
+  /**
+   * Перевірка відповідності категорії
+   */
+  private static matchesCategory(item: OrderItem, category?: string): boolean {
+    return !category || item.category === category;
+  }
+
+  /**
+   * Перевірка відповідності матеріалу
+   */
+  private static matchesMaterial(item: OrderItem, material?: string): boolean {
+    return !material || item.material === material;
+  }
+
+  /**
+   * Перевірка відповідності наявності дефектів
+   */
+  private static matchesDefects(item: OrderItem, hasDefects?: boolean): boolean {
+    if (hasDefects === undefined) return true;
+
+    const itemHasDefects = Boolean(item.defects && item.defects.length > 0);
+    return itemHasDefects === hasDefects;
+  }
+
+  /**
+   * Перевірка відповідності наявності плям
+   */
+  private static matchesStains(item: OrderItem, hasStains?: boolean): boolean {
+    if (hasStains === undefined) return true;
+
+    const itemHasStains = Boolean(item.stains && item.stains.length > 0);
+    return itemHasStains === hasStains;
+  }
+
+  /**
+   * Перевірка відповідності діапазону цін
+   */
+  private static matchesPriceRange(item: OrderItem, priceRange?: [number, number]): boolean {
+    if (!priceRange) return true;
+
+    const [minPrice, maxPrice] = priceRange;
+    const itemPrice = item.totalPrice || 0;
+    return itemPrice >= minPrice && itemPrice <= maxPrice;
   }
 
   /**
@@ -420,14 +433,16 @@ export class OrderItemService {
    * Форматування даних предмета для відображення
    */
   static formatItemForDisplay(item: OrderItem): Record<string, string> {
+    const NOT_SPECIFIED = 'Не вказано';
+
     return {
       name: item.name,
-      category: item.category || 'Не вказано',
+      category: item.category || NOT_SPECIFIED,
       quantity: `${item.quantity} ${item.unitOfMeasure || 'шт'}`,
       unitPrice: `${item.unitPrice?.toFixed(2) || '0.00'} грн`,
       totalPrice: `${item.totalPrice?.toFixed(2) || '0.00'} грн`,
-      material: item.material || 'Не вказано',
-      color: item.color || 'Не вказано',
+      material: item.material || NOT_SPECIFIED,
+      color: item.color || NOT_SPECIFIED,
       hasDefects: item.defects ? 'Так' : 'Ні',
       hasStains: item.stains ? 'Так' : 'Ні',
       isComplete: item.isComplete ? 'Завершено' : 'В процесі',

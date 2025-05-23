@@ -10,7 +10,7 @@ import type {
   OrderCompletion,
   BusinessHours,
   CompletionCalculationParams,
-} from '../types';
+} from '../types/order.types';
 
 export class CompletionCalculator {
   /**
@@ -298,6 +298,9 @@ export class CompletionCalculator {
     adjustedDays: number
   ): string {
     const notes: string[] = [];
+
+    // Додаємо інформацію про фактичний термін
+    notes.push(`Термін виконання: ${adjustedDays} дн.`);
 
     if (expediteType === ExpediteType.EXPRESS_24H) {
       notes.push('Терміново 24 години (+100% до вартості)');

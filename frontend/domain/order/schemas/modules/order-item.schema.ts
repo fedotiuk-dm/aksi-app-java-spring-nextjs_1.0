@@ -4,6 +4,11 @@
 
 import { z } from 'zod';
 
+// === КОНСТАНТИ ===
+const ERROR_MESSAGES = {
+  DESCRIPTION_MAX_LENGTH: 'Опис не може перевищувати 500 символів',
+} as const;
+
 /**
  * Схема для матеріалів
  */
@@ -44,7 +49,7 @@ export const createOrderItemSchema = z
   .object({
     orderId: z.string().optional(),
     name: z.string().min(1, "Назва предмета обов'язкова"),
-    description: z.string().max(500, 'Опис не може перевищувати 500 символів').optional(),
+    description: z.string().max(500, ERROR_MESSAGES.DESCRIPTION_MAX_LENGTH).optional(),
     quantity: z.number().min(1, 'Кількість повинна бути більше 0'),
     unitPrice: z.number().min(0, "Ціна не може бути від'ємною"),
     category: z.string().optional(),
@@ -94,7 +99,7 @@ export const updateOrderItemSchema = z.object({
   id: z.string().min(1, "ID предмета обов'язковий"),
   orderId: z.string().optional(),
   name: z.string().min(1, "Назва предмета обов'язкова"),
-  description: z.string().max(500, 'Опис не може перевищувати 500 символів').optional(),
+  description: z.string().max(500, ERROR_MESSAGES.DESCRIPTION_MAX_LENGTH).optional(),
   quantity: z.number().min(1, 'Кількість повинна бути більше 0'),
   unitPrice: z.number().min(0, "Ціна не може бути від'ємною"),
   totalPrice: z.number().min(0).optional(),
@@ -141,7 +146,7 @@ export const orderItemModifierSchema = z
       errorMap: () => ({ message: 'Тип повинен бути PERCENTAGE або FIXED_AMOUNT' }),
     }),
     value: z.number().min(0, "Значення не може бути від'ємним"),
-    description: z.string().max(500, 'Опис не може перевищувати 500 символів').optional(),
+    description: z.string().max(500, ERROR_MESSAGES.DESCRIPTION_MAX_LENGTH).optional(),
     applied: z.boolean(),
   })
   .refine((data) => data.type !== 'PERCENTAGE' || data.value <= 1000, {

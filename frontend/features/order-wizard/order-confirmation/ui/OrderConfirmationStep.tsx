@@ -1,28 +1,26 @@
 'use client';
 
-import { Box, Grid, Alert } from '@mui/material';
-import React, { useEffect } from 'react';
+import { Box, Grid, Alert, Typography } from '@mui/material';
+import React, { useEffect, useMemo, useCallback } from 'react';
 
 import { useOrderConfirmation } from '@/domain/order';
 import { useWizard } from '@/domain/wizard';
-
 import {
-  OrderSummaryInfo,
-  ItemsTable,
-  FinancialSummary,
-  OrderNotes,
-  LegalAgreement,
-  ReceiptActions,
-  DigitalSignature,
-} from './components';
-import { StepContainer } from '../../shared/ui/step-container';
-import { StepNavigation } from '../../shared/ui/step-navigation';
+  OrderConfirmationSummary,
+  DigitalSignaturePad,
+  LegalCheckbox,
+  ReceiptActionButtons,
+  StatusMessage,
+  StepContainer,
+  StepNavigation,
+} from '@/shared/ui';
 
 /**
  * Етап 4: Підтвердження та завершення з формуванням квитанції
  *
  * FSD принципи:
- * - Використовує композицію малих UI компонентів
+ * - "Тонкий" UI компонент без бізнес-логіки
+ * - Використовує композицію shared UI компонентів
  * - Отримує дані з domain layer через useOrderConfirmation хук
  * - Мінімальна логіка координації
  *
@@ -41,19 +39,6 @@ export const OrderConfirmationStep: React.FC = () => {
   // Отримуємо всю функціональність Order Confirmation з domain layer
   const orderConfirmation = useOrderConfirmation(orderId);
 
-  // Логування для діагностики
-  console.log('OrderConfirmationStep render:', {
-    currentStep: wizard.currentStep,
-    orderId,
-    hasOrder: !!orderConfirmation.order,
-    isOrderFinalized: orderConfirmation.isOrderFinalized,
-    termsAccepted: orderConfirmation.termsAccepted,
-    receiptGenerated: orderConfirmation.receiptGenerated,
-    canFinalize: orderConfirmation.canFinalize,
-    isLoading: orderConfirmation.isLoading,
-    hasError: orderConfirmation.hasError,
-  });
-
   // Скидаємо стан при розмонтуванні компонента
   useEffect(() => {
     return () => {
@@ -61,47 +46,111 @@ export const OrderConfirmationStep: React.FC = () => {
     };
   }, [orderConfirmation.reset]);
 
+  // === COMPUTED VALUES ===
+
   /**
-   * Обробники подій
+   * Підготовлені дані для OrderConfirmationSummary
    */
-  const handleTermsChange = (checked: boolean) => {
-    orderConfirmation.setTermsAccepted(checked);
-  };
+  const summaryData = useMemo(() => {
+    if (!orderConfirmation.order) return null;
 
-  const handleGenerateReceipt = async () => {
-    console.log('Генерація квитанції для замовлення:', orderId);
+    const order = orderConfirmation.order;
+
+    return {
+      receiptNumber: order.receiptNumber,
+      uniqueTag: order.tagNumber || '',
+      createdDate: order.createdDate ? new Date(order.createdDate).toLocaleDateString('uk-UA') : '',
+      executionDate: order.expectedCompletionDate
+        ? new Date(order.expectedCompletionDate).toLocaleDateString('uk-UA')
+        : '',
+      clientName: order.client ? `${order.client.lastName} ${order.client.firstName}` : '',
+      clientPhone: order.client?.phone || '',
+      clientContactMethod: 'Телефон', // TODO: отримати з даних клієнта
+      clientAddress: order.client?.address || '',
+      branchName: order.branchLocation?.name || '',
+      branchAddress: order.branchLocation?.address || '',
+      items:
+        order.items?.map((item: any) => ({
+          id: item.id?.toString() || '',
+          name: item.itemName || '',
+          category: item.serviceCategoryName || '',
+          quantity: item.quantity || 1,
+          unit: item.unit || 'шт',
+          material: item.material || '',
+          color: item.color || '',
+          basePrice: item.basePrice || 0,
+          modifiers: [], // TODO: отримати модифікатори з даних предмета
+          finalPrice: item.totalPrice || 0,
+          stains: [], // TODO: отримати плями з даних предмета
+          defects: [], // TODO: отримати дефекти з даних предмета
+        })) || [],
+      baseAmount:
+        order.items?.reduce((sum: number, item: any) => sum + (item.basePrice || 0), 0) || 0,
+      modifiersAmount: 0, // TODO: розрахувати з модифікаторів
+      subtotal: order.totalAmount || 0,
+      urgencySurcharge: 0, // TODO: розрахувати з expediteType
+      discountType: '', // TODO: отримати з order
+      discountPercent: 0, // TODO: розрахувати з discountAmount
+      discountAmount: order.discountAmount || 0,
+      finalTotal: order.finalAmount || 0,
+      paidAmount: order.prepaymentAmount || 0,
+      remainingDebt: order.balanceAmount || 0,
+      paymentMethod: 'TERMINAL', // TODO: отримати з order parameters
+    };
+  }, [orderConfirmation.order]);
+
+  // === EVENT HANDLERS ===
+
+  /**
+   * Обробник зміни згоди з умовами
+   */
+  const handleTermsChange = useCallback(
+    (checked: boolean) => {
+      orderConfirmation.setTermsAccepted(checked);
+    },
+    [orderConfirmation.setTermsAccepted]
+  );
+
+  /**
+   * Обробник генерації квитанції
+   */
+  const handleGenerateReceipt = useCallback(async () => {
     const success = await orderConfirmation.generateReceipt(orderId);
-
     if (success) {
       console.log('Квитанцію згенеровано успішно');
     } else {
       console.error('Помилка генерації квитанції');
     }
-  };
+  }, [orderConfirmation.generateReceipt, orderId]);
 
-  const handlePrintReceipt = () => {
-    console.log('Друк квитанції');
+  /**
+   * Обробник друку квитанції
+   */
+  const handlePrintReceipt = useCallback(() => {
     orderConfirmation.printReceipt();
-  };
+  }, [orderConfirmation.printReceipt]);
 
-  const handleDownloadPdf = async () => {
-    console.log('Завантаження PDF квитанції');
+  /**
+   * Обробник завантаження PDF
+   */
+  const handleDownloadPdf = useCallback(async () => {
     const success = await orderConfirmation.downloadPdfReceipt(orderId);
-
     if (success) {
       console.log('PDF завантажено успішно');
     } else {
       console.error('Помилка завантаження PDF');
     }
-  };
+  }, [orderConfirmation.downloadPdfReceipt, orderId]);
 
-  const handleEmailReceipt = async () => {
+  /**
+   * Обробник відправки email
+   */
+  const handleEmailReceipt = useCallback(async () => {
     if (!orderConfirmation.order?.client?.email) {
       console.log('Email клієнта не вказано');
       return;
     }
 
-    console.log('Відправка квитанції на email:', orderConfirmation.order.client.email);
     const success = await orderConfirmation.emailReceipt(
       orderId,
       orderConfirmation.order.client.email
@@ -112,40 +161,42 @@ export const OrderConfirmationStep: React.FC = () => {
     } else {
       console.error('Помилка відправки email');
     }
-  };
+  }, [orderConfirmation.emailReceipt, orderConfirmation.order?.client?.email, orderId]);
 
   /**
-   * Навігація
+   * Обробник завершення замовлення
    */
-  const handleCompleteOrder = async () => {
+  const handleCompleteOrder = useCallback(async () => {
     if (!orderConfirmation.canFinalize) {
       console.log('Неможливо завершити замовлення - не всі умови виконано');
       return;
     }
 
-    console.log('Завершення оформлення замовлення');
     const success = await orderConfirmation.finalizeOrder(orderId);
 
     if (success) {
       console.log('Замовлення завершено успішно');
-      // Переходимо до початку для нового замовлення
       wizard.resetWizard();
     } else {
       console.error('Помилка завершення замовлення');
     }
-  };
+  }, [orderConfirmation.canFinalize, orderConfirmation.finalizeOrder, orderId, wizard.resetWizard]);
 
-  const handleBack = async () => {
-    console.log('Повернення до ORDER_PARAMETERS');
+  /**
+   * Обробник повернення назад
+   */
+  const handleBack = useCallback(() => {
     const result = wizard.navigateBack();
     if (result.success) {
       console.log('Успішно повернулися до ORDER_PARAMETERS');
     } else {
       console.error('Помилка повернення:', result.errors);
     }
-  };
+  }, [wizard.navigateBack]);
 
-  // Якщо немає даних замовлення і не завантажується - показуємо помилку
+  // === RENDER ===
+
+  // Помилка завантаження даних
   if (!orderConfirmation.isLoading && !orderConfirmation.order) {
     return (
       <StepContainer
@@ -159,73 +210,6 @@ export const OrderConfirmationStep: React.FC = () => {
       </StepContainer>
     );
   }
-
-  // Перетворюємо дані API в формат компонентів
-  const orderInfo = orderConfirmation.order
-    ? {
-        receiptNumber: orderConfirmation.order.receiptNumber,
-        uniqueTag: orderConfirmation.order.tagNumber || '',
-        createdDate: orderConfirmation.order.createdDate
-          ? new Date(orderConfirmation.order.createdDate).toLocaleDateString('uk-UA')
-          : '',
-        executionDate: orderConfirmation.order.expectedCompletionDate
-          ? new Date(orderConfirmation.order.expectedCompletionDate).toLocaleDateString('uk-UA')
-          : '',
-      }
-    : null;
-
-  const clientInfo = orderConfirmation.order?.client
-    ? {
-        name: `${orderConfirmation.order.client.lastName} ${orderConfirmation.order.client.firstName}`,
-        phone: orderConfirmation.order.client.phone || '',
-        contactMethod: 'Телефон', // TODO: отримати з даних клієнта
-        address: orderConfirmation.order.client.address || '',
-      }
-    : null;
-
-  const branchInfo = orderConfirmation.order?.branchLocation
-    ? {
-        name: orderConfirmation.order.branchLocation.name,
-        address: orderConfirmation.order.branchLocation.address,
-      }
-    : null;
-
-  const items =
-    orderConfirmation.order?.items?.map((item: any) => ({
-      id: item.id?.toString() || '',
-      name: item.itemName || '',
-      category: item.serviceCategoryName || '',
-      quantity: item.quantity || 1,
-      unit: item.unit || 'шт',
-      material: item.material || '',
-      color: item.color || '',
-      basePrice: item.basePrice || 0,
-      modifiers: [], // TODO: отримати модифікатори з даних предмета
-      finalPrice: item.totalPrice || 0,
-      stains: [], // TODO: отримати плями з даних предмета
-      defects: [], // TODO: отримати дефекти з даних предмета
-    })) || [];
-
-  const totals = orderConfirmation.order
-    ? {
-        baseAmount: items.reduce((sum: number, item: any) => sum + item.basePrice, 0),
-        modifiersAmount: 0, // TODO: розрахувати з модифікаторів
-        subtotal: orderConfirmation.order.totalAmount || 0,
-        urgencySurcharge: 0, // TODO: розрахувати з expediteType
-        discountType: '', // TODO: отримати з order
-        discountPercent: 0, // TODO: розрахувати з discountAmount
-        discountAmount: orderConfirmation.order.discountAmount || 0,
-        finalTotal: orderConfirmation.order.finalAmount || 0,
-        paidAmount: orderConfirmation.order.prepaymentAmount || 0,
-        remainingDebt: orderConfirmation.order.balanceAmount || 0,
-        paymentMethod: 'TERMINAL', // TODO: отримати з order parameters
-      }
-    : null;
-
-  const notes = {
-    orderNotes: orderConfirmation.order?.customerNotes || '',
-    clientRequirements: '', // TODO: отримати з даних замовлення
-  };
 
   return (
     <StepContainer
@@ -248,74 +232,76 @@ export const OrderConfirmationStep: React.FC = () => {
         )}
 
         {/* Основний вміст */}
-        {orderConfirmation.order && (
+        {summaryData && (
           <Grid container spacing={3}>
-            {/* Інформація про замовлення */}
-            {orderInfo && clientInfo && branchInfo && (
-              <OrderSummaryInfo
-                orderInfo={orderInfo}
-                clientInfo={clientInfo}
-                branchInfo={branchInfo}
-              />
+            {/* Підсумок замовлення */}
+            <Grid size={{ xs: 12 }}>
+              <OrderConfirmationSummary {...summaryData} />
+            </Grid>
+
+            {/* Примітки до замовлення */}
+            {orderConfirmation.order?.customerNotes && (
+              <Grid size={{ xs: 12 }}>
+                <Alert severity="info">
+                  <Typography variant="subtitle2" gutterBottom>
+                    Примітки до замовлення:
+                  </Typography>
+                  <Typography variant="body2">{orderConfirmation.order.customerNotes}</Typography>
+                </Alert>
+              </Grid>
             )}
 
-            {/* Таблиця предметів */}
-            <ItemsTable items={items} />
-
-            {/* Фінансова інформація */}
-            {totals && <FinancialSummary totals={totals} />}
-
-            {/* Примітки */}
-            <OrderNotes notes={notes} />
-
             {/* Юридичні аспекти */}
-            <LegalAgreement
-              agreesToTerms={orderConfirmation.termsAccepted}
-              onTermsChange={handleTermsChange}
-              disabled={orderConfirmation.isSaving || orderConfirmation.isGeneratingReceipt}
-            />
+            <Grid size={{ xs: 12, md: 6 }}>
+              <LegalCheckbox
+                checked={orderConfirmation.termsAccepted}
+                onChange={handleTermsChange}
+                disabled={orderConfirmation.isSaving || orderConfirmation.isGeneratingReceipt}
+                required={true}
+              />
+            </Grid>
+
+            {/* Дії з квитанцією */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <ReceiptActionButtons
+                isReceiptGenerated={orderConfirmation.receiptGenerated}
+                isProcessing={orderConfirmation.isGeneratingReceipt}
+                onGenerateReceipt={handleGenerateReceipt}
+                onPrintReceipt={handlePrintReceipt}
+                onDownloadPdf={handleDownloadPdf}
+                onEmailReceipt={handleEmailReceipt}
+                disabled={orderConfirmation.isSaving}
+              />
+            </Grid>
 
             {/* Цифровий підпис */}
-            <DigitalSignature
+            <DigitalSignaturePad
               signatureData={orderConfirmation.signatureData}
               onSignatureChange={orderConfirmation.setSignatureData}
               disabled={orderConfirmation.isSaving || orderConfirmation.isGeneratingReceipt}
               required={true}
             />
-
-            {/* Формування та друк квитанції */}
-            <ReceiptActions
-              isReceiptGenerated={orderConfirmation.receiptGenerated}
-              isProcessingOrder={orderConfirmation.isGeneratingReceipt}
-              agreesToTerms={orderConfirmation.termsAccepted}
-              onGenerateReceipt={handleGenerateReceipt}
-              onPrintReceipt={handlePrintReceipt}
-              onDownloadPdf={handleDownloadPdf}
-              onEmailReceipt={handleEmailReceipt}
-              disabled={orderConfirmation.isSaving}
-            />
           </Grid>
         )}
 
-        {/* Інформаційні повідомлення */}
-        {!orderConfirmation.termsAccepted && !orderConfirmation.isLoading && (
-          <Alert severity="info" sx={{ mt: 3 }}>
-            Для завершення замовлення необхідно погодитися з умовами надання послуг.
-          </Alert>
-        )}
+        {/* Статусні повідомлення */}
+        <StatusMessage
+          message="Для завершення замовлення необхідно погодитися з умовами надання послуг та залишити цифровий підпис."
+          severity="info"
+          show={!orderConfirmation.termsAccepted && !orderConfirmation.isLoading}
+        />
 
-        {orderConfirmation.canFinalize && (
-          <Alert severity="success" sx={{ mt: 3 }}>
-            Замовлення готове до завершення. Натисніть &quot;Завершити замовлення&quot; для
-            фінального збереження.
-          </Alert>
-        )}
+        <StatusMessage
+          message="Замовлення готове до завершення. Натисніть 'Завершити замовлення' для фінального збереження."
+          severity="success"
+          show={orderConfirmation.canFinalize}
+        />
 
-        {orderConfirmation.isOrderFinalized && (
-          <Alert severity="success" sx={{ mt: 3 }}>
-            Замовлення вже завершено та збережено в системі.
-          </Alert>
-        )}
+        <StatusMessage
+          message="Замовлення вже завершено та збережено в системі."
+          severity="success"
+          show={orderConfirmation.isOrderFinalized}
+        />
       </Box>
 
       <StepNavigation

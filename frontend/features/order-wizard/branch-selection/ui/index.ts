@@ -1,6 +1,4 @@
-/**
- * Експорт публічного API для branch-selection кроку
- */
+import { BranchSelector } from './BranchSelector';
+import { SelectedBranchInfo } from './SelectedBranchInfo';
 
-export { BranchSelectionStep } from './BranchSelectionStep';
-export * from './components';
+export { BranchSelector, SelectedBranchInfo };

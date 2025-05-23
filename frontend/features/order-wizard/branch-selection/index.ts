@@ -2,4 +2,8 @@
  * Експорт публічного API для branch-selection фічі
  */
 
-export * from './ui';
+export { BranchSelectionStep } from './BranchSelectionStep';
+import { BranchSelector } from './ui/BranchSelector';
+import { SelectedBranchInfo } from './ui/SelectedBranchInfo';
+
+export { BranchSelector, SelectedBranchInfo };

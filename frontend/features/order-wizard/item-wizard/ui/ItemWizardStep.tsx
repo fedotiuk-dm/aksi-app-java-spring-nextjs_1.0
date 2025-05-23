@@ -4,9 +4,9 @@ import { Box } from '@mui/material';
 import React from 'react';
 
 import { useWizard, WizardStep } from '@/domain/wizard';
+import { StepContainer } from '@/shared/ui';
 
 import { ItemWizardHeader, ItemWizardNavigation, ItemWizardContent } from './components';
-import { StepContainer } from '../../shared/ui';
 
 /**
  * Головний компонент для підвізарда предметів (Item Wizard)

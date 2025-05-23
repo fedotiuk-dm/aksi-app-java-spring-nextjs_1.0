@@ -4,7 +4,7 @@ import { Edit, Clear, Delete } from '@mui/icons-material';
 import React from 'react';
 
 import { Client, CommunicationChannel } from '@/domain/client';
-import { InfoCard, ActionButton } from '@/features/order-wizard/shared/ui';
+import { InfoCard, ActionButton } from '@/shared/ui';
 
 interface SelectedClientInfoProps {
   client: Client;

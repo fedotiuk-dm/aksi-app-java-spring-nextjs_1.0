@@ -6,16 +6,26 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 
-import { OrderItemEntity } from '../entities/modules/order-item.entity';
 import { OrderItemService } from '../services/order-item.service';
 
 import type {
   OrderItem,
   OrderItemSearchParams,
   OrderItemStats,
-  OrderItemCharacteristics,
   OrderItemPriceCalculation,
 } from '../types';
+
+// === КОНСТАНТИ ===
+const QUERY_KEYS = {
+  ORDER_ITEMS: 'order-items',
+  ORDER_ITEMS_STATS: 'order-items-stats',
+  ORDERS: 'orders',
+} as const;
+
+const ERROR_MESSAGES = {
+  ORDER_ID_REQUIRED: "Order ID обов'язкове",
+  UNKNOWN_ERROR: 'Невідома помилка',
+} as const;
 
 /**
  * Конфігурація хука для предметів замовлення
@@ -53,7 +63,7 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['order-items', orderId],
+    queryKey: [QUERY_KEYS.ORDER_ITEMS, orderId],
     queryFn: async () => {
       if (!orderId) return [];
       const result = await OrderItemService.getOrderItems(orderId);
@@ -71,15 +81,15 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
    * Запит для отримання статистики предметів
    */
   const { data: stats } = useQuery({
-    queryKey: ['order-items-stats', orderId],
+    queryKey: [QUERY_KEYS.ORDER_ITEMS_STATS, orderId],
     queryFn: async (): Promise<OrderItemStats> => {
       if (!orderId || items.length === 0) {
         return {
           totalItems: 0,
           totalValue: 0,
           averagePrice: 0,
-          byCategory: {},
-          byMaterial: {},
+          byCategory: {} as Record<string, number>,
+          byMaterial: {} as Record<string, number>,
           withDefects: 0,
           withStains: 0,
           withPhotos: 0,
@@ -98,18 +108,21 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
    */
   const addItemMutation = useMutation({
     mutationFn: async (itemData: Partial<OrderItem>) => {
-      if (!orderId) throw new Error("Order ID обов'язкове");
+      if (!orderId) throw new Error(ERROR_MESSAGES.ORDER_ID_REQUIRED);
 
       const result = await OrderItemService.addOrderItem(orderId, itemData);
       if (!result.success) {
         throw new Error(result.error || 'Помилка додавання предмета');
       }
-      return result.item!;
+      if (!result.item) {
+        throw new Error('Предмет не був створений');
+      }
+      return result.item;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['order-items', orderId] });
-      queryClient.invalidateQueries({ queryKey: ['order-items-stats', orderId] });
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER_ITEMS, orderId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER_ITEMS_STATS, orderId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDERS] });
     },
   });
 
@@ -118,18 +131,21 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
    */
   const updateItemMutation = useMutation({
     mutationFn: async ({ itemId, itemData }: { itemId: string; itemData: Partial<OrderItem> }) => {
-      if (!orderId) throw new Error("Order ID обов'язкове");
+      if (!orderId) throw new Error(ERROR_MESSAGES.ORDER_ID_REQUIRED);
 
       const result = await OrderItemService.updateOrderItem(orderId, itemId, itemData);
       if (!result.success) {
         throw new Error(result.error || 'Помилка оновлення предмета');
       }
-      return result.item!;
+      if (!result.item) {
+        throw new Error('Предмет не був оновлений');
+      }
+      return result.item;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['order-items', orderId] });
-      queryClient.invalidateQueries({ queryKey: ['order-items-stats', orderId] });
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER_ITEMS, orderId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER_ITEMS_STATS, orderId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDERS] });
     },
   });
 
@@ -138,7 +154,7 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
    */
   const deleteItemMutation = useMutation({
     mutationFn: async (itemId: string) => {
-      if (!orderId) throw new Error("Order ID обов'язкове");
+      if (!orderId) throw new Error(ERROR_MESSAGES.ORDER_ID_REQUIRED);
 
       const result = await OrderItemService.deleteOrderItem(orderId, itemId);
       if (!result.success) {
@@ -147,9 +163,9 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
       return result;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['order-items', orderId] });
-      queryClient.invalidateQueries({ queryKey: ['order-items-stats', orderId] });
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER_ITEMS, orderId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDER_ITEMS_STATS, orderId] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ORDERS] });
     },
   });
 
@@ -162,7 +178,10 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
       if (!result.success) {
         throw new Error(result.error || 'Помилка розрахунку ціни');
       }
-      return result.calculation!;
+      if (!result.calculation) {
+        throw new Error('Розрахунок не був виконаний');
+      }
+      return result.calculation;
     },
   });
 
@@ -215,7 +234,7 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
         const item = await addItemMutation.mutateAsync(itemData);
         return { success: true, item };
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Невідома помилка';
+        const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR;
         return { success: false, error: errorMessage };
       }
     },
@@ -231,7 +250,7 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
         const item = await updateItemMutation.mutateAsync({ itemId, itemData });
         return { success: true, item };
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Невідома помилка';
+        const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR;
         return { success: false, error: errorMessage };
       }
     },
@@ -247,7 +266,7 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
         await deleteItemMutation.mutateAsync(itemId);
         return { success: true };
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Невідома помилка';
+        const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR;
         return { success: false, error: errorMessage };
       }
     },

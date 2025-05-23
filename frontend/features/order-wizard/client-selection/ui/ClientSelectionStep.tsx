@@ -5,6 +5,7 @@ import React from 'react';
 
 import { useClientStep, Client, ClientMode } from '@/domain/client';
 import { useWizard } from '@/domain/wizard';
+import { StepContainer, StepNavigation } from '@/shared/ui';
 
 import {
   ClientCreateForm,
@@ -13,8 +14,7 @@ import {
   ClientSearchPanel,
   SelectedClientInfo,
 } from './components';
-import { StepContainer } from '../../shared/ui/step-container';
-import { StepNavigation } from '../../shared/ui/step-navigation';
+
 
 /**
  * Головний компонент для CLIENT_SELECTION кроку Order Wizard

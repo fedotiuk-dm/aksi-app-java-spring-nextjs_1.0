@@ -16,10 +16,10 @@ import {
   useOrderParametersStatus,
   useOrderParametersHistory,
 } from '../store';
-import { DiscountType, PaymentMethod } from '../types';
+import { DiscountType } from '../types';
 import { OrderParametersUtils } from '../utils/order-parameters.utils';
 
-import type { UrgencyOption, OrderParametersValidation } from '../types';
+import type { UrgencyOption } from '../types';
 
 /**
  * Основний хук для роботи з параметрами замовлення

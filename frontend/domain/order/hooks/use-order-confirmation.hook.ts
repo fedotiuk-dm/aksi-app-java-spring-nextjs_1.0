@@ -9,15 +9,13 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   OrderManagementLifecycleService,
   OrderManagementDocumentsService,
+  OrderManagementBasicOperationsService,
   type OrderFinalizationRequest,
   type ReceiptGenerationRequest,
   type EmailReceiptRequest,
   type OrderDTO,
   type ReceiptDTO,
 } from '@/lib/api';
-
-import { useOrderStore } from '../store';
-import { OrderStatus } from '../types';
 
 export interface OrderConfirmationData {
   order: OrderDTO | null;
@@ -75,7 +73,8 @@ export const useOrderConfirmation = (orderId?: string) => {
     error: orderError,
   } = useQuery({
     queryKey: ['order', orderId],
-    queryFn: () => (orderId ? OrderManagementLifecycleService.getOrderById({ orderId }) : null),
+    queryFn: () =>
+      orderId ? OrderManagementBasicOperationsService.getOrderById({ id: orderId }) : null,
     enabled: !!orderId,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -84,19 +83,13 @@ export const useOrderConfirmation = (orderId?: string) => {
   const { data: receipt, isLoading: isLoadingReceipt } = useQuery({
     queryKey: ['receipt', orderId],
     queryFn: () => {
-      if (!orderId || !order || order.status !== OrderStatus.COMPLETED) {
+      if (!orderId || !order || order.status !== 'COMPLETED') {
         return null;
       }
 
-      const request: ReceiptGenerationRequest = {
-        orderId,
-        format: 'JSON',
-        includeSignature: true,
-      };
-
-      return OrderManagementDocumentsService.generateReceipt({ requestBody: request });
+      return OrderManagementDocumentsService.getReceiptData({ orderId });
     },
-    enabled: !!orderId && !!order && order.status === OrderStatus.COMPLETED,
+    enabled: !!orderId && !!order && order.status === 'COMPLETED',
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
@@ -109,11 +102,9 @@ export const useOrderConfirmation = (orderId?: string) => {
         includeSignature: true,
       };
 
-      const result = await OrderManagementDocumentsService.generateReceipt({
+      return OrderManagementDocumentsService.generatePdfReceipt({
         requestBody: request,
       });
-
-      return result;
     },
     onSuccess: () => {
       setReceiptGenerated(true);
@@ -128,12 +119,10 @@ export const useOrderConfirmation = (orderId?: string) => {
   // Мутація для завантаження PDF квитанції
   const downloadPdfMutation = useMutation({
     mutationFn: async (orderId: string) => {
-      const response = await OrderManagementLifecycleService.getOrderReceipt({
+      return OrderManagementLifecycleService.getOrderReceipt({
         orderId,
         includeSignature: true,
       });
-
-      return response;
     },
     onSuccess: (data) => {
       // Створюємо Blob та завантажуємо файл
@@ -163,7 +152,7 @@ export const useOrderConfirmation = (orderId?: string) => {
         includeSignature: true,
       };
 
-      await OrderManagementDocumentsService.emailReceipt({ requestBody: request });
+      return OrderManagementDocumentsService.sendReceiptByEmail({ requestBody: request });
     },
     onSuccess: () => {
       setError(null);
@@ -178,18 +167,16 @@ export const useOrderConfirmation = (orderId?: string) => {
     mutationFn: async ({ orderId, comments }: { orderId: string; comments?: string }) => {
       const request: OrderFinalizationRequest = {
         orderId,
-        signatureData,
+        signatureData: signatureData || undefined,
         termsAccepted,
         sendReceiptByEmail: false, // Буде окремо відправлятися
         generatePrintableReceipt: true,
         comments,
       };
 
-      const result = await OrderManagementLifecycleService.finalizeOrder({
+      return OrderManagementLifecycleService.finalizeOrder({
         requestBody: request,
       });
-
-      return result;
     },
     onSuccess: (finalizedOrder) => {
       setError(null);
@@ -227,7 +214,7 @@ export const useOrderConfirmation = (orderId?: string) => {
    * Перевірка чи замовлення вже завершене
    */
   const isOrderFinalized = useMemo(() => {
-    return order?.status === OrderStatus.COMPLETED;
+    return order?.status === 'COMPLETED';
   }, [order?.status]);
 
   // === ACTION HANDLERS ===

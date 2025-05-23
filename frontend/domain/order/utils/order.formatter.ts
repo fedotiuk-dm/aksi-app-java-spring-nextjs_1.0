@@ -176,7 +176,9 @@ export class OrderFormatter {
     const completionDate = this.formatDate(order.expectedCompletionDate);
     const isOverdue = new Date() > order.expectedCompletionDate;
     const expediteInfo =
-      order.expediteType !== 'STANDARD' ? ` (${this.formatExpediteType(order.expediteType)})` : '';
+      order.expediteType && order.expediteType !== 'STANDARD'
+        ? ` (${this.formatExpediteType(order.expediteType)})`
+        : '';
 
     if (isOverdue && order.status !== 'DELIVERED' && order.status !== 'CANCELLED') {
       return `⚠️ Прострочено: ${completionDate}${expediteInfo}`;

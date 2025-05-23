@@ -4,7 +4,7 @@ import { Save, Cancel } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
 import React from 'react';
 
-import { StepContainer, ActionButton, FormSection } from '@/features/order-wizard/shared/ui';
+import { StepContainer, ActionButton, FormSection } from '@/shared/ui';
 
 import { ClientFormFields } from './ClientFormFields';
 

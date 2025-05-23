@@ -8,7 +8,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 
 import { DiscountType, PaymentMethod } from '../types';
 
-import type { ExpediteType, UrgencyOption, OrderParametersValidation } from '../types';
+import type { UrgencyOption, OrderParametersValidation } from '../types';
 
 /**
  * Стан Order Parameters Store
