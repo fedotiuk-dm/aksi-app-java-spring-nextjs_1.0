@@ -9,7 +9,7 @@ export * from './photo-upload';
 export * from './price-calculation';
 export * from './signature-pad';
 
-// Універсальні shared компоненти
+// Универсальні shared компоненти
 export * from './form-fields';
 export * from './action-buttons';
 export * from './info-display';

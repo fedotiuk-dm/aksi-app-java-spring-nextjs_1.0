@@ -55,6 +55,12 @@ export const useClientEditingStore = create<ClientEditingStore>((set, get) => {
 
     // Дії
     startEditing: (client) => {
+      console.log('🎯 ClientEditingStore.startEditing - початок:', {
+        client,
+        structuredAddress: client.structuredAddress,
+        clientKeys: Object.keys(client),
+      });
+
       const formData: UpdateClientFormData = {
         id: client.id || '',
         firstName: client.firstName || '',
@@ -62,10 +68,17 @@ export const useClientEditingStore = create<ClientEditingStore>((set, get) => {
         phone: client.phone || '',
         email: client.email || '',
         address: client.address || '',
+        structuredAddress: client.structuredAddress,
         communicationChannels: client.communicationChannels || [],
         source: client.source || ClientSource.OTHER,
         sourceDetails: client.sourceDetails || '',
       };
+
+      console.log('🎯 ClientEditingStore.startEditing - створена formData:', {
+        formData,
+        structuredAddress: formData.structuredAddress,
+        formDataKeys: Object.keys(formData),
+      });
 
       set({
         formData,
@@ -76,9 +89,24 @@ export const useClientEditingStore = create<ClientEditingStore>((set, get) => {
     },
 
     setFormData: (data) => {
-      set((state) => ({
-        formData: state.formData ? { ...state.formData, ...data } : null,
-      }));
+      console.log('🔧 ClientEditingStore.setFormData:', {
+        newData: data,
+        structuredAddress: data.structuredAddress,
+        dataKeys: Object.keys(data),
+      });
+
+      set((state) => {
+        const updatedFormData = state.formData ? { ...state.formData, ...data } : null;
+        console.log('🔧 ClientEditingStore.setFormData - результат:', {
+          oldFormData: state.formData,
+          updatedFormData,
+          structuredAddress: updatedFormData?.structuredAddress,
+        });
+
+        return {
+          formData: updatedFormData,
+        };
+      });
     },
 
     setLoading: (loading) => {
@@ -92,6 +120,12 @@ export const useClientEditingStore = create<ClientEditingStore>((set, get) => {
     saveClient: async (): Promise<UpdateClientResult> => {
       const { formData } = get();
 
+      console.log('🚀 ClientEditingStore.saveClient() - початок:', {
+        formData,
+        structuredAddress: formData?.structuredAddress,
+        allKeys: formData ? Object.keys(formData) : [],
+      });
+
       if (!formData) {
         return { client: null, errors: { general: 'Дані клієнта відсутні' } };
       }
@@ -99,12 +133,15 @@ export const useClientEditingStore = create<ClientEditingStore>((set, get) => {
       set({ isLoading: true, error: null });
 
       try {
+        console.log('🚀 ClientEditingStore.saveClient() - викликаємо repository.update');
         const response = await clientRepository.update(formData);
 
+        console.log('🚀 ClientEditingStore.saveClient() - успіх:', response);
         set({ isLoading: false });
 
         return { client: response, errors: null };
       } catch (error) {
+        console.error('🚀 ClientEditingStore.saveClient() - помилка:', error);
         const errorMessage = error instanceof Error ? error.message : 'Помилка оновлення клієнта';
 
         set({ isLoading: false, error: errorMessage });

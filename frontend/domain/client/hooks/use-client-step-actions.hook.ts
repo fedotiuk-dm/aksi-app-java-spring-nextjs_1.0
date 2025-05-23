@@ -17,7 +17,15 @@ import { CreateClientFormData, UpdateClientFormData } from '../types';
  * - Composition: композиція спеціалізованих хуків
  */
 export const useClientStepActions = () => {
-  const { createAndSelect, editAndSelect, searchAndSelect } = useClientDomainStore();
+  const {
+    createAndSelect,
+    editAndSelect,
+    searchAndSelect,
+    startClientEditing,
+    startClientCreation,
+    startClientSelection,
+    deleteClient,
+  } = useClientDomainStore();
 
   const clientSearch = useClientSearch();
   const clientSelection = useClientSelection();
@@ -76,6 +84,12 @@ export const useClientStepActions = () => {
     // Операції вибору
     selectClient: clientSelection.selectClient,
     clearSelection: clientSelection.clearSelection,
+    deleteClient,
+
+    // Переключення режимів
+    switchToCreate: startClientCreation,
+    switchToEdit: startClientEditing,
+    switchToSelect: startClientSelection,
 
     // Операції створення
     createClient,
@@ -87,7 +101,7 @@ export const useClientStepActions = () => {
 
     // Операції редагування
     editClient,
-    startEditing: clientEditing.handleStartEditing,
+    startEditing: startClientEditing,
     editingState: {
       isLoading: clientEditing.isLoading,
       error: clientEditing.error,

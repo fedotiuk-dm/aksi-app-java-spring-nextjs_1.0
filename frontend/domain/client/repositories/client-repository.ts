@@ -88,13 +88,34 @@ export class ClientRepository implements IClientRepository {
    */
   async update(data: UpdateClientFormData): Promise<ClientResponse> {
     try {
+      // Логування вхідних даних
+      console.log('🔥 ClientRepository.update() - вхідні дані:', {
+        data,
+        structuredAddress: data.structuredAddress,
+        allKeys: Object.keys(data),
+      });
+
       // Використовуємо ClientAdapter для перетворення form data в API request
       const requestData = ClientAdapter.toUpdateRequest(data);
-      return await ClientsService.updateClient({
+
+      // Логування перетворених даних
+      console.log('🔥 ClientRepository.update() - дані для API:', {
+        requestData,
+        structuredAddress: requestData.structuredAddress,
+        allKeys: Object.keys(requestData),
+        stringifiedData: JSON.stringify(requestData, null, 2),
+      });
+
+      const result = await ClientsService.updateClient({
         id: data.id,
         requestBody: requestData,
       });
+
+      console.log('🔥 ClientRepository.update() - результат від API:', result);
+
+      return result;
     } catch (error) {
+      console.error('🔥 ClientRepository.update() - помилка:', error);
       throw new Error(
         `${this.ERROR_PREFIX} оновлення клієнта: ${error instanceof Error ? error.message : this.UNKNOWN_ERROR}`
       );

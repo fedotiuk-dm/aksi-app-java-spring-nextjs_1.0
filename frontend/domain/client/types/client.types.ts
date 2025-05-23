@@ -6,6 +6,11 @@ import type { ClientPreferenceDTO } from '@/lib/api';
 import type { OrderSummaryDTO } from '@/lib/api';
 
 /**
+ * Доменний тип для адреси (базується на AddressDTO з API)
+ */
+export type Address = AddressDTO;
+
+/**
  * Інтерфейс для представлення клієнта в домені
  */
 export interface Client {
@@ -16,7 +21,7 @@ export interface Client {
   phone?: string;
   email?: string;
   address?: string;
-  structuredAddress?: AddressDTO;
+  structuredAddress?: Address;
   communicationChannels?: CommunicationChannel[];
   source?: ClientSource;
   sourceDetails?: string;

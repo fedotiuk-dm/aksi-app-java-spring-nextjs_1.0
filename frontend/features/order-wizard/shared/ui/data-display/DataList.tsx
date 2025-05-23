@@ -106,8 +106,8 @@ export const DataList: React.FC<DataListProps> = ({
           const showDivider = dividers && !isLastItem;
 
           return (
-            <>
-              <ListItem key={item.id} disablePadding>
+            <React.Fragment key={item.id}>
+              <ListItem disablePadding>
                 {onItemClick && selectable ? (
                   <ListItemButton
                     onClick={() => onItemClick(item)}
@@ -120,9 +120,11 @@ export const DataList: React.FC<DataListProps> = ({
                       secondary={item.secondary}
                       primaryTypographyProps={{
                         variant: dense ? 'body2' : 'body1',
+                        component: 'div',
                       }}
                       secondaryTypographyProps={{
                         variant: 'caption',
+                        component: 'div',
                       }}
                     />
                     {item.actions && (
@@ -137,9 +139,11 @@ export const DataList: React.FC<DataListProps> = ({
                       secondary={item.secondary}
                       primaryTypographyProps={{
                         variant: dense ? 'body2' : 'body1',
+                        component: 'div',
                       }}
                       secondaryTypographyProps={{
                         variant: 'caption',
+                        component: 'div',
                       }}
                     />
                     {item.actions && (
@@ -149,7 +153,7 @@ export const DataList: React.FC<DataListProps> = ({
                 )}
               </ListItem>
               {showDivider && <Divider />}
-            </>
+            </React.Fragment>
           );
         })}
       </List>

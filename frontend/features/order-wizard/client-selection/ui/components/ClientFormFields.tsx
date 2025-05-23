@@ -3,39 +3,35 @@
 import {
   TextField,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   FormControlLabel,
   Checkbox,
+  FormGroup,
+  FormLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
   Box,
   Chip,
   Typography,
-  FormGroup,
-  FormLabel,
 } from '@mui/material';
 import React from 'react';
 
-import { ClientSource, CommunicationChannel, CreateClientFormData } from '@/domain/client';
+import { CreateClientFormData, UpdateClientFormData, Address } from '@/domain/client/types';
+import { ClientSource, CommunicationChannel } from '@/domain/client/types/client-enums';
+import { AddressFields } from '@/features/order-wizard/shared/ui';
 
 interface ClientFormFieldsProps {
-  formData: {
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
-    email?: string;
-    address?: string;
-    source?: ClientSource;
-    sourceDetails?: string;
-    communicationChannels?: CommunicationChannel[];
-  };
-  onChange: (field: string, value: CreateClientFormData[keyof CreateClientFormData]) => void;
+  formData: CreateClientFormData | UpdateClientFormData | Partial<UpdateClientFormData>;
+  onChange: (
+    field: string,
+    value: string | string[] | CommunicationChannel[] | ClientSource | Address | undefined
+  ) => void;
   errors?: Record<string, string>;
   disabled?: boolean;
-  className?: string;
-  showAllFields?: boolean;
   size?: 'small' | 'medium';
+  showAllFields?: boolean;
+  className?: string;
 }
 
 /**
@@ -54,9 +50,9 @@ export const ClientFormFields: React.FC<ClientFormFieldsProps> = ({
   onChange,
   errors = {},
   disabled = false,
-  className,
-  showAllFields = true,
   size = 'medium',
+  showAllFields = true,
+  className,
 }) => {
   const handleChannelChange = (channel: CommunicationChannel, checked: boolean) => {
     const current = formData.communicationChannels || [];
@@ -82,6 +78,33 @@ export const ClientFormFields: React.FC<ClientFormFieldsProps> = ({
     { value: CommunicationChannel.SMS, label: 'SMS' },
     { value: CommunicationChannel.VIBER, label: 'Viber' },
   ];
+
+  const handleStructuredAddressChange = (address: Address) => {
+    console.log('🏠 ClientFormFields.handleStructuredAddressChange:', {
+      newAddress: address,
+      oldStructuredAddress: formData.structuredAddress,
+    });
+
+    onChange('structuredAddress', address);
+    if (address?.fullAddress) {
+      onChange('address', address.fullAddress);
+    }
+  };
+
+  const handleSimpleAddressChange = (address: string) => {
+    console.log('🏠 ClientFormFields.handleSimpleAddressChange:', {
+      newAddress: address,
+      oldAddress: formData.address,
+    });
+
+    onChange('address', address);
+    if (formData.structuredAddress) {
+      onChange('structuredAddress', {
+        ...formData.structuredAddress,
+        fullAddress: address,
+      });
+    }
+  };
 
   return (
     <Box className={className}>
@@ -143,19 +166,25 @@ export const ClientFormFields: React.FC<ClientFormFieldsProps> = ({
 
         {showAllFields && (
           <>
-            {/* Адреса */}
+            {/* Адреса - використовуємо новий компонент */}
             <Grid size={{ xs: 12 }}>
-              <TextField
-                fullWidth
-                label="Адреса"
-                value={formData.address || ''}
-                onChange={(e) => onChange('address', e.target.value)}
-                error={!!errors.address}
-                helperText={errors.address}
+              <AddressFields
+                structuredAddress={formData.structuredAddress}
+                simpleAddress={formData.address}
+                onStructuredAddressChange={handleStructuredAddressChange}
+                onSimpleAddressChange={handleSimpleAddressChange}
+                errors={{
+                  city: errors.city,
+                  street: errors.street,
+                  building: errors.building,
+                  apartment: errors.apartment,
+                  postalCode: errors.postalCode,
+                  fullAddress: errors.fullAddress,
+                  address: errors.address,
+                }}
                 disabled={disabled}
                 size={size}
-                multiline
-                rows={2}
+                mode="both"
               />
             </Grid>
 

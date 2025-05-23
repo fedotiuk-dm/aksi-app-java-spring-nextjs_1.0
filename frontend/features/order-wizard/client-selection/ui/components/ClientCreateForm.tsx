@@ -8,7 +8,12 @@ import { StepContainer, ActionButton, FormSection } from '@/features/order-wizar
 
 import { ClientFormFields } from './ClientFormFields';
 
-import type { CreateClientFormData } from '@/domain/client';
+import type {
+  CreateClientFormData,
+  Address,
+  ClientSource,
+  CommunicationChannel,
+} from '@/domain/client';
 
 interface ClientCreateFormProps {
   isLoading: boolean;
@@ -50,7 +55,7 @@ export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
 
   const handleFieldChange = (
     field: string,
-    value: CreateClientFormData[keyof CreateClientFormData]
+    value: string | string[] | CommunicationChannel[] | ClientSource | Address | undefined
   ) => {
     setLocalFormData((prev) => ({ ...prev, [field]: value }));
   };

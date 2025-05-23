@@ -16,9 +16,10 @@ export class ClientFormAdapter {
       phone: client.phone || '',
       email: client.email,
       address: client.address,
+      structuredAddress: client.structuredAddress,
       communicationChannels: client.communicationChannels,
       source: client.source,
-      sourceDetails: client.sourceDetails
+      sourceDetails: client.sourceDetails,
     };
   }
 
@@ -32,26 +33,30 @@ export class ClientFormAdapter {
       phone: client.phone || '',
       email: client.email,
       address: client.address,
+      structuredAddress: client.structuredAddress,
       communicationChannels: client.communicationChannels,
       source: client.source,
-      sourceDetails: client.sourceDetails
+      sourceDetails: client.sourceDetails,
     };
   }
 
   /**
    * Перетворення даних форми в об'єкт клієнта
    */
-  static formDataToClientObject(formData: CreateClientFormData | UpdateClientFormData): Partial<ClientEntity> {
+  static formDataToClientObject(
+    formData: CreateClientFormData | UpdateClientFormData
+  ): Partial<ClientEntity> {
     return {
-      ...(('id' in formData) ? { id: formData.id } : {}),
+      ...('id' in formData ? { id: formData.id } : {}),
       firstName: formData.firstName,
       lastName: formData.lastName,
       phone: formData.phone,
       email: formData.email,
       address: formData.address,
+      structuredAddress: formData.structuredAddress,
       communicationChannels: formData.communicationChannels,
       source: formData.source,
-      sourceDetails: formData.sourceDetails
+      sourceDetails: formData.sourceDetails,
     };
   }
 }

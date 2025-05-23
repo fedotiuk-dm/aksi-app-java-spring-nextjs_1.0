@@ -8,7 +8,6 @@ import { useClientSelectionStore } from '../store/client-selection.store';
 import { Client } from '../types';
 import { ClientAdapter } from '../utils';
 
-
 /**
  * Властивості хука вибору клієнта
  */
@@ -58,6 +57,7 @@ export const useClientSelection = (props: UseClientSelectionProps = {}) => {
         phone: selectedClientEntity.phone,
         email: selectedClientEntity.email,
         address: selectedClientEntity.address,
+        structuredAddress: selectedClientEntity.structuredAddress,
         source: selectedClientEntity.source,
         sourceDetails: selectedClientEntity.sourceDetails,
         communicationChannels: selectedClientEntity.communicationChannels,

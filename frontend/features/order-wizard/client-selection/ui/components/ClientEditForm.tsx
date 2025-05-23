@@ -8,7 +8,13 @@ import { StepContainer, ActionButton, FormSection } from '@/features/order-wizar
 
 import { ClientFormFields } from './ClientFormFields';
 
-import type { UpdateClientFormData, Client } from '@/domain/client';
+import type {
+  UpdateClientFormData,
+  Client,
+  Address,
+  ClientSource,
+  CommunicationChannel,
+} from '@/domain/client';
 
 interface ClientEditFormProps {
   isLoading: boolean;
@@ -52,7 +58,7 @@ export const ClientEditForm: React.FC<ClientEditFormProps> = ({
 
   const handleFieldChange = (
     field: string,
-    value: UpdateClientFormData[keyof UpdateClientFormData]
+    value: string | string[] | CommunicationChannel[] | ClientSource | Address | undefined
   ) => {
     setLocalFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -60,12 +66,28 @@ export const ClientEditForm: React.FC<ClientEditFormProps> = ({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    console.log('📝 ClientEditForm.handleSubmit - дані форми:', {
+      localFormData,
+      structuredAddress: localFormData.structuredAddress,
+      allKeys: Object.keys(localFormData),
+      isComplete: !!(
+        localFormData.lastName &&
+        localFormData.firstName &&
+        localFormData.phone &&
+        localFormData.id
+      ),
+    });
+
     if (
       localFormData.lastName &&
       localFormData.firstName &&
       localFormData.phone &&
       localFormData.id
     ) {
+      console.log(
+        '📝 ClientEditForm.handleSubmit - викликаємо onSave з даними:',
+        localFormData as UpdateClientFormData
+      );
       await onSave(localFormData as UpdateClientFormData);
     }
   };

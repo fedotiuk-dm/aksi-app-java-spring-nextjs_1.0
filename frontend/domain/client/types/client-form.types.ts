@@ -3,6 +3,8 @@ import { ClientResponse } from '@/lib/api';
 import { ClientSource, CommunicationChannel } from './client-enums';
 import { Client } from './client.types';
 
+import type { AddressDTO } from '@/lib/api';
+
 /**
  * Тип форми клієнта
  */
@@ -18,8 +20,9 @@ export interface CreateClientFormData {
   phone: string;
   email?: string;
 
-  // Адреса (проста форма)
-  address?: string;
+  // Адреса (підтримка як простої так і структурованої)
+  address?: string; // Проста адреса для зворотної сумісності
+  structuredAddress?: AddressDTO; // Структурована адреса
 
   // Джерело та канали
   source?: ClientSource;

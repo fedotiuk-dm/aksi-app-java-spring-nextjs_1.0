@@ -17,6 +17,7 @@ interface ClientSelectionState {
   selectClient: (clientId: string) => Promise<void>;
   clearSelection: () => void;
   isClientSelected: () => boolean;
+  deleteClient: (clientId: string) => Promise<void>;
 }
 
 /**
@@ -77,6 +78,36 @@ export const useClientSelectionStore = create<ClientSelectionState>((set, get) =
 
     isClientSelected: () => {
       return !!get().selectedClient;
+    },
+
+    deleteClient: async (clientId: string) => {
+      if (!clientId) {
+        set({ selectedClientId: null, selectedClient: null });
+        return;
+      }
+
+      set({
+        isLoading: true,
+        isError: false,
+        error: null,
+        selectedClientId: null,
+        selectedClient: null
+      });
+
+      try {
+        await clientRepository.delete(clientId);
+        set({
+          isLoading: false
+        });
+      } catch (error) {
+        set({
+          isLoading: false,
+          isError: true,
+          error: error instanceof Error ? error : new Error('Помилка видалення клієнта'),
+          selectedClientId: null,
+          selectedClient: null
+        });
+      }
     }
   };
 });

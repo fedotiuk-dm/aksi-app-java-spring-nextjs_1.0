@@ -44,6 +44,7 @@ interface ClientDomainActions {
   createAndSelect: (formData: CreateClientFormData) => Promise<void>;
   editAndSelect: (formData: UpdateClientFormData) => Promise<void>;
   searchAndSelect: (searchTerm: string) => Promise<void>;
+  deleteClient: (clientId: string) => Promise<void>;
 }
 
 /**
@@ -155,14 +156,26 @@ export const useClientDomainStore = create<ClientDomainStore>((set, get) => ({
   editAndSelect: async (formData) => {
     const { setGlobalLoading, setGlobalError, setMode } = get();
 
+    console.log('⚡ ClientDomainStore.editAndSelect - отримані дані:', {
+      formData,
+      structuredAddress: formData.structuredAddress,
+      allKeys: Object.keys(formData),
+    });
+
     try {
       setGlobalLoading(true);
       setGlobalError(null);
 
       // Оновлюємо клієнта через editing store
       const editingStore = useClientEditingStore.getState();
+
+      console.log('⚡ ClientDomainStore.editAndSelect - встановлюємо formData в editing store');
       editingStore.setFormData(formData);
+
+      console.log('⚡ ClientDomainStore.editAndSelect - викликаємо saveClient');
       const result = await editingStore.saveClient();
+
+      console.log('⚡ ClientDomainStore.editAndSelect - результат saveClient:', result);
 
       if (result.client && !result.errors) {
         // Автоматично вибираємо оновленого клієнта для wizard
@@ -174,6 +187,7 @@ export const useClientDomainStore = create<ClientDomainStore>((set, get) => ({
         setGlobalError(result.errors?.general || 'Помилка оновлення клієнта');
       }
     } catch (error) {
+      console.error('⚡ ClientDomainStore.editAndSelect - помилка:', error);
       setGlobalError(error instanceof Error ? error.message : 'Невідома помилка');
     } finally {
       setGlobalLoading(false);
@@ -199,6 +213,25 @@ export const useClientDomainStore = create<ClientDomainStore>((set, get) => ({
       }
     } catch (error) {
       setGlobalError(error instanceof Error ? error.message : 'Помилка пошуку');
+    } finally {
+      setGlobalLoading(false);
+    }
+  },
+
+  deleteClient: async (clientId) => {
+    const { setGlobalLoading, setGlobalError } = get();
+
+    try {
+      setGlobalLoading(true);
+      setGlobalError(null);
+
+      // Видаляємо клієнта через selection store
+      await useClientSelectionStore.getState().deleteClient(clientId);
+
+      // Оновлюємо режим до SELECT
+      set({ mode: ClientMode.SELECT });
+    } catch (error) {
+      setGlobalError(error instanceof Error ? error.message : 'Помилка видалення клієнта');
     } finally {
       setGlobalLoading(false);
     }

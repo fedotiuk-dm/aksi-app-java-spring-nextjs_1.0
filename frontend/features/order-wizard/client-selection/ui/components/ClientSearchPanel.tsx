@@ -1,7 +1,7 @@
 'use client';
 
-import { Person, Edit, Phone, Email } from '@mui/icons-material';
-import { Avatar, IconButton, Box, Typography } from '@mui/material';
+import { Person, Edit, Phone, Email, Delete } from '@mui/icons-material';
+import { Avatar, IconButton, Box } from '@mui/material';
 import React from 'react';
 
 import { SearchInput, DataList, DataListItem } from '@/features/order-wizard/shared/ui';
@@ -17,9 +17,11 @@ interface ClientSearchPanelProps {
   onSearch: (term: string) => void;
   onSelectClient: (client: Client) => void;
   onEditClient?: (client: Client) => void;
+  onDeleteClient?: (client: Client) => void;
   className?: string;
   maxHeight?: number;
   showEditButton?: boolean;
+  showDeleteButton?: boolean;
 }
 
 /**
@@ -35,9 +37,11 @@ export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
   onSearch,
   onSelectClient,
   onEditClient,
+  onDeleteClient,
   className,
   maxHeight = 400,
   showEditButton = true,
+  showDeleteButton = true,
 }) => {
   // Перетворюємо клієнтів у формат для DataList
   const listItems = results
@@ -45,30 +49,26 @@ export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
     .map((client) => ({
       id: client.id as string, // Після filter ми знаємо що id існує
       primary: (
-        <Box>
-          <Typography variant="body1" component="span">
-            {client.firstName} {client.lastName}
-          </Typography>
-        </Box>
+        <span>
+          {client.firstName} {client.lastName}
+        </span>
       ),
       secondary: (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <span style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Phone sx={{ fontSize: 14 }} />
-            <Typography variant="caption">{client.phone}</Typography>
-          </Box>
+            <span style={{ fontSize: '0.75rem' }}>{client.phone}</span>
+          </span>
           {client.email && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Email sx={{ fontSize: 14 }} />
-              <Typography variant="caption">{client.email}</Typography>
-            </Box>
+              <span style={{ fontSize: '0.75rem' }}>{client.email}</span>
+            </span>
           )}
           {client.address && (
-            <Typography variant="caption" color="text.secondary">
-              {client.address}
-            </Typography>
+            <span style={{ fontSize: '0.75rem', color: 'text.secondary' }}>{client.address}</span>
           )}
-        </Box>
+        </span>
       ),
       avatar: (
         <Avatar>
@@ -76,17 +76,40 @@ export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
         </Avatar>
       ),
       actions:
-        showEditButton && onEditClient ? (
-          <IconButton
-            size="small"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditClient(client);
-            }}
-            title="Редагувати клієнта"
-          >
-            <Edit />
-          </IconButton>
+        (showEditButton && onEditClient) || (showDeleteButton && onDeleteClient) ? (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {showEditButton && onEditClient && (
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditClient(client);
+                }}
+                title="Редагувати клієнта"
+              >
+                <Edit />
+              </IconButton>
+            )}
+            {showDeleteButton && onDeleteClient && (
+              <IconButton
+                size="small"
+                color="error"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (
+                    confirm(
+                      `Ви впевнені, що хочете видалити клієнта ${client.firstName} ${client.lastName}?`
+                    )
+                  ) {
+                    onDeleteClient(client);
+                  }
+                }}
+                title="Видалити клієнта"
+              >
+                <Delete />
+              </IconButton>
+            )}
+          </Box>
         ) : undefined,
     }));
 

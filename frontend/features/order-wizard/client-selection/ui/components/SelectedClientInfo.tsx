@@ -1,6 +1,6 @@
 'use client';
 
-import { Edit, Clear } from '@mui/icons-material';
+import { Edit, Clear, Delete } from '@mui/icons-material';
 import React from 'react';
 
 import { Client, CommunicationChannel } from '@/domain/client';
@@ -10,6 +10,7 @@ interface SelectedClientInfoProps {
   client: Client;
   onEdit?: () => void;
   onClear?: () => void;
+  onDelete?: () => void;
   className?: string;
   compact?: boolean;
   showActions?: boolean;
@@ -23,6 +24,7 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
   client,
   onEdit,
   onClear,
+  onDelete,
   className,
   compact = false,
   showActions = true,
@@ -102,6 +104,17 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
           onClick={onClear}
         >
           Очистити вибір
+        </ActionButton>
+      )}
+      {onDelete && (
+        <ActionButton
+          variant="text"
+          color="error"
+          size="small"
+          startIcon={<Delete />}
+          onClick={onDelete}
+        >
+          Видалити
         </ActionButton>
       )}
     </>

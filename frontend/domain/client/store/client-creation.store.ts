@@ -40,6 +40,7 @@ const initialState: ClientCreationState = {
     phone: '',
     email: '',
     address: '',
+    structuredAddress: undefined,
     communicationChannels: [],
     source: ClientSource.OTHER,
     sourceDetails: '',

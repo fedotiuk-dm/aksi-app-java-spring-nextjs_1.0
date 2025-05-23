@@ -41,10 +41,21 @@ export const ClientSelectionStep: React.FC = () => {
     },
   });
 
+  // Додаємо логування для діагностики (тимчасово)
+  console.log('ClientSelectionStep render:', {
+    mode: clientStep.mode,
+    hasSelectedClient: clientStep.stepInfo.hasSelectedClient,
+    selectedClient: clientStep.selectedClient,
+    isLoading: clientStep.isLoading,
+    error: clientStep.error,
+  });
+
   /**
    * Рендер контенту залежно від режиму
    */
   const renderContent = () => {
+    console.log('renderContent mode:', clientStep.mode);
+
     switch (clientStep.mode) {
       case ClientMode.CREATE:
         return (
@@ -84,11 +95,21 @@ export const ClientSelectionStep: React.FC = () => {
               <SelectedClientInfo
                 client={clientStep.selectedClient}
                 onEdit={() => {
+                  console.log('Редагування клієнта:', clientStep.selectedClient);
                   if (clientStep.selectedClient) {
                     clientStep.startEditing(clientStep.selectedClient);
                   }
                 }}
                 onClear={clientStep.clearSelection}
+                onDelete={() => {
+                  if (
+                    clientStep.selectedClient?.id &&
+                    confirm('Ви впевнені, що хочете видалити цього клієнта?')
+                  ) {
+                    console.log('Видалення клієнта:', clientStep.selectedClient);
+                    clientStep.deleteClient(clientStep.selectedClient.id);
+                  }
+                }}
               />
             )}
 
@@ -98,6 +119,21 @@ export const ClientSelectionStep: React.FC = () => {
               onSearchTermChange={clientStep.clientSearch.setSearchQuery}
               onSearch={clientStep.search}
               onSelectClient={clientStep.selectAndComplete}
+              onEditClient={(client) => {
+                console.log('Редагування клієнта з пошуку:', client);
+                clientStep.startEditing(client);
+              }}
+              onDeleteClient={(client) => {
+                if (
+                  client.id &&
+                  confirm(
+                    `Ви впевнені, що хочете видалити клієнта ${client.firstName} ${client.lastName}?`
+                  )
+                ) {
+                  console.log('Видалення клієнта з пошуку:', client);
+                  clientStep.deleteClient(client.id);
+                }
+              }}
               isLoading={clientStep.isLoading}
               error={clientStep.error}
             />

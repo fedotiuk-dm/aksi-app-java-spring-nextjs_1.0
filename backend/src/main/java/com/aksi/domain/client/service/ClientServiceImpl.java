@@ -68,6 +68,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClientResponse getClientById(UUID id) {
         log.debug("Отримання клієнта за ID: {}", id);
         ClientEntity client = clientRepository.findById(id)

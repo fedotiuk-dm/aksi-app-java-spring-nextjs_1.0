@@ -3,36 +3,79 @@ import { z } from 'zod';
 import { ClientSource, CommunicationChannel } from '../types/client-enums';
 
 /**
- * Схема для валідації телефонного номера
+ * Схема для валідації телефону
  */
-export const phoneSchema = z
+const phoneSchema = z
   .string()
-  .trim()
-  .min(9, { message: 'Телефон повинен містити мінімум 9 символів' })
-  .max(20, { message: 'Телефон не може містити більше 20 символів' })
-  .regex(/^\+?[\d\s()-]+$/, {
-    message: 'Некоректний формат телефону',
-  });
+  .min(10, 'Телефон повинен містити мінімум 10 символів')
+  .max(15, 'Телефон не може містити більше 15 символів')
+  .regex(/^\+?[0-9]+$/, 'Телефон може містити тільки цифри та знак +');
 
 /**
- * Схема для валідації електронної пошти
+ * Схема для валідації email
  */
-export const emailSchema = z
-  .string()
-  .trim()
-  .email({ message: 'Некоректний формат електронної пошти' })
+const emailSchema = z.string().email('Введіть коректний email').optional().or(z.literal(''));
+
+/**
+ * Схема для валідації каналів комунікації
+ */
+const communicationChannelsSchema = z
+  .array(z.nativeEnum(CommunicationChannel))
   .optional()
-  .or(z.literal(''));
+  .default([]);
 
 /**
- * Схема для валідації джерела клієнта
+ * Схема для валідації джерела
  */
-export const sourceSchema = z.nativeEnum(ClientSource).optional();
+const sourceSchema = z.nativeEnum(ClientSource).optional();
 
 /**
- * Схема для валідації комунікаційних каналів
+ * Схема для валідації структурованої адреси
  */
-export const communicationChannelsSchema = z.array(z.nativeEnum(CommunicationChannel)).optional();
+export const addressDTOSchema = z
+  .object({
+    city: z
+      .string()
+      .trim()
+      .min(2, 'Назва міста повинна містити мінімум 2 символи')
+      .max(100, 'Назва міста не може бути довшою за 100 символів')
+      .optional()
+      .or(z.literal('')),
+    street: z
+      .string()
+      .trim()
+      .min(2, 'Назва вулиці повинна містити мінімум 2 символи')
+      .max(150, 'Назва вулиці не може бути довшою за 150 символів')
+      .optional()
+      .or(z.literal('')),
+    building: z
+      .string()
+      .trim()
+      .max(20, 'Номер будинку не може перевищувати 20 символів')
+      .optional()
+      .or(z.literal('')),
+    apartment: z
+      .string()
+      .trim()
+      .max(20, 'Номер квартири не може перевищувати 20 символів')
+      .optional()
+      .or(z.literal('')),
+    postalCode: z
+      .string()
+      .trim()
+      .max(10, 'Поштовий індекс не може перевищувати 10 символів')
+      .regex(/^[0-9\-]*$/, 'Поштовий індекс може містити тільки цифри та тире')
+      .optional()
+      .or(z.literal('')),
+    fullAddress: z
+      .string()
+      .trim()
+      .min(5, 'Адреса повинна містити мінімум 5 символів')
+      .max(500, 'Адреса не може містити більше 500 символів')
+      .optional()
+      .or(z.literal('')),
+  })
+  .optional();
 
 /**
  * Схема для валідації форми створення клієнта
@@ -56,6 +99,7 @@ export const createClientSchema = z.object({
     .max(200, { message: 'Адреса не може містити більше 200 символів' })
     .optional()
     .or(z.literal('')),
+  structuredAddress: addressDTOSchema,
   communicationChannels: communicationChannelsSchema,
   source: sourceSchema,
   sourceDetails: z
@@ -70,7 +114,7 @@ export const createClientSchema = z.object({
  * Схема для валідації форми оновлення клієнта
  */
 export const updateClientSchema = createClientSchema.extend({
-  id: z.string().trim().min(1, { message: 'ID клієнта не може бути порожнім' }),
+  id: z.string().min(1, 'ID клієнта не може бути порожнім'),
 });
 
 /**
@@ -88,3 +132,4 @@ export const clientSearchSchema = z.object({
 export type CreateClientSchema = z.infer<typeof createClientSchema>;
 export type UpdateClientSchema = z.infer<typeof updateClientSchema>;
 export type ClientSearchSchema = z.infer<typeof clientSearchSchema>;
+export type AddressDTOSchemaType = z.infer<typeof addressDTOSchema>;

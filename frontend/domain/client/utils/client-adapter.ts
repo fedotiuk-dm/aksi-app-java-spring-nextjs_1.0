@@ -21,6 +21,7 @@ export class ClientAdapter {
       phone: apiResponse.phone,
       email: apiResponse.email || undefined,
       address: apiResponse.address || undefined,
+      structuredAddress: apiResponse.structuredAddress,
       source: this.adaptSourceToDomain(apiResponse.source),
       sourceDetails: apiResponse.sourceDetails || undefined,
       communicationChannels: this.adaptChannelsToDomain(apiResponse.communicationChannels),
@@ -41,6 +42,7 @@ export class ClientAdapter {
       phone: apiResponse.phone,
       email: apiResponse.email || undefined,
       address: apiResponse.address || undefined,
+      structuredAddress: apiResponse.structuredAddress,
       source: this.adaptSourceToDomain(apiResponse.source),
       sourceDetails: apiResponse.sourceDetails || undefined,
       communicationChannels: this.adaptChannelsToDomain(apiResponse.communicationChannels),
@@ -60,6 +62,7 @@ export class ClientAdapter {
       phone: entity.phone || '',
       email: entity.email,
       address: entity.address,
+      structuredAddress: entity.structuredAddress,
       source: this.adaptSourceToApi(entity.source),
       sourceDetails: entity.sourceDetails,
       communicationChannels: this.adaptChannelsToApi(entity.communicationChannels),
@@ -72,7 +75,9 @@ export class ClientAdapter {
    * Адаптує source з API до доменного типу
    * Вирішує проблему конфлікту типів енумів
    */
-  private static adaptSourceToDomain(apiSource: any): ClientSource | undefined {
+  private static adaptSourceToDomain(
+    apiSource: CreateClientRequest.source | string | undefined | null
+  ): ClientSource | undefined {
     if (!apiSource) return undefined;
 
     // Безпечний мапінг між API значеннями та доменними enum
@@ -91,16 +96,31 @@ export class ClientAdapter {
   /**
    * Адаптує source з доменного типу до API
    */
-  private static adaptSourceToApi(domainSource: ClientSource | undefined): any {
+  private static adaptSourceToApi(
+    domainSource: ClientSource | undefined
+  ): CreateClientRequest.source | undefined {
     if (!domainSource) return undefined;
-    return domainSource; // API очікує той самий string
+
+    // Мапимо доменні enum значення в API enum значення
+    const sourceApiMap: Record<ClientSource, CreateClientRequest.source> = {
+      [ClientSource.INSTAGRAM]: CreateClientRequest.source.INSTAGRAM,
+      [ClientSource.GOOGLE]: CreateClientRequest.source.GOOGLE,
+      [ClientSource.RECOMMENDATION]: CreateClientRequest.source.RECOMMENDATION,
+      [ClientSource.FACEBOOK]: CreateClientRequest.source.OTHER, // FACEBOOK -> OTHER
+      [ClientSource.PASSING_BY]: CreateClientRequest.source.OTHER, // PASSING_BY -> OTHER
+      [ClientSource.OTHER]: CreateClientRequest.source.OTHER,
+    };
+
+    return sourceApiMap[domainSource];
   }
 
   /**
    * Адаптує канали комунікації з API до доменного типу
    * Вирішує проблему конфлікту типів енумів
    */
-  private static adaptChannelsToDomain(apiChannels: any[] | undefined): CommunicationChannel[] {
+  private static adaptChannelsToDomain(
+    apiChannels: Array<'PHONE' | 'SMS' | 'VIBER'> | undefined | null
+  ): CommunicationChannel[] {
     if (!apiChannels || !Array.isArray(apiChannels)) return [];
 
     const channelMap: Record<string, CommunicationChannel> = {
@@ -119,9 +139,18 @@ export class ClientAdapter {
   /**
    * Адаптує канали комунікації з доменного типу до API
    */
-  private static adaptChannelsToApi(domainChannels: CommunicationChannel[] | undefined): any[] {
+  private static adaptChannelsToApi(
+    domainChannels: CommunicationChannel[] | undefined
+  ): Array<'PHONE' | 'SMS' | 'VIBER'> {
     if (!domainChannels) return [];
-    return domainChannels.map((channel) => channel);
+    return domainChannels
+      .filter(
+        (channel): channel is CommunicationChannel =>
+          channel === CommunicationChannel.PHONE ||
+          channel === CommunicationChannel.SMS ||
+          channel === CommunicationChannel.VIBER
+      )
+      .map((channel) => channel as 'PHONE' | 'SMS' | 'VIBER');
   }
 
   /**
@@ -148,8 +177,9 @@ export class ClientAdapter {
       phone: formData.phone,
       email: formData.email,
       address: formData.address,
-      communicationChannels: this.adaptChannelsToApiFormat(formData.communicationChannels),
-      source: this.adaptSourceToApiFormat(formData.source),
+      structuredAddress: formData.structuredAddress,
+      communicationChannels: this.adaptChannelsToApi(formData.communicationChannels),
+      source: this.adaptSourceToApi(formData.source),
       sourceDetails: formData.sourceDetails,
     };
   }
@@ -159,45 +189,16 @@ export class ClientAdapter {
    */
   static toUpdateRequest(formData: UpdateClientFormData): UpdateClientRequest {
     // Використовуємо базовий метод і адаптуємо тип
-    return this.toCreateRequest(formData) as UpdateClientRequest;
-  }
+    const result = this.toCreateRequest(formData) as UpdateClientRequest;
 
-  /**
-   * Адаптує доменні комунікаційні канали до API формату
-   */
-  private static adaptChannelsToApiFormat(
-    domainChannels: CommunicationChannel[] | undefined
-  ): Array<'PHONE' | 'SMS' | 'VIBER'> | undefined {
-    if (!domainChannels) return undefined;
+    // Логування для перевірки що відправляється на бекенд
+    console.log('🔍 ClientAdapter.toUpdateRequest:', {
+      original: formData,
+      structuredAddress: formData.structuredAddress,
+      result: result,
+      resultStructuredAddress: result.structuredAddress,
+    });
 
-    return domainChannels
-      .filter(
-        (channel): channel is CommunicationChannel =>
-          channel === CommunicationChannel.PHONE ||
-          channel === CommunicationChannel.SMS ||
-          channel === CommunicationChannel.VIBER
-      )
-      .map((channel) => channel as 'PHONE' | 'SMS' | 'VIBER');
-  }
-
-  /**
-   * Адаптує доменне джерело до API формату
-   */
-  private static adaptSourceToApiFormat(
-    domainSource: ClientSource | undefined
-  ): CreateClientRequest.source | UpdateClientRequest.source | undefined {
-    if (!domainSource) return undefined;
-
-    // Мапимо доменні enum значення в API enum значення
-    const sourceApiMap: Record<ClientSource, CreateClientRequest.source> = {
-      [ClientSource.INSTAGRAM]: CreateClientRequest.source.INSTAGRAM,
-      [ClientSource.GOOGLE]: CreateClientRequest.source.GOOGLE,
-      [ClientSource.RECOMMENDATION]: CreateClientRequest.source.RECOMMENDATION,
-      [ClientSource.FACEBOOK]: CreateClientRequest.source.OTHER, // FACEBOOK -> OTHER
-      [ClientSource.PASSING_BY]: CreateClientRequest.source.OTHER, // PASSING_BY -> OTHER
-      [ClientSource.OTHER]: CreateClientRequest.source.OTHER,
-    };
-
-    return sourceApiMap[domainSource];
+    return result;
   }
 }
