@@ -257,57 +257,11 @@ export enum PaymentStatus {
 }
 
 /**
- * Типи матеріалів
- */
-export enum MaterialType {
-  COTTON = 'COTTON',
-  WOOL = 'WOOL',
-  SILK = 'SILK',
-  SYNTHETIC = 'SYNTHETIC',
-  LEATHER = 'LEATHER',
-  NUBUCK = 'NUBUCK',
-  SUEDE = 'SUEDE',
-  SPLIT_LEATHER = 'SPLIT_LEATHER',
-}
-
-/**
- * Ступінь зносу
- */
-export enum WearDegree {
-  PERCENT_10 = '10%',
-  PERCENT_30 = '30%',
-  PERCENT_50 = '50%',
-  PERCENT_75 = '75%',
-}
-
-/**
- * Типи наповнювачів
- */
-export enum FillerType {
-  DOWN = 'DOWN',
-  SYNTHETIC = 'SYNTHETIC',
-  OTHER = 'OTHER',
-}
-
-/**
- * Модифікатор ціни для предмета
- */
-export interface OrderItemModifier {
-  id: string;
-  orderItemId: string;
-  name: string;
-  type: 'PERCENTAGE' | 'FIXED';
-  value: number;
-  description?: string;
-  applied: boolean;
-}
-
-/**
  * Розрахунок ціни предмета з деталізацією
  */
 export interface OrderItemPriceCalculation {
   basePrice: number;
-  modifiers: OrderItemModifier[];
+  modifiers: any[]; // Використовуємо any тимчасово щоб уникнути циклічних залежностей
   subtotal: number;
   discountAmount: number;
   finalPrice: number;
@@ -335,4 +289,62 @@ export interface OrderFinancials {
   prepaymentAmount: number;
   balanceAmount: number;
   paymentMethod: PaymentMethod;
+}
+
+/**
+ * Результат фінансових операцій
+ */
+export interface FinancialOperationResponse {
+  success: boolean;
+  message?: string;
+  data?: Record<string, unknown>;
+  errors?: string[];
+}
+
+/**
+ * Відповідь для операцій зі знижкою
+ */
+export interface DiscountOperationResponse extends FinancialOperationResponse {
+  data?: {
+    orderId: string;
+    discountType: DiscountType;
+    discountPercentage: number;
+    discountAmount: number;
+    oldTotalAmount: number;
+    newTotalAmount: number;
+    appliedAt: string;
+  };
+}
+
+/**
+ * Відповідь для розрахунку оплати
+ */
+export interface PaymentCalculationResponse extends FinancialOperationResponse {
+  data?: {
+    orderId: string;
+    totalAmount: number;
+    discountAmount: number;
+    finalAmount: number;
+    paymentBreakdown: Array<{
+      type: PaymentMethod;
+      amount: number;
+      status: PaymentStatus;
+    }>;
+    calculatedAt: string;
+  };
+}
+
+/**
+ * Інформація про платіж замовлення
+ */
+export interface OrderPaymentInfo {
+  orderId: string;
+  totalAmount: number;
+  prepaymentAmount: number;
+  balanceAmount: number;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  paymentDate?: string;
+  transactionId?: string;
+  receiptNumber?: string;
 }

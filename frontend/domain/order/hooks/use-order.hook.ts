@@ -3,7 +3,7 @@
  * Інтегрує Zustand store з React Query для керування станом та API
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { OrderService } from '../services/order.service';
 import { useOrderStore } from '../store/order.store';
@@ -14,8 +14,6 @@ import type {
   OrderItem,
   OrderStatus,
   DiscountType,
-  ExpediteType,
-  OrderSearchParams,
 } from '../types';
 
 // Константа для повторюваного рядка

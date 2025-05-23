@@ -53,13 +53,12 @@ export class OrderAdapter {
    */
   static toApiDTO(order: Order): CreateOrderRequest {
     return {
-      receiptNumber: order.receiptNumber,
       tagNumber: order.tagNumber,
-      clientId: order.clientId ? parseInt(order.clientId) : undefined,
-      branchLocationId: order.branchLocationId ? parseInt(order.branchLocationId) : undefined,
+      clientId: order.clientId || '',
+      branchLocationId: order.branchLocationId || '',
       customerNotes: order.customerNotes,
       internalNotes: order.internalNotes,
-      expediteType: (order.expediteType || 'STANDARD') as any,
+      expediteType: (order.expediteType || 'STANDARD') as CreateOrderRequest.expediteType,
       draft: order.draft || false,
       // items додаватимуться окремо через OrderItemService
     };

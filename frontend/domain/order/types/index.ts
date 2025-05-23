@@ -12,7 +12,22 @@
  */
 
 // === ОСНОВНІ ТИПИ ===
-export * from './order.types';
+export { OrderStatus, ExpediteType } from './order.types';
+
+export type {
+  Order,
+  OrderItem,
+  OrderSummary,
+  OrderSearchParams,
+  OrderSearchResult,
+  OrderSearchStats,
+  OrderOperationResult,
+  OrderOperationErrors,
+  FinancialOperationResponse,
+  DiscountOperationResponse,
+  PaymentCalculationResponse,
+} from './order.types';
+
 export * from './order-form.types';
 
 // === МОДУЛЬНІ ТИПИ ===

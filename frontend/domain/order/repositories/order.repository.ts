@@ -3,11 +3,24 @@
  * Реалізує інкапсуляцію доступу до даних згідно з DDD
  */
 
-import { ordersApi } from '@/lib/api';
+import {
+  OrderManagementBasicOperationsService,
+  OrderManagementFinancialService,
+  OrderManagementSummaryAnalyticsService,
+  type OrderDTO,
+  type OrderDiscountRequest,
+  type PaymentCalculationRequest,
+  type OrderDetailedSummaryResponse,
+} from '@/lib/api';
 
 import { OrderAdapter } from '../utils';
 
-import type { Order, OrderSearchParams, OrderOperationResult } from '../types';
+import type {
+  Order,
+  OrderSearchParams,
+  OrderOperationResult,
+  FinancialOperationResponse,
+} from '../types';
 
 /**
  * Інтерфейс Order репозиторію
@@ -31,6 +44,23 @@ export interface IOrderRepository {
   // === СТАТИСТИКА ===
   count(): Promise<number>;
   countByStatus(): Promise<Record<string, number>>;
+  getDetailedSummary(orderId: string): Promise<OrderDetailedSummaryResponse | null>;
+
+  // === ФІНАНСОВІ ОПЕРАЦІЇ ===
+  applyDiscount(
+    orderId: string,
+    discountRequest: OrderDiscountRequest
+  ): Promise<FinancialOperationResponse | null>;
+  removeDiscount(orderId: string): Promise<FinancialOperationResponse | null>;
+  getOrderPayment(): Promise<FinancialOperationResponse | null>;
+  calculatePayment(
+    paymentRequest: PaymentCalculationRequest
+  ): Promise<FinancialOperationResponse | null>;
+
+  // === ЖИТТЄВИЙ ЦИКЛ ===
+  completeOrder(orderId: string): Promise<Order | null>;
+  convertDraftToOrder(orderId: string): Promise<Order | null>;
+  cancelOrder(orderId: string): Promise<boolean>;
 }
 
 /**
@@ -42,8 +72,8 @@ export class OrderRepository implements IOrderRepository {
    */
   async findById(id: string): Promise<Order | null> {
     try {
-      const response = await ordersApi.getOrderById(parseInt(id));
-      return response.data ? OrderAdapter.fromApiDTO(response.data) : null;
+      const response = await OrderManagementBasicOperationsService.getOrderById({ id });
+      return response ? OrderAdapter.fromApiDTO(response) : null;
     } catch (error) {
       console.error('Error finding order by ID:', error);
       return null;
@@ -55,15 +85,10 @@ export class OrderRepository implements IOrderRepository {
    */
   async findByReceiptNumber(receiptNumber: string): Promise<Order | null> {
     try {
-      // Припустимо, що API підтримує пошук за номером квитанції
-      const response = await ordersApi.getAllOrders({
-        receiptNumber,
-        page: 0,
-        size: 1,
-      });
-
-      const orders = response.data?.content || [];
-      return orders.length > 0 ? OrderAdapter.fromApiDTO(orders[0]) : null;
+      // TODO: Реалізувати пошук за номером квитанції через відповідний API endpoint
+      const allOrders = await OrderManagementBasicOperationsService.getAllOrders();
+      const foundOrder = allOrders.find((order: OrderDTO) => order.receiptNumber === receiptNumber);
+      return foundOrder ? OrderAdapter.fromApiDTO(foundOrder) : null;
     } catch (error) {
       console.error('Error finding order by receipt number:', error);
       return null;
@@ -75,14 +100,10 @@ export class OrderRepository implements IOrderRepository {
    */
   async findByTagNumber(tagNumber: string): Promise<Order | null> {
     try {
-      const response = await ordersApi.getAllOrders({
-        tagNumber,
-        page: 0,
-        size: 1,
-      });
-
-      const orders = response.data?.content || [];
-      return orders.length > 0 ? OrderAdapter.fromApiDTO(orders[0]) : null;
+      // TODO: Реалізувати пошук за номером тегу через відповідний API endpoint
+      const allOrders = await OrderManagementBasicOperationsService.getAllOrders();
+      const foundOrder = allOrders.find((order: OrderDTO) => order.tagNumber === tagNumber);
+      return foundOrder ? OrderAdapter.fromApiDTO(foundOrder) : null;
     } catch (error) {
       console.error('Error finding order by tag number:', error);
       return null;
@@ -95,10 +116,12 @@ export class OrderRepository implements IOrderRepository {
   async create(order: Order): Promise<OrderOperationResult> {
     try {
       const createRequest = OrderAdapter.toApiDTO(order);
-      const response = await ordersApi.createOrder(createRequest);
+      const response = await OrderManagementBasicOperationsService.createOrder({
+        requestBody: createRequest,
+      });
 
-      if (response.data) {
-        const createdOrder = OrderAdapter.fromApiDTO(response.data);
+      if (response) {
+        const createdOrder = OrderAdapter.fromApiDTO(response);
         return {
           order: createdOrder,
           success: true,
@@ -111,12 +134,13 @@ export class OrderRepository implements IOrderRepository {
         success: false,
         errors: { general: 'Не вдалося створити замовлення' },
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating order:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Помилка створення замовлення';
       return {
         order: null,
         success: false,
-        errors: { general: error.message || 'Помилка створення замовлення' },
+        errors: { general: errorMessage },
       };
     }
   }
@@ -134,11 +158,22 @@ export class OrderRepository implements IOrderRepository {
         };
       }
 
-      const updateRequest = OrderAdapter.toApiDTO(order);
-      const response = await ordersApi.updateOrder(parseInt(order.id), updateRequest);
+      // TODO: Знайти правильний метод для оновлення замовлення
+      // Поки що використовуємо метод оновлення статусу як заглушку
+      const statusLiteral = order.status as
+        | 'DRAFT'
+        | 'NEW'
+        | 'IN_PROGRESS'
+        | 'COMPLETED'
+        | 'DELIVERED'
+        | 'CANCELLED';
+      const response = await OrderManagementBasicOperationsService.updateOrderStatus({
+        id: order.id,
+        status: statusLiteral,
+      });
 
-      if (response.data) {
-        const updatedOrder = OrderAdapter.fromApiDTO(response.data);
+      if (response) {
+        const updatedOrder = OrderAdapter.fromApiDTO(response);
         return {
           order: updatedOrder,
           success: true,
@@ -151,12 +186,13 @@ export class OrderRepository implements IOrderRepository {
         success: false,
         errors: { general: 'Не вдалося оновити замовлення' },
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating order:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Помилка оновлення замовлення';
       return {
         order: null,
         success: false,
-        errors: { general: error.message || 'Помилка оновлення замовлення' },
+        errors: { general: errorMessage },
       };
     }
   }
@@ -166,7 +202,9 @@ export class OrderRepository implements IOrderRepository {
    */
   async delete(id: string): Promise<boolean> {
     try {
-      await ordersApi.deleteOrder(parseInt(id));
+      // TODO: Знайти правильний метод для видалення замовлення
+      // Поки що використовуємо метод скасування як заглушку
+      await OrderManagementBasicOperationsService.cancelOrder({ id });
       return true;
     } catch (error) {
       console.error('Error deleting order:', error);
@@ -179,21 +217,28 @@ export class OrderRepository implements IOrderRepository {
    */
   async search(params: OrderSearchParams): Promise<Order[]> {
     try {
-      const response = await ordersApi.getAllOrders({
-        keyword: params.keyword,
-        status: params.status?.join(','),
-        dateFrom: params.dateFrom?.toISOString(),
-        dateTo: params.dateTo?.toISOString(),
-        branchId: params.branchId ? parseInt(params.branchId) : undefined,
-        clientId: params.clientId ? parseInt(params.clientId) : undefined,
-        minAmount: params.minAmount,
-        maxAmount: params.maxAmount,
-        page: 0,
-        size: 100, // TODO: додати пагінацію
-      });
+      // TODO: Реалізувати фільтрацію через відповідний API endpoint
+      const allOrders = await OrderManagementBasicOperationsService.getAllOrders();
 
-      const orders = response.data?.content || [];
-      return OrderAdapter.fromApiDTOList(orders);
+      // Локальна фільтрація (тимчасове рішення)
+      let filteredOrders = allOrders;
+
+      if (params.keyword) {
+        filteredOrders = filteredOrders.filter(
+          (order: OrderDTO) =>
+            order.receiptNumber?.includes(params.keyword || '') ||
+            order.tagNumber?.includes(params.keyword || '')
+        );
+      }
+
+      if (params.status && params.status.length > 0) {
+        const statusStrings = params.status.map((status) => status.toString());
+        filteredOrders = filteredOrders.filter((order: OrderDTO) =>
+          order.status ? statusStrings.includes(order.status) : false
+        );
+      }
+
+      return OrderAdapter.fromApiDTOList(filteredOrders);
     } catch (error) {
       console.error('Error searching orders:', error);
       return [];
@@ -204,28 +249,58 @@ export class OrderRepository implements IOrderRepository {
    * Знаходить замовлення за клієнтом
    */
   async findByClient(clientId: string): Promise<Order[]> {
-    return this.search({ clientId });
+    try {
+      const allOrders = await OrderManagementBasicOperationsService.getAllOrders();
+      const clientOrders = allOrders.filter(
+        (order: OrderDTO) => order.clientId?.toString() === clientId
+      );
+      return OrderAdapter.fromApiDTOList(clientOrders);
+    } catch (error) {
+      console.error('Error finding orders by client:', error);
+      return [];
+    }
   }
 
   /**
    * Знаходить замовлення за філією
    */
   async findByBranch(branchId: string): Promise<Order[]> {
-    return this.search({ branchId });
+    try {
+      const allOrders = await OrderManagementBasicOperationsService.getAllOrders();
+      const branchOrders = allOrders.filter(
+        (order: OrderDTO) => order.branchLocationId?.toString() === branchId
+      );
+      return OrderAdapter.fromApiDTOList(branchOrders);
+    } catch (error) {
+      console.error('Error finding orders by branch:', error);
+      return [];
+    }
   }
 
   /**
    * Знаходить чернетки замовлень
    */
   async findDrafts(): Promise<Order[]> {
-    return this.search({ status: ['DRAFT'] });
+    try {
+      const drafts = await OrderManagementBasicOperationsService.getDraftOrders();
+      return OrderAdapter.fromApiDTOList(drafts);
+    } catch (error) {
+      console.error('Error finding draft orders:', error);
+      return [];
+    }
   }
 
   /**
    * Знаходить активні замовлення
    */
   async findActive(): Promise<Order[]> {
-    return this.search({ status: ['NEW', 'IN_PROGRESS'] });
+    try {
+      const active = await OrderManagementBasicOperationsService.getActiveOrders();
+      return OrderAdapter.fromApiDTOList(active);
+    } catch (error) {
+      console.error('Error finding active orders:', error);
+      return [];
+    }
   }
 
   /**
@@ -233,11 +308,8 @@ export class OrderRepository implements IOrderRepository {
    */
   async count(): Promise<number> {
     try {
-      const response = await ordersApi.getAllOrders({
-        page: 0,
-        size: 1,
-      });
-      return response.data?.totalElements || 0;
+      const allOrders = await OrderManagementBasicOperationsService.getAllOrders();
+      return allOrders.length;
     } catch (error) {
       console.error('Error counting orders:', error);
       return 0;
@@ -245,22 +317,163 @@ export class OrderRepository implements IOrderRepository {
   }
 
   /**
-   * Підраховує замовлення за статусами
+   * Підраховує кількість замовлень за статусами
    */
   async countByStatus(): Promise<Record<string, number>> {
     try {
-      // TODO: реалізувати API endpoint для статистики
-      const orders = await this.search({});
+      const allOrders = await OrderManagementBasicOperationsService.getAllOrders();
       const counts: Record<string, number> = {};
 
-      orders.forEach((order) => {
-        counts[order.status] = (counts[order.status] || 0) + 1;
-      });
+      for (const order of allOrders) {
+        const orderDto = order as OrderDTO;
+        if (orderDto.status) {
+          const status = orderDto.status;
+          counts[status] = (counts[status] || 0) + 1;
+        }
+      }
 
       return counts;
     } catch (error) {
       console.error('Error counting orders by status:', error);
       return {};
+    }
+  }
+
+  /**
+   * Отримує детальний підсумок замовлення
+   */
+  async getDetailedSummary(orderId: string): Promise<OrderDetailedSummaryResponse | null> {
+    try {
+      return await OrderManagementSummaryAnalyticsService.getOrderDetailedSummary({ orderId });
+    } catch (error) {
+      console.error('Error getting detailed summary:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Застосовує знижку до замовлення
+   */
+  async applyDiscount(
+    orderId: string,
+    discountRequest: OrderDiscountRequest
+  ): Promise<FinancialOperationResponse | null> {
+    try {
+      const response = await OrderManagementFinancialService.applyDiscount1({
+        requestBody: discountRequest,
+      });
+      return {
+        success: true,
+        data: response as Record<string, unknown>,
+      };
+    } catch (error) {
+      console.error('Error applying discount:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to apply discount',
+      };
+    }
+  }
+
+  /**
+   * Видаляє знижку з замовлення
+   */
+  async removeDiscount(orderId: string): Promise<FinancialOperationResponse | null> {
+    try {
+      const response = await OrderManagementFinancialService.removeDiscount({ orderId });
+      return {
+        success: true,
+        data: response as Record<string, unknown>,
+      };
+    } catch (error) {
+      console.error('Error removing discount:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to remove discount',
+      };
+    }
+  }
+
+  /**
+   * Отримує інформацію про оплату
+   */
+  async getOrderPayment(): Promise<FinancialOperationResponse | null> {
+    try {
+      const response = await OrderManagementFinancialService.getOrderPayment();
+      return {
+        success: true,
+        data: response as Record<string, unknown>,
+      };
+    } catch (error) {
+      console.error('Error getting payment info:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to get payment info',
+      };
+    }
+  }
+
+  /**
+   * Розраховує оплату
+   */
+  async calculatePayment(
+    paymentRequest: PaymentCalculationRequest
+  ): Promise<FinancialOperationResponse | null> {
+    try {
+      const response = await OrderManagementFinancialService.calculatePayment({
+        requestBody: paymentRequest,
+      });
+      return {
+        success: true,
+        data: response as Record<string, unknown>,
+      };
+    } catch (error) {
+      console.error('Error calculating payment:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to calculate payment',
+      };
+    }
+  }
+
+  /**
+   * Завершує замовлення
+   */
+  async completeOrder(orderId: string): Promise<Order | null> {
+    try {
+      const response = await OrderManagementBasicOperationsService.completeOrder({ id: orderId });
+      return response ? OrderAdapter.fromApiDTO(response) : null;
+    } catch (error) {
+      console.error('Error completing order:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Конвертує чернетку в замовлення
+   */
+  async convertDraftToOrder(orderId: string): Promise<Order | null> {
+    try {
+      const response = await OrderManagementBasicOperationsService.convertDraftToOrder({
+        id: orderId,
+      });
+      return response ? OrderAdapter.fromApiDTO(response) : null;
+    } catch (error) {
+      console.error('Error converting draft to order:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Скасовує замовлення
+   */
+  async cancelOrder(orderId: string): Promise<boolean> {
+    try {
+      await OrderManagementBasicOperationsService.cancelOrder({ id: orderId });
+      return true;
+    } catch (error) {
+      console.error('Error canceling order:', error);
+      return false;
     }
   }
 }

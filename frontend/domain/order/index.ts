@@ -33,23 +33,20 @@ export {
   FillerType,
 } from './types';
 
+// Сутності
+export { OrderEntity } from './entities';
+
+// Репозиторії
+export { OrderRepository, type IOrderRepository } from './repositories';
+
 // Сервіси
-export { OrderService } from './services/order.service';
+export { OrderService } from './services';
 
 // Хуки
-export { useOrder } from './hooks/use-order.hook';
-export { useOrderSearch } from './hooks/use-order-search.hook';
+export { useOrder, useOrderSearch } from './hooks';
 
 // Сторі
-export {
-  useOrderStore,
-  orderSelectors,
-  useCurrentOrder,
-  useOrderLoading,
-  useOrderError,
-  useOrderHistory,
-  useOrderCache,
-} from './store/order.store';
+export { useOrderStore } from './store';
 
 // Утиліти
 export { OrderUtils } from './utils/order.utils';
@@ -58,6 +55,7 @@ export { PriceCalculator } from './utils/price.calculator';
 export { CompletionCalculator } from './utils/completion.calculator';
 export { OrderItemAdapter } from './utils/order-item.adapter';
 export { FinancialAdapter } from './utils/financial.adapter';
+export { OrderAdapter } from './utils';
 
 // Схеми валідації
 export {
@@ -69,18 +67,16 @@ export {
   applyDiscountSchema,
   changeOrderStatusSchema,
   orderFinancialsSchema,
-} from './schemas/order.schema';
+} from './schemas';
 
 export type {
-  OrderFormData,
-  OrderItemFormData,
   CreateOrderFormData,
   UpdateOrderFormData,
   OrderSearchFormData,
   ApplyDiscountFormData,
   ChangeOrderStatusFormData,
   OrderFinancialsFormData,
-} from './schemas/order.schema';
+} from './schemas';
 
 // Константи
 export const ORDER_CONSTANTS = {

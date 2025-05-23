@@ -3,7 +3,7 @@
  * Адаптовані з API request типів для роботи з формами
  */
 
-import type { Order, OrderItem, OrderStatus, ExpediteType } from './order.types';
+import type { Order, OrderStatus, ExpediteType } from './order.types';
 
 /**
  * Дані форми для створення нового замовлення
@@ -137,6 +137,3 @@ export interface SaveDraftData {
   savedAt: Date;
   autoSaved?: boolean;
 }
-
-// Реекспорт з основних типів для зручності
-export type { Order, OrderItem, OrderStatus, ExpediteType };
