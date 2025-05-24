@@ -1,7 +1,7 @@
 'use client';
 
-import { Info, Category, ShoppingCart, Euro } from '@mui/icons-material';
-import { Grid, Paper } from '@mui/material';
+import { Info, Category, ShoppingCart, CurrencyExchange } from '@mui/icons-material';
+import { Grid, Paper, Alert, Typography, Chip, Box, Stack, Divider } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import React from 'react';
 
@@ -36,16 +36,29 @@ interface ValidationErrors {
   unitPrice?: string;
 }
 
+interface CurrentItem {
+  id: string;
+  name: string;
+  unitOfMeasure: string;
+  basePrice: number;
+  priceBlack?: number;
+  priceColor?: number;
+  priceOptions: Array<{ type: string; label: string; price: number; color: string }>;
+  hasMultiplePrices: boolean;
+}
+
 interface ItemBasicInfoFormProps {
   data: ItemBasicInfoData;
   categories: ServiceCategory[];
   itemNames: string[];
+  currentItem?: CurrentItem | null;
   validation: ValidationErrors;
   isLoadingItems?: boolean;
   onCategoryChange: (event: SelectChangeEvent<string>) => void;
   onItemNameChange: (event: React.SyntheticEvent, value: string | null) => void;
   onQuantityChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onPriceChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onPriceTypeChange?: (priceType: string, price: number) => void;
   onDescriptionChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -56,12 +69,14 @@ export const ItemBasicInfoForm: React.FC<ItemBasicInfoFormProps> = ({
   data,
   categories,
   itemNames,
+  currentItem,
   validation,
   isLoadingItems = false,
   onCategoryChange,
   onItemNameChange,
   onQuantityChange,
   onPriceChange,
+  onPriceTypeChange,
   onDescriptionChange,
 }) => {
   const hasCategory = !!data.category;
@@ -118,6 +133,42 @@ export const ItemBasicInfoForm: React.FC<ItemBasicInfoFormProps> = ({
               />
             </Grid>
 
+            {/* Інформація про варіанти цін */}
+            {currentItem && currentItem.hasMultiplePrices && (
+              <Grid size={{ xs: 12 }}>
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>
+                      Для виробу &quot;{currentItem.name}&quot; доступні різні ціни залежно від
+                      кольору:
+                    </strong>
+                  </Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                    {currentItem.priceOptions.map((option) => (
+                      <Chip
+                        key={option.type}
+                        label={`${option.label}: ${option.price} ₴`}
+                        variant={data.unitPrice === option.price ? 'filled' : 'outlined'}
+                        color={data.unitPrice === option.price ? 'primary' : 'default'}
+                        size="small"
+                        onClick={() =>
+                          onPriceTypeChange && onPriceTypeChange(option.type, option.price)
+                        }
+                        sx={{ cursor: onPriceTypeChange ? 'pointer' : 'default' }}
+                      />
+                    ))}
+                  </Stack>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ mt: 1, display: 'block' }}
+                  >
+                    Натисніть на варіант ціни щоб обрати його для розрахунку
+                  </Typography>
+                </Alert>
+              </Grid>
+            )}
+
             {/* Кількість */}
             <QuantityField
               quantity={data.quantity}
@@ -136,7 +187,7 @@ export const ItemBasicInfoForm: React.FC<ItemBasicInfoFormProps> = ({
                 error={validation.unitPrice}
                 helperText="Базова ціна з прайсу"
                 inputProps={{ min: 0, step: 0.01 }}
-                startIcon={<Euro />}
+                startIcon={<CurrencyExchange />}
                 endIcon="грн"
               />
             </Grid>

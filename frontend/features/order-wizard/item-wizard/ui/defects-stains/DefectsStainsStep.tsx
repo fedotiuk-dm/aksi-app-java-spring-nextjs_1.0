@@ -26,8 +26,13 @@ import {
  * - Використовує shared UI компоненти
  */
 export const DefectsStainsStep: React.FC = () => {
+  // TODO: Отримати orderId з wizard state/context
+  const orderId = 'temp-order-id'; // Тимчасове значення
+
   // === DOMAIN HOOKS ===
-  const { itemData, validation, canProceed, updateDefectsStains, wizard } = useItemWizard();
+  const { itemData, validation, canProceed, updateDefectsStains, wizard } = useItemWizard({
+    orderId,
+  });
   const { defectOptions, stainOptions, convertDefectsToStrings, convertStainsToStrings } =
     useDefectsStains();
 

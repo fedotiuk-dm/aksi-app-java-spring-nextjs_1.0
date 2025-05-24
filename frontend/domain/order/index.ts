@@ -66,6 +66,7 @@ export {
   useItemProperties,
   usePhotoDocumentation,
   usePriceCalculator,
+  useOrderCreation,
 } from './hooks';
 export type {
   ItemWizardData,

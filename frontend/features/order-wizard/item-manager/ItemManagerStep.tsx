@@ -5,8 +5,8 @@ import { Box, Button, Typography, Paper, Chip } from '@mui/material';
 import React from 'react';
 
 import { useOrderItems } from '@/domain/order';
-import { useWizard } from '@/domain/wizard';
-import { StepContainer, StepNavigation } from '@/shared/ui';
+import { useWizard, useWizardOrderId } from '@/domain/wizard';
+import { StepContainer, StepNavigation, OrderDebugInfo } from '@/shared/ui';
 
 import { ItemsTable, ItemsSummary } from './ui/components';
 
@@ -31,14 +31,18 @@ export const ItemManagerStep: React.FC = () => {
   // Отримуємо wizard функціональність
   const wizard = useWizard();
 
-  // TODO: Отримати orderId з wizard state
-  const orderId = 'temp-order-id'; // Тимчасове значення
+  // Отримуємо orderId з wizard context
+  const { orderId, hasOrderId, isReadyForItems, isTemporary } = useWizardOrderId();
 
   // Отримуємо дані предметів з domain layer
   const { hasItems, canProceed, isLoading, isOperating } = useOrderItems({ orderId });
 
   // Логування для діагностики
   console.log('ItemManagerStep render:', {
+    orderId,
+    hasOrderId,
+    isReadyForItems,
+    isTemporary,
     currentStep: wizard.currentStep,
     isItemWizardActive: wizard.isItemWizardActive,
     hasItems,
@@ -98,11 +102,35 @@ export const ItemManagerStep: React.FC = () => {
    */
   const canNavigateNext = canProceed && hasItems && !isLoading && !isOperating;
 
+  // Показуємо повідомлення якщо замовлення ще не готове для предметів
+  if (!isReadyForItems) {
+    return (
+      <StepContainer title="Управління предметами" subtitle="Підготовка до управління предметами">
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Typography variant="h6" color="warning.main" gutterBottom>
+            Замовлення ще не готове для додавання предметів
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {!hasOrderId
+              ? 'Замовлення ще не створене. Поверніться до вибору філії.'
+              : 'Завершіть створення замовлення перед додаванням предметів.'}
+          </Typography>
+          <Button variant="outlined" onClick={handleBack}>
+            Повернутися до попереднього кроку
+          </Button>
+        </Box>
+      </StepContainer>
+    );
+  }
+
   return (
     <StepContainer
       title="Управління предметами"
       subtitle="Додайте предмети до замовлення та налаштуйте їх параметри"
     >
+      {/* Діагностична інформація (тільки в dev режимі) */}
+      <OrderDebugInfo title="Стан замовлення - Item Manager" />
+
       <Box sx={{ minHeight: '400px' }}>
         {/* Статистика предметів */}
         <Paper sx={{ p: 2, mb: 3, bgcolor: 'grey.50' }}>

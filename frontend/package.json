@@ -33,9 +33,17 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{js,jsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,md}": ["prettier --write"]
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -48,7 +56,8 @@
     "@mui/material-nextjs": "^7.0.2",
     "@mui/x-data-grid": "^8.0.0",
     "@mui/x-date-pickers": "^8.0.0",
-    "@tanstack/react-query": "^5.72.2",
+    "@tanstack/react-query": "^5.77.0",
+    "@xstate/react": "^5.0.4",
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",
     "immer": "^10.1.1",
@@ -63,6 +72,7 @@
     "react-hot-toast": "^2.5.2",
     "use-immer": "^0.11.0",
     "uuid": "^11.1.0",
+    "xstate": "^5.19.3",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
   },

@@ -104,6 +104,10 @@ export const useClientSelection = (props: UseClientSelectionProps = {}) => {
       // Оновлюємо доступність наступного кроку в wizard
       updateStepAvailability(WizardStep.BRANCH_SELECTION, true);
 
+      // Оновлюємо customerId в wizard context
+      const { updateContext } = useWizardStore.getState();
+      updateContext({ customerId: client.id });
+
       // Створюємо та публікуємо доменну подію (Event Sourcing)
       const event = ClientEventFactory.createClientSelectedEvent(client);
       await eventBus.publish(event);
@@ -131,6 +135,10 @@ export const useClientSelection = (props: UseClientSelectionProps = {}) => {
 
     // Відключаємо доступність наступного кроку в wizard
     updateStepAvailability(WizardStep.BRANCH_SELECTION, false);
+
+    // Очищаємо customerId в wizard context
+    const { updateContext } = useWizardStore.getState();
+    updateContext({ customerId: undefined });
 
     // Створюємо та публікуємо подію очищення вибору (Domain Event)
     const event = ClientEventFactory.createClientSelectionClearedEvent();

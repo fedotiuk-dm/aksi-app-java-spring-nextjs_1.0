@@ -1,6 +1,6 @@
 'use client';
 
-import { Refresh, Clear } from '@mui/icons-material';
+import { Refresh, Search } from '@mui/icons-material';
 import {
   Alert,
   Autocomplete,
@@ -117,14 +117,6 @@ export const AutocompleteSelector = <T extends AutocompleteSelectorOption>({
     } else {
       onClearSearch();
     }
-  };
-
-  /**
-   * Обробник очищення пошуку
-   */
-  const handleClearSearch = () => {
-    setSearchKeyword('');
-    onClearSearch();
   };
 
   /**
@@ -248,18 +240,13 @@ export const AutocompleteSelector = <T extends AutocompleteSelectorOption>({
             helperText={helperText}
             InputProps={{
               ...params.InputProps,
+              startAdornment: (
+                <Box sx={{ display: 'flex', alignItems: 'center', ml: 1, mr: 0.5 }}>
+                  <Search sx={{ color: 'action.active', fontSize: size === 'small' ? 18 : 20 }} />
+                </Box>
+              ),
               endAdornment: (
-                <>
-                  {isLoading && <CircularProgress size={size === 'small' ? 16 : 20} />}
-                  {searchKeyword && (
-                    <Tooltip title="Очистити пошук">
-                      <IconButton size="small" onClick={handleClearSearch}>
-                        <Clear />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {params.InputProps.endAdornment}
-                </>
+                <>{isLoading && <CircularProgress size={size === 'small' ? 16 : 20} />}</>
               ),
             }}
           />

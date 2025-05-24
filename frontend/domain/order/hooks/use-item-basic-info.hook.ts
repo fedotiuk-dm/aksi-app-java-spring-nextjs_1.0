@@ -30,6 +30,8 @@ export const useItemBasicInfo = () => {
     isLoading: isLoadingItems,
     error: itemsError,
     getBasePrice,
+    getPriceOptions,
+    getItemWithPrices,
   } = usePriceList(itemData.category);
 
   // Обробники подій
@@ -52,22 +54,27 @@ export const useItemBasicInfo = () => {
     async (event: React.SyntheticEvent, value: string | null) => {
       const itemName = value || '';
 
-      // Завантажуємо базову ціну для обраного предмета
-      let basePrice = 0;
-      if (itemName && itemData.category) {
-        try {
-          basePrice = await getBasePrice(itemName, 'other'); // За замовчуванням 'other' колір
-        } catch (error) {
-          console.error('Помилка завантаження базової ціни:', error);
-        }
-      }
+      // Отримуємо інформацію про товар з усіма цінами
+      const itemWithPrices = getItemWithPrices(itemName);
 
-      updateBasicInfo({
-        name: itemName,
-        unitPrice: basePrice,
-      });
+      if (itemWithPrices) {
+        // Якщо товар має кілька варіантів цін, беремо базову
+        const defaultPrice = itemWithPrices.priceOptions[0]?.price || itemWithPrices.basePrice;
+
+        updateBasicInfo({
+          name: itemName,
+          unitPrice: defaultPrice,
+          unitOfMeasure: itemWithPrices.unitOfMeasure,
+        });
+      } else {
+        // Якщо товар не знайдено, очищаємо
+        updateBasicInfo({
+          name: itemName,
+          unitPrice: 0,
+        });
+      }
     },
-    [itemData.category, getBasePrice, updateBasicInfo]
+    [getItemWithPrices, updateBasicInfo]
   );
 
   const handleQuantityChange = useCallback(
@@ -93,6 +100,13 @@ export const useItemBasicInfo = () => {
     [updateBasicInfo]
   );
 
+  const handlePriceTypeChange = useCallback(
+    (priceType: string, price: number) => {
+      updateBasicInfo({ unitPrice: price });
+    },
+    [updateBasicInfo]
+  );
+
   // Валідація
   const validationErrors = useMemo(
     () => ({
@@ -108,6 +122,9 @@ export const useItemBasicInfo = () => {
   const isLoading = isLoadingCategories || isLoadingItems;
   const hasErrors = !!(categoriesError || itemsError);
 
+  // Отримуємо інформацію про поточний товар
+  const currentItem = itemData.name ? getItemWithPrices(itemData.name) : null;
+
   return {
     // Дані (трансформовані для UI)
     data: {
@@ -116,6 +133,7 @@ export const useItemBasicInfo = () => {
     },
     categories,
     itemNames,
+    currentItem,
 
     // Стан
     isLoading,
@@ -131,12 +149,15 @@ export const useItemBasicInfo = () => {
       onQuantityChange: handleQuantityChange,
       onPriceChange: handlePriceChange,
       onDescriptionChange: handleDescriptionChange,
+      onPriceTypeChange: handlePriceTypeChange,
     },
 
     // Утиліти
     utils: {
       getCategoryByCode,
       getBasePrice,
+      getPriceOptions,
+      getItemWithPrices,
     },
   };
 };

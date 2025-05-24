@@ -90,6 +90,8 @@ export const useItemProperties = () => {
    * Отримання доступних матеріалів для категорії
    */
   const getMaterialsByCategory = (category: string): MaterialType[] => {
+    console.log('🔍 getMaterialsByCategory викликано для категорії:', category);
+
     const materialsByCategory: Record<string, MaterialType[]> = {
       CLEANING_TEXTILES: [
         MaterialType.COTTON,
@@ -97,6 +99,8 @@ export const useItemProperties = () => {
         MaterialType.SILK,
         MaterialType.SYNTHETIC,
       ],
+      CLOTHING: [MaterialType.COTTON, MaterialType.WOOL, MaterialType.SILK, MaterialType.SYNTHETIC],
+      PADDING: [MaterialType.COTTON, MaterialType.WOOL, MaterialType.SYNTHETIC], // Додано категорію для верхнього одягу
       LAUNDRY: [MaterialType.COTTON, MaterialType.SYNTHETIC],
       IRONING: [MaterialType.COTTON, MaterialType.WOOL, MaterialType.SILK, MaterialType.SYNTHETIC],
       LEATHER_CLEANING: [
@@ -115,14 +119,25 @@ export const useItemProperties = () => {
       ],
     };
 
-    return materialsByCategory[category] || [];
+    const materials = materialsByCategory[category] || [];
+    console.log('🔍 getMaterialsByCategory результат:', {
+      category,
+      materialsCount: materials.length,
+      materials,
+      'category exists in map': Object.keys(materialsByCategory).includes(category),
+      'all available categories': Object.keys(materialsByCategory),
+    });
+
+    return materials;
   };
 
   /**
    * Перевірка чи потрібен наповнювач для категорії
    */
   const needsFiller = (category: string): boolean => {
-    return ['CLEANING_TEXTILES', 'SHEEPSKIN_CLEANING', 'FUR_CLEANING'].includes(category);
+    return ['CLEANING_TEXTILES', 'PADDING', 'SHEEPSKIN_CLEANING', 'FUR_CLEANING'].includes(
+      category
+    );
   };
 
   /**

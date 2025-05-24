@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Box,
   List,
   ListItem,
   ListItemText,
@@ -74,12 +73,12 @@ export const PriceCalculationResult: React.FC<PriceCalculationResultProps> = ({
           </Typography>
 
           {isCalculating ? (
-            <Box sx={{ mt: 2 }}>
+            <Typography component="div" sx={{ mt: 2 }}>
               <Typography variant="body2" color="text.secondary" gutterBottom>
                 Розрахунок ціни...
               </Typography>
               <LinearProgress />
-            </Box>
+            </Typography>
           ) : calculation ? (
             <>
               {showDetails && calculation.steps.length > 0 && (
@@ -89,7 +88,8 @@ export const PriceCalculationResult: React.FC<PriceCalculationResultProps> = ({
                       <ListItemText
                         primary={step.description}
                         secondary={
-                          <Box
+                          <Typography
+                            component="span"
                             sx={{
                               display: 'flex',
                               justifyContent: 'space-between',
@@ -97,16 +97,21 @@ export const PriceCalculationResult: React.FC<PriceCalculationResultProps> = ({
                             }}
                           >
                             <Typography
+                              component="span"
                               variant="body2"
                               color={step.amount >= 0 ? 'success.main' : 'error.main'}
                             >
                               {step.amount >= 0 ? '+' : ''}
                               {step.amount.toFixed(2)} грн
                             </Typography>
-                            <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              sx={{ fontWeight: 'medium' }}
+                            >
                               = {step.total.toFixed(2)} грн
                             </Typography>
-                          </Box>
+                          </Typography>
                         }
                       />
                     </ListItem>
@@ -116,19 +121,23 @@ export const PriceCalculationResult: React.FC<PriceCalculationResultProps> = ({
 
               <Divider sx={{ my: 2 }} />
 
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography
+                component="div"
+                sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
                 <Typography variant="h6" color="primary">
                   Підсумок:
                 </Typography>
                 <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
                   {calculation.finalPrice.toFixed(2)} грн
                 </Typography>
-              </Box>
+              </Typography>
 
               {showDetails && (
                 <>
                   {calculation.modifiersTotal !== 0 && (
                     <Typography
+                      component="div"
                       variant="caption"
                       color="text.secondary"
                       display="block"
@@ -140,7 +149,12 @@ export const PriceCalculationResult: React.FC<PriceCalculationResultProps> = ({
                   )}
 
                   {calculation.servicesTotal > 0 && (
-                    <Typography variant="caption" color="text.secondary" display="block">
+                    <Typography
+                      component="div"
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                    >
                       Додаткові послуги: +{calculation.servicesTotal.toFixed(2)} грн
                     </Typography>
                   )}

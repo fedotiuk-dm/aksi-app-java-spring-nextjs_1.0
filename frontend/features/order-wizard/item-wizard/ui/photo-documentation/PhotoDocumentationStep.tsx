@@ -1,7 +1,8 @@
 'use client';
 
+import { SkipNext } from '@mui/icons-material';
 import { Alert, Box, Typography } from '@mui/material';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useItemWizard, usePhotoDocumentation } from '@/domain/order';
 import {
@@ -14,6 +15,7 @@ import {
   StatusMessage,
   StepContainer,
   StepNavigation,
+  ActionButton,
 } from '@/shared/ui';
 
 /**
@@ -25,8 +27,15 @@ import {
  * - Використовує shared UI компоненти
  */
 export const PhotoDocumentationStep: React.FC = () => {
+  // === LOCAL STATE ===
+  const [isSaving, setIsSaving] = useState(false);
+
   // === DOMAIN HOOKS ===
-  const { itemData, validation, canProceed, updatePhotos, wizard } = useItemWizard();
+  // TODO: Отримати orderId з wizard state/context
+  const orderId = 'temp-order-id'; // Тимчасове значення
+  const { itemData, validation, canProceed, updatePhotos, wizard, saveItem } = useItemWizard({
+    orderId,
+  });
   const {
     previewImage,
     isUploading,
@@ -111,16 +120,32 @@ export const PhotoDocumentationStep: React.FC = () => {
   /**
    * Обробник переходу до наступного кроку (завершення Item Wizard)
    */
-  const handleNext = useCallback(() => {
-    if (canProceed) {
-      const result = wizard.navigateForward();
-      if (result.success) {
-        console.log('Перехід до завершення Item Wizard');
-      } else {
-        console.error('Помилка переходу:', result.errors);
+  const handleNext = useCallback(async () => {
+    if (canProceed && !isSaving) {
+      setIsSaving(true);
+      console.log('Збереження предмета з фото...');
+
+      try {
+        // Спочатку зберігаємо предмет
+        const saveResult = await saveItem();
+        if (saveResult.success) {
+          console.log('✅ Предмет збережено успішно:', saveResult.item);
+
+          // Потім завершуємо Item Wizard
+          const result = wizard.finishItemWizardFlow(true);
+          if (result.success) {
+            console.log('✅ Завершення Item Wizard з фото - повернення до Item Manager');
+          } else {
+            console.error('❌ Помилка завершення:', result.error);
+          }
+        } else {
+          console.error('❌ Помилка збереження предмета:', saveResult.error);
+        }
+      } finally {
+        setIsSaving(false);
       }
     }
-  }, [canProceed, wizard]);
+  }, [canProceed, isSaving, wizard, saveItem]);
 
   /**
    * Обробник повернення до попереднього підкроку
@@ -134,15 +159,58 @@ export const PhotoDocumentationStep: React.FC = () => {
     }
   }, [wizard]);
 
+  /**
+   * Обробник пропуску фото-документації
+   * Завершує Item Wizard без додавання фото
+   */
+  const handleSkip = useCallback(async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    console.log('Пропуск фото-документації, збереження предмета без фото...');
+
+    try {
+      // Очищуємо фото, якщо були додані
+      updatePhotos({
+        photos: [],
+        hasPhotos: false,
+      });
+
+      // Спочатку зберігаємо предмет без фото
+      const saveResult = await saveItem();
+      if (saveResult.success) {
+        console.log('✅ Предмет збережено успішно без фото:', saveResult.item);
+
+        // Потім завершуємо Item Wizard
+        const result = wizard.finishItemWizardFlow(true);
+        if (result.success) {
+          console.log(
+            '✅ Пропуск фото-документації, завершення Item Wizard - повернення до Item Manager'
+          );
+        } else {
+          console.error('❌ Помилка завершення:', result.error);
+        }
+      } else {
+        console.error('❌ Помилка збереження предмета:', saveResult.error);
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  }, [isSaving, updatePhotos, wizard, saveItem]);
+
   return (
     <StepContainer
       title="Фотодокументація"
-      subtitle="Додайте фото предмета для кращого документування його стану"
+      subtitle="Додайте фото предмета для кращого документування його стану або пропустіть цей етап"
     >
       <Box sx={{ minHeight: '400px' }}>
         {/* Інформація та обмеження */}
         <Alert severity="info" sx={{ mb: 3 }}>
           <Typography variant="body2">
+            <strong>Необов&rsquo;язковий крок:</strong> Фото допомагають документувати стан
+            предмета, але не є обов&rsquo;язковими. Можна пропустити цей етап.
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>
             <strong>Обмеження:</strong> Максимум {constants.MAX_PHOTOS} фото на предмет, до{' '}
             {constants.MAX_FILE_SIZE / 1024 / 1024}MB кожне. Фото автоматично стискаються для
             оптимізації.
@@ -231,8 +299,21 @@ export const PhotoDocumentationStep: React.FC = () => {
         onBack={handleBack}
         nextLabel="Завершити та додати предмет"
         backLabel="Назад до ціни"
-        isNextDisabled={!canProceed}
-        nextLoading={isUploading}
+        isNextDisabled={!canProceed || isSaving}
+        nextLoading={isUploading || isSaving}
+        additionalActions={
+          <ActionButton
+            variant="text"
+            color="warning"
+            onClick={handleSkip}
+            startIcon={<SkipNext />}
+            size="medium"
+            loading={isSaving}
+            disabled={isSaving}
+          >
+            Пропустити фото
+          </ActionButton>
+        }
       />
     </StepContainer>
   );

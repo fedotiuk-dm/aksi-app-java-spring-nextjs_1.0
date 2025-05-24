@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: orders-1.0-016
+      author: system
+      comment: Remove old branch_location varchar field after migrating to branch_location_id foreign key
+      changes:
+        # Видаляємо старе поле branch_location (VARCHAR), яке конфліктує з новим branch_location_id
+        - dropColumn:
+            tableName: orders
+            columnName: branch_location

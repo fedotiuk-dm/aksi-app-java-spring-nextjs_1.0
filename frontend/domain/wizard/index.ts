@@ -1,26 +1,13 @@
 /**
- * Wizard Domain - Public API
- * Консолідований експорт для wizard domain згідно SOLID принципів
- *
- * SOLID principi:
- * - Single Responsibility: чіткий розподіл функціональності
- * - Interface Segregation: спеціалізовані інтерфейси
- * - Open/Closed: легко розширюється
- * - Dependency Inversion: залежність від абстракцій
+ * Головний експорт Order Wizard Domain
+ * Публічне API для інтеграції з UI компонентами
  */
 
-// Core Types та Enum Values - для типів та значень
-export { WizardStep, WizardMode, WizardStatus } from './types';
-export type { WizardContext, NavigationResult, StepValidationResult } from './types';
+// Shared components
+export * from './shared';
 
-// Entities - доменні сутності
-export { WizardEntity } from './entities';
+// Flow management
+export * from './flow';
 
-// Stores - композиційні сторі
-export { useWizardStore } from './store';
-
-// Hooks - публічні хуки для UI компонентів
-export { useWizard, useWizardState, useWizardNavigation } from './hooks';
-
-// Services - доменні сервіси (за потребою)
-export { WizardNavigationService } from './services/wizard-navigation.service';
+// Головний хук wizard (буде реалізований пізніше в наступних фазах)
+// export { useWizard } from './hooks/use-wizard.hook';

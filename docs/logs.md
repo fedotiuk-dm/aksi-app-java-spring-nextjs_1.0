@@ -1,785 +1,857 @@
-[INFO] Starting audit...
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/JwtAuthenticationFilter.java:69: Line is longer than 120 characters (found 124). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/SecurityConfig.java:44:78: Expected @throws tag for 'Exception'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/SecurityConfig.java:125:99: Expected @throws tag for 'Exception'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/CacheConfig.java:20:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/CacheConfig.java:21:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/CorsConfig.java:55: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/CorsConfig.java:56: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/OpenApiConfig.java:83: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/util/QRCodeGenerator.java:3:1: Illegal import - java.awt.image.BufferedImage. [IllegalImport]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/util/JwtUtils.java:45: Javadoc comment at column 28 has parse error. Missed HTML close tag 'T'. Sometimes it means that close tag missed for one of previous tags. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/util/JwtUtils.java:45: Javadoc comment at column 28 has parse error. Missed HTML close tag 'T'. Sometimes it means that close tag missed for one of previous tags. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/util/JwtUtils.java:45: Javadoc comment at column 28 has parse error. Missed HTML close tag 'T'. Sometimes it means that close tag missed for one of previous tags. [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/util/JwtUtils.java:45: Javadoc comment at column 28 has parse error. Missed HTML close tag 'T'. Sometimes it means that close tag missed for one of previous tags. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderPaymentController.java:88: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/UnitOfMeasureController.java:59: Line is longer than 120 characters (found 134). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/UnitOfMeasureController.java:70: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/UnitOfMeasureController.java:122: Line is longer than 120 characters (found 132). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:59:3: Empty line should be followed by <p> tag on the next line. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:63: Не додавайте /api/ у RequestMapping - це додається автоматично [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:103: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:176: Line is longer than 120 characters (found 136). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:185: Line is longer than 120 characters (found 129). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:204: Line is longer than 120 characters (found 130). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:213: Line is longer than 120 characters (found 123). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:309: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:327: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:368: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:425: Line is longer than 120 characters (found 134). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:474: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:514:23: Expected @throws tag for 'IllegalArgumentException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:567:23: Expected @throws tag for 'IllegalArgumentException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:578: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:581: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:603: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/PricingController.java:634: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderDiscountController.java:66: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderDiscountController.java:90: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/AutocompleteController.java:37: Не додавайте /api/ у RequestMapping - це додається автоматично [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/AutocompleteController.java:67: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/AutocompleteController.java:69: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/AutocompleteController.java:102: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/AutocompleteController.java:210: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/AutocompleteController.java:212: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ReferenceDataController.java:38:3: Empty line should be followed by <p> tag on the next line. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ReferenceDataController.java:43: Не додавайте /api/ у RequestMapping - це додається автоматично [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ReferenceDataController.java:255: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ReferenceDataController.java:256: Line is longer than 120 characters (found 129). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ReferenceDataController.java:257: Line is longer than 120 characters (found 124). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ReferenceDataController.java:258: Line is longer than 120 characters (found 124). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderRequirementsController.java:31: Line is longer than 120 characters (found 131). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/CustomerSignatureController.java:87: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/CustomerSignatureController.java:91: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/CustomerSignatureController.java:103: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/FileController.java:50: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderSummaryController.java:44: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ReceiptController.java:44: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/HealthCheckController.java:19: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/HealthCheckController.java:24: Не додавайте /api/ у RequestMapping - це додається автоматично [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/HealthCheckController.java:32: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/HealthCheckController.java:45: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/HealthCheckController.java:105: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ModifierRecommendationController.java:26: Line is longer than 120 characters (found 125). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ModifierRecommendationController.java:35: Line is longer than 120 characters (found 134). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ModifierRecommendationController.java:59: Line is longer than 120 characters (found 138). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/ModifierRecommendationController.java:83: Line is longer than 120 characters (found 128). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderItemPhotoController.java:92: Line is longer than 120 characters (found 123). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderItemPhotoController.java:124: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderItemPhotoController.java:138: Line is longer than 120 characters (found 125). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderItemPhotoController.java:158: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderItemPhotoController.java:195: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderItemPhotoController.java:215: Line is longer than 120 characters (found 127). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderFinalizationController.java:82: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderFinalizationController.java:124: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderController.java:105: Line is longer than 120 characters (found 125). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderController.java:132: Line is longer than 120 characters (found 126). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderController.java:390: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderController.java:418: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderController.java:448: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderController.java:484: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/OrderController.java:521: API URL повинні бути в kebab-case (маленькі літери з дефісами) [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/service/auth/AuthService.java:50:23: Expected @throws tag for 'UserAlreadyExistsException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/service/auth/AuthService.java:100:23: Expected @throws tag for 'AuthenticationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/service/auth/AuthService.java:129:23: Expected @throws tag for 'AuthenticationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/service/pricing/PriceListService.java:282:23: Expected @throws tag for 'ResourceNotFoundException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/mapper/PriceListMapper.java:21:5: All overloaded methods should be placed next to each other. Previous overloaded method located at line '16'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/application/dto/common/PagedResponse.java:14:1: Type Javadoc comment is missing @param <T> tag. [JavadocType]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/application/dto/common/PagedRequest.java:29:17: Variable 'page' explicitly initialized to '0' (default value for its type). [ExplicitInitialization]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/exception/handler/ExceptionHandlerComponentsManager.java:48: Line is longer than 120 characters (found 137). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/exception/handler/ExceptionHandlerComponentsManager.java:69: Line is longer than 120 characters (found 133). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/exception/handler/ValidationExceptionHandlerComponent.java:51:62: Unnecessary parentheses around lambda value. [UnnecessaryParentheses]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/exception/handler/AbstractExceptionHandlerComponent.java:31:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/exception/handler/AbstractExceptionHandlerComponent.java:34:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/exception/handler/AbstractExceptionHandlerComponent.java:122: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/exception/handler/AbstractExceptionHandlerComponent.java:129: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/exception/handler/AbstractExceptionHandlerComponent.java:213: Line is longer than 120 characters (found 142). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/ClientPreferenceEntity.java:33: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/ClientPreferenceEntity.java:40: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/ClientPreferenceEntity.java:46: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/ClientPreferenceEntity.java:52: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/ClientPreferenceEntity.java:59: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/repository/ClientRepository.java:21:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientResponse.java:64: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientResponse.java:95: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientResponse.java:100: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientResponse.java:106: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientResponse.java:112: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientProjection.java:11:5: 'METHOD_DEF' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientProjection.java:12:5: 'METHOD_DEF' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientProjection.java:13:5: 'METHOD_DEF' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientProjection.java:14:5: 'METHOD_DEF' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPreferenceDTO.java:20: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPreferenceDTO.java:25: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPreferenceDTO.java:32: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientCategoryDTO.java:16: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientCategoryDTO.java:21: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientCategoryDTO.java:26: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientCategoryDTO.java:37: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientSearchRequest.java:18: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientSearchRequest.java:24: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientSearchRequest.java:29:17: Variable 'page' explicitly initialized to '0' (default value for its type). [ExplicitInitialization]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientSearchRequest.java:31: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:18: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:22: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:23: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:27: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:28: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:32: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:33: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:37: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:38: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:42: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:43: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:47: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/dto/ClientPageResponse.java:48: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/AddressMigrationService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientServiceImpl.java:116: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientServiceImpl.java:134: Line is longer than 120 characters (found 132). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientServiceImpl.java:183: Line is longer than 120 characters (found 126). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientServiceImpl.java:200: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientServiceImpl.java:219: Line is longer than 120 characters (found 124). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/mapper/ClientMapper.java:149: Line is longer than 120 characters (found 135). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/entity/AbstractItemIssueEntity.java:26:3: Empty line should be followed by <p> tag on the next line. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/entity/AbstractItemIssueEntity.java:32:3: Empty line should be followed by <p> tag on the next line. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/model/PriceCalculationParams.java:24: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/model/PriceCalculationParams.java:29: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/model/PriceCalculationParams.java:34: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/model/PriceCalculationParams.java:40: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/model/PriceCalculationParams.java:46: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/model/PriceCalculationParams.java:51: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/model/PriceCalculationParams.java:56: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/model/PriceCalculationParams.java:58: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/model/PriceCalculationParams.java:62: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/CatalogPriceModifierRepository.java:19:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/CatalogPriceModifierRepository.java:49:8: Unused @param tag for 'serviceCategory'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/PriceListItemRepository.java:16:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/PriceListItemRepository.java:18:5: 'METHOD_DEF' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/PriceListItemRepository.java:19:5: 'METHOD_DEF' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/PriceListItemRepository.java:20:5: 'METHOD_DEF' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/StainTypeRepository.java:17:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/DefectTypeRepository.java:17:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/ServiceCategoryRepository.java:14:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/ServiceCategoryRepository.java:16:5: 'METHOD_DEF' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/repository/ServiceCategoryRepository.java:17:5: 'METHOD_DEF' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/dto/BasePriceModifierDTO.java:82: Line is longer than 120 characters (found 124). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/dto/BasePriceModifierDTO.java:86: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/dto/PriceModifierDTO.java:29:12: More than 7 parameters (found 11). [ParameterNumber]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/dto/PriceModifierDefinitionDTO.java:29:12: More than 7 parameters (found 11). [ParameterNumber]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/dto/ModifierSearchRequest.java:40: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/dto/PriceCalculationRequestDTO.java:36: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/dto/PriceCalculationRequestDTO.java:40: Line is longer than 120 characters (found 124). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceRecommendationService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PricingDomainService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/CatalogPriceModifierServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/CatalogPriceModifierServiceImpl.java:127: Line is longer than 120 characters (found 126). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:18: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:23: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:26: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:28: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:29: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:30: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:31: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:32: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:33: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:34: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:35: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:36: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:37: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationService.java:40:16: More than 7 parameters (found 9). [ParameterNumber]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceListService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationServiceImpl.java:54:5: Method calculatePrice length is 120 lines (max allowed is 100). [MethodLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationServiceImpl.java:56:40: More than 7 parameters (found 10). [ParameterNumber]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationServiceImpl.java:86: Line is longer than 120 characters (found 126). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationServiceImpl.java:125: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationServiceImpl.java:135: Line is longer than 120 characters (found 123). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationServiceImpl.java:163: Line is longer than 120 characters (found 132). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationServiceImpl.java:205: Line is longer than 120 characters (found 130). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationServiceImpl.java:271: Line is longer than 120 characters (found 126). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/AbstractStainTypeService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/DefectTypeServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/DefectTypeServiceImpl.java:24: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:35: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:35:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:36: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:36:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:37: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:37:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:38: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:38:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:39: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:39:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:40: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:40:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:41: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:41:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:42:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:46:5: 'STATIC_INIT' should be separated from previous line. [EmptyLineSeparator]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:47: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:50: Line is longer than 120 characters (found 137). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:52: Line is longer than 120 characters (found 127). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:53: Line is longer than 120 characters (found 129). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:78: Line is longer than 120 characters (found 123). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureServiceImpl.java:156: Line is longer than 120 characters (found 132). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/AbstractItemIssueService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/AbstractItemIssueService.java:24:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/DefectTypeService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:33: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:34: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:35: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:36: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:37: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:38: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:41: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:42: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:110: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:111: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:112: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryModifierMapper.java:117: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceRecommendationServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:39: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:47: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:51: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:54: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:55: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:56: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:58: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:61: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:62: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:64: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:67: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:68: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:69: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:71: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:74: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:75: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:76: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:78: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:81: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:82: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:83: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:84: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:86: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:93: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:94: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:96: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:104: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:108: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:112: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:116: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:120: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:125: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:126: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:128: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:138: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:149: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:154:23: More than 7 parameters (found 9). [ParameterNumber]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:164: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:177: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:306: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:357: Line is longer than 120 characters (found 129). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:416:18: More than 7 parameters (found 8). [ParameterNumber]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:433: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:442: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:465: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceModifierCalculationServiceImpl.java:471:7: Empty line should be followed by <p> tag on the next line. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/StainTypeService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/ServiceCategoryServiceImpl.java:65: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/AbstractDefectTypeService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/StainTypeServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceCalculationService.java:40:33: More than 7 parameters (found 10). [ParameterNumber]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/UnitOfMeasureService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceListServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/PriceListServiceImpl.java:71: Line is longer than 120 characters (found 130). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/service/CatalogPriceModifierService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/ModifierStrategy.java:12: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/ModifierStrategy.java:20: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/FixedModifierStrategy.java:11: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/FixedModifierStrategy.java:27: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/PercentageModifierStrategy.java:27: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/PriceModifierManager.java:24: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/PriceModifierManager.java:29: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/PriceModifierManager.java:41: Line is longer than 120 characters (found 128). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/PriceModifierManager.java:50: Line is longer than 120 characters (found 132). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/PriceModifierManager.java:71: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/PriceModifierManager.java:74: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/PriceModifierManager.java:76: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/PriceModifierManager.java:77: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/RangePercentageModifierStrategy.java:27: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/RangePercentageModifierStrategy.java:39: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/AdditionModifierStrategy.java:27: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/strategy/AdditionModifierStrategy.java:33: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/usecase/GetRiskWarningsUseCase.java:51:23: Expected @throws tag for 'IllegalArgumentException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/usecase/ApplyModifiersUseCase.java:63: Line is longer than 120 characters (found 125). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/usecase/ApplyModifiersUseCase.java:95:23: Expected @throws tag for 'IllegalArgumentException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/usecase/GetRecommendedModifiersUseCase.java:52:23: Expected @throws tag for 'IllegalArgumentException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/usecase/ApplyDiscountAndExpediteUseCase.java:44: Line is longer than 120 characters (found 131). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:15:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:16:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:17:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:20:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:21:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:22:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:23:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:26:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:27:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:30:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:31:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:32:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:35:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:36:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:37:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:38:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:39:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:40:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:43:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:44:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:45:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:46: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:46:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:47:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:48: Line is longer than 120 characters (found 128). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:48:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:54:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:55:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:56:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:57:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:58:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:59:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:60:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:61:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:62:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:63:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:64:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:65:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:70:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:71:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:72:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:73:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:74:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:75:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:76:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:77:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:80: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:84: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:84:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:85: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:85:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:86: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:86:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:87: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:87:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:88: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:88:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:89: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:89:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:90: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:90:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:91:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:94:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:103: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:107:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:108:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:109:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:110:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:111:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:112:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:113:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:114:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:123:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:124:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:125:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:126:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:127:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:128:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:133:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:134:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:135:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:136:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:137:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:138:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:143:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:144:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:145:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:146:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:147:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:148:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:149:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:150:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:151:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:152:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:157:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:158:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:159:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:160:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:161:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:162:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:163:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:164:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:165:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:166:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:171:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:172: Line is longer than 120 characters (found 138). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:172:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:173: Line is longer than 120 characters (found 129). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:173:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:178:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:179:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:180:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:181:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:182:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PricingConstants.java:183:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:3: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:5:3: Empty line should be followed by <p> tag on the next line. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:13:3: Empty line should be followed by <p> tag on the next line. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:31:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:32:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:33:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:37:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:38:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:39:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:40:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:41:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:46:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:47:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:48:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:49:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:50:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:55:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:56:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:57:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:58:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:59:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:60:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:61:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:62:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:67:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:68:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:69:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:70:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:71:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:76:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:77:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:78:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:79:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:80:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:81:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:82:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:87:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:88:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:89:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:90:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:91:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:96:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:97:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:98:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:99:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:104:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:105:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:106:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:107:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:112:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:113:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:114:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:116:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:117:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:118:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:119:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:120:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:121:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:126:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:127:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:128:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:129:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:130:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:131:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:132:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:133:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:134:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:135:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:140:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:141:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:142:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:143:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ApiConstants.java:144:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:17:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:18:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:19:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:20:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:23:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:24:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:27:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:28:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:29:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:30:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:33:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:36:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:41:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:56: Line continuation have incorrect indentation level, expected level should be 4. [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:58: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:59: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/PriceCalculationConstants.java:60: Block tags have to appear in the order '[@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index]'. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:15:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:16:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:17:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:19:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:20:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:21:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:24:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:25:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:26:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:27:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:30:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:33:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:34:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:35:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:38:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:39:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:40:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:43:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:44:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:45:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:46:5: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:50:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:51:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:52:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:53:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:54:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:55:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:56:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:61:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:62:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:63:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/ModifierFormatConstants.java:64:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:15:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:16:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:17:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:18:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:19:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:20:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:25:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:26:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:27:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:28:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:29:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:30:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:31:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:32:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:33:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:34:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:35:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:36:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:37:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:38:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:39:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:44:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:45:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:46:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:47:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:48:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:49:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:50:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:51:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:52:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:53:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:58:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:59:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:60:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:61:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:62:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:63:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:64:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:65:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:66:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:67:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:68:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:69:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:70:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:71:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:76:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:77:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:78:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:79:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:80:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:81:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:82:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:83:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:88:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:89:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:90:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:91:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:92:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:93:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:94:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:95:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:100:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:101:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:102:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:103:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:104:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:105:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:106:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:111:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:112:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:113:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:114:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:115:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:116:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:117:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:118:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:119:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:120:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:121:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:126:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:127:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:128:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:129:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:134:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:135:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:136:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:137:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:138:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:143:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:144:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/constants/LocalizationConstants.java:145:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/pricing/valueobject/package-info.java:3:3: Empty line should be followed by <p> tag on the next line. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/user/repository/UserRepository.java:15:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java:173:21: Variable 'draft' explicitly initialized to 'false' (default value for its type). [ExplicitInitialization]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java:177: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java:177:21: Variable 'isPrinted' explicitly initialized to 'false' (default value for its type). [ExplicitInitialization]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java:181: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java:181:21: Variable 'isEmailed' explicitly initialized to 'false' (default value for its type). [ExplicitInitialization]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java:188:21: Variable 'termsAccepted' explicitly initialized to 'false' (default value for its type). [ExplicitInitialization]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/CustomerSignatureEntity.java:47:21: Variable 'termsAccepted' explicitly initialized to 'false' (default value for its type). [ExplicitInitialization]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/model/NonExpeditableCategory.java:10: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/model/NonExpeditableCategory.java:15: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/model/NonExpeditableCategory.java:20: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/model/RestrictedCategory.java:17: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/model/NonDiscountableCategory.java:10: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/model/NonDiscountableCategory.java:15: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/model/NonDiscountableCategory.java:20: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/repository/OrderRepository.java:18:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/repository/OrderItemRepository.java:15:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/repository/CustomerSignatureRepository.java:16:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/repository/OrderItemPhotoRepository.java:15:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/repository/PriceModifierRepository.java:15:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/dto/receipt/EmailReceiptRequest.java:49:21: Variable 'includeSignature' explicitly initialized to 'false' (default value for its type). [ExplicitInitialization]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/dto/OrderDTO.java:94: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/dto/OrderDTO.java:95: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderFinalizationService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderFinalizationService.java:14: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderService.java:158: Line is longer than 120 characters (found 124). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ReceiptServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ReceiptServiceImpl.java:54: Line is longer than 120 characters (found 124). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ReceiptServiceImpl.java:55: Line is longer than 120 characters (found 128). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ReceiptServiceImpl.java:56: Line is longer than 120 characters (found 128). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ReceiptServiceImpl.java:57: Line is longer than 120 characters (found 125). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ReceiptServiceImpl.java:61:5: Method generateReceipt length is 117 lines (max allowed is 100). [MethodLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ReceiptServiceImpl.java:171: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ReceiptServiceImpl.java:192: Line is longer than 120 characters (found 134). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/DiscountServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/DiscountServiceImpl.java:53: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/DiscountServiceImpl.java:165: Line is longer than 120 characters (found 133). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/DiscountServiceImpl.java:238: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/DiscountServiceImpl.java:239: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/DiscountServiceImpl.java:241: Line has trailing spaces. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ItemCharacteristicsServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderSummaryService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ModifierRecommendationServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ModifierRecommendationServiceImpl.java:29: Line is longer than 120 characters (found 157). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ModifierRecommendationServiceImpl.java:35: Line is longer than 120 characters (found 159). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ModifierRecommendationServiceImpl.java:41: Line is longer than 120 characters (found 148). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderRequirementsService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderRequirementsServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderItemPhotoServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderItemPhotoServiceImpl.java:50: Line is longer than 120 characters (found 126). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/CompletionDateServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/CompletionDateServiceImpl.java:35:5: Method calculateExpectedCompletionDate length is 122 lines (max allowed is 100). [MethodLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/CompletionDateServiceImpl.java:57: Line is longer than 120 characters (found 123). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/CompletionDateServiceImpl.java:117: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/CompletionDateServiceImpl.java:134: Line is longer than 120 characters (found 123). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ModifierRecommendationService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderServiceImpl.java:134: Line is longer than 120 characters (found 132). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderItemPhotoService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/PaymentService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ItemCharacteristicsService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/CustomerSignatureService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/CompletionDateService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/DiscountService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:40:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:41:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:42:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:208: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:227: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:228: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:229: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:230: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:235: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:236: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:237: Хардкод кодів категорій. Використовуйте enum або константи [Regexp]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:246: Line is longer than 120 characters (found 150). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/recommendation/RecommendationBaseService.java:261: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/CustomerSignatureServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/ReceiptService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderFinalizationServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderFinalizationServiceImpl.java:84: Line is longer than 120 characters (found 121). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderSummaryServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/OrderSummaryServiceImpl.java:114: Line is longer than 120 characters (found 122). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/service/PaymentServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:25:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:26:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:27:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:28:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:29:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:30:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:31:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:32:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:75:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:76:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:77:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:78:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:79:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:80:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:81:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:82:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:83:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:106:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:107:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:108:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:128:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:129:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:130:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:131:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:168:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:169:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:170:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:171:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:172:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:173:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:174:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:175:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:176:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:199:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:200:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:201:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:202:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:205:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:206:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/constants/ItemCharacteristicsConstants.java:207:9: Missing a Javadoc comment. [JavadocVariable]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/BranchLocationRepository.java:16:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/BranchLocationServiceImpl.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/BranchLocationService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/resources/liquibase.properties:7: Line has trailing spaces. [RegexpSingleline]
-Audit done.
+OrderWizard.tsx:68 OrderWizard ініціалізовано успішно
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: false, clientSelection.hasSelection: false, wizard.availability[BRANCH_SELECTION]: false, wizard.currentStep: 'client-selection'}
+api-client.ts:90 OrderWizard API initialized
+api-client.ts:63 OrderWizard OpenAPI Config
+api-client.ts:64 BASE URL: http://localhost:8080/api
+api-client.ts:65 VERSION: 1.0.0
+api-client.ts:66 WITH_CREDENTIALS: true
+api-client.ts:67 CREDENTIALS: include
+api-client.ts:68 HEADERS: function() {...}
+api-client.ts:107 OrderWizard API Connection Test
+api-client.ts:108 Testing connection to: http://localhost:8080/api
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+use-client-step-navigation.hook.ts:27 Navigation: canProceedToNext перевірка, hasSelection: false
+use-client-step-navigation.hook.ts:27 Navigation: canProceedToNext перевірка, hasSelection: false
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: select
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: select
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: true, clientSelection.hasSelection: false, wizard.availability[BRANCH_SELECTION]: false, wizard.currentStep: 'client-selection'}
+index.ts:95 JWT токен додано в заголовок запиту
+index.ts:95 JWT токен додано в заголовок запиту
+report-hmr-latency.ts:26 [Fast Refresh] done in NaNms
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: select
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: select
+api-client.ts:112 Connection successful! API health status: API is working
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: select
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: select
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+index.ts:95 JWT токен додано в заголовок запиту
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+use-client-step-navigation.hook.ts:53 Navigation: не можу перейти з клієнтом - перевірка не пройдена
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: false, clientStep.state.isStepComplete: false, clientStep.navigation.canProceedToNext: false, hasSelectedClient: false, selectedClientId: undefined, …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+index.ts:95 JWT токен додано в заголовок запиту
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ Navigation: canProceedToNext перевірка, hasSelection: true
+ Navigation: canProceedToNext перевірка, hasSelection: true
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: true, clientStep.state.isStepComplete: true, clientStep.navigation.canProceedToNext: true, hasSelectedClient: true, selectedClientId: '464a2870-925b-47fd-be82-62ad09091857', …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: false}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: true, clientStep.state.isStepComplete: true, clientStep.navigation.canProceedToNext: true, hasSelectedClient: true, selectedClientId: '464a2870-925b-47fd-be82-62ad09091857', …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+OrderWizard.tsx:78 Синхронізація: клієнт вибраний, оновлюємо availability для BRANCH_SELECTION
+wizard.store.ts:267 Wizard Store: updateStepAvailability викликано для branch-selection = true
+wizard.store.ts:271 Wizard Store: поточна availability для branch-selection: false
+wizard.store.ts:273 Wizard Store: нова availability для branch-selection: true
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: true, clientSelection.hasSelection: true, wizard.availability[BRANCH_SELECTION]: false, wizard.currentStep: 'client-selection'}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: true, clientStep.state.isStepComplete: true, clientStep.navigation.canProceedToNext: true, hasSelectedClient: true, selectedClientId: '464a2870-925b-47fd-be82-62ad09091857', …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: true, clientStep.state.isStepComplete: true, clientStep.navigation.canProceedToNext: true, hasSelectedClient: true, selectedClientId: '464a2870-925b-47fd-be82-62ad09091857', …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+ Client Selection Store: оновлюємо wizard availability для BRANCH_SELECTION
+ Wizard Store: updateStepAvailability викликано для branch-selection = true
+ Wizard Store: поточна availability для branch-selection: true
+ Wizard Store: нова availability для branch-selection: true
+ Client Selection Store: availability оновлено успішно
+ WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+ WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: true, clientStep.state.isStepComplete: true, clientStep.navigation.canProceedToNext: true, hasSelectedClient: true, selectedClientId: '464a2870-925b-47fd-be82-62ad09091857', …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: true, clientStep.state.isStepComplete: true, clientStep.navigation.canProceedToNext: true, hasSelectedClient: true, selectedClientId: '464a2870-925b-47fd-be82-62ad09091857', …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard.store.ts:267 Wizard Store: updateStepAvailability викликано для branch-selection = true
+wizard.store.ts:271 Wizard Store: поточна availability для branch-selection: true
+wizard.store.ts:273 Wizard Store: нова availability для branch-selection: true
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: true, clientStep.state.isStepComplete: true, clientStep.navigation.canProceedToNext: true, hasSelectedClient: true, selectedClientId: '464a2870-925b-47fd-be82-62ad09091857', …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'client-selection', nextStep: 'branch-selection', nextStepAvailable: true}
+ClientSelectionStep.tsx:46 ClientSelectionStep render - canProceed: {canProceed: true, clientStep.state.isStepComplete: true, clientStep.navigation.canProceedToNext: true, hasSelectedClient: true, selectedClientId: '464a2870-925b-47fd-be82-62ad09091857', …}
+ClientSelectionStep.tsx:83 renderContent mode: search
+ClientSelectionStep.tsx:59 handleNext викликано, canProceed: true
+ClientSelectionStep.tsx:67 Перехід до наступного кроку з клієнтом: {id: '464a2870-925b-47fd-be82-62ad09091857', firstName: 'Dmytro', lastName: 'Fedotiuk', fullName: 'Dmytro Fedotiuk', phone: '+380981784264', …}
+wizard-navigation.entity.ts:93 WizardNavigationEntity: goForward {currentStep: 'client-selection', nextStep: 'branch-selection', isItemWizardActive: false, availability: {…}}
+wizard-navigation.entity.ts:65 WizardNavigationEntity: navigateToStep {previousStep: 'client-selection', currentStep: 'branch-selection', isItemWizardActive: false}
+ClientSelectionStep.tsx:72 Успішно перейшли до вибору філії
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: null, hasSelection: false, isSelectionValid: false, isLoading: false, error: null, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: null, hasSelection: false, isSelectionValid: false, isLoading: false, error: null, …}
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: true, clientSelection.hasSelection: true, wizard.availability[BRANCH_SELECTION]: true, wizard.currentStep: 'branch-selection'}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: null, hasSelection: false, isSelectionValid: false, isLoading: true, error: null, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: null, hasSelection: false, isSelectionValid: false, isLoading: true, error: null, …}
+AutocompleteSelector.tsx:197 MUI: You are providing a disabled `button` child to the Tooltip component.
+A disabled element does not fire events.
+Tooltip needs to listen to the child element's events to display the title.
+
+Add a simple wrapper element, such as a `span`.
+overrideMethod @ hook.js:608
+Tooltip.Tooltip.useEffect @ Tooltip.js:381
+react-stack-bottom-frame @ react-dom-client.development.js:23054
+runWithFiberInDEV @ react-dom-client.development.js:844
+commitHookEffectListMount @ react-dom-client.development.js:11977
+commitHookPassiveMountEffects @ react-dom-client.development.js:12098
+commitPassiveMountOnFiber @ react-dom-client.development.js:13928
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13931
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13931
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13931
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13931
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13931
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13931
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13931
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13931
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:13921
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+commitPassiveMountOnFiber @ react-dom-client.development.js:14047
+recursivelyTraversePassiveMountEffects @ react-dom-client.development.js:13901
+<ForwardRef(Tooltip)>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+AutocompleteSelector @ AutocompleteSelector.tsx:197
+react-stack-bottom-frame @ react-dom-client.development.js:22973
+renderWithHooksAgain @ react-dom-client.development.js:6766
+renderWithHooks @ react-dom-client.development.js:6678
+updateFunctionComponent @ react-dom-client.development.js:8930
+beginWork @ react-dom-client.development.js:10555
+runWithFiberInDEV @ react-dom-client.development.js:844
+performUnitOfWork @ react-dom-client.development.js:15257
+workLoopSync @ react-dom-client.development.js:15077
+renderRootSync @ react-dom-client.development.js:15057
+performWorkOnRoot @ react-dom-client.development.js:14525
+performSyncWorkOnRoot @ react-dom-client.development.js:16364
+flushSyncWorkAcrossRoots_impl @ react-dom-client.development.js:16210
+processRootScheduleInMicrotask @ react-dom-client.development.js:16249
+(anonymous) @ react-dom-client.development.js:16383
+<AutocompleteSelector>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+BranchSelector @ BranchSelector.tsx:53
+react-stack-bottom-frame @ react-dom-client.development.js:22973
+renderWithHooksAgain @ react-dom-client.development.js:6766
+renderWithHooks @ react-dom-client.development.js:6678
+updateFunctionComponent @ react-dom-client.development.js:8930
+beginWork @ react-dom-client.development.js:10555
+runWithFiberInDEV @ react-dom-client.development.js:844
+performUnitOfWork @ react-dom-client.development.js:15257
+workLoopSync @ react-dom-client.development.js:15077
+renderRootSync @ react-dom-client.development.js:15057
+performWorkOnRoot @ react-dom-client.development.js:14525
+performSyncWorkOnRoot @ react-dom-client.development.js:16364
+flushSyncWorkAcrossRoots_impl @ react-dom-client.development.js:16210
+processRootScheduleInMicrotask @ react-dom-client.development.js:16249
+(anonymous) @ react-dom-client.development.js:16383
+<BranchSelector>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+BranchSelectionStep @ BranchSelectionStep.tsx:105
+react-stack-bottom-frame @ react-dom-client.development.js:22973
+renderWithHooksAgain @ react-dom-client.development.js:6766
+renderWithHooks @ react-dom-client.development.js:6678
+updateFunctionComponent @ react-dom-client.development.js:8930
+beginWork @ react-dom-client.development.js:10555
+runWithFiberInDEV @ react-dom-client.development.js:844
+performUnitOfWork @ react-dom-client.development.js:15257
+workLoopSync @ react-dom-client.development.js:15077
+renderRootSync @ react-dom-client.development.js:15057
+performWorkOnRoot @ react-dom-client.development.js:14525
+performSyncWorkOnRoot @ react-dom-client.development.js:16364
+flushSyncWorkAcrossRoots_impl @ react-dom-client.development.js:16210
+processRootScheduleInMicrotask @ react-dom-client.development.js:16249
+(anonymous) @ react-dom-client.development.js:16383
+<BranchSelectionStep>
+exports.jsxDEV @ react-jsx-dev-runtime.development.js:346
+renderCurrentStep @ OrderWizard.tsx:244
+OrderWizard @ OrderWizard.tsx:351
+react-stack-bottom-frame @ react-dom-client.development.js:22973
+renderWithHooksAgain @ react-dom-client.development.js:6766
+renderWithHooks @ react-dom-client.development.js:6678
+updateFunctionComponent @ react-dom-client.development.js:8930
+beginWork @ react-dom-client.development.js:10555
+runWithFiberInDEV @ react-dom-client.development.js:844
+performUnitOfWork @ react-dom-client.development.js:15257
+workLoopSync @ react-dom-client.development.js:15077
+renderRootSync @ react-dom-client.development.js:15057
+performWorkOnRoot @ react-dom-client.development.js:14525
+performSyncWorkOnRoot @ react-dom-client.development.js:16364
+flushSyncWorkAcrossRoots_impl @ react-dom-client.development.js:16210
+processRootScheduleInMicrotask @ react-dom-client.development.js:16249
+(anonymous) @ react-dom-client.development.js:16383
+index.ts:95 JWT токен додано в заголовок запиту
+index.ts:95 JWT токен додано в заголовок запиту
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: null, hasSelection: false, isSelectionValid: false, isLoading: false, error: null, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: null, hasSelection: false, isSelectionValid: false, isLoading: false, error: null, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: null, hasSelection: false, isSelectionValid: false, isLoading: false, error: null, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: null, hasSelection: false, isSelectionValid: false, isLoading: false, error: null, …}
+BranchSelectionStep.tsx:47 Філію вибрано для замовлення: {id: 'feef728a-befa-4a61-8e85-53967a38b4ea', name: 'Головне відділення', address: 'Вінниця, вул. Замостянська, 33', phone: '+380632913911', code: 'AKSI1', …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: {…}, hasSelection: true, isSelectionValid: true, isLoading: true, error: null, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: false}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: {…}, hasSelection: true, isSelectionValid: true, isLoading: true, error: null, …}
+index.ts:95 JWT токен додано в заголовок запиту
+wizard.store.ts:267 Wizard Store: updateStepAvailability викликано для item-manager = true
+wizard.store.ts:271 Wizard Store: поточна availability для item-manager: false
+wizard.store.ts:273 Wizard Store: нова availability для item-manager: true
+use-branch-selection.hook.ts:94 Branch Selection: увімкнено availability для ITEM_MANAGER
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: {…}, hasSelection: true, isSelectionValid: true, isLoading: true, error: null, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: {…}, hasSelection: true, isSelectionValid: true, isLoading: true, error: null, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: {…}, hasSelection: true, isSelectionValid: true, isLoading: false, error: null, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'branch-selection', nextStep: 'item-manager', nextStepAvailable: true}
+BranchSelectionStep.tsx:34 BranchSelectionStep render: {selectedBranch: {…}, hasSelection: true, isSelectionValid: true, isLoading: false, error: null, …}
+BranchSelectionStep.tsx:56 Перехід до наступного кроку з філією: {id: 'feef728a-befa-4a61-8e85-53967a38b4ea', name: 'Головне відділення', address: 'Вінниця, вул. Замостянська, 33', phone: '+380632913911', code: 'AKSI1', …}
+wizard-navigation.entity.ts:93 WizardNavigationEntity: goForward {currentStep: 'branch-selection', nextStep: 'item-manager', isItemWizardActive: false, availability: {…}}
+wizard-navigation.entity.ts:65 WizardNavigationEntity: navigateToStep {previousStep: 'branch-selection', currentStep: 'item-manager', isItemWizardActive: false}
+BranchSelectionStep.tsx:61 Успішно перейшли до наступного кроку
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+ItemManagerStep.tsx:41 ItemManagerStep render: {currentStep: 'item-manager', isItemWizardActive: false, hasItems: false, canProceed: false, isLoading: true, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+ItemManagerStep.tsx:41 ItemManagerStep render: {currentStep: 'item-manager', isItemWizardActive: false, hasItems: false, canProceed: false, isLoading: true, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+order-item.service.ts:53 OrderItemService.getOrderItems: {orderId: 'temp-order-id'}
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: true, clientSelection.hasSelection: true, wizard.availability[BRANCH_SELECTION]: true, wizard.currentStep: 'item-manager'}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+ItemManagerStep.tsx:41 ItemManagerStep render: {currentStep: 'item-manager', isItemWizardActive: false, hasItems: false, canProceed: false, isLoading: false, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+ItemManagerStep.tsx:41 ItemManagerStep render: {currentStep: 'item-manager', isItemWizardActive: false, hasItems: false, canProceed: false, isLoading: false, …}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+wizard-navigation.entity.ts:45 WizardNavigationEntity: canGoForward (main wizard) {currentStep: 'item-manager', nextStep: 'order-parameters', nextStepAvailable: false}
+ItemManagerStep.tsx:54 Запуск item wizard для додавання предмета
+wizard-item.entity.ts:35 WizardItemEntity: Запуск Item Wizard...
+wizard-navigation.entity.ts:65 WizardNavigationEntity: navigateToStep {previousStep: 'item-basic-info', currentStep: 'item-basic-info', isItemWizardActive: true}
+wizard-item.entity.ts:55 WizardItemEntity: Item Wizard запущено успішно {currentStep: 'item-basic-info', availability: {…}}
+ItemManagerStep.tsx:58 Item wizard запущено успішно
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: '', color: ''}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: '', color: ''}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: '', color: ''}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: '', color: ''}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-wizard-debug.hook.ts:15 🧙‍♂️ Wizard Debug Info
+use-wizard-debug.hook.ts:16 Current Step: item-basic-info
+use-wizard-debug.hook.ts:17 Item Wizard Active: true
+use-wizard-debug.hook.ts:18 Step Availability: {client-selection: true, branch-selection: true, item-manager: true, order-parameters: false, order-confirmation: false, …}
+use-wizard-debug.hook.ts:50 Item Wizard Steps Availability: {item-basic-info: true, item-properties: true, defects-stains: false, price-calculator: false, photo-documentation: false}
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: true, clientSelection.hasSelection: true, wizard.availability[BRANCH_SELECTION]: true, wizard.currentStep: 'item-basic-info'}
+use-wizard-debug.hook.ts:15 🧙‍♂️ Wizard Debug Info
+use-wizard-debug.hook.ts:16 Current Step: item-basic-info
+use-wizard-debug.hook.ts:17 Item Wizard Active: true
+use-wizard-debug.hook.ts:18 Step Availability: {client-selection: true, branch-selection: true, item-manager: true, order-parameters: false, order-confirmation: false, …}
+use-wizard-debug.hook.ts:50 Item Wizard Steps Availability: {item-basic-info: true, item-properties: true, defects-stains: false, price-calculator: false, photo-documentation: false}
+index.ts:95 JWT токен додано в заголовок запиту
+index.ts:95 JWT токен додано в заголовок запиту
+use-wizard-debug.hook.ts:15 🧙‍♂️ Wizard Debug Info
+use-wizard-debug.hook.ts:16 Current Step: item-basic-info
+use-wizard-debug.hook.ts:17 Item Wizard Active: true
+use-wizard-debug.hook.ts:18 Step Availability: {client-selection: true, branch-selection: true, item-manager: true, order-parameters: false, order-confirmation: false, …}
+use-wizard-debug.hook.ts:50 Item Wizard Steps Availability: {item-basic-info: true, item-properties: true, defects-stains: false, price-calculator: false, photo-documentation: false}
+use-wizard-debug.hook.ts:15 🧙‍♂️ Wizard Debug Info
+use-wizard-debug.hook.ts:16 Current Step: item-basic-info
+use-wizard-debug.hook.ts:17 Item Wizard Active: true
+use-wizard-debug.hook.ts:18 Step Availability: {client-selection: true, branch-selection: true, item-manager: true, order-parameters: false, order-confirmation: false, …}
+use-wizard-debug.hook.ts:50 Item Wizard Steps Availability: {item-basic-info: true, item-properties: true, defects-stains: false, price-calculator: false, photo-documentation: false}
+item-wizard.store.ts:157 ItemWizardStore: updateBasicInfo {category: 'PADDING', unitOfMeasure: 'шт', name: '', unitPrice: 0}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-wizard-debug.hook.ts:15 🧙‍♂️ Wizard Debug Info
+use-wizard-debug.hook.ts:16 Current Step: item-basic-info
+use-wizard-debug.hook.ts:17 Item Wizard Active: true
+use-wizard-debug.hook.ts:18 Step Availability: {client-selection: true, branch-selection: true, item-manager: true, order-parameters: false, order-confirmation: false, …}
+use-wizard-debug.hook.ts:50 Item Wizard Steps Availability: {item-basic-info: true, item-properties: true, defects-stains: false, price-calculator: false, photo-documentation: false}
+index.ts:95 JWT токен додано в заголовок запиту
+use-wizard-debug.hook.ts:15 🧙‍♂️ Wizard Debug Info
+use-wizard-debug.hook.ts:16 Current Step: item-basic-info
+use-wizard-debug.hook.ts:17 Item Wizard Active: true
+use-wizard-debug.hook.ts:18 Step Availability: {client-selection: true, branch-selection: true, item-manager: true, order-parameters: false, order-confirmation: false, …}
+use-wizard-debug.hook.ts:50 Item Wizard Steps Availability: {item-basic-info: true, item-properties: true, defects-stains: false, price-calculator: false, photo-documentation: false}
+item-wizard.store.ts:157 ItemWizardStore: updateBasicInfo {name: 'Жилет', unitPrice: 1250, unitOfMeasure: 'шт'}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-wizard-debug.hook.ts:15 🧙‍♂️ Wizard Debug Info
+use-wizard-debug.hook.ts:16 Current Step: item-basic-info
+use-wizard-debug.hook.ts:17 Item Wizard Active: true
+use-wizard-debug.hook.ts:18 Step Availability: {client-selection: true, branch-selection: true, item-manager: true, order-parameters: false, order-confirmation: false, …}
+use-wizard-debug.hook.ts:50 Item Wizard Steps Availability: {item-basic-info: true, item-properties: true, defects-stains: false, price-calculator: false, photo-documentation: false}
+wizard-navigation.entity.ts:93 WizardNavigationEntity: goForward {currentStep: 'item-basic-info', nextStep: 'item-properties', isItemWizardActive: true, availability: {…}}
+wizard-navigation.entity.ts:115 WizardNavigationEntity: Активуємо крок після наступного для Item Wizard: defects-stains
+wizard-navigation.entity.ts:65 WizardNavigationEntity: navigateToStep {previousStep: 'item-basic-info', currentStep: 'item-properties', isItemWizardActive: true}
+ItemBasicInfoStep.tsx:40 Перехід до характеристик предмета
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: ''}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:441 ❌ validateProperties: Колір обов'язковий {color: ''}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-properties.hook.ts:93 🔍 getMaterialsByCategory викликано для категорії: PADDING
+use-item-properties.hook.ts:122 🔍 getMaterialsByCategory результат: {category: 'PADDING', materialsCount: 0, materials: Array(0)}
+ItemPropertiesStep.tsx:50 🔍 ItemPropertiesStep render: {canProceed: false, itemData: {…}, validation.properties: {…}, availableMaterials.length: 0, availableMaterials: Array(0), …}
+use-item-properties.hook.ts:93 🔍 getMaterialsByCategory викликано для категорії: PADDING
+use-item-properties.hook.ts:122 🔍 getMaterialsByCategory результат: {category: 'PADDING', materialsCount: 0, materials: Array(0)}
+ItemPropertiesStep.tsx:50 🔍 ItemPropertiesStep render: {canProceed: false, itemData: {…}, validation.properties: {…}, availableMaterials.length: 0, availableMaterials: Array(0), …}
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: true, clientSelection.hasSelection: true, wizard.availability[BRANCH_SELECTION]: true, wizard.currentStep: 'item-properties'}
+item-wizard.store.ts:164 ItemWizardStore: updateProperties {color: 'Білий'}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-properties.hook.ts:93 🔍 getMaterialsByCategory викликано для категорії: PADDING
+use-item-properties.hook.ts:122 🔍 getMaterialsByCategory результат: {category: 'PADDING', materialsCount: 0, materials: Array(0)}
+ItemPropertiesStep.tsx:50 🔍 ItemPropertiesStep render: {canProceed: false, itemData: {…}, validation.properties: {…}, availableMaterials.length: 0, availableMaterials: Array(0), …}
+use-item-properties.hook.ts:93 🔍 getMaterialsByCategory викликано для категорії: PADDING
+use-item-properties.hook.ts:122 🔍 getMaterialsByCategory результат: {category: 'PADDING', materialsCount: 0, materials: Array(0)}
+ItemPropertiesStep.tsx:50 🔍 ItemPropertiesStep render: {canProceed: false, itemData: {…}, validation.properties: {…}, availableMaterials.length: 0, availableMaterials: Array(0), …}
+item-wizard.store.ts:164 ItemWizardStore: updateProperties {wearDegree: '30'}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-properties.hook.ts:93 🔍 getMaterialsByCategory викликано для категорії: PADDING
+use-item-properties.hook.ts:122 🔍 getMaterialsByCategory результат: {category: 'PADDING', materialsCount: 0, materials: Array(0)}
+ItemPropertiesStep.tsx:50 🔍 ItemPropertiesStep render: {canProceed: false, itemData: {…}, validation.properties: {…}, availableMaterials.length: 0, availableMaterials: Array(0), …}
+use-item-properties.hook.ts:93 🔍 getMaterialsByCategory викликано для категорії: PADDING
+use-item-properties.hook.ts:122 🔍 getMaterialsByCategory результат: {category: 'PADDING', materialsCount: 0, materials: Array(0)}
+ItemPropertiesStep.tsx:50 🔍 ItemPropertiesStep render: {canProceed: false, itemData: {…}, validation.properties: {…}, availableMaterials.length: 0, availableMaterials: Array(0), …}
+wizard-navigation.entity.ts:93 WizardNavigationEntity: goForward {currentStep: 'item-properties', nextStep: 'defects-stains', isItemWizardActive: true, availability: {…}}
+wizard-navigation.entity.ts:115 WizardNavigationEntity: Активуємо крок після наступного для Item Wizard: price-calculator
+wizard-navigation.entity.ts:65 WizardNavigationEntity: navigateToStep {previousStep: 'item-properties', currentStep: 'defects-stains', isItemWizardActive: true}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: true, clientSelection.hasSelection: true, wizard.availability[BRANCH_SELECTION]: true, wizard.currentStep: 'defects-stains'}
+item-wizard.store.ts:171 ItemWizardStore: updateDefectsStains {stains: Array(1)}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+item-wizard.store.ts:171 ItemWizardStore: updateDefectsStains {stains: Array(2)}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+item-wizard.store.ts:171 ItemWizardStore: updateDefectsStains {defects: Array(1)}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+wizard-navigation.entity.ts:93 WizardNavigationEntity: goForward {currentStep: 'defects-stains', nextStep: 'price-calculator', isItemWizardActive: true, availability: {…}}
+wizard-navigation.entity.ts:115 WizardNavigationEntity: Активуємо крок після наступного для Item Wizard: photo-documentation
+wizard-navigation.entity.ts:65 WizardNavigationEntity: navigateToStep {previousStep: 'defects-stains', currentStep: 'price-calculator', isItemWizardActive: true}
+DefectsStainsStep.tsx:136 Перехід до калькулятора ціни
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: true, clientSelection.hasSelection: true, wizard.availability[BRANCH_SELECTION]: true, wizard.currentStep: 'price-calculator'}
+item-wizard.store.ts:178 ItemWizardStore: updatePriceModifiers {childSized: true}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+wizard-navigation.entity.ts:93 WizardNavigationEntity: goForward {currentStep: 'price-calculator', nextStep: 'photo-documentation', isItemWizardActive: true, availability: {…}}
+wizard-navigation.entity.ts:65 WizardNavigationEntity: navigateToStep {previousStep: 'price-calculator', currentStep: 'photo-documentation', isItemWizardActive: true}
+PriceCalculatorStep.tsx:131 Перехід до фотодокументації
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+OrderWizard.tsx:86 OrderWizard діагностика: {wizard.isInitialized: true, clientSelection.hasSelection: true, wizard.availability[BRANCH_SELECTION]: true, wizard.currentStep: 'photo-documentation'}
+PhotoDocumentationStep.tsx:170 Пропуск фото-документації, збереження предмета без фото...
+item-wizard.store.ts:185 ItemWizardStore: updatePhotos {photos: Array(0), hasPhotos: false}
+use-item-wizard.hook.ts:250 🔍 saveItem викликано. Стан перед збереженням: {orderId: 'temp-order-id', isReadyToSave: false, itemData: {…}, validation: {…}}
+use-item-wizard.hook.ts:262 ❌ Валідація не пройшла. Деталі:
+overrideMethod @ hook.js:608
+error @ intercept-console-error.ts:40
+useItemWizard.useCallback[saveItem] @ use-item-wizard.hook.ts:262
+PhotoDocumentationStep.useCallback[handleSkip] @ PhotoDocumentationStep.tsx:180
+handleClick @ ActionButton.tsx:59
+executeDispatch @ react-dom-client.development.js:16501
+runWithFiberInDEV @ react-dom-client.development.js:844
+processDispatchQueue @ react-dom-client.development.js:16551
+(anonymous) @ react-dom-client.development.js:17149
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16705
+dispatchEvent @ react-dom-client.development.js:20815
+dispatchDiscreteEvent @ react-dom-client.development.js:20783
+use-item-wizard.hook.ts:263 basicInfo: {isValid: true, errors: {…}}
+overrideMethod @ hook.js:608
+error @ intercept-console-error.ts:40
+useItemWizard.useCallback[saveItem] @ use-item-wizard.hook.ts:263
+PhotoDocumentationStep.useCallback[handleSkip] @ PhotoDocumentationStep.tsx:180
+handleClick @ ActionButton.tsx:59
+executeDispatch @ react-dom-client.development.js:16501
+runWithFiberInDEV @ react-dom-client.development.js:844
+processDispatchQueue @ react-dom-client.development.js:16551
+(anonymous) @ react-dom-client.development.js:17149
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16705
+dispatchEvent @ react-dom-client.development.js:20815
+dispatchDiscreteEvent @ react-dom-client.development.js:20783
+use-item-wizard.hook.ts:264 properties: {isValid: false, errors: {…}}
+overrideMethod @ hook.js:608
+error @ intercept-console-error.ts:40
+useItemWizard.useCallback[saveItem] @ use-item-wizard.hook.ts:264
+PhotoDocumentationStep.useCallback[handleSkip] @ PhotoDocumentationStep.tsx:180
+handleClick @ ActionButton.tsx:59
+executeDispatch @ react-dom-client.development.js:16501
+runWithFiberInDEV @ react-dom-client.development.js:844
+processDispatchQueue @ react-dom-client.development.js:16551
+(anonymous) @ react-dom-client.development.js:17149
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16705
+dispatchEvent @ react-dom-client.development.js:20815
+dispatchDiscreteEvent @ react-dom-client.development.js:20783
+use-item-wizard.hook.ts:265 defectsStains: {isValid: true, errors: {…}}
+overrideMethod @ hook.js:608
+error @ intercept-console-error.ts:40
+useItemWizard.useCallback[saveItem] @ use-item-wizard.hook.ts:265
+PhotoDocumentationStep.useCallback[handleSkip] @ PhotoDocumentationStep.tsx:180
+handleClick @ ActionButton.tsx:59
+executeDispatch @ react-dom-client.development.js:16501
+runWithFiberInDEV @ react-dom-client.development.js:844
+processDispatchQueue @ react-dom-client.development.js:16551
+(anonymous) @ react-dom-client.development.js:17149
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16705
+dispatchEvent @ react-dom-client.development.js:20815
+dispatchDiscreteEvent @ react-dom-client.development.js:20783
+use-item-wizard.hook.ts:266 priceCalculator: {isValid: true, errors: {…}}
+overrideMethod @ hook.js:608
+error @ intercept-console-error.ts:40
+useItemWizard.useCallback[saveItem] @ use-item-wizard.hook.ts:266
+PhotoDocumentationStep.useCallback[handleSkip] @ PhotoDocumentationStep.tsx:180
+handleClick @ ActionButton.tsx:59
+executeDispatch @ react-dom-client.development.js:16501
+runWithFiberInDEV @ react-dom-client.development.js:844
+processDispatchQueue @ react-dom-client.development.js:16551
+(anonymous) @ react-dom-client.development.js:17149
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16705
+dispatchEvent @ react-dom-client.development.js:20815
+dispatchDiscreteEvent @ react-dom-client.development.js:20783
+use-item-wizard.hook.ts:267 photoDocumentation: {isValid: true, errors: {…}}
+overrideMethod @ hook.js:608
+error @ intercept-console-error.ts:40
+useItemWizard.useCallback[saveItem] @ use-item-wizard.hook.ts:267
+PhotoDocumentationStep.useCallback[handleSkip] @ PhotoDocumentationStep.tsx:180
+handleClick @ ActionButton.tsx:59
+executeDispatch @ react-dom-client.development.js:16501
+runWithFiberInDEV @ react-dom-client.development.js:844
+processDispatchQueue @ react-dom-client.development.js:16551
+(anonymous) @ react-dom-client.development.js:17149
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16705
+dispatchEvent @ react-dom-client.development.js:20815
+dispatchDiscreteEvent @ react-dom-client.development.js:20783
+use-item-wizard.hook.ts:268 itemData: {name: 'Жилет', category: 'PADDING', quantity: 1, unitOfMeasure: 'шт', unitPrice: 1250, …}
+overrideMethod @ hook.js:608
+error @ intercept-console-error.ts:40
+useItemWizard.useCallback[saveItem] @ use-item-wizard.hook.ts:268
+PhotoDocumentationStep.useCallback[handleSkip] @ PhotoDocumentationStep.tsx:180
+handleClick @ ActionButton.tsx:59
+executeDispatch @ react-dom-client.development.js:16501
+runWithFiberInDEV @ react-dom-client.development.js:844
+processDispatchQueue @ react-dom-client.development.js:16551
+(anonymous) @ react-dom-client.development.js:17149
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16705
+dispatchEvent @ react-dom-client.development.js:20815
+dispatchDiscreteEvent @ react-dom-client.development.js:20783
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+use-item-wizard.hook.ts:420 🔍 validateProperties викликано: {material: undefined, category: 'PADDING', color: 'Білий'}
+use-item-wizard.hook.ts:433 ❌ validateProperties: Матеріал обов'язковий {category: 'PADDING', material: undefined}
+use-item-wizard.hook.ts:447 🔍 validateProperties результат: {isValid: false, errors: {…}, data: {…}}
+PhotoDocumentationStep.tsx:194 ❌ Помилка збереження предмета: Предмет не готовий до збереження - є помилки валідації
+overrideMethod @ hook.js:608
+error @ intercept-console-error.ts:40
+PhotoDocumentationStep.useCallback[handleSkip] @ PhotoDocumentationStep.tsx:194
+await in PhotoDocumentationStep.useCallback[handleSkip]
+handleClick @ ActionButton.tsx:59
+executeDispatch @ react-dom-client.development.js:16501
+runWithFiberInDEV @ react-dom-client.development.js:844
+processDispatchQueue @ react-dom-client.development.js:16551
+(anonymous) @ react-dom-client.development.js:17149
+batchedUpdates$1 @ react-dom-client.development.js:3262
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:16705
+dispatchEvent @ react-dom-client.development.js:20815
+dispatchDiscreteEvent @ react-dom-client.development.js:20783
+turbopack-hot-reloader-common.ts:41 [Fast Refresh] rebuilding
+report-hmr-latency.ts:26 [Fast Refresh] done in 2171ms

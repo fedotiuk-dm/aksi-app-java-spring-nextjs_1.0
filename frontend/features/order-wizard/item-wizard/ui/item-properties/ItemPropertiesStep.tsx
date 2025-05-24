@@ -5,6 +5,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import React, { useCallback } from 'react';
 
 import { useItemWizard, useItemProperties, MaterialType } from '@/domain/order';
+import { useWizardOrderId } from '@/domain/wizard';
 import {
   MaterialSelector,
   ColorSelector,
@@ -14,6 +15,7 @@ import {
   StatusMessage,
   StepContainer,
   StepNavigation,
+  OrderDebugInfo,
 } from '@/shared/ui';
 
 /**
@@ -25,8 +27,11 @@ import {
  * - Використовує shared UI компоненти
  */
 export const ItemPropertiesStep: React.FC = () => {
+  // Отримуємо orderId з wizard context
+  const { orderId } = useWizardOrderId();
+
   // === DOMAIN HOOKS ===
-  const { itemData, validation, canProceed, updateProperties, wizard } = useItemWizard();
+  const { itemData, validation, canProceed, updateProperties, wizard } = useItemWizard({ orderId });
   const {
     baseColors,
     fillerOptions,
@@ -42,6 +47,18 @@ export const ItemPropertiesStep: React.FC = () => {
   const showFiller = needsFiller(itemData.category);
   const selectedMaterialLabel = itemData.material ? getMaterialLabel(itemData.material) : '';
   const selectedFillerLabel = itemData.fillerType ? getFillerLabel(itemData.fillerType) : '';
+
+  // Debug логування
+  console.log('🔍 ItemPropertiesStep render:', {
+    orderId,
+    hasOrderId: !!orderId,
+    canProceed,
+    itemData,
+    'validation.properties': validation.properties,
+    'availableMaterials.length': availableMaterials.length,
+    availableMaterials,
+    showMaterialSelector: availableMaterials.length > 0,
+  });
 
   // === EVENT HANDLERS ===
 
@@ -136,6 +153,9 @@ export const ItemPropertiesStep: React.FC = () => {
       title="Характеристики предмета"
       subtitle="Вкажіть матеріал, колір та інші важливі характеристики предмета"
     >
+      {/* Діагностична інформація (тільки в dev режимі) */}
+      <OrderDebugInfo title="Стан замовлення - Item Properties" />
+
       <Box sx={{ minHeight: '400px' }}>
         {/* Матеріал */}
         {availableMaterials.length > 0 && (

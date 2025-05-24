@@ -43,3 +43,7 @@ export * from './AddressFields';
 export * from './MultiSelectCheckboxGroup';
 export * from './AutocompleteSelector';
 export * from './EntityInfoAlert';
+
+// New molecules for order creation
+export * from './InfoField';
+export * from './AutoFieldsInfo';

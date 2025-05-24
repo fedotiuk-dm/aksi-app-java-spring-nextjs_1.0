@@ -8,6 +8,7 @@ export { useOrder } from './use-order.hook';
 export { useOrderSearch } from './use-order-search.hook';
 export { useOrderParameters } from './use-order-parameters.hook';
 export { useOrderConfirmation } from './use-order-confirmation.hook';
+export { useOrderCreation } from './use-order-creation.hook';
 
 // Хуки для предметів замовлення
 export { useOrderItems, useOrderItem } from './use-order-items.hook';

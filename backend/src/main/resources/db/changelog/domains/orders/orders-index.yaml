@@ -44,3 +44,6 @@ databaseChangeLog:
   - include:
       file: 1.0/015-add-reference-data-fields.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/016-remove-old-branch-location-field.yaml
+      relativeToChangelogFile: true

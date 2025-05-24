@@ -24,7 +24,11 @@ import {
  */
 export const PriceCalculatorStep: React.FC = () => {
   // === DOMAIN HOOKS ===
-  const { itemData, validation, canProceed, updatePriceModifiers, wizard } = useItemWizard();
+  // TODO: Отримати orderId з wizard state/context
+  const orderId = 'temp-order-id'; // Тимчасове значення
+  const { itemData, validation, canProceed, updatePriceModifiers, wizard } = useItemWizard({
+    orderId,
+  });
   const {
     expandedSections,
     isCalculating,

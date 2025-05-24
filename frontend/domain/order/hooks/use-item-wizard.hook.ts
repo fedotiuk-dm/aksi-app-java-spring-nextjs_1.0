@@ -3,20 +3,14 @@
  * Інтегрує Item Wizard стан з React та бізнес-логікою
  */
 
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useWizard, WizardStep } from '@/domain/wizard';
 
-import { OrderItemService } from '../services/order-item.service';
+import { useOrderItems } from './use-order-items.hook';
 import { useItemWizardStore, type ItemWizardData } from '../store';
 
-import type {
-  OrderItem,
-  OrderItemCharacteristics,
-  MaterialType,
-  DefectType,
-  StainType,
-} from '../types';
+import type { OrderItem } from '../types';
 
 // ItemWizardData тепер імпортується з store
 
@@ -71,10 +65,12 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
   const { orderId, editingItemId, autoSave: _autoSave = false } = config;
   const wizard = useWizard();
 
+  // Використовуємо useOrderItems для роботи з предметами (TanStack Query мутації)
+  const { addItem, updateItem } = useOrderItems({ orderId });
+
   // Використовуємо Zustand store замість локального стану
   const {
     itemData,
-    isEditing,
     editingItemId: storeEditingItemId,
     updateBasicInfo: storeUpdateBasicInfo,
     updateProperties: storeUpdateProperties,
@@ -82,8 +78,6 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
     updatePriceModifiers: storeUpdatePriceModifiers,
     updatePhotos: storeUpdatePhotos,
     resetItemData,
-    startEditing,
-    stopEditing,
   } = useItemWizardStore();
 
   // === COMPUTED VALUES ===
@@ -169,9 +163,16 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
         >
       >
     ) => {
+      console.log('🔍 updateBasicInfo викликано з updates:', updates);
+      console.log('🔍 поточний itemData перед оновленням:', itemData);
       storeUpdateBasicInfo(updates);
+
+      // Логуємо стан після оновлення (можливо буде асинхронно)
+      setTimeout(() => {
+        console.log('🔍 itemData після оновлення:', itemData);
+      }, 0);
     },
-    [storeUpdateBasicInfo]
+    [storeUpdateBasicInfo, itemData]
   );
 
   /**
@@ -186,9 +187,11 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
         >
       >
     ) => {
+      console.log('🔍 updateProperties викликано з updates:', updates);
+      console.log('🔍 поточна категорія для матеріалів:', itemData.category);
       storeUpdateProperties(updates);
     },
-    [storeUpdateProperties]
+    [storeUpdateProperties, itemData.category]
   );
 
   /**
@@ -240,19 +243,8 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
    */
   const calculatePrice = useCallback(async () => {
     try {
-      const itemForCalculation: Partial<OrderItem> = {
-        name: itemData.name,
-        category: itemData.category,
-        quantity: itemData.quantity,
-        unitPrice: itemData.unitPrice,
-        material: itemData.material,
-        // Додати інші поля для розрахунку
-      };
-
-      const result = await OrderItemService.calculateItemPrice(itemForCalculation);
-      if (result.success && result.calculation) {
-        return result.calculation;
-      }
+      // TODO: Додати метод calculatePrice в useOrderItems або використати окремий хук
+      console.log('calculatePrice не реалізовано через useOrderItems');
       return null;
     } catch (error) {
       console.error('Error calculating price:', error);
@@ -264,15 +256,32 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
    * Збереження предмета
    */
   const saveItem = useCallback(async (): Promise<ItemWizardOperationResult> => {
+    console.log('🔍 saveItem викликано. Стан перед збереженням:', {
+      orderId,
+      isReadyToSave,
+      itemData,
+      validation,
+    });
+
     if (!orderId) {
+      console.error('❌ Order ID відсутній');
       return { success: false, error: "Order ID обов'язкове для збереження предмета" };
     }
 
     if (!isReadyToSave) {
+      console.error('❌ Валідація не пройшла. Деталі:');
+      console.error('basicInfo:', validation.basicInfo);
+      console.error('properties:', validation.properties);
+      console.error('defectsStains:', validation.defectsStains);
+      console.error('priceCalculator:', validation.priceCalculator);
+      console.error('photoDocumentation:', validation.photoDocumentation);
+      console.error('itemData:', itemData);
       return { success: false, error: 'Предмет не готовий до збереження - є помилки валідації' };
     }
 
     try {
+      console.log('✅ Валідація пройшла успішно, починаємо збереження...');
+
       // Конвертуємо ItemWizardData в OrderItem
       const orderItem: Partial<OrderItem> = {
         id: editingItemId,
@@ -288,28 +297,51 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
         // TODO: додати інші поля
       };
 
+      console.log('🔍 Підготовлений orderItem для збереження:', orderItem);
+
       let result;
-      if (isEditing) {
+      if (isEditingComputed) {
         if (!editingItemId) {
+          console.error('❌ Відсутній ID предмета для редагування');
           return { success: false, error: 'Відсутній ID предмета для редагування' };
         }
-        result = await OrderItemService.updateOrderItem(orderId, editingItemId, orderItem);
+        console.log('📝 Редагуємо існуючий предмет з ID:', editingItemId);
+        result = await updateItem(editingItemId, orderItem);
       } else {
-        result = await OrderItemService.addOrderItem(orderId, orderItem);
+        console.log('➕ Додаємо новий предмет до замовлення:', orderId);
+        result = await addItem(orderItem);
       }
 
+      console.log('🔍 Результат збереження через useOrderItems:', result);
+
       if (result.success) {
+        console.log('✅ Предмет збережено успішно через useOrderItems мутацію');
+        console.log('✅ Збережений предмет:', result.item);
+
         // Очищуємо стан після успішного збереження
+        console.log('🧹 Очищуємо стан Item Wizard після збереження');
         resetItemData();
         return { success: true, item: result.item };
       } else {
+        console.error('❌ Помилка збереження через useOrderItems:', result.error);
         return { success: false, error: result.error };
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Невідома помилка збереження';
+      console.error('❌ Exception при збереженні предмета:', error);
       return { success: false, error: errorMessage };
     }
-  }, [orderId, editingItemId, isEditingComputed, isReadyToSave, itemData, resetItemData]);
+  }, [
+    orderId,
+    editingItemId,
+    isEditingComputed,
+    isReadyToSave,
+    itemData,
+    validation,
+    addItem,
+    updateItem,
+    resetItemData,
+  ]);
 
   /**
    * Скасування та очищення стану
@@ -326,36 +358,15 @@ export const useItemWizard = (config: UseItemWizardConfig = {}) => {
       if (!orderId) return;
 
       try {
-        const result = await OrderItemService.getOrderItem(orderId, itemId);
-        if (result.success && result.item) {
-          // Конвертуємо OrderItem в ItemWizardData
-          const item = result.item;
-          startEditing(itemId, {
-            name: item.name,
-            category: item.category || '',
-            quantity: item.quantity,
-            unitOfMeasure: item.unitOfMeasure || 'шт',
-            unitPrice: item.unitPrice || 0,
-            description: item.description || '',
-            material: item.material as MaterialType,
-            color: item.color || '',
-            // TODO: додати інші поля
-            fillerType: undefined,
-            fillerCompressed: false,
-            wearDegree: undefined,
-            defects: [],
-            stains: [],
-            defectsNotes: '',
-            noWarranty: false,
-            noWarrantyReason: '',
-            childSized: false,
-            manualCleaning: false,
-            heavilySoiled: false,
-            heavilySoiledPercentage: 0,
-            photos: [],
-            hasPhotos: false,
-          });
-        }
+        // TODO: Додати метод getOrderItem в useOrderItems або використати findItemById
+        console.log('loadItemForEditing не реалізовано через useOrderItems');
+        // Тимчасово використовуємо findItemById якщо предмет вже в кеші
+        // const item = findItemById(itemId);
+        // if (item) {
+        //   startEditing(itemId, {
+        //     // конвертувати OrderItem в ItemWizardData
+        //   });
+        // }
       } catch (error) {
         console.error('Error loading item for editing:', error);
       }
@@ -429,6 +440,12 @@ function validateBasicInfo(data: ItemWizardData) {
 function validateProperties(data: ItemWizardData) {
   const errors: Record<string, string> = {};
 
+  console.log('🔍 validateProperties викликано:', {
+    material: data.material,
+    category: data.category,
+    color: data.color,
+  });
+
   // Матеріал обов'язковий для більшості категорій
   if (
     !data.material &&
@@ -436,14 +453,32 @@ function validateProperties(data: ItemWizardData) {
     !['прання', 'прасування'].includes(data.category.toLowerCase())
   ) {
     errors.material = "Матеріал обов'язковий для цієї категорії";
+    console.log("❌ validateProperties: Матеріал обов'язковий", {
+      category: data.category,
+      material: data.material,
+    });
   }
 
   if (!data.color?.trim()) {
     errors.color = "Колір обов'язковий";
+    console.log("❌ validateProperties: Колір обов'язковий", {
+      color: data.color,
+    });
   }
 
+  const isValid = Object.keys(errors).length === 0;
+  console.log('🔍 validateProperties результат:', {
+    isValid,
+    errors,
+    data: {
+      material: data.material,
+      category: data.category,
+      color: data.color,
+    },
+  });
+
   return {
-    isValid: Object.keys(errors).length === 0,
+    isValid,
     errors,
   };
 }

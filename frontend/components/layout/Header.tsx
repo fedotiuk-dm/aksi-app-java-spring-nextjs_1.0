@@ -38,6 +38,7 @@ import { useState } from 'react';
 
 // Внутрішні залежності
 import { useLogout } from '@/features/auth/hooks/useLogout';
+import { useSafeMUIHydration } from '@/shared/lib/hooks';
 
 // Константи
 const APP_NAME = 'AKSI Хімчистка';
@@ -57,6 +58,7 @@ export default function Header() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pathname = usePathname();
   const { logout, isLoading } = useLogout();
+  const { muiProps } = useSafeMUIHydration();
 
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -72,7 +74,7 @@ export default function Header() {
 
   return (
     <>
-      <AppBar position="static" elevation={0} sx={{ bgcolor: APP_BAR_BG_COLOR }}>
+      <AppBar position="static" elevation={0} sx={{ bgcolor: APP_BAR_BG_COLOR }} {...muiProps}>
         <Toolbar>
           <IconButton
             edge="start"
@@ -112,6 +114,7 @@ export default function Header() {
                   filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
                   width: 200,
                 },
+                ...muiProps,
               }}
             >
               <MenuItem onClick={handleUserMenuClose}>

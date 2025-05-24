@@ -230,15 +230,25 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
    */
   const addItem = useCallback(
     async (itemData: Partial<OrderItem>): Promise<OrderItemOperationResult> => {
+      console.log('🔍 useOrderItems.addItem викликано з даними:', {
+        orderId,
+        itemData,
+      });
+
       try {
+        console.log('📤 Викликаємо addItemMutation.mutateAsync...');
         const item = await addItemMutation.mutateAsync(itemData);
+        console.log('✅ addItemMutation.mutateAsync успішно завершений:', item);
+        console.log('✅ Invalidate queries викликано автоматично через onSuccess');
         return { success: true, item };
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR;
+        console.error('❌ Помилка в addItemMutation.mutateAsync:', error);
+        console.error('❌ Error message:', errorMessage);
         return { success: false, error: errorMessage };
       }
     },
-    [addItemMutation]
+    [addItemMutation, orderId]
   );
 
   /**
@@ -246,15 +256,26 @@ export const useOrderItems = (config: UseOrderItemsConfig = {}) => {
    */
   const updateItem = useCallback(
     async (itemId: string, itemData: Partial<OrderItem>): Promise<OrderItemOperationResult> => {
+      console.log('🔍 useOrderItems.updateItem викликано з даними:', {
+        orderId,
+        itemId,
+        itemData,
+      });
+
       try {
+        console.log('📤 Викликаємо updateItemMutation.mutateAsync...');
         const item = await updateItemMutation.mutateAsync({ itemId, itemData });
+        console.log('✅ updateItemMutation.mutateAsync успішно завершений:', item);
+        console.log('✅ Invalidate queries викликано автоматично через onSuccess');
         return { success: true, item };
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR;
+        console.error('❌ Помилка в updateItemMutation.mutateAsync:', error);
+        console.error('❌ Error message:', errorMessage);
         return { success: false, error: errorMessage };
       }
     },
-    [updateItemMutation]
+    [updateItemMutation, orderId]
   );
 
   /**
