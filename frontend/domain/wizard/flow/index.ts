@@ -63,23 +63,42 @@
  * Реалізує координацію загального стану wizard та валідацію переходів.
  */
 
-// Context
-export * from './context';
+// === ГОЛОВНА МАШИНА ===
+export { wizardFlowMachine } from './wizard-flow.machine';
+export type { WizardFlowMachine } from './wizard-flow.machine';
 
-// Events
-export * from './events';
+// === КОНТЕКСТ ===
+export {
+  createInitialContext,
+  createViewContext,
+  createEditContext,
+} from './context/wizard-context.factory';
 
-// Guards
-export * from './guards';
+export type {
+  WizardContext as FlowWizardContext,
+  WizardContextInput as FlowWizardContextInput,
+  WizardProgressInfo as FlowWizardProgressInfo,
+  WizardValidationInfo as FlowWizardValidationInfo,
+  WizardSessionInfo as FlowWizardSessionInfo,
+  WizardMetadata as FlowWizardMetadata,
+} from './context/wizard-context.types';
 
-// Actions
+// === ПОДІЇ ===
+export { EventCreators } from './events';
+
+// === GUARDS (ОХОРОНЦІ) ===
+export {
+  canProceedToNextStep as canProceedToNextStepFlow,
+  canReturnToPrevStep,
+  canGotoStep,
+  canStartItemWizard,
+  canCompleteItemWizard,
+  needsValidation,
+  canComplete,
+} from './guards';
+
+// === ACTIONS (ДІЇ) ===
 export * from './actions';
 
-// States
-export * from './states';
-
-// Services
-export * from './services';
-
-// Main machine
-export * from './wizard-flow.machine';
+// === STATES (СТАНИ) ===
+export { wizardStates } from './states';

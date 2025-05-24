@@ -1,0 +1,40 @@
+{
+  "name": "aksi-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AKSI App - Java Spring + Next.js application for dry cleaning services",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm start",
+    "lint": "cd frontend && npm run lint",
+    "lint:fix": "cd frontend && npm run lint:fix",
+    "lint:strict": "cd frontend && npm run lint:strict",
+    "format": "cd frontend && npm run format",
+    "format:check": "cd frontend && npm run format:check",
+    "type-check": "cd frontend && npm run type-check",
+    "check": "cd frontend && npm run check",
+    "check:fix": "cd frontend && npm run check:fix",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:frontend"
+  },
+  "workspaces": [
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "dry-cleaning",
+    "aksi",
+    "java",
+    "spring-boot",
+    "nextjs",
+    "typescript",
+    "ddd",
+    "fsd"
+  ],
+  "author": "AKSI Team",
+  "license": "UNLICENSED"
+}
