@@ -10,6 +10,9 @@ const publicPaths = [
   '/api/auth/login',
   '/api/auth/register',
   '/api/auth/refresh-token',
+  '/api/typedoc',
+  '/typedoc',
+  '/docs',
 ];
 
 // Перевірка, чи шлях є публічним
@@ -42,6 +45,18 @@ const isTokenValid = (token: string): boolean => {
 export async function middleware(request: NextRequest) {
   // Отримуємо шлях
   const path = request.nextUrl.pathname;
+
+  // Спеціальна обробка для TypeDoc документації
+  if (path === '/typedoc' || path === '/typedoc/') {
+    const url = new URL('/docs/index.html', request.url);
+    return NextResponse.redirect(url);
+  }
+
+  if (path.startsWith('/typedoc/')) {
+    const docPath = path.replace('/typedoc/', '/docs/');
+    const url = new URL(docPath, request.url);
+    return NextResponse.redirect(url);
+  }
 
   // Якщо шлях публічний, пропускаємо без перевірки
   if (isPublic(path)) {

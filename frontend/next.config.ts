@@ -11,11 +11,6 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || BACKEND_URL,
   },
-  // Використовуємо Traefik для всієї маршрутизації
-  // Замість проксіювання в Next.js
-  async rewrites() {
-    return [];
-  },
 
   // Пропуск перевірки типів під час збірки
   typescript: {

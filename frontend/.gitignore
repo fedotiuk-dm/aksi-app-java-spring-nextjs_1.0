@@ -21,6 +21,9 @@
 /build
 /dist
 
+# documentation
+/docs/
+
 # misc
 .DS_Store
 *.pem
