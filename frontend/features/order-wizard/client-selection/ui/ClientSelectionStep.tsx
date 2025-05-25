@@ -1,22 +1,35 @@
 'use client';
 
-import { Box } from '@mui/material';
-import React from 'react';
+import { Box, Alert } from '@mui/material';
+import React, { useState } from 'react';
 
-import { useClientStep, Client, ClientMode } from '@/domain/client';
-import { useWizard } from '@/domain/wizard';
+import {
+  useClientSearch,
+  useClientForm,
+  useClientSelection,
+  useWizardState,
+  useWizardNavigation,
+} from '@/domain/wizard';
 import { StepContainer, StepNavigation } from '@/shared/ui';
 
 import {
   ClientCreateForm,
-  ClientEditForm,
   ClientModeSelector,
   ClientSearchPanel,
   SelectedClientInfo,
 } from './components';
 
 /**
- * Головний компонент для CLIENT_SELECTION кроку Order Wizard
+ * Режими роботи компонента
+ */
+enum ClientMode {
+  SELECT = 'select',
+  SEARCH = 'search',
+  CREATE = 'create',
+}
+
+/**
+ * Головний компонент для CLIENT_SELECTION кроку Order Wizard (DDD архітектура)
  *
  * FSD принципи:
  * - Тільки UI логіка (презентаційний компонент)
@@ -24,181 +37,120 @@ import {
  * - Мінімальний локальний стан
  * - Композиція спеціалізованих UI компонентів
  *
- * Згідно з документацією Order Wizard:
- * 1.1. Вибір або створення клієнта
- * - Форма пошуку існуючого клієнта
- * - Відображення списку знайдених клієнтів
- * - Можливість вибрати клієнта зі списку
- * - Можливість редагування клієнта
- * - Форма нового клієнта з повною валідацією
+ * DDD принципи:
+ * - Вся бізнес-логіка делегована доменним сервісам
+ * - Хуки фокусуються тільки на React стані
+ * - Валідація через Zod схеми
  */
 export const ClientSelectionStep: React.FC = () => {
-  // Отримуємо всю функціональність з domain layer
-  const clientStep = useClientStep({
-    autoAdvance: true,
-    onStepComplete: (client: Client) => {
-      console.log('Клієнт вибраний для замовлення:', client);
-    },
-  });
-  const wizard = useWizard();
+  // === ЛОКАЛЬНИЙ UI СТАН ===
+  const [mode, setMode] = useState<ClientMode>(ClientMode.SELECT);
 
-  // Логування для діагностики
-  console.log('ClientSelectionStep render - canProceed:', {
-    canProceed: clientStep.canProceed,
-    'clientStep.state.isStepComplete': clientStep.state.isStepComplete,
-    'clientStep.navigation.canProceedToNext': clientStep.navigation.canProceedToNext,
-    hasSelectedClient: clientStep.stepInfo.hasSelectedClient,
-    selectedClientId: clientStep.selectedClient?.id,
-    'clientStep.selectedClient': !!clientStep.selectedClient,
-  });
+  // === DOMAIN ХУКИ ===
+  const clientSearch = useClientSearch();
+  const clientForm = useClientForm();
+  const clientSelection = useClientSelection();
+  const wizardState = useWizardState();
+  const wizardNavigation = useWizardNavigation();
 
-  /**
-   * Обробник переходу до наступного кроку
-   */
-  const handleNext = async () => {
-    console.log('handleNext викликано, canProceed:', clientStep.canProceed);
-
-    if (!clientStep.canProceed) {
-      console.log('Не можна продовжити - клієнт не вибраний');
-      return;
-    }
-
-    if (clientStep.canProceed) {
-      console.log('Перехід до наступного кроку з клієнтом:', clientStep.selectedClient);
-
-      // Переходимо до наступного кроку через wizard
-      const result = wizard.navigateForward();
-      if (result.success) {
-        console.log('Успішно перейшли до вибору філії');
-      } else {
-        console.error('Помилка переходу:', result.errors);
-      }
+  // === ОБРОБНИКИ ПОДІЙ ===
+  const handleSelectClient = async (client: any) => {
+    const result = await clientSelection.selectClient(client);
+    if (result.success) {
+      setMode(ClientMode.SELECT);
     }
   };
 
-  /**
-   * Рендер контенту залежно від режиму
-   */
-  const renderContent = () => {
-    console.log('renderContent mode:', clientStep.mode);
+  const handleCreateClient = async (data: any) => {
+    const result = await clientForm.createClient(data);
+    if (result.success) {
+      if ('client' in result && result.client) {
+        await clientSelection.selectNewClient(result.client);
+        setMode(ClientMode.SELECT);
+      }
+    }
+    // Якщо needsReview або інша помилка, залишаємося в режимі створення
+  };
 
-    switch (clientStep.mode) {
+  const handleClearSelection = () => {
+    clientSelection.clearSelection();
+    setMode(ClientMode.SELECT);
+  };
+
+  const handleNext = () => {
+    if (clientSelection.canProceed) {
+      wizardNavigation.navigateForward();
+    }
+  };
+
+  // === РЕНДЕР КОНТЕНТУ ===
+  const renderContent = () => {
+    switch (mode) {
       case ClientMode.CREATE:
         return (
           <ClientCreateForm
-            isLoading={clientStep.creationState.isLoading}
-            error={clientStep.creationState.error}
-            formData={clientStep.creationState.formData}
-            onSave={clientStep.createClient}
-            onCancel={clientStep.switchToSelect}
-          />
-        );
-
-      case ClientMode.EDIT:
-        return (
-          <ClientEditForm
-            isLoading={clientStep.editingState.isLoading}
-            error={clientStep.editingState.error}
-            formData={clientStep.editingState.formData || {}}
-            originalClient={clientStep.editingState.originalClient}
-            onSave={clientStep.editClient}
-            onCancel={clientStep.switchToSelect}
+            form={clientForm}
+            isCreating={clientForm.isCreating}
+            duplicateCheck={clientForm.duplicateCheck}
+            showDuplicateWarning={clientForm.showDuplicateWarning}
+            onSubmit={handleCreateClient}
+            onCancel={() => setMode(ClientMode.SELECT)}
+            onFieldChange={(field, value) => {
+              (clientForm.setValue as any)(field, value);
+            }}
+            onDismissDuplicateWarning={clientForm.dismissDuplicateWarning}
           />
         );
 
       case ClientMode.SEARCH:
         return (
-          <>
-            {clientStep.stepInfo.hasSelectedClient && clientStep.selectedClient && (
-              <SelectedClientInfo
-                client={clientStep.selectedClient}
-                onEdit={() => {
-                  console.log('Редагування клієнта:', clientStep.selectedClient);
-                  if (clientStep.selectedClient) {
-                    clientStep.startEditing(clientStep.selectedClient);
-                  }
-                }}
-                onClear={clientStep.clearSelection}
-                onDelete={() => {
-                  if (
-                    clientStep.selectedClient?.id &&
-                    confirm('Ви впевнені, що хочете видалити цього клієнта?')
-                  ) {
-                    console.log('Видалення клієнта:', clientStep.selectedClient);
-                    clientStep.deleteClient(clientStep.selectedClient.id);
-                  }
-                }}
-              />
-            )}
-
-            {/* Показуємо пошук якщо клієнт ще не вибраний */}
-            {!clientStep.stepInfo.hasSelectedClient && (
-              <ClientSearchPanel
-                searchTerm={clientStep.clientSearch.searchTerm}
-                results={clientStep.searchResults}
-                onSearchTermChange={clientStep.clientSearch.setSearchQuery}
-                onSearch={clientStep.search}
-                onSelectClient={clientStep.selectAndComplete}
-                onEditClient={(client) => {
-                  console.log('Редагування клієнта з пошуку:', client);
-                  clientStep.startEditing(client);
-                }}
-                onDeleteClient={(client) => {
-                  if (
-                    client.id &&
-                    confirm(
-                      `Ви впевнені, що хочете видалити клієнта ${client.firstName} ${client.lastName}?`
-                    )
-                  ) {
-                    console.log('Видалення клієнта з пошуку:', client);
-                    clientStep.deleteClient(client.id);
-                  }
-                }}
-                onBack={clientStep.switchToSelect}
-                isLoading={clientStep.isLoading}
-                error={clientStep.error}
-              />
-            )}
-          </>
+          <ClientSearchPanel
+            {...clientSearch}
+            onSelectClient={handleSelectClient}
+            onBack={() => setMode(ClientMode.SELECT)}
+          />
         );
 
       case ClientMode.SELECT:
-      default:
         return (
-          <>
-            {/* Показуємо селектор якщо клієнт ще не вибраний */}
-            {!clientStep.stepInfo.hasSelectedClient && (
-              <ClientModeSelector
-                currentMode={clientStep.mode}
-                onSwitchToCreate={clientStep.switchToCreate}
-                onSwitchToSearch={clientStep.switchToSearch}
-                hasSelectedClient={clientStep.stepInfo.hasSelectedClient}
-              />
-            )}
-
-            {clientStep.stepInfo.hasSelectedClient && clientStep.selectedClient && (
-              <SelectedClientInfo
-                client={clientStep.selectedClient}
-                onEdit={() => {
-                  console.log('Редагування клієнта:', clientStep.selectedClient);
-                  if (clientStep.selectedClient) {
-                    clientStep.startEditing(clientStep.selectedClient);
-                  }
-                }}
-                onClear={clientStep.clearSelection}
-                onDelete={() => {
-                  if (
-                    clientStep.selectedClient?.id &&
-                    confirm('Ви впевнені, що хочете видалити цього клієнта?')
-                  ) {
-                    console.log('Видалення клієнта:', clientStep.selectedClient);
-                    clientStep.deleteClient(clientStep.selectedClient.id);
-                  }
-                }}
-              />
-            )}
-          </>
+          <SelectedClientInfo
+            client={
+              clientSelection.selectedClient || {
+                id: '',
+                firstName: '',
+                lastName: '',
+                fullName: '',
+                phone: '',
+                email: '',
+                address: '',
+                communicationChannels: [],
+                source: undefined,
+                orderCount: 0,
+                createdAt: '',
+                updatedAt: '',
+              }
+            }
+            clientDisplay={{
+              fullName: clientSelection.selectedClient
+                ? `${clientSelection.selectedClient.firstName} ${clientSelection.selectedClient.lastName}`
+                : '',
+              subtitle: clientSelection.selectedClient?.phone || '',
+              completenessPercentage: 0,
+              missingFields: [],
+              recommendedFields: [],
+              canProceed: false,
+              proceedReasons: [],
+            }}
+            validationResult={clientSelection.validationResult || undefined}
+            onClear={() => {
+              clientSelection.clearSelection();
+              setMode(ClientMode.SEARCH);
+            }}
+          />
         );
+
+      default:
+        return null;
     }
   };
 
@@ -207,17 +159,35 @@ export const ClientSelectionStep: React.FC = () => {
       title="Вибір клієнта"
       subtitle="Оберіть існуючого клієнта, створіть нового або відредагуйте дані"
     >
+      {/* Відображення помилок */}
+      {wizardState.hasErrors && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {wizardState.errors.map((error, index) => (
+            <div key={index}>{error}</div>
+          ))}
+        </Alert>
+      )}
+
+      {/* Відображення попереджень */}
+      {wizardState.hasWarnings && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {wizardState.warnings.map((warning, index) => (
+            <div key={index}>{warning}</div>
+          ))}
+        </Alert>
+      )}
+
       <Box sx={{ minHeight: '400px' }}>{renderContent()}</Box>
 
       <StepNavigation
         onNext={handleNext}
         nextLabel={
-          clientStep.stepInfo.hasSelectedClient
+          clientSelection.hasSelectedClient
             ? 'Продовжити до вибору філії'
             : 'Спочатку оберіть клієнта'
         }
-        isNextDisabled={!clientStep.canProceed}
-        nextLoading={clientStep.isLoading}
+        isNextDisabled={!clientSelection.canProceed}
+        nextLoading={wizardState.isLoading}
         hideBackButton
       />
     </StepContainer>

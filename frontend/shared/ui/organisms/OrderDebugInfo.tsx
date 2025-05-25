@@ -1,5 +1,6 @@
 'use client';
 
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
   Paper,
@@ -9,9 +10,9 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
-import { useWizardOrderId, useWizard } from '@/domain/wizard';
+
+import { useWizardNavigation, useWizardState, useWizardStore } from '@/domain/wizard';
 
 interface OrderDebugInfoProps {
   show?: boolean;
@@ -26,17 +27,9 @@ export const OrderDebugInfo: React.FC<OrderDebugInfoProps> = ({
   show = process.env.NODE_ENV === 'development',
   title = 'Діагностика замовлення',
 }) => {
-  const wizard = useWizard();
-  const {
-    orderId,
-    customerId,
-    branchId,
-    hasOrderId,
-    hasCustomerId,
-    hasBranchId,
-    isTemporary,
-    isReadyForItems,
-  } = useWizardOrderId();
+  const wizardNavigation = useWizardNavigation();
+  const wizardState = useWizardState();
+  const wizardStore = useWizardStore();
 
   if (!show) return null;
 
@@ -55,13 +48,15 @@ export const OrderDebugInfo: React.FC<OrderDebugInfoProps> = ({
               Wizard стан
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              <Chip label={`Крок: ${wizard.currentStep}`} size="small" color="primary" />
+              <Chip label={`Крок: ${wizardNavigation.currentStep}`} size="small" color="primary" />
               <Chip
                 label={
-                  wizard.isItemWizardActive ? 'Item Wizard: Активний' : 'Item Wizard: Неактивний'
+                  wizardNavigation.isItemWizardActive
+                    ? 'Item Wizard: Активний'
+                    : 'Item Wizard: Неактивний'
                 }
                 size="small"
-                color={wizard.isItemWizardActive ? 'success' : 'default'}
+                color={wizardNavigation.isItemWizardActive ? 'success' : 'default'}
               />
             </Box>
           </Paper>
@@ -73,27 +68,19 @@ export const OrderDebugInfo: React.FC<OrderDebugInfoProps> = ({
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body2">Order ID:</Typography>
+                <Typography variant="body2">Selected Client ID:</Typography>
                 <Chip
-                  label={orderId || 'відсутній'}
+                  label={wizardStore.selectedClientId || 'відсутній'}
                   size="small"
-                  color={hasOrderId ? (isTemporary ? 'warning' : 'success') : 'error'}
+                  color={wizardStore.selectedClientId ? 'success' : 'error'}
                 />
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body2">Customer ID:</Typography>
+                <Typography variant="body2">Is New Client:</Typography>
                 <Chip
-                  label={customerId || 'відсутній'}
+                  label={wizardStore.isNewClient ? 'Так' : 'Ні'}
                   size="small"
-                  color={hasCustomerId ? 'success' : 'error'}
-                />
-              </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body2">Branch ID:</Typography>
-                <Chip
-                  label={branchId || 'відсутній'}
-                  size="small"
-                  color={hasBranchId ? 'success' : 'error'}
+                  color={wizardStore.isNewClient ? 'warning' : 'default'}
                 />
               </Box>
             </Box>
@@ -106,18 +93,27 @@ export const OrderDebugInfo: React.FC<OrderDebugInfoProps> = ({
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               <Chip
-                label={isReadyForItems ? 'Готовий для предметів' : 'Не готовий для предметів'}
+                label={wizardState.hasErrors ? 'Є помилки' : 'Без помилок'}
                 size="small"
-                color={isReadyForItems ? 'success' : 'warning'}
+                color={wizardState.hasErrors ? 'error' : 'success'}
               />
-              {isTemporary && <Chip label="Тимчасовий ID" size="small" color="warning" />}
+              <Chip
+                label={wizardState.hasWarnings ? 'Є попередження' : 'Без попереджень'}
+                size="small"
+                color={wizardState.hasWarnings ? 'warning' : 'success'}
+              />
+              <Chip
+                label={wizardState.isLoading ? 'Завантаження' : 'Готово'}
+                size="small"
+                color={wizardState.isLoading ? 'info' : 'default'}
+              />
             </Box>
           </Paper>
 
           {/* Wizard context */}
           <Paper variant="outlined" sx={{ p: 2 }}>
             <Typography variant="subtitle2" gutterBottom>
-              Wizard Context (JSON)
+              Wizard Store (JSON)
             </Typography>
             <Box
               sx={{
@@ -128,7 +124,19 @@ export const OrderDebugInfo: React.FC<OrderDebugInfoProps> = ({
                 fontFamily: 'monospace',
               }}
             >
-              <pre>{JSON.stringify(wizard.context, null, 2)}</pre>
+              <pre>
+                {JSON.stringify(
+                  {
+                    selectedClientId: wizardStore.selectedClientId,
+                    isNewClient: wizardStore.isNewClient,
+                    errors: wizardState.errors,
+                    warnings: wizardState.warnings,
+                    isLoading: wizardState.isLoading,
+                  },
+                  null,
+                  2
+                )}
+              </pre>
             </Box>
           </Paper>
         </Box>

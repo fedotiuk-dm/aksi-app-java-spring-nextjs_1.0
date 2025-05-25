@@ -1,24 +1,23 @@
-import { Container, Typography, Paper } from '@mui/material';
-import React from 'react';
+'use client';
 
-import { OrderWizard } from '@/features/order-wizard';
+import { Box, Container, Typography } from '@mui/material';
+
+import { ClientSelectionStep } from '@/features/order-wizard/client-selection/ui/ClientSelectionStep';
 
 /**
- * Сторінка з майстром створення замовлення
+ * Тестова сторінка для першого кроку Order Wizard
+ * Повністю ізольована від інших компонентів
  */
-export default function OrderWizardPage() {
+export default function OrderWizardTestPage() {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Створення нового замовлення
-        </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
-          Додайте нове замовлення, заповнивши всі необхідні поля нижче
-        </Typography>
-      </Paper>
+      <Typography variant="h4" gutterBottom>
+        Тест: Вибір клієнта
+      </Typography>
 
-      <OrderWizard />
+      <Box sx={{ mt: 3 }}>
+        <ClientSelectionStep />
+      </Box>
     </Container>
   );
 }

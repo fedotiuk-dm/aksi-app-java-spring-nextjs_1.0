@@ -1,54 +1,104 @@
 /**
- * @fileoverview Хук інтеграції XState машини з валідацією та навігацією
+ * @fileoverview Хук для навігації в wizard
  * @module domain/wizard/hooks/shared
  */
 
 import { useActor } from '@xstate/react';
 import { useCallback } from 'react';
 
-import { useWizardState } from './use-wizard-state.hook';
 import { wizardMachine } from '../../machines';
+import { useWizardStore } from '../../store';
 import { WizardStep } from '../../types';
 
+const NAVIGATION_ERROR_MESSAGE = 'Помилка навігації';
+
 /**
- * Інтеграція XState машини з валідацією
+ * Хук для навігації в wizard
  *
- * Розширений goNext з автоматичною валідацією через існуючі схеми
- * Контроль переходів між кроками з урахуванням помилок стору
+ * Принципи DDD:
+ * - XState: навігація між кроками та валідація переходів
+ * - Zustand: бізнес-стан та дані
+ * - Інтеграція обох систем через єдиний API
  */
 export const useWizardNavigation = () => {
+  // === XSTATE МАШИНА (навігація) ===
   const [state, send] = useActor(wizardMachine);
-  const { hasErrors, canProceed, addError } = useWizardState();
 
-  // Навігація з валідацією
-  const goNext = useCallback(() => {
-    if (!canProceed) {
-      addError('Виправте помилки перед переходом до наступного кроку');
+  // === ZUSTAND STORE (бізнес-стан) ===
+  const { errors, hasUnsavedChanges, clearErrors, addError } = useWizardStore();
+
+  // === ВАЛІДАЦІЯ ПЕРЕХОДІВ ===
+  const canProceed = useCallback(() => {
+    // Перевіряємо бізнес-правила з Zustand
+    if (errors.length > 0) {
       return false;
     }
 
-    send({ type: 'NEXT' });
-    return true;
-  }, [canProceed, addError, send]);
+    // Перевіряємо можливість переходу в XState
+    return state.can({ type: 'NEXT' });
+  }, [errors.length, state]);
 
-  const goBack = useCallback(() => {
-    send({ type: 'PREV' });
-  }, [send]);
+  // === НАВІГАЦІЯ ВПЕРЕД ===
+  const navigateForward = useCallback(() => {
+    clearErrors();
 
+    if (!canProceed()) {
+      addError('Виправте помилки перед переходом до наступного кроку');
+      return { success: false, errors: ['Неможливо продовжити'] };
+    }
+
+    try {
+      send({ type: 'NEXT' });
+      return { success: true, errors: [] };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : NAVIGATION_ERROR_MESSAGE;
+      addError(errorMessage);
+      return { success: false, errors: [errorMessage] };
+    }
+  }, [canProceed, clearErrors, addError, send]);
+
+  // === НАВІГАЦІЯ НАЗАД ===
+  const navigateBack = useCallback(() => {
+    clearErrors();
+
+    if (!state.can({ type: 'PREV' })) {
+      return { success: false, errors: ['Неможливо повернутися назад'] };
+    }
+
+    try {
+      send({ type: 'PREV' });
+      return { success: true, errors: [] };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : NAVIGATION_ERROR_MESSAGE;
+      addError(errorMessage);
+      return { success: false, errors: [errorMessage] };
+    }
+  }, [state, clearErrors, addError, send]);
+
+  // === ПЕРЕХІД ДО КОНКРЕТНОГО КРОКУ ===
   const goToStep = useCallback(
     (step: WizardStep) => {
-      send({ type: 'GO_TO_STEP', step });
+      clearErrors();
+
+      try {
+        send({ type: 'GO_TO_STEP', step });
+        return { success: true, errors: [] };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : NAVIGATION_ERROR_MESSAGE;
+        addError(errorMessage);
+        return { success: false, errors: [errorMessage] };
+      }
     },
-    [send]
+    [clearErrors, addError, send]
   );
 
-  // Item Wizard навігація
+  // === ITEM WIZARD НАВІГАЦІЯ ===
   const startItemWizard = useCallback(() => {
     send({ type: 'START_ITEM_WIZARD' });
   }, [send]);
 
   const nextItemStep = useCallback(() => {
-    if (!canProceed) {
+    if (!canProceed()) {
       addError('Виправте помилки перед переходом до наступного підкроку');
       return false;
     }
@@ -62,7 +112,7 @@ export const useWizardNavigation = () => {
   }, [send]);
 
   const completeItemWizard = useCallback(() => {
-    if (!canProceed) {
+    if (!canProceed()) {
       addError('Виправте помилки перед завершенням редагування предмета');
       return false;
     }
@@ -71,13 +121,9 @@ export const useWizardNavigation = () => {
     return true;
   }, [canProceed, addError, send]);
 
-  const cancelItemWizard = useCallback(() => {
-    send({ type: 'CANCEL_ITEM_WIZARD' });
-  }, [send]);
-
-  // Wizard завершення
+  // === ЗАВЕРШЕННЯ WIZARD ===
   const completeWizard = useCallback(() => {
-    if (!canProceed) {
+    if (!canProceed()) {
       addError('Виправте помилки перед завершенням замовлення');
       return false;
     }
@@ -91,31 +137,33 @@ export const useWizardNavigation = () => {
   }, [send]);
 
   return {
-    // Поточний стан
+    // === ПОТОЧНИЙ СТАН ===
     currentStep: state.context.currentStep,
     currentSubStep: state.context.currentSubStep,
-    canGoNext: state.can({ type: 'NEXT' }) && canProceed,
-    canGoBack: state.can({ type: 'PREV' }),
     isItemWizardActive: state.matches({ itemManager: 'itemWizard' }),
 
-    // Основна навігація
-    goNext,
-    goBack,
+    // === МОЖЛИВОСТІ НАВІГАЦІЇ ===
+    canNavigateForward: canProceed,
+    canNavigateBack: () => state.can({ type: 'PREV' }),
+
+    // === ОСНОВНА НАВІГАЦІЯ ===
+    navigateForward,
+    navigateBack,
     goToStep,
 
-    // Item Wizard навігація
+    // === ITEM WIZARD ===
     startItemWizard,
     nextItemStep,
     prevItemStep,
     completeItemWizard,
-    cancelItemWizard,
 
-    // Wizard завершення
+    // === ЗАВЕРШЕННЯ ===
     completeWizard,
     resetWizard,
 
-    // Debug інформація (для розробки)
+    // === DEBUG (для розробки) ===
     machineState: state.value,
-    hasNavigationErrors: hasErrors,
+    hasNavigationErrors: errors.length > 0,
+    hasUnsavedChanges,
   };
 };

@@ -126,14 +126,14 @@ export {
   resetPricingStores,
 } from './store/pricing.store';
 
-// ============= ХУКИ =============
-export { usePricing, default as usePricingDefault } from './hooks/use-pricing.hook';
-export {
-  usePriceCalculator,
-  default as usePriceCalculatorDefault,
-} from './hooks/use-price-calculator.hook';
-export { useServiceCategories } from './hooks/use-service-categories.hook';
-export { usePriceList } from './hooks/use-price-list.hook';
+// ============= ХУКИ ============= - поки не використовуються
+// export { usePricing, default as usePricingDefault } from './hooks/use-pricing.hook';
+// export {
+//   usePriceCalculator,
+//   default as usePriceCalculatorDefault,
+// } from './hooks/use-price-calculator.hook';
+// export { useServiceCategories } from './hooks/use-service-categories.hook';
+// export { usePriceList } from './hooks/use-price-list.hook';
 
 // ============= КОНСТАНТИ ТА УТИЛІТИ =============
 

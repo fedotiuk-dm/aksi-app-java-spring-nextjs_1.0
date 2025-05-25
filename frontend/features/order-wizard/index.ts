@@ -1,6 +1,1 @@
-import OrderWizard from './OrderWizard';
-
-export { OrderWizard };
-
-// === TESTING COMPONENTS ===
-export { OrderWizardExample } from './OrderWizardExample';
+export { default as OrderWizard } from './OrderWizard';

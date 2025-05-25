@@ -1,54 +1,30 @@
 /**
- * @fileoverview Хуки Order Wizard (DDD архітектура)
+ * @fileoverview Публічне API для wizard хуків
  * @module domain/wizard/hooks
- *
- * Централізований експорт всіх хуків wizard з чіткою DDD архітектурою:
- * - Спільні хуки (навігація, стан, форми)
- * - Хуки етапів (client-selection, branch-selection, items-manager, etc.)
  */
 
-// === СПІЛЬНІ ХУКИ ===
-export { useWizardState } from './shared/use-wizard-state.hook';
-export { useWizardNavigation } from './shared/use-wizard-navigation.hook';
-export { useWizardForm } from './shared/use-wizard-form.hook';
-
-// === ХУКИ ЕТАПІВ ===
-
-// Етап 1: Вибір клієнта (ЗАВЕРШЕНО)
+// === STEP 3 COMPLETED: Client Selection Hooks ===
 export { useClientSearch, useClientForm, useClientSelection } from './steps/client-selection';
 
-// Етап 2: Вибір філії (TODO: КРОК 5)
-// export {
-//   useBranchSelection,
-//   useOrderInitiation,
-// } from './steps/branch-selection';
+// === Shared Hooks ===
+export { useWizardNavigation, useWizardState, useWizardForm } from './shared';
 
-// Етап 3: Менеджер предметів (TODO: КРОК 7)
-// export {
-//   useItemManager,
-//   useItemWizard,
-//   usePricingCalculator,
-// } from './steps/items-manager';
+// === TODO: STEP 4 - Branch Selection Hooks ===
+// export { useBranchSelection } from './steps/branch-selection/use-branch-selection.hook';
+// export { useOrderInitiation } from './steps/branch-selection/use-order-initiation.hook';
 
-// Етап 4: Параметри замовлення (TODO: КРОК 8)
-// export {
-//   useOrderParameters,
-//   useExpediteCalculation,
-// } from './steps/order-parameters';
+// === TODO: STEP 5 - Item Management Hooks ===
+// export { useItemWizard } from './steps/item-management/use-item-wizard.hook';
+// export { useItemForm } from './steps/item-management/use-item-form.hook';
+// export { useItemProperties } from './steps/item-management/use-item-properties.hook';
+// export { useItemDefects } from './steps/item-management/use-item-defects.hook';
+// export { useItemPricing } from './steps/item-management/use-item-pricing.hook';
+// export { useItemPhotos } from './steps/item-management/use-item-photos.hook';
 
-// Етап 5: Підтвердження замовлення (TODO: КРОК 8)
-// export {
-//   useOrderConfirmation,
-//   useDigitalSignature,
-// } from './steps/order-confirmation';
+// === TODO: STEP 6 - Order Parameters Hooks ===
+// export { useOrderParameters } from './steps/order-parameters/use-order-parameters.hook';
+// export { useOrderSummary } from './steps/order-parameters/use-order-summary.hook';
 
-// === ЕКСПОРТ ТИПІВ ===
-export type {
-  ClientSearchResult,
-  ClientSearchPageResult,
-  CreateClientData,
-  DuplicateCheckResult,
-  ClientCreationResult,
-  ClientSelectionResult,
-  ClientValidationResult,
-} from './steps/client-selection';
+// === TODO: STEP 7 - Order Completion Hooks ===
+// export { useOrderCompletion } from './steps/order-completion/use-order-completion.hook';
+// export { useOrderConfirmation } from './steps/order-completion/use-order-confirmation.hook';

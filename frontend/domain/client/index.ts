@@ -17,7 +17,7 @@ export * from './use-cases';
 export * from './events';
 
 // Hooks (включаючи основний інтеграційний хук useClientStep)
-export * from './hooks';
+//export * from './hooks'; - поки не використовується
 
 // Store
 export * from './store';

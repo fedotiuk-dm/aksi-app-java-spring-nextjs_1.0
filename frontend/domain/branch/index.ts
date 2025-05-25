@@ -68,7 +68,7 @@ export { BranchRepository } from './repositories';
 
 // === ХУКИ ===
 // Основний хук для роботи з доменом branch
-export { useBranchSelection } from './hooks';
+//export { useBranchSelection } from './hooks'; - поки не використовується
 
 // === STORES (необов'язково експортувати, хуки інкапсулюють доступ) ===
 // Експортуємо для випадків коли потрібен прямий доступ до стору

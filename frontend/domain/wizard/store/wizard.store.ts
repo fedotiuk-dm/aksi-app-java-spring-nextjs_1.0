@@ -6,12 +6,19 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-import type { ClientSearchResult } from '../types';
+import { WizardMode } from '../types';
+
+import type { ClientSearchResult, WizardContext } from '../types';
 
 /**
  * Інтерфейс стану wizard store
  */
 interface WizardState {
+  // Wizard context
+  isInitialized: boolean;
+  context: WizardContext | null;
+  mode: WizardMode;
+
   // Loading states
   isLoading: boolean;
   isItemWizardActive: boolean;
@@ -34,6 +41,10 @@ interface WizardState {
  * Інтерфейс дій wizard store
  */
 interface WizardActions {
+  // Initialization
+  initialize: (context: WizardContext) => { success: boolean; errors?: string[] };
+  setMode: (mode: WizardMode) => void;
+
   // Loading actions
   setLoading: (loading: boolean) => void;
 
@@ -65,6 +76,9 @@ interface WizardActions {
  * Початковий стан wizard
  */
 const initialState: WizardState = {
+  isInitialized: false,
+  context: null,
+  mode: WizardMode.CREATE,
   isLoading: false,
   isItemWizardActive: false,
   selectedClientId: null,
@@ -86,9 +100,37 @@ const initialState: WizardState = {
  */
 export const useWizardStore = create<WizardState & WizardActions>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       // Initial state
       ...initialState,
+
+      // Initialization
+      initialize: (context) => {
+        try {
+          set(
+            {
+              isInitialized: true,
+              context,
+              mode: context.mode,
+              errors: [],
+              warnings: [],
+            },
+            false,
+            'wizard/initialize'
+          );
+          return { success: true };
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Помилка ініціалізації';
+          set(
+            (state) => ({ errors: [...state.errors, errorMessage] }),
+            false,
+            'wizard/initializeError'
+          );
+          return { success: false, errors: [errorMessage] };
+        }
+      },
+
+      setMode: (mode) => set({ mode }, false, 'wizard/setMode'),
 
       // Loading actions
       setLoading: (loading) => set({ isLoading: loading }, false, 'wizard/setLoading'),

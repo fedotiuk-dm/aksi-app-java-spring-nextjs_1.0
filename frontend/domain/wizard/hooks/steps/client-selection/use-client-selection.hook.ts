@@ -32,7 +32,7 @@ export const useClientSelection = () => {
 
   // === WIZARD ІНТЕГРАЦІЯ ===
   const { addError, addWarning, clearErrors, clearWarnings } = useWizardState();
-  const { goNext, canGoNext } = useWizardNavigation();
+  const { navigateForward, canNavigateForward } = useWizardNavigation();
 
   // === ZUSTAND STORE ===
   const {
@@ -132,18 +132,21 @@ export const useClientSelection = () => {
 
   // === ПЕРЕХІД ДО НАСТУПНОГО КРОКУ ===
   const proceedToNextStep = useCallback(() => {
-    if (!selectedClient) {
-      addError('Оберіть клієнта для продовження');
-      return false;
+    const validation = validationResult;
+
+    if (!validation?.canProceed) {
+      // Додаємо помилки до wizard стану
+      validation?.errors.forEach((error: string) => addError(error));
+      validation?.warnings.forEach((warning: string) => addWarning(warning));
+      return;
     }
 
-    if (!ClientSelectionService.canProceedToNextStep(selectedClient)) {
-      addError('Клієнт не може бути використаний для замовлення');
-      return false;
+    // Використовуємо навігацію через XState
+    const result = navigateForward();
+    if (!result.success) {
+      result.errors.forEach((error: string) => addError(error));
     }
-
-    return goNext();
-  }, [selectedClient, addError, goNext]);
+  }, [validationResult, addError, addWarning, navigateForward]);
 
   // === ВАЛІДАЦІЯ ПОТОЧНОГО КЛІЄНТА ===
   const validateCurrentClient = useCallback(() => {
@@ -171,7 +174,8 @@ export const useClientSelection = () => {
     const isValidForOrder = selectedClient
       ? ClientSelectionService.isValidForOrder(selectedClient)
       : false;
-    const canProceed = hasSelectedClient && isValidForOrder && canGoNext;
+    const canProceed =
+      hasSelectedClient && validationResult?.canProceed === true && canNavigateForward();
 
     const missingRequiredFields = selectedClient
       ? ClientSelectionService.getMissingRequiredFields(selectedClient)
@@ -195,7 +199,7 @@ export const useClientSelection = () => {
       hasValidationErrors: (validationResult?.errors?.length || 0) > 0,
       hasValidationWarnings: (validationResult?.warnings?.length || 0) > 0,
     };
-  }, [selectedClient, canGoNext, validationResult]);
+  }, [selectedClient, validationResult, canNavigateForward]);
 
   return {
     // Стан вибору

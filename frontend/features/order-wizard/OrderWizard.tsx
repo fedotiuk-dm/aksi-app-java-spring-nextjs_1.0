@@ -7,14 +7,21 @@ import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar
 import { Box, Paper, Chip, Typography, Divider, Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import { useClientSelection } from '@/domain/client';
-import { useWizard, WizardStep, WizardMode, WizardContext } from '@/domain/wizard';
-import { BranchSelectionStep } from '@/features/order-wizard/branch-selection/BranchSelectionStep';
+// import { useClientSelection } from '@/domain/client';
+import {
+  useWizardStore,
+  useWizardNavigation,
+  WizardStep,
+  WizardMode,
+  WizardContext,
+} from '@/domain/wizard';
+import { useWizardState } from '@/domain/wizard';
+// import { BranchSelectionStep } from '@/features/order-wizard/branch-selection/BranchSelectionStep';
 import { ClientSelectionStep } from '@/features/order-wizard/client-selection/ui/ClientSelectionStep';
-import { ItemManagerStep } from '@/features/order-wizard/item-manager';
-import { ItemWizardStep } from '@/features/order-wizard/item-wizard';
-import { OrderConfirmationStep } from '@/features/order-wizard/order-confirmation';
-import { OrderParametersStep } from '@/features/order-wizard/order-parameters';
+// import { ItemManagerStep } from '@/features/order-wizard/item-manager';
+// import { ItemWizardStep } from '@/features/order-wizard/item-wizard';
+// import { OrderConfirmationStep } from '@/features/order-wizard/order-confirmation';
+// import { OrderParametersStep } from '@/features/order-wizard/order-parameters';
 import { testApiConnection, initOrderWizardApi } from '@/features/order-wizard/shared/api';
 import useHealthCheck from '@/features/system-status/hooks/useHealthCheck';
 
@@ -42,16 +49,18 @@ export default function OrderWizard() {
     lastTest: null,
   });
 
-  // Використовуємо головний wizard хук з domain layer
-  const wizard = useWizard();
-  const { initializeWizard } = wizard;
+  // Використовуємо wizard хуки з domain layer
+  const wizardStore = useWizardStore();
+  const wizardNavigation = useWizardNavigation();
+  const wizardState = useWizardState();
 
   // Додаємо client selection для синхронізації стану
-  const clientSelection = useClientSelection();
+  // const clientSelection = useClientSelection();
 
-  // Ініціалізуємо візард при першому завантаженні
+  // === ІНІЦІАЛІЗАЦІЯ WIZARD ===
   useEffect(() => {
-    if (!wizard.isInitialized && !wizard.hasErrors) {
+    // Ініціалізуємо wizard при першому завантаженні
+    if (!wizardStore.isInitialized) {
       const initialContext: WizardContext = {
         mode: WizardMode.CREATE,
         orderId: undefined,
@@ -62,64 +71,24 @@ export default function OrderWizard() {
         },
       };
 
-      const result = initializeWizard(initialContext);
+      console.log('OrderWizard: Ініціалізація з контекстом:', initialContext);
+
+      const result = wizardStore.initialize(initialContext);
 
       if (result.success) {
-        console.log('OrderWizard ініціалізовано успішно');
+        console.log('OrderWizard: Успішно ініціалізовано');
       } else {
-        console.error('Помилка ініціалізації OrderWizard:', result.errors);
+        console.error('OrderWizard: Помилка ініціалізації:', result.errors);
       }
     }
-  }, [wizard.isInitialized, wizard.hasErrors, initializeWizard]);
+  }, [wizardStore]);
 
-  // Синхронізуємо стан клієнта з wizard availability після ініціалізації
+  // Синхронізуємо стан клієнта з wizard
   useEffect(() => {
-    if (wizard.isInitialized && clientSelection.hasSelection) {
-      console.log('Синхронізація: клієнт вибраний, оновлюємо availability для BRANCH_SELECTION');
-      wizard.updateStepAvailability(WizardStep.BRANCH_SELECTION, true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wizard.isInitialized, clientSelection.hasSelection]);
-
-  // Логування для діагностики (тимчасово)
-  useEffect(() => {
-    console.log('OrderWizard діагностика:', {
-      'wizard.isInitialized': wizard.isInitialized,
-      'clientSelection.hasSelection': clientSelection.hasSelection,
-      'wizard.availability[BRANCH_SELECTION]': wizard.isStepAvailable(WizardStep.BRANCH_SELECTION),
-      'wizard.currentStep': wizard.currentStep,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wizard.isInitialized, clientSelection.hasSelection, wizard.currentStep]);
-
-  // Автоматично тестуємо Order Wizard API при завантаженні (тільки в development)
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && !orderWizardApiStatus.tested) {
-      initOrderWizardApi();
-      testOrderWizardApi();
-    }
-  }, [orderWizardApiStatus.tested]);
-
-  /**
-   * Тестування Order Wizard API
-   */
-  const testOrderWizardApi = async () => {
-    try {
-      const isWorking = await testApiConnection();
-      setOrderWizardApiStatus({
-        tested: true,
-        working: isWorking,
-        lastTest: new Date(),
-      });
-    } catch (error) {
-      console.error('Помилка тестування Order Wizard API:', error);
-      setOrderWizardApiStatus({
-        tested: true,
-        working: false,
-        lastTest: new Date(),
-      });
-    }
-  };
+    // if (clientSelection.hasSelection) {
+    //   console.log('OrderWizard: Клієнт вибраний, можна переходити до BRANCH_SELECTION');
+    // }
+  }, []); // [clientSelection.hasSelection]
 
   /**
    * Відображення статусу з'єднання з API
@@ -181,17 +150,11 @@ export default function OrderWizard() {
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
         <Chip
           size="small"
-          label={`Крок: ${wizard.currentStep}`}
+          label={`Крок: ${wizardNavigation.currentStep}`}
           color="primary"
           variant="outlined"
         />
-        <Chip
-          size="small"
-          label={`Прогрес: ${Math.round(wizard.progress * 100)}%`}
-          color="info"
-          variant="outlined"
-        />
-        {wizard.hasErrors && <Chip size="small" label="Помилка" color="error" />}
+        {wizardState.hasErrors && <Chip size="small" label="Помилка" color="error" />}
       </Box>
     );
   };
@@ -200,93 +163,90 @@ export default function OrderWizard() {
    * Перевірка поточного кроку
    */
   const isCurrentStep = (step: WizardStep): boolean => {
-    return wizard.currentStep === step;
+    return wizardNavigation.currentStep === step;
   };
 
   /**
    * Рендеринг поточного кроку візарда
    */
   const renderCurrentStep = () => {
-    // Якщо візард не ініціалізовано, показуємо завантаження або кнопку ініціалізації
-    if (!wizard.isInitialized) {
-      if (wizard.hasErrors) {
-        return (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography variant="h6" color="error" gutterBottom>
-              Помилка ініціалізації візарда
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              {wizard.lastError}
-            </Typography>
-            <Button variant="contained" onClick={() => wizard.resetWizard()}>
-              Спробувати знову
-            </Button>
-          </Box>
-        );
-      }
-
-      return (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Ініціалізація візарда...
-          </Typography>
-        </Box>
-      );
-    }
-
     // Відображаємо крок вибору клієнта
     if (isCurrentStep(WizardStep.CLIENT_SELECTION)) {
       return <ClientSelectionStep />;
     }
 
-    // Відображаємо крок вибору філії
-    if (isCurrentStep(WizardStep.BRANCH_SELECTION)) {
-      return <BranchSelectionStep />;
-    }
+    // ТИМЧАСОВО ЗАКОМЕНТОВАНО ДЛЯ ТЕСТУВАННЯ
+    // // Відображаємо крок вибору філії
+    // if (isCurrentStep(WizardStep.BRANCH_SELECTION)) {
+    //   return <BranchSelectionStep />;
+    // }
 
-    // Відображаємо крок основної інформації
-    if (isCurrentStep(WizardStep.ITEM_MANAGER)) {
-      return <ItemManagerStep />;
-    }
+    // // Відображаємо крок основної інформації
+    // if (isCurrentStep(WizardStep.ITEM_MANAGER)) {
+    //   return <ItemManagerStep />;
+    // }
 
-    // Відображаємо крок параметрів замовлення
-    if (isCurrentStep(WizardStep.ORDER_PARAMETERS)) {
-      return <OrderParametersStep />;
-    }
+    // // Відображаємо крок параметрів замовлення
+    // if (isCurrentStep(WizardStep.ORDER_PARAMETERS)) {
+    //   return <OrderParametersStep />;
+    // }
 
-    // Відображаємо крок підтвердження замовлення
-    if (isCurrentStep(WizardStep.ORDER_CONFIRMATION)) {
-      return <OrderConfirmationStep />;
-    }
+    // // Відображаємо крок підтвердження замовлення
+    // if (isCurrentStep(WizardStep.CONFIRMATION)) {
+    //   return <OrderConfirmationStep />;
+    // }
 
-    // Якщо активний підвізард предметів, показуємо ItemWizardStep
-    if (
-      isCurrentStep(WizardStep.ITEM_BASIC_INFO) ||
-      isCurrentStep(WizardStep.ITEM_PROPERTIES) ||
-      isCurrentStep(WizardStep.DEFECTS_STAINS) ||
-      isCurrentStep(WizardStep.PRICE_CALCULATOR) ||
-      isCurrentStep(WizardStep.PHOTO_DOCUMENTATION)
-    ) {
-      return <ItemWizardStep />;
-    }
+    // // Якщо активний підвізард предметів, показуємо ItemWizardStep
+    // if (wizardNavigation.isItemWizardActive) {
+    //   return <ItemWizardStep />;
+    // }
 
-    // Якщо крок не визначено, показуємо помилку
+    // Якщо крок не визначено, показуємо повідомлення
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
-        <Typography variant="h6" color="error" gutterBottom>
-          Невідомий крок візарда
+        <Typography variant="h6" color="warning.main" gutterBottom>
+          Крок в розробці
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Поточний крок: {wizard.currentStep}
+          Поточний крок: {wizardNavigation.currentStep}
         </Typography>
         <Button
           variant="contained"
-          onClick={() => wizard.navigateToStep(WizardStep.CLIENT_SELECTION)}
+          onClick={() => wizardNavigation.goToStep(WizardStep.CLIENT_SELECTION)}
         >
-          Повернутись до початку
+          Повернутись до вибору клієнта
         </Button>
       </Box>
     );
+  };
+
+  // Автоматично тестуємо Order Wizard API при завантаженні (тільки в development)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && !orderWizardApiStatus.tested) {
+      initOrderWizardApi();
+      testOrderWizardApi();
+    }
+  }, [orderWizardApiStatus.tested]);
+
+  /**
+   * Тестування Order Wizard API
+   */
+  const testOrderWizardApi = async () => {
+    try {
+      const isWorking = await testApiConnection();
+      setOrderWizardApiStatus({
+        tested: true,
+        working: isWorking,
+        lastTest: new Date(),
+      });
+    } catch (error) {
+      console.error('Помилка тестування Order Wizard API:', error);
+      setOrderWizardApiStatus({
+        tested: true,
+        working: false,
+        lastTest: new Date(),
+      });
+    }
   };
 
   return (
@@ -325,10 +285,10 @@ export default function OrderWizard() {
         </Box>
       )}
 
-      {wizard.hasErrors && wizard.lastError && (
+      {wizardState.hasErrors && wizardState.errors.length > 0 && (
         <Box sx={{ mb: 3 }}>
           <Typography variant="body2" color="error" gutterBottom>
-            Помилка візарда: {wizard.lastError}
+            Помилка візарда: {wizardState.errors[0]}
           </Typography>
           <Divider sx={{ my: 1 }} />
         </Box>

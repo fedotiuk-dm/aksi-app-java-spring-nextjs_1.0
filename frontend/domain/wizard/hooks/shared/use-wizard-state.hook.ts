@@ -1,81 +1,49 @@
 /**
- * @fileoverview Хук для зручних селекторів Zustand стору wizard
+ * @fileoverview Хук для роботи з станом wizard
  * @module domain/wizard/hooks/shared
  */
-
-import { useMemo } from 'react';
 
 import { useWizardStore } from '../../store';
 
 /**
- * Зручні селектори вашого Zustand стору з computed значеннями
+ * Хук для роботи з станом wizard
  *
- * Надає:
- * - Селектори стану (isLoading, errors, warnings)
- * - Computed значення (hasErrors, canProceed, hasUnsavedChanges)
- * - Методи управління станом
+ * Принципи DDD:
+ * - Тільки React стан та UI логіка
+ * - Інкапсулює доступ до Zustand store
+ * - Надає зручний API для UI компонентів
  */
 export const useWizardState = () => {
   const {
-    // Стан
     isLoading,
-    isItemWizardActive,
-    hasUnsavedChanges,
-    lastSavedAt,
     errors,
     warnings,
-
-    // Дії
-    setLoading,
-    startItemWizard,
-    completeItemWizard,
-    markUnsavedChanges,
-    markSaved,
+    hasUnsavedChanges,
+    lastSavedAt,
     addError,
     addWarning,
     clearErrors,
     clearWarnings,
-    completeWizard,
-    resetWizard,
+    markUnsavedChanges,
+    markSaved,
   } = useWizardStore();
-
-  // Computed значення
-  const computed = useMemo(
-    () => ({
-      hasErrors: errors.length > 0,
-      hasWarnings: warnings.length > 0,
-      canProceed: !isLoading && errors.length === 0,
-      isActive: !isLoading,
-      hasAnyIssues: errors.length > 0 || warnings.length > 0,
-      errorCount: errors.length,
-      warningCount: warnings.length,
-    }),
-    [isLoading, errors.length, warnings.length]
-  );
 
   return {
     // Стан
     isLoading,
-    isItemWizardActive,
-    hasUnsavedChanges,
-    lastSavedAt,
     errors,
     warnings,
+    hasErrors: errors.length > 0,
+    hasWarnings: warnings.length > 0,
+    hasUnsavedChanges,
+    lastSavedAt,
 
-    // Computed значення
-    ...computed,
-
-    // Методи управління станом
-    setLoading,
-    startItemWizard,
-    completeItemWizard,
-    markUnsavedChanges,
-    markSaved,
+    // Методи
     addError,
     addWarning,
     clearErrors,
     clearWarnings,
-    completeWizard,
-    resetWizard,
+    markUnsavedChanges,
+    markSaved,
   };
 };

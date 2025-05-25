@@ -8,19 +8,28 @@ import { StepContainer, ActionButton, FormSection } from '@/shared/ui';
 
 import { ClientFormFields } from './ClientFormFields';
 
-import type {
-  CreateClientFormData,
-  Address,
-  ClientSource,
-  CommunicationChannel,
-} from '@/domain/client';
+import type { ClientSearchResult } from '@/domain/wizard';
 
 interface ClientCreateFormProps {
-  isLoading: boolean;
-  error: string | null;
-  formData: Partial<CreateClientFormData>;
-  onSave: (data: CreateClientFormData) => Promise<void>;
+  // Дані з useClientForm хука
+  form: any; // React Hook Form instance
+  isCreating: boolean;
+  duplicateCheck: {
+    hasDuplicates: boolean;
+    duplicatesByPhone: ClientSearchResult[];
+    duplicatesByEmail: ClientSearchResult[];
+    duplicatesByFullName: ClientSearchResult[];
+    recommendedAction: 'create' | 'merge' | 'review';
+  } | null;
+  showDuplicateWarning: boolean;
+
+  // Обробники подій (тільки UI події)
+  onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
+  onFieldChange: (field: string, value: any) => void;
+  onDismissDuplicateWarning?: () => void;
+
+  // Опції UI
   className?: string;
   title?: string;
   buttonSize?: 'small' | 'medium' | 'large';
@@ -30,15 +39,22 @@ interface ClientCreateFormProps {
 }
 
 /**
- * Компонент форми створення нового клієнта
- * Використовує shared компоненти для консистентного стилю
+ * Компонент форми створення нового клієнта (DDD архітектура)
+ *
+ * FSD принципи:
+ * - Тільки UI логіка та відображення
+ * - Отримує всі дані з useClientForm хука
+ * - Не містить бізнес-логіки
  */
 export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
-  isLoading,
-  error,
-  formData,
-  onSave,
+  form,
+  isCreating,
+  duplicateCheck,
+  showDuplicateWarning,
+  onSubmit,
   onCancel,
+  onFieldChange,
+  onDismissDuplicateWarning,
   className,
   title = 'Створити нового клієнта',
   buttonSize = 'medium',
@@ -46,29 +62,14 @@ export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
   submitLabel = 'Створити клієнта',
   cancelLabel = 'Скасувати',
 }) => {
-  const [localFormData, setLocalFormData] = React.useState(formData);
+  const {
+    handleSubmit,
+    formState: { errors, isValid },
+  } = form;
 
-  // Синхронізуємо локальні дані з зовнішніми
-  React.useEffect(() => {
-    setLocalFormData(formData);
-  }, [formData]);
-
-  const handleFieldChange = (
-    field: string,
-    value: string | string[] | CommunicationChannel[] | ClientSource | Address | undefined
-  ) => {
-    setLocalFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (localFormData.lastName && localFormData.firstName && localFormData.phone) {
-      await onSave(localFormData as CreateClientFormData);
-    }
-  };
-
-  const isFormValid = !!(localFormData.lastName && localFormData.firstName && localFormData.phone);
+  const handleFormSubmit = handleSubmit(async (data: any) => {
+    await onSubmit(data);
+  });
 
   return (
     <StepContainer
@@ -76,19 +77,45 @@ export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
       subtitle="Додайте нового клієнта до бази даних хімчистки"
       className={className}
     >
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
+      {/* Відображення попереджень про дублікати */}
+      {showDuplicateWarning && duplicateCheck?.hasDuplicates && (
+        <Alert severity="warning" sx={{ mb: 2 }} onClose={onDismissDuplicateWarning}>
+          <Box>
+            <strong>Знайдено схожих клієнтів:</strong>
+            {duplicateCheck.duplicatesByPhone.map((duplicate: any, index: number) => (
+              <div key={index}>
+                {duplicate.firstName} {duplicate.lastName} - {duplicate.phone}
+              </div>
+            ))}
+          </Box>
+          {duplicateCheck.duplicatesByEmail.map((duplicate: any, index: number) => (
+            <div key={index}>
+              {duplicate.firstName} {duplicate.lastName} - {duplicate.email}
+            </div>
+          ))}
+          {duplicateCheck.duplicatesByFullName.map((duplicate: any, index: number) => (
+            <div key={index}>
+              {duplicate.firstName} {duplicate.lastName} - {duplicate.phone}
+            </div>
+          ))}
         </Alert>
       )}
 
-      <Box component="form" onSubmit={handleSubmit}>
+      {/* Індикатор перевірки дублікатів */}
+      {duplicateCheck?.recommendedAction === 'review' && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          Перевірка на наявність дублікатів...
+        </Alert>
+      )}
+
+      <Box component="form" onSubmit={handleFormSubmit}>
         <FormSection title="Особисті дані" subtitle="Основна інформація про клієнта" required>
           <ClientFormFields
-            formData={localFormData}
-            onChange={handleFieldChange}
+            formData={form.watch()}
+            onChange={onFieldChange}
             size="medium"
             showAllFields={true}
+            errors={errors}
           />
         </FormSection>
 
@@ -97,7 +124,7 @@ export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
             <ActionButton
               variant="outlined"
               onClick={onCancel}
-              disabled={isLoading}
+              disabled={isCreating}
               startIcon={<Cancel />}
               size={buttonSize}
             >
@@ -108,8 +135,8 @@ export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
           <ActionButton
             type="submit"
             variant="contained"
-            disabled={!isFormValid}
-            loading={isLoading}
+            disabled={!isValid || isCreating}
+            loading={isCreating}
             startIcon={<Save />}
             size={buttonSize}
             loadingText="Збереження..."

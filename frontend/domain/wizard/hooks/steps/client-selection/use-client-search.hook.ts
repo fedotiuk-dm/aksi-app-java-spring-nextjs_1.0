@@ -1,5 +1,5 @@
 /**
- * @fileoverview Хук пошуку клієнтів (DDD архітектура)
+ * @fileoverview Хук для пошуку клієнтів (DDD архітектура)
  * @module domain/wizard/hooks/steps/client-selection
  */
 
@@ -14,11 +14,11 @@ import type { ClientSearchResult } from '../../../types';
 /**
  * Простий дебаунс хук (замість use-debounce)
  */
-const useDebounce = (callback: (...args: any[]) => void, delay: number) => {
+const useDebounce = <T extends unknown[]>(callback: (...args: T) => void, delay: number) => {
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
 
   const debouncedCallback = useCallback(
-    (...args: any[]) => {
+    (...args: T) => {
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
