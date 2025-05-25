@@ -9,6 +9,7 @@ import type {
   PriceModifierDTO,
   PriceCalculationRequestDTO,
   PriceCalculationResponseDTO,
+  CalculationDetailsDTO,
   StainTypeDTO,
   DefectTypeDTO,
 } from '@/lib/api';
@@ -193,7 +194,7 @@ export class PricingMappingAdapter {
   /**
    * Перетворює API деталь розрахунку у доменний тип
    */
-  static calculationDetailToDomain(apiDetail: any): CalculationDetail {
+  static calculationDetailToDomain(apiDetail: CalculationDetailsDTO): CalculationDetail {
     return {
       step: apiDetail.step || 0,
       stepName: apiDetail.stepName || '',

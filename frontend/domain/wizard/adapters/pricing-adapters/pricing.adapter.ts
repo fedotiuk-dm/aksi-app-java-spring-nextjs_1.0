@@ -8,15 +8,7 @@ import { PricingCategoriesAdapter } from './categories.adapter';
 import { PricingIssuesAdapter } from './issues.adapter';
 import { PricingMappingAdapter } from './mapping.adapter';
 
-import type {
-  ServiceCategory,
-  PriceListItem,
-  PriceModifier,
-  PriceCalculationRequest,
-  PriceCalculationResponse,
-  StainType,
-  DefectType,
-} from './mapping.adapter';
+// Типи автоматично виводяться TypeScript при делегуванні методів
 
 /**
  * Композиційний адаптер ціноутворення для зворотної сумісності

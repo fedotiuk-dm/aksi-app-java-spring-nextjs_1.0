@@ -47,7 +47,7 @@ export class PaginationMappingAdapter {
    * Перетворює пагіновану API відповідь у стандартний доменний формат
    */
   static toDomain<TApi, TDomain>(
-    apiResponse: PaginatedApiResponse<TApi>,
+    apiResponse: PaginatedApiResponse<TApi> | Record<string, any>,
     itemAdapter: (item: TApi) => TDomain
   ): PaginatedDomainResponse<TDomain> {
     return {

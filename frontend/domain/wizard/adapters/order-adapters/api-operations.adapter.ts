@@ -12,6 +12,17 @@ import {
 
 import { OrderMappingAdapter } from './mapping.adapter';
 
+import type {
+  PaymentCalculationData,
+  PaymentCalculationResult,
+  DiscountData,
+  DiscountResult,
+  ReceiptGenerationData,
+  ReceiptGenerationResult,
+  EmailReceiptData,
+  EmailReceiptResult,
+  ReceiptData,
+} from './mapping.adapter';
 import type { OrderSummary, OrderStatus } from '../../types';
 import type { CreateOrderRequest } from '@/lib/api';
 
@@ -183,11 +194,15 @@ export class OrderApiOperationsAdapter {
   /**
    * Застосування оплати до замовлення через API
    */
-  static async applyPayment(paymentData: any): Promise<any> {
+  static async applyPayment(
+    paymentData: PaymentCalculationData
+  ): Promise<PaymentCalculationResult> {
     try {
-      return await OrderManagementFinancialService.applyPayment({
-        requestBody: paymentData,
+      const apiRequest = OrderMappingAdapter.paymentDataToApi(paymentData);
+      const apiResponse = await OrderManagementFinancialService.applyPayment({
+        requestBody: apiRequest,
       });
+      return OrderMappingAdapter.paymentResultFromApi(apiResponse);
     } catch (error) {
       console.error('Помилка при застосуванні оплати:', error);
       throw new Error(`Не вдалося застосувати оплату: ${error}`);
@@ -197,11 +212,15 @@ export class OrderApiOperationsAdapter {
   /**
    * Розрахунок оплати замовлення через API
    */
-  static async calculatePayment(paymentData: any): Promise<any> {
+  static async calculatePayment(
+    paymentData: PaymentCalculationData
+  ): Promise<PaymentCalculationResult> {
     try {
-      return await OrderManagementFinancialService.calculatePayment({
-        requestBody: paymentData,
+      const apiRequest = OrderMappingAdapter.paymentDataToApi(paymentData);
+      const apiResponse = await OrderManagementFinancialService.calculatePayment({
+        requestBody: apiRequest,
       });
+      return OrderMappingAdapter.paymentResultFromApi(apiResponse);
     } catch (error) {
       console.error('Помилка при розрахунку оплати:', error);
       throw new Error(`Не вдалося розрахувати оплату: ${error}`);
@@ -211,11 +230,13 @@ export class OrderApiOperationsAdapter {
   /**
    * Застосування знижки до замовлення через API
    */
-  static async applyDiscount(discountData: any): Promise<any> {
+  static async applyDiscount(discountData: DiscountData): Promise<DiscountResult> {
     try {
-      return await OrderManagementFinancialService.applyDiscount1({
-        requestBody: discountData,
+      const apiRequest = OrderMappingAdapter.discountDataToApi(discountData);
+      const apiResponse = await OrderManagementFinancialService.applyDiscount1({
+        requestBody: apiRequest,
       });
+      return OrderMappingAdapter.discountResultFromApi(apiResponse);
     } catch (error) {
       console.error('Помилка при застосуванні знижки:', error);
       throw new Error(`Не вдалося застосувати знижку: ${error}`);
@@ -225,9 +246,10 @@ export class OrderApiOperationsAdapter {
   /**
    * Отримання інформації про знижку замовлення через API
    */
-  static async getOrderDiscount(orderId: string): Promise<any> {
+  static async getOrderDiscount(orderId: string): Promise<DiscountResult> {
     try {
-      return await OrderManagementFinancialService.getOrderDiscount({ orderId });
+      const apiResponse = await OrderManagementFinancialService.getOrderDiscount({ orderId });
+      return OrderMappingAdapter.discountResultFromApi(apiResponse);
     } catch (error) {
       console.error(`Помилка при отриманні інформації про знижку замовлення ${orderId}:`, error);
       throw new Error(`Не вдалося отримати інформацію про знижку: ${error}`);
@@ -237,9 +259,9 @@ export class OrderApiOperationsAdapter {
   /**
    * Видалення знижки з замовлення через API
    */
-  static async removeDiscount(orderId: string): Promise<any> {
+  static async removeDiscount(orderId: string): Promise<void> {
     try {
-      return await OrderManagementFinancialService.removeDiscount({ orderId });
+      await OrderManagementFinancialService.removeDiscount({ orderId });
     } catch (error) {
       console.error(`Помилка при видаленні знижки з замовлення ${orderId}:`, error);
       throw new Error(`Не вдалося видалити знижку: ${error}`);
@@ -251,11 +273,15 @@ export class OrderApiOperationsAdapter {
   /**
    * Генерування PDF квитанції через API
    */
-  static async generatePdfReceipt(receiptData: any): Promise<any> {
+  static async generatePdfReceipt(
+    receiptData: ReceiptGenerationData
+  ): Promise<ReceiptGenerationResult> {
     try {
-      return await OrderManagementDocumentsService.generatePdfReceipt({
-        requestBody: receiptData,
+      const apiRequest = OrderMappingAdapter.receiptGenerationDataToApi(receiptData);
+      const apiResponse = await OrderManagementDocumentsService.generatePdfReceipt({
+        requestBody: apiRequest,
       });
+      return OrderMappingAdapter.receiptGenerationResultFromApi(apiResponse);
     } catch (error) {
       console.error('Помилка при генеруванні PDF квитанції:', error);
       throw new Error(`Не вдалося згенерувати PDF квитанцію: ${error}`);
@@ -265,11 +291,13 @@ export class OrderApiOperationsAdapter {
   /**
    * Відправлення квитанції на email через API
    */
-  static async sendReceiptByEmail(emailData: any): Promise<any> {
+  static async sendReceiptByEmail(emailData: EmailReceiptData): Promise<EmailReceiptResult> {
     try {
-      return await OrderManagementDocumentsService.sendReceiptByEmail({
-        requestBody: emailData,
+      const apiRequest = OrderMappingAdapter.emailReceiptDataToApi(emailData);
+      const apiResponse = await OrderManagementDocumentsService.sendReceiptByEmail({
+        requestBody: apiRequest,
       });
+      return OrderMappingAdapter.emailReceiptResultFromApi(apiResponse);
     } catch (error) {
       console.error('Помилка при відправленні квитанції на email:', error);
       throw new Error(`Не вдалося відправити квитанцію на email: ${error}`);
@@ -279,9 +307,10 @@ export class OrderApiOperationsAdapter {
   /**
    * Отримання даних для квитанції через API
    */
-  static async getReceiptData(orderId: string): Promise<any> {
+  static async getReceiptData(orderId: string): Promise<ReceiptData> {
     try {
-      return await OrderManagementDocumentsService.getReceiptData({ orderId });
+      const apiResponse = await OrderManagementDocumentsService.getReceiptData({ orderId });
+      return OrderMappingAdapter.receiptDataFromApi(apiResponse);
     } catch (error) {
       console.error(`Помилка при отриманні даних для квитанції замовлення ${orderId}:`, error);
       throw new Error(`Не вдалося отримати дані для квитанції: ${error}`);

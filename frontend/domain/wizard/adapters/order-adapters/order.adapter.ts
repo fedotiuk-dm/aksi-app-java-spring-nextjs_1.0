@@ -6,6 +6,17 @@
 import { OrderApiOperationsAdapter } from './api-operations.adapter';
 import { OrderMappingAdapter } from './mapping.adapter';
 
+import type {
+  PaymentCalculationData,
+  PaymentCalculationResult,
+  DiscountData,
+  DiscountResult,
+  ReceiptGenerationData,
+  ReceiptGenerationResult,
+  EmailReceiptData,
+  EmailReceiptResult,
+  ReceiptData,
+} from './mapping.adapter';
 import type { OrderSummary, OrderStatus } from '../../types';
 import type {
   OrderDTO,
@@ -135,56 +146,62 @@ export class OrderAdapter {
   /**
    * Застосування оплати до замовлення через API
    */
-  static async applyPayment(paymentData: any): Promise<any> {
+  static async applyPayment(
+    paymentData: PaymentCalculationData
+  ): Promise<PaymentCalculationResult> {
     return OrderApiOperationsAdapter.applyPayment(paymentData);
   }
 
   /**
    * Розрахунок оплати замовлення через API
    */
-  static async calculatePayment(paymentData: any): Promise<any> {
+  static async calculatePayment(
+    paymentData: PaymentCalculationData
+  ): Promise<PaymentCalculationResult> {
     return OrderApiOperationsAdapter.calculatePayment(paymentData);
   }
 
   /**
    * Застосування знижки до замовлення через API
    */
-  static async applyDiscount(discountData: any): Promise<any> {
+  static async applyDiscount(discountData: DiscountData): Promise<DiscountResult> {
     return OrderApiOperationsAdapter.applyDiscount(discountData);
   }
 
   /**
    * Отримання інформації про знижку замовлення через API
    */
-  static async getOrderDiscount(orderId: string): Promise<any> {
+  static async getOrderDiscount(orderId: string): Promise<DiscountResult> {
     return OrderApiOperationsAdapter.getOrderDiscount(orderId);
   }
 
   /**
    * Видалення знижки з замовлення через API
    */
-  static async removeDiscount(orderId: string): Promise<any> {
+  static async removeDiscount(orderId: string): Promise<void> {
     return OrderApiOperationsAdapter.removeDiscount(orderId);
   }
 
   /**
    * Генерування PDF квитанції через API
    */
-  static async generatePdfReceipt(receiptData: any): Promise<any> {
+  static async generatePdfReceipt(
+    receiptData: ReceiptGenerationData
+  ): Promise<ReceiptGenerationResult> {
     return OrderApiOperationsAdapter.generatePdfReceipt(receiptData);
   }
 
   /**
    * Відправлення квитанції на email через API
    */
-  static async sendReceiptByEmail(emailData: any): Promise<any> {
+  static async sendReceiptByEmail(emailData: EmailReceiptData): Promise<EmailReceiptResult> {
     return OrderApiOperationsAdapter.sendReceiptByEmail(emailData);
   }
 
   /**
    * Отримання даних для квитанції через API
    */
-  static async getReceiptData(orderId: string): Promise<any> {
+  static async getReceiptData(orderId: string): Promise<ReceiptData> {
     return OrderApiOperationsAdapter.getReceiptData(orderId);
   }
 }

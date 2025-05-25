@@ -9,6 +9,19 @@ export { OrderApiOperationsAdapter } from './api-operations.adapter';
 // Композиційний адаптер для зворотної сумісності
 export { OrderAdapter } from './order.adapter';
 
+// Експорт типів адаптера
+export type {
+  PaymentCalculationData,
+  PaymentCalculationResult,
+  DiscountData,
+  DiscountResult,
+  ReceiptGenerationData,
+  ReceiptGenerationResult,
+  EmailReceiptData,
+  EmailReceiptResult,
+  ReceiptData,
+} from './mapping.adapter';
+
 // Групування типів адаптера (БЕЗ реекспорту доменних типів)
 import type { OrderSummary, OrderStatus, ExpediteType } from '../../types';
 
