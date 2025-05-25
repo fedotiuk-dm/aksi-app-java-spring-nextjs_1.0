@@ -9,10 +9,7 @@ export { OrderApiOperationsAdapter } from './api-operations.adapter';
 // Композиційний адаптер для зворотної сумісності
 export { OrderAdapter } from './order.adapter';
 
-// Експорт типів з wizard domain
-export type { OrderSummary, OrderStatus, ExpediteType } from '../../types';
-
-// Групування типів для зручності
+// Групування типів адаптера (БЕЗ реекспорту доменних типів)
 import type { OrderSummary, OrderStatus, ExpediteType } from '../../types';
 
 export type OrderDomainTypes = {
@@ -21,5 +18,7 @@ export type OrderDomainTypes = {
   ExpediteType: ExpediteType;
 };
 
-// Експорт для зворотної сумісності
+// Експорт для зворотної сумісності (тільки аліаси)
 export type { OrderSummary as WizardOrderSummary } from '../../types';
+export type { OrderStatus as WizardOrderStatus } from '../../types';
+export type { ExpediteType as WizardExpediteType } from '../../types';

@@ -9,15 +9,12 @@ export { OrderItemApiOperationsAdapter } from './api-operations.adapter';
 // Композиційний адаптер для зворотної сумісності
 export { OrderItemAdapter } from './order-item.adapter';
 
-// Експорт типів з wizard domain
-export type { OrderItem } from '../../types';
-
-// Групування типів для зручності
+// Групування типів адаптера (БЕЗ реекспорту доменних типів)
 import type { OrderItem } from '../../types';
 
 export type OrderItemDomainTypes = {
   OrderItem: OrderItem;
 };
 
-// Експорт для зворотної сумісності
+// Експорт для зворотної сумісності (тільки аліаси)
 export type { OrderItem as WizardOrderItem } from '../../types';

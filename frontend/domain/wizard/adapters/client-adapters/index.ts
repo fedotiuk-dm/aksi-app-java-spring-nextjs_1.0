@@ -9,15 +9,12 @@ export { ClientApiOperationsAdapter } from './api-operations.adapter';
 // Композиційний адаптер для зворотної сумісності
 export { ClientAdapter } from './client.adapter';
 
-// Експорт типів з wizard domain
-export type { ClientSearchResult } from '../../types';
-
-// Групування типів для зручності
+// Групування типів адаптера (БЕЗ реекспорту доменних типів)
 import type { ClientSearchResult } from '../../types';
 
 export type ClientDomainTypes = {
   ClientSearchResult: ClientSearchResult;
 };
 
-// Експорт для зворотної сумісності
+// Експорт для зворотної сумісності (тільки аліаси)
 export type { ClientSearchResult as WizardClientSearchResult } from '../../types';

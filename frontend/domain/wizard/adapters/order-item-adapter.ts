@@ -9,5 +9,5 @@ export { OrderItemAdapter } from './order-item-adapters';
 // Експорт спеціалізованих адаптерів для прямого використання
 export { OrderItemMappingAdapter, OrderItemApiOperationsAdapter } from './order-item-adapters';
 
-// Експорт типів
-export type { OrderItemDomainTypes, OrderItem, WizardOrderItem } from './order-item-adapters';
+// Експорт типів (тільки ті, що доступні в підіндексі)
+export type { OrderItemDomainTypes, WizardOrderItem } from './order-item-adapters';

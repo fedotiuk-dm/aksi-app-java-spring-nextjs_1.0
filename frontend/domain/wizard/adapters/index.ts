@@ -21,7 +21,7 @@ export { PricingAdapter } from './pricing-adapters';
 // === УТИЛІТАРНІ АДАПТЕРИ ===
 export { PaginationAdapter } from './pagination-adapters';
 
-// === ЕКСПОРТ ТИПІВ ===
+// === ЕКСПОРТ ТИПІВ АДАПТЕРІВ (БЕЗ ДОМЕННИХ ТИПІВ) ===
 export type {
   PaginatedDomainResponse,
   PaginationParams,
@@ -51,23 +51,17 @@ export type {
 } from './pricing-adapters';
 export type {
   BranchDomainTypes,
-  Branch,
   BranchCreateRequest,
   BranchUpdateRequest,
   WizardBranch,
   WizardBranchCreateRequest,
   WizardBranchUpdateRequest,
 } from './branch-adapters';
-export type { OrderItemDomainTypes, OrderItem, WizardOrderItem } from './order-item-adapters';
+export type { OrderItemDomainTypes, WizardOrderItem } from './order-item-adapters';
 export type {
   OrderDomainTypes,
-  OrderSummary,
-  OrderStatus,
-  ExpediteType,
   WizardOrderSummary,
+  WizardOrderStatus,
+  WizardExpediteType,
 } from './order-adapters';
-export type {
-  ClientDomainTypes,
-  ClientSearchResult,
-  WizardClientSearchResult,
-} from './client-adapters';
+export type { ClientDomainTypes, WizardClientSearchResult } from './client-adapters';
