@@ -30,6 +30,7 @@ import type {
   PriceModifier,
   PriceCalculationRequest,
   PriceCalculationResponse,
+  CalculationDetail,
   StainType,
   DefectType,
 } from './mapping.adapter';
@@ -40,6 +41,7 @@ export type PricingDomainTypes = {
   PriceModifier: PriceModifier;
   PriceCalculationRequest: PriceCalculationRequest;
   PriceCalculationResponse: PriceCalculationResponse;
+  CalculationDetail: CalculationDetail;
   StainType: StainType;
   DefectType: DefectType;
 };
@@ -48,3 +50,7 @@ export type PricingDomainTypes = {
 export type { ServiceCategory as PricingServiceCategory } from './mapping.adapter';
 export type { PriceListItem as PricingPriceListItem } from './mapping.adapter';
 export type { PriceModifier as PricingPriceModifier } from './mapping.adapter';
+export type { PriceCalculationRequest as WizardPriceCalculationRequest } from './mapping.adapter';
+export type { PriceCalculationResponse as WizardPriceCalculationResponse } from './mapping.adapter';
+export type { StainType as WizardStainType } from './mapping.adapter';
+export type { DefectType as WizardDefectType } from './mapping.adapter';

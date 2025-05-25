@@ -17,8 +17,15 @@ export {
 // Експорт типів
 export type {
   PricingDomainTypes,
+  ServiceCategory,
+  PriceListItem,
+  PriceModifier,
   PriceCalculationRequest,
   PriceCalculationResponse,
-  ServiceCategory,
-  PriceModifier,
+  CalculationDetail,
+  StainType,
+  DefectType,
+  PricingServiceCategory,
+  PricingPriceListItem,
+  PricingPriceModifier,
 } from './pricing-adapters';

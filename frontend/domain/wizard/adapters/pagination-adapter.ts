@@ -10,4 +10,12 @@ export { PaginationAdapter } from './pagination-adapters';
 export { PaginationMappingAdapter, PaginationUtilitiesAdapter } from './pagination-adapters';
 
 // Експорт типів
-export type { PaginatedDomainResponse, PaginationParams, PaginationMetadata } from './pagination-adapters';
+export type {
+  PaginatedDomainResponse,
+  PaginationParams,
+  PaginationMetadata,
+  PaginationDomainTypes,
+  WizardPaginatedDomainResponse,
+  WizardPaginationParams,
+  WizardPaginationMetadata,
+} from './pagination-adapters';
