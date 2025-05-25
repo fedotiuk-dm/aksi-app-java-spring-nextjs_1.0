@@ -1,36 +1,27 @@
-import { Container, Typography, Paper, Alert } from '@mui/material';
-import React from 'react';
-
-import { OrderWizardExample } from '@/features/order-wizard';
-
 /**
- * Тестова сторінка для нового OrderWizardExample
- * Використовує новий DDD store та архітектуру
+ * Тестова сторінка для Order Wizard XState v5
+ * URL: /order-wizard-test
  */
-export default function OrderWizardTestPage() {
+
+import { Typography, Container, Paper } from '@mui/material';
+
+import { OrderWizardExample } from '@/features/order-wizard/OrderWizardExample';
+
+export default function TestWizardPage() {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Order Wizard Test - Нова архітектура
+      <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
+        <Typography variant="h3" gutterBottom>
+          🧪 Order Wizard - XState v5 Тест
         </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
-          Тестування нового OrderWizard з DDD архітектурою та оптимізованим Zustand store
+        <Typography variant="body1" color="text.secondary">
+          Тестова сторінка для нової машини станів на XState v5
         </Typography>
-
-        <Alert severity="info" sx={{ mt: 2 }}>
-          <Typography variant="body2">
-            <strong>Архітектура:</strong> &ldquo;DDD inside, FSD outside&rdquo;
-            <br />
-            <strong>Store:</strong> Оптимізований single OrderWizard store
-            <br />
-            <strong>Особливості:</strong> Циклічний Item Wizard, валідація навігації, автоматичне
-            управління доступністю
-          </Typography>
-        </Alert>
+        <Typography variant="body2" sx={{ mt: 1 }}>
+          DDD inside, FSD outside архітектура
+        </Typography>
       </Paper>
 
-      {/* Тестовий компонент */}
       <OrderWizardExample />
     </Container>
   );

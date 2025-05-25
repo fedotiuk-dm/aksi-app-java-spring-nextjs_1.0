@@ -1,6 +1,12 @@
 /**
- * Публічне API всіх схем домену wizard
- * Централізований експорт усіх Zod схем для валідації
+ * @fileoverview Схеми валідації wizard домену
+ * @module domain/wizard/schemas
+ *
+ * Централізований експорт усіх Zod схем для валідації:
+ * - Базові схеми
+ * - Схеми полів
+ * - Схеми файлів
+ * - Схеми результатів
  */
 
 // === БАЗОВІ СХЕМИ ===
@@ -9,32 +15,34 @@ export {
   wizardMetadataSchema,
   wizardContextSchema,
   saveStateSchema,
-} from './wizard/wizard-base.schemas';
+} from './wizard-base.schemas';
 
-// === СХЕМИ ПОЛІВ ===
+// === СХЕМИ КЛІЄНТСЬКИХ ПОЛІВ ===
 export {
   nameSchema,
   phoneSchema,
   emailSchema,
   addressSchema,
   clientIdSchema,
-} from './wizard/wizard-client-fields.schemas';
+} from './wizard-client-fields.schemas';
 
+// === СХЕМИ ЗАМОВЛЕННЯ ===
 export {
   receiptNumberSchema,
   uniqueLabelSchema,
   futureDateSchema,
   orderIdSchema,
   idSchema,
-} from './wizard/wizard-order-fields.schemas';
+} from './wizard-order-fields.schemas';
 
+// === СХЕМИ ЧИСЛОВИХ ПОЛІВ ===
 export {
   quantitySchema,
   priceSchema,
   totalSchema,
   discountPercentSchema,
   discountAmountSchema,
-} from './wizard/wizard-numeric-fields.schemas';
+} from './wizard-numeric-fields.schemas';
 
 // === СХЕМИ ФАЙЛІВ ===
 export {
@@ -43,7 +51,7 @@ export {
   pdfFileSchema,
   documentFileSchema,
   multipleFilesSchema,
-} from './wizard/wizard-file.schemas';
+} from './wizard-file.schemas';
 
 // === СХЕМИ РЕЗУЛЬТАТІВ ===
 export {
@@ -54,4 +62,4 @@ export {
   deleteResultSchema,
   paginatedResultSchema,
   validationResultSchema,
-} from './wizard/wizard-result.schemas';
+} from './wizard-result.schemas';

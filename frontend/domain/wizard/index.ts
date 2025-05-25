@@ -28,5 +28,11 @@ export * from './schemas';
 // === КОНСТАНТИ ===
 export * from './constants';
 
-// === FLOW MANAGEMENT (XSTATE) ===
-export * from './flow';
+// === XSTATE V5 МАШИНИ ===
+export * from './machines';
+
+// === HOOKS (DOMAIN LOGIC) ===
+export * from './hooks';
+
+// === ZUSTAND STORES ===
+export * from './store';

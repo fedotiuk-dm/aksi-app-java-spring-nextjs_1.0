@@ -10,8 +10,7 @@ import type {
   OrderItemPriceCalculation,
   OrderItemCharacteristics,
   MaterialType,
-  DefectType,
-  StainType,
+
 } from '../types';
 
 /**

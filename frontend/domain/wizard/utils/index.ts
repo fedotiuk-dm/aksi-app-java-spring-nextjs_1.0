@@ -1,6 +1,15 @@
 /**
- * Публічне API для всіх утиліт wizard домену
- * Експорт тільки найважливіших утиліт для зовнішнього використання
+ * @fileoverview Утиліти wizard домену
+ * @module domain/wizard/utils
+ *
+ * Експорт утиліт для зовнішнього використання:
+ * - Генерація ідентифікаторів
+ * - Форматування даних
+ * - Розрахунок прогресу
+ * - Валідація кроків
+ * - Навігація кроків
+ * - Оптимізація продуктивності
+ * - Операції з даними
  */
 
 // === ГЕНЕРАЦІЯ ІДЕНТИФІКАТОРІВ ===
@@ -9,7 +18,7 @@ export {
   generateReceiptNumber,
   generateSessionId,
   generateUniqueOrderLabel,
-} from './generators/id-generators.utils';
+} from './id-generators.utils';
 
 // === ФОРМАТУВАННЯ ДАНИХ ===
 export {
@@ -19,7 +28,7 @@ export {
   formatPhone,
   formatPercentage,
   formatQuantity,
-} from './formatters/data-formatters.utils';
+} from './data-formatters.utils';
 
 // === РОЗРАХУНОК ПРОГРЕСУ ===
 export {
@@ -27,7 +36,7 @@ export {
   calculateItemWizardProgress,
   calculateStepProgress,
   calculateWeightedProgress,
-} from './progress/progress-calculators.utils';
+} from './progress-calculators.utils';
 
 // === ВАЛІДАЦІЯ КРОКІВ ===
 export {
@@ -38,7 +47,7 @@ export {
   areRequiredStepsValid,
   getValidStepsCount,
   hasCriticalErrors,
-} from './validation/step-validators.utils';
+} from './step-validators.utils';
 
 // === НАВІГАЦІЯ КРОКІВ ===
 export {
@@ -48,10 +57,10 @@ export {
   getPrevStep,
   isStepRequired,
   calculateProgress,
-} from './steps/wizard-steps-navigation.utils';
+} from './wizard-steps-navigation.utils';
 
 // === ОПТИМІЗАЦІЯ ПРОДУКТИВНОСТІ ===
-export { debounce, throttle, memoize, delay, retry } from './performance/function-helpers.utils';
+export { debounce, throttle, memoize, delay, retry } from './function-helpers.utils';
 
 // === ОПЕРАЦІЇ ===
 export {
@@ -62,7 +71,7 @@ export {
   getOperationErrors,
   getOperationWarnings,
   combineOperationResults,
-} from './operations/operation-helpers.utils';
+} from './operation-helpers.utils';
 
 // === РОБОТА З ДАНИМИ ===
-export { deepClone, isEmpty, get, set, deepMerge, compact } from './data/data-helpers.utils';
+export { deepClone, isEmpty, get, set, deepMerge, compact } from './data-helpers.utils';
