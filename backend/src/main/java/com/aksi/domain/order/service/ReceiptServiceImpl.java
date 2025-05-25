@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.domain.branch.entity.BranchLocationEntity;
 import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.order.dto.receipt.EmailReceiptRequest;
+import com.aksi.domain.order.dto.receipt.EmailReceiptResponse;
+import com.aksi.domain.order.dto.receipt.PdfReceiptResponse;
 import com.aksi.domain.order.dto.receipt.ReceiptBranchInfoDTO;
 import com.aksi.domain.order.dto.receipt.ReceiptClientInfoDTO;
 import com.aksi.domain.order.dto.receipt.ReceiptDTO;
@@ -179,13 +181,32 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @Override
-    public byte[] generatePdfReceipt(ReceiptGenerationRequest request) {
+    public PdfReceiptResponse generatePdfReceipt(ReceiptGenerationRequest request) {
+        ReceiptDTO receipt = generateReceipt(request);
+        byte[] pdfBytes = pdfRenderer.generatePdfReceipt(receipt, request.isIncludeSignature());
+
+        // Конвертуємо в Base64 для передачі через JSON
+        String pdfData = java.util.Base64.getEncoder().encodeToString(pdfBytes);
+
+        return PdfReceiptResponse.builder()
+                .orderId(request.getOrderId())
+                .pdfData(pdfData)
+                .generatedAt(java.time.LocalDateTime.now())
+                .format(request.getFormat())
+                .includeSignature(request.isIncludeSignature())
+                .fileSize((long) pdfBytes.length)
+                .fileName("receipt_" + receipt.getReceiptNumber() + ".pdf")
+                .build();
+    }
+
+    @Override
+    public byte[] generatePdfReceiptBytes(ReceiptGenerationRequest request) {
         ReceiptDTO receipt = generateReceipt(request);
         return pdfRenderer.generatePdfReceipt(receipt, request.isIncludeSignature());
     }
 
     @Override
-    public void emailReceipt(EmailReceiptRequest request) {
+    public EmailReceiptResponse emailReceipt(EmailReceiptRequest request) {
         log.info("Emailing receipt for order ID: {}", request.getOrderId());
 
         // Створюємо запит на генерацію квитанції з ID замовлення
@@ -224,15 +245,45 @@ public class ReceiptServiceImpl implements ReceiptService {
 
             emailSender.send(message);
             log.info("Receipt email sent successfully to: {}", request.getRecipientEmail());
+
+            return EmailReceiptResponse.builder()
+                    .orderId(request.getOrderId())
+                    .recipientEmail(request.getRecipientEmail())
+                    .sentAt(java.time.LocalDateTime.now())
+                    .status(EmailReceiptResponse.EmailStatus.SENT)
+                    .subject(request.getSubject())
+                    .message(request.getMessage())
+                    .build();
         } catch (jakarta.mail.MessagingException e) {
             log.error("Error sending email message", e);
-            throw new RuntimeException("Failed to send receipt email", e);
+            return EmailReceiptResponse.builder()
+                    .orderId(request.getOrderId())
+                    .recipientEmail(request.getRecipientEmail())
+                    .sentAt(java.time.LocalDateTime.now())
+                    .status(EmailReceiptResponse.EmailStatus.FAILED)
+                    .subject(request.getSubject())
+                    .message(request.getMessage())
+                    .build();
         } catch (IllegalArgumentException e) {
             log.error("Invalid argument in email preparation", e);
-            throw new RuntimeException("Failed to prepare receipt email", e);
+            return EmailReceiptResponse.builder()
+                    .orderId(request.getOrderId())
+                    .recipientEmail(request.getRecipientEmail())
+                    .sentAt(java.time.LocalDateTime.now())
+                    .status(EmailReceiptResponse.EmailStatus.FAILED)
+                    .subject(request.getSubject())
+                    .message(request.getMessage())
+                    .build();
         } catch (RuntimeException e) {
             log.error("Error generating PDF for email", e);
-            throw new RuntimeException("Failed to generate receipt PDF", e);
+            return EmailReceiptResponse.builder()
+                    .orderId(request.getOrderId())
+                    .recipientEmail(request.getRecipientEmail())
+                    .sentAt(java.time.LocalDateTime.now())
+                    .status(EmailReceiptResponse.EmailStatus.FAILED)
+                    .subject(request.getSubject())
+                    .message(request.getMessage())
+                    .build();
         }
     }
 }

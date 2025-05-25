@@ -1,67 +1,25 @@
 /**
- * @fileoverview Адаптери wizard домену
+ * @fileoverview Головний експорт адаптерів домену wizard
  * @module domain/wizard/adapters
  *
- * Експорт адаптерів для перетворення згенерованих OpenAPI типів у доменні типи:
- * - Адаптер клієнтів
- * - Адаптер філій
- * - Адаптер предметів замовлення
- * - Адаптер замовлень
- * - Адаптер ціноутворення
- * - Утилітарний адаптер пагінації
+ * Нова структура адаптерів:
+ * - Плоска структура папок
+ * - Розділення на маппери та API функції
+ * - Максимум 150 рядків на файл
+ * - Функціональний підхід замість класів
  */
 
-// === ОСНОВНІ АДАПТЕРИ ===
-export { ClientAdapter } from './client-adapters';
-export { BranchAdapter } from './branch-adapters';
-export { OrderItemAdapter } from './order-item-adapters';
-export { OrderAdapter } from './order-adapters';
-export { PricingAdapter } from './pricing-adapters';
+// === ORDER ADAPTERS ===
+export * from './order';
 
-// === УТИЛІТАРНІ АДАПТЕРИ ===
-export { PaginationAdapter } from './pagination-adapters';
+// === CLIENT ADAPTERS ===
+export * from './client';
 
-// === ЕКСПОРТ ТИПІВ АДАПТЕРІВ (БЕЗ ДОМЕННИХ ТИПІВ) ===
-export type {
-  PaginatedDomainResponse,
-  PaginationParams,
-  PaginationMetadata,
-  PaginationDomainTypes,
-  WizardPaginatedDomainResponse,
-  WizardPaginationParams,
-  WizardPaginationMetadata,
-} from './pagination-adapters';
-export type {
-  PricingDomainTypes,
-  ServiceCategory,
-  PriceListItem,
-  PriceModifier,
-  PriceCalculationRequest,
-  PriceCalculationResponse,
-  CalculationDetail,
-  StainType,
-  DefectType,
-  PricingServiceCategory,
-  PricingPriceListItem,
-  PricingPriceModifier,
-  WizardPriceCalculationRequest,
-  WizardPriceCalculationResponse,
-  WizardStainType,
-  WizardDefectType,
-} from './pricing-adapters';
-export type {
-  BranchDomainTypes,
-  BranchCreateRequest,
-  BranchUpdateRequest,
-  WizardBranch,
-  WizardBranchCreateRequest,
-  WizardBranchUpdateRequest,
-} from './branch-adapters';
-export type { OrderItemDomainTypes, WizardOrderItem } from './order-item-adapters';
-export type {
-  OrderDomainTypes,
-  WizardOrderSummary,
-  WizardOrderStatus,
-  WizardExpediteType,
-} from './order-adapters';
-export type { ClientDomainTypes, WizardClientSearchResult } from './client-adapters';
+// === BRANCH ADAPTERS ===
+export * from './branch';
+
+// === ORDER ITEM ADAPTERS ===
+export * from './order-item';
+
+// === PRICING ADAPTERS ===
+export * from './pricing';

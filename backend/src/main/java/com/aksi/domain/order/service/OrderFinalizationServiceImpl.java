@@ -144,7 +144,7 @@ public class OrderFinalizationServiceImpl implements OrderFinalizationService {
                 includeSignature);
 
         // Генеруємо PDF
-        byte[] pdfContent = receiptService.generatePdfReceipt(receiptRequest);
+                    byte[] pdfContent = receiptService.generatePdfReceiptBytes(receiptRequest);
         log.info("PDF чек успішно згенеровано для замовлення: {}", orderId);
 
         return pdfContent;

@@ -1,6 +1,8 @@
 package com.aksi.domain.order.service;
 
 import com.aksi.domain.order.dto.receipt.EmailReceiptRequest;
+import com.aksi.domain.order.dto.receipt.EmailReceiptResponse;
+import com.aksi.domain.order.dto.receipt.PdfReceiptResponse;
 import com.aksi.domain.order.dto.receipt.ReceiptDTO;
 import com.aksi.domain.order.dto.receipt.ReceiptGenerationRequest;
 
@@ -21,14 +23,23 @@ public interface ReceiptService {
      * Згенерувати PDF-квитанцію.
      *
      * @param request запит з параметрами генерації
-     * @return масив байтів з PDF-документом
+     * @return відповідь з інформацією про згенеровану квитанцію
      */
-    byte[] generatePdfReceipt(ReceiptGenerationRequest request);
+    PdfReceiptResponse generatePdfReceipt(ReceiptGenerationRequest request);
 
     /**
      * Відправити квитанцію на email.
      *
      * @param request запит з параметрами відправки
+     * @return відповідь з інформацією про відправку
      */
-    void emailReceipt(EmailReceiptRequest request);
+    EmailReceiptResponse emailReceipt(EmailReceiptRequest request);
+
+    /**
+     * Згенерувати PDF-квитанцію як масив байтів (для внутрішнього використання).
+     *
+     * @param request запит з параметрами генерації
+     * @return масив байтів з PDF-документом
+     */
+    byte[] generatePdfReceiptBytes(ReceiptGenerationRequest request);
 }

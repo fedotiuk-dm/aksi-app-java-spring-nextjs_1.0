@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.application.dto.common.AutocompleteResponseDTO;
+import com.aksi.domain.pricing.dto.PriceListItemDTO;
 import com.aksi.domain.pricing.dto.PriceModifierDTO;
+import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
 import com.aksi.domain.pricing.entity.PriceModifierDefinitionEntity.ModifierCategory;
 import com.aksi.domain.pricing.service.CatalogPriceModifierService;
+import com.aksi.domain.pricing.service.PriceListService;
+import com.aksi.domain.pricing.service.ServiceCategoryService;
 import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,6 +45,8 @@ import lombok.extern.slf4j.Slf4j;
 public class AutocompleteController {
 
     private final CatalogPriceModifierService modifierService;
+    private final PriceListService priceListService;
+    private final ServiceCategoryService serviceCategoryService;
 
     /**
      * Автокомпліт для назв предметів з прайс-листа.
@@ -75,43 +81,47 @@ public class AutocompleteController {
         log.info("Запит автокомпліту предметів: '{}', категорія: {}, ліміт: {}", query, categoryCode, limit);
 
         try {
-            // Заглушка для демонстрації (в реальному проекті тут був би виклик сервісу)
-            List<String> items = List.of(
-                "Прання сорочки чоловічої",
-                "Прання сорочки жіночої",
-                "Хімчистка сорочки",
-                "Прання піджака",
-                "Хімчистка піджака",
-                "Прання брюк",
-                "Прання спідниці",
-                "Хімчистка пальта"
-            ).stream()
-             .filter(item -> item.toLowerCase().contains(query.toLowerCase()))
-             .limit(limit)
-             .collect(Collectors.toList());
+            // Отримуємо предмети з прайс-листа через сервіс
+            List<PriceListItemDTO> priceListItems;
 
-            List<AutocompleteResponseDTO.AutocompleteItem> autocompleteItems = items.stream()
-                .map(itemName -> AutocompleteResponseDTO.AutocompleteItem.builder()
-                    .id(itemName.replaceAll("\\s+", "_").toUpperCase())
-                    .label(itemName)
-                    .value(itemName)
+            if (categoryCode != null && !categoryCode.isEmpty()) {
+                // Фільтруємо за категорією
+                priceListItems = priceListService.getItemsByCategoryCode(categoryCode);
+            } else {
+                // Отримуємо всі активні предмети
+                priceListItems = priceListService.getAllActiveItems();
+            }
+
+            // Фільтруємо за запитом та обмежуємо кількість
+            List<PriceListItemDTO> filteredItems = priceListItems.stream()
+                .filter(item -> item.getName().toLowerCase().contains(query.toLowerCase()))
+                .limit(limit)
+                .collect(Collectors.toList());
+
+            List<AutocompleteResponseDTO.AutocompleteItem> autocompleteItems = filteredItems.stream()
+                .map(item -> AutocompleteResponseDTO.AutocompleteItem.builder()
+                    .id(item.getId().toString())
+                    .label(item.getName())
+                    .value(item.getName())
                     .type("ITEM")
-                    .active(true)
-                    .priority(1)
+                    .active(item.isActive())
+                    .priority(item.isActive() ? 1 : 2)
                     .metadata(Map.of(
-                        "category", categoryCode != null ? categoryCode : "CLOTHING",
-                        "isService", itemName.contains("Хімчистка")
+                        "categoryId", item.getCategoryId().toString(),
+                        "unitOfMeasure", item.getUnitOfMeasure(),
+                        "basePrice", item.getBasePrice().toString(),
+                        "catalogNumber", item.getCatalogNumber() != null ? item.getCatalogNumber().toString() : ""
                     ))
                     .build())
                 .collect(Collectors.toList());
 
             AutocompleteResponseDTO response = AutocompleteResponseDTO.builder()
                 .items(autocompleteItems)
-                .totalCount((long) items.size())
+                .totalCount((long) filteredItems.size())
                 .category("ITEM_NAMES")
                 .build();
 
-            return ApiResponseUtils.ok(response, "Знайдено {} варіантів для '{}'", items.size(), query);
+            return ApiResponseUtils.ok(response, "Знайдено {} варіантів для '{}'", filteredItems.size(), query);
 
         } catch (IllegalArgumentException e) {
             return ApiResponseUtils.badRequest("Некоректні параметри запиту",
@@ -205,38 +215,40 @@ public class AutocompleteController {
         log.info("Запит автокомпліту категорій: '{}', ліміт: {}", query, limit);
 
         try {
-            // Заглушка для демонстрації
-            List<Map<String, String>> categories = List.of(
-                Map.of("code", "CLOTHING", "name", "Одяг", "description", "Прання та хімчистка одягу"),
-                Map.of("code", "SHOES", "name", "Взуття", "description", "Чищення та реставрація взуття"),
-                Map.of("code", "LEATHER", "name", "Шкіряні вироби", "description", "Обробка шкіряних виробів"),
-                Map.of("code", "TEXTILES", "name", "Текстиль", "description", "Прання текстильних виробів"),
-                Map.of("code", "OUTERWEAR", "name", "Верхній одяг", "description", "Хімчистка верхнього одягу")
-            ).stream()
-             .filter(cat -> cat.get("name").toLowerCase().contains(query.toLowerCase()) ||
-                          cat.get("code").toLowerCase().contains(query.toLowerCase()))
-             .limit(limit)
-             .collect(Collectors.toList());
+            // Отримуємо категорії послуг через сервіс
+            List<ServiceCategoryDTO> allCategories = serviceCategoryService.getAllActiveCategories();
 
-            List<AutocompleteResponseDTO.AutocompleteItem> autocompleteItems = categories.stream()
+            // Фільтруємо за запитом та обмежуємо кількість
+            List<ServiceCategoryDTO> filteredCategories = allCategories.stream()
+                .filter(cat -> cat.getName().toLowerCase().contains(query.toLowerCase()) ||
+                             cat.getCode().toLowerCase().contains(query.toLowerCase()) ||
+                             (cat.getDescription() != null && cat.getDescription().toLowerCase().contains(query.toLowerCase())))
+                .limit(limit)
+                .collect(Collectors.toList());
+
+            List<AutocompleteResponseDTO.AutocompleteItem> autocompleteItems = filteredCategories.stream()
                 .map(cat -> AutocompleteResponseDTO.AutocompleteItem.builder()
-                    .id(cat.get("code"))
-                    .label(cat.get("name"))
-                    .value(cat.get("code"))
-                    .description(cat.get("description"))
+                    .id(cat.getId().toString())
+                    .label(cat.getName())
+                    .value(cat.getCode())
+                    .description(cat.getDescription())
                     .type("CATEGORY")
-                    .active(true)
-                    .priority(1)
+                    .active(cat.isActive())
+                    .priority(cat.isActive() ? 1 : 2)
+                    .metadata(Map.of(
+                        "code", cat.getCode(),
+                        "name", cat.getName()
+                    ))
                     .build())
                 .collect(Collectors.toList());
 
             AutocompleteResponseDTO response = AutocompleteResponseDTO.builder()
                 .items(autocompleteItems)
-                .totalCount((long) categories.size())
+                .totalCount((long) filteredCategories.size())
                 .category("SERVICE_CATEGORIES")
                 .build();
 
-            return ApiResponseUtils.ok(response, "Знайдено {} категорій для '{}'", categories.size(), query);
+            return ApiResponseUtils.ok(response, "Знайдено {} категорій для '{}'", filteredCategories.size(), query);
 
         } catch (Exception e) {
             return ApiResponseUtils.internalServerError("Помилка при автокомпліті категорій",

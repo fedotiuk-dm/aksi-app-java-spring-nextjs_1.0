@@ -68,11 +68,11 @@ export const useClientSelection = () => {
 
           // Додавання попереджень якщо є
           if (result.warnings) {
-            result.warnings.forEach((warning) => addWarning(warning));
+            result.warnings.forEach((warning: string) => addWarning(warning));
           }
 
           if (validation.warnings.length > 0) {
-            validation.warnings.forEach((warning) => addWarning(warning));
+            validation.warnings.forEach((warning: string) => addWarning(warning));
           }
 
           return { success: true, client: result.client };
@@ -82,7 +82,7 @@ export const useClientSelection = () => {
           }
 
           if (result.warnings) {
-            result.warnings.forEach((warning) => addWarning(warning));
+            result.warnings.forEach((warning: string) => addWarning(warning));
           }
 
           return { success: false, error: result.error };
@@ -122,7 +122,7 @@ export const useClientSelection = () => {
       setValidationResult(validation);
 
       if (validation.warnings.length > 0) {
-        validation.warnings.forEach((warning) => addWarning(warning));
+        validation.warnings.forEach((warning: string) => addWarning(warning));
       }
 
       return { success: true, client };
@@ -162,7 +162,7 @@ export const useClientSelection = () => {
 
     // Додавання нових попереджень
     if (validation.warnings.length > 0) {
-      validation.warnings.forEach((warning) => addWarning(warning));
+      validation.warnings.forEach((warning: string) => addWarning(warning));
     }
 
     return validation;
