@@ -1,30 +1,54 @@
 /**
  * @fileoverview Публічне API для wizard хуків
  * @module domain/wizard/hooks
+ *
+ * Архітектура "DDD inside, FSD outside":
+ * - Хуки організовані за етапами Order Wizard
+ * - Кожен етап має свої специфічні хуки
+ * - Спільні хуки винесені в окрему папку
+ * - Композиційні хуки об'єднують функціональність етапів
  */
 
-// === STEP 3 COMPLETED: Client Selection Hooks ===
-export { useClientSearch, useClientForm, useClientSelection } from './steps/client-selection';
-
-// === Shared Hooks ===
+// === Спільні хуки (навігація, стан, форми) ===
 export { useWizardNavigation, useWizardState, useWizardForm } from './shared';
 
-// === TODO: STEP 4 - Branch Selection Hooks ===
-// export { useBranchSelection } from './steps/branch-selection/use-branch-selection.hook';
-// export { useOrderInitiation } from './steps/branch-selection/use-order-initiation.hook';
+// === ЕТАП 1: Клієнт та базова інформація (ЗАВЕРШЕНО) ===
+export { useClientSearch, useClientForm, useClientSelection } from './steps/client-selection';
 
-// === TODO: STEP 5 - Item Management Hooks ===
-// export { useItemWizard } from './steps/item-management/use-item-wizard.hook';
-// export { useItemForm } from './steps/item-management/use-item-form.hook';
-// export { useItemProperties } from './steps/item-management/use-item-properties.hook';
-// export { useItemDefects } from './steps/item-management/use-item-defects.hook';
-// export { useItemPricing } from './steps/item-management/use-item-pricing.hook';
-// export { useItemPhotos } from './steps/item-management/use-item-photos.hook';
+// === ЕТАП 2: Вибір філії та ініціація замовлення ===
+export {
+  useBranchLoading,
+  useBranchSearch,
+  useBranchSelection,
+  useBranchSelectionStage,
+} from './steps/branch-selection';
 
-// === TODO: STEP 6 - Order Parameters Hooks ===
-// export { useOrderParameters } from './steps/order-parameters/use-order-parameters.hook';
-// export { useOrderSummary } from './steps/order-parameters/use-order-summary.hook';
+// === ЕТАП 3: Менеджер предметів (циклічний процес) ===
+// export {
+//   useItemManager,
+//   useItemWizard,
+//   useItemBasicInfo,
+//   useItemCharacteristics,
+//   useItemDefectsAndStains,
+//   useItemPricingCalculator,
+//   useItemPhotos,
+//   useItemManagementStep
+// } from './steps/item-management';
 
-// === TODO: STEP 7 - Order Completion Hooks ===
-// export { useOrderCompletion } from './steps/order-completion/use-order-completion.hook';
-// export { useOrderConfirmation } from './steps/order-completion/use-order-confirmation.hook';
+// === ЕТАП 4: Загальні параметри замовлення ===
+// export {
+//   useOrderExecution,
+//   useOrderDiscounts,
+//   useOrderPayment,
+//   useOrderAdditionalInfo,
+//   useOrderParametersStep
+// } from './steps/order-parameters';
+
+// === ЕТАП 5: Підтвердження та завершення ===
+// export {
+//   useOrderReview,
+//   useOrderLegalAspects,
+//   useReceiptGeneration,
+//   useOrderFinalization,
+//   useOrderCompletionStep
+// } from './steps/order-completion';

@@ -8,7 +8,7 @@ import { devtools } from 'zustand/middleware';
 
 import { WizardMode } from '../types';
 
-import type { ClientSearchResult, WizardContext } from '../types';
+import type { ClientSearchResult, WizardContext, Branch } from '../types';
 
 /**
  * Інтерфейс стану wizard store
@@ -27,6 +27,11 @@ interface WizardState {
   selectedClientId: string | null;
   selectedClient: ClientSearchResult | null;
   isNewClient: boolean;
+
+  // Branch selection state
+  selectedBranchId: string | null;
+  selectedBranch: Branch | null;
+  branchValidationError: string | null;
 
   // Changes tracking
   hasUnsavedChanges: boolean;
@@ -52,6 +57,11 @@ interface WizardActions {
   setSelectedClient: (client: ClientSearchResult) => void;
   clearSelectedClient: () => void;
   setNewClientFlag: (isNew: boolean) => void;
+
+  // Branch selection actions
+  setSelectedBranch: (branch: Branch) => void;
+  clearSelectedBranch: () => void;
+  setBranchValidationError: (error: string | null) => void;
 
   // Item wizard actions
   startItemWizard: () => void;
@@ -84,6 +94,9 @@ const initialState: WizardState = {
   selectedClientId: null,
   selectedClient: null,
   isNewClient: false,
+  selectedBranchId: null,
+  selectedBranch: null,
+  branchValidationError: null,
   hasUnsavedChanges: false,
   lastSavedAt: null,
   errors: [],
@@ -149,6 +162,22 @@ export const useWizardStore = create<WizardState & WizardActions>()(
           'wizard/clearSelectedClient'
         ),
       setNewClientFlag: (isNew) => set({ isNewClient: isNew }, false, 'wizard/setNewClientFlag'),
+
+      // Branch selection actions
+      setSelectedBranch: (branch) =>
+        set(
+          { selectedBranch: branch, selectedBranchId: branch.id, branchValidationError: null },
+          false,
+          'wizard/setSelectedBranch'
+        ),
+      clearSelectedBranch: () =>
+        set(
+          { selectedBranch: null, selectedBranchId: null, branchValidationError: null },
+          false,
+          'wizard/clearSelectedBranch'
+        ),
+      setBranchValidationError: (error) =>
+        set({ branchValidationError: error }, false, 'wizard/setBranchValidationError'),
 
       // Item wizard actions
       startItemWizard: () => set({ isItemWizardActive: true }, false, 'wizard/startItemWizard'),
