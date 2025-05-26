@@ -37,8 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/order-items/{itemId}/photos")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Order Management - Item Photos",
-     description = "Управління фотографіями предметів замовлень")
+@Tag(name = "Order Item Photos", description = "API для роботи з фотографіями предметів замовлення")
 public class OrderItemPhotoController {
 
     private final OrderItemPhotoService orderItemPhotoService;

@@ -26,8 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/orders/completion")
 @RequiredArgsConstructor
-@Tag(name = "Order Management - Lifecycle",
-     description = "Управління життєвим циклом замовлень: завершення, фіналізація, статуси")
+@Tag(name = "Order Completion", description = "API для управління датами завершення замовлень")
 @Slf4j
 public class OrderCompletionController {
 
