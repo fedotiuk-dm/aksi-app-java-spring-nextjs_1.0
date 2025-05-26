@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 
-import { ClientSearchService } from '../../../services';
+import { clientSearchCoreService } from '../../../services';
 import { useWizardState } from '../../shared';
 
 import type { ClientSearchPageResult } from '../../../services';

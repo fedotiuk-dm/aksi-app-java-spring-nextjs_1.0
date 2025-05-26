@@ -30,28 +30,3 @@ export * from './branch';
 // === СЕРВІСИ ПРЕДМЕТІВ ===
 export * from './item';
 
-/**
- * Колекція всіх сервісів для зручного доступу
- */
-export const wizardServices = {
-  // Клієнти
-  clientSearch: () => import('./client').then((m) => m.clientSearchService),
-  clientCreation: () => import('./client').then((m) => m.clientCreationService),
-
-  // Ціни
-  priceCalculation: () => import('./pricing').then((m) => m.priceCalculationService),
-  priceList: () => import('./pricing').then((m) => m.priceListService),
-  priceModifier: () => import('./pricing').then((m) => m.priceModifierService),
-  priceDiscount: () => import('./pricing').then((m) => m.priceDiscountService),
-
-  // Замовлення
-  orderCreation: () => import('./order').then((m) => m.orderCreationService),
-  orderSearch: () => import('./order').then((m) => m.orderSearchService),
-  orderManagement: () => import('./order').then((m) => m.orderManagementService),
-  orderStats: () => import('./order').then((m) => m.orderStatsService),
-
-  // Предмети
-  itemCreation: () => import('./item').then((m) => m.itemCreationService),
-  itemManagement: () => import('./item').then((m) => m.itemManagementService),
-  itemPhoto: () => import('./item').then((m) => m.itemPhotoService),
-} as const;

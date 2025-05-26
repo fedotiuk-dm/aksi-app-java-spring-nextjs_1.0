@@ -1,45 +1,57 @@
 /**
- * @fileoverview Інтерфейси збереження для сервісів
+ * @fileoverview Інтерфейси збереження даних для сервісів
  * @module domain/wizard/services/interfaces/persistence
  */
 
+import type {
+  OperationResult,
+  SaveOperationResult,
+  LoadOperationResult,
+} from './operation-result.interfaces';
+
 /**
- * Інтерфейс репозиторію
+ * Базовий інтерфейс репозиторію
  */
-export interface Repository<T, ID> {
-  findById(id: ID): Promise<T | null>;
-  save(entity: T): Promise<T>;
-  delete(id: ID): Promise<boolean>;
-  findAll(): Promise<T[]>;
+export interface BaseRepository<T, ID = string> {
+  findById(id: ID): Promise<OperationResult<T | null>>;
+  save(entity: T): Promise<SaveOperationResult<T>>;
+  delete(id: ID): Promise<OperationResult<boolean>>;
 }
 
 /**
- * Інтерфейс кешу
+ * Розширений інтерфейс репозиторію з пошуком
  */
-export interface Cache<K, V> {
-  get(key: K): Promise<V | null>;
-  set(key: K, value: V, ttl?: number): Promise<void>;
-  delete(key: K): Promise<boolean>;
-  clear(): Promise<void>;
-  has(key: K): Promise<boolean>;
+export interface SearchableRepository<T, ID = string> extends BaseRepository<T, ID> {
+  findAll(): Promise<OperationResult<T[]>>;
+  findByQuery(query: string): Promise<OperationResult<T[]>>;
+  count(): Promise<OperationResult<number>>;
 }
 
 /**
- * Конфігурація збереження
+ * Інтерфейс кешованого репозиторію
  */
-export interface PersistenceConfig {
-  autoSave?: boolean;
-  saveInterval?: number;
-  maxRetries?: number;
-  timeout?: number;
+export interface CachedRepository<T, ID = string> extends BaseRepository<T, ID> {
+  findByIdCached(id: ID): Promise<LoadOperationResult<T | null>>;
+  clearCache(): Promise<OperationResult<boolean>>;
+  getCacheStats(): Promise<OperationResult<CacheStats>>;
 }
 
 /**
- * Метадані збереження
+ * Статистика кешу
  */
-export interface PersistenceMetadata {
-  version: number;
-  timestamp: Date;
-  checksum?: string;
-  size?: number;
+export interface CacheStats {
+  size: number;
+  hits: number;
+  misses: number;
+  hitRate: number;
+}
+
+/**
+ * Інтерфейс збереження стану
+ */
+export interface StateStorage {
+  save<T>(key: string, data: T): Promise<OperationResult<boolean>>;
+  load<T>(key: string): Promise<LoadOperationResult<T | null>>;
+  remove(key: string): Promise<OperationResult<boolean>>;
+  clear(): Promise<OperationResult<boolean>>;
 }

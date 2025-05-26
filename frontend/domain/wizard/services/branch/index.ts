@@ -3,8 +3,9 @@
  * @module domain/wizard/services/branch
  */
 
-// === ДОМЕННІ ТИПИ ===
-export * from './branch-domain.types';
+// === НОВІ МОДУЛЬНІ ТИПИ ===
+export * from './types';
 
-// === СЕРВІСИ ===
-export * from './branch.service';
+// === НОВІ МОДУЛЬНІ СЕРВІСИ ===
+export * from './services';
+

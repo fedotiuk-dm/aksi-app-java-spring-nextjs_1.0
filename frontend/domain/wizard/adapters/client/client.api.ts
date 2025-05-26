@@ -117,7 +117,15 @@ export async function searchClientsWithPagination(
   keyword: string,
   page: number = 0,
   size: number = 20
-): Promise<{ clients: ClientSearchResult[]; totalElements: number; totalPages: number }> {
+): Promise<{
+  clients: ClientSearchResult[];
+  totalElements: number;
+  totalPages: number;
+  pageNumber: number;
+  pageSize: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+}> {
   try {
     const apiResponse = await ClientsService.searchClientsWithPagination({
       requestBody: {
@@ -134,6 +142,10 @@ export async function searchClientsWithPagination(
       clients,
       totalElements: apiResponse.totalElements || 0,
       totalPages: apiResponse.totalPages || 0,
+      pageNumber: apiResponse.pageNumber || 0,
+      pageSize: apiResponse.pageSize || size,
+      hasPrevious: apiResponse.hasPrevious || false,
+      hasNext: apiResponse.hasNext || false,
     };
   } catch (error) {
     console.error('Помилка при пошуку клієнтів з пагінацією:', error);

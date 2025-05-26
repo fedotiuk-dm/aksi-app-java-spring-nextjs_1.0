@@ -4,19 +4,13 @@
  */
 
 // === ДОМЕННІ ТИПИ ===
-export * from './client-domain.types';
+export * from './types';
 
-// === ІНТЕРФЕЙСИ ===
-export * from './client.interfaces';
+// === КЛІЄНТСЬКІ ІНТЕРФЕЙСИ ===
+export * from './interfaces';
 
-// === РЕПОЗИТОРІЙ КЛІЄНТІВ ===
-export * from './client.repository';
+// === РЕПОЗИТОРІЇ ===
+export * from './repositories';
 
-// === СЕРВІСИ ===
-export * from './client-search.service';
-export * from './client-creation.service';
-
-// TODO: Додати інші сервіси поступово
-// export * from './client-validation.service';
-// export * from './client-selection.service';
-// export * from './client-autocomplete.service';
+// === МОДУЛЬНІ СЕРВІСИ ===
+export * from './services';

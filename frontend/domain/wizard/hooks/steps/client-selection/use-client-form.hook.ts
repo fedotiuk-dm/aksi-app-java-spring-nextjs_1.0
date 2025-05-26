@@ -3,7 +3,7 @@
  * @module domain/wizard/hooks/steps/client-selection
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { z } from 'zod';
 
 import {
@@ -12,13 +12,15 @@ import {
   emailSchema,
   addressSchema,
 } from '../../../schemas/wizard-client-fields.schemas';
-import { ClientCreationService } from '../../../services';
+import { clientCreationService, clientExistenceService } from '../../../services/client';
 import { useWizardForm, useWizardState } from '../../shared';
 
-import type { DuplicateCheckResult, ClientCreationResult } from '../../../services';
-import type { ClientSearchResult } from '../../../types';
-
-// Імпорт Zod схеми для валідації
+import type {
+  ClientDomain,
+  CreateClientDomainRequest,
+  ContactMethod,
+  ReferralSource,
+} from '../../../services/client/types';
 
 /**
  * Схема валідації форми створення клієнта
@@ -37,24 +39,13 @@ const createClientSchema = z.object({
 type CreateClientFormData = z.infer<typeof createClientSchema>;
 
 /**
- * Хук форми створення клієнтів з валідацією та перевіркою дублікатів
- *
- * Відповідальність:
- * - React стан форми та валідації
- * - Інтеграція з Zod схемами
- * - Управління станом дублікатів
- * - Інтеграція з wizard станом
- *
- * Делегує бізнес-логіку:
- * - ClientCreationService для створення та перевірки дублікатів
- * - useWizardForm для валідації
+ * Хук форми створення клієнтів з валідацією
  */
 export const useClientForm = (initialData?: Partial<CreateClientFormData>) => {
   // === REACT СТАН ===
   const [isCreating, setIsCreating] = useState(false);
-  const [duplicateCheck, setDuplicateCheck] = useState<DuplicateCheckResult | null>(null);
-  const [createdClient, setCreatedClient] = useState<ClientSearchResult | null>(null);
-  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [createdClient, setCreatedClient] = useState<ClientDomain | null>(null);
+  const [existingClient, setExistingClient] = useState<boolean>(false);
 
   // === WIZARD ІНТЕГРАЦІЯ ===
   const { addError, addWarning, clearErrors, clearWarnings } = useWizardState();
@@ -73,110 +64,66 @@ export const useClientForm = (initialData?: Partial<CreateClientFormData>) => {
     },
   });
 
-  const { watch, setValue, reset } = formMethods;
+  const { watch, reset } = formMethods;
 
-  // === ПЕРЕВІРКА ДУБЛІКАТІВ ===
-  const checkDuplicates = useCallback(async () => {
+  // === ПЕРЕВІРКА ІСНУВАННЯ КЛІЄНТА ===
+  const checkClientExists = useCallback(async () => {
     const formData = watch();
 
-    if (!formData.firstName || !formData.lastName || !formData.phone) {
+    if (!formData.phone) {
       return;
     }
 
     try {
-      const result = await ClientCreationService.checkForDuplicates({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-        email: formData.email || undefined,
-        address: formData.address || undefined,
-        communicationChannels: formData.communicationChannels,
-        source: formData.source,
-        sourceDetails: formData.sourceDetails || undefined,
-      });
+      const result = await clientExistenceService.checkClientExists(
+        formData.phone,
+        formData.email || undefined
+      );
 
-      setDuplicateCheck(result);
-
-      if (result.hasDuplicates) {
-        const message = ClientCreationService.getDuplicateMessage(result);
-        addWarning(message);
-        setShowDuplicateWarning(true);
+      if (result.success && result.data) {
+        setExistingClient(true);
+        addWarning('Клієнт з таким телефоном вже існує');
       } else {
+        setExistingClient(false);
         clearWarnings();
-        setShowDuplicateWarning(false);
       }
     } catch (error) {
-      addError(error instanceof Error ? error.message : 'Помилка перевірки дублікатів');
+      addError(error instanceof Error ? error.message : 'Помилка перевірки клієнта');
     }
   }, [watch, addError, addWarning, clearWarnings]);
 
-  // === ДОПОМІЖНІ ФУНКЦІЇ ===
-  const handleDuplicateCheck = useCallback(async () => {
-    if (!duplicateCheck || duplicateCheck.recommendedAction === 'review') {
-      await checkDuplicates();
-
-      if (duplicateCheck && !ClientCreationService.canAutoCreate(duplicateCheck)) {
-        return { shouldStop: true };
-      }
-    }
-    return { shouldStop: false };
-  }, [duplicateCheck, checkDuplicates]);
-
-  const handleCreationResult = useCallback(
-    (result: ClientCreationResult) => {
-      if (result.success && result.client) {
-        setCreatedClient(result.client);
-        setShowDuplicateWarning(false);
-
-        if (result.warnings) {
-          result.warnings.forEach((warning: string) => addWarning(warning));
-        }
-
-        return { success: true, client: result.client };
-      } else {
-        if (result.error) {
-          addError(result.error);
-        }
-
-        if (result.duplicateCheck) {
-          setDuplicateCheck(result.duplicateCheck);
-          setShowDuplicateWarning(true);
-        }
-
-        return { success: false, duplicateCheck: result.duplicateCheck };
-      }
-    },
-    [addWarning, addError]
-  );
-
   // === СТВОРЕННЯ КЛІЄНТА ===
   const createClient = useCallback(
-    async (data: CreateClientFormData, forceCreate: boolean = false) => {
+    async (data: CreateClientFormData) => {
       setIsCreating(true);
       clearErrors();
 
       try {
-        // Перевірка дублікатів якщо не форсуємо
-        if (!forceCreate) {
-          const duplicateResult = await handleDuplicateCheck();
-          if (duplicateResult.shouldStop) {
-            setIsCreating(false);
-            return { success: false, needsReview: true };
-          }
-        }
-
-        const result = await ClientCreationService.createClient({
+        const request: CreateClientDomainRequest = {
           firstName: data.firstName,
           lastName: data.lastName,
           phone: data.phone,
           email: data.email || undefined,
-          address: data.address || undefined,
-          communicationChannels: data.communicationChannels,
-          source: data.source,
-          sourceDetails: data.sourceDetails || undefined,
-        });
+          address: data.address
+            ? {
+                street: data.address,
+                city: '', // Потрібно буде додати поле в форму
+              }
+            : undefined,
+          contactMethods: (data.communicationChannels || ['PHONE']) as ContactMethod[],
+          referralSource: data.source as ReferralSource,
+          referralSourceOther: data.sourceDetails || undefined,
+        };
 
-        return handleCreationResult(result);
+        const result = await clientCreationService.createClient(request);
+
+        if (result.success && result.data) {
+          setCreatedClient(result.data);
+          return { success: true, client: result.data };
+        } else {
+          addError(result.error || 'Помилка створення клієнта');
+          return { success: false };
+        }
       } catch (error) {
         addError(error instanceof Error ? error.message : 'Помилка створення клієнта');
         return { success: false };
@@ -184,74 +131,30 @@ export const useClientForm = (initialData?: Partial<CreateClientFormData>) => {
         setIsCreating(false);
       }
     },
-    [handleDuplicateCheck, handleCreationResult, addError, clearErrors]
+    [addError, clearErrors]
   );
 
   // === МЕТОДИ УПРАВЛІННЯ ФОРМОЮ ===
   const resetForm = useCallback(() => {
     reset();
-    setDuplicateCheck(null);
     setCreatedClient(null);
-    setShowDuplicateWarning(false);
+    setExistingClient(false);
     clearErrors();
     clearWarnings();
   }, [reset, clearErrors, clearWarnings]);
-
-  const dismissDuplicateWarning = useCallback(() => {
-    setShowDuplicateWarning(false);
-    clearWarnings();
-  }, [clearWarnings]);
-
-  const forceCreateClient = useCallback(
-    async (data: CreateClientFormData) => {
-      return await createClient(data, true);
-    },
-    [createClient]
-  );
-
-  // === COMPUTED ЗНАЧЕННЯ ===
-  const computed = useMemo(() => {
-    const canAutoCreate = duplicateCheck
-      ? ClientCreationService.canAutoCreate(duplicateCheck)
-      : true;
-    const hasCriticalDuplicates =
-      (duplicateCheck?.duplicatesByPhone?.length || 0) > 0 ||
-      (duplicateCheck?.duplicatesByEmail?.length || 0) > 0;
-    const hasNameDuplicates = (duplicateCheck?.duplicatesByFullName?.length || 0) > 0;
-
-    return {
-      canAutoCreate,
-      hasCriticalDuplicates,
-      hasNameDuplicates,
-      needsReview: duplicateCheck?.recommendedAction === 'review',
-      canProceed: !isCreating && (!duplicateCheck || canAutoCreate),
-    };
-  }, [duplicateCheck, isCreating]);
 
   return {
     // Форма
     ...formMethods,
 
-    // Стан створення
+    // Стан
     isCreating,
     createdClient,
-
-    // Дублікати
-    duplicateCheck,
-    showDuplicateWarning,
-
-    // Computed значення
-    ...computed,
+    existingClient,
 
     // Методи
     createClient,
-    checkDuplicates,
+    checkClientExists,
     resetForm,
-    dismissDuplicateWarning,
-    forceCreateClient,
-
-    // Утиліти
-    setValue,
-    watch,
   };
 };

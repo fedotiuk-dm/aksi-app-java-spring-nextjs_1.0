@@ -23,14 +23,6 @@ export interface ExtendedOperationResult<T = unknown> extends OperationResult<T>
 }
 
 /**
- * Результат операції з валідацією
- */
-export interface ValidationOperationResult<T = unknown> extends OperationResult<T> {
-  validationErrors?: ValidationError[];
-  isValid: boolean;
-}
-
-/**
  * Помилка валідації
  */
 export interface ValidationError {
@@ -38,6 +30,14 @@ export interface ValidationError {
   message: string;
   code: string;
   value?: unknown;
+}
+
+/**
+ * Результат операції з валідацією
+ */
+export interface ValidationOperationResult<T = unknown> extends OperationResult<T> {
+  validationErrors?: ValidationError[];
+  isValid: boolean;
 }
 
 /**

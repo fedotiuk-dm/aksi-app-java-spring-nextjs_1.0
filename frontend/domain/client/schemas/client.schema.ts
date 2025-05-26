@@ -127,9 +127,39 @@ export const clientSearchSchema = z.object({
 });
 
 /**
+ * Розширена схема для пошуку клієнтів з пагінацією та сортуванням
+ */
+export const advancedClientSearchSchema = z.object({
+  query: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().optional(),
+  page: z.number().min(0).default(0),
+  size: z.number().min(1).max(100).default(20),
+  sortBy: z.enum(['firstName', 'lastName', 'phone', 'email', 'createdAt']).optional(),
+  sortDirection: z.enum(['ASC', 'DESC']).default('ASC'),
+});
+
+/**
+ * Схема для результату пошуку з пагінацією
+ */
+export const clientSearchResultSchema = z.object({
+  content: z.array(z.any()), // Тут буде схема клієнта
+  totalElements: z.number(),
+  totalPages: z.number(),
+  pageNumber: z.number(),
+  pageSize: z.number(),
+  hasPrevious: z.boolean(),
+  hasNext: z.boolean(),
+});
+
+/**
  * Експорт типів на основі схем
  */
 export type CreateClientSchema = z.infer<typeof createClientSchema>;
 export type UpdateClientSchema = z.infer<typeof updateClientSchema>;
 export type ClientSearchSchema = z.infer<typeof clientSearchSchema>;
+export type AdvancedClientSearchSchema = z.infer<typeof advancedClientSearchSchema>;
+export type ClientSearchResultSchema = z.infer<typeof clientSearchResultSchema>;
 export type AddressDTOSchemaType = z.infer<typeof addressDTOSchema>;

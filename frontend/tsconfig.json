@@ -16,6 +16,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
@@ -23,6 +24,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
+      "@/lib/api": ["./lib/api"],
+      "@/lib/api/*": ["./lib/api/*"],
       "@features/order-wizard/*": ["./features/order-wizard/*"],
       "@features/order-wizard/wizard/*": ["./features/order-wizard/wizard/*"],
       "@features/order-wizard/clients/*": ["./features/order-wizard/clients/*"],
@@ -42,5 +45,5 @@
     "types/**/*.ts",
     "types/**/*.d.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next/**/*"]
 }
