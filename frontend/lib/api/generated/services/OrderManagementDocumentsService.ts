@@ -3,6 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { EmailReceiptRequest } from '../models/EmailReceiptRequest';
+import type { EmailReceiptResponse } from '../models/EmailReceiptResponse';
+import type { PdfReceiptResponse } from '../models/PdfReceiptResponse';
 import type { ReceiptDTO } from '../models/ReceiptDTO';
 import type { ReceiptGenerationRequest } from '../models/ReceiptGenerationRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -12,14 +14,14 @@ export class OrderManagementDocumentsService {
     /**
      * Згенерувати PDF-квитанцію
      * Генерує PDF-квитанцію для замовлення з вказаними параметрами
-     * @returns any PDF-квитанція успішно згенерована
+     * @returns PdfReceiptResponse PDF-квитанція успішно згенерована
      * @throws ApiError
      */
     public static generatePdfReceipt({
         requestBody,
     }: {
         requestBody: ReceiptGenerationRequest,
-    }): CancelablePromise<Record<string, any>> {
+    }): CancelablePromise<PdfReceiptResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/receipts/pdf',
@@ -37,14 +39,14 @@ export class OrderManagementDocumentsService {
     /**
      * Відправити квитанцію на email
      * Відправляє PDF-квитанцію на вказаний email
-     * @returns any Квитанція успішно відправлена
+     * @returns EmailReceiptResponse Квитанція успішно відправлена
      * @throws ApiError
      */
     public static sendReceiptByEmail({
         requestBody,
     }: {
         requestBody: EmailReceiptRequest,
-    }): CancelablePromise<Record<string, any>> {
+    }): CancelablePromise<EmailReceiptResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/receipts/email',

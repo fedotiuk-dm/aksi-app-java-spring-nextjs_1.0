@@ -3,25 +3,11 @@
  * @module domain/wizard/adapters/client
  */
 
-// Експорт мапперів
-export {
-  mapClientResponseToDomain,
-  mapClientToCreateRequest,
-  mapClientToUpdateRequest,
-  // Legacy експорти
-  mapClientDTOToDomain,
-  mapClientSummaryDTOToDomain,
-  mapClientToDTO,
-  mapClientArrayToDomain,
-} from './client.mapper';
+// API
+export * from './api';
 
-// Експорт API функцій
-export {
-  getAllClients,
-  getClientById,
-  createClient,
-  updateClient,
-  deleteClient,
-  searchClients,
-  searchClientsWithPagination,
-} from './client.api';
+// Маппери
+export * from './mappers';
+
+// Типи
+export * from './types';

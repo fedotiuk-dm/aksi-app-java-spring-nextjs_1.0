@@ -3,23 +3,11 @@
  * @module domain/wizard/adapters/branch
  */
 
-// Експорт мапперів
-export {
-  mapBranchDTOToDomain,
-  mapBranchToCreateRequest,
-  mapBranchToUpdateRequest,
-  mapBranchToDTO, // Legacy
-  mapBranchArrayToDomain,
-} from './branch.mapper';
+// API
+export * from './api/branch.api';
 
-// Експорт API функцій
-export {
-  getAllBranches,
-  getBranchById,
-  getBranchByCode,
-  createBranch,
-  updateBranch,
-  deleteBranch,
-  getActiveBranches,
-  setBranchActiveStatus,
-} from './branch.api';
+// Маппери
+export * from './mappers/branch.mapper';
+
+// Типи
+export * from './types/branch-adapter.types';

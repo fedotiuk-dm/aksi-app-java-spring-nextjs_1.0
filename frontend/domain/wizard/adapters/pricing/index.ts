@@ -3,18 +3,11 @@
  * @module domain/wizard/adapters/pricing
  */
 
-// === PRICE CALCULATION ===
-export * from './price-calculation.mapper';
-export * from './price-calculation.api';
+// API
+export * from './api';
 
-// === SERVICE CATEGORIES ===
-export * from './service-category.mapper';
-export * from './service-category.api';
+// Маппери
+export * from './mappers';
 
-// === PRICE LIST ===
-export * from './price-list.mapper';
-export * from './price-list.api';
-
-// === PRICE MODIFIERS ===
-export * from './price-modifier.mapper';
-export * from './price-modifier.api';
+// Типи
+export * from './types';

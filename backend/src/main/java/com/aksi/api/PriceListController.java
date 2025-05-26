@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.pricing.dto.PriceListItemDTO;
 import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
-import com.aksi.service.pricing.PriceListService;
+import com.aksi.domain.pricing.service.PriceListDomainService;
 import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Price List", description = "API для роботи з прайс-листом хімчистки")
 public class PriceListController {
 
-    private final PriceListService priceListService;
+    private final PriceListDomainService priceListService;
 
     @GetMapping
     @Operation(summary = "Отримати всі категорії послуг")

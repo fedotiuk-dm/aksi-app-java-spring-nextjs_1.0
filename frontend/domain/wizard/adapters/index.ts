@@ -10,17 +10,14 @@
 
 // ===== ЕКСПОРТИ АДАПТЕРІВ ПО ДОМЕНАХ =====
 
+// BRANCH DOMAIN
+export * from './branch';
+
 // CLIENT DOMAIN
 export * from './client';
 
 // ORDER DOMAIN
 export * from './order';
-
-// ORDER-ITEM DOMAIN
-export * from './order-item';
-
-// BRANCH DOMAIN
-export * from './branch';
 
 // PRICING DOMAIN
 export * from './pricing';

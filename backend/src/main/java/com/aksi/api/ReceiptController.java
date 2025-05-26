@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * REST контролер для роботи з квитанціями.
+ * REST контролер для роботи з квитанціями
  */
 @RestController
 @RequestMapping("/receipts")
@@ -79,7 +79,7 @@ public class ReceiptController {
         log.info("Запит на генерацію PDF-квитанції для замовлення з ID: {}", request.getOrderId());
 
         try {
-            byte[] pdfContent = receiptService.generatePdfReceipt(request);
+            byte[] pdfContent = receiptService.generatePdfReceiptBytes(request);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
