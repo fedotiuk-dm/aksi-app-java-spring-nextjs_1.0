@@ -17,9 +17,9 @@ interface DataListItem {
 }
 
 interface ClientSearchPanelProps {
-  // Стан пошуку
+  // Стан пошуку з useClientSearch хука
   searchTerm: string;
-  results: ClientSearchResult[];
+  clients: ClientSearchResult[];
   isSearching: boolean;
   hasResults: boolean;
   totalResults: number;
@@ -27,15 +27,8 @@ interface ClientSearchPanelProps {
   totalPages: number;
   canLoadNext: boolean;
   canLoadPrevious: boolean;
-  formattedResults: Array<{
-    id: string;
-    displayName: string;
-    subtitle: string;
-    phone: string;
-    orderCount: number;
-  }>;
 
-  // Методи
+  // Методи з useClientSearch хука
   search: (query: string, page?: number) => void;
   searchNextPage: () => void;
   searchPreviousPage: () => void;
@@ -56,7 +49,7 @@ interface ClientSearchPanelProps {
  */
 export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
   searchTerm,
-  results,
+  clients,
   isSearching,
   hasResults,
   totalResults,
@@ -64,7 +57,6 @@ export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
   totalPages,
   canLoadNext,
   canLoadPrevious,
-  formattedResults,
   search,
   searchNextPage,
   searchPreviousPage,
@@ -75,7 +67,7 @@ export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
   maxHeight = 400,
 }) => {
   // Перетворюємо клієнтів у формат для DataList
-  const listItems: DataListItem[] = results.map((client) => ({
+  const listItems: DataListItem[] = clients.map((client) => ({
     id: client.id,
     primary: (
       <Typography variant="body1" fontWeight="medium">
@@ -114,7 +106,7 @@ export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
   }));
 
   const handleItemClick = (item: DataListItem) => {
-    const client = results.find((c) => c.id === item.id);
+    const client = clients.find((c) => c.id === item.id);
     if (client) {
       onSelectClient(client);
     }
@@ -143,6 +135,7 @@ export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
           value={searchTerm}
           onChange={handleSearchChange}
           onSearch={handleSearchSubmit}
+          onClear={clearSearch}
           placeholder="Введіть прізвище, телефон або email..."
           label="Пошук клієнта"
           loading={isSearching}

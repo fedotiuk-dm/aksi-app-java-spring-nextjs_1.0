@@ -8,20 +8,14 @@ import { StepContainer, ActionButton, FormSection } from '@/shared/ui';
 
 import { ClientFormFields } from './ClientFormFields';
 
-import type {
-  UpdateClientFormData,
-  Client,
-  Address,
-  ClientSource,
-  CommunicationChannel,
-} from '@/domain/client';
+import type { ClientData } from '@/domain/wizard/services/stage-1-client-and-order-info';
 
 interface ClientEditFormProps {
   isLoading: boolean;
   error: string | null;
-  formData: Partial<UpdateClientFormData>;
-  originalClient: Client | null;
-  onSave: (data: UpdateClientFormData) => Promise<void>;
+  formData: Partial<ClientData>;
+  originalClient: ClientData | null;
+  onSave: (data: ClientData) => Promise<void>;
   onCancel: () => void;
   className?: string;
   title?: string;
@@ -56,10 +50,7 @@ export const ClientEditForm: React.FC<ClientEditFormProps> = ({
     setLocalFormData(formData);
   }, [formData]);
 
-  const handleFieldChange = (
-    field: string,
-    value: string | string[] | CommunicationChannel[] | ClientSource | Address | undefined
-  ) => {
+  const handleFieldChange = (field: keyof ClientData, value: unknown) => {
     setLocalFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -68,27 +59,16 @@ export const ClientEditForm: React.FC<ClientEditFormProps> = ({
 
     console.log('📝 ClientEditForm.handleSubmit - дані форми:', {
       localFormData,
-      structuredAddress: localFormData.structuredAddress,
       allKeys: Object.keys(localFormData),
-      isComplete: !!(
-        localFormData.lastName &&
-        localFormData.firstName &&
-        localFormData.phone &&
-        localFormData.id
-      ),
+      isComplete: !!(localFormData.lastName && localFormData.firstName && localFormData.phone),
     });
 
-    if (
-      localFormData.lastName &&
-      localFormData.firstName &&
-      localFormData.phone &&
-      localFormData.id
-    ) {
+    if (localFormData.lastName && localFormData.firstName && localFormData.phone) {
       console.log(
         '📝 ClientEditForm.handleSubmit - викликаємо onSave з даними:',
-        localFormData as UpdateClientFormData
+        localFormData as ClientData
       );
-      await onSave(localFormData as UpdateClientFormData);
+      await onSave(localFormData as ClientData);
     }
   };
 
@@ -101,12 +81,7 @@ export const ClientEditForm: React.FC<ClientEditFormProps> = ({
   }
 
   const defaultTitle = `Редагувати клієнта: ${originalClient.firstName} ${originalClient.lastName}`;
-  const isFormValid = !!(
-    localFormData.lastName &&
-    localFormData.firstName &&
-    localFormData.phone &&
-    localFormData.id
-  );
+  const isFormValid = !!(localFormData.lastName && localFormData.firstName && localFormData.phone);
 
   return (
     <StepContainer

@@ -8,26 +8,19 @@ import { StepContainer, ActionButton, FormSection } from '@/shared/ui';
 
 import { ClientFormFields } from './ClientFormFields';
 
-import type { ClientSearchResult } from '@/domain/wizard';
+import type { ClientData } from '@/domain/wizard/services/stage-1-client-and-order-info';
+import type { UseFormReturn } from 'react-hook-form';
 
 interface ClientCreateFormProps {
   // Дані з useClientForm хука
-  form: any; // React Hook Form instance
-  isCreating: boolean;
-  duplicateCheck: {
-    hasDuplicates: boolean;
-    duplicatesByPhone: ClientSearchResult[];
-    duplicatesByEmail: ClientSearchResult[];
-    duplicatesByFullName: ClientSearchResult[];
-    recommendedAction: 'create' | 'merge' | 'review';
-  } | null;
-  showDuplicateWarning: boolean;
+  form: UseFormReturn<ClientData> & {
+    isCreating: boolean;
+    existingClient: boolean;
+  };
 
   // Обробники подій (тільки UI події)
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: ClientData) => Promise<void>;
   onCancel: () => void;
-  onFieldChange: (field: string, value: any) => void;
-  onDismissDuplicateWarning?: () => void;
 
   // Опції UI
   className?: string;
@@ -48,13 +41,8 @@ interface ClientCreateFormProps {
  */
 export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
   form,
-  isCreating,
-  duplicateCheck,
-  showDuplicateWarning,
   onSubmit,
   onCancel,
-  onFieldChange,
-  onDismissDuplicateWarning,
   className,
   title = 'Створити нового клієнта',
   buttonSize = 'medium',
@@ -65,11 +53,19 @@ export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
   const {
     handleSubmit,
     formState: { errors, isValid },
+    watch,
+    setValue,
+    isCreating,
+    existingClient,
   } = form;
 
-  const handleFormSubmit = handleSubmit(async (data: any) => {
+  const handleFormSubmit = handleSubmit(async (data: ClientData) => {
     await onSubmit(data);
   });
+
+  const handleFieldChange = (field: keyof ClientData, value: unknown) => {
+    setValue(field, value as ClientData[typeof field]);
+  };
 
   return (
     <StepContainer
@@ -77,42 +73,21 @@ export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
       subtitle="Додайте нового клієнта до бази даних хімчистки"
       className={className}
     >
-      {/* Відображення попереджень про дублікати */}
-      {showDuplicateWarning && duplicateCheck?.hasDuplicates && (
-        <Alert severity="warning" sx={{ mb: 2 }} onClose={onDismissDuplicateWarning}>
+      {/* Відображення попереджень про існуючого клієнта */}
+      {existingClient && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
           <Box>
-            <strong>Знайдено схожих клієнтів:</strong>
-            {duplicateCheck.duplicatesByPhone.map((duplicate: any, index: number) => (
-              <div key={index}>
-                {duplicate.firstName} {duplicate.lastName} - {duplicate.phone}
-              </div>
-            ))}
+            <strong>Увага!</strong> Клієнт з такими даними вже може існувати в базі даних. Перевірте
+            правильність введених даних.
           </Box>
-          {duplicateCheck.duplicatesByEmail.map((duplicate: any, index: number) => (
-            <div key={index}>
-              {duplicate.firstName} {duplicate.lastName} - {duplicate.email}
-            </div>
-          ))}
-          {duplicateCheck.duplicatesByFullName.map((duplicate: any, index: number) => (
-            <div key={index}>
-              {duplicate.firstName} {duplicate.lastName} - {duplicate.phone}
-            </div>
-          ))}
-        </Alert>
-      )}
-
-      {/* Індикатор перевірки дублікатів */}
-      {duplicateCheck?.recommendedAction === 'review' && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Перевірка на наявність дублікатів...
         </Alert>
       )}
 
       <Box component="form" onSubmit={handleFormSubmit}>
         <FormSection title="Особисті дані" subtitle="Основна інформація про клієнта" required>
           <ClientFormFields
-            formData={form.watch()}
-            onChange={onFieldChange}
+            formData={watch()}
+            onChange={handleFieldChange}
             size="medium"
             showAllFields={true}
             errors={errors}

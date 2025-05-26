@@ -9,6 +9,7 @@ import {
   useClientSelection,
   useWizardState,
   useWizardNavigation,
+  type ClientSearchResult,
 } from '@/domain/wizard';
 import { StepContainer, StepNavigation } from '@/shared/ui';
 
@@ -18,6 +19,8 @@ import {
   ClientSearchPanel,
   SelectedClientInfo,
 } from './components';
+
+import type { ClientData } from '@/domain/wizard/services/stage-1-client-and-order-info';
 
 /**
  * Режими роботи компонента
@@ -54,22 +57,19 @@ export const ClientSelectionStep: React.FC = () => {
   const wizardNavigation = useWizardNavigation();
 
   // === ОБРОБНИКИ ПОДІЙ ===
-  const handleSelectClient = async (client: any) => {
+  const handleSelectClient = async (client: ClientSearchResult) => {
     const result = await clientSelection.selectClient(client);
     if (result.success) {
       setMode(ClientMode.SELECT);
     }
   };
 
-  const handleCreateClient = async (data: any) => {
+  const handleCreateClient = async (data: ClientData) => {
     const result = await clientForm.createClient(data);
-    if (result.success) {
-      if ('client' in result && result.client) {
-        await clientSelection.selectNewClient(result.client);
-        setMode(ClientMode.SELECT);
-      }
+    if (result.success && result.client) {
+      await clientSelection.selectNewClient(result.client);
+      setMode(ClientMode.SELECT);
     }
-    // Якщо needsReview або інша помилка, залишаємося в режимі створення
   };
 
   const handleClearSelection = () => {
@@ -90,15 +90,8 @@ export const ClientSelectionStep: React.FC = () => {
         return (
           <ClientCreateForm
             form={clientForm}
-            isCreating={clientForm.isCreating}
-            duplicateCheck={clientForm.duplicateCheck}
-            showDuplicateWarning={clientForm.showDuplicateWarning}
             onSubmit={handleCreateClient}
             onCancel={() => setMode(ClientMode.SELECT)}
-            onFieldChange={(field, value) => {
-              (clientForm.setValue as any)(field, value);
-            }}
-            onDismissDuplicateWarning={clientForm.dismissDuplicateWarning}
           />
         );
 
@@ -112,40 +105,25 @@ export const ClientSelectionStep: React.FC = () => {
         );
 
       case ClientMode.SELECT:
+        if (clientSelection.hasSelectedClient && clientSelection.selectedClient) {
+          return (
+            <SelectedClientInfo
+              client={clientSelection.selectedClient}
+              validationResult={clientSelection.validationResult}
+              onClear={handleClearSelection}
+              onEdit={() => {
+                // TODO: Додати режим редагування
+                console.log('Edit client');
+              }}
+            />
+          );
+        }
+
         return (
-          <SelectedClientInfo
-            client={
-              clientSelection.selectedClient || {
-                id: '',
-                firstName: '',
-                lastName: '',
-                fullName: '',
-                phone: '',
-                email: '',
-                address: '',
-                communicationChannels: [],
-                source: undefined,
-                orderCount: 0,
-                createdAt: '',
-                updatedAt: '',
-              }
-            }
-            clientDisplay={{
-              fullName: clientSelection.selectedClient
-                ? `${clientSelection.selectedClient.firstName} ${clientSelection.selectedClient.lastName}`
-                : '',
-              subtitle: clientSelection.selectedClient?.phone || '',
-              completenessPercentage: 0,
-              missingFields: [],
-              recommendedFields: [],
-              canProceed: false,
-              proceedReasons: [],
-            }}
-            validationResult={clientSelection.validationResult || undefined}
-            onClear={() => {
-              clientSelection.clearSelection();
-              setMode(ClientMode.SEARCH);
-            }}
+          <ClientModeSelector
+            onSwitchToCreate={() => setMode(ClientMode.CREATE)}
+            onSwitchToSearch={() => setMode(ClientMode.SEARCH)}
+            hasSelectedClient={clientSelection.hasSelectedClient}
           />
         );
 
@@ -155,10 +133,7 @@ export const ClientSelectionStep: React.FC = () => {
   };
 
   return (
-    <StepContainer
-      title="Вибір клієнта"
-      subtitle="Оберіть існуючого клієнта, створіть нового або відредагуйте дані"
-    >
+    <StepContainer title="Вибір клієнта" subtitle="Оберіть існуючого клієнта або створіть нового">
       {/* Відображення помилок */}
       {wizardState.hasErrors && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -183,7 +158,7 @@ export const ClientSelectionStep: React.FC = () => {
         onNext={handleNext}
         nextLabel={
           clientSelection.hasSelectedClient
-            ? 'Продовжити до вибору філії'
+            ? 'Продовжити до базової інформації замовлення'
             : 'Спочатку оберіть клієнта'
         }
         isNextDisabled={!clientSelection.canProceed}

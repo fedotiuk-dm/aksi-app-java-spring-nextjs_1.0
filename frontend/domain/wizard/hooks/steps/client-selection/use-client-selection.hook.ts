@@ -5,12 +5,19 @@
 
 import { useState, useCallback, useMemo } from 'react';
 
-import { ClientSelectionService } from '../../../services';
 import { useWizardStore } from '../../../store';
 import { useWizardState, useWizardNavigation } from '../../shared';
 
-import type { ClientValidationResult } from '../../../services';
-import type { ClientSearchResult } from '../../../types';
+import type { ClientSearchResult } from '../../../services/stage-1-client-and-order-info';
+
+/**
+ * Результат валідації клієнта
+ */
+interface ClientValidationResult {
+  canProceed: boolean;
+  errors: string[];
+  warnings: string[];
+}
 
 /**
  * Хук вибору клієнта в контексті wizard
@@ -20,10 +27,6 @@ import type { ClientSearchResult } from '../../../types';
  * - Інтеграція з Zustand store
  * - Управління переходом до наступного кроку
  * - Інтеграція з wizard навігацією
- *
- * Делегує бізнес-логіку:
- * - ClientSelectionService для валідації та вибору
- * - useWizardNavigation для переходів
  */
 export const useClientSelection = () => {
   // === REACT СТАН ===
@@ -47,6 +50,43 @@ export const useClientSelection = () => {
     setNewClientFlag,
   } = useWizardStore();
 
+  // === ВАЛІДАЦІЯ КЛІЄНТА ===
+  const validateClientForOrder = useCallback(
+    (client: ClientSearchResult): ClientValidationResult => {
+      const errors: string[] = [];
+      const warnings: string[] = [];
+
+      // Обов'язкові поля
+      if (!client.firstName || client.firstName.trim() === '') {
+        errors.push("Ім'я клієнта обов'язкове");
+      }
+
+      if (!client.lastName || client.lastName.trim() === '') {
+        errors.push("Прізвище клієнта обов'язкове");
+      }
+
+      if (!client.phone || client.phone.trim() === '') {
+        errors.push("Телефон клієнта обов'язковий");
+      }
+
+      // Рекомендовані поля
+      if (!client.email || client.email.trim() === '') {
+        warnings.push('Рекомендується вказати email клієнта');
+      }
+
+      if (!client.address || client.address.trim() === '') {
+        warnings.push('Рекомендується вказати адресу клієнта');
+      }
+
+      return {
+        canProceed: errors.length === 0,
+        errors,
+        warnings,
+      };
+    },
+    []
+  );
+
   // === ВИБІР КЛІЄНТА ===
   const selectClient = useCallback(
     async (client: ClientSearchResult) => {
@@ -55,38 +95,20 @@ export const useClientSelection = () => {
       clearWarnings();
 
       try {
-        const result = ClientSelectionService.selectClient(client);
+        // Оновлення Zustand store
+        setSelectedClient(client);
+        setNewClientFlag(false);
 
-        if (result.success && result.client) {
-          // Оновлення Zustand store
-          setSelectedClient(result.client);
-          setNewClientFlag(false);
+        // Валідація для замовлення
+        const validation = validateClientForOrder(client);
+        setValidationResult(validation);
 
-          // Валідація для замовлення
-          const validation = ClientSelectionService.validateClientForOrder(result.client);
-          setValidationResult(validation);
-
-          // Додавання попереджень якщо є
-          if (result.warnings) {
-            result.warnings.forEach((warning: string) => addWarning(warning));
-          }
-
-          if (validation.warnings.length > 0) {
-            validation.warnings.forEach((warning: string) => addWarning(warning));
-          }
-
-          return { success: true, client: result.client };
-        } else {
-          if (result.error) {
-            addError(result.error);
-          }
-
-          if (result.warnings) {
-            result.warnings.forEach((warning: string) => addWarning(warning));
-          }
-
-          return { success: false, error: result.error };
+        // Додавання попереджень якщо є
+        if (validation.warnings.length > 0) {
+          validation.warnings.forEach((warning: string) => addWarning(warning));
         }
+
+        return { success: true, client };
       } catch (error) {
         addError(error instanceof Error ? error.message : 'Помилка вибору клієнта');
         return { success: false };
@@ -94,21 +116,24 @@ export const useClientSelection = () => {
         setIsSelecting(false);
       }
     },
-    [setSelectedClient, setNewClientFlag, addError, addWarning, clearErrors, clearWarnings]
+    [
+      setSelectedClient,
+      setNewClientFlag,
+      addError,
+      addWarning,
+      clearErrors,
+      clearWarnings,
+      validateClientForOrder,
+    ]
   );
 
   // === ОЧИЩЕННЯ ВИБОРУ ===
   const clearSelection = useCallback(() => {
-    const result = ClientSelectionService.clearSelection();
-
-    if (result.success) {
-      clearSelectedClient();
-      setValidationResult(null);
-      clearErrors();
-      clearWarnings();
-    }
-
-    return result;
+    clearSelectedClient();
+    setValidationResult(null);
+    clearErrors();
+    clearWarnings();
+    return { success: true };
   }, [clearSelectedClient, clearErrors, clearWarnings]);
 
   // === ВИБІР НОВОГО КЛІЄНТА ===
@@ -118,7 +143,7 @@ export const useClientSelection = () => {
       setNewClientFlag(true);
 
       // Валідація нового клієнта
-      const validation = ClientSelectionService.validateClientForOrder(client);
+      const validation = validateClientForOrder(client);
       setValidationResult(validation);
 
       if (validation.warnings.length > 0) {
@@ -127,7 +152,7 @@ export const useClientSelection = () => {
 
       return { success: true, client };
     },
-    [setSelectedClient, setNewClientFlag, addWarning]
+    [setSelectedClient, setNewClientFlag, addWarning, validateClientForOrder]
   );
 
   // === ПЕРЕХІД ДО НАСТУПНОГО КРОКУ ===
@@ -154,7 +179,7 @@ export const useClientSelection = () => {
       return null;
     }
 
-    const validation = ClientSelectionService.validateClientForOrder(selectedClient);
+    const validation = validateClientForOrder(selectedClient);
     setValidationResult(validation);
 
     // Очищення попередніх попереджень
@@ -166,28 +191,51 @@ export const useClientSelection = () => {
     }
 
     return validation;
-  }, [selectedClient, addWarning, clearWarnings]);
+  }, [selectedClient, addWarning, clearWarnings, validateClientForOrder]);
+
+  // === УТИЛІТИ ===
+  const formatClientForDisplay = useCallback((client: ClientSearchResult) => {
+    return {
+      fullName: `${client.firstName} ${client.lastName}`.trim(),
+      phone: client.phone,
+      email: client.email || 'Не вказано',
+      address: client.address || 'Не вказано',
+    };
+  }, []);
+
+  const getMissingRequiredFields = useCallback((client: ClientSearchResult) => {
+    const missing: string[] = [];
+
+    if (!client.firstName?.trim()) missing.push('firstName');
+    if (!client.lastName?.trim()) missing.push('lastName');
+    if (!client.phone?.trim()) missing.push('phone');
+
+    return missing;
+  }, []);
+
+  const getMissingRecommendedFields = useCallback((client: ClientSearchResult) => {
+    const missing: string[] = [];
+
+    if (!client.email?.trim()) missing.push('email');
+    if (!client.address?.trim()) missing.push('address');
+
+    return missing;
+  }, []);
 
   // === COMPUTED ЗНАЧЕННЯ ===
   const computed = useMemo(() => {
     const hasSelectedClient = !!selectedClient;
     const isValidForOrder = selectedClient
-      ? ClientSelectionService.isValidForOrder(selectedClient)
+      ? getMissingRequiredFields(selectedClient).length === 0
       : false;
     const canProceed =
       hasSelectedClient && validationResult?.canProceed === true && canNavigateForward();
 
-    const missingRequiredFields = selectedClient
-      ? ClientSelectionService.getMissingRequiredFields(selectedClient)
-      : [];
-
+    const missingRequiredFields = selectedClient ? getMissingRequiredFields(selectedClient) : [];
     const missingRecommendedFields = selectedClient
-      ? ClientSelectionService.getMissingRecommendedFields(selectedClient)
+      ? getMissingRecommendedFields(selectedClient)
       : [];
-
-    const clientDisplay = selectedClient
-      ? ClientSelectionService.formatClientForDisplay(selectedClient)
-      : null;
+    const clientDisplay = selectedClient ? formatClientForDisplay(selectedClient) : null;
 
     return {
       hasSelectedClient,
@@ -199,10 +247,17 @@ export const useClientSelection = () => {
       hasValidationErrors: (validationResult?.errors?.length || 0) > 0,
       hasValidationWarnings: (validationResult?.warnings?.length || 0) > 0,
     };
-  }, [selectedClient, validationResult, canNavigateForward]);
+  }, [
+    selectedClient,
+    validationResult,
+    canNavigateForward,
+    getMissingRequiredFields,
+    getMissingRecommendedFields,
+    formatClientForDisplay,
+  ]);
 
   return {
-    // Стан вибору
+    // Стан
     selectedClient,
     selectedClientId,
     isNewClient,
@@ -217,10 +272,15 @@ export const useClientSelection = () => {
     selectNewClient,
     clearSelection,
 
+    // Валідація
+    validateCurrentClient,
+
     // Навігація
     proceedToNextStep,
 
-    // Валідація
-    validateCurrentClient,
+    // Утиліти
+    formatClientForDisplay,
+    getMissingRequiredFields,
+    getMissingRecommendedFields,
   };
 };

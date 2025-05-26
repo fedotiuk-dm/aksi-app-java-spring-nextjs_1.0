@@ -5,14 +5,16 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 
-import { clientSearchCoreService } from '../../../services';
+import { clientSearchService } from '../../../services/stage-1-client-and-order-info';
 import { useWizardState } from '../../shared';
 
-import type { ClientSearchPageResult } from '../../../services';
-import type { ClientSearchResult } from '../../../types';
+import type {
+  ClientSearchPaginatedResult,
+  ClientSearchResult,
+} from '../../../services/stage-1-client-and-order-info';
 
 /**
- * Простий дебаунс хук (замість use-debounce)
+ * Простий дебаунс хук
  */
 const useDebounce = <T extends unknown[]>(callback: (...args: T) => void, delay: number) => {
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
@@ -52,15 +54,17 @@ const useDebounce = <T extends unknown[]>(callback: (...args: T) => void, delay:
  * - Інтеграція з wizard станом
  *
  * Делегує бізнес-логіку:
- * - ClientSearchService для пошуку
+ * - clientSearchService для пошуку
  * - useWizardState для помилок
  */
 export const useClientSearch = () => {
   // === REACT СТАН ===
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResult, setSearchResult] = useState<ClientSearchPageResult | null>(null);
+  const [searchResult, setSearchResult] = useState<ClientSearchPaginatedResult | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [searchCache, setSearchCache] = useState<Map<string, ClientSearchPageResult>>(new Map());
+  const [searchCache, setSearchCache] = useState<Map<string, ClientSearchPaginatedResult>>(
+    new Map()
+  );
 
   // === WIZARD ІНТЕГРАЦІЯ ===
   const { addError, clearErrors } = useWizardState();
@@ -68,7 +72,8 @@ export const useClientSearch = () => {
   // === ФУНКЦІЯ ПОШУКУ ===
   const performSearch = useCallback(
     async (query: string, page: number = 0) => {
-      if (!ClientSearchService.shouldDebounceSearch(query)) {
+      // Мінімальна довжина запиту
+      if (query.trim().length < 2) {
         setSearchResult(null);
         return;
       }
@@ -85,15 +90,17 @@ export const useClientSearch = () => {
       clearErrors();
 
       try {
-        const result = await ClientSearchService.searchWithPagination({
-          query,
-          page,
-        });
+        const result = await clientSearchService.searchClients(query, page, 20);
 
-        setSearchResult(result);
-
-        // Кешування результату
-        setSearchCache((prev) => new Map(prev).set(cacheKey, result));
+        if (result.success && result.data) {
+          const searchData = result.data;
+          setSearchResult(searchData);
+          // Кешування результату
+          setSearchCache((prev) => new Map(prev).set(cacheKey, searchData));
+        } else {
+          addError(result.error || 'Помилка пошуку клієнтів');
+          setSearchResult(null);
+        }
       } catch (error) {
         addError(error instanceof Error ? error.message : 'Помилка пошуку клієнтів');
         setSearchResult(null);
@@ -107,7 +114,7 @@ export const useClientSearch = () => {
   // === ДЕБАУНС ПОШУКУ ===
   const { debouncedCallback: debouncedSearch, cancel: cancelDebounce } = useDebounce(
     performSearch,
-    ClientSearchService.getSearchDebounceMs()
+    300 // 300ms дебаунс
   );
 
   // === МЕТОДИ ПОШУКУ ===
@@ -120,25 +127,21 @@ export const useClientSearch = () => {
   );
 
   const searchNextPage = useCallback(() => {
-    if (!searchResult || !ClientSearchService.canLoadNextPage(searchResult)) {
+    if (!searchResult || !searchResult.hasNext) {
       return;
     }
 
-    const nextPage = ClientSearchService.getNextPageNumber(searchResult);
-    if (nextPage !== null) {
-      debouncedSearch(searchTerm, nextPage);
-    }
+    const nextPage = searchResult.pageNumber + 1;
+    debouncedSearch(searchTerm, nextPage);
   }, [searchResult, searchTerm, debouncedSearch]);
 
   const searchPreviousPage = useCallback(() => {
-    if (!searchResult || !ClientSearchService.canLoadPreviousPage(searchResult)) {
+    if (!searchResult || !searchResult.hasPrevious) {
       return;
     }
 
-    const prevPage = ClientSearchService.getPreviousPageNumber(searchResult);
-    if (prevPage !== null) {
-      debouncedSearch(searchTerm, prevPage);
-    }
+    const prevPage = searchResult.pageNumber - 1;
+    debouncedSearch(searchTerm, prevPage);
   }, [searchResult, searchTerm, debouncedSearch]);
 
   const clearSearch = useCallback(() => {
@@ -153,7 +156,8 @@ export const useClientSearch = () => {
   const quickSearch = useCallback(
     async (query: string, limit: number = 5): Promise<ClientSearchResult[]> => {
       try {
-        return await ClientSearchService.quickSearch(query, limit);
+        const result = await clientSearchService.searchClients(query, 0, limit);
+        return result.success && result.data ? result.data.clients : [];
       } catch (error) {
         addError(error instanceof Error ? error.message : 'Помилка швидкого пошуку');
         return [];
@@ -162,29 +166,36 @@ export const useClientSearch = () => {
     [addError]
   );
 
+  // === ОТРИМАННЯ КЛІЄНТА ЗА ID ===
+  const getClientById = useCallback(
+    async (id: string): Promise<ClientSearchResult | null> => {
+      try {
+        const result = await clientSearchService.getClientById(id);
+        return result.success && result.data ? result.data : null;
+      } catch (error) {
+        addError(error instanceof Error ? error.message : 'Помилка отримання клієнта');
+        return null;
+      }
+    },
+    [addError]
+  );
+
   // === COMPUTED ЗНАЧЕННЯ ===
   const computed = useMemo(() => {
-    const hasResults = searchResult ? ClientSearchService.hasSearchResults(searchResult) : false;
-    const canLoadNext = searchResult ? ClientSearchService.canLoadNextPage(searchResult) : false;
-    const canLoadPrevious = searchResult
-      ? ClientSearchService.canLoadPreviousPage(searchResult)
-      : false;
-
-    const formattedResults = searchResult?.items
-      ? ClientSearchService.formatSearchResultsForDisplay(searchResult.items)
-      : [];
+    const hasResults = searchResult ? searchResult.clients.length > 0 : false;
+    const canLoadNext = searchResult ? searchResult.hasNext : false;
+    const canLoadPrevious = searchResult ? searchResult.hasPrevious : false;
 
     return {
       hasResults,
       canLoadNext,
       canLoadPrevious,
-      formattedResults,
+      clients: searchResult?.clients || [],
       totalResults: searchResult?.totalElements || 0,
-      currentPage: searchResult?.currentPage || 0,
+      currentPage: searchResult?.pageNumber || 0,
       totalPages: searchResult?.totalPages || 0,
       isEmptySearch: searchTerm.length === 0,
-      isMinimalQuery:
-        searchTerm.length > 0 && !ClientSearchService.shouldDebounceSearch(searchTerm),
+      isMinimalQuery: searchTerm.length > 0 && searchTerm.length < 2,
     };
   }, [searchResult, searchTerm]);
 
@@ -204,14 +215,15 @@ export const useClientSearch = () => {
     // Computed значення
     ...computed,
 
-    // Методи пошуку
+    // Методи
     search,
     searchNextPage,
     searchPreviousPage,
     clearSearch,
     quickSearch,
+    getClientById,
 
-    // Результати
-    results: searchResult?.items || [],
+    // Утиліти
+    setSearchTerm,
   };
 };

@@ -1,32 +1,34 @@
 /**
- * @fileoverview Головний файл експорту сервісів домену wizard
+ * @fileoverview Головний експорт доменних сервісів Order Wizard
  * @module domain/wizard/services
- * @author AKSI Team
- * @since 1.0.0
  *
- * Сервіси організовані за SOLID принципами:
- * - Single Responsibility: кожен сервіс має одну відповідальність
- * - Open/Closed: легко розширювати без модифікації існуючого коду
- * - Liskov Substitution: правильне використання інтерфейсів
- * - Interface Segregation: малі, специфічні інтерфейси
- * - Dependency Inversion: залежність від абстракцій
+ * Архітектура "DDD inside, FSD outside" - всі сервіси організовані за етапами Order Wizard
+ *
+ * ЕТАПИ ORDER WIZARD:
+ * 1. Клієнт та базова інформація замовлення
+ * 2. Менеджер предметів (циклічний процес)
+ * 3. Загальні параметри замовлення
+ * 4. Підтвердження та завершення
+ *
+ * @generated Автоматично згенеровано 2025-05-26T02:40:31.019Z
+ * @generator scripts/generate-services-index.js
  */
 
-// === БАЗОВІ ІНТЕРФЕЙСИ ===
-export * from './interfaces';
+// ===== ОСНОВНІ ЕКСПОРТИ ПО ЕТАПАХ =====
 
-// === КЛІЄНТСЬКІ СЕРВІСИ ===
-export * from './client';
+// ЕТАП 1: КЛІЄНТ ТА БАЗОВА ІНФОРМАЦІЯ ЗАМОВЛЕННЯ
+export * from './stage-1-client-and-order-info';
 
-// === СЕРВІСИ ЦІНОУТВОРЕННЯ ===
-export * from './pricing';
+// ЕТАП 2: МЕНЕДЖЕР ПРЕДМЕТІВ
+//export * from './stage-2-item-management';
 
-// === СЕРВІСИ ЗАМОВЛЕНЬ ===
-export * from './order';
+// ЕТАП 3: ЗАГАЛЬНІ ПАРАМЕТРИ ЗАМОВЛЕННЯ
+//export * from './stage-3-order-configuration';
 
-// === СЕРВІСИ ФІЛІЙ ===
-export * from './branch';
+// ЕТАП 4: ПІДТВЕРДЖЕННЯ ТА ЗАВЕРШЕННЯ
+//export * from './stage-4-order-finalization';
 
-// === СЕРВІСИ ПРЕДМЕТІВ ===
-export * from './item';
+// СПІЛЬНІ СЕРВІСИ
+export * from './shared';
+
 

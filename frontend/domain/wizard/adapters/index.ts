@@ -1,25 +1,26 @@
 /**
- * @fileoverview Головний експорт адаптерів домену wizard
+ * @fileoverview Головний індекс адаптерів Order Wizard
  * @module domain/wizard/adapters
  *
- * Нова структура адаптерів:
- * - Плоска структура папок
- * - Розділення на маппери та API функції
- * - Максимум 150 рядків на файл
- * - Функціональний підхід замість класів
+ * Автоматично згенеровано з OpenAPI специфікації
+ *
+ * @generated 2025-05-26T02:55:14.485Z
+ * @generator scripts/generate-adapters.js
  */
 
-// === ORDER ADAPTERS ===
-export * from './order';
+// ===== ЕКСПОРТИ АДАПТЕРІВ ПО ДОМЕНАХ =====
 
-// === CLIENT ADAPTERS ===
+// CLIENT DOMAIN
 export * from './client';
 
-// === BRANCH ADAPTERS ===
-export * from './branch';
+// ORDER DOMAIN
+export * from './order';
 
-// === ORDER ITEM ADAPTERS ===
+// ORDER-ITEM DOMAIN
 export * from './order-item';
 
-// === PRICING ADAPTERS ===
+// BRANCH DOMAIN
+export * from './branch';
+
+// PRICING DOMAIN
 export * from './pricing';

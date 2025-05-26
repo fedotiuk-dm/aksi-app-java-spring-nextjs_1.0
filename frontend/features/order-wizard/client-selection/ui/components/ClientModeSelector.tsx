@@ -4,10 +4,7 @@ import { PersonAdd, Search } from '@mui/icons-material';
 import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import React from 'react';
 
-import { ClientMode } from '@/domain/client';
-
 interface ClientModeSelectorProps {
-  currentMode: ClientMode;
   onSwitchToCreate: () => void;
   onSwitchToSearch: () => void;
   hasSelectedClient: boolean;
@@ -29,7 +26,6 @@ interface ClientModeSelectorProps {
  * - Уніфікований стиль згідно зі shared компонентами
  */
 export const ClientModeSelector: React.FC<ClientModeSelectorProps> = ({
-  currentMode,
   onSwitchToCreate,
   onSwitchToSearch,
   hasSelectedClient,
@@ -48,11 +44,10 @@ export const ClientModeSelector: React.FC<ClientModeSelectorProps> = ({
     <Grid container spacing={2} sx={{ mb: 3 }} className={className}>
       <Grid size={{ xs: 12, sm: 6 }}>
         <Card
-          variant={currentMode === ClientMode.CREATE ? 'outlined' : 'elevation'}
+          variant="outlined"
           sx={{
             cursor: 'pointer',
-            backgroundColor:
-              currentMode === ClientMode.CREATE ? 'action.selected' : 'background.paper',
+            backgroundColor: 'background.paper',
             '&:hover': { backgroundColor: 'action.hover' },
             transition: 'all 0.2s ease-in-out',
           }}
@@ -67,7 +62,7 @@ export const ClientModeSelector: React.FC<ClientModeSelectorProps> = ({
               {createDescription}
             </Typography>
             <Button
-              variant={currentMode === ClientMode.CREATE ? 'contained' : 'outlined'}
+              variant="contained"
               startIcon={<PersonAdd />}
               size={buttonSize}
               onClick={(e) => {
@@ -83,7 +78,7 @@ export const ClientModeSelector: React.FC<ClientModeSelectorProps> = ({
 
       <Grid size={{ xs: 12, sm: 6 }}>
         <Card
-          variant="elevation"
+          variant="outlined"
           sx={{
             cursor: 'pointer',
             backgroundColor: 'background.paper',

@@ -3,68 +3,56 @@
  * @module domain/wizard/hooks/steps/client-selection
  */
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState, useCallback } from 'react';
-import { z } from 'zod';
+import { useForm } from 'react-hook-form';
 
 import {
-  nameSchema,
-  phoneSchema,
-  emailSchema,
-  addressSchema,
-} from '../../../schemas/wizard-client-fields.schemas';
-import { clientCreationService, clientExistenceService } from '../../../services/client';
-import { useWizardForm, useWizardState } from '../../shared';
-
-import type {
-  ClientDomain,
-  CreateClientDomainRequest,
+  clientSearchService,
+  clientCreationService,
+  clientDataSchema,
+  type ClientData,
+  type CreateClientRequest,
+  type ClientSearchResult,
   ContactMethod,
-  ReferralSource,
-} from '../../../services/client/types';
-
-/**
- * Схема валідації форми створення клієнта
- */
-const createClientSchema = z.object({
-  firstName: nameSchema,
-  lastName: nameSchema,
-  phone: phoneSchema,
-  email: emailSchema,
-  address: addressSchema,
-  communicationChannels: z.array(z.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
-  source: z.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
-  sourceDetails: z.string().optional(),
-});
-
-type CreateClientFormData = z.infer<typeof createClientSchema>;
+  InformationSource,
+} from '../../../services/stage-1-client-and-order-info';
+import { useWizardState } from '../../shared';
 
 /**
  * Хук форми створення клієнтів з валідацією
  */
-export const useClientForm = (initialData?: Partial<CreateClientFormData>) => {
+export const useClientForm = (initialData?: Partial<ClientData>) => {
   // === REACT СТАН ===
   const [isCreating, setIsCreating] = useState(false);
-  const [createdClient, setCreatedClient] = useState<ClientDomain | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [createdClient, setCreatedClient] = useState<ClientSearchResult | null>(null);
   const [existingClient, setExistingClient] = useState<boolean>(false);
 
   // === WIZARD ІНТЕГРАЦІЯ ===
   const { addError, addWarning, clearErrors, clearWarnings } = useWizardState();
 
   // === ФОРМА З ZOD ВАЛІДАЦІЄЮ ===
-  const formMethods = useWizardForm(createClientSchema, {
+  const formMethods = useForm<ClientData>({
+    resolver: zodResolver(clientDataSchema),
     defaultValues: {
       firstName: initialData?.firstName || '',
       lastName: initialData?.lastName || '',
       phone: initialData?.phone || '',
       email: initialData?.email || '',
       address: initialData?.address || '',
-      communicationChannels: initialData?.communicationChannels || ['PHONE'],
-      source: initialData?.source,
-      sourceDetails: initialData?.sourceDetails || '',
+      contactMethods: initialData?.contactMethods || [ContactMethod.PHONE],
+      informationSource: initialData?.informationSource || InformationSource.OTHER,
+      informationSourceOther: initialData?.informationSourceOther || '',
     },
   });
 
-  const { watch, reset } = formMethods;
+  const {
+    watch,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = formMethods;
 
   // === ПЕРЕВІРКА ІСНУВАННЯ КЛІЄНТА ===
   const checkClientExists = useCallback(async () => {
@@ -75,18 +63,26 @@ export const useClientForm = (initialData?: Partial<CreateClientFormData>) => {
     }
 
     try {
-      const result = await clientExistenceService.checkClientExists(
-        formData.phone,
-        formData.email || undefined
-      );
+      const phoneResult = await clientSearchService.checkClientExistsByPhone(formData.phone);
 
-      if (result.success && result.data) {
+      if (phoneResult.success && phoneResult.data) {
         setExistingClient(true);
         addWarning('Клієнт з таким телефоном вже існує');
-      } else {
-        setExistingClient(false);
-        clearWarnings();
+        return;
       }
+
+      if (formData.email) {
+        const emailResult = await clientSearchService.checkClientExistsByEmail(formData.email);
+
+        if (emailResult.success && emailResult.data) {
+          setExistingClient(true);
+          addWarning('Клієнт з таким email вже існує');
+          return;
+        }
+      }
+
+      setExistingClient(false);
+      clearWarnings();
     } catch (error) {
       addError(error instanceof Error ? error.message : 'Помилка перевірки клієнта');
     }
@@ -94,25 +90,20 @@ export const useClientForm = (initialData?: Partial<CreateClientFormData>) => {
 
   // === СТВОРЕННЯ КЛІЄНТА ===
   const createClient = useCallback(
-    async (data: CreateClientFormData) => {
+    async (data: ClientData) => {
       setIsCreating(true);
       clearErrors();
 
       try {
-        const request: CreateClientDomainRequest = {
+        const request: CreateClientRequest = {
           firstName: data.firstName,
           lastName: data.lastName,
           phone: data.phone,
-          email: data.email || undefined,
-          address: data.address
-            ? {
-                street: data.address,
-                city: '', // Потрібно буде додати поле в форму
-              }
-            : undefined,
-          contactMethods: (data.communicationChannels || ['PHONE']) as ContactMethod[],
-          referralSource: data.source as ReferralSource,
-          referralSourceOther: data.sourceDetails || undefined,
+          email: data.email,
+          address: data.address,
+          contactMethods: data.contactMethods || [ContactMethod.PHONE],
+          informationSource: data.informationSource || InformationSource.OTHER,
+          informationSourceOther: data.informationSourceOther,
         };
 
         const result = await clientCreationService.createClient(request);
@@ -134,6 +125,32 @@ export const useClientForm = (initialData?: Partial<CreateClientFormData>) => {
     [addError, clearErrors]
   );
 
+  // === ОНОВЛЕННЯ КЛІЄНТА ===
+  const updateClient = useCallback(
+    async (id: string, data: Partial<ClientData>) => {
+      setIsUpdating(true);
+      clearErrors();
+
+      try {
+        const result = await clientCreationService.updateClient(id, data);
+
+        if (result.success && result.data) {
+          setCreatedClient(result.data);
+          return { success: true, client: result.data };
+        } else {
+          addError(result.error || 'Помилка оновлення клієнта');
+          return { success: false };
+        }
+      } catch (error) {
+        addError(error instanceof Error ? error.message : 'Помилка оновлення клієнта');
+        return { success: false };
+      } finally {
+        setIsUpdating(false);
+      }
+    },
+    [addError, clearErrors]
+  );
+
   // === МЕТОДИ УПРАВЛІННЯ ФОРМОЮ ===
   const resetForm = useCallback(() => {
     reset();
@@ -143,18 +160,29 @@ export const useClientForm = (initialData?: Partial<CreateClientFormData>) => {
     clearWarnings();
   }, [reset, clearErrors, clearWarnings]);
 
+  const submitForm = useCallback(
+    (onSubmit: (data: ClientData) => void | Promise<void>) => {
+      return handleSubmit(onSubmit);
+    },
+    [handleSubmit]
+  );
+
   return {
     // Форма
     ...formMethods,
 
     // Стан
     isCreating,
+    isUpdating,
     createdClient,
     existingClient,
+    errors,
 
     // Методи
     createClient,
+    updateClient,
     checkClientExists,
     resetForm,
+    submitForm,
   };
 };

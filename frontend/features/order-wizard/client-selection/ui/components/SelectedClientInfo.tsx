@@ -1,6 +1,6 @@
 'use client';
 
-import { Clear, CheckCircle, Warning } from '@mui/icons-material';
+import { Clear, CheckCircle, Warning, Edit } from '@mui/icons-material';
 import { Alert, Box, Chip, Typography } from '@mui/material';
 import React from 'react';
 
@@ -8,24 +8,17 @@ import { InfoCard, ActionButton } from '@/shared/ui';
 
 import type { ClientSearchResult } from '@/domain/wizard';
 
+interface ClientValidationResult {
+  canProceed: boolean;
+  errors: string[];
+  warnings: string[];
+}
+
 interface SelectedClientInfoProps {
   client: ClientSearchResult;
-  clientDisplay: {
-    fullName: string;
-    subtitle: string;
-    completenessPercentage: number;
-    missingFields: string[];
-    recommendedFields: string[];
-    canProceed: boolean;
-    proceedReasons: string[];
-  };
-  validationResult?: {
-    isValid: boolean;
-    errors: string[];
-    warnings: string[];
-    canProceed: boolean;
-  };
+  validationResult?: ClientValidationResult | null;
   onClear?: () => void;
+  onEdit?: () => void;
   className?: string;
   compact?: boolean;
   showActions?: boolean;
@@ -37,13 +30,16 @@ interface SelectedClientInfoProps {
  */
 export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
   client,
-  clientDisplay,
   validationResult,
   onClear,
+  onEdit,
   className,
   compact = false,
   showActions = true,
 }) => {
+  // Формуємо повне ім'я
+  const fullName = client.fullName || `${client.firstName} ${client.lastName}`.trim();
+
   // Формуємо список інформації про клієнта
   const infoItems = [
     {
@@ -97,20 +93,52 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
 
   // Статус валідації
   const getValidationStatus = () => {
-    if (validationResult?.isValid) {
+    if (validationResult?.canProceed) {
       return { status: 'success' as const, text: 'Готово до замовлення' };
     }
-    if (validationResult?.canProceed) {
-      return { status: 'warning' as const, text: 'Можна продовжити' };
+    if (validationResult?.errors && validationResult.errors.length > 0) {
+      return { status: 'error' as const, text: 'Потрібні додаткові дані' };
     }
-    return { status: 'error' as const, text: 'Потрібні додаткові дані' };
+    return { status: 'warning' as const, text: 'Можна продовжити' };
   };
 
   const { status } = getValidationStatus();
 
+  // Обчислюємо повноту профілю
+  const calculateCompleteness = () => {
+    const requiredFields = ['firstName', 'lastName', 'phone'];
+    const optionalFields = ['email', 'address'];
+
+    const filledRequired = requiredFields.filter(
+      (field) => client[field as keyof ClientSearchResult]
+    ).length;
+
+    const filledOptional = optionalFields.filter(
+      (field) => client[field as keyof ClientSearchResult]
+    ).length;
+
+    const totalFields = requiredFields.length + optionalFields.length;
+    const filledFields = filledRequired + filledOptional;
+
+    return Math.round((filledFields / totalFields) * 100);
+  };
+
+  const completenessPercentage = calculateCompleteness();
+
   // Дії для картки
   const actions = showActions ? (
     <>
+      {onEdit && (
+        <ActionButton
+          variant="outlined"
+          color="primary"
+          size="small"
+          startIcon={<Edit />}
+          onClick={onEdit}
+        >
+          Редагувати
+        </ActionButton>
+      )}
       {onClear && (
         <ActionButton
           variant="outlined"
@@ -127,9 +155,9 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
 
   return (
     <Box className={className}>
-      <InfoCard title={clientDisplay.fullName} status={status} compact={compact}>
+      <InfoCard title={fullName} status={status} compact={compact}>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {clientDisplay.subtitle}
+          Вибраний клієнт
         </Typography>
 
         {/* Інформація про клієнта */}
@@ -160,86 +188,38 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
       {/* Індикатор повноти профілю */}
       <Box sx={{ mt: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-          {clientDisplay.canProceed ? (
+          {validationResult?.canProceed ? (
             <CheckCircle color="success" fontSize="small" />
           ) : (
             <Warning color="warning" fontSize="small" />
           )}
-          <span>Повнота профілю: {clientDisplay.completenessPercentage}%</span>
+          <Typography variant="body2">Повнота профілю: {completenessPercentage}%</Typography>
         </Box>
 
-        {/* Відсутні обов'язкові поля */}
-        {clientDisplay.missingFields.length > 0 && (
+        {/* Помилки валідації */}
+        {validationResult?.errors && validationResult.errors.length > 0 && (
           <Alert severity="error" sx={{ mb: 1 }}>
-            <strong>Відсутні обов&apos;язкові поля:</strong>
-            <Box sx={{ mt: 0.5 }}>
-              {clientDisplay.missingFields.map((field, index) => (
-                <Chip
-                  key={index}
-                  label={field}
-                  size="small"
-                  color="error"
-                  sx={{ mr: 0.5, mb: 0.5 }}
-                />
-              ))}
-            </Box>
-          </Alert>
-        )}
-
-        {/* Рекомендовані поля */}
-        {clientDisplay.recommendedFields.length > 0 && (
-          <Alert severity="warning" sx={{ mb: 1 }}>
-            <strong>Рекомендовані поля:</strong>
-            <Box sx={{ mt: 0.5 }}>
-              {clientDisplay.recommendedFields.map((field, index) => (
-                <Chip
-                  key={index}
-                  label={field}
-                  size="small"
-                  color="warning"
-                  sx={{ mr: 0.5, mb: 0.5 }}
-                />
-              ))}
-            </Box>
-          </Alert>
-        )}
-
-        {/* Причини можливості продовження */}
-        {clientDisplay.proceedReasons.length > 0 && (
-          <Alert severity="info">
-            <strong>Можна продовжити тому що:</strong>
+            <strong>Помилки:</strong>
             <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-              {clientDisplay.proceedReasons.map((reason, index) => (
-                <li key={index}>{reason}</li>
+              {validationResult.errors.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </ul>
+          </Alert>
+        )}
+
+        {/* Попередження валідації */}
+        {validationResult?.warnings && validationResult.warnings.length > 0 && (
+          <Alert severity="warning" sx={{ mb: 1 }}>
+            <strong>Попередження:</strong>
+            <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
+              {validationResult.warnings.map((warning, index) => (
+                <li key={index}>{warning}</li>
               ))}
             </ul>
           </Alert>
         )}
       </Box>
-
-      {/* Помилки валідації */}
-      {validationResult?.errors && validationResult.errors.length > 0 && (
-        <Alert severity="error" sx={{ mt: 1 }}>
-          <strong>Помилки:</strong>
-          <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-            {validationResult.errors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </ul>
-        </Alert>
-      )}
-
-      {/* Попередження валідації */}
-      {validationResult?.warnings && validationResult.warnings.length > 0 && (
-        <Alert severity="warning" sx={{ mt: 1 }}>
-          <strong>Попередження:</strong>
-          <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-            {validationResult.warnings.map((warning, index) => (
-              <li key={index}>{warning}</li>
-            ))}
-          </ul>
-        </Alert>
-      )}
     </Box>
   );
 };
