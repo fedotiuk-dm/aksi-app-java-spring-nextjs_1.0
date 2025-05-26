@@ -3,6 +3,7 @@
  * @module domain/wizard/adapters/order/mappers
  */
 
+import { WizardModifierType } from '../../pricing/types';
 import { WizardOrderStatus, WizardExpediteType } from '../types';
 
 /**
@@ -40,6 +41,22 @@ function mapExpediteType(apiType: string | undefined): WizardExpediteType {
       return WizardExpediteType.EXPRESS_24H;
     default:
       return WizardExpediteType.STANDARD;
+  }
+}
+
+/**
+ * Конвертер типу модифікатора з API в доменний тип
+ */
+function mapModifierTypeToDomain(apiType?: string): WizardModifierType {
+  switch (apiType?.toUpperCase()) {
+    case 'PERCENTAGE':
+      return WizardModifierType.PERCENTAGE;
+    case 'FIXED_AMOUNT':
+      return WizardModifierType.FIXED_AMOUNT;
+    case 'MULTIPLIER':
+      return WizardModifierType.MULTIPLIER;
+    default:
+      return WizardModifierType.PERCENTAGE;
   }
 }
 
@@ -120,7 +137,7 @@ function mapOrderItemDTOToDomain(apiItem: OrderItemDTO): WizardOrderItem {
 function mapPriceModifierToDomain(apiModifier: PriceModifierDTO) {
   return {
     name: apiModifier.name || '',
-    type: (apiModifier.type === 'PERCENTAGE' ? 'PERCENTAGE' : 'FIXED') as 'PERCENTAGE' | 'FIXED',
+    type: mapModifierTypeToDomain(apiModifier.type),
     value: apiModifier.value || 0,
     amount: apiModifier.amount || 0,
   };

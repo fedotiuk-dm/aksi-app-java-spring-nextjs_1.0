@@ -8,11 +8,11 @@ import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
 import {
-  clientSearchService,
-  clientCreationService,
+  searchClients,
+  createNewClient,
+  updateExistingClient,
   clientDataSchema,
   type ClientData,
-  type CreateClientRequest,
   type ClientSearchResult,
   ContactMethod,
   InformationSource,
@@ -63,22 +63,13 @@ export const useClientForm = (initialData?: Partial<ClientData>) => {
     }
 
     try {
-      const phoneResult = await clientSearchService.checkClientExistsByPhone(formData.phone);
+      // Пошук клієнта за телефоном
+      const result = await searchClients(formData.phone, 0, 5);
 
-      if (phoneResult.success && phoneResult.data) {
+      if (result.success && result.data && result.data.length > 0) {
         setExistingClient(true);
-        addWarning('Клієнт з таким телефоном вже існує');
+        addWarning('Клієнт з таким телефоном може вже існувати');
         return;
-      }
-
-      if (formData.email) {
-        const emailResult = await clientSearchService.checkClientExistsByEmail(formData.email);
-
-        if (emailResult.success && emailResult.data) {
-          setExistingClient(true);
-          addWarning('Клієнт з таким email вже існує');
-          return;
-        }
       }
 
       setExistingClient(false);
@@ -95,18 +86,7 @@ export const useClientForm = (initialData?: Partial<ClientData>) => {
       clearErrors();
 
       try {
-        const request: CreateClientRequest = {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          phone: data.phone,
-          email: data.email,
-          address: data.address,
-          contactMethods: data.contactMethods || [ContactMethod.PHONE],
-          informationSource: data.informationSource || InformationSource.OTHER,
-          informationSourceOther: data.informationSourceOther,
-        };
-
-        const result = await clientCreationService.createClient(request);
+        const result = await createNewClient(data);
 
         if (result.success && result.data) {
           setCreatedClient(result.data);
@@ -132,7 +112,7 @@ export const useClientForm = (initialData?: Partial<ClientData>) => {
       clearErrors();
 
       try {
-        const result = await clientCreationService.updateClient(id, data);
+        const result = await updateExistingClient(id, data);
 
         if (result.success && result.data) {
           setCreatedClient(result.data);

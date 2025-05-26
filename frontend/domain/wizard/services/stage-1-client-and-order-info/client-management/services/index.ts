@@ -3,8 +3,13 @@
  * @module domain/wizard/services/stage-1/client-management/services
  */
 
-// Експорт сервісів пошуку клієнтів
+// Сервіси пошуку клієнтів
 export * from './client-search.service';
 
-// Експорт сервісу створення клієнтів
-export * from './client-creation.service';
+// Сервіси створення і оновлення клієнтів
+export * from './client-create.service';
+export * from './client-update.service';
+
+// Сервіси валідації даних клієнтів
+export * from './validation';
+

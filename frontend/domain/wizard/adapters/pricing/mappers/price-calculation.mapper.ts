@@ -3,79 +3,82 @@
  * @module domain/wizard/adapters/pricing/mappers
  */
 
+import { WizardModifierType } from '../types/price-modifier.types';
+
 import type {
   WizardPriceCalculationRequest,
   WizardPriceCalculationResponse,
   WizardPriceCalculationDetails,
   WizardAppliedModifier,
-  WizardModifierType,
 } from '../types';
-import type { 
-  PriceCalculationRequestDTO, 
-  PriceCalculationResponseDTO,
-  PriceModifierDTO,
-  CalculationDetailsDTO
-} from '@/lib/api';
+import type { PriceCalculationRequestDTO } from '@/lib/api';
 
 /**
- * Розширений запит для додаткових параметрів
+ * Інтерфейси для API відповідей з розрахунку цін
  */
-export interface ExtendedWizardPriceCalculationRequest extends WizardPriceCalculationRequest {
-  stainCodes?: string[];
-  defectCodes?: string[];
-  riskCodes?: string[];
-  fillerType?: string;
-  fillerCompressed?: boolean;
-  wearPercentage?: number;
+
+interface CalculationDetailsApiResponse extends Record<string, unknown> {
+  modifierCode?: string;
+  modifierName?: string;
+  modifierValue?: string;
+  priceDifference?: number;
+  description?: string;
+}
+
+interface PriceCalculationResponseApiResponse extends Record<string, unknown> {
+  baseUnitPrice?: number;
+  quantity?: number;
+  baseTotalPrice?: number;
+  finalTotalPrice?: number;
+  itemName?: string;
+  categoryCode?: string;
+  categoryName?: string;
+  unitOfMeasure?: string | { value?: string };
+  calculationDetails?: CalculationDetailsApiResponse[];
+  warnings?: string[];
+  recommendations?: string[];
+  expedited?: boolean;
+  expeditePercent?: number;
+  discountPercent?: number;
 }
 
 /**
  * Перетворює WizardPriceCalculationRequest у PriceCalculationRequestDTO
  */
 export function mapPriceCalculationRequestToDTO(
-  domainRequest: WizardPriceCalculationRequest | ExtendedWizardPriceCalculationRequest
+  domainRequest: WizardPriceCalculationRequest
 ): PriceCalculationRequestDTO {
-  const extendedRequest = domainRequest as ExtendedWizardPriceCalculationRequest;
-
   return {
-    categoryCode: domainRequest.categoryCode,
-    itemName: domainRequest.itemName,
-    quantity: domainRequest.quantity,
+    categoryCode: domainRequest.categoryCode || '',
+    itemName: domainRequest.itemName || '',
+    quantity: domainRequest.quantity || 1,
     color: domainRequest.color,
-    material: domainRequest.material,
-    modifierCodes: domainRequest.modifierCodes,
-    expedited: domainRequest.expedited,
-    expeditePercent: domainRequest.expeditePercent,
-    discountPercent: domainRequest.discountPercent,
-    urgencyLevel: domainRequest.urgencyLevel,
-    specialInstructions: domainRequest.specialInstructions,
-
-    // Розширені параметри
-    stainCodes: extendedRequest.stainCodes,
-    defectCodes: extendedRequest.defectCodes,
-    riskCodes: extendedRequest.riskCodes,
-    fillerType: extendedRequest.fillerType,
-    fillerCompressed: extendedRequest.fillerCompressed,
-    wearPercentage: extendedRequest.wearPercentage,
+    modifierCodes: domainRequest.modifierCodes || [],
+    expedited: domainRequest.expedited || false,
+    expeditePercent: domainRequest.expeditePercent || 0,
+    discountPercent: domainRequest.discountPercent || 0,
   };
 }
 
 /**
- * Перетворює PriceCalculationResponseDTO у WizardPriceCalculationResponse
+ * Перетворює PriceCalculationResponseApiResponse у WizardPriceCalculationResponse
  */
 export function mapPriceCalculationResponseToDomain(
-  apiResponse: PriceCalculationResponseDTO
+  apiResponse: PriceCalculationResponseApiResponse
 ): WizardPriceCalculationResponse {
-  const appliedModifiers: WizardAppliedModifier[] = (apiResponse.appliedModifiers || []).map(
-    (modifier: AppliedModifierDTO) => ({
-      code: modifier.code || '',
-      name: modifier.name || '',
-      type: mapModifierTypeToDomain(modifier.type),
-      value: modifier.value || 0,
-      amount: modifier.amount || 0,
-      description: modifier.description || '',
-    })
-  );
+  // Отримуємо модифікатори з calculationDetails, якщо вони є
+  const appliedModifiers: WizardAppliedModifier[] = (apiResponse.calculationDetails || [])
+    .filter((detail: CalculationDetailsApiResponse) => detail.modifierCode) // Тільки записи з модифікаторами
+    .map((detail: CalculationDetailsApiResponse) => ({
+      code: detail.modifierCode || '',
+      name: detail.modifierName || '',
+      type: mapModifierTypeToDomain(
+        detail.modifierValue?.includes('%') ? 'PERCENTAGE' : 'FIXED_AMOUNT'
+      ),
+      value: parseModifierValue(detail.modifierValue || '0'),
+      amount: detail.priceDifference || 0,
+      description: detail.description || '',
+    }));
 
   const calculation: WizardPriceCalculationDetails = {
     basePrice: apiResponse.baseUnitPrice || 0,
@@ -118,22 +121,41 @@ function mapModifierTypeToDomain(apiType?: string): WizardModifierType {
 }
 
 /**
+ * Парсить значення модифікатора з рядка
+ */
+function parseModifierValue(valueStr: string): number {
+  if (!valueStr) return 0;
+
+  // Якщо значення містить %, витягуємо числову частину
+  if (valueStr.includes('%')) {
+    return parseFloat(valueStr.replace('%', ''));
+  }
+
+  // Спроба конвертації рядка в число
+  const numValue = parseFloat(valueStr);
+  return isNaN(numValue) ? 0 : numValue;
+}
+
+/**
  * Розраховує загальну суму модифікаторів
  */
-function calculateModifiersAmount(apiResponse: PriceCalculationResponseDTO): number {
-  if (!apiResponse.appliedModifiers || !Array.isArray(apiResponse.appliedModifiers)) {
+function calculateModifiersAmount(apiResponse: PriceCalculationResponseApiResponse): number {
+  if (!apiResponse.calculationDetails || !Array.isArray(apiResponse.calculationDetails)) {
     return 0;
   }
 
-  return apiResponse.appliedModifiers.reduce((total, modifier) => {
-    return total + (modifier.amount || 0);
-  }, 0);
+  // Сума різниць цін для всіх кроків, пов'язаних з модифікаторами
+  return apiResponse.calculationDetails
+    .filter((detail: CalculationDetailsApiResponse) => detail.modifierCode) // Тільки записи з модифікаторами
+    .reduce((total, detail: CalculationDetailsApiResponse) => {
+      return total + (detail.priceDifference || 0);
+    }, 0);
 }
 
 /**
  * Розраховує суму надбавки за терміновість
  */
-function calculateUrgencyAmount(apiResponse: PriceCalculationResponseDTO): number {
+function calculateUrgencyAmount(apiResponse: PriceCalculationResponseApiResponse): number {
   if (!apiResponse.expedited || !apiResponse.expeditePercent) {
     return 0;
   }
@@ -145,7 +167,7 @@ function calculateUrgencyAmount(apiResponse: PriceCalculationResponseDTO): numbe
 /**
  * Розраховує суму знижки
  */
-function calculateDiscountAmount(apiResponse: PriceCalculationResponseDTO): number {
+function calculateDiscountAmount(apiResponse: PriceCalculationResponseApiResponse): number {
   if (!apiResponse.discountPercent) {
     return 0;
   }

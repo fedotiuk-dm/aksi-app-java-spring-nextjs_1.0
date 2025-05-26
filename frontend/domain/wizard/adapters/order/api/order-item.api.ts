@@ -3,17 +3,9 @@
  * @module domain/wizard/adapters/order/api
  */
 
-import {
-  OrderManagementBasicOperationsService,
-  OrderManagementItemsService,
-  PricingCalculationService,
-} from '@/lib/api';
+import { OrdersService, PriceCalculationService } from '@/lib/api';
 
-import {
-  mapOrderItemDTOToDomain,
-  mapOrderItemArrayToDomain,
-  mapOrderItemToDTO,
-} from '../mappers';
+import { mapOrderItemDTOToDomain, mapOrderItemArrayToDomain, mapOrderItemToDTO } from '../mappers';
 
 import type { WizardOrderItem, WizardOrderOperationResult } from '../types';
 import type { OrderItemDTO } from '@/lib/api';
@@ -28,7 +20,7 @@ export async function getOrderItems(
   orderId: string
 ): Promise<WizardOrderOperationResult<WizardOrderItem[]>> {
   try {
-    const apiResponse = await OrderManagementItemsService.getOrderItems({ orderId });
+    const apiResponse = await OrdersService.getOrderItems({ orderId });
     const items = mapOrderItemArrayToDomain(apiResponse);
 
     return {
@@ -51,7 +43,7 @@ export async function getOrderItemById(
   itemId: string
 ): Promise<WizardOrderOperationResult<WizardOrderItem>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.getOrderItem({
+    const apiResponse = await OrdersService.getOrderItem({
       orderId,
       itemId,
     });
@@ -78,7 +70,7 @@ export async function addOrderItem(
 ): Promise<WizardOrderOperationResult<WizardOrderItem>> {
   try {
     const apiRequest = mapOrderItemToDTO(itemData);
-    const apiResponse = await OrderManagementBasicOperationsService.addOrderItem({
+    const apiResponse = await OrdersService.addOrderItem({
       orderId,
       requestBody: apiRequest as OrderItemDTO,
     });
@@ -106,7 +98,7 @@ export async function updateOrderItem(
 ): Promise<WizardOrderOperationResult<WizardOrderItem>> {
   try {
     const apiRequest = mapOrderItemToDTO(itemData);
-    const apiResponse = await OrderManagementBasicOperationsService.updateOrderItem({
+    const apiResponse = await OrdersService.updateOrderItem({
       orderId,
       itemId,
       requestBody: apiRequest as OrderItemDTO,
@@ -133,7 +125,7 @@ export async function deleteOrderItem(
   itemId: string
 ): Promise<WizardOrderOperationResult<void>> {
   try {
-    await OrderManagementBasicOperationsService.deleteOrderItem({ orderId, itemId });
+    await OrdersService.deleteOrderItem({ orderId, itemId });
 
     return {
       success: true,
@@ -165,7 +157,7 @@ export async function calculateOrderItemPrice(
       discountPercent: 0,
     };
 
-    const apiResponse = await PricingCalculationService.calculatePrice({
+    const apiResponse = await PriceCalculationService.calculatePrice({
       requestBody: calculationRequest,
     });
 

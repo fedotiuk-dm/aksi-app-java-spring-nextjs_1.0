@@ -3,13 +3,9 @@
  * @module domain/wizard/adapters/order/api
  */
 
-import { OrderManagementBasicOperationsService } from '@/lib/api';
+import { OrdersService } from '@/lib/api';
 
-import {
-  mapOrderDTOToDomain,
-  mapOrderArrayToDomain,
-  mapOrderToCreateRequest,
-} from '../mappers';
+import { mapOrderDTOToDomain, mapOrderArrayToDomain, mapOrderToCreateRequest } from '../mappers';
 
 import type {
   WizardOrder,
@@ -26,7 +22,7 @@ const UNKNOWN_ERROR = 'Невідома помилка';
  */
 export async function getAllOrders(): Promise<WizardOrderOperationResult<WizardOrder[]>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.getAllOrders();
+    const apiResponse = await OrdersService.getAllOrders();
     const orders = mapOrderArrayToDomain(apiResponse);
 
     return {
@@ -46,7 +42,7 @@ export async function getAllOrders(): Promise<WizardOrderOperationResult<WizardO
  */
 export async function getOrderById(id: string): Promise<WizardOrderOperationResult<WizardOrder>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.getOrderById({ id });
+    const apiResponse = await OrdersService.getOrderById({ id });
     const order = mapOrderDTOToDomain(apiResponse);
 
     return {
@@ -69,7 +65,7 @@ export async function createOrder(
 ): Promise<WizardOrderOperationResult<WizardOrder>> {
   try {
     const createRequest = mapOrderToCreateRequest(orderData);
-    const apiResponse = await OrderManagementBasicOperationsService.createOrder({
+    const apiResponse = await OrdersService.createOrder({
       requestBody: createRequest,
     });
     const order = mapOrderDTOToDomain(apiResponse);
@@ -94,7 +90,7 @@ export async function saveOrderDraft(
 ): Promise<WizardOrderOperationResult<WizardOrder>> {
   try {
     const createRequest = mapOrderToCreateRequest({ ...orderData, draft: true });
-    const apiResponse = await OrderManagementBasicOperationsService.saveOrderDraft({
+    const apiResponse = await OrdersService.saveOrderDraft({
       requestBody: createRequest,
     });
     const order = mapOrderDTOToDomain(apiResponse);
@@ -116,7 +112,7 @@ export async function saveOrderDraft(
  */
 export async function getDraftOrders(): Promise<WizardOrderOperationResult<WizardOrder[]>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.getDraftOrders();
+    const apiResponse = await OrdersService.getDraftOrders();
     const orders = mapOrderArrayToDomain(apiResponse);
 
     return {
@@ -138,7 +134,7 @@ export async function convertDraftToOrder(
   id: string
 ): Promise<WizardOrderOperationResult<WizardOrder>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.convertDraftToOrder({ id });
+    const apiResponse = await OrdersService.convertDraftToOrder({ id });
     const order = mapOrderDTOToDomain(apiResponse);
 
     return {
@@ -158,7 +154,7 @@ export async function convertDraftToOrder(
  */
 export async function getActiveOrders(): Promise<WizardOrderOperationResult<WizardOrder[]>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.getActiveOrders();
+    const apiResponse = await OrdersService.getActiveOrders();
     const orders = mapOrderArrayToDomain(apiResponse);
 
     return {
@@ -181,7 +177,7 @@ export async function updateOrderStatus(
   status: WizardOrderStatus
 ): Promise<WizardOrderOperationResult<WizardOrder>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.updateOrderStatus({
+    const apiResponse = await OrdersService.updateOrderStatus({
       id,
       status: status as 'DRAFT' | 'NEW' | 'IN_PROGRESS' | 'COMPLETED' | 'DELIVERED' | 'CANCELLED',
     });
@@ -204,7 +200,7 @@ export async function updateOrderStatus(
  */
 export async function completeOrder(id: string): Promise<WizardOrderOperationResult<WizardOrder>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.completeOrder({ id });
+    const apiResponse = await OrdersService.completeOrder({ id });
     const order = mapOrderDTOToDomain(apiResponse);
 
     return {
@@ -224,7 +220,7 @@ export async function completeOrder(id: string): Promise<WizardOrderOperationRes
  */
 export async function cancelOrder(id: string): Promise<WizardOrderOperationResult<void>> {
   try {
-    await OrderManagementBasicOperationsService.cancelOrder({ id });
+    await OrdersService.cancelOrder({ id });
 
     return {
       success: true,
@@ -245,7 +241,7 @@ export async function addPrepayment(
   amount: number
 ): Promise<WizardOrderOperationResult<WizardOrder>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.addPrepayment({
+    const apiResponse = await OrdersService.addPrepayment({
       id,
       amount,
     });
@@ -271,7 +267,7 @@ export async function applyDiscount(
   amount: number
 ): Promise<WizardOrderOperationResult<WizardOrder>> {
   try {
-    const apiResponse = await OrderManagementBasicOperationsService.applyDiscount({
+    const apiResponse = await OrdersService.applyDiscount({
       id,
       amount,
     });

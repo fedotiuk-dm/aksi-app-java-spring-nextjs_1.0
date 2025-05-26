@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ModifierRecommendationDTO } from '../models/ModifierRecommendationDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -9,7 +10,7 @@ export class ModifierRecommendationService {
     /**
      * Отримати рекомендовані модифікатори на основі плям
      * Повертає список рекомендованих модифікаторів цін на основі вказаних типів плям, категорії та матеріалу
-     * @returns any OK
+     * @returns ModifierRecommendationDTO OK
      * @throws ApiError
      */
     public static getRecommendedModifiersForStains({
@@ -20,7 +21,7 @@ export class ModifierRecommendationService {
         stains: Array<string>,
         categoryCode?: string,
         materialType?: string,
-    }): CancelablePromise<Record<string, any>> {
+    }): CancelablePromise<Array<ModifierRecommendationDTO>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/modifier-recommendations/stains',
@@ -41,7 +42,7 @@ export class ModifierRecommendationService {
     /**
      * Отримати попередження про ризики
      * Повертає список попереджень про ризики на основі вказаних плям, дефектів, матеріалу та категорії
-     * @returns any OK
+     * @returns string OK
      * @throws ApiError
      */
     public static getRiskWarningsForItem({
@@ -54,7 +55,7 @@ export class ModifierRecommendationService {
         defects?: Array<string>,
         materialType?: string,
         categoryCode?: string,
-    }): CancelablePromise<Record<string, any>> {
+    }): CancelablePromise<Array<string>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/modifier-recommendations/risks',
@@ -76,7 +77,7 @@ export class ModifierRecommendationService {
     /**
      * Отримати рекомендовані модифікатори на основі дефектів
      * Повертає список рекомендованих модифікаторів цін на основі вказаних типів дефектів, категорії та матеріалу
-     * @returns any OK
+     * @returns ModifierRecommendationDTO OK
      * @throws ApiError
      */
     public static getRecommendedModifiersForDefects({
@@ -87,7 +88,7 @@ export class ModifierRecommendationService {
         defects: Array<string>,
         categoryCode?: string,
         materialType?: string,
-    }): CancelablePromise<Record<string, any>> {
+    }): CancelablePromise<Array<ModifierRecommendationDTO>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/modifier-recommendations/defects',

@@ -32,8 +32,10 @@ export interface WizardReceiptGenerationResult {
 export interface WizardEmailReceiptData {
   readonly orderId: string;
   readonly email: string;
+  readonly includeSignature?: boolean;
   readonly subject?: string;
   readonly message?: string;
+  readonly additionalMessage?: string;
 }
 
 /**

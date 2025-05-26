@@ -54,17 +54,6 @@ export interface WizardAppliedModifier {
 }
 
 /**
- * Рекомендований модифікатор
- */
-export interface WizardRecommendedModifier {
-  code: string;
-  name: string;
-  reason: string;
-  priority: number;
-  isRequired: boolean;
-}
-
-/**
  * Параметри пошуку модифікаторів
  */
 export interface WizardModifierSearchParams {

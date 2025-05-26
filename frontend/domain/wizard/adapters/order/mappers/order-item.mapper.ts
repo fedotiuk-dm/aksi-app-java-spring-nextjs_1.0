@@ -3,8 +3,26 @@
  * @module domain/wizard/adapters/order/mappers
  */
 
+import { WizardModifierType } from '../../pricing/types';
+
 import type { WizardOrderItem, WizardOrderItemDetailed } from '../types';
 import type { OrderItemDTO, OrderItemDetailedDTO } from '@/lib/api';
+
+/**
+ * Конвертер типу модифікатора з API в доменний тип
+ */
+function mapModifierTypeToDomain(apiType?: string): WizardModifierType {
+  switch (apiType?.toUpperCase()) {
+    case 'PERCENTAGE':
+      return WizardModifierType.PERCENTAGE;
+    case 'FIXED_AMOUNT':
+      return WizardModifierType.FIXED_AMOUNT;
+    case 'MULTIPLIER':
+      return WizardModifierType.MULTIPLIER;
+    default:
+      return WizardModifierType.PERCENTAGE;
+  }
+}
 
 /**
  * Перетворює OrderItemDTO у WizardOrderItem
@@ -46,7 +64,7 @@ export function mapOrderItemDetailedDTOToDomain(
       modifiers:
         apiItem.priceModifiers?.map((modifier) => ({
           name: modifier.name || '',
-          type: modifier.type === 'PERCENTAGE' ? 'PERCENTAGE' : 'FIXED',
+          type: mapModifierTypeToDomain(modifier.type),
           value: modifier.value || 0,
           amount: modifier.amount || 0,
         })) || [],

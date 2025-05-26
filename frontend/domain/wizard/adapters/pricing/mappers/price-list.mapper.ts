@@ -4,12 +4,25 @@
  */
 
 import type { WizardPriceListItem } from '../types';
-import type { PriceListItemDTO } from '@/lib/api';
 
 /**
- * Перетворює PriceListItemDTO у WizardPriceListItem
+ * Інтерфейс для API відповіді з елементами прайс-листа
  */
-export function mapPriceListItemDTOToDomain(apiItem: PriceListItemDTO): WizardPriceListItem {
+interface PriceListItemApiResponse extends Record<string, unknown> {
+  id?: string;
+  categoryId?: string;
+  name?: string;
+  unitOfMeasure?: string;
+  basePrice?: number;
+  active?: boolean;
+}
+
+/**
+ * Перетворює PriceListItemApiResponse у WizardPriceListItem
+ */
+export function mapPriceListItemDTOToDomain(
+  apiItem: PriceListItemApiResponse
+): WizardPriceListItem {
   return {
     id: apiItem.id || '',
     categoryId: apiItem.categoryId || '',
@@ -26,8 +39,10 @@ export function mapPriceListItemDTOToDomain(apiItem: PriceListItemDTO): WizardPr
 }
 
 /**
- * Перетворює масив PriceListItemDTO у WizardPriceListItem[]
+ * Перетворює масив PriceListItemApiResponse у WizardPriceListItem[]
  */
-export function mapPriceListItemArrayToDomain(apiItems: PriceListItemDTO[]): WizardPriceListItem[] {
+export function mapPriceListItemArrayToDomain(
+  apiItems: PriceListItemApiResponse[]
+): WizardPriceListItem[] {
   return apiItems.map(mapPriceListItemDTOToDomain);
 }

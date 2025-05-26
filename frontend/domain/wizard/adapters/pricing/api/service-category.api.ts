@@ -3,17 +3,16 @@
  * @module domain/wizard/adapters/pricing/api
  */
 
-import { PricingApiService } from '@/lib/api';
+import { PriceListService } from '@/lib/api';
 
-import {
-  mapServiceCategoryDTOToDomain,
-  mapServiceCategoryArrayToDomain,
-} from '../mappers';
+import { mapServiceCategoryDTOToDomain, mapServiceCategoryArrayToDomain } from '../mappers';
 
-import type {
-  WizardPricingOperationResult,
-  WizardServiceCategory,
-} from '../types';
+/**
+ * Інтерфейс для API відповіді з категоріями послуг
+ */
+interface ServiceCategoryApiResponse extends Record<string, unknown> {}
+
+import type { WizardPricingOperationResult, WizardServiceCategory } from '../types';
 
 // Константи для помилок
 const UNKNOWN_ERROR = 'Невідома помилка';
@@ -25,8 +24,8 @@ export async function getAllServiceCategories(): Promise<
   WizardPricingOperationResult<WizardServiceCategory[]>
 > {
   try {
-    const apiResponse = await PricingApiService.getAllCategories();
-    const categories = mapServiceCategoryArrayToDomain(apiResponse);
+    const apiResponse = await PriceListService.getAllCategories();
+    const categories = mapServiceCategoryArrayToDomain(apiResponse as ServiceCategoryApiResponse[]);
 
     return {
       success: true,
@@ -41,18 +40,23 @@ export async function getAllServiceCategories(): Promise<
 }
 
 /**
- * Отримання активних категорій послуг
+ * Отримання активних категорій послуг (фільтрація на клієнті)
  */
 export async function getActiveServiceCategories(): Promise<
   WizardPricingOperationResult<WizardServiceCategory[]>
 > {
   try {
-    const apiResponse = await PricingApiService.getActiveCategories();
-    const categories = mapServiceCategoryArrayToDomain(apiResponse);
+    const result = await getAllServiceCategories();
+    if (!result.success) {
+      return result;
+    }
+
+    // Фільтруємо активні категорії на клієнті
+    const activeCategories = result.data?.filter((category) => category.isActive) || [];
 
     return {
       success: true,
-      data: categories,
+      data: activeCategories,
     };
   } catch (error) {
     return {
@@ -69,8 +73,8 @@ export async function getServiceCategoryById(
   id: string
 ): Promise<WizardPricingOperationResult<WizardServiceCategory>> {
   try {
-    const apiResponse = await PricingApiService.getCategoryById({ id });
-    const category = mapServiceCategoryDTOToDomain(apiResponse);
+    const apiResponse = await PriceListService.getCategoryById1({ categoryId: id });
+    const category = mapServiceCategoryDTOToDomain(apiResponse as ServiceCategoryApiResponse);
 
     return {
       success: true,
@@ -91,8 +95,8 @@ export async function getServiceCategoryByCode(
   code: string
 ): Promise<WizardPricingOperationResult<WizardServiceCategory>> {
   try {
-    const apiResponse = await PricingApiService.getCategoryByCode({ code });
-    const category = mapServiceCategoryDTOToDomain(apiResponse);
+    const apiResponse = await PriceListService.getCategoryByCode1({ code });
+    const category = mapServiceCategoryDTOToDomain(apiResponse as ServiceCategoryApiResponse);
 
     return {
       success: true,
@@ -107,22 +111,43 @@ export async function getServiceCategoryByCode(
 }
 
 /**
- * Отримання матеріалів для категорії
+ * Отримання одиниць вимірювання для категорії
  */
-export async function getMaterialsForCategory(
-  categoryCode: string
+export async function getUnitsOfMeasureForCategory(
+  categoryId: string
 ): Promise<WizardPricingOperationResult<string[]>> {
   try {
-    const apiResponse = await PricingApiService.getMaterialsForCategory({ categoryCode });
+    const apiResponse = await PriceListService.getAvailableUnitsOfMeasure({ categoryId });
 
     return {
       success: true,
-      data: apiResponse || [],
+      data: (apiResponse as string[]) || [],
     };
   } catch (error) {
     return {
       success: false,
-      error: `Не вдалося отримати матеріали: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
+      error: `Не вдалося отримати одиниці вимірювання: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
+    };
+  }
+}
+
+/**
+ * Отримання назв предметів для категорії
+ */
+export async function getItemNamesForCategory(
+  categoryId: string
+): Promise<WizardPricingOperationResult<string[]>> {
+  try {
+    const apiResponse = await PriceListService.getItemNamesByCategory({ categoryId });
+
+    return {
+      success: true,
+      data: (apiResponse as string[]) || [],
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: `Не вдалося отримати назви предметів: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
     };
   }
 }

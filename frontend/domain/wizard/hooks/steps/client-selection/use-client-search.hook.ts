@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 
-import { clientSearchService } from '../../../services/stage-1-client-and-order-info';
+import { searchClients } from '../../../services/stage-1-client-and-order-info';
 import { useWizardState } from '../../shared';
 
 import type {
@@ -90,10 +90,19 @@ export const useClientSearch = () => {
       clearErrors();
 
       try {
-        const result = await clientSearchService.searchClients(query, page, 20);
+        const result = await searchClients(query, page, 20);
 
         if (result.success && result.data) {
-          const searchData = result.data;
+          // Адаптуємо результат до ClientSearchPaginatedResult
+          const searchData: ClientSearchPaginatedResult = {
+            clients: result.data,
+            totalElements: result.data.length,
+            totalPages: 1,
+            pageNumber: page,
+            pageSize: 20,
+            hasNext: false,
+            hasPrevious: page > 0,
+          };
           setSearchResult(searchData);
           // Кешування результату
           setSearchCache((prev) => new Map(prev).set(cacheKey, searchData));
@@ -156,8 +165,8 @@ export const useClientSearch = () => {
   const quickSearch = useCallback(
     async (query: string, limit: number = 5): Promise<ClientSearchResult[]> => {
       try {
-        const result = await clientSearchService.searchClients(query, 0, limit);
-        return result.success && result.data ? result.data.clients : [];
+        const result = await searchClients(query, 0, limit);
+        return result.success && result.data ? result.data : [];
       } catch (error) {
         addError(error instanceof Error ? error.message : 'Помилка швидкого пошуку');
         return [];
@@ -170,8 +179,8 @@ export const useClientSearch = () => {
   const getClientById = useCallback(
     async (id: string): Promise<ClientSearchResult | null> => {
       try {
-        const result = await clientSearchService.getClientById(id);
-        return result.success && result.data ? result.data : null;
+        const result = await searchClients(id, 0, 1);
+        return result.success && result.data && result.data.length > 0 ? result.data[0] : null;
       } catch (error) {
         addError(error instanceof Error ? error.message : 'Помилка отримання клієнта');
         return null;

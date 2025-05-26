@@ -3,7 +3,7 @@
  * @module domain/wizard/adapters/order/api
  */
 
-import { OrderManagementDocumentsService } from '@/lib/api';
+import { ReceiptService } from '@/lib/api';
 
 import {
   mapReceiptGenerationDataToApi,
@@ -33,7 +33,7 @@ export async function generateOrderPdfReceipt(
 ): Promise<WizardOrderOperationResult<WizardReceiptGenerationResult>> {
   try {
     const apiRequest = mapReceiptGenerationDataToApi(receiptData);
-    const apiResponse = await OrderManagementDocumentsService.generatePdfReceipt({
+    const apiResponse = await ReceiptService.generatePdfReceipt({
       requestBody: apiRequest,
     });
     const result = mapReceiptGenerationResultFromApi(apiResponse);
@@ -58,7 +58,7 @@ export async function sendOrderReceiptByEmail(
 ): Promise<WizardOrderOperationResult<WizardEmailReceiptResult>> {
   try {
     const apiRequest = mapEmailReceiptDataToApi(emailData);
-    const apiResponse = await OrderManagementDocumentsService.sendReceiptByEmail({
+    const apiResponse = await ReceiptService.sendReceiptByEmail({
       requestBody: apiRequest,
     });
     const result = mapEmailReceiptResultFromApi(apiResponse);
@@ -82,7 +82,7 @@ export async function getOrderReceiptData(
   orderId: string
 ): Promise<WizardOrderOperationResult<WizardReceiptData>> {
   try {
-    const apiResponse = await OrderManagementDocumentsService.getReceiptData({ orderId });
+    const apiResponse = await ReceiptService.getReceiptData({ orderId });
     const receiptData = mapReceiptDTOToDomain(apiResponse);
 
     return {

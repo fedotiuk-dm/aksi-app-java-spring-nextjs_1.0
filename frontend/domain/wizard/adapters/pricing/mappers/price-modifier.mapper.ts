@@ -3,17 +3,32 @@
  * @module domain/wizard/adapters/pricing/mappers
  */
 
-import type {
-  WizardPriceModifier,
-  WizardModifierType,
-  WizardModifierCategory,
-} from '../types';
-import type { PriceModifierDTO } from '@/lib/api';
+import { WizardModifierType, WizardModifierCategory } from '../types';
+
+import type { WizardPriceModifier } from '../types';
 
 /**
- * Перетворює PriceModifierDTO у WizardPriceModifier
+ * Інтерфейс для API відповіді з модифікаторами цін
  */
-export function mapPriceModifierDTOToDomain(apiModifier: PriceModifierDTO): WizardPriceModifier {
+interface PriceModifierApiResponse extends Record<string, unknown> {
+  id?: string;
+  code?: string;
+  name?: string;
+  description?: string;
+  type?: string;
+  category?: string;
+  value?: number;
+  active?: boolean;
+  applicableCategories?: string[];
+  conditions?: string[];
+}
+
+/**
+ * Перетворює PriceModifierApiResponse у WizardPriceModifier
+ */
+export function mapPriceModifierDTOToDomain(
+  apiModifier: PriceModifierApiResponse
+): WizardPriceModifier {
   return {
     id: apiModifier.id || '',
     code: apiModifier.code || '',
@@ -29,10 +44,10 @@ export function mapPriceModifierDTOToDomain(apiModifier: PriceModifierDTO): Wiza
 }
 
 /**
- * Перетворює масив PriceModifierDTO у WizardPriceModifier[]
+ * Перетворює масив PriceModifierApiResponse у WizardPriceModifier[]
  */
 export function mapPriceModifierArrayToDomain(
-  apiModifiers: PriceModifierDTO[]
+  apiModifiers: PriceModifierApiResponse[]
 ): WizardPriceModifier[] {
   return apiModifiers.map(mapPriceModifierDTOToDomain);
 }

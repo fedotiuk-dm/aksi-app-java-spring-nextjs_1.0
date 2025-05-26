@@ -25,15 +25,15 @@ export type PriceCalculationRequestDTO = {
      */
     quantity: number;
     /**
-     * Список кодів модифікаторів для застосування
+     * Список кодів модифікаторів
      */
     modifierCodes?: Array<string>;
     /**
-     * Значення для модифікаторів з діапазоном (наприклад, розмір плями)
+     * Значення для модифікаторів з діапазоном
      */
     rangeModifierValues?: Array<RangeModifierValue>;
     /**
-     * Кількості для фіксованих модифікаторів (наприклад, кількість ґудзиків)
+     * Кількості для фіксованих модифікаторів
      */
     fixedModifierQuantities?: Array<FixedModifierQuantity>;
     /**

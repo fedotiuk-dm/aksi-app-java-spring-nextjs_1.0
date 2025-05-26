@@ -6,6 +6,8 @@
 import { WizardOrderStatus, WizardExpediteType } from './base.types';
 import { WizardOrderItem, WizardOrderItemDetailed } from './items.types';
 
+import type { WizardModifierType } from '../../pricing/types';
+
 /**
  * Інформація про клієнта в замовленні (спрощена)
  */
@@ -114,6 +116,16 @@ export interface WizardOrderCreateData {
 }
 
 /**
+ * Результат ініціалізації замовлення
+ */
+export interface WizardOrderInitializationResult {
+  readonly orderId: string;
+  readonly receiptNumber?: string; // Генерується автоматично на бекенді
+  readonly tagNumber: string; // Унікальна мітка, введена вручну
+  readonly createdAt?: string;
+}
+
+/**
  * Дані для оновлення замовлення
  */
 export interface WizardOrderUpdateData {
@@ -126,4 +138,166 @@ export interface WizardOrderUpdateData {
   readonly internalNotes?: string;
   readonly expediteType?: WizardExpediteType;
   readonly status?: WizardOrderStatus;
+}
+
+/**
+ * Підпис клієнта
+ */
+export interface WizardCustomerSignature {
+  readonly id: string;
+  readonly orderId: string;
+  readonly signatureData: string;
+  readonly signatureType: string;
+  readonly createdAt: string;
+  readonly updatedAt?: string;
+}
+
+/**
+ * Дані для створення підпису клієнта
+ */
+export interface WizardCustomerSignatureCreateData {
+  readonly orderId: string;
+  readonly signatureData: string;
+  readonly signatureType: string;
+}
+
+/**
+ * Дані для фіналізації замовлення
+ */
+export interface WizardOrderFinalizationData {
+  readonly orderId: string;
+  readonly signatureData?: string;
+  readonly termsAccepted?: boolean;
+  readonly sendReceiptByEmail?: boolean;
+  readonly generatePrintableReceipt?: boolean;
+  readonly comments?: string;
+}
+
+/**
+ * Дані для додаткових вимог до замовлення
+ */
+export interface WizardAdditionalRequirementsData {
+  readonly orderId: string;
+  readonly additionalRequirements?: string;
+  readonly customerNotes?: string;
+}
+
+/**
+ * Результат операції з додатковими вимогами
+ */
+export interface WizardAdditionalRequirementsResult {
+  readonly orderId: string;
+  readonly additionalRequirements?: string;
+  readonly customerNotes?: string;
+  readonly updatedAt?: string;
+}
+
+/**
+ * Дані для оновлення параметрів виконання замовлення
+ */
+export interface WizardOrderCompletionUpdateData {
+  readonly orderId: string;
+  readonly expediteType: WizardExpediteType;
+  readonly expectedCompletionDate: string;
+}
+
+/**
+ * Дані для розрахунку дати завершення замовлення
+ */
+export interface WizardCompletionDateCalculationData {
+  readonly serviceCategoryIds: string[];
+  readonly expediteType: WizardExpediteType;
+}
+
+/**
+ * Результат оновлення параметрів виконання замовлення
+ */
+export interface WizardOrderCompletionResult {
+  readonly orderId: string;
+  readonly expediteType: string;
+  readonly expectedCompletionDate: string;
+  readonly expediteSurcharge: number;
+  readonly updatedAt?: string;
+}
+
+/**
+ * Результат розрахунку дати завершення замовлення
+ */
+export interface WizardCompletionDateCalculationResult {
+  readonly expectedCompletionDate: string;
+  readonly expediteType: string;
+  readonly expediteSurcharge: number;
+  readonly standardCompletionDate?: string;
+  readonly calculatedAt?: string;
+}
+
+/**
+ * API відповідь для базової ціни
+ */
+export interface WizardBasePriceResponse {
+  readonly price?: number;
+  readonly basePrice?: number;
+  readonly unitOfMeasure?: string;
+  readonly categoryCode?: string;
+  readonly itemName?: string;
+  readonly color?: string;
+}
+
+/**
+ * API відповідь для модифікатора
+ */
+export interface WizardModifierResponse {
+  readonly code?: string;
+  readonly name?: string;
+  readonly description?: string;
+  readonly type?: WizardModifierType;
+  readonly value?: number;
+  readonly category?: 'GENERAL' | 'TEXTILE' | 'LEATHER';
+  readonly applicableCategories?: string[];
+  readonly isRecommended?: boolean;
+}
+
+/**
+ * API відповідь для попередження про ризики
+ */
+export interface WizardRiskWarningResponse {
+  readonly type?: string;
+  readonly severity?: 'LOW' | 'MEDIUM' | 'HIGH';
+  readonly message?: string;
+  readonly recommendation?: string;
+}
+
+/**
+ * Фотографія предмета замовлення
+ */
+export interface WizardOrderItemPhoto {
+  readonly id: string;
+  readonly itemId: string;
+  readonly fileName: string;
+  readonly filePath: string;
+  readonly fileSize: number;
+  readonly mimeType: string;
+  readonly description?: string;
+  readonly annotations?: string;
+  readonly uploadedAt: string;
+  readonly updatedAt?: string;
+}
+
+/**
+ * Дані для завантаження фотографії
+ */
+export interface WizardPhotoUploadData {
+  readonly itemId: string;
+  readonly file: File;
+  readonly description?: string;
+}
+
+/**
+ * Дані для оновлення анотацій фотографії
+ */
+export interface WizardPhotoAnnotationsData {
+  readonly itemId: string;
+  readonly photoId: string;
+  readonly annotations: string;
+  readonly description?: string;
 }

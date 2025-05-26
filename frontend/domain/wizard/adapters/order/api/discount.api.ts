@@ -3,7 +3,7 @@
  * @module domain/wizard/adapters/order/api
  */
 
-import { OrderManagementFinancialService } from '@/lib/api';
+import { OrderDiscountsService } from '@/lib/api';
 
 import { mapDiscountDataToApi, mapDiscountResultFromApi } from '../mappers';
 
@@ -25,23 +25,25 @@ export async function applyOrderDiscount(
   try {
     const apiRequest = mapDiscountDataToApi(discountData);
     // Отримуємо відповідь з API
-    const apiResponse = await OrderManagementFinancialService.applyDiscount1({
+    const apiResponse = await OrderDiscountsService.applyDiscount1({
       requestBody: apiRequest,
     });
-    
+
     // Валідація відповіді
     if (!apiResponse || typeof apiResponse !== 'object') {
       throw new Error('Отримано некоректну відповідь від API');
     }
-    
+
     // Перетворюємо відповідь в типізований формат
     const typedResponse = {
       discountAmount: Number(apiResponse.discountAmount || 0),
       finalAmount: Number(apiResponse.finalAmount || 0),
-      discountDescription: apiResponse.discountDescription ? String(apiResponse.discountDescription) : undefined,
-      ...apiResponse
+      discountDescription: apiResponse.discountDescription
+        ? String(apiResponse.discountDescription)
+        : undefined,
+      ...apiResponse,
     };
-    
+
     const result = mapDiscountResultFromApi(typedResponse);
 
     return {
@@ -63,23 +65,25 @@ export async function getOrderDiscount(
   orderId: string
 ): Promise<WizardOrderOperationResult<WizardDiscountResult>> {
   try {
-    const apiResponse = await OrderManagementFinancialService.getOrderDiscount({
+    const apiResponse = await OrderDiscountsService.getOrderDiscount({
       orderId,
     });
-    
+
     // Валідація відповіді
     if (!apiResponse || typeof apiResponse !== 'object') {
       throw new Error('Отримано некоректну відповідь від API');
     }
-    
+
     // Перетворюємо відповідь в типізований формат
     const typedResponse = {
       discountAmount: Number(apiResponse.discountAmount || 0),
       finalAmount: Number(apiResponse.finalAmount || 0),
-      discountDescription: apiResponse.discountDescription ? String(apiResponse.discountDescription) : undefined,
-      ...apiResponse
+      discountDescription: apiResponse.discountDescription
+        ? String(apiResponse.discountDescription)
+        : undefined,
+      ...apiResponse,
     };
-    
+
     const result = mapDiscountResultFromApi(typedResponse);
 
     return {
@@ -101,7 +105,7 @@ export async function removeOrderDiscount(
   orderId: string
 ): Promise<WizardOrderOperationResult<void>> {
   try {
-    await OrderManagementFinancialService.removeDiscount({ orderId });
+    await OrderDiscountsService.removeDiscount({ orderId });
 
     return {
       success: true,

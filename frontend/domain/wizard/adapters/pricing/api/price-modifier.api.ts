@@ -3,12 +3,14 @@
  * @module domain/wizard/adapters/pricing/api
  */
 
-import { PricingApiService } from '@/lib/api';
+import { PriceCalculationService } from '@/lib/api';
 
-import {
-  mapPriceModifierDTOToDomain,
-  mapPriceModifierArrayToDomain,
-} from '../mappers';
+import { mapPriceModifierDTOToDomain, mapPriceModifierArrayToDomain } from '../mappers';
+
+/**
+ * Інтерфейс для API відповіді з модифікаторами
+ */
+interface PriceModifierApiResponse extends Record<string, unknown> {}
 
 import type {
   WizardPricingOperationResult,
@@ -26,8 +28,10 @@ export async function getModifiersForCategory(
   categoryCode: string
 ): Promise<WizardPricingOperationResult<WizardPriceModifier[]>> {
   try {
-    const apiResponse = await PricingApiService.getModifiersForServiceCategory({ categoryCode });
-    const modifiers = mapPriceModifierArrayToDomain(apiResponse);
+    const apiResponse = await PriceCalculationService.getModifiersForServiceCategory1({
+      categoryCode,
+    });
+    const modifiers = mapPriceModifierArrayToDomain(apiResponse as PriceModifierApiResponse[]);
 
     return {
       success: true,
@@ -48,8 +52,8 @@ export async function getModifierByCode(
   code: string
 ): Promise<WizardPricingOperationResult<WizardPriceModifier>> {
   try {
-    const apiResponse = await PricingApiService.getModifierByCode({ code });
-    const modifier = mapPriceModifierDTOToDomain(apiResponse);
+    const apiResponse = await PriceCalculationService.getModifierByCode1({ code });
+    const modifier = mapPriceModifierDTOToDomain(apiResponse as PriceModifierApiResponse);
 
     return {
       success: true,
@@ -67,11 +71,11 @@ export async function getModifierByCode(
  * Отримання модифікаторів за категорією модифікатора
  */
 export async function getModifiersByCategory(
-  category: "GENERAL" | "TEXTILE" | "LEATHER"
+  category: 'GENERAL' | 'TEXTILE' | 'LEATHER'
 ): Promise<WizardPricingOperationResult<WizardPriceModifier[]>> {
   try {
-    const apiResponse = await PricingApiService.getModifiersByCategory({ category });
-    const modifiers = mapPriceModifierArrayToDomain(apiResponse);
+    const apiResponse = await PriceCalculationService.getModifiersByCategory1({ category });
+    const modifiers = mapPriceModifierArrayToDomain(apiResponse as PriceModifierApiResponse[]);
 
     return {
       success: true,
@@ -86,42 +90,17 @@ export async function getModifiersByCategory(
 }
 
 /**
- * Пошук модифікаторів з параметрами
+ * Отримання модифікаторів за кодами
  */
-export async function searchModifiers(
-  params: WizardModifierSearchParams
+export async function getModifiersByCodes(
+  codes: string[]
 ): Promise<WizardPricingOperationResult<WizardPriceModifier[]>> {
   try {
-    // Перетворюємо параметри у формат, який очікує API
-    const searchParams: {
-      query?: string;
-      category?: 'GENERAL' | 'TEXTILE' | 'LEATHER';
-      active?: boolean;
-      page?: number;
-      size?: number;
-      sortBy?: string;
-      sortDirection?: string;
-    } = {
-      query: params.searchTerm, // правильна назва параметра - query, а не searchTerm
-      active: params.isActive, // правильна назва параметра - active, а не isActive
-    };
+    const apiResponse = await PriceCalculationService.getModifiersByCodes({ requestBody: codes });
 
-    // Конвертуємо категорію модифікатора у формат, який очікує API
-    // Зауважте, що категорії модифікаторів в домені та API відрізняються
-    // Доменні категорії: MATERIAL, COLOR, SIZE, URGENCY, CONDITION, SPECIAL_SERVICE, DISCOUNT
-    // API категорії: GENERAL, TEXTILE, LEATHER
-    
-    // Зараз ми не передаємо категорію модифікатора в API, бо немає прямого маппінгу
-    // Для коректної реалізації потрібно буде додати правильний маппінг між типами
-
-    // Додаємо дефолтні значення для пагінації та сортування
-    searchParams.page = 0; // Перша сторінка за замовчуванням
-    searchParams.size = 20; // Розмір сторінки за замовчуванням
-    searchParams.sortBy = 'name'; // Поле сортування за замовчуванням
-    searchParams.sortDirection = 'ASC'; // Напрямок сортування за замовчуванням
-
-    const apiResponse = await PricingApiService.searchModifiers(searchParams);
-    const modifiers = mapPriceModifierArrayToDomain(apiResponse);
+    // Перетворюємо Record<string, PriceModifierApiResponse> в масив модифікаторів
+    const modifiersArray = Object.values(apiResponse as Record<string, PriceModifierApiResponse>);
+    const modifiers = mapPriceModifierArrayToDomain(modifiersArray);
 
     return {
       success: true,
@@ -130,7 +109,7 @@ export async function searchModifiers(
   } catch (error) {
     return {
       success: false,
-      error: `Помилка пошуку модифікаторів: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
+      error: `Не вдалося отримати модифікатори за кодами: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
     };
   }
 }
@@ -142,24 +121,10 @@ export async function getAvailableModifiersForCategory(
   categoryCode: string
 ): Promise<WizardPricingOperationResult<WizardPriceModifier[]>> {
   try {
-    // Отримуємо коди модифікаторів (масив рядків)
-    const modifierCodes = await PricingApiService.getAvailableModifiersForCategory({ categoryCode });
-    
-    if (modifierCodes.length === 0) {
-      return {
-        success: true,
-        data: [],
-      };
-    }
-    
-    // Отримуємо повну інформацію для кожного модифікатора
-    const modifiersPromises = modifierCodes.map(code => getModifierByCode(code));
-    const modifiersResults = await Promise.all(modifiersPromises);
-    
-    // Фільтруємо тільки успішні результати
-    const modifiers = modifiersResults
-      .filter(result => result.success && result.data)
-      .map(result => result.data as WizardPriceModifier);
+    const apiResponse = await PriceCalculationService.getAvailableModifiersForCategory({
+      categoryCode,
+    });
+    const modifiers = mapPriceModifierArrayToDomain(apiResponse as PriceModifierApiResponse[]);
 
     return {
       success: true,
@@ -169,6 +134,32 @@ export async function getAvailableModifiersForCategory(
     return {
       success: false,
       error: `Не вдалося отримати доступні модифікатори: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
+    };
+  }
+}
+
+/**
+ * Пошук модифікаторів з параметрами (спрощена версія)
+ */
+export async function searchModifiers(
+  params: WizardModifierSearchParams
+): Promise<WizardPricingOperationResult<WizardPriceModifier[]>> {
+  try {
+    // Оскільки в новому API немає загального методу пошуку,
+    // використовуємо пошук за категорією, якщо вона вказана
+    if (params.categoryCode) {
+      return await getModifiersForCategory(params.categoryCode);
+    }
+
+    // Якщо категорія не вказана, повертаємо порожній результат
+    return {
+      success: true,
+      data: [],
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: `Помилка пошуку модифікаторів: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
     };
   }
 }

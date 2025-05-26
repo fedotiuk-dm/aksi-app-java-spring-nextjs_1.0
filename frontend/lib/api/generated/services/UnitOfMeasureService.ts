@@ -8,7 +8,7 @@ import { request as __request } from '../core/request';
 export class UnitOfMeasureService {
     /**
      * Отримати рекомендовану одиницю виміру для предмета
-     * @returns any OK
+     * @returns string OK
      * @throws ApiError
      */
     public static getRecommendedUnitOfMeasure({
@@ -17,7 +17,7 @@ export class UnitOfMeasureService {
     }: {
         categoryId: string,
         itemName: string,
-    }): CancelablePromise<Record<string, any>> {
+    }): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/units-of-measure/recommend',
@@ -36,7 +36,7 @@ export class UnitOfMeasureService {
     }
     /**
      * Перевірити підтримку одиниці виміру для предмета
-     * @returns any OK
+     * @returns boolean OK
      * @throws ApiError
      */
     public static isUnitSupportedForItem({
@@ -47,7 +47,7 @@ export class UnitOfMeasureService {
         categoryId: string,
         itemName: string,
         unitOfMeasure: string,
-    }): CancelablePromise<Record<string, any>> {
+    }): CancelablePromise<boolean> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/units-of-measure/check-support',
@@ -67,14 +67,14 @@ export class UnitOfMeasureService {
     }
     /**
      * Отримати всі доступні одиниці виміру для категорії
-     * @returns any OK
+     * @returns string OK
      * @throws ApiError
      */
     public static getAvailableUnitsForCategory({
         categoryId,
     }: {
         categoryId: string,
-    }): CancelablePromise<Record<string, any>> {
+    }): CancelablePromise<Array<string>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/units-of-measure/category/{categoryId}',

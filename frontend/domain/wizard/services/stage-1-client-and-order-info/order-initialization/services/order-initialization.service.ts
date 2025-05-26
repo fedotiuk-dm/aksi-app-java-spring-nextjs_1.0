@@ -4,6 +4,12 @@
  */
 
 import { getAllBranches } from '../../../../adapters/branch';
+import { 
+  validateUniqueLabel as validateUniqueLabelAdapter,
+  checkUniqueLabelExists, 
+  initializeOrder as initializeOrderAdapter
+} from '../../../../adapters/order/api';
+import { IOrderInitializationService } from '../interfaces/order-initialization.interfaces';
 import {
   orderInitializationSchema,
   uniqueLabelSchema,
@@ -12,31 +18,32 @@ import {
   type Branch,
   type GenerateReceiptNumberRequest,
   type ValidateUniqueLabelRequest,
+  type OrderInitializationResult
 } from '../types/order-initialization.types';
 
 import type { OperationResult } from '../../../shared/types/base.types';
 
-// Імпорт адаптерів
-
 /**
  * Сервіс ініціалізації замовлення
- * Відповідальність: генерація номерів квитанцій, валідація міток, управління філіями
+ * Відповідальність: валідація міток, управління філіями, ініціалізація замовлення
  */
-export class OrderInitializationService {
+export class OrderInitializationService implements IOrderInitializationService {
   private readonly UNKNOWN_ERROR = 'Невідома помилка';
 
   /**
    * Генерація номера квитанції
+   * Примітка: в актуальній версії номер квитанції генерується автоматично на бекенді
+   * під час створення замовлення, але цей метод залишений для сумісності з інтерфейсом
    */
   async generateReceiptNumber(
     request?: GenerateReceiptNumberRequest
   ): Promise<OperationResult<string>> {
     try {
       // Генерація номера на основі дати та філії
+      // Формат: YYYYMMDD-BRANCH-NNNN
       const date = request?.date || new Date();
       const branchId = request?.branchId || 'DEFAULT';
 
-      // Формат: YYYYMMDD-BRANCH-NNNN
       const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
       const branchCode = branchId.slice(0, 3).toUpperCase();
       const sequence = Math.floor(Math.random() * 9999)
@@ -52,205 +59,212 @@ export class OrderInitializationService {
     } catch (error) {
       return {
         success: false,
-        error: `Помилка генерації номера квитанції: ${error instanceof Error ? error.message : this.UNKNOWN_ERROR}`,
+        error: error instanceof Error ? error.message : this.UNKNOWN_ERROR,
       };
     }
   }
 
   /**
-   * Валідація унікальної мітки
+   * Валідація формату унікальної мітки
+   */
+  validateUniqueLabelFormat(label: string): OperationResult<boolean> {
+    try {
+      // Використовуємо Zod для валідації
+      const result = uniqueLabelSchema.safeParse({ label });
+
+      if (!result.success) {
+        const errorMessages = result.error.errors.map((err) => err.message).join(', ');
+        return {
+          success: false,
+          error: errorMessages,
+        };
+      }
+
+      // Додаткова валідація з API адаптера
+      const adapterValidation = validateUniqueLabelAdapter(label);
+
+      if (!adapterValidation.isValid) {
+        return {
+          success: false,
+          error: adapterValidation.error || 'Неприпустимий формат мітки',
+        };
+      }
+
+      return {
+        success: true,
+        data: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : this.UNKNOWN_ERROR,
+      };
+    }
+  }
+
+  /**
+   * Перевірка унікальності мітки
    */
   async validateUniqueLabel(
     request: ValidateUniqueLabelRequest
   ): Promise<OperationResult<boolean>> {
     try {
-      // Валідація формату мітки
-      const validationResult = uniqueLabelSchema.safeParse({ label: request.label });
-      if (!validationResult.success) {
+      // Спочатку валідуємо формат
+      const formatValidation = this.validateUniqueLabelFormat(request.label);
+      if (!formatValidation.success) {
+        return formatValidation;
+      }
+
+      // Потім перевіряємо унікальність через API
+      const result = await checkUniqueLabelExists(request.label, request.excludeOrderId);
+
+      if (!result.success) {
         return {
           success: false,
-          error: `Некоректний формат мітки: ${validationResult.error.issues.map((i) => i.message).join(', ')}`,
+          error: result.error || 'Не вдалося перевірити унікальність мітки',
         };
       }
 
-      // TODO: Тут буде перевірка унікальності через API
-      // Поки що повертаємо true (мітка унікальна)
-      const isUnique = true;
+      // Якщо мітка існує, це означає, що вона НЕ є унікальною
+      const isUnique = !result.data;
 
       return {
         success: true,
         data: isUnique,
+        error: isUnique ? undefined : 'Мітка вже використовується в іншому замовленні',
       };
     } catch (error) {
       return {
         success: false,
-        error: `Помилка валідації унікальної мітки: ${error instanceof Error ? error.message : this.UNKNOWN_ERROR}`,
+        error: error instanceof Error ? error.message : this.UNKNOWN_ERROR,
       };
     }
   }
 
   /**
-   * Завантаження списку філій
+   * Отримання списку філій
    */
   async loadBranches(): Promise<OperationResult<Branch[]>> {
     try {
-      // Виклик адаптера для отримання філій
-      const branches = await getAllBranches();
+      const result = await getAllBranches();
 
-      // Трансформація до нашого типу
-      const transformedBranches: Branch[] = branches.map((branch) => ({
-        id: branch.id,
-        name: branch.name,
-        address: branch.address,
-        phone: branch.phone || '',
-        workingHours: '9:00-18:00', // За замовчуванням
-        isActive: branch.active,
-      }));
+      if (!result.success) {
+        return {
+          success: false,
+          error: result.error || 'Не вдалося завантажити список філій',
+        };
+      }
 
       return {
         success: true,
-        data: transformedBranches,
+        data: result.data,
       };
     } catch (error) {
       return {
         success: false,
-        error: `Помилка завантаження філій: ${error instanceof Error ? error.message : this.UNKNOWN_ERROR}`,
+        error: error instanceof Error ? error.message : this.UNKNOWN_ERROR,
       };
     }
   }
 
   /**
-   * Отримання філії за ID
+   * Валідація даних для ініціалізації замовлення
    */
-  async getBranchById(id: string): Promise<OperationResult<Branch>> {
+  validateOrderInitializationData(data: Partial<OrderInitializationData>): OperationResult<OrderInitializationData> & {
+    isValid: boolean;
+    validationErrors: Record<string, string>;
+  } {
     try {
-      if (!id || id.trim() === '') {
-        return {
-          success: false,
-          error: 'ID філії не може бути порожнім',
-        };
-      }
+      // Використовуємо Zod для валідації
+      const result = orderInitializationSchema.safeParse(data);
 
-      const branchesResult = await this.loadBranches();
-      if (!branchesResult.success || !branchesResult.data) {
-        return {
-          success: false,
-          error: branchesResult.error || 'Помилка завантаження філій',
-        };
-      }
+      if (!result.success) {
+        const validationErrors: Record<string, string> = {};
+        
+        result.error.errors.forEach((err) => {
+          const field = err.path[0] as string;
+          validationErrors[field] = err.message;
+        });
 
-      const branch = branchesResult.data.find((b) => b.id === id);
-      if (!branch) {
         return {
           success: false,
-          error: 'Філію не знайдено',
+          isValid: false,
+          error: 'Дані для ініціалізації замовлення містять помилки',
+          validationErrors,
         };
       }
 
       return {
         success: true,
-        data: branch,
+        isValid: true,
+        data: result.data,
+        validationErrors: {},
       };
     } catch (error) {
       return {
         success: false,
-        error: `Помилка отримання філії: ${error instanceof Error ? error.message : this.UNKNOWN_ERROR}`,
+        isValid: false,
+        error: error instanceof Error ? error.message : this.UNKNOWN_ERROR,
+        validationErrors: {},
       };
     }
   }
 
   /**
-   * Валідація даних ініціалізації замовлення
+   * Ініціалізація нового замовлення
    */
-  validateOrderInitialization(
-    data: OrderInitializationData
-  ): OperationResult<OrderInitializationData> {
-    try {
-      const validationResult = orderInitializationSchema.safeParse(data);
-
-      if (!validationResult.success) {
-        return {
-          success: false,
-          error: `Помилка валідації: ${validationResult.error.issues.map((i) => i.message).join(', ')}`,
-        };
-      }
-
-      return {
-        success: true,
-        data: validationResult.data,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: `Помилка валідації: ${error instanceof Error ? error.message : this.UNKNOWN_ERROR}`,
-      };
-    }
-  }
-
-  /**
-   * Ініціалізація замовлення з усіма перевірками
-   */
-  async initializeOrder(data: OrderInitializationData): Promise<OperationResult<OrderBasicInfo>> {
+  async initializeOrder(data: OrderInitializationData): Promise<OrderInitializationResult> {
     try {
       // Валідація даних
-      const validationResult = this.validateOrderInitialization(data);
+      const validationResult = this.validateOrderInitializationData(data);
       if (!validationResult.success) {
-        return validationResult as OperationResult<OrderBasicInfo>;
+        return {
+          success: false,
+          error: validationResult.error,
+        };
       }
 
       // Перевірка унікальності мітки
-      const uniqueLabelResult = await this.validateUniqueLabel({ label: data.uniqueLabel });
+      const uniqueLabelResult = await this.validateUniqueLabel({
+        label: data.uniqueLabel,
+      });
+
       if (!uniqueLabelResult.success || !uniqueLabelResult.data) {
         return {
           success: false,
-          error: uniqueLabelResult.error || 'Мітка не є унікальною',
+          error: uniqueLabelResult.error || 'Мітка вже використовується в іншому замовленні',
         };
       }
 
-      // Перевірка існування філії
-      const branchResult = await this.getBranchById(data.branchId);
-      if (!branchResult.success) {
+      // Ініціалізація замовлення через API
+      const result = await initializeOrderAdapter(
+        data.uniqueLabel,
+        data.branchId
+      );
+
+      if (!result.success) {
         return {
           success: false,
-          error: branchResult.error || 'Філію не знайдено',
+          error: result.error || 'Не вдалося ініціалізувати замовлення',
         };
       }
 
-      // Створення базової інформації замовлення
+      // Формуємо результат ініціалізації
       const orderBasicInfo: OrderBasicInfo = {
-        receiptNumber: data.receiptNumber,
+        receiptNumber: result.data.receiptNumber || data.receiptNumber,
         uniqueLabel: data.uniqueLabel,
         branchId: data.branchId,
-        branch: branchResult.data,
         createdAt: data.createdAt,
       };
 
       return {
         success: true,
-        data: orderBasicInfo,
+        orderBasicInfo,
       };
     } catch (error) {
       return {
         success: false,
-        error: `Помилка ініціалізації замовлення: ${error instanceof Error ? error.message : this.UNKNOWN_ERROR}`,
-      };
-    }
-  }
-
-  /**
-   * Сканування унікальної мітки (заглушка для майбутньої реалізації)
-   */
-  async scanUniqueLabel(): Promise<OperationResult<string>> {
-    try {
-      // TODO: Інтеграція зі сканером QR/штрих-кодів
-      return {
-        success: false,
-        error: 'Функція сканування ще не реалізована',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: `Помилка сканування: ${error instanceof Error ? error.message : this.UNKNOWN_ERROR}`,
+        error: error instanceof Error ? error.message : this.UNKNOWN_ERROR,
       };
     }
   }

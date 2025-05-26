@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.order.dto.receipt.EmailReceiptRequest;
+import com.aksi.domain.order.dto.receipt.EmailReceiptResponse;
+import com.aksi.domain.order.dto.receipt.PdfReceiptResponse;
 import com.aksi.domain.order.dto.receipt.ReceiptDTO;
 import com.aksi.domain.order.dto.receipt.ReceiptGenerationRequest;
 import com.aksi.domain.order.service.ReceiptService;
@@ -69,7 +71,8 @@ public class ReceiptController {
     @PostMapping("/pdf")
     @Operation(summary = "Згенерувати PDF-квитанцію",
                description = "Генерує PDF-квитанцію для замовлення з вказаними параметрами")
-    @ApiResponse(responseCode = "200", description = "PDF-квитанція успішно згенерована")
+    @ApiResponse(responseCode = "200", description = "PDF-квитанція успішно згенерована",
+            content = @Content(schema = @Schema(implementation = PdfReceiptResponse.class)))
     @ApiResponse(responseCode = "400", description = "Некоректний запит")
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
     public ResponseEntity<?> generatePdfReceipt(
@@ -79,15 +82,9 @@ public class ReceiptController {
         log.info("Запит на генерацію PDF-квитанції для замовлення з ID: {}", request.getOrderId());
 
         try {
-            byte[] pdfContent = receiptService.generatePdfReceiptBytes(request);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("filename", "receipt_" + request.getOrderId() + ".pdf");
-            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-
-            // Тут зберігаємо оригінальну поведінку, оскільки це PDF-файл з особливими заголовками
-            return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+            PdfReceiptResponse response = receiptService.generatePdfReceipt(request);
+            return ApiResponseUtils.ok(response, "PDF-квитанцію успішно згенеровано для замовлення з ID: {}", 
+                    request.getOrderId());
         } catch (IllegalArgumentException e) {
             return ApiResponseUtils.notFound("Замовлення не знайдено",
                     "Замовлення з ID: {} не знайдено. Причина: {}", request.getOrderId(), e.getMessage());
@@ -97,11 +94,42 @@ public class ReceiptController {
                     request.getOrderId(), e.getMessage());
         }
     }
+    
+    @GetMapping("/pdf/download/{orderId}")
+    @Operation(summary = "Завантажити PDF-квитанцію",
+               description = "Завантажує PDF-квитанцію для замовлення як файл")
+    @ApiResponse(responseCode = "200", description = "PDF-квитанція успішно завантажена")
+    @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
+    public ResponseEntity<?> downloadPdfReceipt(
+            @Parameter(description = "ID замовлення", required = true) @PathVariable UUID orderId) {
+
+        log.info("Запит на завантаження PDF-квитанції для замовлення з ID: {}", orderId);
+
+        try {
+            ReceiptGenerationRequest request = new ReceiptGenerationRequest(orderId, "PDF", true);
+            byte[] pdfContent = receiptService.generatePdfReceiptBytes(request);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", "receipt_" + orderId + ".pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return new ResponseEntity<>(pdfContent, headers, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ApiResponseUtils.notFound("Замовлення не знайдено",
+                    "Замовлення з ID: {} не знайдено. Причина: {}", orderId, e.getMessage());
+        } catch (Exception e) {
+            return ApiResponseUtils.internalServerError("Помилка при завантаженні PDF-квитанції",
+                    "Виникла помилка при завантаженні PDF-квитанції для замовлення з ID: {}. Причина: {}",
+                    orderId, e.getMessage());
+        }
+    }
 
     @PostMapping("/email")
     @Operation(summary = "Відправити квитанцію на email",
                description = "Відправляє PDF-квитанцію на вказаний email")
-    @ApiResponse(responseCode = "200", description = "Квитанція успішно відправлена")
+    @ApiResponse(responseCode = "200", description = "Квитанція успішно відправлена",
+            content = @Content(schema = @Schema(implementation = EmailReceiptResponse.class)))
     @ApiResponse(responseCode = "400", description = "Некоректний запит")
     @ApiResponse(responseCode = "404", description = "Замовлення не знайдено")
     public ResponseEntity<?> sendReceiptByEmail(
@@ -111,8 +139,9 @@ public class ReceiptController {
         log.info("Запит на відправку квитанції на email для замовлення з ID: {}", request.getOrderId());
 
         try {
-            receiptService.emailReceipt(request);
-            return ApiResponseUtils.ok(null, "Квитанцію успішно відправлено на вказану email-адресу");
+            EmailReceiptResponse response = receiptService.emailReceipt(request);
+            return ApiResponseUtils.ok(response, "Квитанцію успішно відправлено на email: {}", 
+                    response.getRecipientEmail());
         } catch (IllegalArgumentException e) {
             return ApiResponseUtils.notFound("Замовлення не знайдено",
                     "Замовлення з ID: {} не знайдено. Причина: {}", request.getOrderId(), e.getMessage());

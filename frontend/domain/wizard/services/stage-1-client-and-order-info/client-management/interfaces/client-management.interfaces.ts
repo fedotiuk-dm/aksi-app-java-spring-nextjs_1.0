@@ -1,143 +1,42 @@
 /**
- * @fileoverview Інтерфейси сервісів для управління клієнтами
+ * @fileoverview Інтерфейси для сервісів управління клієнтами
  * @module domain/wizard/services/stage-1/client-management/interfaces
  */
 
-import type { OperationResult } from '../../../shared/types/base.types';
 import type {
   ClientData,
   ClientSearchResult,
   ClientSearchPaginatedResult,
-  ClientSearchQuery,
-  CreateClientRequest,
-} from '../types/client-domain.types';
+} from '../types';
 
 /**
- * Інтерфейс сервісу пошуку клієнтів
+ * Результат операції з типізованим успіхом/помилкою
  */
-export interface IClientSearchService {
-  /**
-   * Пошук клієнтів за ключовим словом з пагінацією
-   */
-  searchClients(
-    query: string,
-    page?: number,
-    size?: number
-  ): Promise<OperationResult<ClientSearchPaginatedResult>>;
-
-  /**
-   * Отримання клієнта за ID
-   */
-  getClientById(id: string): Promise<OperationResult<ClientSearchResult>>;
-
-  /**
-   * Перевірка існування клієнта за телефоном
-   */
-  checkClientExistsByPhone(phone: string): Promise<OperationResult<boolean>>;
-
-  /**
-   * Перевірка існування клієнта за email
-   */
-  checkClientExistsByEmail(email: string): Promise<OperationResult<boolean>>;
+export interface OperationResult<T> {
+  readonly success: boolean;
+  readonly data?: T;
+  readonly error?: string;
+  readonly warnings?: string[];
 }
 
 /**
- * Інтерфейс сервісу створення клієнтів
+ * Параметри пошуку клієнтів
  */
-export interface IClientCreationService {
-  /**
-   * Створення нового клієнта
-   */
-  createClient(data: CreateClientRequest): Promise<OperationResult<ClientSearchResult>>;
-
-  /**
-   * Валідація даних клієнта перед створенням
-   */
-  validateClientData(data: ClientData): OperationResult<ClientData>;
-
-  /**
-   * Перевірка унікальності телефону
-   */
-  validatePhoneUniqueness(phone: string): Promise<OperationResult<boolean>>;
-
-  /**
-   * Перевірка унікальності email (якщо вказаний)
-   */
-  validateEmailUniqueness(email: string): Promise<OperationResult<boolean>>;
+export interface ClientSearchParams {
+  readonly query: string;
+  readonly page?: number;
+  readonly pageSize?: number;
 }
 
 /**
- * Інтерфейс сервісу редагування клієнтів
- */
-export interface IClientEditingService {
-  /**
-   * Оновлення даних клієнта
-   */
-  updateClient(id: string, data: Partial<ClientData>): Promise<OperationResult<ClientSearchResult>>;
-
-  /**
-   * Валідація даних для оновлення
-   */
-  validateUpdateData(data: Partial<ClientData>): OperationResult<Partial<ClientData>>;
-
-  /**
-   * Перевірка можливості оновлення клієнта
-   */
-  canUpdateClient(id: string): Promise<OperationResult<boolean>>;
-}
-
-/**
- * Інтерфейс сервісу валідації клієнтів
- */
-export interface IClientValidationService {
-  /**
-   * Валідація повних даних клієнта
-   */
-  validateClientData(data: ClientData): OperationResult<ClientData>;
-
-  /**
-   * Валідація пошукового запиту
-   */
-  validateSearchQuery(query: ClientSearchQuery): OperationResult<ClientSearchQuery>;
-
-  /**
-   * Валідація телефону
-   */
-  validatePhone(phone: string): OperationResult<string>;
-
-  /**
-   * Валідація email
-   */
-  validateEmail(email: string): OperationResult<string>;
-
-  /**
-   * Валідація способів зв'язку
-   */
-  validateContactMethods(methods: string[]): OperationResult<string[]>;
-
-  /**
-   * Валідація джерела інформації
-   */
-  validateInformationSource(
-    source: string,
-    other?: string
-  ): OperationResult<{
-    source: string;
-    other?: string;
-  }>;
-}
-
-/**
- * Інтерфейс основного сервісу управління клієнтами
+ * Інтерфейс сервісу для управління клієнтами
  */
 export interface IClientManagementService {
   /**
-   * Пошук клієнтів
+   * Пошук клієнтів за параметрами
    */
   searchClients(
-    query: string,
-    page?: number,
-    size?: number
+    params: ClientSearchParams
   ): Promise<OperationResult<ClientSearchPaginatedResult>>;
 
   /**
@@ -148,25 +47,63 @@ export interface IClientManagementService {
   /**
    * Створення нового клієнта
    */
-  createClient(data: CreateClientRequest): Promise<OperationResult<ClientSearchResult>>;
+  createClient(clientData: ClientData): Promise<OperationResult<ClientSearchResult>>;
 
   /**
-   * Оновлення клієнта
+   * Оновлення існуючого клієнта
    */
-  updateClient(id: string, data: Partial<ClientData>): Promise<OperationResult<ClientSearchResult>>;
+  updateClient(
+    id: string,
+    clientData: Partial<ClientData>
+  ): Promise<OperationResult<ClientSearchResult>>;
 
   /**
    * Валідація даних клієнта
    */
-  validateClientData(data: ClientData): OperationResult<ClientData>;
+  validateClientData(clientData: Partial<ClientData>): OperationResult<ClientData>;
 
   /**
    * Перевірка унікальності телефону
    */
-  checkPhoneUniqueness(phone: string, excludeId?: string): Promise<OperationResult<boolean>>;
+  checkPhoneUniqueness(phone: string): Promise<OperationResult<boolean>>;
 
   /**
    * Перевірка унікальності email
    */
-  checkEmailUniqueness(email: string, excludeId?: string): Promise<OperationResult<boolean>>;
+  checkEmailUniqueness(email: string): Promise<OperationResult<boolean>>;
+
+  /**
+   * Перетворення між форматами даних клієнта
+   */
+  transformClientData(domainClient: ClientSearchResult): ClientData;
+}
+
+/**
+ * Інтерфейс для сервісу управління станом клієнта в wizard
+ */
+export interface IClientStateService {
+  /**
+   * Отримання поточного стану клієнта в wizard
+   */
+  getSelectedClient(): ClientSearchResult | null;
+
+  /**
+   * Встановлення обраного клієнта
+   */
+  setSelectedClient(client: ClientSearchResult | null): void;
+
+  /**
+   * Отримання поточних даних форми клієнта
+   */
+  getClientFormData(): Partial<ClientData>;
+
+  /**
+   * Оновлення даних форми клієнта
+   */
+  updateClientFormData(data: Partial<ClientData>): void;
+
+  /**
+   * Скидання стану
+   */
+  resetClientState(): void;
 }

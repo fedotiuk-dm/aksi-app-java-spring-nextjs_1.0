@@ -50,3 +50,15 @@ export interface WizardPriceCalculationResponse {
   recommendations: string[];
   timestamp: string;
 }
+
+/**
+ * Рекомендований модифікатор для розрахунку ціни
+ */
+export interface WizardRecommendedModifier {
+  code: string;
+  name: string;
+  reason: string;
+  priority: number;
+  isRequired: boolean;
+  description?: string;
+}

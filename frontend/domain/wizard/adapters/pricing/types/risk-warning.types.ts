@@ -3,6 +3,8 @@
  * @module domain/wizard/adapters/pricing/types/risk-warning
  */
 
+import type { WizardModifierType, WizardModifierCategory } from './price-modifier.types';
+
 /**
  * Рівень ризику
  */
@@ -14,13 +16,26 @@ export enum WizardRiskLevel {
 }
 
 /**
+ * Інформація про модифікатор ціни
+ */
+export interface WizardModifierInfo {
+  readonly code: string;
+  readonly name: string;
+  readonly description: string;
+  readonly type: WizardModifierType;
+  readonly value: number;
+  readonly category: WizardModifierCategory;
+  readonly applicableCategories: string[];
+}
+
+/**
  * Попередження про ризики
  */
 export interface WizardRiskWarning {
-  id: string;
-  type: string;
-  level: WizardRiskLevel;
-  message: string;
-  description?: string;
-  recommendations: string[];
+  readonly id: string;
+  readonly type: string;
+  readonly level: WizardRiskLevel;
+  readonly message: string;
+  readonly description?: string;
+  readonly recommendations: string[];
 }

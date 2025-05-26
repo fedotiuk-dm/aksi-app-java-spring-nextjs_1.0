@@ -5,7 +5,7 @@
 
 import { z } from 'zod';
 
-import type { ClientSearchResult as WizardClientSearchResult } from '../../../../types/wizard-step-states.types';
+import type { ClientSearchResult as WizardClientSearchResult } from '../../../../types';
 
 /**
  * Способи зв'язку з клієнтом (мапимо на wizard формат)

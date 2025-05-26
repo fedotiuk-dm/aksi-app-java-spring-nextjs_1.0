@@ -3,6 +3,8 @@
  * @module domain/wizard/adapters/order/types/items
  */
 
+import type { WizardModifierType } from '../../pricing/types';
+
 /**
  * Предмет замовлення (базова інформація)
  */
@@ -24,7 +26,7 @@ export interface WizardOrderItem {
  */
 export interface WizardOrderItemPriceModifier {
   readonly name: string;
-  readonly type: 'PERCENTAGE' | 'FIXED';
+  readonly type: WizardModifierType;
   readonly value: number;
   readonly amount: number;
 }

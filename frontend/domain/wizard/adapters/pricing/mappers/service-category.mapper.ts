@@ -4,13 +4,26 @@
  */
 
 import type { WizardServiceCategory } from '../types';
-import type { ServiceCategoryDTO } from '@/lib/api';
 
 /**
- * Перетворює ServiceCategoryDTO у WizardServiceCategory
+ * Інтерфейс для API відповіді з категоріями послуг
+ */
+interface ServiceCategoryApiResponse extends Record<string, unknown> {
+  id?: string;
+  code?: string;
+  name?: string;
+  description?: string;
+  active?: boolean;
+  sortOrder?: number;
+  materials?: string[];
+  defaultUnit?: string;
+}
+
+/**
+ * Перетворює ServiceCategoryApiResponse у WizardServiceCategory
  */
 export function mapServiceCategoryDTOToDomain(
-  apiCategory: ServiceCategoryDTO
+  apiCategory: ServiceCategoryApiResponse
 ): WizardServiceCategory {
   return {
     id: apiCategory.id || '',
@@ -25,10 +38,10 @@ export function mapServiceCategoryDTOToDomain(
 }
 
 /**
- * Перетворює масив ServiceCategoryDTO у WizardServiceCategory[]
+ * Перетворює масив ServiceCategoryApiResponse у WizardServiceCategory[]
  */
 export function mapServiceCategoryArrayToDomain(
-  apiCategories: ServiceCategoryDTO[]
+  apiCategories: ServiceCategoryApiResponse[]
 ): WizardServiceCategory[] {
   return apiCategories.map(mapServiceCategoryDTOToDomain);
 }

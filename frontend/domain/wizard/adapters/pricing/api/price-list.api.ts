@@ -3,12 +3,14 @@
  * @module domain/wizard/adapters/pricing/api
  */
 
-import { PricingApiService, PricingPriceListService } from '@/lib/api';
+import { PriceListService } from '@/lib/api';
 
-import {
-  mapPriceListItemDTOToDomain,
-  mapPriceListItemArrayToDomain,
-} from '../mappers';
+import { mapPriceListItemDTOToDomain, mapPriceListItemArrayToDomain } from '../mappers';
+
+/**
+ * Інтерфейс для API відповіді з елементами прайс-листа
+ */
+interface PriceListApiResponse extends Record<string, unknown> {}
 
 import type {
   WizardPricingOperationResult,
@@ -27,8 +29,8 @@ export async function getPriceListItemById(
   itemId: string
 ): Promise<WizardPricingOperationResult<WizardPriceListItem>> {
   try {
-    const apiResponse = await PricingPriceListService.getItemById({ itemId });
-    const item = mapPriceListItemDTOToDomain(apiResponse);
+    const apiResponse = await PriceListService.getItemById({ itemId });
+    const item = mapPriceListItemDTOToDomain(apiResponse as PriceListApiResponse);
 
     return {
       success: true,
@@ -49,8 +51,8 @@ export async function getPriceListItemsByCategory(
   categoryCode: string
 ): Promise<WizardPricingOperationResult<WizardPriceListItem[]>> {
   try {
-    const apiResponse = await PricingPriceListService.getItemsByCategoryCode({ categoryCode });
-    const items = mapPriceListItemArrayToDomain(apiResponse);
+    const apiResponse = await PriceListService.getItemsByCategoryCode({ categoryCode });
+    const items = mapPriceListItemArrayToDomain(apiResponse as PriceListApiResponse[]);
 
     return {
       success: true,
@@ -60,28 +62,6 @@ export async function getPriceListItemsByCategory(
     return {
       success: false,
       error: `Не вдалося отримати прайс-лист для категорії: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
-    };
-  }
-}
-
-/**
- * Альтернативний метод отримання елементів через PricingApiService
- */
-export async function getPriceListItemsByCategoryAlt(
-  categoryCode: string
-): Promise<WizardPricingOperationResult<WizardPriceListItem[]>> {
-  try {
-    const apiResponse = await PricingApiService.getItemsByCategoryCode({ categoryCode });
-    const items = mapPriceListItemArrayToDomain(apiResponse);
-
-    return {
-      success: true,
-      data: items,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: `Не вдалося отримати прайс-лист (альт): ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
     };
   }
 }
@@ -154,7 +134,7 @@ export async function searchPriceListItems(
     if (!result.success) {
       return {
         success: false,
-        error: result.error
+        error: result.error,
       };
     }
 
