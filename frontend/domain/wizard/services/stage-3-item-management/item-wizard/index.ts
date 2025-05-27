@@ -1,23 +1,19 @@
 /**
- * @fileoverview Item Wizard
- * @module domain/wizard/services/stage-2-item-management/item-wizard
- *
- * @generated Автоматично згенеровано 2025-05-26T02:42:54.699Z
- * @generator scripts/generate-stage-indexes.js
+ * @fileoverview Item Wizard - менеджер предметів для Order Wizard
+ * @module domain/wizard/services/stage-3-item-management/item-wizard
  */
 
-// ===== ПІДМОДУЛІ =====
-
+// Експортуємо типи, інтерфейси та сервіси
+export * from './types';
 export * from './interfaces';
 export * from './services';
-export * from './types';
 
 // ===== КОНФІГУРАЦІЯ ПІДМОДУЛЯ =====
 
 export const SUBMODULE_CONFIG = {
   name: 'item-wizard',
   title: 'Item Wizard',
-  stage: 'stage-2-item-management',
+  stage: 'stage-3-item-management',
   availableFiles: [],
   availableDirs: ['interfaces', 'services', 'types'],
 } as const;
