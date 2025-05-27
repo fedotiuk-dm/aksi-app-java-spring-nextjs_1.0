@@ -1,172 +1,235 @@
 'use client';
 
-import { Box, Alert } from '@mui/material';
+import { PersonAdd, PersonSearch } from '@mui/icons-material';
+import { Box, Paper, Typography, Button, Stepper, Step, StepLabel, Alert } from '@mui/material';
 import React, { useState } from 'react';
 
-import {
-  useClientSearch,
-  useClientForm,
-  useClientSelection,
-  useWizardState,
-  useWizardNavigation,
-  type ClientSearchResult,
-} from '@/domain/wizard';
-import { StepContainer, StepNavigation } from '@/shared/ui';
+import { useClientManagement } from '@/domain/wizard/hooks';
 
-import {
-  ClientCreateForm,
-  ClientModeSelector,
-  ClientSearchPanel,
-  SelectedClientInfo,
-} from './components';
+import { ClientFormPanel } from './components/ClientFormPanel';
+import { ClientSearchPanel } from './components/ClientSearchPanel';
+import { ClientSelectedPanel } from './components/ClientSelectedPanel';
 
-import type { ClientData } from '@/domain/wizard/services/stage-1-client-and-order-info';
+import type {
+  ClientSearchResult,
+  ClientData,
+} from '@/domain/wizard/services/stage-1-client-and-order-info';
+
+type ClientSelectionMode = 'search' | 'create' | 'selected';
 
 /**
- * Режими роботи компонента
- */
-enum ClientMode {
-  SELECT = 'select',
-  SEARCH = 'search',
-  CREATE = 'create',
-}
-
-/**
- * Головний компонент для CLIENT_SELECTION кроку Order Wizard (DDD архітектура)
- *
- * FSD принципи:
- * - Тільки UI логіка (презентаційний компонент)
- * - Отримує всі дані з domain хуків
- * - Мінімальний локальний стан
- * - Композиція спеціалізованих UI компонентів
- *
- * DDD принципи:
- * - Вся бізнес-логіка делегована доменним сервісам
- * - Хуки фокусуються тільки на React стані
- * - Валідація через Zod схеми
+ * Головний компонент етапу вибору клієнта
  */
 export const ClientSelectionStep: React.FC = () => {
-  // === ЛОКАЛЬНИЙ UI СТАН ===
-  const [mode, setMode] = useState<ClientMode>(ClientMode.SELECT);
+  const [mode, setMode] = useState<ClientSelectionMode>('search');
 
-  // === DOMAIN ХУКИ ===
-  const clientSearch = useClientSearch();
-  const clientForm = useClientForm();
-  const clientSelection = useClientSelection();
-  const wizardState = useWizardState();
-  const wizardNavigation = useWizardNavigation();
+  // === ДОМЕННА ЛОГІКА ===
+  const {
+    // Пошук
+    searchQuery,
+    searchResults,
+    isSearching,
+    searchError,
+    searchClients,
+    clearSearch,
+
+    // Форма
+    formMethods,
+    isCreatingClient,
+    isUpdatingClient,
+    createClient,
+    updateClient,
+    validateClientData,
+
+    // Вибір
+    selectedClient,
+    isNewClient,
+    selectClient,
+    selectNewClient,
+    clearSelection,
+    proceedToNextStep,
+
+    // Утиліти
+    formatPhone,
+    createClientSummary,
+    ContactMethod,
+    InformationSource,
+  } = useClientManagement();
 
   // === ОБРОБНИКИ ПОДІЙ ===
-  const handleSelectClient = async (client: ClientSearchResult) => {
-    const result = await clientSelection.selectClient(client);
+  const handleSelectExistingClient = async (client: ClientSearchResult) => {
+    const result = await selectClient(client);
     if (result.success) {
-      setMode(ClientMode.SELECT);
+      setMode('selected');
     }
   };
 
-  const handleCreateClient = async (data: ClientData) => {
-    const result = await clientForm.createClient(data);
+  const handleCreateOrUpdateClient = async (data: ClientData) => {
+    let result;
+
+    // Якщо є вибраний клієнт, то це оновлення
+    if (selectedClient) {
+      result = await updateClient(selectedClient.id || '', data);
+    } else {
+      // Інакше це створення нового клієнта
+      result = await createClient(data);
+    }
+
     if (result.success && result.client) {
-      await clientSelection.selectNewClient(result.client);
-      setMode(ClientMode.SELECT);
+      if (selectedClient) {
+        // Оновлюємо вибраного клієнта
+        await selectClient(result.client);
+      } else {
+        // Вибираємо нового клієнта
+        await selectNewClient(result.client);
+      }
+      setMode('selected');
     }
   };
 
-  const handleClearSelection = () => {
-    clientSelection.clearSelection();
-    setMode(ClientMode.SELECT);
+  const handleBackToSearch = () => {
+    clearSelection();
+    setMode('search');
   };
 
-  const handleNext = () => {
-    if (clientSelection.canProceed) {
-      wizardNavigation.navigateForward();
+  const handleCreateNewClient = () => {
+    clearSelection();
+    formMethods.reset({
+      firstName: '',
+      lastName: '',
+      phone: '',
+      email: '',
+      address: '',
+      contactMethods: [ContactMethod.PHONE],
+      informationSource: InformationSource.OTHER,
+      informationSourceOther: '',
+    });
+    setMode('create');
+  };
+
+  const handleEditClient = () => {
+    // Ініціалізуємо форму з даними вибраного клієнта
+    if (selectedClient) {
+      formMethods.reset({
+        firstName: selectedClient.firstName || '',
+        lastName: selectedClient.lastName || '',
+        phone: selectedClient.phone || '',
+        email: selectedClient.email || '',
+        address: selectedClient.address || '',
+        contactMethods: selectedClient.contactMethods || [ContactMethod.PHONE],
+        informationSource: selectedClient.informationSource || InformationSource.OTHER,
+        informationSourceOther: selectedClient.informationSourceOther || '',
+      });
     }
+    setMode('create');
   };
 
-  // === РЕНДЕР КОНТЕНТУ ===
-  const renderContent = () => {
+  // === ЕТАПИ ВІЗАРДА ===
+  const steps = ['Пошук клієнта', 'Підтвердження вибору', 'Завершення'];
+
+  const getActiveStep = () => {
     switch (mode) {
-      case ClientMode.CREATE:
-        return (
-          <ClientCreateForm
-            form={clientForm}
-            onSubmit={handleCreateClient}
-            onCancel={() => setMode(ClientMode.SELECT)}
-          />
-        );
-
-      case ClientMode.SEARCH:
-        return (
-          <ClientSearchPanel
-            {...clientSearch}
-            onSelectClient={handleSelectClient}
-            onBack={() => setMode(ClientMode.SELECT)}
-          />
-        );
-
-      case ClientMode.SELECT:
-        if (clientSelection.hasSelectedClient && clientSelection.selectedClient) {
-          return (
-            <SelectedClientInfo
-              client={clientSelection.selectedClient}
-              validationResult={clientSelection.validationResult}
-              onClear={handleClearSelection}
-              onEdit={() => {
-                // TODO: Додати режим редагування
-                console.log('Edit client');
-              }}
-            />
-          );
-        }
-
-        return (
-          <ClientModeSelector
-            onSwitchToCreate={() => setMode(ClientMode.CREATE)}
-            onSwitchToSearch={() => setMode(ClientMode.SEARCH)}
-            hasSelectedClient={clientSelection.hasSelectedClient}
-          />
-        );
-
+      case 'search':
+      case 'create':
+        return 0;
+      case 'selected':
+        return selectedClient ? 1 : 0;
       default:
-        return null;
+        return 0;
     }
   };
 
   return (
-    <StepContainer title="Вибір клієнта" subtitle="Оберіть існуючого клієнта або створіть нового">
-      {/* Відображення помилок */}
-      {wizardState.hasErrors && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {wizardState.errors.map((error, index) => (
-            <div key={index}>{error}</div>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
+      {/* Заголовок етапу */}
+      <Typography variant="h4" component="h1" gutterBottom>
+        Етап 1: Вибір клієнта
+      </Typography>
+
+      {/* Прогрес бар */}
+      <Box sx={{ mb: 4 }}>
+        <Stepper activeStep={getActiveStep()} alternativeLabel>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
           ))}
-        </Alert>
-      )}
+        </Stepper>
+      </Box>
 
-      {/* Відображення попереджень */}
-      {wizardState.hasWarnings && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          {wizardState.warnings.map((warning, index) => (
-            <div key={index}>{warning}</div>
-          ))}
-        </Alert>
-      )}
+      {/* Головний контент */}
+      <Paper elevation={1} sx={{ p: 3 }}>
+        {mode === 'search' && (
+          <Box>
+            {/* Вибір дії */}
+            <Box sx={{ mb: 3, display: 'flex', gap: 2, justifyContent: 'center' }}>
+              <Button
+                variant="outlined"
+                startIcon={<PersonSearch />}
+                onClick={() => setMode('search')}
+                size="large"
+              >
+                Знайти існуючого клієнта
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<PersonAdd />}
+                onClick={handleCreateNewClient}
+                size="large"
+              >
+                Створити нового клієнта
+              </Button>
+            </Box>
 
-      <Box sx={{ minHeight: '400px' }}>{renderContent()}</Box>
+            {/* Панель пошуку */}
+            <ClientSearchPanel
+              searchQuery={searchQuery}
+              searchResults={searchResults}
+              isSearching={isSearching}
+              searchError={searchError}
+              searchClients={searchClients}
+              clearSearch={clearSearch}
+              formatPhone={formatPhone}
+              createClientSummary={createClientSummary}
+              onSelectClient={handleSelectExistingClient}
+              showBackButton={false}
+            />
+          </Box>
+        )}
 
-      <StepNavigation
-        onNext={handleNext}
-        nextLabel={
-          clientSelection.hasSelectedClient
-            ? 'Продовжити до базової інформації замовлення'
-            : 'Спочатку оберіть клієнта'
-        }
-        isNextDisabled={!clientSelection.canProceed}
-        nextLoading={wizardState.isLoading}
-        hideBackButton
-      />
-    </StepContainer>
+        {mode === 'create' && (
+          <ClientFormPanel
+            formMethods={formMethods}
+            isCreating={isCreatingClient}
+            isUpdating={isUpdatingClient}
+            onSubmit={handleCreateOrUpdateClient}
+            onBack={handleBackToSearch}
+            ContactMethod={ContactMethod}
+            InformationSource={InformationSource}
+            validateClientData={validateClientData}
+            isEditing={!!selectedClient}
+          />
+        )}
+
+        {mode === 'selected' && selectedClient && (
+          <ClientSelectedPanel
+            client={selectedClient}
+            isNewClient={isNewClient}
+            formatPhone={formatPhone}
+            createClientSummary={createClientSummary}
+            onEdit={handleEditClient}
+            onChangeClient={handleBackToSearch}
+            onProceed={proceedToNextStep}
+          />
+        )}
+
+        {/* Помилки */}
+        {searchError && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {searchError}
+          </Alert>
+        )}
+      </Paper>
+    </Box>
   );
 };
-
-export default ClientSelectionStep;

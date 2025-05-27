@@ -1,199 +1,250 @@
 'use client';
 
-import { Person, Phone, Email, ArrowBack } from '@mui/icons-material';
-import { Avatar, Box, Button, Typography } from '@mui/material';
-import React from 'react';
+import { Search, Person, Phone, Email, LocationOn, ArrowBack } from '@mui/icons-material';
+import {
+  Box,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemButton,
+  Typography,
+  CircularProgress,
+  Alert,
+  Paper,
+  InputAdornment,
+  Chip,
+  Divider,
+} from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
 
-import { SearchInput, DataList } from '@/shared/ui';
-
-import type { ClientSearchResult } from '@/domain/wizard';
-
-interface DataListItem {
-  id: string;
-  primary: React.ReactNode;
-  secondary?: React.ReactNode;
-  avatar?: React.ReactNode;
-  actions?: React.ReactNode;
-}
+import type { UseClientManagementReturn } from '@/domain/wizard/hooks';
+import type { ClientSearchResult } from '@/domain/wizard/services/stage-1-client-and-order-info/client-management';
 
 interface ClientSearchPanelProps {
-  // Стан пошуку з useClientSearch хука
-  searchTerm: string;
-  clients: ClientSearchResult[];
+  searchQuery: string;
+  searchResults: ClientSearchResult[];
   isSearching: boolean;
-  hasResults: boolean;
-  totalResults: number;
-  currentPage: number;
-  totalPages: number;
-  canLoadNext: boolean;
-  canLoadPrevious: boolean;
-
-  // Методи з useClientSearch хука
-  search: (query: string, page?: number) => void;
-  searchNextPage: () => void;
-  searchPreviousPage: () => void;
-  clearSearch: () => void;
-
-  // Обробники подій
+  searchError: string | null;
+  searchClients: UseClientManagementReturn['searchClients'];
+  clearSearch: UseClientManagementReturn['clearSearch'];
+  formatPhone: UseClientManagementReturn['formatPhone'];
+  createClientSummary: UseClientManagementReturn['createClientSummary'];
   onSelectClient: (client: ClientSearchResult) => void;
   onBack?: () => void;
-
-  // Опції
-  className?: string;
-  maxHeight?: number;
+  showBackButton?: boolean;
 }
 
 /**
- * Компонент панелі пошуку клієнтів (DDD архітектура)
- * Використовує дані з useClientSearch хука
+ * Панель пошуку клієнтів
  */
 export const ClientSearchPanel: React.FC<ClientSearchPanelProps> = ({
-  searchTerm,
-  clients,
+  searchQuery,
+  searchResults,
   isSearching,
-  hasResults,
-  totalResults,
-  currentPage,
-  totalPages,
-  canLoadNext,
-  canLoadPrevious,
-  search,
-  searchNextPage,
-  searchPreviousPage,
+  searchError,
+  searchClients,
   clearSearch,
+  formatPhone,
   onSelectClient,
   onBack,
-  className,
-  maxHeight = 400,
+  showBackButton = true,
 }) => {
-  // Перетворюємо клієнтів у формат для DataList
-  const listItems: DataListItem[] = clients.map((client) => ({
-    id: client.id,
-    primary: (
-      <Typography variant="body1" fontWeight="medium">
-        {client.fullName || `${client.firstName} ${client.lastName}`}
-      </Typography>
-    ),
-    secondary: (
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Phone sx={{ fontSize: 14, color: 'text.secondary' }} />
-          <Typography variant="caption">{client.phone}</Typography>
-        </Box>
-        {client.email && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Email sx={{ fontSize: 14, color: 'text.secondary' }} />
-            <Typography variant="caption">{client.email}</Typography>
-          </Box>
-        )}
-        {client.address && (
-          <Typography variant="caption" color="text.secondary">
-            {client.address}
-          </Typography>
-        )}
-        {client.orderCount !== undefined && (
-          <Typography variant="caption" color="primary">
-            Замовлень: {client.orderCount}
-          </Typography>
-        )}
-      </Box>
-    ),
-    avatar: (
-      <Avatar>
-        <Person />
-      </Avatar>
-    ),
-  }));
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+  const lastSearchRef = useRef<string>('');
 
-  const handleItemClick = (item: DataListItem) => {
-    const client = clients.find((c) => c.id === item.id);
-    if (client) {
-      onSelectClient(client);
+  // Автоматичний debounced пошук при зміні localQuery
+  useEffect(() => {
+    const trimmedQuery = localQuery.trim();
+
+    // Уникаємо дублювання запитів
+    if (lastSearchRef.current === trimmedQuery) {
+      return;
+    }
+
+    lastSearchRef.current = trimmedQuery;
+
+    if (trimmedQuery.length >= 2) {
+      searchClients(localQuery);
+    } else if (trimmedQuery.length === 0) {
+      searchClients('');
+    }
+  }, [localQuery, searchClients]);
+
+  // Синхронізація з зовнішнім searchQuery
+  useEffect(() => {
+    setLocalQuery(searchQuery);
+  }, [searchQuery]);
+
+  const handleSearch = async () => {
+    if (localQuery.trim()) {
+      await searchClients(localQuery);
     }
   };
 
-  const handleSearchChange = (term: string) => {
-    search(term, 0);
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
-  const handleSearchSubmit = (term: string) => {
-    search(term, 0);
+  const handleClearSearch = () => {
+    setLocalQuery('');
+    clearSearch();
   };
+
+  const renderClientItem = (client: ClientSearchResult) => (
+    <ListItem key={client.id} disablePadding>
+      <ListItemButton onClick={() => onSelectClient(client)}>
+        <Box sx={{ width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+            <Person sx={{ mr: 1, color: 'primary.main' }} />
+            <Typography variant="h6" component="div">
+              {client.fullName || `${client.firstName} ${client.lastName}`}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+            <Chip
+              icon={<Phone />}
+              label={formatPhone(client.phone)}
+              variant="outlined"
+              size="small"
+            />
+            {client.email && (
+              <Chip
+                icon={<Email />}
+                label={client.email}
+                variant="outlined"
+                size="small"
+                color="secondary"
+              />
+            )}
+            {client.address && (
+              <Chip
+                icon={<LocationOn />}
+                label={client.address}
+                variant="outlined"
+                size="small"
+                color="default"
+              />
+            )}
+          </Box>
+
+          {client.orderCount !== undefined && (
+            <Typography variant="caption" color="text.secondary">
+              Замовлень: {client.orderCount}
+            </Typography>
+          )}
+        </Box>
+      </ListItemButton>
+    </ListItem>
+  );
 
   return (
-    <Box className={className}>
-      {onBack && (
-        <Box sx={{ mb: 2 }}>
-          <Button variant="outlined" startIcon={<ArrowBack />} onClick={onBack} size="small">
-            Назад до вибору
+    <Box>
+      {/* Заголовок з кнопкою назад */}
+      {showBackButton && onBack && (
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <Button startIcon={<ArrowBack />} onClick={onBack} sx={{ mr: 2 }}>
+            Назад
           </Button>
+          <Typography variant="h6">Пошук клієнтів</Typography>
         </Box>
       )}
 
-      <Box sx={{ mb: 2 }}>
-        <SearchInput
-          value={searchTerm}
-          onChange={handleSearchChange}
-          onSearch={handleSearchSubmit}
-          onClear={clearSearch}
-          placeholder="Введіть прізвище, телефон або email..."
-          label="Пошук клієнта"
-          loading={isSearching}
-          autoFocus
+      {!showBackButton && (
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6">Пошук клієнтів</Typography>
+        </Box>
+      )}
+
+      {/* Поле пошуку */}
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          fullWidth
+          value={localQuery}
+          onChange={(e) => setLocalQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Введіть прізвище, телефон, email... (автоматичний пошук)"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+            endAdornment: isSearching ? (
+              <InputAdornment position="end">
+                <CircularProgress size={20} />
+              </InputAdornment>
+            ) : undefined,
+          }}
         />
+        <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
+          <Button variant="outlined" onClick={handleClearSearch} disabled={isSearching}>
+            Очистити пошук
+          </Button>
+          {localQuery.trim() && localQuery.trim().length < 2 && (
+            <Typography variant="caption" color="text.secondary" sx={{ alignSelf: 'center' }}>
+              Введіть мінімум 2 символи для автоматичного пошуку
+            </Typography>
+          )}
+        </Box>
       </Box>
 
-      {/* Інформація про результати */}
-      {hasResults && (
-        <Box sx={{ mb: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            Знайдено клієнтів: {totalResults}
-            {totalPages > 1 && ` (сторінка ${currentPage + 1} з ${totalPages})`}
-          </Typography>
-        </Box>
+      {/* Помилки */}
+      {searchError && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {searchError}
+        </Alert>
       )}
 
-      <DataList
-        items={listItems}
-        onItemClick={handleItemClick}
-        loading={isSearching}
-        error={null}
-        emptyMessage={
-          searchTerm.trim()
-            ? 'За вашим запитом клієнтів не знайдено'
-            : 'Введіть текст для пошуку клієнтів'
-        }
-        maxHeight={maxHeight}
-        variant="outlined"
-        dense={false}
-        dividers={true}
-        selectable={true}
-      />
+      {/* Результати пошуку */}
+      {searchQuery && (
+        <Paper variant="outlined" sx={{ maxHeight: 400, overflow: 'auto' }}>
+          {searchResults.length > 0 ? (
+            <>
+              <Box sx={{ p: 2, bgcolor: 'grey.50' }}>
+                <Typography variant="subtitle2">
+                  Знайдено клієнтів: {searchResults.length}
+                </Typography>
+              </Box>
+              <List disablePadding>
+                {searchResults.map((client, index) => (
+                  <React.Fragment key={client.id}>
+                    {index > 0 && <Divider />}
+                    {renderClientItem(client)}
+                  </React.Fragment>
+                ))}
+              </List>
+            </>
+          ) : (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography color="text.secondary">
+                Клієнтів не знайдено за запитом &quot;{searchQuery}&quot;
+              </Typography>
+              <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                Спробуйте змінити критерії пошуку або створіть нового клієнта
+              </Typography>
+            </Box>
+          )}
+        </Paper>
+      )}
 
-      {/* Пагінація */}
-      {hasResults && totalPages > 1 && (
-        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={searchPreviousPage}
-            disabled={!canLoadPrevious || isSearching}
-          >
-            Попередня
-          </Button>
-
-          <Typography variant="body2" color="text.secondary">
-            {currentPage + 1} / {totalPages}
+      {/* Підказки */}
+      {!searchQuery && (
+        <Box sx={{ p: 2, bgcolor: 'info.50', borderRadius: 1 }}>
+          <Typography variant="body2" color="info.main">
+            💡 Поради для пошуку:
           </Typography>
-
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={searchNextPage}
-            disabled={!canLoadNext || isSearching}
-          >
-            Наступна
-          </Button>
+          <Typography variant="caption" component="div" sx={{ mt: 1 }}>
+            • Введіть прізвище або частину прізвища
+            <br />
+            • Введіть номер телефону (можна частково)
+            <br />
+            • Введіть email адресу
+            <br />• Введіть частину адреси
+          </Typography>
         </Box>
       )}
     </Box>

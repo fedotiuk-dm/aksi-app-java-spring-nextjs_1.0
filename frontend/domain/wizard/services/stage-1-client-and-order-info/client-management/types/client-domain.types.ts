@@ -39,43 +39,57 @@ export interface ClientSearchResult extends WizardClientSearchResult {
 /**
  * Схема для валідації даних клієнта (для форм)
  */
-export const clientDataSchema = z.object({
-  firstName: z
-    .string()
-    .trim()
-    .min(2, "Ім'я повинно містити мінімум 2 символи")
-    .max(50, "Ім'я не може перевищувати 50 символів"),
+export const clientDataSchema = z
+  .object({
+    firstName: z
+      .string()
+      .trim()
+      .min(2, "Ім'я повинно містити мінімум 2 символи")
+      .max(50, "Ім'я не може перевищувати 50 символів"),
 
-  lastName: z
-    .string()
-    .trim()
-    .min(2, 'Прізвище повинно містити мінімум 2 символи')
-    .max(50, 'Прізвище не може перевищувати 50 символів'),
+    lastName: z
+      .string()
+      .trim()
+      .min(2, 'Прізвище повинно містити мінімум 2 символи')
+      .max(50, 'Прізвище не може перевищувати 50 символів'),
 
-  phone: z
-    .string()
-    .trim()
-    .min(10, 'Телефон повинен містити мінімум 10 символів')
-    .max(15, 'Телефон не може перевищувати 15 символів')
-    .regex(/^[\+]?[0-9\(\)\-\s]+$/, 'Некоректний формат телефону'),
+    phone: z
+      .string()
+      .trim()
+      .min(10, 'Телефон повинен містити мінімум 10 символів')
+      .max(15, 'Телефон не може перевищувати 15 символів')
+      .regex(/^[\+]?[0-9\(\)\-\s]+$/, 'Некоректний формат телефону'),
 
-  email: z.string().email('Некоректний формат email').optional(),
+    email: z.string().email('Некоректний формат email').optional(),
 
-  address: z.string().trim().max(200, 'Адреса не може перевищувати 200 символів').optional(),
+    address: z.string().trim().max(200, 'Адреса не може перевищувати 200 символів').optional(),
 
-  contactMethods: z
-    .array(z.nativeEnum(ContactMethod))
-    .min(1, "Необхідно вибрати хоча б один спосіб зв'язку")
-    .optional(),
+    contactMethods: z
+      .array(z.nativeEnum(ContactMethod))
+      .min(1, "Необхідно вибрати хоча б один спосіб зв'язку")
+      .default([ContactMethod.PHONE]),
 
-  informationSource: z.nativeEnum(InformationSource).optional(),
+    informationSource: z.nativeEnum(InformationSource).default(InformationSource.OTHER),
 
-  informationSourceOther: z
-    .string()
-    .trim()
-    .max(100, 'Опис джерела не може перевищувати 100 символів')
-    .optional(),
-});
+    informationSourceOther: z
+      .string()
+      .trim()
+      .max(100, 'Опис джерела не може перевищувати 100 символів')
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      // Якщо джерело "OTHER", то поле informationSourceOther обов'язкове
+      if (data.informationSource === InformationSource.OTHER) {
+        return data.informationSourceOther && data.informationSourceOther.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: 'Необхідно вказати деталі для джерела "Інше"',
+      path: ['informationSourceOther'],
+    }
+  );
 
 /**
  * Схема для валідації пошукового запиту

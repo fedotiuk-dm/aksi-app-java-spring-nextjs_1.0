@@ -10,6 +10,13 @@ export * from './client-search.service';
 export * from './client-create.service';
 export * from './client-update.service';
 
-// Сервіси валідації даних клієнтів
-export * from './validation';
+// Валідація тепер через Zod схеми в types/client-domain.types.ts
 
+// Спеціалізовані сервіси
+export * from './contact-methods.service';
+export * from './information-source.service';
+export * from './client-uniqueness-check.service';
+export * from './client-transformation-simple.service';
+
+// Комплексний сервіс управління клієнтами
+export * from './client-management.service';

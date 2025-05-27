@@ -3,5 +3,8 @@
  * @module features/order-wizard/client-selection
  */
 
-export { ClientSelectionStep } from './ui/ClientSelectionStep';
-export { default as ClientSelectionStepDefault } from './ui/ClientSelectionStep';
+// === UI КОМПОНЕНТИ ===
+export * from './ui';
+
+// === ХУКИ ===
+export * from './hooks';

@@ -3,11 +3,7 @@
  * @module domain/wizard/services/stage-1/client-management/interfaces
  */
 
-import type {
-  ClientData,
-  ClientSearchResult,
-  ClientSearchPaginatedResult,
-} from '../types';
+import type { ClientData, ClientSearchResult, ClientSearchPaginatedResult } from '../types';
 
 /**
  * Результат операції з типізованим успіхом/помилкою
@@ -35,9 +31,7 @@ export interface IClientManagementService {
   /**
    * Пошук клієнтів за параметрами
    */
-  searchClients(
-    params: ClientSearchParams
-  ): Promise<OperationResult<ClientSearchPaginatedResult>>;
+  searchClients(params: ClientSearchParams): Promise<OperationResult<ClientSearchPaginatedResult>>;
 
   /**
    * Отримання клієнта за ID
@@ -73,9 +67,19 @@ export interface IClientManagementService {
   checkEmailUniqueness(email: string): Promise<OperationResult<boolean>>;
 
   /**
-   * Перетворення між форматами даних клієнта
+   * Форматування телефону для відображення
    */
-  transformClientData(domainClient: ClientSearchResult): ClientData;
+  formatPhoneForDisplay(phone: string): string;
+
+  /**
+   * Створення повного імені клієнта
+   */
+  createFullName(firstName: string, lastName: string): string;
+
+  /**
+   * Створення короткого опису клієнта
+   */
+  createClientSummary(client: ClientSearchResult): string;
 }
 
 /**

@@ -216,3 +216,85 @@ export async function searchClientsWithPagination(
     };
   }
 }
+
+/**
+ * Перевірка унікальності телефону
+ * @param phone Телефон для перевірки
+ * @param excludeClientId ID клієнта, якого треба виключити з перевірки (для редагування)
+ */
+export async function checkPhoneUniqueness(
+  phone: string,
+  excludeClientId?: string
+): Promise<WizardClientOperationResult<boolean>> {
+  try {
+    // Використовуємо пошук для перевірки унікальності
+    const searchResult = await searchClientsWithPagination({
+      query: phone,
+      page: 0,
+      size: 100, // Достатньо для перевірки унікальності
+    });
+
+    if (!searchResult.success || !searchResult.data) {
+      return {
+        success: false,
+        error: 'Не вдалося перевірити унікальність телефону',
+      };
+    }
+
+    // Перевіряємо, чи є клієнт з таким же телефоном
+    const duplicateClient = searchResult.data.clients.find(
+      (client) => client.phone === phone && client.id !== excludeClientId
+    );
+
+    return {
+      success: true,
+      data: !duplicateClient, // true якщо телефон унікальний (немає дублікатів)
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: `Помилка при перевірці унікальності телефону: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
+    };
+  }
+}
+
+/**
+ * Перевірка унікальності email
+ * @param email Email для перевірки
+ * @param excludeClientId ID клієнта, якого треба виключити з перевірки (для редагування)
+ */
+export async function checkEmailUniqueness(
+  email: string,
+  excludeClientId?: string
+): Promise<WizardClientOperationResult<boolean>> {
+  try {
+    // Використовуємо пошук для перевірки унікальності
+    const searchResult = await searchClientsWithPagination({
+      query: email,
+      page: 0,
+      size: 100, // Достатньо для перевірки унікальності
+    });
+
+    if (!searchResult.success || !searchResult.data) {
+      return {
+        success: false,
+        error: 'Не вдалося перевірити унікальність email',
+      };
+    }
+
+    // Перевіряємо, чи є клієнт з таким же email
+    const duplicateClient = searchResult.data.clients.find(
+      (client) => client.email === email && client.id !== excludeClientId
+    );
+
+    return {
+      success: true,
+      data: !duplicateClient, // true якщо email унікальний (немає дублікатів)
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: `Помилка при перевірці унікальності email: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
+    };
+  }
+}

@@ -4,9 +4,11 @@
  */
 
 // === ОСНОВНІ СЕРВІСИ ===
+export * from './basic-info-loader.service';
 export * from './service-category-manager.service';
 export * from './price-list-manager.service';
 export * from './basic-info-validator.service';
+export * from './basic-info-operations.service';
 export * from './basic-info-manager.service';
 
 // === ГОЛОВНИЙ ЕКСПОРТ ===

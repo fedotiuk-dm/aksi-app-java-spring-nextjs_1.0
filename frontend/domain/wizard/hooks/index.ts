@@ -13,15 +13,10 @@
 export { useWizardNavigation, useWizardState, useWizardForm } from './shared';
 
 // === ЕТАП 1: Клієнт та базова інформація (ЗАВЕРШЕНО) ===
-export { useClientSearch, useClientForm, useClientSelection } from './steps/client-selection';
+export * from './steps/client-selection';
 
 // === ЕТАП 2: Вибір філії та ініціація замовлення ===
-export {
-  useBranchLoading,
-  useBranchSearch,
-  useBranchSelection,
-  useBranchSelectionStage,
-} from './steps/branch-selection';
+//export * from './steps/branch-selection';
 
 // === ЕТАП 3: Менеджер предметів (циклічний процес) ===
 // export {

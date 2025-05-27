@@ -3,7 +3,7 @@
  * @module domain/wizard/hooks/steps/client-selection
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { searchClients } from '../../../services/stage-1-client-and-order-info';
 import { useWizardState } from '../../shared';
@@ -17,29 +17,27 @@ import type {
  * Простий дебаунс хук
  */
 const useDebounce = <T extends unknown[]>(callback: (...args: T) => void, delay: number) => {
-  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const debouncedCallback = useCallback(
     (...args: T) => {
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
       }
 
-      const timer = setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         callback(...args);
       }, delay);
-
-      setDebounceTimer(timer);
     },
-    [callback, delay, debounceTimer]
+    [callback, delay]
   );
 
   const cancel = useCallback(() => {
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-      setDebounceTimer(null);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
-  }, [debounceTimer]);
+  }, []);
 
   return { debouncedCallback, cancel };
 };
@@ -62,9 +60,7 @@ export const useClientSearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResult, setSearchResult] = useState<ClientSearchPaginatedResult | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [searchCache, setSearchCache] = useState<Map<string, ClientSearchPaginatedResult>>(
-    new Map()
-  );
+  const searchCacheRef = useRef<Map<string, ClientSearchPaginatedResult>>(new Map());
 
   // === WIZARD ІНТЕГРАЦІЯ ===
   const { addError, clearErrors } = useWizardState();
@@ -80,12 +76,15 @@ export const useClientSearch = () => {
 
       // Перевірка кешу
       const cacheKey = `${query}-${page}`;
-      const cached = searchCache.get(cacheKey);
+      const currentCache = searchCacheRef.current;
+      const cached = currentCache.get(cacheKey);
+
       if (cached) {
         setSearchResult(cached);
         return;
       }
 
+      // Пошук якщо немає в кеші
       setIsSearching(true);
       clearErrors();
 
@@ -103,9 +102,10 @@ export const useClientSearch = () => {
             hasNext: false,
             hasPrevious: page > 0,
           };
+
           setSearchResult(searchData);
           // Кешування результату
-          setSearchCache((prev) => new Map(prev).set(cacheKey, searchData));
+          searchCacheRef.current.set(cacheKey, searchData);
         } else {
           addError(result.error || 'Помилка пошуку клієнтів');
           setSearchResult(null);
@@ -117,7 +117,7 @@ export const useClientSearch = () => {
         setIsSearching(false);
       }
     },
-    [searchCache, clearErrors, addError]
+    [clearErrors, addError]
   );
 
   // === ДЕБАУНС ПОШУКУ ===
@@ -156,7 +156,7 @@ export const useClientSearch = () => {
   const clearSearch = useCallback(() => {
     setSearchTerm('');
     setSearchResult(null);
-    setSearchCache(new Map());
+    searchCacheRef.current = new Map();
     clearErrors();
     cancelDebounce();
   }, [clearErrors, cancelDebounce]);
