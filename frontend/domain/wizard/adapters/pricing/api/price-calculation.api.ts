@@ -1,79 +1,56 @@
 /**
- * @fileoverview API функції для розрахунку цін
+ * @fileoverview API функції для розрахунку цін в контексті pricing
  * @module domain/wizard/adapters/pricing/api
  */
 
 import { PriceCalculationService } from '@/lib/api';
 
-import { mapPriceCalculationRequestToDTO, mapPriceCalculationResponseToDomain } from '../mappers';
-
+// Імпортуємо спільні типи з shared
 import type {
-  WizardPricingOperationResult,
   WizardPriceCalculationRequest,
   WizardPriceCalculationResponse,
   WizardRiskWarning,
-  WizardRecommendedModifier,
-  WizardRiskLevel,
+} from '../../shared';
+import type {
+  WizardPricingOperationResult,
+  BasePriceApiResponse,
+  RiskWarningApiResponse,
 } from '../types';
-
-/**
- * Інтерфейс для відповіді API з базовою ціною
- */
-interface BasePriceApiResponse {
-  basePrice?: number;
-  [key: string]: unknown;
-}
-
-/**
- * Інтерфейс для відповіді API з попередженнями про ризики
- */
-interface RiskWarningApiResponse {
-  id?: string;
-  type?: string;
-  level?: string;
-  message?: string;
-  description?: string;
-  recommendations?: string[];
-}
-
-/**
- * Інтерфейс для відповіді API з рекомендованими модифікаторами
- */
-interface RecommendedModifierApiResponse {
-  name?: string;
-  description?: string;
-  type?: string;
-  code?: string;
-  [key: string]: unknown;
-}
-
-/**
- * Інтерфейс для внутрішнього використання
- */
-interface RecommendedModifierApiItem {
-  name: string;
-  description?: string;
-  code?: string;
-  reason?: string;
-  priority?: number;
-  isRequired?: boolean;
-}
 
 // Константи для помилок
 const UNKNOWN_ERROR = 'Невідома помилка';
 
 /**
- * Розрахунок ціни предмета
+ * Розрахунок ціни предмета (pricing версія)
  */
-export async function calculatePrice(
+export async function calculatePriceForPricing(
   request: WizardPriceCalculationRequest
 ): Promise<WizardPricingOperationResult<WizardPriceCalculationResponse>> {
   try {
-    const apiRequest = mapPriceCalculationRequestToDTO(request);
     const apiResponse = await PriceCalculationService.calculatePrice({
-      requestBody: apiRequest,
+      requestBody: {
+        categoryCode: request.categoryCode,
+        itemName: request.itemName,
+        quantity: request.quantity,
+        color: request.color,
+        modifierCodes: request.modifierCodes || [],
+        expedited: request.expedited,
+        expeditePercent: request.expeditePercent,
+        discountPercent: request.discountPercent,
+      },
     });
-    const response = mapPriceCalculationResponseToDomain(apiResponse);
+
+    const response: WizardPriceCalculationResponse = {
+      success: true,
+      itemName: request.itemName,
+      categoryCode: request.categoryCode,
+      baseUnitPrice: apiResponse.baseUnitPrice,
+      quantity: apiResponse.quantity,
+      baseTotalPrice: apiResponse.baseTotalPrice,
+      finalUnitPrice: apiResponse.finalUnitPrice,
+      finalTotalPrice: apiResponse.finalTotalPrice,
+      unitOfMeasure: apiResponse.unitOfMeasure,
+    };
 
     return {
       success: true,
@@ -88,9 +65,9 @@ export async function calculatePrice(
 }
 
 /**
- * Отримання базової ціни для предмета
+ * Отримання базової ціни для предмета (pricing версія)
  */
-export async function getBasePrice(
+export async function getBasePriceForPricing(
   categoryCode: string,
   itemName: string,
   color?: string
@@ -117,9 +94,9 @@ export async function getBasePrice(
 }
 
 /**
- * Отримання попереджень про ризики
+ * Отримання попереджень про ризики (pricing версія)
  */
-export async function getRiskWarnings(
+export async function getRiskWarningsForPricing(
   categoryCode: string,
   itemName: string,
   material?: string,
@@ -129,64 +106,26 @@ export async function getRiskWarnings(
     const apiResponse = await PriceCalculationService.getRiskWarnings({
       categoryCode,
       materialType: material,
-      stains: color ? [`color:${color}`] : [], // Використовуємо колір як плямy
+      stains: color ? [`color:${color}`] : [],
       defects: [],
     });
 
-    const typedResponse = apiResponse as Record<string, unknown>;
+    const warnings: WizardRiskWarning[] = [];
 
-    // Оскільки API повертає Record<string, any>, перетворюємо його в масив
-    const warningsData = Array.isArray(typedResponse)
-      ? typedResponse
-      : Object.values(typedResponse).filter(
-          (item) => typeof item === 'string' || typeof item === 'object'
-        );
-
-    const warnings: WizardRiskWarning[] = warningsData.map((warningData: unknown) => {
-      if (typeof warningData === 'string') {
-        try {
-          // Припускаємо, що рядки - це JSON об'єкти у текстовому форматі
-          const warning = JSON.parse(warningData) as RiskWarningApiResponse;
-          return {
-            id: warning.id || '',
+    // Обробляємо відповідь API
+    if (Array.isArray(apiResponse)) {
+      apiResponse.forEach((item) => {
+        if (typeof item === 'object' && item !== null) {
+          const warning = item as RiskWarningApiResponse;
+          warnings.push({
             type: warning.type || '',
-            level: (warning.level as WizardRiskLevel) || 'LOW',
+            severity: (warning.severity as 'LOW' | 'MEDIUM' | 'HIGH') || 'LOW',
             message: warning.message || '',
-            description: warning.description,
-            recommendations: warning.recommendations || [],
-          };
-        } catch {
-          // Якщо не вдалося розпарсити JSON, створюємо базовий об'єкт
-          return {
-            id: '',
-            type: '',
-            level: 'LOW' as WizardRiskLevel,
-            message: warningData,
-            description: undefined,
-            recommendations: [],
-          };
+            recommendation: warning.recommendation,
+          });
         }
-      } else if (typeof warningData === 'object' && warningData !== null) {
-        const warning = warningData as RiskWarningApiResponse;
-        return {
-          id: warning.id || '',
-          type: warning.type || '',
-          level: (warning.level as WizardRiskLevel) || 'LOW',
-          message: warning.message || '',
-          description: warning.description,
-          recommendations: warning.recommendations || [],
-        };
-      } else {
-        return {
-          id: '',
-          type: '',
-          level: 'LOW' as WizardRiskLevel,
-          message: String(warningData),
-          description: undefined,
-          recommendations: [],
-        };
-      }
-    });
+      });
+    }
 
     return {
       success: true,
@@ -196,68 +135,6 @@ export async function getRiskWarnings(
     return {
       success: false,
       error: `Не вдалося отримати попередження: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
-    };
-  }
-}
-
-/**
- * Отримання рекомендованих модифікаторів
- */
-export async function getRecommendedModifiers(
-  categoryCode: string,
-  itemName: string,
-  material?: string,
-  color?: string
-): Promise<WizardPricingOperationResult<WizardRecommendedModifier[]>> {
-  try {
-    // Отримуємо відповідь з API
-    const apiResponse = await PriceCalculationService.getRecommendedModifiers({
-      categoryCode,
-      materialType: material,
-      stains: color ? [`color:${color}`] : [], // Використовуємо колір як пляму
-      defects: [],
-    });
-
-    const typedResponse = apiResponse as Record<string, unknown>;
-
-    // Перетворюємо Record в масив
-    const modifiersData = Array.isArray(typedResponse)
-      ? typedResponse
-      : Object.values(typedResponse);
-
-    // Перетворюємо API відповідь у типізований формат
-    const typedModifiers = modifiersData.map((item: unknown): RecommendedModifierApiItem => {
-      const modifier = item as RecommendedModifierApiResponse;
-
-      return {
-        name: modifier.name || '',
-        description: modifier.description,
-        code: modifier.type || modifier.code || '',
-        reason: modifier.description || '',
-        priority: 0,
-        isRequired: false,
-      };
-    });
-
-    // Мапимо у доменний формат
-    const modifiers: WizardRecommendedModifier[] = typedModifiers.map(
-      (modifier: RecommendedModifierApiItem) => ({
-        code: modifier.code || '',
-        name: modifier.name || '',
-        reason: modifier.reason || '',
-        priority: modifier.priority || 0,
-        isRequired: modifier.isRequired || false,
-      })
-    );
-
-    return {
-      success: true,
-      data: modifiers,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: `Не вдалося отримати рекомендації: ${error instanceof Error ? error.message : UNKNOWN_ERROR}`,
     };
   }
 }

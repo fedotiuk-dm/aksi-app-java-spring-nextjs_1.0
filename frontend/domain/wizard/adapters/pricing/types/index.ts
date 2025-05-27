@@ -15,20 +15,13 @@ export * from './price-list.types';
 // Модифікатори цін
 export * from './price-modifier.types';
 
-// Розрахунок цін (включає WizardRecommendedModifier)
-export * from './price-calculation.types';
+// Розрахунок цін - типи тепер в shared
 
 // Попередження про ризики та модифікатори (включає WizardRiskLevel)
 export * from './risk-warning.types';
 
 // Характеристики предметів (без WizardRiskLevel, імпортує з risk-warning.types)
-export type {
-  WizardWearDegree,
-  WizardStainType,
-  WizardDefectType,
-  WizardMaterial,
-  WizardFillerType,
-  WizardColor,
-  WizardRisk,
-  WizardUnitOfMeasure,
-} from './item-characteristics.types';
+export type * from './item-characteristics.types';
+
+// API відповіді
+export * from './api-responses.types';

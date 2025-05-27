@@ -10,6 +10,9 @@
 
 // ===== ЕКСПОРТИ АДАПТЕРІВ ПО ДОМЕНАХ =====
 
+// SHARED TYPES (спільні типи для уникнення конфліктів)
+export * from './shared';
+
 // BRANCH DOMAIN
 export * from './branch';
 

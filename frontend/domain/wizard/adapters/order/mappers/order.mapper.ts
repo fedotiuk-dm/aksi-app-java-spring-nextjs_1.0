@@ -3,62 +3,12 @@
  * @module domain/wizard/adapters/order/mappers
  */
 
+import {
+  mapApiStatusToWizard,
+  mapApiExpediteTypeToWizard,
+  mapApiModifierTypeToWizard,
+} from './enum.mapper.improved';
 import { WizardModifierType } from '../../pricing/types';
-import { WizardOrderStatus, WizardExpediteType } from '../types';
-
-/**
- * Маппінг статусів з API в доменні типи
- */
-function mapOrderStatus(apiStatus: string | undefined): WizardOrderStatus {
-  switch (apiStatus) {
-    case 'DRAFT':
-      return WizardOrderStatus.DRAFT;
-    case 'NEW':
-      return WizardOrderStatus.NEW;
-    case 'IN_PROGRESS':
-      return WizardOrderStatus.IN_PROGRESS;
-    case 'COMPLETED':
-      return WizardOrderStatus.COMPLETED;
-    case 'DELIVERED':
-      return WizardOrderStatus.DELIVERED;
-    case 'CANCELLED':
-      return WizardOrderStatus.CANCELLED;
-    default:
-      return WizardOrderStatus.DRAFT;
-  }
-}
-
-/**
- * Маппінг типів терміновості з API в доменні типи
- */
-function mapExpediteType(apiType: string | undefined): WizardExpediteType {
-  switch (apiType) {
-    case 'STANDARD':
-      return WizardExpediteType.STANDARD;
-    case 'EXPRESS_48H':
-      return WizardExpediteType.EXPRESS_48H;
-    case 'EXPRESS_24H':
-      return WizardExpediteType.EXPRESS_24H;
-    default:
-      return WizardExpediteType.STANDARD;
-  }
-}
-
-/**
- * Конвертер типу модифікатора з API в доменний тип
- */
-function mapModifierTypeToDomain(apiType?: string): WizardModifierType {
-  switch (apiType?.toUpperCase()) {
-    case 'PERCENTAGE':
-      return WizardModifierType.PERCENTAGE;
-    case 'FIXED_AMOUNT':
-      return WizardModifierType.FIXED_AMOUNT;
-    case 'MULTIPLIER':
-      return WizardModifierType.MULTIPLIER;
-    default:
-      return WizardModifierType.PERCENTAGE;
-  }
-}
 
 import type {
   WizardOrder,
@@ -132,12 +82,29 @@ function mapOrderItemDTOToDomain(apiItem: OrderItemDTO): WizardOrderItem {
 }
 
 /**
+ * Перетворює WizardPriceModifierType в WizardModifierType
+ */
+function mapPriceModifierTypeToWizardModifierType(type: string | undefined): WizardModifierType {
+  switch (type) {
+    case 'PERCENTAGE':
+      return WizardModifierType.PERCENTAGE;
+    case 'FIXED_AMOUNT':
+      return WizardModifierType.FIXED_AMOUNT;
+    case 'MULTIPLIER':
+      return WizardModifierType.MULTIPLIER;
+    default:
+      return WizardModifierType.PERCENTAGE;
+  }
+}
+
+/**
  * Перетворює PriceModifierDTO в доменний тип модифікатора
  */
 function mapPriceModifierToDomain(apiModifier: PriceModifierDTO) {
+  const wizardPriceModifierType = mapApiModifierTypeToWizard(apiModifier.type);
   return {
     name: apiModifier.name || '',
-    type: mapModifierTypeToDomain(apiModifier.type),
+    type: mapPriceModifierTypeToWizardModifierType(wizardPriceModifierType.toString()),
     value: apiModifier.value || 0,
     amount: apiModifier.amount || 0,
   };
@@ -169,7 +136,7 @@ export function mapOrderDTOToDomain(apiOrder: OrderDTO): WizardOrder {
     id: apiOrder.id || '',
     receiptNumber: apiOrder.receiptNumber || '',
     tagNumber: apiOrder.tagNumber,
-    status: mapOrderStatus(apiOrder.status),
+    status: mapApiStatusToWizard(apiOrder.status),
     clientInfo: mapClientToOrderClientInfo(apiOrder.client),
     branchInfo: mapBranchToOrderBranchInfo(apiOrder.branchLocation),
     items: (apiOrder.items || []).map(mapOrderItemDTOToDomain),
@@ -179,7 +146,7 @@ export function mapOrderDTOToDomain(apiOrder: OrderDTO): WizardOrder {
     finalAmount: apiOrder.finalAmount || apiOrder.totalAmount || 0,
     prepaymentAmount: apiOrder.prepaymentAmount,
     balanceAmount: apiOrder.balanceAmount || 0,
-    expediteType: mapExpediteType(apiOrder.expediteType),
+    expediteType: mapApiExpediteTypeToWizard(apiOrder.expediteType),
     expectedCompletionDate: apiOrder.expectedCompletionDate,
     createdDate: apiOrder.createdDate || new Date().toISOString(),
     updatedDate: apiOrder.updatedDate,
@@ -227,7 +194,7 @@ export function mapOrderDetailedToDomain(
     finalAmount: apiOrder.finalAmount || 0,
     prepaymentAmount: apiOrder.prepaymentAmount,
     balanceAmount: apiOrder.balanceAmount || 0,
-    expediteType: mapExpediteType(apiOrder.expediteType),
+    expediteType: mapApiExpediteTypeToWizard(apiOrder.expediteType),
     expectedCompletionDate: apiOrder.expectedCompletionDate,
     createdDate: apiOrder.createdDate || new Date().toISOString(),
     customerNotes: apiOrder.customerNotes,
@@ -243,7 +210,7 @@ export function mapOrderSummaryDTOToDomain(apiOrder: OrderSummaryDTO): WizardOrd
   return {
     id: apiOrder.id || '',
     receiptNumber: apiOrder.receiptNumber || '',
-    status: mapOrderStatus(apiOrder.status),
+    status: mapApiStatusToWizard(apiOrder.status),
     totalAmount: apiOrder.totalAmount || 0,
     createdAt: apiOrder.createdAt || new Date().toISOString(),
     completionDate: apiOrder.completionDate,

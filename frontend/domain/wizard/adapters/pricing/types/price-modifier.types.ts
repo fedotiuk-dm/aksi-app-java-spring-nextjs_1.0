@@ -3,14 +3,8 @@
  * @module domain/wizard/adapters/pricing/types/price-modifier
  */
 
-/**
- * Типи модифікаторів
- */
-export enum WizardModifierType {
-  PERCENTAGE = 'PERCENTAGE',
-  FIXED_AMOUNT = 'FIXED_AMOUNT',
-  MULTIPLIER = 'MULTIPLIER',
-}
+// Імпортуємо спільні типи з shared
+import type { WizardModifierType } from '../../shared';
 
 /**
  * Категорії модифікаторів
@@ -39,18 +33,6 @@ export interface WizardPriceModifier {
   isActive: boolean;
   applicableCategories: string[];
   conditions?: string[];
-}
-
-/**
- * Деталі застосованого модифікатора
- */
-export interface WizardAppliedModifier {
-  code: string;
-  name: string;
-  type: WizardModifierType;
-  value: number;
-  amount: number;
-  description?: string;
 }
 
 /**

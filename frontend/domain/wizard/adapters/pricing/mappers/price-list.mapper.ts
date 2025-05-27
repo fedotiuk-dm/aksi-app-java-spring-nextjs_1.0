@@ -4,45 +4,45 @@
  */
 
 import type { WizardPriceListItem } from '../types';
+import type { PriceListItemDTO } from '@/lib/api';
 
 /**
- * Інтерфейс для API відповіді з елементами прайс-листа
+ * Розширений інтерфейс для API відповіді з елементами прайс-листа
+ * Додає поля, які можуть не бути в базовому PriceListItemDTO
  */
-interface PriceListItemApiResponse extends Record<string, unknown> {
-  id?: string;
-  categoryId?: string;
-  name?: string;
-  unitOfMeasure?: string;
-  basePrice?: number;
-  active?: boolean;
+interface ExtendedPriceListItemResponse extends PriceListItemDTO {
+  categoryCode?: string;
+  categoryName?: string;
+  description?: string;
+  notes?: string;
 }
 
 /**
- * Перетворює PriceListItemApiResponse у WizardPriceListItem
+ * Перетворює ExtendedPriceListItemResponse у WizardPriceListItem
  */
 export function mapPriceListItemDTOToDomain(
-  apiItem: PriceListItemApiResponse
+  apiItem: ExtendedPriceListItemResponse
 ): WizardPriceListItem {
   return {
     id: apiItem.id || '',
     categoryId: apiItem.categoryId || '',
-    categoryCode: apiItem.categoryId || '', // Використовуємо categoryId як код
-    categoryName: '', // Буде заповнено окремо
-    itemNumber: apiItem.id || '', // Використовуємо id як номер
+    categoryCode: apiItem.categoryCode || apiItem.categoryId || '',
+    categoryName: apiItem.categoryName || '',
+    itemNumber: apiItem.catalogNumber?.toString() || apiItem.id || '',
     name: apiItem.name || '',
     unitOfMeasure: apiItem.unitOfMeasure || 'шт',
     basePrice: apiItem.basePrice || 0,
     isActive: apiItem.active || false,
-    description: '', // Поле відсутнє в DTO
-    notes: '', // Поле відсутнє в DTO
+    description: apiItem.description || '',
+    notes: apiItem.notes || '',
   };
 }
 
 /**
- * Перетворює масив PriceListItemApiResponse у WizardPriceListItem[]
+ * Перетворює масив ExtendedPriceListItemResponse у WizardPriceListItem[]
  */
 export function mapPriceListItemArrayToDomain(
-  apiItems: PriceListItemApiResponse[]
+  apiItems: ExtendedPriceListItemResponse[]
 ): WizardPriceListItem[] {
   return apiItems.map(mapPriceListItemDTOToDomain);
 }

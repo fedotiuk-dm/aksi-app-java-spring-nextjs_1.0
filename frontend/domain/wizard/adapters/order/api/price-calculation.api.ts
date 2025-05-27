@@ -5,8 +5,15 @@
 
 import { PriceCalculationService } from '@/lib/api';
 
-import { WizardModifierType } from '../../pricing/types';
+// Імпортуємо спільні типи з shared
+import { WizardModifierType } from '../../shared';
 
+import type {
+  WizardPriceCalculationRequest,
+  WizardPriceCalculationResponse,
+  WizardModifierInfo,
+  WizardRiskWarning,
+} from '../../shared';
 import type {
   WizardOrderOperationResult,
   WizardModifierResponse,
@@ -24,42 +31,7 @@ import type {
 const UNKNOWN_ERROR = 'Невідома помилка';
 
 /**
- * Запит на розрахунок ціни для замовлення
- */
-export interface WizardPriceCalculationRequest {
-  readonly categoryCode: string;
-  readonly itemName: string;
-  readonly quantity: number;
-  readonly color?: string;
-  readonly modifierCodes?: string[];
-  readonly rangeModifierValues?: Array<{
-    readonly modifierCode: string;
-    readonly value: number;
-  }>;
-  readonly fixedModifierQuantities?: Array<{
-    readonly modifierCode: string;
-    readonly quantity: number;
-  }>;
-  readonly expedited?: boolean;
-  readonly expeditePercent?: number;
-  readonly discountPercent?: number;
-}
-
-/**
- * Відповідь розрахунку ціни для замовлення
- */
-export interface WizardPriceCalculationResponse {
-  readonly baseUnitPrice: number;
-  readonly quantity: number;
-  readonly baseTotalPrice: number;
-  readonly finalUnitPrice: number;
-  readonly finalTotalPrice: number;
-  readonly unitOfMeasure?: string;
-  readonly calculationDetails: WizardCalculationDetail[];
-}
-
-/**
- * Деталі модифікатора
+ * Деталі модифікатора (специфічний для order)
  */
 export interface WizardModifierDetail {
   readonly code: string;
@@ -68,45 +40,6 @@ export interface WizardModifierDetail {
   readonly value: number;
   readonly appliedAmount: number;
   readonly description?: string;
-}
-
-/**
- * Деталі розрахунку
- */
-export interface WizardCalculationDetail {
-  readonly step: number;
-  readonly stepName: string;
-  readonly description: string;
-  readonly modifierCode?: string;
-  readonly modifierName?: string;
-  readonly modifierValue?: string;
-  readonly priceBefore: number;
-  readonly priceAfter: number;
-  readonly priceDifference: number;
-}
-
-/**
- * Інформація про модифікатор
- */
-export interface WizardModifierInfo {
-  readonly code: string;
-  readonly name: string;
-  readonly description: string;
-  readonly type: WizardModifierType;
-  readonly value: number;
-  readonly category: 'GENERAL' | 'TEXTILE' | 'LEATHER';
-  readonly applicableCategories: string[];
-  readonly isRecommended?: boolean;
-}
-
-/**
- * Попередження про ризики
- */
-export interface WizardRiskWarning {
-  readonly type: string;
-  readonly severity: 'LOW' | 'MEDIUM' | 'HIGH';
-  readonly message: string;
-  readonly recommendation?: string;
 }
 
 /**

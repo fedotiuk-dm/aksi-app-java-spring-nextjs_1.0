@@ -7,15 +7,13 @@ import { PriceCalculationService } from '@/lib/api';
 
 import { mapPriceModifierDTOToDomain, mapPriceModifierArrayToDomain } from '../mappers';
 
-/**
- * Інтерфейс для API відповіді з модифікаторами
- */
-interface PriceModifierApiResponse extends Record<string, unknown> {}
-
 import type {
   WizardPricingOperationResult,
   WizardPriceModifier,
   WizardModifierSearchParams,
+  PriceModifierApiResponse,
+  ModifiersByCategoryApiResponse,
+  ModifiersByCodesApiResponse,
 } from '../types';
 
 // Константи для помилок
@@ -31,7 +29,7 @@ export async function getModifiersForCategory(
     const apiResponse = await PriceCalculationService.getModifiersForServiceCategory1({
       categoryCode,
     });
-    const modifiers = mapPriceModifierArrayToDomain(apiResponse as PriceModifierApiResponse[]);
+    const modifiers = mapPriceModifierArrayToDomain(apiResponse as ModifiersByCategoryApiResponse);
 
     return {
       success: true,
@@ -46,9 +44,9 @@ export async function getModifiersForCategory(
 }
 
 /**
- * Отримання модифікатора за кодом
+ * Отримання модифікатора за кодом (pricing версія)
  */
-export async function getModifierByCode(
+export async function getModifierByCodeForPricing(
   code: string
 ): Promise<WizardPricingOperationResult<WizardPriceModifier>> {
   try {
@@ -75,7 +73,7 @@ export async function getModifiersByCategory(
 ): Promise<WizardPricingOperationResult<WizardPriceModifier[]>> {
   try {
     const apiResponse = await PriceCalculationService.getModifiersByCategory1({ category });
-    const modifiers = mapPriceModifierArrayToDomain(apiResponse as PriceModifierApiResponse[]);
+    const modifiers = mapPriceModifierArrayToDomain(apiResponse as ModifiersByCategoryApiResponse);
 
     return {
       success: true,
@@ -99,7 +97,7 @@ export async function getModifiersByCodes(
     const apiResponse = await PriceCalculationService.getModifiersByCodes({ requestBody: codes });
 
     // Перетворюємо Record<string, PriceModifierApiResponse> в масив модифікаторів
-    const modifiersArray = Object.values(apiResponse as Record<string, PriceModifierApiResponse>);
+    const modifiersArray = Object.values(apiResponse as ModifiersByCodesApiResponse);
     const modifiers = mapPriceModifierArrayToDomain(modifiersArray);
 
     return {
@@ -115,16 +113,16 @@ export async function getModifiersByCodes(
 }
 
 /**
- * Отримання доступних модифікаторів для категорії
+ * Отримання доступних модифікаторів для категорії (pricing версія)
  */
-export async function getAvailableModifiersForCategory(
+export async function getAvailableModifiersForPricingCategory(
   categoryCode: string
 ): Promise<WizardPricingOperationResult<WizardPriceModifier[]>> {
   try {
     const apiResponse = await PriceCalculationService.getAvailableModifiersForCategory({
       categoryCode,
     });
-    const modifiers = mapPriceModifierArrayToDomain(apiResponse as PriceModifierApiResponse[]);
+    const modifiers = mapPriceModifierArrayToDomain(apiResponse as ModifiersByCategoryApiResponse);
 
     return {
       success: true,

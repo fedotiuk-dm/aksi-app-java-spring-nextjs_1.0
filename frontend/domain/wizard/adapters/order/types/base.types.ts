@@ -9,7 +9,7 @@ export type WizardReceiptNumber = string;
 export type WizardTagNumber = string;
 
 /**
- * Статуси замовлення
+ * Статуси замовлень для wizard домену
  */
 export enum WizardOrderStatus {
   DRAFT = 'DRAFT',
@@ -21,7 +21,7 @@ export enum WizardOrderStatus {
 }
 
 /**
- * Типи терміновості виконання
+ * Типи терміновості для wizard домену
  */
 export enum WizardExpediteType {
   STANDARD = 'STANDARD',

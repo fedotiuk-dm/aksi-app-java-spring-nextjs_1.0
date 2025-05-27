@@ -3,14 +3,14 @@
  * @module domain/wizard/adapters/pricing/mappers
  */
 
-import { WizardModifierType } from '../types/price-modifier.types';
+import { WizardModifierType } from '../../shared';
 
 import type {
   WizardPriceCalculationRequest,
   WizardPriceCalculationResponse,
   WizardPriceCalculationDetails,
   WizardAppliedModifier,
-} from '../types';
+} from '../../shared';
 import type { PriceCalculationRequestDTO } from '@/lib/api';
 
 /**
@@ -76,7 +76,7 @@ export function mapPriceCalculationResponseToDomain(
         detail.modifierValue?.includes('%') ? 'PERCENTAGE' : 'FIXED_AMOUNT'
       ),
       value: parseModifierValue(detail.modifierValue || '0'),
-      amount: detail.priceDifference || 0,
+      appliedAmount: detail.priceDifference || 0,
       description: detail.description || '',
     }));
 

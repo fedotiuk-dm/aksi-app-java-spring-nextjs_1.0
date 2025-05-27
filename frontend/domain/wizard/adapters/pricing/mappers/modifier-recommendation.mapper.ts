@@ -3,10 +3,9 @@
  * @module domain/wizard/adapters/pricing/mappers
  */
 
-import { WizardModifierType, WizardModifierCategory } from '../types/price-modifier.types';
-import { WizardRiskLevel } from '../types/risk-warning.types';
+import { WizardModifierType } from '../../shared';
 
-import type { WizardModifierInfo, WizardRiskWarning } from '../types';
+import type { WizardModifierInfo, WizardRiskWarning } from '../../shared';
 import type { ModifierRecommendationDTO } from '@/lib/api';
 
 /**
@@ -19,7 +18,7 @@ export function mapModifierFromApiResponse(apiData: ModifierRecommendationDTO): 
     description: apiData.reason || '',
     type: WizardModifierType.PERCENTAGE, // За замовчуванням, можна розширити пізніше
     value: apiData.recommendedValue || 0,
-    category: WizardModifierCategory.CONDITION, // За замовчуванням, можна розширити пізніше
+    category: 'GENERAL', // За замовчуванням, можна розширити пізніше
     applicableCategories: [], // Поки що порожній масив
   };
 }
@@ -29,12 +28,10 @@ export function mapModifierFromApiResponse(apiData: ModifierRecommendationDTO): 
  */
 export function mapRiskWarningFromApiResponse(apiData: string): WizardRiskWarning {
   return {
-    id: apiData.toLowerCase().replace(/\s+/g, '_'),
     type: 'GENERAL',
-    level: WizardRiskLevel.MEDIUM,
+    severity: 'MEDIUM',
     message: apiData,
-    description: `Попередження: ${apiData}`,
-    recommendations: [],
+    recommendation: `Попередження: ${apiData}`,
   };
 }
 

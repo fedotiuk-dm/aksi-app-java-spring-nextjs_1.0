@@ -3,25 +3,10 @@
  * @module domain/wizard/adapters/pricing/mappers
  */
 
-import { WizardModifierType, WizardModifierCategory } from '../types';
+import { WizardModifierType } from '../../shared';
+import { WizardModifierCategory } from '../types';
 
-import type { WizardPriceModifier } from '../types';
-
-/**
- * Інтерфейс для API відповіді з модифікаторами цін
- */
-interface PriceModifierApiResponse extends Record<string, unknown> {
-  id?: string;
-  code?: string;
-  name?: string;
-  description?: string;
-  type?: string;
-  category?: string;
-  value?: number;
-  active?: boolean;
-  applicableCategories?: string[];
-  conditions?: string[];
-}
+import type { WizardPriceModifier, PriceModifierApiResponse } from '../types';
 
 /**
  * Перетворює PriceModifierApiResponse у WizardPriceModifier
@@ -30,14 +15,14 @@ export function mapPriceModifierDTOToDomain(
   apiModifier: PriceModifierApiResponse
 ): WizardPriceModifier {
   return {
-    id: apiModifier.id || '',
+    id: apiModifier.id || apiModifier.modifierId || '',
     code: apiModifier.code || '',
     name: apiModifier.name || '',
-    description: apiModifier.description,
-    type: mapModifierTypeToDomain(apiModifier.type),
+    description: apiModifier.reason, // reason використовується як description
+    type: mapModifierTypeToDomain(), // тип буде визначатися за замовчуванням
     category: mapModifierCategoryToDomain(apiModifier.category),
-    value: apiModifier.value || 0,
-    isActive: apiModifier.active || false,
+    value: apiModifier.recommendedValue || 0,
+    isActive: apiModifier.active || true,
     applicableCategories: apiModifier.applicableCategories || [],
     conditions: apiModifier.conditions || [],
   };

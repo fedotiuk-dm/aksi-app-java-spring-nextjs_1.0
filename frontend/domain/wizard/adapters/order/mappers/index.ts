@@ -9,3 +9,6 @@ export * from './order.mapper';
 export * from './order-item.mapper';
 export * from './payment.mapper';
 export * from './receipt.mapper';
+
+// Покращені enum маппери
+export * from './enum.mapper.improved';

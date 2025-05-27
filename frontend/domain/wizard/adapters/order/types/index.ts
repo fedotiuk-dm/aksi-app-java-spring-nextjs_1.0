@@ -6,6 +6,9 @@
 // Базові типи та перелічення
 export * from './base.types';
 
+// Enum типи з OpenAPI
+export * from './enums.types';
+
 // Сутності замовлень
 export * from './entities.types';
 
