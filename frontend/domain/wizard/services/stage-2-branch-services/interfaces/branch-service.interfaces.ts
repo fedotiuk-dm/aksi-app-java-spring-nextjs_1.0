@@ -7,12 +7,12 @@ import type {
   WizardBranch,
   WizardBranchCreateData,
   WizardBranchUpdateData,
-} from '../../../adapters/branch';
+} from '../../../schemas';
 import type {
   BranchFilters,
   BranchValidationResult,
   BranchServiceState,
-  BranchOperationResult
+  BranchOperationResult,
 } from '../types/';
 
 /**
@@ -64,7 +64,10 @@ export interface IBranchService {
    * @param branchId Ідентифікатор філії
    * @param branchData Дані для оновлення
    */
-  updateBranch(branchId: string, branchData: WizardBranchUpdateData): Promise<BranchOperationResult<WizardBranch>>;
+  updateBranch(
+    branchId: string,
+    branchData: WizardBranchUpdateData
+  ): Promise<BranchOperationResult<WizardBranch>>;
 
   /**
    * Видалення філії
@@ -88,7 +91,9 @@ export interface IBranchService {
    * Валідація даних філії
    * @param branchData Дані філії для валідації
    */
-  validateBranchData(branchData: WizardBranchCreateData | WizardBranchUpdateData): BranchValidationResult;
+  validateBranchData(
+    branchData: WizardBranchCreateData | WizardBranchUpdateData
+  ): BranchValidationResult;
 
   /**
    * Отримання поточного стану сервісу філій

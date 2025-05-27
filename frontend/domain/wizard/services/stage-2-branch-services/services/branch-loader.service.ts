@@ -1,74 +1,189 @@
 /**
- * @fileoverview Сервіс для завантаження філій
+ * @fileoverview Сервіс завантаження філій для Order Wizard
  * @module domain/wizard/services/stage-2-branch-services/services/branch-loader
  */
 
-import { WizardBranch } from '../../../adapters/branch';
-import { getAllBranches, getActiveBranches } from '../../../adapters/branch/api/branch.api';
-import { BranchOperationResult, IBranchLoaderService } from '../types/branch-service.types';
+import { getAllBranches, getActiveBranches } from '../../../adapters/branch';
+import { WizardBranch, wizardBranchSchema } from '../../../schemas';
 
-/** Константа для невідомої помилки */
-export const UNKNOWN_ERROR = 'Невідома помилка при отриманні даних філій';
+import type { BranchOperationResult, IBranchLoaderService } from '../types';
 
 /**
- * Сервіс для завантаження філій Order Wizard
+ * Константи помилок
+ */
+export const BRANCH_LOADER_ERRORS = {
+  LOAD_FAILED: 'Не вдалося завантажити філії',
+  NO_ACTIVE_BRANCHES: 'Немає активних філій',
+  NETWORK_ERROR: 'Помилка мережі при завантаженні філій',
+  VALIDATION_ERROR: 'Помилка валідації даних філій',
+} as const;
+
+/**
+ * Сервіс завантаження філій
  * @implements IBranchLoaderService
  */
 export class BranchLoaderService implements IBranchLoaderService {
+  private cachedBranches: WizardBranch[] = [];
+  private cachedActiveBranches: WizardBranch[] = [];
+  private lastLoadTime: number = 0;
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 хвилин
+
   /**
-   * Завантажує всі філії з бекенду
+   * Завантаження всіх філій
    * @returns Promise з результатом операції
    */
   async loadAllBranches(): Promise<BranchOperationResult<WizardBranch[]>> {
     try {
-      const result = await getAllBranches();
-      
-      if (result.success && result.data) {
+      // Перевіряємо кеш
+      if (this.isCacheValid() && this.cachedBranches.length > 0) {
         return {
           success: true,
-          data: result.data
-        };
-      } else {
-        return {
-          success: false,
-          error: result.error || 'Не вдалося завантажити філії'
+          data: this.cachedBranches,
         };
       }
+
+      // Використовуємо адаптер для завантаження філій з API
+      const adapterResult = await getAllBranches();
+
+      if (!adapterResult.success || !adapterResult.data) {
+        return {
+          success: false,
+          error: adapterResult.error || BRANCH_LOADER_ERRORS.LOAD_FAILED,
+        };
+      }
+
+      // Валідація отриманих даних через Zod схему
+      const validationResults = adapterResult.data.map((branch) =>
+        wizardBranchSchema.safeParse(branch)
+      );
+      const invalidBranches = validationResults.filter((result) => !result.success);
+
+      if (invalidBranches.length > 0) {
+        console.warn('Знайдено невалідні дані філій:', invalidBranches);
+      }
+
+      const validBranches = validationResults
+        .filter((result) => result.success)
+        .map((result) => result.data as WizardBranch);
+
+      // Оновлюємо кеш
+      this.cachedBranches = validBranches;
+      this.lastLoadTime = Date.now();
+
+      return {
+        success: true,
+        data: validBranches,
+      };
     } catch (error) {
-      console.error('Помилка при завантаженні філій:', error);
+      console.error('Помилка завантаження філій:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : UNKNOWN_ERROR
+        error: error instanceof Error ? error.message : BRANCH_LOADER_ERRORS.LOAD_FAILED,
       };
     }
   }
 
   /**
-   * Завантажує тільки активні філії з бекенду
+   * Завантаження тільки активних філій
    * @returns Promise з результатом операції
    */
   async loadActiveBranches(): Promise<BranchOperationResult<WizardBranch[]>> {
     try {
-      const result = await getActiveBranches();
-      
-      if (result.success && result.data) {
+      // Перевіряємо кеш активних філій
+      if (this.isCacheValid() && this.cachedActiveBranches.length > 0) {
         return {
           success: true,
-          data: result.data
-        };
-      } else {
-        return {
-          success: false,
-          error: result.error || 'Не вдалося завантажити активні філії'
+          data: this.cachedActiveBranches,
         };
       }
+
+      // Використовуємо спеціалізований адаптер для активних філій
+      const adapterResult = await getActiveBranches();
+
+      if (!adapterResult.success || !adapterResult.data) {
+        return {
+          success: false,
+          error: adapterResult.error || BRANCH_LOADER_ERRORS.LOAD_FAILED,
+        };
+      }
+
+      // Валідація отриманих даних
+      const validationResults = adapterResult.data.map((branch) =>
+        wizardBranchSchema.safeParse(branch)
+      );
+      const invalidBranches = validationResults.filter((result) => !result.success);
+
+      if (invalidBranches.length > 0) {
+        console.warn('Знайдено невалідні дані активних філій:', invalidBranches);
+      }
+
+      const activeBranches = validationResults
+        .filter((result) => result.success)
+        .map((result) => result.data as WizardBranch);
+
+      if (activeBranches.length === 0) {
+        return {
+          success: false,
+          error: BRANCH_LOADER_ERRORS.NO_ACTIVE_BRANCHES,
+        };
+      }
+
+      // Оновлюємо кеш активних філій
+      this.cachedActiveBranches = activeBranches;
+
+      return {
+        success: true,
+        data: activeBranches,
+      };
     } catch (error) {
-      console.error('Помилка при завантаженні активних філій:', error);
+      console.error('Помилка завантаження активних філій:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : UNKNOWN_ERROR
+        error: error instanceof Error ? error.message : BRANCH_LOADER_ERRORS.LOAD_FAILED,
       };
     }
+  }
+
+  /**
+   * Очищення кешу
+   */
+  clearCache(): void {
+    this.cachedBranches = [];
+    this.cachedActiveBranches = [];
+    this.lastLoadTime = 0;
+  }
+
+  /**
+   * Примусове оновлення даних (ігнорує кеш)
+   */
+  async forceReload(): Promise<BranchOperationResult<WizardBranch[]>> {
+    this.clearCache();
+    return this.loadAllBranches();
+  }
+
+  /**
+   * Перевірка валідності кешу
+   */
+  private isCacheValid(): boolean {
+    return Date.now() - this.lastLoadTime < this.CACHE_DURATION;
+  }
+
+  /**
+   * Отримання інформації про стан кешу
+   */
+  getCacheInfo(): {
+    hasCachedBranches: boolean;
+    hasCachedActiveBranches: boolean;
+    cacheAge: number;
+    isValid: boolean;
+  } {
+    const cacheAge = Date.now() - this.lastLoadTime;
+    return {
+      hasCachedBranches: this.cachedBranches.length > 0,
+      hasCachedActiveBranches: this.cachedActiveBranches.length > 0,
+      cacheAge,
+      isValid: this.isCacheValid(),
+    };
   }
 }
 

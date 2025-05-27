@@ -3,10 +3,11 @@
  * @module domain/wizard/services/stage-2-branch-services/services/branch-selection
  */
 
-import { BranchLoaderService, UNKNOWN_ERROR } from './branch-loader.service';
+import { BranchLoaderService } from './branch-loader.service';
 import { BranchValidatorService } from './branch-validator.service';
-import { WizardBranch } from '../../../adapters/branch';
-import { BranchOperationResult, IBranchSelectionService } from '../types/branch-service.types';
+import { WizardBranch } from '../../../schemas';
+
+import type { BranchOperationResult, IBranchSelectionService } from '../types';
 
 /**
  * Сервіс для вибору філій в Order Wizard
@@ -45,7 +46,7 @@ export class BranchSelectionService implements IBranchSelectionService {
         if (!branchesResult.success || !branchesResult.data) {
           return {
             success: false,
-            error: branchesResult.error || 'Не вдалося завантажити філії'
+            error: branchesResult.error || 'Не вдалося завантажити філії',
           };
         }
         this.branches = branchesResult.data;
@@ -57,7 +58,7 @@ export class BranchSelectionService implements IBranchSelectionService {
         if (!activeBranchesResult.success || !activeBranchesResult.data) {
           return {
             success: false,
-            error: activeBranchesResult.error || 'Не вдалося завантажити активні філії'
+            error: activeBranchesResult.error || 'Не вдалося завантажити активні філії',
           };
         }
         this.activeBranches = activeBranchesResult.data;
@@ -68,7 +69,7 @@ export class BranchSelectionService implements IBranchSelectionService {
       if (!branch) {
         return {
           success: false,
-          error: `Філію з ID ${branchId} не знайдено`
+          error: `Філію з ID ${branchId} не знайдено`,
         };
       }
 
@@ -76,20 +77,20 @@ export class BranchSelectionService implements IBranchSelectionService {
       if (!branch.active) {
         return {
           success: false,
-          error: `Філія ${branch.name} неактивна. Виберіть активну філію.`
+          error: `Філія ${branch.name} неактивна. Виберіть активну філію.`,
         };
       }
 
       // Повертаємо успішний результат
       return {
         success: true,
-        data: branch
+        data: branch,
       };
     } catch (error) {
       console.error('Помилка при виборі філії:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : UNKNOWN_ERROR
+        error: error instanceof Error ? error.message : 'Невідома помилка',
       };
     }
   }

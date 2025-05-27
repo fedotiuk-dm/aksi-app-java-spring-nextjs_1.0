@@ -6,46 +6,26 @@
 import type {
   WizardBranch,
   WizardBranchCreateData,
-  WizardBranchUpdateData
-} from '../../../adapters/branch';
+  WizardBranchUpdateData,
+  WizardBranchFilters as SchemaWizardBranchFilters,
+  WizardBranchOperationResult as SchemaWizardBranchOperationResult,
+  WizardBranchValidationResult as SchemaWizardBranchValidationResult,
+} from '../../../schemas';
 
 /**
- * Фільтри для філій
+ * Фільтри для філій (використовуємо Zod типи)
  */
-export interface BranchFilters {
-  /** Пошук за назвою філії */
-  name?: string;
-  /** Фільтр за активністю */
-  active?: boolean;
-  /** Пошук за адресою */
-  address?: string;
-  /** Пошук за кодом філії */
-  code?: string;
-}
+export type BranchFilters = SchemaWizardBranchFilters;
 
 /**
- * Результат операції з філіями
+ * Результат операції з філіями (використовуємо Zod типи)
  */
-export interface BranchOperationResult<T> {
-  /** Успішність операції */
-  success: boolean;
-  /** Дані у випадку успіху */
-  data?: T;
-  /** Текст помилки у випадку неуспішної операції */
-  error?: string;
-}
+export type BranchOperationResult<T> = SchemaWizardBranchOperationResult<T>;
 
 /**
- * Результат валідації даних філії
+ * Результат валідації даних філії (використовуємо Zod типи)
  */
-export interface BranchValidationResult {
-  /** Успішність валідації */
-  valid: boolean;
-  /** Помилки валідації за полями */
-  errors: {
-    [key: string]: string;
-  };
-}
+export type BranchValidationResult = SchemaWizardBranchValidationResult;
 
 /**
  * Стан сервісу філій
@@ -75,7 +55,7 @@ export interface BranchServiceState {
 export interface IBranchLoaderService {
   /** Завантаження всіх філій */
   loadAllBranches(): Promise<BranchOperationResult<WizardBranch[]>>;
-  
+
   /** Завантаження тільки активних філій */
   loadActiveBranches(): Promise<BranchOperationResult<WizardBranch[]>>;
 }
@@ -86,18 +66,20 @@ export interface IBranchLoaderService {
 export interface IBranchValidatorService {
   /** Перевірка, чи існує філія з вказаним ID */
   isBranchValid(branches: WizardBranch[], branchId: string): boolean;
-  
+
   /** Знаходження філії за ID */
   findBranchById(branches: WizardBranch[], branchId: string): WizardBranch | undefined;
-  
+
   /** Знаходження філії за кодом */
   findBranchByCode(branches: WizardBranch[], code: string): WizardBranch | undefined;
-  
+
   /** Фільтрація філій за активністю */
   filterByActive(branches: WizardBranch[], active: boolean): WizardBranch[];
-  
+
   /** Валідація даних філії */
-  validateBranchData(branchData: WizardBranchCreateData | WizardBranchUpdateData): BranchValidationResult;
+  validateBranchData(
+    branchData: WizardBranchCreateData | WizardBranchUpdateData
+  ): BranchValidationResult;
 }
 
 /**
@@ -106,7 +88,7 @@ export interface IBranchValidatorService {
 export interface IBranchSelectionService {
   /** Форматування назви філії */
   formatBranchName(branch: WizardBranch): string;
-  
+
   /** Вибір філії за ідентифікатором */
   selectBranch(branchId: string): Promise<BranchOperationResult<WizardBranch>>;
 }
@@ -117,16 +99,19 @@ export interface IBranchSelectionService {
 export interface IBranchOperationsService {
   /** Створення нової філії */
   createBranch(branchData: WizardBranchCreateData): Promise<BranchOperationResult<WizardBranch>>;
-  
+
   /** Оновлення існуючої філії */
-  updateBranch(branchId: string, branchData: WizardBranchUpdateData): Promise<BranchOperationResult<WizardBranch>>;
-  
+  updateBranch(
+    branchId: string,
+    branchData: WizardBranchUpdateData
+  ): Promise<BranchOperationResult<WizardBranch>>;
+
   /** Видалення філії */
   deleteBranch(branchId: string): Promise<BranchOperationResult<void>>;
-  
+
   /** Активація філії */
   activateBranch(branchId: string): Promise<BranchOperationResult<WizardBranch>>;
-  
+
   /** Деактивація філії */
   deactivateBranch(branchId: string): Promise<BranchOperationResult<WizardBranch>>;
 }

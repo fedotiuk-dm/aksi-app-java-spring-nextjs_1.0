@@ -53,6 +53,27 @@ export {
   multipleFilesSchema,
 } from './wizard-file.schemas';
 
+// === СХЕМИ ФІЛІЙ ===
+export {
+  wizardBranchIdSchema,
+  wizardBranchCodeSchema,
+  wizardBranchNameSchema,
+  wizardBranchAddressSchema,
+  wizardBranchPhoneSchema,
+  wizardBranchSchema,
+  wizardBranchCreateDataSchema,
+  wizardBranchUpdateDataSchema,
+  wizardBranchFiltersSchema,
+  wizardBranchOperationResultSchema,
+  wizardBranchValidationResultSchema,
+  type WizardBranch,
+  type WizardBranchCreateData,
+  type WizardBranchUpdateData,
+  type WizardBranchFilters,
+  type WizardBranchOperationResult,
+  type WizardBranchValidationResult,
+} from './wizard-branch-fields.schemas';
+
 // === СХЕМИ РЕЗУЛЬТАТІВ ===
 export {
   operationResultSchema,

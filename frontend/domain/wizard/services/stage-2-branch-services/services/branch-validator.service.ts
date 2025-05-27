@@ -1,91 +1,195 @@
 /**
- * @fileoverview Сервіс для валідації філій
+ * @fileoverview Сервіс валідації філій для Order Wizard
  * @module domain/wizard/services/stage-2-branch-services/services/branch-validator
  */
 
-import type {
+import {
   WizardBranch,
   WizardBranchCreateData,
-  WizardBranchUpdateData
-} from '../../../adapters/branch';
-import type { BranchValidationResult, IBranchValidatorService } from '../types/branch-service.types';
+  WizardBranchUpdateData,
+  wizardBranchSchema,
+  wizardBranchCreateDataSchema,
+  wizardBranchUpdateDataSchema,
+} from '../../../schemas';
+
+import type { BranchValidationResult, IBranchValidatorService } from '../types';
 
 /**
- * Сервіс для валідації філій
+ * Сервіс валідації філій
  * @implements IBranchValidatorService
  */
 export class BranchValidatorService implements IBranchValidatorService {
   /**
-   * Перевіряє, чи існує філія з вказаним ID
-   * @param branches Масив філій
-   * @param branchId ID філії
+   * Перевірка, чи існує філія з вказаним ID
+   * @param branches Список філій
+   * @param branchId ID філії для пошуку
    * @returns true, якщо філія існує
    */
   isBranchValid(branches: WizardBranch[], branchId: string): boolean {
-    return branches.some(branch => branch.id === branchId);
+    return branches.some((branch) => branch.id === branchId);
   }
 
   /**
-   * Знаходить філію за ID
-   * @param branches Масив філій
-   * @param branchId ID філії
-   * @returns Знайдена філія або undefined
+   * Знаходження філії за ID
+   * @param branches Список філій
+   * @param branchId ID філії для пошуку
+   * @returns Філія або undefined
    */
   findBranchById(branches: WizardBranch[], branchId: string): WizardBranch | undefined {
-    return branches.find(branch => branch.id === branchId);
+    return branches.find((branch) => branch.id === branchId);
   }
 
   /**
-   * Знаходить філію за кодом
-   * @param branches Масив філій
-   * @param code Код філії
-   * @returns Знайдена філія або undefined
+   * Знаходження філії за кодом
+   * @param branches Список філій
+   * @param code Код філії для пошуку
+   * @returns Філія або undefined
    */
   findBranchByCode(branches: WizardBranch[], code: string): WizardBranch | undefined {
-    return branches.find(branch => branch.code === code);
+    return branches.find((branch) => branch.code === code);
   }
 
   /**
-   * Фільтрує філії за активністю
-   * @param branches Масив філій
-   * @param active Активність філій
-   * @returns Фільтрований масив філій
+   * Фільтрація філій за активністю
+   * @param branches Список філій
+   * @param active Статус активності
+   * @returns Відфільтровані філії
    */
   filterByActive(branches: WizardBranch[], active: boolean): WizardBranch[] {
-    return branches.filter(branch => branch.active === active);
+    return branches.filter((branch) => branch.active === active);
   }
 
   /**
-   * Валідує дані філії перед створенням або оновленням
-   * @param branchData Дані філії
+   * Валідація даних філії через Zod схеми
+   * @param branchData Дані філії для валідації
    * @returns Результат валідації
    */
-  validateBranchData(branchData: WizardBranchCreateData | WizardBranchUpdateData): BranchValidationResult {
-    const errors: { [key: string]: string } = {};
+  validateBranchData(
+    branchData: WizardBranchCreateData | WizardBranchUpdateData
+  ): BranchValidationResult {
+    try {
+      // Визначаємо, який тип даних ми валідуємо
+      const isCreateData = this.isCreateData(branchData);
+      const schema = isCreateData ? wizardBranchCreateDataSchema : wizardBranchUpdateDataSchema;
 
-    // Валідація назви
-    if (!branchData.name || branchData.name.trim() === '') {
-      errors.name = 'Назва філії обов’язкова';
-    } else if (branchData.name.length < 3) {
-      errors.name = 'Назва філії повинна містити мінімум 3 символи';
+      const result = schema.safeParse(branchData);
+
+      if (result.success) {
+        return {
+          isValid: true,
+          errors: [],
+          warnings: [],
+          fieldErrors: {},
+        };
+      }
+
+      // Обробляємо помилки валідації
+      const fieldErrors: Record<string, string[]> = {};
+      const errors: string[] = [];
+
+      result.error.issues.forEach((issue) => {
+        const fieldPath = issue.path.join('.');
+        const message = issue.message;
+
+        if (fieldPath) {
+          if (!fieldErrors[fieldPath]) {
+            fieldErrors[fieldPath] = [];
+          }
+          fieldErrors[fieldPath].push(message);
+        } else {
+          errors.push(message);
+        }
+      });
+
+      return {
+        isValid: false,
+        errors,
+        warnings: [],
+        fieldErrors,
+      };
+    } catch (error) {
+      console.error('Помилка валідації даних філії:', error);
+      return {
+        isValid: false,
+        errors: ['Помилка валідації даних'],
+        warnings: [],
+        fieldErrors: {},
+      };
     }
+  }
 
-    // Валідація коду
-    if (!branchData.code || branchData.code.trim() === '') {
-      errors.code = 'Код філії обов’язковий';
-    } else if (!/^[A-Z0-9]+$/.test(branchData.code)) {
-      errors.code = 'Код філії повинен містити лише великі літери та цифри';
+  /**
+   * Валідація існуючої філії
+   * @param branch Філія для валідації
+   * @returns Результат валідації
+   */
+  validateExistingBranch(branch: WizardBranch): BranchValidationResult {
+    try {
+      const result = wizardBranchSchema.safeParse(branch);
+
+      if (result.success) {
+        return {
+          isValid: true,
+          errors: [],
+          warnings: [],
+          fieldErrors: {},
+        };
+      }
+
+      // Обробляємо помилки валідації
+      const fieldErrors: Record<string, string[]> = {};
+      const errors: string[] = [];
+
+      result.error.issues.forEach((issue) => {
+        const fieldPath = issue.path.join('.');
+        const message = issue.message;
+
+        if (fieldPath) {
+          if (!fieldErrors[fieldPath]) {
+            fieldErrors[fieldPath] = [];
+          }
+          fieldErrors[fieldPath].push(message);
+        } else {
+          errors.push(message);
+        }
+      });
+
+      return {
+        isValid: false,
+        errors,
+        warnings: [],
+        fieldErrors,
+      };
+    } catch (error) {
+      console.error('Помилка валідації філії:', error);
+      return {
+        isValid: false,
+        errors: ['Помилка валідації філії'],
+        warnings: [],
+        fieldErrors: {},
+      };
     }
+  }
 
-    // Валідація адреси
-    if (!branchData.address || branchData.address.trim() === '') {
-      errors.address = 'Адреса філії обов’язкова';
-    }
+  /**
+   * Перевірка унікальності коду філії
+   * @param branches Список існуючих філій
+   * @param code Код для перевірки
+   * @param excludeId ID філії, яку треба виключити з перевірки (для оновлення)
+   * @returns true, якщо код унікальний
+   */
+  isCodeUnique(branches: WizardBranch[], code: string, excludeId?: string): boolean {
+    return !branches.some((branch) => branch.code === code && branch.id !== excludeId);
+  }
 
-    return {
-      valid: Object.keys(errors).length === 0,
-      errors
-    };
+  /**
+   * Допоміжний метод для визначення типу даних
+   */
+  private isCreateData(
+    data: WizardBranchCreateData | WizardBranchUpdateData
+  ): data is WizardBranchCreateData {
+    // Якщо всі обов'язкові поля для створення присутні, це CreateData
+    return 'name' in data && 'address' in data && 'code' in data;
   }
 }
 
