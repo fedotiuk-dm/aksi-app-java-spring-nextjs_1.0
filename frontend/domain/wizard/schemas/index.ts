@@ -74,6 +74,42 @@ export {
   type WizardBranchValidationResult,
 } from './wizard-branch-fields.schemas';
 
+// === СХЕМИ ПРЕДМЕТІВ ===
+export {
+  wizardItemIdSchema,
+  wizardItemCategorySchema,
+  wizardItemNameSchema,
+  wizardItemQuantitySchema,
+  wizardItemUnitSchema,
+  wizardItemMaterialSchema,
+  wizardItemColorSchema,
+  wizardItemFillerTypeSchema,
+  wizardItemFillerCompressedSchema,
+  wizardItemWearDegreeSchema,
+  wizardItemStainsSchema,
+  wizardItemDefectsSchema,
+  wizardItemRisksSchema,
+  wizardItemBasePriceSchema,
+  wizardItemFinalPriceSchema,
+  wizardItemNotesSchema,
+  wizardItemPhotosSchema,
+  wizardOrderItemSchema,
+  wizardOrderItemCreateSchema,
+  wizardOrderItemUpdateSchema,
+  wizardOrderItemDetailedSchema,
+  wizardOrderItemFiltersSchema,
+  type WizardOrderItem,
+  type WizardOrderItemCreate,
+  type WizardOrderItemUpdate,
+  type WizardOrderItemDetailed,
+  type WizardOrderItemFilters,
+  type WizardItemCategory,
+  type WizardItemMaterial,
+  type WizardItemUnit,
+  type WizardItemFillerType,
+  type WizardItemWearDegree,
+} from './wizard-item-fields.schemas';
+
 // === СХЕМИ РЕЗУЛЬТАТІВ ===
 export {
   operationResultSchema,

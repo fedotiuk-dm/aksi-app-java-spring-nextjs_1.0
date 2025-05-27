@@ -6,3 +6,5 @@
 export * from './item-wizard.service';
 export * from './item-wizard-navigation.service';
 export * from './item-wizard-validation.service';
+export * from './item-loader.service';
+export * from './item-operations.service';
