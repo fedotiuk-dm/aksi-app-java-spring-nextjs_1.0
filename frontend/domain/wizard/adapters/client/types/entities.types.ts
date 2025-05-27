@@ -26,7 +26,7 @@ export interface WizardClient {
   readonly address?: string;
   readonly structuredAddress?: WizardClientAddress;
   readonly communicationChannels: WizardCommunicationChannel[];
-  readonly source: WizardClientSource;
+  readonly source?: WizardClientSource;
   readonly sourceDetails?: string;
   readonly createdAt: string;
   readonly updatedAt: string;

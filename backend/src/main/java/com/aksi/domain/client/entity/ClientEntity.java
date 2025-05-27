@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.aksi.domain.client.enums.ClientSource;
 import com.aksi.domain.order.entity.OrderEntity;
 
 import jakarta.persistence.CascadeType;
@@ -107,7 +108,7 @@ public class ClientEntity {
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "source")
-    private ClientSourceEntity source;
+    private ClientSource source;
 
     /**
      * Уточнення джерела, якщо вибрано "Інше".

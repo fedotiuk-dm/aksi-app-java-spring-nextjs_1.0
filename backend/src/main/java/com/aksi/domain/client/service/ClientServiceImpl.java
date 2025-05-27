@@ -21,7 +21,7 @@ import com.aksi.domain.client.dto.CreateClientRequest;
 import com.aksi.domain.client.dto.UpdateClientRequest;
 import com.aksi.domain.client.entity.AddressEntity;
 import com.aksi.domain.client.entity.ClientEntity;
-import com.aksi.domain.client.entity.ClientSourceEntity;
+import com.aksi.domain.client.enums.ClientSource;
 import com.aksi.domain.client.event.ClientAddressChangedEvent;
 import com.aksi.domain.client.event.ClientCreatedEvent;
 import com.aksi.domain.client.event.ClientUpdatedEvent;
@@ -310,7 +310,7 @@ public class ClientServiceImpl implements ClientService {
      * @param sourceDetails деталі джерела
      */
     private void validateClientData(ClientEntity client, String phone, String email,
-                                    ClientSourceEntity source, String sourceDetails) {
+                                    ClientSource source, String sourceDetails) {
         validateUniquePhone(client, phone);
         validateUniqueEmail(client, email);
         validateSourceDetails(source, sourceDetails);
@@ -353,8 +353,8 @@ public class ClientServiceImpl implements ClientService {
      * @param source тип джерела
      * @param sourceDetails деталі джерела
      */
-    private void validateSourceDetails(ClientSourceEntity source, String sourceDetails) {
-        if (source == ClientSourceEntity.OTHER && (sourceDetails == null || sourceDetails.isEmpty())) {
+    private void validateSourceDetails(ClientSource source, String sourceDetails) {
+        if (source == ClientSource.OTHER && (sourceDetails == null || sourceDetails.isEmpty())) {
             throw new IllegalArgumentException("Деталі джерела обов'язкові, якщо вибрано 'Інше'");
         }
     }

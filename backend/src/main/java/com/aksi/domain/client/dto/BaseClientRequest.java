@@ -2,8 +2,8 @@ package com.aksi.domain.client.dto;
 
 import java.util.Set;
 
-import com.aksi.domain.client.entity.ClientSourceEntity;
 import com.aksi.domain.client.entity.CommunicationChannelEntity;
+import com.aksi.domain.client.enums.ClientSource;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -72,7 +72,7 @@ public abstract class BaseClientRequest {
     /**
      * Джерело, з якого клієнт дізнався про хімчистку.
      */
-    private ClientSourceEntity source;
+    private ClientSource source;
 
     /**
      * Деталі джерела, якщо вибрано "Інше".

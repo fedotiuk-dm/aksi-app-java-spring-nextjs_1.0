@@ -23,12 +23,12 @@ export enum WizardCommunicationChannel {
 
 /**
  * Джерело залучення клієнта
+ * Синхронізовано з ClientSource enum з бекенду
  */
 export enum WizardClientSource {
-  DIRECT = 'DIRECT',
-  REFERRAL = 'REFERRAL',
-  SOCIAL_MEDIA = 'SOCIAL_MEDIA',
-  ADVERTISEMENT = 'ADVERTISEMENT',
+  INSTAGRAM = 'INSTAGRAM',
+  GOOGLE = 'GOOGLE',
+  RECOMMENDATION = 'RECOMMENDATION',
   OTHER = 'OTHER',
 }
 

@@ -5,17 +5,20 @@
 
 import { ClientResponse, CreateClientRequest, UpdateClientRequest } from '@/lib/api';
 
-import {
-  WizardClient,
-  WizardClientCreateData,
-  WizardClientUpdateData
-} from '../types';
+import { WizardClient, WizardClientCreateData, WizardClientUpdateData } from '../types';
 import { mapAddressDTOToDomain, mapAddressDomainToDTO } from './address.mapper';
 import { mapClientCategoryDTOToDomain } from './category.mapper';
-import { mapCommunicationChannelsToDomain, mapCommunicationChannelsToAPI } from './communication.mapper';
+import {
+  mapCommunicationChannelsToDomain,
+  mapCommunicationChannelsToAPI,
+} from './communication.mapper';
 import { mapClientOrderSummaryFromDTO } from './order.mapper';
 import { mapClientPreferenceDTOToDomain } from './preference.mapper';
-import { mapClientSourceToDomain, mapClientSourceToCreateRequest, mapClientSourceToUpdateRequest } from './source.mapper';
+import {
+  mapApiSourceToWizard,
+  mapWizardSourceToCreateRequest,
+  mapWizardSourceToUpdateRequest,
+} from './source.mapper.improved';
 
 /**
  * Перетворює ClientResponse у WizardClient
@@ -32,7 +35,7 @@ export function mapClientResponseToDomain(apiClient: ClientResponse): WizardClie
     address: apiClient.address,
     structuredAddress: mapAddressDTOToDomain(apiClient.structuredAddress),
     communicationChannels: mapCommunicationChannelsToDomain(apiClient.communicationChannels),
-    source: mapClientSourceToDomain(apiClient.source),
+    source: mapApiSourceToWizard(apiClient.source),
     sourceDetails: apiClient.sourceDetails,
     createdAt: apiClient.createdAt || new Date().toISOString(),
     updatedAt: apiClient.updatedAt || new Date().toISOString(),
@@ -57,7 +60,7 @@ export function mapClientToCreateRequest(
     address: domainClient.address,
     structuredAddress: mapAddressDomainToDTO(domainClient.structuredAddress),
     communicationChannels: mapCommunicationChannelsToAPI(domainClient.communicationChannels),
-    source: mapClientSourceToCreateRequest(domainClient.source),
+    source: mapWizardSourceToCreateRequest(domainClient.source),
     sourceDetails: domainClient.sourceDetails,
   };
 }
@@ -76,7 +79,7 @@ export function mapClientToUpdateRequest(
     address: domainClient.address,
     structuredAddress: mapAddressDomainToDTO(domainClient.structuredAddress),
     communicationChannels: mapCommunicationChannelsToAPI(domainClient.communicationChannels),
-    source: mapClientSourceToUpdateRequest(domainClient.source),
+    source: mapWizardSourceToUpdateRequest(domainClient.source),
     sourceDetails: domainClient.sourceDetails,
   };
 }
