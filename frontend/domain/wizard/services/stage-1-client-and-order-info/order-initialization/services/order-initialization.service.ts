@@ -4,10 +4,10 @@
  */
 
 import { getAllBranches } from '../../../../adapters/branch';
-import { 
+import {
   validateUniqueLabel as validateUniqueLabelAdapter,
-  checkUniqueLabelExists, 
-  initializeOrder as initializeOrderAdapter
+  checkUniqueLabelExists,
+  initializeOrder as initializeOrderAdapter,
 } from '../../../../adapters/order/api';
 import { IOrderInitializationService } from '../interfaces/order-initialization.interfaces';
 import {
@@ -18,7 +18,7 @@ import {
   type Branch,
   type GenerateReceiptNumberRequest,
   type ValidateUniqueLabelRequest,
-  type OrderInitializationResult
+  type OrderInitializationResult,
 } from '../types/order-initialization.types';
 
 import type { OperationResult } from '../../../shared/types/base.types';
@@ -155,9 +155,20 @@ export class OrderInitializationService implements IOrderInitializationService {
         };
       }
 
+      // Адаптуємо WizardBranch[] до Branch[]
+      const adaptedBranches: Branch[] =
+        result.data?.map((wizardBranch) => ({
+          id: wizardBranch.id,
+          name: wizardBranch.name,
+          address: wizardBranch.address,
+          phone: wizardBranch.phone || '',
+          workingHours: '09:00-18:00', // Значення за замовчуванням
+          isActive: wizardBranch.active,
+        })) || [];
+
       return {
         success: true,
-        data: result.data,
+        data: adaptedBranches,
       };
     } catch (error) {
       return {
@@ -170,7 +181,9 @@ export class OrderInitializationService implements IOrderInitializationService {
   /**
    * Валідація даних для ініціалізації замовлення
    */
-  validateOrderInitializationData(data: Partial<OrderInitializationData>): OperationResult<OrderInitializationData> & {
+  validateOrderInitializationData(
+    data: Partial<OrderInitializationData>
+  ): OperationResult<OrderInitializationData> & {
     isValid: boolean;
     validationErrors: Record<string, string>;
   } {
@@ -180,7 +193,7 @@ export class OrderInitializationService implements IOrderInitializationService {
 
       if (!result.success) {
         const validationErrors: Record<string, string> = {};
-        
+
         result.error.errors.forEach((err) => {
           const field = err.path[0] as string;
           validationErrors[field] = err.message;
@@ -237,10 +250,7 @@ export class OrderInitializationService implements IOrderInitializationService {
       }
 
       // Ініціалізація замовлення через API
-      const result = await initializeOrderAdapter(
-        data.uniqueLabel,
-        data.branchId
-      );
+      const result = await initializeOrderAdapter(data.uniqueLabel, data.branchId);
 
       if (!result.success) {
         return {
@@ -251,7 +261,7 @@ export class OrderInitializationService implements IOrderInitializationService {
 
       // Формуємо результат ініціалізації
       const orderBasicInfo: OrderBasicInfo = {
-        receiptNumber: result.data.receiptNumber || data.receiptNumber,
+        receiptNumber: result.data?.receiptNumber || data.receiptNumber,
         uniqueLabel: data.uniqueLabel,
         branchId: data.branchId,
         createdAt: data.createdAt,

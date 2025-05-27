@@ -8,7 +8,7 @@ import {
   mapApiExpediteTypeToWizard,
   mapApiModifierTypeToWizard,
 } from './enum.mapper.improved';
-import { WizardModifierType } from '../../pricing/types';
+import { WizardModifierType } from '../../shared';
 
 import type {
   WizardOrder,

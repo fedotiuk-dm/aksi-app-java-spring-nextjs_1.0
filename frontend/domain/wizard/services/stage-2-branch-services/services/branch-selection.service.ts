@@ -1,69 +1,97 @@
 /**
- * @fileoverview Сервіс вибору філії для Order Wizard
- * @module domain/wizard/services/stage-2-branch-services/services
+ * @fileoverview Сервіс для вибору філій в Order Wizard
+ * @module domain/wizard/services/stage-2-branch-services/services/branch-selection
  */
 
-import { getAllBranches, getActiveBranches } from '../../../adapters/branch';
-
-import type { WizardBranch, WizardBranchOperationResult } from '../../../adapters/branch';
+import { BranchLoaderService, UNKNOWN_ERROR } from './branch-loader.service';
+import { BranchValidatorService } from './branch-validator.service';
+import { WizardBranch } from '../../../adapters/branch';
+import { BranchOperationResult, IBranchSelectionService } from '../types/branch-service.types';
 
 /**
- * Простий сервіс для вибору філії (пункту прийому замовлення)
- * Відповідає за отримання списку філій та вибір філії для замовлення
+ * Сервіс для вибору філій в Order Wizard
+ * @implements IBranchSelectionService
  */
-export class BranchSelectionService {
-  /**
-   * Отримання всіх філій
-   */
-  async getAllBranches(): Promise<WizardBranchOperationResult<WizardBranch[]>> {
-    try {
-      return await getAllBranches();
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Невідома помилка',
-      };
-    }
+export class BranchSelectionService implements IBranchSelectionService {
+  private loaderService: BranchLoaderService;
+  private validatorService: BranchValidatorService;
+  private branches: WizardBranch[] = [];
+  private activeBranches: WizardBranch[] = [];
+
+  constructor() {
+    this.loaderService = new BranchLoaderService();
+    this.validatorService = new BranchValidatorService();
   }
 
   /**
-   * Отримання тільки активних філій
-   */
-  async getActiveBranches(): Promise<WizardBranchOperationResult<WizardBranch[]>> {
-    try {
-      return await getActiveBranches();
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Невідома помилка',
-      };
-    }
-  }
-
-  /**
-   * Перевірка, чи існує філія з вказаним ID
-   * @param branches Список філій
-   * @param branchId ID філії для перевірки
-   */
-  isBranchValid(branches: WizardBranch[], branchId: string): boolean {
-    return branches.some(branch => branch.id === branchId && branch.active);
-  }
-
-  /**
-   * Знаходження філії за ID
-   * @param branches Список філій
-   * @param branchId ID філії
-   */
-  findBranchById(branches: WizardBranch[], branchId: string): WizardBranch | undefined {
-    return branches.find(branch => branch.id === branchId);
-  }
-
-  /**
-   * Форматування назви філії
-   * @param branch Філія
+   * Форматує назву філії для відображення
+   * @param branch Філія для форматування
+   * @returns Форматована назва філії
    */
   formatBranchName(branch: WizardBranch): string {
-    return `${branch.name} (${branch.address})`;
+    return `${branch.name} (${branch.code})`;
+  }
+
+  /**
+   * Вибір філії за ідентифікатором
+   * @param branchId Ідентифікатор філії
+   * @returns Promise з результатом операції
+   */
+  async selectBranch(branchId: string): Promise<BranchOperationResult<WizardBranch>> {
+    try {
+      // Якщо у нас ще немає завантажених філій, завантажуємо їх
+      if (this.branches.length === 0) {
+        const branchesResult = await this.loaderService.loadAllBranches();
+        if (!branchesResult.success || !branchesResult.data) {
+          return {
+            success: false,
+            error: branchesResult.error || 'Не вдалося завантажити філії'
+          };
+        }
+        this.branches = branchesResult.data;
+      }
+
+      // Якщо у нас ще немає завантажених активних філій, завантажуємо їх
+      if (this.activeBranches.length === 0) {
+        const activeBranchesResult = await this.loaderService.loadActiveBranches();
+        if (!activeBranchesResult.success || !activeBranchesResult.data) {
+          return {
+            success: false,
+            error: activeBranchesResult.error || 'Не вдалося завантажити активні філії'
+          };
+        }
+        this.activeBranches = activeBranchesResult.data;
+      }
+
+      // Перевіряємо, чи існує філія з вказаним ID
+      const branch = this.validatorService.findBranchById(this.branches, branchId);
+      if (!branch) {
+        return {
+          success: false,
+          error: `Філію з ID ${branchId} не знайдено`
+        };
+      }
+
+      // Перевіряємо, чи є філія активною
+      if (!branch.active) {
+        return {
+          success: false,
+          error: `Філія ${branch.name} неактивна. Виберіть активну філію.`
+        };
+      }
+
+      // Повертаємо успішний результат
+      return {
+        success: true,
+        data: branch
+      };
+    } catch (error) {
+      console.error('Помилка при виборі філії:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : UNKNOWN_ERROR
+      };
+    }
   }
 }
 

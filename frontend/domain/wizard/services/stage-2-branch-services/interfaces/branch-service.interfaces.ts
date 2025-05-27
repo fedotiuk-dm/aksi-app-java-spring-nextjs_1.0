@@ -7,14 +7,13 @@ import type {
   WizardBranch,
   WizardBranchCreateData,
   WizardBranchUpdateData,
-  WizardBranchOperationResult
 } from '../../../adapters/branch';
 import type {
   BranchFilters,
   BranchValidationResult,
   BranchServiceState,
   BranchOperationResult
-} from '../types/branch-service.types';
+} from '../types/';
 
 /**
  * Інтерфейс сервісу управління філіями

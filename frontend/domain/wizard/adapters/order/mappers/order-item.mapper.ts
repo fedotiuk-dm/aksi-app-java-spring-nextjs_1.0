@@ -3,7 +3,7 @@
  * @module domain/wizard/adapters/order/mappers
  */
 
-import { WizardModifierType } from '../../pricing/types';
+import { WizardModifierType } from '../../shared';
 
 import type { WizardOrderItem, WizardOrderItemDetailed } from '../types';
 import type { OrderItemDTO, OrderItemDetailedDTO } from '@/lib/api';
