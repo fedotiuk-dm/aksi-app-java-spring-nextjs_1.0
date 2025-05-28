@@ -1,65 +1,192 @@
-import {
-  applyOrderDiscount,
-  getOrderDiscount,
-  type WizardDiscountData,
-  type WizardDiscountResult,
-  WizardDiscountType,
-} from '@/domain/wizard/adapters/order';
-import {
-  globalDiscountsSchema,
-  globalDiscountsFormSchema,
-  type DiscountType,
-} from '@/domain/wizard/schemas/wizard-stage-3.schemas';
+import { z } from 'zod';
 
-// Імпорти адаптерів з wizard domain
+import {
+  applyDiscount1Body,
+  applyDiscount1200Response,
+  applyDiscountParams,
+  applyDiscount200Response,
+  safeValidate,
+  validateOrThrow,
+} from '@/shared/api/generated/order/zod';
 
 import { BaseWizardService } from '../../base.service';
 
 /**
- * ✅ МІНІМАЛІСТСЬКИЙ СЕРВІС ДЛЯ 3.2: ЗНИЖКИ (глобальні для замовлення)
- * ✅ На основі: OrderWizard instruction_structure logic.md
- * Розмір: ~80 рядків (дотримання ліміту)
+ * Сервіс для глобальних знижок замовлення з orval + zod інтеграцією
  *
- * Відповідальність (ТІЛЬКИ):
- * - Композиція order адаптерів для знижок
- * - Валідація знижок через централізовані Zod схеми
- * - Перевірка обмежень відповідно до документу
+ * Відповідальність (ТІЛЬКИ бізнес-логіка):
+ * - Валідація знижок через orval Zod схеми
+ * - Бізнес-правила для типів знижок та обмежень категорій
+ * - Валідація параметрів запитів та відповідей API
+ * - Композиція даних для застосування знижок
  *
- * НЕ дублює:
- * - Розрахунок знижок (роль order адаптерів)
+ * НЕ робить:
+ * - API виклики (роль хуків + Orval)
  * - Збереження стану (роль Zustand)
  * - Кешування (роль TanStack Query)
+ * - Навігацію (роль XState)
+ *
+ * ✅ ORVAL READY: повністю інтегровано з orval + zod схемами
  */
+
+// Використовуємо orval схеми напряму
+export type ApplyDiscountRequest = z.infer<typeof applyDiscount1Body>;
+export type ApplyDiscountResponse = z.infer<typeof applyDiscount1200Response>;
+export type ApplyDiscountByAmountParams = z.infer<typeof applyDiscountParams>;
+export type ApplyDiscountByAmountResponse = z.infer<typeof applyDiscount200Response>;
+
+// Константи для уникнення дублювання
+const EXCLUDED_CATEGORIES_PATTERNS = ['прасування', 'прання', 'фарбування'] as const;
+const EXCLUDED_CATEGORIES_FULL = ['прасування', 'прання', 'фарбування_текстилю'] as const;
+
+// Локальні zod схеми для специфічної бізнес-логіки
+const discountTypeValidationSchema = z.object({
+  discountType: z.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']),
+  customPercentage: z.number().min(0).max(100).optional(),
+  description: z.string().max(255).optional(),
+});
+
+const excludedCategoriesSchema = z.object({
+  serviceCategoryIds: z.array(z.string().uuid()),
+  excludedPatterns: z.array(z.string()).default([...EXCLUDED_CATEGORIES_PATTERNS]),
+});
+
+const discountCalculationSchema = z.object({
+  totalAmount: z.number().min(0, "Сума не може бути від'ємною"),
+  discountPercentage: z.number().min(0).max(100),
+  excludedCategoriesAmount: z.number().min(0).default(0),
+});
+
+// Локальні типи для бізнес-логіки
+export type DiscountType = z.infer<typeof applyDiscount1Body>['discountType'];
+export type DiscountTypeValidation = z.infer<typeof discountTypeValidationSchema>;
+export type ExcludedCategoriesCheck = z.infer<typeof excludedCategoriesSchema>;
+export type DiscountCalculation = z.infer<typeof discountCalculationSchema>;
+
+export interface DiscountTypeOption {
+  value: DiscountType;
+  label: string;
+  percent?: number;
+  description: string;
+}
+
+export interface DiscountValidationResult {
+  isValid: boolean;
+  errors: string[];
+  validatedData?: ApplyDiscountRequest;
+}
+
+export interface DiscountCalculationResult {
+  originalAmount: number;
+  discountAmount: number;
+  finalAmount: number;
+  discountPercentage: number;
+  excludedAmount: number;
+  isValid: boolean;
+  errors: string[];
+}
 
 export class GlobalDiscountsService extends BaseWizardService {
   protected readonly serviceName = 'GlobalDiscountsService';
 
   /**
-   * Валідація глобальних знижок (через централізовані схеми)
+   * Валідація запиту на застосування знижки через orval схему
    */
-  validateGlobalDiscounts(data: unknown) {
-    return globalDiscountsSchema.safeParse(data);
+  validateApplyDiscountRequest(
+    orderId: string,
+    discountType: DiscountType,
+    discountPercentage?: number,
+    discountDescription?: string
+  ): DiscountValidationResult {
+    const requestData = {
+      orderId,
+      discountType,
+      discountPercentage,
+      discountDescription,
+    };
+
+    const validation = safeValidate(applyDiscount1Body, requestData);
+
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      validatedData: validation.data,
+    };
   }
 
   /**
-   * Валідація форми глобальних знижок
+   * Валідація типу знижки через локальну схему
    */
-  validateGlobalDiscountsForm(data: unknown) {
-    return globalDiscountsFormSchema.safeParse(data);
+  validateDiscountType(
+    discountType: DiscountType,
+    customPercentage?: number,
+    description?: string
+  ): {
+    isValid: boolean;
+    errors: string[];
+    validatedData?: DiscountTypeValidation;
+  } {
+    const validation = safeValidate(discountTypeValidationSchema, {
+      discountType,
+      customPercentage,
+      description,
+    });
+
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      validatedData: validation.data,
+    };
   }
 
   /**
-   * Отримання типів знижок відповідно до документу
-   * Тип знижки (вибір один):
-   * - Без знижки, Еверкард (10%), Соцмережі (5%), ЗСУ (10%), Інше
+   * Отримання опцій типів знижок відповідно до документу
    */
-  getDiscountTypeOptions(): Array<{ value: DiscountType; label: string; percent?: number }> {
+  getDiscountTypeOptions(): DiscountTypeOption[] {
     return [
-      { value: 'без_знижки', label: 'Без знижки' },
-      { value: 'еверкард', label: 'Еверкард', percent: 10 },
-      { value: 'соцмережі', label: 'Соцмережі', percent: 5 },
-      { value: 'зсу', label: 'ЗСУ', percent: 10 },
-      { value: 'інше', label: 'Інше (вказати відсоток)' },
+      {
+        value: 'NO_DISCOUNT',
+        label: 'Без знижки',
+        percent: 0,
+        description: 'Замовлення без знижки',
+      },
+      {
+        value: 'EVERCARD',
+        label: 'Еверкард',
+        percent: 10,
+        description: 'Знижка за картою Еверкард',
+      },
+      {
+        value: 'SOCIAL_MEDIA',
+        label: 'Соцмережі',
+        percent: 5,
+        description: 'Знижка за інформацію із соцмереж',
+      },
+      {
+        value: 'MILITARY',
+        label: 'ЗСУ',
+        percent: 10,
+        description: 'Знижка для військовослужбовців ЗСУ',
+      },
+      {
+        value: 'CUSTOM',
+        label: 'Інше',
+        description: 'Індивідуальна знижка (вказати відсоток)',
+      },
     ];
   }
 
@@ -68,89 +195,206 @@ export class GlobalDiscountsService extends BaseWizardService {
    * Знижки НЕ діють на прасування, прання і фарбування текстилю
    */
   getExcludedCategories(): string[] {
-    return ['прасування', 'прання', 'фарбування_текстилю'];
+    return [...EXCLUDED_CATEGORIES_FULL];
   }
 
   /**
-   * Композиція: застосування глобальної знижки через адаптер
+   * Перевірка чи має знижка фіксований відсоток
    */
-  async applyGlobalDiscount(
-    discountData: WizardDiscountData
-  ): Promise<WizardDiscountResult | null> {
-    const result = await applyOrderDiscount(discountData);
-    return result.success ? result.data || null : null;
+  hasFixedPercent(discountType: DiscountType): boolean {
+    return ['EVERCARD', 'SOCIAL_MEDIA', 'MILITARY'].includes(discountType);
   }
 
   /**
-   * Отримання поточної знижки замовлення
+   * Перевірка виключених категорій через локальну схему
    */
-  async getOrderDiscount(orderId: string): Promise<WizardDiscountResult | null> {
-    const result = await getOrderDiscount(orderId);
-    return result.success ? result.data || null : null;
+  checkExcludedCategories(
+    serviceCategoryIds: string[],
+    customExcludedPatterns?: string[]
+  ): {
+    isValid: boolean;
+    errors: string[];
+    excludedCategoryIds: string[];
+    hasExcludedCategories: boolean;
+  } {
+    const excludedPatterns = customExcludedPatterns || [...EXCLUDED_CATEGORIES_PATTERNS];
+    const validation = safeValidate(excludedCategoriesSchema, {
+      serviceCategoryIds,
+      excludedPatterns,
+    });
+
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+        excludedCategoryIds: [],
+        hasExcludedCategories: false,
+      };
+    }
+
+    // Знайти категорії, які містять виключені шаблони
+    const excludedCategoryIds = serviceCategoryIds.filter((id) =>
+      excludedPatterns.some((pattern) => id.toLowerCase().includes(pattern.toLowerCase()))
+    );
+
+    return {
+      isValid: true,
+      errors: [],
+      excludedCategoryIds,
+      hasExcludedCategories: excludedCategoryIds.length > 0,
+    };
   }
 
   /**
-   * Перевірка чи має знижка відсоток за замовчуванням
+   * Розрахунок знижки з урахуванням виключених категорій
    */
-  hasDefaultPercent(discountType: DiscountType): boolean {
-    return ['еверкард', 'соцмережі', 'зсу'].includes(discountType);
+  calculateDiscountAmount(
+    totalAmount: number,
+    discountPercentage: number,
+    excludedCategoriesAmount: number = 0
+  ): DiscountCalculationResult {
+    const validation = safeValidate(discountCalculationSchema, {
+      totalAmount,
+      discountPercentage,
+      excludedCategoriesAmount,
+    });
+
+    if (!validation.success) {
+      return {
+        originalAmount: totalAmount,
+        discountAmount: 0,
+        finalAmount: totalAmount,
+        discountPercentage: 0,
+        excludedAmount: 0,
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    // Сума, до якої застосовується знижка (без виключених категорій)
+    const discountableAmount = Math.max(0, totalAmount - excludedCategoriesAmount);
+
+    // Розрахунок суми знижки
+    const discountAmount = (discountableAmount * discountPercentage) / 100;
+
+    // Фінальна сума
+    const finalAmount = totalAmount - discountAmount;
+
+    return {
+      originalAmount: totalAmount,
+      discountAmount,
+      finalAmount,
+      discountPercentage,
+      excludedAmount: excludedCategoriesAmount,
+      isValid: true,
+      errors: [],
+    };
+  }
+
+  /**
+   * Отримання опису знижки
+   */
+  getDiscountDescription(discountType: DiscountType, customDescription?: string): string {
+    if (customDescription) {
+      return customDescription;
+    }
+
+    const option = this.getDiscountTypeOptions().find((opt) => opt.value === discountType);
+    return option?.description || '';
+  }
+
+  /**
+   * Отримання інформації про обмеження знижок
+   */
+  getDiscountRestrictions(): {
+    excludedCategories: string[];
+    message: string;
+  } {
+    return {
+      excludedCategories: [...EXCLUDED_CATEGORIES_FULL],
+      message: 'Знижки НЕ діють на прасування, прання і фарбування текстилю',
+    };
+  }
+
+  /**
+   * Створення запиту для застосування знижки
+   */
+  createApplyDiscountRequest(
+    orderId: string,
+    discountType: DiscountType,
+    customPercentage?: number
+  ): {
+    isValid: boolean;
+    errors: string[];
+    requestData?: ApplyDiscountRequest;
+  } {
+    const discountPercentage = customPercentage || this.getDefaultDiscountPercent(discountType);
+    const discountDescription = this.getDiscountDescription(discountType);
+
+    const validation = this.validateApplyDiscountRequest(
+      orderId,
+      discountType,
+      discountPercentage,
+      discountDescription
+    );
+
+    if (!validation.isValid) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      requestData: validation.validatedData,
+    };
+  }
+
+  /**
+   * Валідація відсотка знижки
+   */
+  validateDiscountPercentage(percentage: number): {
+    isValid: boolean;
+    errors: string[];
+  } {
+    if (percentage < 0) {
+      return {
+        isValid: false,
+        errors: ["Відсоток знижки не може бути від'ємним"],
+      };
+    }
+
+    if (percentage > 100) {
+      return {
+        isValid: false,
+        errors: ['Відсоток знижки не може перевищувати 100%'],
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+    };
+  }
+
+  /**
+   * Форматування суми знижки для відображення
+   */
+  formatDiscountAmount(amount: number, currency: string = 'UAH'): string {
+    return new Intl.NumberFormat('uk-UA', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 2,
+    }).format(amount);
   }
 
   /**
    * Отримання відсотка знижки за замовчуванням
    */
   getDefaultDiscountPercent(discountType: DiscountType): number {
-    const mapping: Record<DiscountType, number> = {
-      без_знижки: 0,
-      еверкард: 10,
-      соцмережі: 5,
-      зсу: 10,
-      інше: 0,
-    };
-    return mapping[discountType] || 0;
-  }
-
-  /**
-   * Маппінг UI типу знижки на domain тип для адаптера
-   */
-  mapDiscountTypeToWizard(
-    orderId: string,
-    discountType: DiscountType,
-    customPercent?: number
-  ): WizardDiscountData {
-    return {
-      orderId,
-      type: this.getWizardDiscountTypeFromUI(discountType),
-      percentage: customPercent || this.getDefaultDiscountPercent(discountType),
-      description: this.getDiscountDescription(discountType),
-    };
-  }
-
-  /**
-   * Приватний метод: конвертація UI типу знижки
-   */
-  private getWizardDiscountTypeFromUI(discountType: DiscountType): WizardDiscountType {
-    const mapping: Record<DiscountType, WizardDiscountType> = {
-      без_знижки: WizardDiscountType.NONE,
-      еверкард: WizardDiscountType.EVERCARD,
-      соцмережі: WizardDiscountType.SOCIAL_MEDIA,
-      зсу: WizardDiscountType.MILITARY,
-      інше: WizardDiscountType.CUSTOM,
-    };
-    return mapping[discountType] || WizardDiscountType.NONE;
-  }
-
-  /**
-   * Приватний метод: отримання опису знижки
-   */
-  private getDiscountDescription(discountType: DiscountType): string {
-    const mapping: Record<DiscountType, string> = {
-      без_знижки: '',
-      еверкард: 'Знижка за картою Еверкард',
-      соцмережі: 'Знижка за інформацію із соцмереж',
-      зсу: 'Знижка для військовослужбовців ЗСУ',
-      інше: 'Індивідуальна знижка',
-    };
-    return mapping[discountType] || '';
+    const option = this.getDiscountTypeOptions().find((opt) => opt.value === discountType);
+    return option?.percent || 0;
   }
 }

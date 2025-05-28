@@ -6,8 +6,8 @@
 import { useMemo } from 'react';
 
 import { WizardNavigationService } from '../../machines';
-import { useWizardStore } from '../../store';
-import { WizardStep, ItemWizardStep } from '../../types';
+import { useWizardBaseStore } from '../../store';
+import { WizardStep, ItemWizardStep } from '../../types/wizard-steps.types';
 
 /**
  * Інформація про крок wizard
@@ -25,7 +25,7 @@ interface StepInfo {
  * 📊 Надає детальну інформацію про стан кожного кроку
  */
 export const useWizardProgress = () => {
-  const { currentStep, currentSubStep, completedSteps } = useWizardStore();
+  const { currentStep, currentSubStep, completedSteps } = useWizardBaseStore();
 
   // 📋 Інформація про всі кроки
   const steps = useMemo((): StepInfo[] => {
@@ -38,7 +38,7 @@ export const useWizardProgress = () => {
       [WizardStep.COMPLETED]: 'Завершено',
     };
 
-    return Object.values(WizardStep)
+    return (Object.values(WizardStep) as WizardStep[])
       .filter((step) => step !== WizardStep.COMPLETED) // Виключаємо завершений стан з прогресу
       .map((step) => ({
         step,

@@ -1,191 +1,244 @@
+import { z } from 'zod';
+
 import {
-  getOrderItems,
-  addOrderItem,
-  updateOrderItem,
-  deleteOrderItem,
-  calculateOrderItemPrice,
-  type WizardOrderItem,
-  type WizardOrderItemDetailed,
-} from '@/domain/wizard/adapters/order';
-import {
-  itemListSchema,
-  itemListItemSchema,
-  itemSummarySchema,
-  type ItemSummary,
-} from '@/domain/wizard/schemas';
+  getOrderItemsParams,
+  getOrderItems200Response,
+  getOrderItems200ResponseItem,
+  addOrderItemParams,
+  addOrderItemBody,
+  addOrderItem201Response,
+  updateOrderItemParams,
+  updateOrderItemBody,
+  updateOrderItem200Response,
+  deleteOrderItem204Response,
+  safeValidate,
+  validateOrThrow,
+} from '@/shared/api/generated/order/zod';
 
 import { BaseWizardService } from '../../base.service';
 
 /**
- * Інтерфейс для відображення предмета в таблиці
- */
-interface ItemTableRow {
-  id: string;
-  name: string;
-  category: string;
-  quantity: string;
-  material: string;
-  color: string;
-  price: number;
-}
-
-/**
- * Розширений мінімалістський менеджер предметів замовлення
- * Розмір: ~120 рядків (в межах ліміту)
+ * Сервіс менеджера предметів з orval + zod інтеграцією
  *
- * Відповідальність (ТІЛЬКИ):
- * - Композиція order-item адаптерів для CRUD операцій
- * - Валідація через ВСІ централізовані Zod схеми менеджера 2.0
- * - Мінімальні розрахунки підсумків та цін
- * - Форматування для UI таблиці
+ * Відповідальність (ТІЛЬКИ менеджмент предметів):
+ * - CRUD операції з предметами замовлення
+ * - Табличне відображення та форматування
+ * - Підсумки та розрахунки для замовлення
+ * - Валідація параметрів запитів
  *
- * НЕ дублює:
- * - API виклики (роль order-item адаптерів)
+ * НЕ дублює типи з інших сервісів:
+ * - OrderItemResponse, ItemValidationResult - тільки в basic-info
+ * - Характеристики предметів - тільки в characteristics
+ * - WearLevel, материали, кольори - тільки в characteristics
+ *
+ * НЕ робить:
+ * - API виклики (роль хуків + Orval)
  * - Збереження стану (роль Zustand)
  * - Кешування (роль TanStack Query)
  * - Навігацію (роль XState)
- * - Схеми валідації (роль централізованих schemas)
  */
+
+// ТІЛЬКИ типи для менеджменту та таблиці предметів
+export type OrderItemsListResponse = z.infer<typeof getOrderItems200Response>;
+export type OrderItemsParams = z.infer<typeof getOrderItemsParams>;
+export type AddOrderItemParams = z.infer<typeof addOrderItemParams>;
+export type UpdateOrderItemParams = z.infer<typeof updateOrderItemParams>;
+
+// Локальні схеми для UI таблиці та менеджменту
+const itemTableRowSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  category: z.string(),
+  quantity: z.string(),
+  material: z.string(),
+  color: z.string(),
+  price: z.number(),
+});
+
+const orderSummarySchema = z.object({
+  totalItems: z.number().min(0),
+  totalPrice: z.number().min(0),
+  averagePrice: z.number().min(0),
+  canProceed: z.boolean(),
+});
+
+// Локальні типи для менеджменту
+export type ItemTableRow = z.infer<typeof itemTableRowSchema>;
+export type OrderSummary = z.infer<typeof orderSummarySchema>;
+
+export interface ItemsListValidationResult {
+  isValid: boolean;
+  errors: string[];
+  validatedData?: OrderItemsListResponse;
+}
 
 export class ItemManagerService extends BaseWizardService {
   protected readonly serviceName = 'ItemManagerService';
 
   /**
-   * Композиція: отримання предметів через адаптер
+   * Валідація параметрів для отримання предметів замовлення
    */
-  async getOrderItems(orderId: string): Promise<WizardOrderItem[]> {
-    const result = await getOrderItems(orderId);
-    return result.success ? result.data || [] : [];
+  validateGetOrderItemsParams(orderId: string): {
+    isValid: boolean;
+    errors: string[];
+    validatedParams?: OrderItemsParams;
+  } {
+    const params = { orderId };
+    const validation = safeValidate(getOrderItemsParams, params);
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      validatedParams: validation.data,
+    };
   }
 
   /**
-   * Композиція: додавання предмета через адаптер
+   * Валідація відповіді зі списком предметів
    */
-  async addItem(
-    orderId: string,
-    itemData: Partial<WizardOrderItem>
-  ): Promise<WizardOrderItem | null> {
-    const result = await addOrderItem(orderId, itemData);
-    return result.success ? result.data || null : null;
+  validateOrderItemsResponse(data: unknown): ItemsListValidationResult {
+    const validation = safeValidate(getOrderItems200Response, data);
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      validatedData: validation.data,
+    };
   }
 
   /**
-   * Композиція: оновлення предмета через адаптер
+   * Розрахунок підсумків замовлення
    */
-  async updateItem(
-    orderId: string,
-    itemId: string,
-    itemData: Partial<WizardOrderItem>
-  ): Promise<WizardOrderItem | null> {
-    const result = await updateOrderItem(orderId, itemId, itemData);
-    return result.success ? result.data || null : null;
-  }
+  calculateOrderSummary(items: OrderItemsListResponse): OrderSummary {
+    if (!Array.isArray(items) || items.length === 0) {
+      return {
+        totalItems: 0,
+        totalPrice: 0,
+        averagePrice: 0,
+        canProceed: false,
+      };
+    }
 
-  /**
-   * Композиція: видалення предмета через адаптер
-   */
-  async deleteItem(orderId: string, itemId: string): Promise<boolean> {
-    const result = await deleteOrderItem(orderId, itemId);
-    return result.success;
-  }
-
-  /**
-   * Композиція: розрахунок ціни предмета через адаптер
-   */
-  async calculateItemPrice(itemData: Partial<WizardOrderItem>): Promise<number> {
-    const result = await calculateOrderItemPrice(itemData);
-    return result.success ? result.data || 0 : 0;
-  }
-
-  /**
-   * Валідація окремого предмета в списку
-   */
-  validateItemListItem(item: unknown) {
-    return itemListItemSchema.safeParse(item);
-  }
-
-  /**
-   * Валідація списку предметів через централізовану схему
-   */
-  validateItemList(items: unknown) {
-    return itemListSchema.safeParse({ items });
-  }
-
-  /**
-   * Валідація підсумку через централізовану схему
-   */
-  validateSummary(summary: unknown) {
-    return itemSummarySchema.safeParse(summary);
-  }
-
-  /**
-   * Розрахунок підсумків замовлення - мінімальна логіка
-   */
-  calculateSummary(items: WizardOrderItem[]): ItemSummary {
     const totalItems = items.length;
-    const totalPrice = items.reduce((sum, item) => sum + item.finalPrice, 0);
-    const averagePrice = totalItems > 0 ? totalPrice / totalItems : 0;
+    const totalPrice = items.reduce((sum, item) => {
+      return sum + (item.totalPrice || 0);
+    }, 0);
+    const averagePrice = totalPrice / totalItems;
 
     return {
       totalItems,
-      totalPrice,
-      averagePrice,
+      totalPrice: Number(totalPrice.toFixed(2)),
+      averagePrice: Number(averagePrice.toFixed(2)),
       canProceed: totalItems > 0,
     };
   }
 
   /**
-   * Перевірка чи можна продовжити до наступного етапу
+   * Перевірка чи можна переходити до наступного етапу
    */
-  canProceedToNextStage(items: WizardOrderItem[]): boolean {
-    return items.length > 0 && items.every((item) => item.finalPrice > 0);
-  }
+  canProceedToNextStage(items: OrderItemsListResponse): boolean {
+    if (!Array.isArray(items) || items.length === 0) {
+      return false;
+    }
 
-  /**
-   * Форматування даних для таблиці (крок 2.0) з типізацією
-   */
-  formatItemsForTable(items: WizardOrderItem[]): ItemTableRow[] {
-    return items.map((item) => ({
-      id: item.id || '',
-      name: item.itemName,
-      category: item.categoryName,
-      quantity: `${item.quantity} ${item.unit}`,
-      material: item.material || '—',
-      color: item.color || '—',
-      price: item.finalPrice,
-    }));
-  }
-
-  /**
-   * Пошук предмета в списку за ID
-   */
-  findItemById(items: WizardOrderItem[], itemId: string): WizardOrderItem | null {
-    return items.find((item) => item.id === itemId) || null;
-  }
-
-  /**
-   * Перевірка унікальності предмета в замовленні (за назвою + характеристиками)
-   */
-  isItemDuplicate(items: WizardOrderItem[], newItem: WizardOrderItemDetailed): boolean {
-    return items.some(
-      (item) =>
-        item.itemName === newItem.itemName &&
-        item.material === newItem.material &&
-        item.color === newItem.color
+    // Всі предмети повинні мати необхідні поля
+    return items.every(
+      (item) => item.name && item.category && item.quantity && item.unitPrice !== undefined
     );
   }
 
   /**
-   * Створення підсумку з валідацією
+   * Форматування предметів для відображення в таблиці
    */
-  createSummaryWithValidation(items: WizardOrderItem[]): ItemSummary {
-    const summary = this.calculateSummary(items);
-
-    const validation = this.validateSummary(summary);
-    if (!validation.success) {
-      throw new Error(`Валідація підсумку: ${validation.error.errors[0]?.message}`);
+  formatItemsForTable(items: OrderItemsListResponse): ItemTableRow[] {
+    if (!Array.isArray(items)) {
+      return [];
     }
 
-    return validation.data;
+    return items.map((item) => {
+      const quantity = item.unitOfMeasure === 'kg' ? `${item.quantity} кг` : `${item.quantity} шт`;
+
+      return {
+        id: item.id || '',
+        name: item.name || 'Без назви',
+        category: item.category || 'Без категорії',
+        quantity,
+        material: item.material || '-',
+        color: item.color || '-',
+        price: item.totalPrice || 0,
+      };
+    });
+  }
+
+  /**
+   * Пошук предмета за ID
+   */
+  findItemById(items: OrderItemsListResponse, itemId: string): (typeof items)[0] | null {
+    if (!Array.isArray(items)) {
+      return null;
+    }
+
+    return items.find((item) => item.id === itemId) || null;
+  }
+
+  /**
+   * Перевірка на дублікати предметів
+   */
+  isItemDuplicate(
+    items: OrderItemsListResponse,
+    newItem: { name: string; category: string }
+  ): boolean {
+    if (!Array.isArray(items)) {
+      return false;
+    }
+
+    return items.some((item) => item.name === newItem.name && item.category === newItem.category);
+  }
+
+  /**
+   * Перевірка чи всі предмети завершені
+   */
+  areAllItemsComplete(items: OrderItemsListResponse): {
+    isComplete: boolean;
+    incompleteItems: string[];
+  } {
+    if (!Array.isArray(items) || items.length === 0) {
+      return {
+        isComplete: false,
+        incompleteItems: ['Жодного предмета не додано'],
+      };
+    }
+
+    const incompleteItems: string[] = [];
+
+    items.forEach((item, index) => {
+      const missingFields: string[] = [];
+
+      if (!item.name) missingFields.push('назва');
+      if (!item.category) missingFields.push('категорія');
+      if (!item.quantity) missingFields.push('кількість');
+      if (item.unitPrice === undefined) missingFields.push('ціна');
+
+      if (missingFields.length > 0) {
+        incompleteItems.push(`Предмет ${index + 1}: відсутні ${missingFields.join(', ')}`);
+      }
+    });
+
+    return {
+      isComplete: incompleteItems.length === 0,
+      incompleteItems,
+    };
   }
 }

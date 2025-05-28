@@ -1,51 +1,15 @@
 /**
- * Базовий сервіс для всіх Wizard сервісів
- * Містить спільну функціональність: валідація, логування, обробка помилок
+ * Базовий сервіс для всіх Wizard сервісів з орієнтацією на orval + zod
+ * Містить спільну функціональність: логування, обробка помилок, утиліти
+ *
+ * ПРИМІТКА: Валідація тепер через orval safeValidate/validateOrThrow
  */
-
-import { z } from 'zod';
 
 export abstract class BaseWizardService {
   /**
    * Ім'я сервісу для логування
    */
   protected abstract readonly serviceName: string;
-
-  /**
-   * Валідація даних через Zod схему
-   */
-  protected validateData<T>(schema: z.ZodSchema<T>, data: unknown): T {
-    try {
-      return schema.parse(data);
-    } catch (error) {
-      this.logError('Validation failed', { error, data });
-      throw new Error(`${this.serviceName}: Невалідні дані - ${error}`);
-    }
-  }
-
-  /**
-   * Безпечна валідація даних (повертає результат з помилкою)
-   */
-  protected safeValidateData<T>(
-    schema: z.ZodSchema<T>,
-    data: unknown
-  ): {
-    success: boolean;
-    data?: T;
-    error?: string;
-  } {
-    const result = schema.safeParse(data);
-
-    if (result.success) {
-      return { success: true, data: result.data };
-    } else {
-      this.logError('Safe validation failed', { error: result.error, data });
-      return {
-        success: false,
-        error: `${this.serviceName}: ${result.error.message}`,
-      };
-    }
-  }
 
   /**
    * Обробка помилок з логуванням

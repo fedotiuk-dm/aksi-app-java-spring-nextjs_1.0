@@ -1,9 +1,13 @@
-import { branchSelectionSchema, branchFilterSchema } from '@/domain/wizard/schemas';
+import { z } from 'zod';
+
+import {
+  getAllBranchLocations200Response,
+  getAllBranchLocationsQueryParams,
+} from '@/shared/api/generated/branch/zod';
 
 import { BaseWizardService } from '../../base.service';
 
 import type { Branch } from '../../../types';
-import type { BranchLocationDTO } from '@/shared/api/generated/branch';
 
 /**
  * Сервіс для бізнес-логіки вибору філії
@@ -20,13 +24,24 @@ import type { BranchLocationDTO } from '@/shared/api/generated/branch';
  * - Кешування (роль TanStack Query)
  */
 
-export interface BranchFilterCriteria {
-  searchTerm?: string;
-  activeOnly?: boolean;
-  region?: string;
-  sortBy?: 'name' | 'code' | 'address';
-  sortOrder?: 'asc' | 'desc';
-}
+// Використовуємо orval схеми напряму
+export type BranchLocationDTO = z.infer<typeof getAllBranchLocations200Response>;
+
+// Локальна композитна схема для фільтрації (розширює API параметри)
+const branchFilterSchema = getAllBranchLocationsQueryParams.extend({
+  searchTerm: z.string().optional(),
+  region: z.string().optional(),
+  sortBy: z.enum(['name', 'code', 'address']).default('name'),
+  sortOrder: z.enum(['asc', 'desc']).default('asc'),
+});
+
+export type BranchFilterCriteria = z.infer<typeof branchFilterSchema>;
+
+// Локальна схема для валідації вибору (тільки для внутрішніх потреб сервісу)
+const branchSelectionSchema = z.object({
+  selectedBranchId: z.string().min(1, 'Необхідно вибрати філію'),
+  selectedBranch: getAllBranchLocations200Response,
+});
 
 export interface BranchSelectionResult {
   isValid: boolean;
@@ -54,7 +69,7 @@ export class BranchSelectionService extends BaseWizardService {
   }
 
   /**
-   * Валідація вибору філії
+   * Валідація вибору філії через Zod схему
    */
   validateBranchSelection(branchId: string, branches: Branch[]): BranchSelectionResult {
     const errors: string[] = [];
@@ -71,6 +86,18 @@ export class BranchSelectionService extends BaseWizardService {
       if (!selectedBranch.active) {
         errors.push('Вибрана філія неактивна');
       }
+
+      // Додаткова валідація через локальну Zod схему
+      try {
+        branchSelectionSchema.parse({
+          selectedBranchId: branchId,
+          selectedBranch: selectedBranch,
+        });
+      } catch (zodError) {
+        if (zodError instanceof z.ZodError) {
+          errors.push(...zodError.errors.map((e) => e.message));
+        }
+      }
     }
 
     return {
@@ -81,17 +108,45 @@ export class BranchSelectionService extends BaseWizardService {
   }
 
   /**
+   * Валідація критеріїв фільтрації через локальну Zod схему
+   */
+  validateFilterCriteria(criteria: Partial<BranchFilterCriteria>): {
+    isValid: boolean;
+    errors: string[];
+    validatedCriteria?: BranchFilterCriteria;
+  } {
+    try {
+      const validatedCriteria = branchFilterSchema.parse(criteria);
+      return {
+        isValid: true,
+        errors: [],
+        validatedCriteria,
+      };
+    } catch (zodError) {
+      const errors =
+        zodError instanceof z.ZodError
+          ? zodError.errors.map((e) => `${e.path.join('.')}: ${e.message}`)
+          : ['Невідома помилка валідації'];
+
+      return {
+        isValid: false,
+        errors,
+      };
+    }
+  }
+
+  /**
    * Фільтрація філій за критеріями
    */
   filterBranches(branches: Branch[], criteria: BranchFilterCriteria): Branch[] {
     let result = [...branches];
 
-    // Фільтр по активності
-    if (criteria.activeOnly) {
-      result = result.filter((branch) => branch.active);
+    // Фільтр по активності (з orval схеми)
+    if (criteria.active !== undefined) {
+      result = result.filter((branch) => branch.active === criteria.active);
     }
 
-    // Фільтр по пошуку
+    // Фільтр по пошуку (локальне розширення)
     if (criteria.searchTerm?.trim()) {
       const term = criteria.searchTerm.toLowerCase();
       result = result.filter(
@@ -102,7 +157,7 @@ export class BranchSelectionService extends BaseWizardService {
       );
     }
 
-    // Сортування
+    // Сортування (локальне розширення)
     if (criteria.sortBy) {
       result.sort((a, b) => {
         let aValue = '';

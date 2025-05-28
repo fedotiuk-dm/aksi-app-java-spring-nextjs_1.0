@@ -1,134 +1,167 @@
-import {
-  initializeOrder,
-  checkUniqueLabelExists,
-  validateUniqueLabel,
-  type WizardOrderInitializationResult,
-} from '@/domain/wizard/adapters/order';
-import {
-  orderInitializationSchema,
-  uniqueTagValidationSchema,
-  orderBasicInfoSchema,
-  receiptNumberGenerationSchema,
-  type OrderInitializationData,
-  type UniqueTagValidationData,
-  type OrderBasicInfoData,
-  type ReceiptNumberGenerationData,
-} from '@/domain/wizard/schemas';
-import { generateReceiptNumber } from '@/domain/wizard/utils';
+import { z } from 'zod';
 
-// Імпорти централізованих схем та типів
+import {
+  createOrderBody,
+  createOrder201Response,
+  safeValidate,
+  validateOrThrow,
+} from '@/shared/api/generated/order/zod';
 
 import { BaseWizardService } from '../../base.service';
 
 /**
- * Мінімалістський сервіс для ініціалізації замовлення
- * Розмір: ~90 рядків (дотримання ліміту)
+ * Сервіс для ініціалізації замовлення з orval + zod інтеграцією
  *
- * Відповідальність (ТІЛЬКИ):
- * - Композиція order адаптерів для ініціалізації
- * - Валідація через централізовані Zod схеми
- * - Мінімальні перевірки унікальності
- * - Генерація номерів через схеми валідації
+ * Відповідальність (ТІЛЬКИ бізнес-логіка):
+ * - Валідація даних створення замовлення через orval Zod схеми
+ * - Композиція та підготовка даних для API
+ * - Генерація та валідація унікальних міток
+ * - Бізнес-правила ініціалізації замовлення
  *
- * НЕ дублює:
- * - API виклики (роль order адаптерів)
+ * НЕ робить:
+ * - API виклики (роль хуків + Orval)
  * - Збереження стану (роль Zustand)
  * - Кешування (роль TanStack Query)
- * - Схеми валідації (роль централізованих schemas)
  */
+
+// Використовуємо orval схеми напряму
+export type CreateOrderRequest = z.infer<typeof createOrderBody>;
+export type OrderResponse = z.infer<typeof createOrder201Response>;
+
+// Локальні композитні схеми для ініціалізації
+const orderInitDataSchema = z.object({
+  clientId: z.string().uuid('Невірний формат ID клієнта'),
+  branchLocationId: z.string().uuid('Невірний формат ID філії'),
+  tagNumber: z.string().min(1, "Унікальна мітка обов'язкова").optional(),
+});
+
+const uniqueTagValidationSchema = z.object({
+  tag: z.string().min(1, 'Мітка не може бути порожньою'),
+  excludeOrderId: z.string().uuid().optional(),
+});
+
+const receiptNumberGenerationSchema = z.object({
+  branchCode: z.string().min(1, "Код філії обов'язковий"),
+  timestamp: z.number().min(0).optional(),
+  randomSuffix: z.string().length(3).optional(),
+});
+
+// Експортуємо типи на основі локальних схем
+export type OrderInitData = z.infer<typeof orderInitDataSchema>;
+export type UniqueTagValidation = z.infer<typeof uniqueTagValidationSchema>;
+export type ReceiptNumberData = z.infer<typeof receiptNumberGenerationSchema>;
+
+export interface OrderInitializationResult {
+  isValid: boolean;
+  errors: string[];
+  orderData?: CreateOrderRequest;
+}
 
 export class OrderInitializationService extends BaseWizardService {
   protected readonly serviceName = 'OrderInitializationService';
 
   /**
-   * Композиція: ініціалізація замовлення через адаптер з валідацією
+   * Валідація даних ініціалізації замовлення через orval схему
    */
-  async initializeOrder(
-    initData: OrderInitializationData
-  ): Promise<WizardOrderInitializationResult | null> {
-    // Валідація через централізовану схему
-    const validation = this.validateOrderInit(initData);
-    if (!validation.success) {
-      throw new Error(validation.error.errors[0].message);
+  validateOrderInitData(data: unknown): {
+    isValid: boolean;
+    errors: string[];
+    validatedData?: OrderInitData;
+  } {
+    const localValidation = safeValidate(orderInitDataSchema, data);
+    if (!localValidation.success) {
+      return {
+        isValid: false,
+        errors: localValidation.errors,
+      };
     }
 
-    const result = await initializeOrder(initData.uniqueTag, initData.branchId, initData.clientId);
-    return result.success ? result.data || null : null;
-  }
-
-  /**
-   * Композиція: перевірка унікальності мітки через адаптер з типізацією
-   */
-  async checkUniqueTagExists(validationData: UniqueTagValidationData): Promise<boolean> {
-    const validation = this.validateUniqueTagData(validationData);
-    if (!validation.success) {
-      return false;
-    }
-
-    const result = await checkUniqueLabelExists(validationData.tag, validationData.excludeOrderId);
-    return result.success ? result.data || false : false;
-  }
-
-  /**
-   * Валідація унікальної мітки через адаптер
-   */
-  validateUniqueTag(tag: string): { isValid: boolean; error?: string } {
-    return validateUniqueLabel(tag);
-  }
-
-  /**
-   * Валідація даних ініціалізації через централізовану схему
-   */
-  validateOrderInit(data: unknown) {
-    return orderInitializationSchema.safeParse(data);
-  }
-
-  /**
-   * Валідація унікальної мітки через централізовану схему
-   */
-  validateUniqueTagData(data: unknown) {
-    return uniqueTagValidationSchema.safeParse(data);
-  }
-
-  /**
-   * Валідація базової інформації через централізовану схему
-   */
-  validateBasicInfo(data: unknown) {
-    return orderBasicInfoSchema.safeParse(data);
-  }
-
-  /**
-   * Валідація даних для генерації номеру квитанції
-   */
-  validateReceiptGeneration(data: unknown) {
-    return receiptNumberGenerationSchema.safeParse(data);
-  }
-
-  /**
-   * Створення базової структури замовлення
-   */
-  createOrderBasicInfo(initData: OrderInitializationData, branchCode: string): OrderBasicInfoData {
-    // Валідація через централізовану схему
-    const validation = this.validateOrderInit(initData);
-    if (!validation.success) {
-      throw new Error(validation.error.errors[0].message);
-    }
-
-    // Створення базової структури
     return {
-      receiptNumber: this.generateReceiptNumberWithValidation(branchCode),
-      uniqueTag: initData.uniqueTag.trim(),
-      branchId: initData.branchId,
-      clientId: initData.clientId,
-      createdAt: new Date().toISOString(),
+      isValid: true,
+      errors: [],
+      validatedData: localValidation.data,
     };
   }
 
   /**
-   * Генерація номеру квитанції з валідацією через схему
+   * Створення базового об'єкта замовлення для API
    */
-  generateReceiptNumberWithValidation(branchCode: string): string {
-    const generationData: ReceiptNumberGenerationData = {
+  createOrderData(initData: OrderInitData): OrderInitializationResult {
+    // Валідація вхідних даних
+    const validation = this.validateOrderInitData(initData);
+    if (!validation.isValid || !validation.validatedData) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    const validatedData = validation.validatedData;
+
+    // Створення об'єкта відповідно до orval схеми
+    const orderData: CreateOrderRequest = {
+      clientId: validatedData.clientId,
+      branchLocationId: validatedData.branchLocationId,
+      tagNumber: validatedData.tagNumber,
+      draft: true, // Завжди створюємо як чернетку
+      items: [], // Предмети будуть додані пізніше в Item Manager
+      expediteType: 'STANDARD',
+    };
+
+    // Валідація через orval схему
+    const apiValidation = safeValidate(createOrderBody, orderData);
+    if (!apiValidation.success) {
+      return {
+        isValid: false,
+        errors: apiValidation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      orderData: apiValidation.data,
+    };
+  }
+
+  /**
+   * Валідація унікальної мітки
+   */
+  validateUniqueTag(validationData: UniqueTagValidation): {
+    isValid: boolean;
+    errors: string[];
+    normalizedTag?: string;
+  } {
+    const validation = safeValidate(uniqueTagValidationSchema, validationData);
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    const normalizedTag = this.normalizeUniqueTag(validation.data.tag);
+
+    // Базова валідація формату тега
+    if (!this.isValidTagFormat(normalizedTag)) {
+      return {
+        isValid: false,
+        errors: ['Невірний формат унікальної мітки'],
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      normalizedTag,
+    };
+  }
+
+  /**
+   * Генерація номеру квитанції з валідацією
+   */
+  generateReceiptNumber(branchCode: string): string {
+    const generationData: ReceiptNumberData = {
       branchCode,
       timestamp: Date.now(),
       randomSuffix: Math.floor(Math.random() * 1000)
@@ -136,13 +169,14 @@ export class OrderInitializationService extends BaseWizardService {
         .padStart(3, '0'),
     };
 
-    // Валідація через централізовану схему
-    const validation = this.validateReceiptGeneration(generationData);
-    if (!validation.success) {
-      throw new Error(validation.error.errors[0].message);
+    // Валідація даних генерації
+    try {
+      validateOrThrow(receiptNumberGenerationSchema, generationData);
+    } catch (error) {
+      throw new Error(`Помилка генерації номеру квитанції: ${error}`);
     }
 
-    // Генерація номеру на основі валідованих даних
+    // Генерація номеру
     const timestamp =
       generationData.timestamp?.toString().slice(-6) || Date.now().toString().slice(-6);
     const randomSuffix =
@@ -155,12 +189,12 @@ export class OrderInitializationService extends BaseWizardService {
   }
 
   /**
-   * Генерація випадкової унікальної мітки (для автозаповнення)
+   * Генерація випадкової унікальної мітки
    */
   generateRandomUniqueTag(): string {
-    const baseNumber = generateReceiptNumber();
+    const timestamp = Date.now().toString().slice(-6);
     const suffix = Math.random().toString(36).substring(2, 5).toUpperCase();
-    return `TAG-${baseNumber.slice(-6)}-${suffix}`;
+    return `TAG-${timestamp}-${suffix}`;
   }
 
   /**
@@ -168,6 +202,15 @@ export class OrderInitializationService extends BaseWizardService {
    */
   normalizeUniqueTag(tag: string): string {
     return tag.trim().toUpperCase();
+  }
+
+  /**
+   * Перевірка формату унікальної мітки
+   */
+  isValidTagFormat(tag: string): boolean {
+    // Допускаємо букви, цифри, дефіси, підкреслення
+    const pattern = /^[A-Z0-9\-_]{3,20}$/;
+    return pattern.test(tag);
   }
 
   /**
@@ -180,28 +223,74 @@ export class OrderInitializationService extends BaseWizardService {
   }
 
   /**
-   * Валідація та нормалізація унікальної мітки з типізацією
+   * Підготовка мінімальних даних замовлення для чернетки
    */
-  processUniqueTag(validationData: UniqueTagValidationData): {
-    isValid: boolean;
-    normalizedTag?: string;
-    error?: string;
+  createDraftOrderData(
+    clientId: string,
+    branchLocationId: string,
+    tagNumber?: string
+  ): CreateOrderRequest {
+    const orderData: CreateOrderRequest = {
+      clientId,
+      branchLocationId,
+      tagNumber: tagNumber || this.generateRandomUniqueTag(),
+      draft: true,
+      expediteType: 'STANDARD',
+      items: [],
+    };
+
+    // Валідація через orval схему
+    try {
+      return validateOrThrow(createOrderBody, orderData);
+    } catch (error) {
+      throw new Error(`Помилка створення чернетки замовлення: ${error}`);
+    }
+  }
+
+  /**
+   * Перевірка готовності даних для створення замовлення
+   */
+  isReadyForCreation(orderData: CreateOrderRequest): {
+    isReady: boolean;
+    missingFields: string[];
   } {
-    const validation = this.validateUniqueTagData(validationData);
-    if (!validation.success) {
-      return {
-        isValid: false,
-        error: validation.error.errors[0].message,
-      };
+    const missingFields: string[] = [];
+
+    if (!orderData.clientId) {
+      missingFields.push('ID клієнта');
     }
 
-    const normalizedTag = this.normalizeUniqueTag(validationData.tag);
-    const tagValidation = this.validateUniqueTag(normalizedTag);
+    if (!orderData.branchLocationId) {
+      missingFields.push('ID філії');
+    }
+
+    if (!orderData.tagNumber?.trim()) {
+      missingFields.push('Унікальна мітка');
+    }
+
+    // Для фінального замовлення потрібен хоча б один предмет
+    if (!orderData.draft && (!orderData.items || orderData.items.length === 0)) {
+      missingFields.push('Предмети замовлення');
+    }
 
     return {
-      isValid: tagValidation.isValid,
-      normalizedTag: tagValidation.isValid ? normalizedTag : undefined,
-      error: tagValidation.error,
+      isReady: missingFields.length === 0,
+      missingFields,
+    };
+  }
+
+  /**
+   * Трансформація даних замовлення з чернетки у фінальне
+   */
+  transformDraftToFinal(draftData: CreateOrderRequest): CreateOrderRequest {
+    const validation = safeValidate(createOrderBody, draftData);
+    if (!validation.success) {
+      throw new Error(`Невірні дані чернетки: ${validation.errors.join(', ')}`);
+    }
+
+    return {
+      ...validation.data,
+      draft: false,
     };
   }
 }

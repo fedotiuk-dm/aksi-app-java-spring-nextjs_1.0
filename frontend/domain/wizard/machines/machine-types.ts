@@ -1,6 +1,6 @@
 // XState v5 типи для wizard navigation (SRP)
 // Імпортуємо доменні концепти з types
-import { WizardStep, ItemWizardStep } from '../types';
+import { WizardStep, ItemWizardStep } from '../types/wizard-steps.types';
 
 // XState v5 Context - мінімальний для navigation
 export interface WizardMachineContext {

@@ -3,7 +3,7 @@
  * @module domain/wizard/machines/wizard-navigation
  */
 
-import { WizardStep, ItemWizardStep } from '../types';
+import { WizardStep, ItemWizardStep } from '../types/wizard-steps.types';
 
 /**
  * Результат навігаційної операції

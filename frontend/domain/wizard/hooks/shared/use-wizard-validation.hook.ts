@@ -4,14 +4,7 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { z } from 'zod';
 
-import {
-  clientManagementSchema,
-  branchSelectionSchema,
-  completeItemSchema,
-  orderParamsStage3Schema,
-} from '../../schemas';
 import { useWizardStore } from '../../store';
 import { WizardStep } from '../../types';
 
@@ -27,6 +20,9 @@ interface StepValidationResult {
 /**
  * Загальний валідаційний хук для wizard
  * ✅ Централізована валідація всіх кроків
+ *
+ * ПРИМІТКА: Детальна валідація відбувається в відповідних сервісах
+ * з використанням orval Zod схем. Тут тільки базові перевірки.
  */
 export const useWizardValidation = () => {
   const {
@@ -47,27 +43,28 @@ export const useWizardValidation = () => {
 
   // ✅ Валідація кроку "Вибір філії"
   const validateBranchStep = useCallback((): StepValidationResult => {
-    try {
-      branchSelectionSchema.parse({ selectedBranch });
-      return {
-        isValid: true,
-        errors: [],
-        warnings: [],
-      };
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return {
-          isValid: false,
-          errors: error.errors.map((e) => e.message),
-          warnings: [],
-        };
-      }
+    // Проста валідація вибору філії (детальна валідація в BranchSelectionService)
+    if (!selectedBranch) {
       return {
         isValid: false,
-        errors: ['Оберіть філію для продовження'],
+        errors: ['Необхідно вибрати пункт прийому'],
         warnings: [],
       };
     }
+
+    if (!selectedBranch.active) {
+      return {
+        isValid: false,
+        errors: ['Вибрана філія неактивна'],
+        warnings: [],
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      warnings: [],
+    };
   }, [selectedBranch]);
 
   // ✅ Валідація кроку "Менеджер предметів"

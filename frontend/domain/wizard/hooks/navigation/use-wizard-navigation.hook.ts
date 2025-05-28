@@ -6,9 +6,15 @@
 import { useMachine } from '@xstate/react';
 import { useCallback } from 'react';
 
+import {
+  WIZARD_STEP_LABELS,
+  ITEM_WIZARD_STEP_LABELS,
+  WIZARD_STEPS_ORDER,
+  ITEM_WIZARD_STEPS_ORDER,
+} from '../../constants';
 import { wizardMachine, WizardNavigationService } from '../../machines';
-import { useWizardStore } from '../../store';
-import { WizardStep, ItemWizardStep } from '../../types';
+import { useWizardBaseStore } from '../../store';
+import { WizardStep, ItemWizardStep } from '../../types/wizard-steps.types';
 
 /**
  * Основний навігаційний хук для wizard
@@ -20,7 +26,7 @@ export const useWizardNavigation = () => {
 
   // 🏪 Zustand - глобальний стан
   const { currentStep, currentSubStep, setCurrentStep, setCurrentSubStep, resetWizard } =
-    useWizardStore();
+    useWizardBaseStore();
 
   // 🚦 Навігаційні методи
   const goToNextStep = useCallback(() => {
@@ -99,6 +105,35 @@ export const useWizardNavigation = () => {
     send({ type: 'RESET' });
   }, [resetWizard, send]);
 
+  // 📋 Використання констант
+  const getCurrentStepLabel = useCallback(() => {
+    return WIZARD_STEP_LABELS[currentStep] || currentStep;
+  }, [currentStep]);
+
+  const getCurrentSubStepLabel = useCallback(() => {
+    return currentSubStep ? ITEM_WIZARD_STEP_LABELS[currentSubStep] : '';
+  }, [currentSubStep]);
+
+  const getNextStepFromOrder = useCallback(() => {
+    const currentIndex = WIZARD_STEPS_ORDER.indexOf(currentStep);
+    return currentIndex >= 0 && currentIndex < WIZARD_STEPS_ORDER.length - 1
+      ? WIZARD_STEPS_ORDER[currentIndex + 1]
+      : null;
+  }, [currentStep]);
+
+  const getPrevStepFromOrder = useCallback(() => {
+    const currentIndex = WIZARD_STEPS_ORDER.indexOf(currentStep);
+    return currentIndex > 0 ? WIZARD_STEPS_ORDER[currentIndex - 1] : null;
+  }, [currentStep]);
+
+  const getNextSubStepFromOrder = useCallback(() => {
+    if (!currentSubStep) return null;
+    const currentIndex = ITEM_WIZARD_STEPS_ORDER.indexOf(currentSubStep);
+    return currentIndex >= 0 && currentIndex < ITEM_WIZARD_STEPS_ORDER.length - 1
+      ? ITEM_WIZARD_STEPS_ORDER[currentIndex + 1]
+      : null;
+  }, [currentSubStep]);
+
   return {
     // 📍 Поточний стан
     currentStep,
@@ -125,5 +160,16 @@ export const useWizardNavigation = () => {
     // 🔄 Загальне управління
     completeWizard,
     resetWizard: resetWizardState,
+
+    // 📋 Константи та лейбли
+    getCurrentStepLabel,
+    getCurrentSubStepLabel,
+    getNextStepFromOrder,
+    getPrevStepFromOrder,
+    getNextSubStepFromOrder,
+    wizardStepsOrder: WIZARD_STEPS_ORDER,
+    itemWizardStepsOrder: ITEM_WIZARD_STEPS_ORDER,
+    wizardStepLabels: WIZARD_STEP_LABELS,
+    itemWizardStepLabels: ITEM_WIZARD_STEP_LABELS,
   };
 };

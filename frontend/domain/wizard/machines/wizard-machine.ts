@@ -1,7 +1,7 @@
 import { setup, assign } from 'xstate';
 
 import { WizardMachineContext, WizardMachineEvent } from './machine-types';
-import { WizardStep } from '../types';
+import { WizardStep } from '../types/wizard-steps.types';
 
 /**
  * XState v5 машина для wizard navigation

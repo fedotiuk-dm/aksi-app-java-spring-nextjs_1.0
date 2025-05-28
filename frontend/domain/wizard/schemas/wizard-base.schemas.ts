@@ -4,7 +4,7 @@
 
 import { z } from 'zod';
 
-import { WizardMode, ValidationStatus } from '../types';
+import { WizardMode, ValidationStatus } from '../types/wizard-modes.types';
 
 /**
  * Базова схема валідації кроку

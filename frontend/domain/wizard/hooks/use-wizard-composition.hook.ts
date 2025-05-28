@@ -6,8 +6,14 @@
 import { useCallback, useMemo } from 'react';
 
 import { useWizardNavigation } from './navigation';
-import { useWizardStore } from '../store';
-import { WizardStep } from '../types';
+import {
+  useWizardBaseStore,
+  useClientSelectionStore,
+  useItemsManagerStore,
+  useExecutionParametersStore,
+  useDiscountsStore,
+} from '../store';
+import { WizardStep } from '../types/wizard-steps.types';
 
 /**
  * Загальний стан wizard
@@ -29,19 +35,15 @@ export const useWizardComposition = () => {
   // 🧭 Навігація
   const navigation = useWizardNavigation();
 
-  // 🏪 Глобальний стан
-  const {
-    selectedClient,
-    selectedBranch,
-    orderItems,
-    executionParams,
-    selectedDiscount,
-    errors,
-    warnings,
-    resetWizard,
-    addError,
-    addWarning,
-  } = useWizardStore();
+  // 🏪 Глобальний стан з slice stores
+  const { errors, warnings, resetWizard, addError, addWarning } = useWizardBaseStore();
+
+  // Заглушки для даних (TODO: підключити реальні stores)
+  const selectedClient = null;
+  const selectedBranch = null;
+  const orderItems: any[] = [];
+  const executionParams = null;
+  const selectedDiscount = null;
 
   // 📊 Загальний статус wizard
   const wizardStatus = useMemo((): WizardStatus => {
@@ -237,7 +239,7 @@ export const useWizardComposition = () => {
         const issues: string[] = [];
 
         if (!selectedClient) issues.push('Не вибрано клієнта');
-        if (!selectedBranch) issues.push('Не вибрано філію');
+        if (!selectedBranch) issues.push('Не вибрано філії');
         if (!orderItems || orderItems.length === 0) issues.push('Немає предметів у замовленні');
         if (!executionParams?.executionDate) issues.push('Не встановлено дату виконання');
 

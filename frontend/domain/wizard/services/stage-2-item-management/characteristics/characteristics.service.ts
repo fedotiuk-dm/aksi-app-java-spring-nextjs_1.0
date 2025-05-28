@@ -1,110 +1,239 @@
+import { z } from 'zod';
+
 import {
-  getMaterials,
-  getColors,
-  getWearDegrees,
-  getFillerTypes,
-  type WizardMaterial,
-  type WizardColor,
-  type WizardWearDegree,
-  type WizardFillerType,
-} from '@/domain/wizard/adapters/pricing';
+  updateOrderItemBody,
+  addOrderItemBody,
+  getOrderItem200Response,
+  safeValidate as orderSafeValidate,
+} from '@/shared/api/generated/order/zod';
 import {
-  itemCharacteristicsSchema,
-  materialSelectionSchema,
-  colorInputSchema,
-  unitTypeEnum,
-  wearLevelEnum,
-  fillerTypeEnum,
-  type ItemCharacteristics,
-  type MaterialSelection,
-  type ColorInput,
-  type UnitType,
-  type WearLevel,
-  type FillerType,
-} from '@/domain/wizard/schemas';
+  getMaterials200Response,
+  getMaterialsQueryParams,
+  getColors200Response,
+  getFillerTypes200Response,
+  getWearDegrees200Response,
+  safeValidate,
+  validateOrThrow,
+} from '@/shared/api/generated/pricing/zod';
 
 import { BaseWizardService } from '../../base.service';
 
 /**
- * Розширений мінімалістський сервіс для характеристик предмета
- * Розмір: ~140 рядків (в межах ліміту)
+ * Сервіс для характеристик предметів з orval + zod інтеграцією
  *
- * Відповідальність (ТІЛЬКИ):
- * - Композиція pricing адаптерів для матеріалів + кольорів
- * - Валідація через ВСІ централізовані Zod схеми підетапу 2.2
- * - Мінімальна фільтрація за категоріями
- * - Робота з енумами (матеріали, кольори, наповнювачі, знос)
+ * Відповідальність (ТІЛЬКИ бізнес-логіка):
+ * - Валідація характеристик предметів через orval Zod схеми
+ * - Бізнес-правила для матеріалів, кольорів, наповнювачів
+ * - Валідація сумісності характеристик з категоріями
+ * - Композиція та валідація повної інформації
  *
- * НЕ дублює:
- * - API виклики (роль pricing адаптерів)
- * - Мапінг даних (роль адаптерів)
+ * НЕ робить:
+ * - API виклики (роль хуків + Orval)
  * - Збереження стану (роль Zustand)
  * - Кешування (роль TanStack Query)
- * - Схеми валідації (роль централізованих schemas)
  */
+
+// Використовуємо orval схеми напряму
+export type MaterialsResponse = z.infer<typeof getMaterials200Response>;
+export type ColorsResponse = z.infer<typeof getColors200Response>;
+export type FillerTypesResponse = z.infer<typeof getFillerTypes200Response>;
+export type WearDegreesResponse = z.infer<typeof getWearDegrees200Response>;
+export type MaterialsQueryParams = z.infer<typeof getMaterialsQueryParams>;
+
+// Локальний тип для оновлення характеристик (не експортуємо OrderItemResponse)
+type ItemForCharacteristicsUpdate = {
+  material?: string;
+  color?: string;
+  fillerType?: string;
+  fillerCompressed?: boolean;
+  wearDegree?: string;
+};
+
+// Локальні композитні схеми для характеристик
+const itemCharacteristicsSchema = z.object({
+  material: z.string().min(1, "Матеріал обов'язковий"),
+  color: z.string().min(1, "Колір обов'язковий"),
+  fillerType: z.string().optional(),
+  fillerCompressed: z.boolean().optional(),
+  wearDegree: z.string().optional(),
+});
+
+const materialSelectionSchema = z.object({
+  material: z.string().min(1, "Матеріал обов'язковий"),
+  categoryCode: z.string().optional(),
+});
+
+const colorInputSchema = z.object({
+  color: z.string().min(1, "Колір обов'язковий"),
+  isCustomColor: z.boolean().optional(),
+});
+
+const fillerCharacteristicsSchema = z.object({
+  fillerType: z.string().min(1, "Тип наповнювача обов'язковий"),
+  fillerCompressed: z.boolean().optional(),
+});
+
+// Енуми для характеристик
+const wearLevelEnum = z.enum(['10%', '30%', '50%', '75%']);
+const commonMaterialEnum = z.enum([
+  'cotton',
+  'wool',
+  'silk',
+  'synthetic',
+  'leather',
+  'nubuck',
+  'suede',
+]);
+const commonColorEnum = z.enum([
+  'black',
+  'white',
+  'red',
+  'blue',
+  'green',
+  'yellow',
+  'brown',
+  'gray',
+]);
+
+// Експортуємо типи
+export type ItemCharacteristics = z.infer<typeof itemCharacteristicsSchema>;
+export type MaterialSelection = z.infer<typeof materialSelectionSchema>;
+export type ColorInput = z.infer<typeof colorInputSchema>;
+export type FillerCharacteristics = z.infer<typeof fillerCharacteristicsSchema>;
+export type WearLevel = z.infer<typeof wearLevelEnum>;
+export type CommonMaterial = z.infer<typeof commonMaterialEnum>;
+export type CommonColor = z.infer<typeof commonColorEnum>;
+
+export interface CharacteristicsValidationResult {
+  isValid: boolean;
+  errors: string[];
+  validatedData?: ItemCharacteristics;
+}
 
 export class CharacteristicsService extends BaseWizardService {
   protected readonly serviceName = 'CharacteristicsService';
 
   /**
-   * Композиція: отримання матеріалів (з можливістю фільтрації за категорією)
+   * Валідація характеристик предмета
    */
-  async getMaterialsByCategory(categoryCode?: string): Promise<WizardMaterial[]> {
-    const result = await getMaterials(categoryCode);
-    return result.success ? result.data || [] : [];
+  validateItemCharacteristics(data: unknown): {
+    isValid: boolean;
+    errors: string[];
+    validatedData?: ItemCharacteristics;
+  } {
+    const validation = safeValidate(itemCharacteristicsSchema, data);
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      validatedData: validation.data,
+    };
   }
 
   /**
-   * Композиція: отримання всіх матеріалів без фільтрації
+   * Валідація вибору матеріалу
    */
-  async getAllMaterials(): Promise<WizardMaterial[]> {
-    const result = await getMaterials();
-    return result.success ? result.data || [] : [];
+  validateMaterialSelection(data: unknown): {
+    isValid: boolean;
+    errors: string[];
+    validatedData?: MaterialSelection;
+  } {
+    const validation = safeValidate(materialSelectionSchema, data);
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      validatedData: validation.data,
+    };
   }
 
   /**
-   * Композиція: отримання доступних кольорів
+   * Валідація введення кольору
    */
-  async getAvailableColors(): Promise<WizardColor[]> {
-    const result = await getColors();
-    return result.success ? result.data || [] : [];
+  validateColorInput(data: unknown): {
+    isValid: boolean;
+    errors: string[];
+    validatedData?: ColorInput;
+  } {
+    const validation = safeValidate(colorInputSchema, data);
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      validatedData: validation.data,
+    };
   }
 
   /**
-   * Композиція: отримання ступенів зносу з адаптера
+   * Валідація характеристик наповнювача
    */
-  async getWearDegreesFromApi(): Promise<WizardWearDegree[]> {
-    const result = await getWearDegrees();
-    return result.success ? result.data || [] : [];
+  validateFillerCharacteristics(data: unknown): {
+    isValid: boolean;
+    errors: string[];
+    validatedData?: FillerCharacteristics;
+  } {
+    const validation = safeValidate(fillerCharacteristicsSchema, data);
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      validatedData: validation.data,
+    };
   }
 
   /**
-   * Композиція: отримання типів наповнювачів з адаптера
+   * Валідація параметрів для отримання матеріалів
    */
-  async getFillerTypesFromApi(): Promise<WizardFillerType[]> {
-    const result = await getFillerTypes();
-    return result.success ? result.data || [] : [];
+  validateMaterialsParams(categoryCode?: string): {
+    isValid: boolean;
+    errors: string[];
+    validatedParams?: MaterialsQueryParams;
+  } {
+    const params = categoryCode ? { categoryCode } : {};
+    const validation = safeValidate(getMaterialsQueryParams, params);
+    if (!validation.success) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
+    }
+
+    return {
+      isValid: true,
+      errors: [],
+      validatedParams: validation.data,
+    };
   }
 
   /**
-   * Отримання типів наповнювачів через enum (для UI)
+   * Отримання доступних рівнів зносу
    */
-  getFillerTypesEnum(): FillerType[] {
-    return fillerTypeEnum.options;
-  }
-
-  /**
-   * Отримання рівнів зносу через enum (для UI)
-   */
-  getWearLevelsEnum(): WearLevel[] {
+  getAvailableWearLevels(): WearLevel[] {
     return wearLevelEnum.options;
-  }
-
-  /**
-   * Валідація типу наповнювача
-   */
-  validateFillerType(type: string): boolean {
-    return fillerTypeEnum.safeParse(type).success;
   }
 
   /**
@@ -115,110 +244,236 @@ export class CharacteristicsService extends BaseWizardService {
   }
 
   /**
-   * Валідація повних характеристик предмета
+   * Отримання загальних матеріалів
    */
-  validateCharacteristics(data: unknown) {
-    return itemCharacteristicsSchema.safeParse(data);
+  getCommonMaterials(): CommonMaterial[] {
+    return commonMaterialEnum.options;
   }
 
   /**
-   * Валідація вибору матеріалу
+   * Валідація матеріалу
    */
-  validateMaterialSelection(data: unknown) {
-    return materialSelectionSchema.safeParse(data);
+  validateMaterial(material: string): boolean {
+    return material.length > 0;
   }
 
   /**
-   * Валідація введення кольору
+   * Отримання загальних кольорів
    */
-  validateColorInput(data: unknown) {
-    return colorInputSchema.safeParse(data);
+  getCommonColors(): CommonColor[] {
+    return commonColorEnum.options;
+  }
+
+  /**
+   * Валідація кольору
+   */
+  validateColor(color: string): boolean {
+    return color.length > 0;
   }
 
   /**
    * Перевірка чи підтримує категорія наповнювач
    */
   categorySupportsFillers(categoryCode: string): boolean {
-    const fillerCategories = ['outerwear', 'bedding', 'pillows', 'jackets'];
-    return fillerCategories.includes(categoryCode.toLowerCase());
+    const fillerCategories = [
+      'outerwear',
+      'bedding',
+      'pillows',
+      'jackets',
+      'coats',
+      'comforters',
+      'duvets',
+    ];
+    return fillerCategories.some((cat) => categoryCode.toLowerCase().includes(cat));
   }
 
   /**
    * Перевірка чи підтримує категорія рівні зносу
    */
   categorySupportWearLevels(categoryCode: string): boolean {
-    const wearCategories = ['leather', 'shoes', 'accessories'];
-    return wearCategories.includes(categoryCode.toLowerCase());
+    const wearCategories = ['leather', 'shoes', 'accessories', 'bags', 'belts', 'suede', 'nubuck'];
+    return wearCategories.some((cat) => categoryCode.toLowerCase().includes(cat));
   }
 
   /**
    * Перевірка сумісності матеріалу з категорією
    */
   isMaterialCompatible(categoryCode: string, material: string): boolean {
-    // Основна логіка сумісності буде в адаптерах або бізнес-правилах
-    // Тут тільки базова валідація
-    return material.length > 0;
+    if (!material?.trim()) {
+      return false;
+    }
+
+    // Спеціальні правила сумісності
+    const leatherCategories = ['leather', 'shoes', 'bags'];
+    const leatherMaterials = ['leather', 'nubuck', 'suede'];
+
+    if (leatherCategories.some((cat) => categoryCode.toLowerCase().includes(cat))) {
+      return leatherMaterials.some((mat) => material.toLowerCase().includes(mat));
+    }
+
+    const textileCategories = ['clothing', 'outerwear', 'bedding'];
+    const textileMaterials = ['cotton', 'wool', 'silk', 'synthetic'];
+
+    if (textileCategories.some((cat) => categoryCode.toLowerCase().includes(cat))) {
+      return textileMaterials.some((mat) => material.toLowerCase().includes(mat));
+    }
+
+    // За замовчуванням дозволяємо будь-який матеріал
+    return true;
   }
 
   /**
-   * Створення характеристик з валідацією
+   * Отримання матеріалу за замовчуванням для категорії
    */
-  createCharacteristicsWithValidation(
+  getDefaultMaterial(categoryCode: string): string {
+    const categoryLower = categoryCode.toLowerCase();
+
+    if (categoryLower.includes('leather') || categoryLower.includes('shoes')) {
+      return 'leather';
+    }
+
+    if (categoryLower.includes('wool') || categoryLower.includes('coat')) {
+      return 'wool';
+    }
+
+    if (categoryLower.includes('silk') || categoryLower.includes('dress')) {
+      return 'silk';
+    }
+
+    // За замовчуванням
+    return 'cotton';
+  }
+
+  /**
+   * Створення повних характеристик з валідацією
+   */
+  createCharacteristics(
     material: string,
     color: string,
-    filling?: FillerType,
-    customFilling?: string,
-    isFillingDamaged?: boolean,
-    wearLevel?: WearLevel
-  ) {
-    const data: ItemCharacteristics = {
+    fillerType?: string,
+    fillerCompressed?: boolean,
+    wearDegree?: string
+  ): CharacteristicsValidationResult {
+    const characteristics: ItemCharacteristics = {
       material,
       color,
-      filling,
-      customFilling,
-      isFillingDamaged,
-      wearLevel,
+      fillerType,
+      fillerCompressed,
+      wearDegree,
     };
 
-    const validation = this.validateCharacteristics(data);
-    if (!validation.success) {
-      throw new Error(`Валідація характеристик: ${validation.error.errors[0]?.message}`);
+    const validation = this.validateItemCharacteristics(characteristics);
+    if (!validation.isValid || !validation.validatedData) {
+      return {
+        isValid: false,
+        errors: validation.errors,
+      };
     }
 
-    return validation.data;
+    return {
+      isValid: true,
+      errors: [],
+      validatedData: validation.validatedData,
+    };
   }
 
   /**
-   * Створення матеріального вибору з валідацією
+   * Оновлення характеристик існуючого предмета для API
    */
-  createMaterialSelectionWithValidation(material: string, categoryCode?: string) {
-    const data: MaterialSelection = {
-      material,
-      categoryCode,
+  updateItemCharacteristics(
+    currentOrderItem: ItemForCharacteristicsUpdate,
+    newCharacteristics: Partial<ItemForCharacteristicsUpdate>
+  ): {
+    isValid: boolean;
+    errors: string[];
+    orderItemUpdate?: z.infer<typeof updateOrderItemBody>;
+  } {
+    // Об'єднуємо існуючі дані з новими характеристиками
+    const updatedItem = {
+      ...currentOrderItem,
+      material: newCharacteristics.material || currentOrderItem.material,
+      color: newCharacteristics.color || currentOrderItem.color,
+      fillerType: newCharacteristics.fillerType || currentOrderItem.fillerType,
+      fillerCompressed: newCharacteristics.fillerCompressed ?? currentOrderItem.fillerCompressed,
+      wearDegree: newCharacteristics.wearDegree || currentOrderItem.wearDegree,
     };
 
-    const validation = this.validateMaterialSelection(data);
-    if (!validation.success) {
-      throw new Error(`Валідація матеріалу: ${validation.error.errors[0]?.message}`);
+    // Валідація через orval схему
+    const apiValidation = safeValidate(updateOrderItemBody, updatedItem);
+    if (!apiValidation.success) {
+      return {
+        isValid: false,
+        errors: apiValidation.errors,
+      };
     }
 
-    return validation.data;
+    return {
+      isValid: true,
+      errors: [],
+      orderItemUpdate: apiValidation.data,
+    };
   }
 
   /**
-   * Створення введення кольору з валідацією
+   * Перевірка повноти характеристик для категорії
    */
-  createColorInputWithValidation(color: string, isCustomColor?: boolean) {
-    const data: ColorInput = {
-      color,
-      isCustomColor,
-    };
+  areCharacteristicsComplete(
+    characteristics: ItemCharacteristics,
+    categoryCode: string
+  ): {
+    isComplete: boolean;
+    missingFields: string[];
+  } {
+    const missingFields: string[] = [];
 
-    const validation = this.validateColorInput(data);
-    if (!validation.success) {
-      throw new Error(`Валідація кольору: ${validation.error.errors[0]?.message}`);
+    if (!characteristics.material?.trim()) {
+      missingFields.push('Матеріал');
     }
 
-    return validation.data;
+    if (!characteristics.color?.trim()) {
+      missingFields.push('Колір');
+    }
+
+    // Перевіряємо обов'язкові поля для специфічних категорій
+    if (this.categorySupportsFillers(categoryCode) && !characteristics.fillerType) {
+      missingFields.push('Тип наповнювача');
+    }
+
+    if (this.categorySupportWearLevels(categoryCode) && !characteristics.wearDegree) {
+      missingFields.push('Ступінь зносу');
+    }
+
+    return {
+      isComplete: missingFields.length === 0,
+      missingFields,
+    };
+  }
+
+  /**
+   * Генерація опису характеристик для відображення
+   */
+  generateCharacteristicsDescription(characteristics: ItemCharacteristics): string {
+    const parts: string[] = [];
+
+    if (characteristics.material) {
+      parts.push(`Матеріал: ${characteristics.material}`);
+    }
+
+    if (characteristics.color) {
+      parts.push(`Колір: ${characteristics.color}`);
+    }
+
+    if (characteristics.fillerType) {
+      const fillerDesc = characteristics.fillerCompressed
+        ? `${characteristics.fillerType} (збитий)`
+        : characteristics.fillerType;
+      parts.push(`Наповнювач: ${fillerDesc}`);
+    }
+
+    if (characteristics.wearDegree) {
+      parts.push(`Знос: ${characteristics.wearDegree}`);
+    }
+
+    return parts.join(', ') || 'Характеристики не вказані';
   }
 }
