@@ -79,3 +79,11 @@ export const validationResultSchema = z.object({
   warnings: z.array(z.string()).optional(),
   field: z.string().optional(),
 });
+
+// === ТИПИ ЗГЕНЕРОВАНІ З ZOD СХЕМ ===
+
+export type OperationResult = z.infer<typeof operationResultSchema>;
+export type CreateResult = z.infer<typeof createResultSchema>;
+export type UpdateResult = z.infer<typeof updateResultSchema>;
+export type DeleteResult = z.infer<typeof deleteResultSchema>;
+export type ValidationResult = z.infer<typeof validationResultSchema>;

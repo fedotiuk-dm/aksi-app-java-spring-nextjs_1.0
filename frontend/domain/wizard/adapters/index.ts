@@ -24,3 +24,6 @@ export * from './order';
 
 // PRICING DOMAIN
 export * from './pricing';
+
+// SHARED UTILITIES
+export * from './shared';

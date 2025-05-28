@@ -6,12 +6,16 @@
  * - Основну машину станів
  * - XState специфічні типи (контекст, події)
  * - Helper типи для навігації та прогресу
+ * - Навігаційний сервіс для крок-за-кроком логіки
  *
  * ПРИМІТКА: Доменні enum'и (WizardStep, ItemWizardStep) експортуються з types/
  */
 
 // === ОСНОВНА XSTATE V5 МАШИНА ===
 export { wizardMachine, type WizardMachine } from './wizard-machine';
+
+// === НАВІГАЦІЙНИЙ СЕРВІС ===
+export { WizardNavigationService, type NavigationResult } from './wizard-navigation.service';
 
 // === XSTATE СПЕЦИФІЧНІ ТИПИ ===
 export {
