@@ -6,18 +6,23 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
+  InfiniteData,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -90,6 +95,77 @@ export const getGetOrderItemQueryKey = (orderId: string,
     }
 
     
+export const getGetOrderItemInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getOrderItem>>>, TError = ErrorResponse>(orderId: string,
+    itemId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItem>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderItemQueryKey(orderId,itemId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderItem>>> = ({ signal }) => getOrderItem(orderId,itemId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId && itemId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItem>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrderItemInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderItem>>>
+export type GetOrderItemInfiniteQueryError = ErrorResponse
+
+
+export function useGetOrderItemInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderItem>>>, TError = ErrorResponse>(
+ orderId: string,
+    itemId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItem>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderItem>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderItem>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderItemInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderItem>>>, TError = ErrorResponse>(
+ orderId: string,
+    itemId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItem>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderItem>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderItem>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderItemInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderItem>>>, TError = ErrorResponse>(
+ orderId: string,
+    itemId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItem>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати конкретний предмет замовлення
+ */
+
+export function useGetOrderItemInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderItem>>>, TError = ErrorResponse>(
+ orderId: string,
+    itemId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItem>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrderItemInfiniteQueryOptions(orderId,itemId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetOrderItemQueryOptions = <TData = Awaited<ReturnType<typeof getOrderItem>>, TError = ErrorResponse>(orderId: string,
     itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderItem>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
@@ -764,6 +840,72 @@ export const getGetAllOrdersQueryKey = () => {
     }
 
     
+export const getGetAllOrdersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getAllOrders>>>, TError = ErrorResponse>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAllOrdersQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllOrders>>> = ({ signal }) => getAllOrders(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllOrders>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAllOrdersInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getAllOrders>>>
+export type GetAllOrdersInfiniteQueryError = ErrorResponse
+
+
+export function useGetAllOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllOrders>>>, TError = ErrorResponse>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllOrders>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllOrders>>,
+          TError,
+          Awaited<ReturnType<typeof getAllOrders>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllOrders>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllOrders>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllOrders>>,
+          TError,
+          Awaited<ReturnType<typeof getAllOrders>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllOrders>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати всі замовлення
+ */
+
+export function useGetAllOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllOrders>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAllOrdersInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetAllOrdersQueryOptions = <TData = Awaited<ReturnType<typeof getAllOrders>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -919,6 +1061,72 @@ export const getGetRequirementsQueryKey = (orderId: string,) => {
     }
 
     
+export const getGetRequirementsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getRequirements>>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRequirements>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRequirementsQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRequirements>>> = ({ signal }) => getRequirements(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRequirements>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRequirementsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getRequirements>>>
+export type GetRequirementsInfiniteQueryError = ErrorResponse
+
+
+export function useGetRequirementsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRequirements>>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRequirements>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRequirements>>,
+          TError,
+          Awaited<ReturnType<typeof getRequirements>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRequirementsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRequirements>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRequirements>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRequirements>>,
+          TError,
+          Awaited<ReturnType<typeof getRequirements>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRequirementsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRequirements>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRequirements>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати додаткові вимоги та примітки до замовлення
+ */
+
+export function useGetRequirementsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRequirements>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRequirements>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetRequirementsInfiniteQueryOptions(orderId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetRequirementsQueryOptions = <TData = Awaited<ReturnType<typeof getRequirements>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRequirements>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -1075,6 +1283,72 @@ export const getGetOrderPaymentQueryKey = (orderId: string,) => {
     }
 
     
+export const getGetOrderPaymentInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getOrderPayment>>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderPayment>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderPaymentQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderPayment>>> = ({ signal }) => getOrderPayment(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderPayment>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrderPaymentInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderPayment>>>
+export type GetOrderPaymentInfiniteQueryError = ErrorResponse
+
+
+export function useGetOrderPaymentInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderPayment>>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderPayment>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderPayment>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderPayment>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderPaymentInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderPayment>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderPayment>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderPayment>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderPayment>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderPaymentInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderPayment>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderPayment>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати інформацію про оплату замовлення
+ */
+
+export function useGetOrderPaymentInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderPayment>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderPayment>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrderPaymentInfiniteQueryOptions(orderId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetOrderPaymentQueryOptions = <TData = Awaited<ReturnType<typeof getOrderPayment>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderPayment>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -1298,6 +1572,72 @@ export const getGetOrderItemsQueryKey = (orderId: string,) => {
     }
 
     
+export const getGetOrderItemsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getOrderItems>>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderItemsQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderItems>>> = ({ signal }) => getOrderItems(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItems>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrderItemsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderItems>>>
+export type GetOrderItemsInfiniteQueryError = ErrorResponse
+
+
+export function useGetOrderItemsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderItems>>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItems>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderItems>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderItems>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderItemsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderItems>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItems>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderItems>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderItems>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderItemsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderItems>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати всі предмети замовлення
+ */
+
+export function useGetOrderItemsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderItems>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrderItemsInfiniteQueryOptions(orderId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetOrderItemsQueryOptions = <TData = Awaited<ReturnType<typeof getOrderItems>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -1785,6 +2125,72 @@ export const getGetPhotosByItemIdQueryKey = (itemId: string,) => {
     }
 
     
+export const getGetPhotosByItemIdInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getPhotosByItemId>>>, TError = ErrorResponse>(itemId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotosByItemId>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPhotosByItemIdQueryKey(itemId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotosByItemId>>> = ({ signal }) => getPhotosByItemId(itemId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(itemId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotosByItemId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPhotosByItemIdInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getPhotosByItemId>>>
+export type GetPhotosByItemIdInfiniteQueryError = ErrorResponse
+
+
+export function useGetPhotosByItemIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getPhotosByItemId>>>, TError = ErrorResponse>(
+ itemId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotosByItemId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPhotosByItemId>>,
+          TError,
+          Awaited<ReturnType<typeof getPhotosByItemId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPhotosByItemIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getPhotosByItemId>>>, TError = ErrorResponse>(
+ itemId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotosByItemId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPhotosByItemId>>,
+          TError,
+          Awaited<ReturnType<typeof getPhotosByItemId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPhotosByItemIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getPhotosByItemId>>>, TError = ErrorResponse>(
+ itemId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotosByItemId>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати всі фотографії предмета замовлення
+ */
+
+export function useGetPhotosByItemIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getPhotosByItemId>>>, TError = ErrorResponse>(
+ itemId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotosByItemId>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetPhotosByItemIdInfiniteQueryOptions(itemId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetPhotosByItemIdQueryOptions = <TData = Awaited<ReturnType<typeof getPhotosByItemId>>, TError = ErrorResponse>(itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPhotosByItemId>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -1945,6 +2351,72 @@ export const getGetOrderDetailedSummaryQueryKey = (orderId: string,) => {
     }
 
     
+export const getGetOrderDetailedSummaryInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getOrderDetailedSummary>>>, TError = ErrorResponse | void>(orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDetailedSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderDetailedSummaryQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderDetailedSummary>>> = ({ signal }) => getOrderDetailedSummary(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDetailedSummary>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrderDetailedSummaryInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderDetailedSummary>>>
+export type GetOrderDetailedSummaryInfiniteQueryError = ErrorResponse | void
+
+
+export function useGetOrderDetailedSummaryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderDetailedSummary>>>, TError = ErrorResponse | void>(
+ orderId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDetailedSummary>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderDetailedSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderDetailedSummary>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderDetailedSummaryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderDetailedSummary>>>, TError = ErrorResponse | void>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDetailedSummary>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderDetailedSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderDetailedSummary>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderDetailedSummaryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderDetailedSummary>>>, TError = ErrorResponse | void>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDetailedSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати детальний підсумок замовлення
+ */
+
+export function useGetOrderDetailedSummaryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderDetailedSummary>>>, TError = ErrorResponse | void>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDetailedSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrderDetailedSummaryInfiniteQueryOptions(orderId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetOrderDetailedSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getOrderDetailedSummary>>, TError = ErrorResponse | void>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderDetailedSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -2034,6 +2506,72 @@ export const getGetOrderByIdQueryKey = (id: string,) => {
     }
 
     
+export const getGetOrderByIdInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getOrderById>>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderById>>> = ({ signal }) => getOrderById(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrderByIdInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderById>>>
+export type GetOrderByIdInfiniteQueryError = ErrorResponse
+
+
+export function useGetOrderByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderById>>>, TError = ErrorResponse>(
+ id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderById>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderById>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати замовлення за ID
+ */
+
+export function useGetOrderByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrderByIdInfiniteQueryOptions(id,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetOrderByIdQueryOptions = <TData = Awaited<ReturnType<typeof getOrderById>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -2126,6 +2664,77 @@ export const getGetOrderReceiptQueryKey = (orderId: string,
     }
 
     
+export const getGetOrderReceiptInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getOrderReceipt>>>, TError = ErrorResponse>(orderId: string,
+    params?: GetOrderReceiptParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderReceiptQueryKey(orderId,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderReceipt>>> = ({ signal }) => getOrderReceipt(orderId,params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderReceipt>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrderReceiptInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderReceipt>>>
+export type GetOrderReceiptInfiniteQueryError = ErrorResponse
+
+
+export function useGetOrderReceiptInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderReceipt>>>, TError = ErrorResponse>(
+ orderId: string,
+    params: undefined |  GetOrderReceiptParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderReceipt>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderReceipt>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderReceipt>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderReceiptInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderReceipt>>>, TError = ErrorResponse>(
+ orderId: string,
+    params?: GetOrderReceiptParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderReceipt>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderReceipt>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderReceipt>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderReceiptInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderReceipt>>>, TError = ErrorResponse>(
+ orderId: string,
+    params?: GetOrderReceiptParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати PDF-чек замовлення
+ */
+
+export function useGetOrderReceiptInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderReceipt>>>, TError = ErrorResponse>(
+ orderId: string,
+    params?: GetOrderReceiptParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrderReceiptInfiniteQueryOptions(orderId,params,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetOrderReceiptQueryOptions = <TData = Awaited<ReturnType<typeof getOrderReceipt>>, TError = ErrorResponse>(orderId: string,
     params?: GetOrderReceiptParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
@@ -2220,6 +2829,72 @@ export const getGetDraftOrdersQueryKey = () => {
     }
 
     
+export const getGetDraftOrdersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getDraftOrders>>>, TError = ErrorResponse>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDraftOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDraftOrdersQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDraftOrders>>> = ({ signal }) => getDraftOrders(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDraftOrders>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDraftOrdersInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getDraftOrders>>>
+export type GetDraftOrdersInfiniteQueryError = ErrorResponse
+
+
+export function useGetDraftOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDraftOrders>>>, TError = ErrorResponse>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDraftOrders>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDraftOrders>>,
+          TError,
+          Awaited<ReturnType<typeof getDraftOrders>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDraftOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDraftOrders>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDraftOrders>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDraftOrders>>,
+          TError,
+          Awaited<ReturnType<typeof getDraftOrders>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDraftOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDraftOrders>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDraftOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати чернетки замовлень
+ */
+
+export function useGetDraftOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDraftOrders>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDraftOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDraftOrdersInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetDraftOrdersQueryOptions = <TData = Awaited<ReturnType<typeof getDraftOrders>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDraftOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -2309,6 +2984,72 @@ export const getGetOrderDiscountQueryKey = (orderId: string,) => {
     }
 
     
+export const getGetOrderDiscountInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getOrderDiscount>>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDiscount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderDiscountQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderDiscount>>> = ({ signal }) => getOrderDiscount(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDiscount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrderDiscountInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderDiscount>>>
+export type GetOrderDiscountInfiniteQueryError = ErrorResponse
+
+
+export function useGetOrderDiscountInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderDiscount>>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDiscount>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderDiscount>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderDiscount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderDiscountInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderDiscount>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDiscount>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderDiscount>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderDiscount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderDiscountInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderDiscount>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDiscount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати інформацію про знижку
+ */
+
+export function useGetOrderDiscountInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderDiscount>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderDiscount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrderDiscountInfiniteQueryOptions(orderId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetOrderDiscountQueryOptions = <TData = Awaited<ReturnType<typeof getOrderDiscount>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderDiscount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -2461,6 +3202,72 @@ export const getGetActiveOrdersQueryKey = () => {
     }
 
     
+export const getGetActiveOrdersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getActiveOrders>>>, TError = ErrorResponse>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetActiveOrdersQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getActiveOrders>>> = ({ signal }) => getActiveOrders(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveOrders>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetActiveOrdersInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getActiveOrders>>>
+export type GetActiveOrdersInfiniteQueryError = ErrorResponse
+
+
+export function useGetActiveOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getActiveOrders>>>, TError = ErrorResponse>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveOrders>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getActiveOrders>>,
+          TError,
+          Awaited<ReturnType<typeof getActiveOrders>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetActiveOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getActiveOrders>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveOrders>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getActiveOrders>>,
+          TError,
+          Awaited<ReturnType<typeof getActiveOrders>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetActiveOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getActiveOrders>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати активні замовлення
+ */
+
+export function useGetActiveOrdersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getActiveOrders>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetActiveOrdersInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetActiveOrdersQueryOptions = <TData = Awaited<ReturnType<typeof getActiveOrders>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getActiveOrders>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -2552,6 +3359,77 @@ export const getGetPhotoByIdQueryKey = (itemId: string,
     }
 
     
+export const getGetPhotoByIdInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getPhotoById>>>, TError = ErrorResponse>(itemId: string,
+    photoId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotoById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPhotoByIdQueryKey(itemId,photoId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotoById>>> = ({ signal }) => getPhotoById(itemId,photoId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(itemId && photoId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotoById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPhotoByIdInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getPhotoById>>>
+export type GetPhotoByIdInfiniteQueryError = ErrorResponse
+
+
+export function useGetPhotoByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getPhotoById>>>, TError = ErrorResponse>(
+ itemId: string,
+    photoId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotoById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPhotoById>>,
+          TError,
+          Awaited<ReturnType<typeof getPhotoById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPhotoByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getPhotoById>>>, TError = ErrorResponse>(
+ itemId: string,
+    photoId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotoById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPhotoById>>,
+          TError,
+          Awaited<ReturnType<typeof getPhotoById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPhotoByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getPhotoById>>>, TError = ErrorResponse>(
+ itemId: string,
+    photoId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotoById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати фотографію за ID
+ */
+
+export function useGetPhotoByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getPhotoById>>>, TError = ErrorResponse>(
+ itemId: string,
+    photoId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getPhotoById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetPhotoByIdInfiniteQueryOptions(itemId,photoId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetPhotoByIdQueryOptions = <TData = Awaited<ReturnType<typeof getPhotoById>>, TError = ErrorResponse>(itemId: string,
     photoId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPhotoById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {

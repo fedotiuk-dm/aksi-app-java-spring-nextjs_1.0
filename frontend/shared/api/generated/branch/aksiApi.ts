@@ -6,18 +6,23 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
+  InfiniteData,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -63,6 +68,72 @@ export const getGetBranchLocationByIdQueryKey = (id: string,) => {
     }
 
     
+export const getGetBranchLocationByIdInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationById>>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBranchLocationByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBranchLocationById>>> = ({ signal }) => getBranchLocationById(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetBranchLocationByIdInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getBranchLocationById>>>
+export type GetBranchLocationByIdInfiniteQueryError = ErrorResponse
+
+
+export function useGetBranchLocationByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationById>>>, TError = ErrorResponse>(
+ id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBranchLocationById>>,
+          TError,
+          Awaited<ReturnType<typeof getBranchLocationById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBranchLocationByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBranchLocationById>>,
+          TError,
+          Awaited<ReturnType<typeof getBranchLocationById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBranchLocationByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати пункт прийому за ID
+ */
+
+export function useGetBranchLocationByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetBranchLocationByIdInfiniteQueryOptions(id,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetBranchLocationByIdQueryOptions = <TData = Awaited<ReturnType<typeof getBranchLocationById>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBranchLocationById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -347,6 +418,72 @@ export const getGetAllBranchLocationsQueryKey = (params?: GetAllBranchLocationsP
     }
 
     
+export const getGetAllBranchLocationsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getAllBranchLocations>>>, TError = ErrorResponse>(params?: GetAllBranchLocationsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllBranchLocations>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAllBranchLocationsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllBranchLocations>>> = ({ signal }) => getAllBranchLocations(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllBranchLocations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAllBranchLocationsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getAllBranchLocations>>>
+export type GetAllBranchLocationsInfiniteQueryError = ErrorResponse
+
+
+export function useGetAllBranchLocationsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllBranchLocations>>>, TError = ErrorResponse>(
+ params: undefined |  GetAllBranchLocationsParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllBranchLocations>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllBranchLocations>>,
+          TError,
+          Awaited<ReturnType<typeof getAllBranchLocations>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllBranchLocationsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllBranchLocations>>>, TError = ErrorResponse>(
+ params?: GetAllBranchLocationsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllBranchLocations>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllBranchLocations>>,
+          TError,
+          Awaited<ReturnType<typeof getAllBranchLocations>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllBranchLocationsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllBranchLocations>>>, TError = ErrorResponse>(
+ params?: GetAllBranchLocationsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllBranchLocations>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати всі пункти прийому замовлень
+ */
+
+export function useGetAllBranchLocationsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllBranchLocations>>>, TError = ErrorResponse>(
+ params?: GetAllBranchLocationsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllBranchLocations>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAllBranchLocationsInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetAllBranchLocationsQueryOptions = <TData = Awaited<ReturnType<typeof getAllBranchLocations>>, TError = ErrorResponse>(params?: GetAllBranchLocationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllBranchLocations>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -502,6 +639,72 @@ export const getGetBranchLocationByCodeQueryKey = (code: string,) => {
     }
 
     
+export const getGetBranchLocationByCodeInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationByCode>>>, TError = ErrorResponse>(code: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationByCode>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBranchLocationByCodeQueryKey(code);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBranchLocationByCode>>> = ({ signal }) => getBranchLocationByCode(code, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(code), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationByCode>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetBranchLocationByCodeInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getBranchLocationByCode>>>
+export type GetBranchLocationByCodeInfiniteQueryError = ErrorResponse
+
+
+export function useGetBranchLocationByCodeInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationByCode>>>, TError = ErrorResponse>(
+ code: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationByCode>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBranchLocationByCode>>,
+          TError,
+          Awaited<ReturnType<typeof getBranchLocationByCode>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBranchLocationByCodeInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationByCode>>>, TError = ErrorResponse>(
+ code: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationByCode>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBranchLocationByCode>>,
+          TError,
+          Awaited<ReturnType<typeof getBranchLocationByCode>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBranchLocationByCodeInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationByCode>>>, TError = ErrorResponse>(
+ code: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationByCode>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати пункт прийому за кодом
+ */
+
+export function useGetBranchLocationByCodeInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBranchLocationByCode>>>, TError = ErrorResponse>(
+ code: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBranchLocationByCode>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetBranchLocationByCodeInfiniteQueryOptions(code,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetBranchLocationByCodeQueryOptions = <TData = Awaited<ReturnType<typeof getBranchLocationByCode>>, TError = ErrorResponse>(code: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBranchLocationByCode>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 

@@ -6,16 +6,21 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useInfiniteQuery,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
+  InfiniteData,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseQueryOptions,
   UseQueryResult
 } from '@tanstack/react-query';
@@ -54,6 +59,72 @@ export const getHelloQueryKey = () => {
     }
 
     
+export const getHelloInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof hello>>>, TError = ErrorResponse>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof hello>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getHelloQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hello>>> = ({ signal }) => hello(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof hello>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type HelloInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof hello>>>
+export type HelloInfiniteQueryError = ErrorResponse
+
+
+export function useHelloInfinite<TData = InfiniteData<Awaited<ReturnType<typeof hello>>>, TError = ErrorResponse>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof hello>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hello>>,
+          TError,
+          Awaited<ReturnType<typeof hello>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHelloInfinite<TData = InfiniteData<Awaited<ReturnType<typeof hello>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof hello>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hello>>,
+          TError,
+          Awaited<ReturnType<typeof hello>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHelloInfinite<TData = InfiniteData<Awaited<ReturnType<typeof hello>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof hello>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Тестовий ендпоінт
+ */
+
+export function useHelloInfinite<TData = InfiniteData<Awaited<ReturnType<typeof hello>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof hello>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getHelloInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getHelloQueryOptions = <TData = Awaited<ReturnType<typeof hello>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hello>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 

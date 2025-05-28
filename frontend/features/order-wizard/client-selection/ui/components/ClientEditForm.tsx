@@ -1,76 +1,94 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Save, Cancel } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
+// Типи з доменного шару
+import {
+  clientFormSchema,
+  type ClientFormData,
+} from '@/domain/wizard/services/stage-1-client-and-order/client-management';
 import { StepContainer, ActionButton, FormSection } from '@/shared/ui';
 
 import { ClientFormFields } from './ClientFormFields';
 
-import type { ClientData } from '@/domain/wizard/services/stage-1-client-and-order-info';
+import type { ClientResponse } from '@/shared/api/generated/client';
+
+// Shared компоненти
+
+// Компоненти
 
 interface ClientEditFormProps {
   isLoading: boolean;
   error: string | null;
-  formData: Partial<ClientData>;
-  originalClient: ClientData | null;
-  onSave: (data: ClientData) => Promise<void>;
+  originalClient: ClientResponse | null;
+  onSave: (data: ClientFormData) => Promise<void>;
   onCancel: () => void;
   className?: string;
   title?: string;
-  buttonSize?: 'small' | 'medium' | 'large';
-  hideCancel?: boolean;
   submitLabel?: string;
   cancelLabel?: string;
 }
 
 /**
- * Компонент форми редагування клієнта
- * Використовує shared компоненти для консистентного стилю
+ * Компонент форми редагування клієнта (DDD архітектура + Shared UI)
  */
 export const ClientEditForm: React.FC<ClientEditFormProps> = ({
   isLoading,
   error,
-  formData,
   originalClient,
   onSave,
   onCancel,
   className,
   title,
-  buttonSize = 'medium',
-  hideCancel = false,
   submitLabel = 'Зберегти зміни',
   cancelLabel = 'Скасувати',
 }) => {
-  const [localFormData, setLocalFormData] = React.useState(formData);
+  // Форма з Zod валідацією
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<ClientFormData>({
+    resolver: zodResolver(clientFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      phone: '',
+      email: '',
+      address: '',
+      communicationChannels: ['PHONE'],
+      source: 'OTHER',
+      sourceDetails: '',
+      informationSourceOther: '',
+    },
+  });
 
-  // Синхронізуємо локальні дані з зовнішніми
-  React.useEffect(() => {
-    setLocalFormData(formData);
-  }, [formData]);
-
-  const handleFieldChange = (field: keyof ClientData, value: unknown) => {
-    setLocalFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    console.log('📝 ClientEditForm.handleSubmit - дані форми:', {
-      localFormData,
-      allKeys: Object.keys(localFormData),
-      isComplete: !!(localFormData.lastName && localFormData.firstName && localFormData.phone),
-    });
-
-    if (localFormData.lastName && localFormData.firstName && localFormData.phone) {
-      console.log(
-        '📝 ClientEditForm.handleSubmit - викликаємо onSave з даними:',
-        localFormData as ClientData
-      );
-      await onSave(localFormData as ClientData);
+  // Ініціалізація форми з даними клієнта
+  useEffect(() => {
+    if (originalClient) {
+      reset({
+        firstName: originalClient.firstName || '',
+        lastName: originalClient.lastName || '',
+        phone: originalClient.phone || '',
+        email: originalClient.email || '',
+        address: originalClient.address || '',
+        communicationChannels: originalClient.communicationChannels || ['PHONE'],
+        source: originalClient.source || 'OTHER',
+        sourceDetails: originalClient.sourceDetails || '',
+        informationSourceOther: originalClient.sourceDetails || '',
+      });
     }
-  };
+  }, [originalClient, reset]);
+
+  const handleFormSubmit = handleSubmit(async (data: ClientFormData) => {
+    await onSave(data);
+  });
 
   if (!originalClient) {
     return (
@@ -81,7 +99,6 @@ export const ClientEditForm: React.FC<ClientEditFormProps> = ({
   }
 
   const defaultTitle = `Редагувати клієнта: ${originalClient.firstName} ${originalClient.lastName}`;
-  const isFormValid = !!(localFormData.lastName && localFormData.firstName && localFormData.phone);
 
   return (
     <StepContainer
@@ -89,46 +106,41 @@ export const ClientEditForm: React.FC<ClientEditFormProps> = ({
       subtitle="Внесіть зміни до інформації про клієнта"
       className={className}
     >
+      {/* Помилки */}
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
       )}
 
-      <Box component="form" onSubmit={handleSubmit}>
+      {/* Форма */}
+      <Box component="form" onSubmit={handleFormSubmit}>
         <FormSection
           title="Особисті дані"
           subtitle="Оновіть необхідну інформацію про клієнта"
           required
         >
-          <ClientFormFields
-            formData={localFormData}
-            onChange={handleFieldChange}
-            size="medium"
-            showAllFields={true}
-          />
+          <ClientFormFields control={control} errors={errors} showAllFields={true} />
         </FormSection>
 
-        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-          {!hideCancel && (
-            <ActionButton
-              variant="outlined"
-              onClick={onCancel}
-              disabled={isLoading}
-              startIcon={<Cancel />}
-              size={buttonSize}
-            >
-              {cancelLabel}
-            </ActionButton>
-          )}
+        {/* Кнопки */}
+        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 3 }}>
+          <ActionButton
+            variant="outlined"
+            onClick={onCancel}
+            disabled={isLoading}
+            startIcon={<Cancel />}
+            type="button"
+          >
+            {cancelLabel}
+          </ActionButton>
 
           <ActionButton
             type="submit"
             variant="contained"
-            disabled={!isFormValid}
+            disabled={!isValid}
             loading={isLoading}
             startIcon={<Save />}
-            size={buttonSize}
             loadingText="Збереження..."
           >
             {submitLabel}

@@ -1,25 +1,19 @@
 /**
- * @fileoverview Публічне API для етапу 1: Клієнт та замовлення
+ * @fileoverview Публічне API для хуків Stage 1 - Client and Order
  *
- * Експортує хуки та типи для управління:
- * - Вибором та створенням клієнтів (крок 1.1)
- * - Вибором філії та ініціалізацією замовлення (крок 1.2)
- * - Валідацією етапу
+ * Експорт оновлених хуків, що використовують Orval + Zod + React Query
+ * Замінює старі хуки новим централізованим API хуком
  */
 
-// === КРОК 1.1: Вибір клієнта ===
-export { useClientSelection } from './use-client-selection.hook';
-export type {
-  ClientCreationState,
-  ClientSearchState,
-  ClientSelectionValidation,
-} from './use-client-selection.hook';
+// === ОСНОВНИЙ API ХУК ===
+export {
+  useClientApiOperations,
+  type ClientSearchState,
+  type ClientOperationsState,
+} from './use-client-api-operations.hook';
 
-// === КРОК 1.2: Філія та ініціалізація замовлення ===
-export { useBranchAndOrderInit } from './use-branch-and-order-init.hook';
-export type {
-  BranchLoadingState,
-  OrderBasicInfo,
-  BranchAndOrderValidation,
-  BranchAndOrderState,
-} from './use-branch-and-order-init.hook';
+// === BACKWARD COMPATIBILITY ===
+// Перехідні експорти для існуючого UI (будуть видалені пізніше)
+export { useClientApiOperations as useClientSearch } from './use-client-api-operations.hook';
+export { useClientApiOperations as useClientCreation } from './use-client-api-operations.hook';
+export { useClientApiOperations as useClientSelection } from './use-client-api-operations.hook';

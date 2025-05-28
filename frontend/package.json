@@ -61,7 +61,28 @@
     "api:clean": "rm -rf shared/api/generated/*",
     "api:clean:domains": "rm -rf shared/api/generated/{auth,branch,client,order,pricing,receipt,test}",
     "api:rebuild": "npm run api:clean && npm run api:generate",
-    "api:create-index": "node scripts/create-api-index.js"
+    "api:create-index": "node scripts/create-api-index.js",
+
+    "# 🔥 Advanced Orval scripts": "",
+    "orval:dev": "npm run api:clean && npm run orval:all && npm run api:create-index",
+    "orval:ci": "npm run api:clean && npm run orval:all && npm run api:create-index && npm run orval:validate",
+    "orval:validate": "node scripts/validate-generated-schemas.js",
+    "orval:check-health": "node scripts/check-api-health.js",
+
+    "# 🚀 Watch modes": "",
+    "orval:watch:client": "npx orval --config orval.config.ts client-api client-zod --watch",
+    "orval:watch:order": "npx orval --config orval.config.ts order-api order-zod --watch",
+    "orval:watch:pricing": "npx orval --config orval.config.ts pricing-api pricing-zod --watch",
+
+    "# 📦 Domain-specific regeneration": "",
+    "api:regen:client": "rm -rf shared/api/generated/client && npm run orval:client && node scripts/create-zod-index.js client",
+    "api:regen:order": "rm -rf shared/api/generated/order && npm run orval:order && node scripts/create-zod-index.js order",
+    "api:regen:pricing": "rm -rf shared/api/generated/pricing && npm run orval:pricing && node scripts/create-zod-index.js pricing",
+
+    "# 🔧 Utilities": "",
+    "api:fix-imports": "node scripts/fix-generated-imports.js",
+    "api:update-docs": "node scripts/update-api-docs.js",
+    "api:bundle-schemas": "node scripts/bundle-zod-schemas.js"
   },
   "lint-staged": {
     "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
@@ -79,6 +100,7 @@
     "@mui/material-nextjs": "^7.0.2",
     "@mui/x-data-grid": "^8.0.0",
     "@mui/x-date-pickers": "^8.0.0",
+    "@orval/zod": "^7.9.0",
     "@tanstack/react-query": "^5.77.0",
     "@xstate/react": "^5.0.4",
     "axios": "^1.8.4",
@@ -96,7 +118,7 @@
     "use-immer": "^0.11.0",
     "uuid": "^11.1.0",
     "xstate": "^5.19.3",
-    "zod": "^3.24.2",
+    "zod": "^3.25.32",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

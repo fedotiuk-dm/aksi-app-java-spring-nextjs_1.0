@@ -1,12 +1,14 @@
 'use client';
 
-import { Clear, CheckCircle, Warning, Edit } from '@mui/icons-material';
+import { Clear, CheckCircle, Warning, Edit, Person } from '@mui/icons-material';
 import { Alert, Box, Chip, Typography } from '@mui/material';
 import React from 'react';
 
+// Shared компоненти
 import { InfoCard, ActionButton } from '@/shared/ui';
 
-import type { ClientSearchResult } from '@/domain/wizard';
+// Типи з API
+import type { ClientResponse } from '@/shared/api/generated/client';
 
 interface ClientValidationResult {
   canProceed: boolean;
@@ -15,7 +17,7 @@ interface ClientValidationResult {
 }
 
 interface SelectedClientInfoProps {
-  client: ClientSearchResult;
+  client: ClientResponse;
   validationResult?: ClientValidationResult | null;
   onClear?: () => void;
   onEdit?: () => void;
@@ -25,8 +27,7 @@ interface SelectedClientInfoProps {
 }
 
 /**
- * Компонент відображення інформації про вибраного клієнта (DDD архітектура)
- * Використовує дані з useClientSelection хука
+ * Компонент відображення інформації про вибраного клієнта (DDD архітектура + Shared UI)
  */
 export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
   client,
@@ -38,7 +39,7 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
   showActions = true,
 }) => {
   // Формуємо повне ім'я
-  const fullName = client.fullName || `${client.firstName} ${client.lastName}`.trim();
+  const fullName = `${client.firstName || ''} ${client.lastName || ''}`.trim() || 'Без імені';
 
   // Формуємо список інформації про клієнта
   const infoItems = [
@@ -73,36 +74,64 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
       : []),
   ];
 
+  // Переклад способів зв'язку
+  const translateCommunicationChannel = (channel: string) => {
+    switch (channel) {
+      case 'PHONE':
+        return 'Телефон';
+      case 'SMS':
+        return 'SMS';
+      case 'VIBER':
+        return 'Viber';
+      default:
+        return channel;
+    }
+  };
+
+  // Переклад джерел інформації
+  const translateSource = (source: string) => {
+    switch (source) {
+      case 'INSTAGRAM':
+        return 'Instagram';
+      case 'GOOGLE':
+        return 'Google';
+      case 'RECOMMENDATION':
+        return 'Рекомендації';
+      case 'OTHER':
+        return 'Інше';
+      default:
+        return source;
+    }
+  };
+
   // Формуємо теги для способів зв'язку
   const communicationTags: Array<{
     label: string;
     color?: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
   }> =
     client.communicationChannels?.map((channel) => ({
-      label: channel,
+      label: translateCommunicationChannel(channel),
       color: 'primary' as const,
     })) || [];
 
   // Додаємо тег джерела якщо є
   if (client.source) {
     communicationTags.push({
-      label: `Джерело: ${client.source}`,
+      label: `Джерело: ${translateSource(client.source)}`,
       color: 'secondary',
     });
   }
 
-  // Статус валідації
-  const getValidationStatus = () => {
+  // Статус валідації для InfoCard
+  const getValidationStatus = (): 'success' | 'info' | 'warning' | 'error' => {
     if (validationResult?.canProceed) {
-      return { status: 'success' as const, text: 'Готово до замовлення' };
+      return 'success';
     }
     if (validationResult?.errors && validationResult.errors.length > 0) {
-      return { status: 'error' as const, text: 'Потрібні додаткові дані' };
+      return 'error';
     }
-    return { status: 'warning' as const, text: 'Можна продовжити' };
+    return 'warning';
   };
-
-  const { status } = getValidationStatus();
 
   // Обчислюємо повноту профілю
   const calculateCompleteness = () => {
@@ -110,11 +139,11 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
     const optionalFields = ['email', 'address'];
 
     const filledRequired = requiredFields.filter(
-      (field) => client[field as keyof ClientSearchResult]
+      (field) => client[field as keyof ClientResponse]
     ).length;
 
     const filledOptional = optionalFields.filter(
-      (field) => client[field as keyof ClientSearchResult]
+      (field) => client[field as keyof ClientResponse]
     ).length;
 
     const totalFields = requiredFields.length + optionalFields.length;
@@ -125,52 +154,26 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
 
   const completenessPercentage = calculateCompleteness();
 
-  // Дії для картки
-  const actions = showActions ? (
-    <>
-      {onEdit && (
-        <ActionButton
-          variant="outlined"
-          color="primary"
-          size="small"
-          startIcon={<Edit />}
-          onClick={onEdit}
-        >
-          Редагувати
-        </ActionButton>
-      )}
-      {onClear && (
-        <ActionButton
-          variant="outlined"
-          color="error"
-          size="small"
-          startIcon={<Clear />}
-          onClick={onClear}
-        >
-          Очистити вибір
-        </ActionButton>
-      )}
-    </>
-  ) : undefined;
-
   return (
     <Box className={className}>
-      <InfoCard title={fullName} status={status} compact={compact}>
+      <InfoCard title={fullName} icon={<Person />} status={getValidationStatus()} compact={compact}>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Вибраний клієнт
         </Typography>
 
         {/* Інформація про клієнта */}
-        {infoItems.map((item, index) => (
-          <Box key={index} sx={{ mb: 1 }}>
-            <Typography variant="body2" component="span" sx={{ fontWeight: 500 }}>
-              {item.label}:
-            </Typography>{' '}
-            <Typography variant="body2" component="span">
-              {item.value}
-            </Typography>
-          </Box>
-        ))}
+        {infoItems
+          .filter((item) => item.value)
+          .map((item, index) => (
+            <Box key={index} sx={{ mb: 1 }}>
+              <Typography variant="body2" component="span" sx={{ fontWeight: 500 }}>
+                {item.label}:
+              </Typography>{' '}
+              <Typography variant="body2" component="span">
+                {item.value}
+              </Typography>
+            </Box>
+          ))}
 
         {/* Теги */}
         {communicationTags.length > 0 && (
@@ -182,7 +185,32 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
         )}
 
         {/* Дії */}
-        {actions && <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>{actions}</Box>}
+        {showActions && (
+          <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+            {onEdit && (
+              <ActionButton
+                variant="outlined"
+                color="primary"
+                size="small"
+                startIcon={<Edit />}
+                onClick={onEdit}
+              >
+                Редагувати
+              </ActionButton>
+            )}
+            {onClear && (
+              <ActionButton
+                variant="outlined"
+                color="error"
+                size="small"
+                startIcon={<Clear />}
+                onClick={onClear}
+              >
+                Очистити вибір
+              </ActionButton>
+            )}
+          </Box>
+        )}
       </InfoCard>
 
       {/* Індикатор повноти профілю */}
@@ -198,25 +226,17 @@ export const SelectedClientInfo: React.FC<SelectedClientInfoProps> = ({
 
         {/* Помилки валідації */}
         {validationResult?.errors && validationResult.errors.length > 0 && (
-          <Alert severity="error" sx={{ mb: 1 }}>
-            <strong>Помилки:</strong>
-            <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-              {validationResult.errors.map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
+          <Alert severity="error" sx={{ mt: 1 }}>
+            <Typography variant="body2">Помилки: {validationResult.errors.join(', ')}</Typography>
           </Alert>
         )}
 
         {/* Попередження валідації */}
         {validationResult?.warnings && validationResult.warnings.length > 0 && (
-          <Alert severity="warning" sx={{ mb: 1 }}>
-            <strong>Попередження:</strong>
-            <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-              {validationResult.warnings.map((warning, index) => (
-                <li key={index}>{warning}</li>
-              ))}
-            </ul>
+          <Alert severity="warning" sx={{ mt: 1 }}>
+            <Typography variant="body2">
+              Попередження: {validationResult.warnings.join(', ')}
+            </Typography>
           </Alert>
         )}
       </Box>

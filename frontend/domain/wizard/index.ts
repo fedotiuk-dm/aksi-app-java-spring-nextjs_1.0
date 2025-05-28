@@ -9,8 +9,7 @@
  * Публічне API для wizard домену
  * Експорт всіх компонентів згідно з архітектурою "DDD inside, FSD outside"
  *
- * ВАЖЛИВО: Експортуємо все з підмодулів через їх публічні API (index.ts)
- * щоб мати гарантію що нічого не пропустили
+ * ВАЖЛИВО: Прості імпорти до конкретних файлів для кращого контролю
  */
 
 // === ТИПИ ТА ЕНУМИ ===
@@ -18,9 +17,6 @@ export * from './types';
 
 // === УТИЛІТИ ===
 export * from './utils';
-
-// === АДАПТЕРИ API → DOMAIN ===
-export * from './adapters';
 
 // === ZOD СХЕМИ ВАЛІДАЦІЇ ===
 export * from './schemas';
@@ -30,6 +26,9 @@ export * from './constants';
 
 // === XSTATE V5 МАШИНИ ===
 export * from './machines';
+
+// === СЕРВІСИ (BUSINESS LOGIC) ===
+export * from './services';
 
 // === HOOKS (DOMAIN LOGIC) ===
 export * from './hooks';

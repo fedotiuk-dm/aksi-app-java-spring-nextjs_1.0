@@ -2,30 +2,39 @@
  * Етап 1: Клієнт та базова інформація замовлення
  *
  * Експортує всі сервіси для першого етапу Order Wizard:
- * - Управління клієнтами (пошук, створення, валідація)
  * - Вибір філії (фільтрація, рекомендації, валідація)
  * - Ініціалізація замовлення (номери, мітки, базова структура)
+ *
+ * ПРИМІТКА: Сервіси тепер зосереджені на бізнес-логіці. API виклики роблять хуки через Orval.
  */
 
 // ===== СЕРВІСИ =====
-export { ClientManagementService } from './client-management/client-management.service';
-export { BranchSelectionService } from './branch-selection/branch-selection.service';
-export { OrderInitializationService } from './order-initialization/order-initialization.service';
+// Працюючий сервіс
+import { BranchSelectionService } from './branch-selection/branch-selection.service';
 
-// ===== ТИПИ (тільки існуючі) =====
+import type {
+  BranchFilterCriteria,
+  BranchSelectionResult,
+} from './branch-selection/branch-selection.service';
 
-// Типи з ClientManagementService
-export type {
-  ClientData,
-  ContactMethod,
-  InfoSource,
-} from './client-management/client-management.service';
+export { BranchSelectionService };
+export type { BranchFilterCriteria, BranchSelectionResult };
+
+// TODO: Переписати OrderInitializationService під Orval
+// export { OrderInitializationService } from './order-initialization/order-initialization.service';
+
+// ===== ТИПИ =====
 
 // Типи з BranchSelectionService
-export type { BranchSelection } from './branch-selection/branch-selection.service';
+// export type {
+//   BranchFilterCriteria,
+//   BranchSelectionResult,
+// } from './branch-selection/branch-selection.service';
 
+// TODO: Оновити типи після переписування OrderInitializationService
 // Типи з OrderInitializationService
-export type { OrderInitData } from './order-initialization/order-initialization.service';
-
-// Типи з результатів ініціалізації (з адаптерів)
-export type { WizardOrderInitializationResult } from '@/domain/wizard/adapters/order';
+// export type {
+//   OrderInitData,
+//   UniqueTagValidation,
+//   ReceiptNumberData,
+// } from './order-initialization/order-initialization.service';

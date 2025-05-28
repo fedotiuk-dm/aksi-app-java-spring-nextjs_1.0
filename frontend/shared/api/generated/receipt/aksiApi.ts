@@ -6,18 +6,23 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
+  InfiniteData,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -195,6 +200,72 @@ export const getGetReceiptDataQueryKey = (orderId: string,) => {
     }
 
     
+export const getGetReceiptDataInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getReceiptData>>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getReceiptData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetReceiptDataQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getReceiptData>>> = ({ signal }) => getReceiptData(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getReceiptData>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetReceiptDataInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getReceiptData>>>
+export type GetReceiptDataInfiniteQueryError = ErrorResponse
+
+
+export function useGetReceiptDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getReceiptData>>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getReceiptData>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getReceiptData>>,
+          TError,
+          Awaited<ReturnType<typeof getReceiptData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetReceiptDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getReceiptData>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getReceiptData>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getReceiptData>>,
+          TError,
+          Awaited<ReturnType<typeof getReceiptData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetReceiptDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getReceiptData>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getReceiptData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати дані для квитанції
+ */
+
+export function useGetReceiptDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getReceiptData>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getReceiptData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetReceiptDataInfiniteQueryOptions(orderId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetReceiptDataQueryOptions = <TData = Awaited<ReturnType<typeof getReceiptData>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReceiptData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -284,6 +355,72 @@ export const getDownloadPdfReceiptQueryKey = (orderId: string,) => {
     }
 
     
+export const getDownloadPdfReceiptInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof downloadPdfReceipt>>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof downloadPdfReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDownloadPdfReceiptQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof downloadPdfReceipt>>> = ({ signal }) => downloadPdfReceipt(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof downloadPdfReceipt>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DownloadPdfReceiptInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof downloadPdfReceipt>>>
+export type DownloadPdfReceiptInfiniteQueryError = ErrorResponse
+
+
+export function useDownloadPdfReceiptInfinite<TData = InfiniteData<Awaited<ReturnType<typeof downloadPdfReceipt>>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof downloadPdfReceipt>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof downloadPdfReceipt>>,
+          TError,
+          Awaited<ReturnType<typeof downloadPdfReceipt>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDownloadPdfReceiptInfinite<TData = InfiniteData<Awaited<ReturnType<typeof downloadPdfReceipt>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof downloadPdfReceipt>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof downloadPdfReceipt>>,
+          TError,
+          Awaited<ReturnType<typeof downloadPdfReceipt>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDownloadPdfReceiptInfinite<TData = InfiniteData<Awaited<ReturnType<typeof downloadPdfReceipt>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof downloadPdfReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Завантажити PDF-квитанцію
+ */
+
+export function useDownloadPdfReceiptInfinite<TData = InfiniteData<Awaited<ReturnType<typeof downloadPdfReceipt>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof downloadPdfReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDownloadPdfReceiptInfiniteQueryOptions(orderId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getDownloadPdfReceiptQueryOptions = <TData = Awaited<ReturnType<typeof downloadPdfReceipt>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof downloadPdfReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 

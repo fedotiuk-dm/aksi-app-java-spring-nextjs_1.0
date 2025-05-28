@@ -1,280 +1,338 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowBack, Save } from '@mui/icons-material';
 import {
   Box,
-  TextField,
-  Button,
-  Typography,
   Grid,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
+  FormHelperText,
   CircularProgress,
+  Button,
 } from '@mui/material';
-import React from 'react';
-import { Controller } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
-import type { UseClientManagementReturn } from '@/domain/wizard/hooks';
-import type { ClientData } from '@/domain/wizard/services/stage-1-client-and-order-info';
+import {
+  clientFormSchema,
+  type ClientFormData,
+} from '@/domain/wizard/services/stage-1-client-and-order/client-management';
+import {
+  StepContainer,
+  FormSection,
+  FormField,
+  ActionButton,
+  MultiSelectCheckboxGroup,
+  StatusMessage,
+} from '@/shared/ui';
+
+// Імпорти з доменного шару - Zod схема та типи
+
+// Типи хуків та API
+import type { ClientResponse } from '@/shared/api/generated/client';
+
+interface ClientFormState {
+  isLoading: boolean;
+  isError: boolean;
+  errorMessage: string;
+}
 
 interface ClientFormPanelProps {
-  formMethods: UseClientManagementReturn['formMethods'];
-  isCreating: boolean;
-  isUpdating: boolean;
-  onSubmit: (data: ClientData) => Promise<void>;
-  onBack: () => void;
-  ContactMethod: UseClientManagementReturn['ContactMethod'];
-  InformationSource: UseClientManagementReturn['InformationSource'];
-  validateClientData: UseClientManagementReturn['validateClientData'];
-  isEditing?: boolean;
+  creationState: ClientFormState;
+  selectedClient?: ClientResponse | null;
+  onSubmit: (data: ClientFormData) => Promise<void>;
+  onCancel: () => void;
+  onValidate: (data: ClientFormData) => any;
+  isEditMode?: boolean;
 }
 
 /**
- * Панель форми для створення клієнта
+ * Панель форми для створення/редагування клієнта (з Zod валідацією + Shared UI)
  */
 export const ClientFormPanel: React.FC<ClientFormPanelProps> = ({
-  formMethods,
-  isCreating,
-  isUpdating,
+  creationState,
+  selectedClient,
   onSubmit,
-  onBack,
-  ContactMethod,
-  InformationSource,
-  validateClientData,
-  isEditing = false,
+  onCancel,
+  onValidate,
 }) => {
+  // React Hook Form з Zod валідацією
   const {
     control,
     handleSubmit,
     watch,
-    formState: { errors },
-  } = formMethods;
-  const informationSource = watch('informationSource');
+    reset,
+    formState: { errors, isValid },
+  } = useForm<ClientFormData>({
+    resolver: zodResolver(clientFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      phone: '',
+      email: '',
+      address: '',
+      communicationChannels: ['PHONE'],
+      source: 'OTHER',
+      sourceDetails: '',
+      informationSourceOther: '',
+    },
+  });
+
+  // Ініціалізація форми з даними вибраного клієнта (для редагування)
+  useEffect(() => {
+    if (selectedClient) {
+      reset({
+        firstName: selectedClient.firstName || '',
+        lastName: selectedClient.lastName || '',
+        phone: selectedClient.phone || '',
+        email: selectedClient.email || '',
+        address: selectedClient.address || '',
+        communicationChannels: selectedClient.communicationChannels || ['PHONE'],
+        source: selectedClient.source || 'OTHER',
+        sourceDetails: selectedClient.sourceDetails || '',
+        informationSourceOther: selectedClient.sourceDetails || '',
+      });
+    }
+  }, [selectedClient, reset]);
+
+  const source = watch('source');
+  const isEditing = !!selectedClient;
 
   const handleFormSubmit = handleSubmit(async (data) => {
-    const validation = validateClientData(data as unknown as ClientData);
-    if (validation.success) {
-      await onSubmit(data as unknown as ClientData);
+    // Додаткова валідація через доменний сервіс
+    const validation = onValidate(data);
+    if (validation.isValid) {
+      await onSubmit(data);
     }
   });
 
-  const isLoading = isCreating || isUpdating;
+  // Варіанти способів зв'язку
+  const contactMethodOptions = [
+    { value: 'PHONE', label: 'Телефон' },
+    { value: 'SMS', label: 'SMS' },
+    { value: 'VIBER', label: 'Viber' },
+  ];
+
+  // Варіанти джерел інформації
+  const informationSourceOptions = [
+    { value: 'INSTAGRAM', label: 'Instagram' },
+    { value: 'GOOGLE', label: 'Google' },
+    { value: 'RECOMMENDATION', label: 'Рекомендації' },
+    { value: 'OTHER', label: 'Інше' },
+  ];
 
   return (
     <Box>
       {/* Заголовок з кнопкою назад */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <Button startIcon={<ArrowBack />} onClick={onBack} sx={{ mr: 2 }}>
+        <Button startIcon={<ArrowBack />} onClick={onCancel} sx={{ mr: 2 }}>
           Назад
         </Button>
-        <Typography variant="h6">
-          {isEditing ? 'Редагування клієнта' : 'Створення нового клієнта'}
-        </Typography>
-      </Box>
+        <StepContainer title={isEditing ? 'Редагування клієнта' : 'Створення нового клієнта'}>
+          {/* Помилки створення */}
+          {creationState.isError && creationState.errorMessage && (
+            <StatusMessage severity="error" message={creationState.errorMessage} sx={{ mb: 3 }} />
+          )}
 
-      {/* Форма */}
-      <form onSubmit={handleFormSubmit}>
-        <Grid container spacing={3}>
-          {/* Основна інформація */}
-          <Grid size={{ xs: 12 }}>
-            <Typography variant="h6" gutterBottom>
-              Основна інформація
-            </Typography>
-          </Grid>
+          {/* Форма з Zod валідацією */}
+          <form onSubmit={handleFormSubmit}>
+            {/* Основна інформація */}
+            <FormSection title="Основна інформація">
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Controller
+                    name="firstName"
+                    control={control}
+                    render={({ field }) => (
+                      <FormField
+                        {...field}
+                        type="text"
+                        label="Ім'я"
+                        error={errors.firstName?.message}
+                        required
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Grid>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Controller
-              name="firstName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="Ім'я"
-                  error={!!errors.firstName}
-                  helperText={errors.firstName?.message}
-                  required
-                />
-              )}
-            />
-          </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Controller
+                    name="lastName"
+                    control={control}
+                    render={({ field }) => (
+                      <FormField
+                        {...field}
+                        type="text"
+                        label="Прізвище"
+                        error={errors.lastName?.message}
+                        required
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Grid>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Controller
-              name="lastName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="Прізвище"
-                  error={!!errors.lastName}
-                  helperText={errors.lastName?.message}
-                  required
-                />
-              )}
-            />
-          </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Controller
+                    name="phone"
+                    control={control}
+                    render={({ field }) => (
+                      <FormField
+                        {...field}
+                        type="tel"
+                        label="Телефон"
+                        error={errors.phone?.message}
+                        required
+                        fullWidth
+                        placeholder="+380XXXXXXXXX"
+                      />
+                    )}
+                  />
+                </Grid>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="Телефон"
-                  error={!!errors.phone}
-                  helperText={errors.phone?.message}
-                  required
-                />
-              )}
-            />
-          </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Controller
+                    name="email"
+                    control={control}
+                    render={({ field }) => (
+                      <FormField
+                        {...field}
+                        type="email"
+                        label="Email"
+                        error={errors.email?.message}
+                        fullWidth
+                        placeholder="example@domain.com"
+                      />
+                    )}
+                  />
+                </Grid>
 
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  type="email"
-                  label="Email"
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                />
-              )}
-            />
-          </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <Controller
+                    name="address"
+                    control={control}
+                    render={({ field }) => (
+                      <FormField
+                        {...field}
+                        type="text"
+                        label="Адреса"
+                        error={errors.address?.message}
+                        fullWidth
+                        multiline
+                        rows={2}
+                        placeholder="Вулиця, будинок, квартира, місто"
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+            </FormSection>
 
-          <Grid size={{ xs: 12 }}>
-            <Controller
-              name="address"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="Адреса"
-                  multiline
-                  rows={2}
-                  error={!!errors.address}
-                  helperText={errors.address?.message}
-                />
-              )}
-            />
-          </Grid>
-
-          {/* Способи зв'язку */}
-          <Grid size={{ xs: 12 }}>
-            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-              Способи зв&apos;язку
-            </Typography>
-            <Controller
-              name="contactMethods"
-              control={control}
-              render={({ field }) => (
-                <FormGroup row>
-                  {Object.values(ContactMethod).map((method) => (
-                    <FormControlLabel
-                      key={method}
-                      control={
-                        <Checkbox
-                          checked={field.value?.includes(method) || false}
-                          onChange={(e) => {
-                            const currentMethods = field.value || [];
-                            if (e.target.checked) {
-                              field.onChange([...currentMethods, method]);
-                            } else {
-                              field.onChange(currentMethods.filter((m: string) => m !== method));
-                            }
-                          }}
-                        />
-                      }
-                      label={method}
-                    />
-                  ))}
-                </FormGroup>
-              )}
-            />
-          </Grid>
-
-          {/* Джерело інформації */}
-          <Grid size={{ xs: 12 }}>
-            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-              Джерело інформації
-            </Typography>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Controller
-              name="informationSource"
-              control={control}
-              render={({ field }) => (
-                <FormControl fullWidth>
-                  <InputLabel>Як дізналися про нас?</InputLabel>
-                  <Select {...field} label="Як дізналися про нас?">
-                    {Object.values(InformationSource).map((source) => (
-                      <MenuItem key={source} value={source}>
-                        {source}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-            />
-          </Grid>
-
-          {informationSource === InformationSource.OTHER && (
-            <Grid size={{ xs: 12, sm: 6 }}>
+            {/* Способи зв'язку */}
+            <FormSection title="Способи зв'язку">
               <Controller
-                name="informationSourceOther"
+                name="communicationChannels"
                 control={control}
                 render={({ field }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Уточніть джерело"
-                    error={!!errors.informationSourceOther}
-                    helperText={errors.informationSourceOther?.message}
+                  <MultiSelectCheckboxGroup
+                    label="Оберіть зручні способи зв'язку"
+                    options={contactMethodOptions}
+                    selectedValues={field.value || []}
+                    onChange={field.onChange}
+                    orientation="row"
+                    showSelectedTags={false}
+                    error={errors.communicationChannels?.message}
+                    helperText="Оберіть один або кілька способів для зв'язку з клієнтом"
                   />
                 )}
               />
-            </Grid>
-          )}
+            </FormSection>
 
-          {/* Кнопки */}
-          <Grid size={{ xs: 12 }}>
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 3 }}>
-              <Button variant="outlined" onClick={onBack} disabled={isLoading}>
-                Скасувати
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                startIcon={isLoading ? <CircularProgress size={16} /> : <Save />}
-                disabled={isLoading}
-              >
-                {isLoading
-                  ? isEditing
-                    ? 'Збереження...'
-                    : 'Створення...'
-                  : isEditing
-                    ? 'Зберегти зміни'
-                    : 'Створити клієнта'}
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
-      </form>
+            {/* Джерело інформації */}
+            <FormSection title="Джерело інформації">
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Controller
+                    name="source"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControl fullWidth error={!!errors.source}>
+                        <InputLabel>Звідки дізналися про нас?</InputLabel>
+                        <Select {...field} label="Звідки дізналися про нас?">
+                          {informationSourceOptions.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.source && (
+                          <FormHelperText error>{errors.source.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
+
+                {/* Поле "Інше" для джерела інформації */}
+                {source === 'OTHER' && (
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <Controller
+                      name="sourceDetails"
+                      control={control}
+                      render={({ field }) => (
+                        <FormField
+                          {...field}
+                          type="text"
+                          label="Уточніть джерело"
+                          error={errors.sourceDetails?.message}
+                          required={source === 'OTHER'}
+                          fullWidth
+                          placeholder="Опишіть як клієнт дізнався про хімчистку"
+                        />
+                      )}
+                    />
+                  </Grid>
+                )}
+              </Grid>
+            </FormSection>
+
+            {/* Кнопки дій */}
+            <FormSection title="">
+              <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+                <ActionButton
+                  type="submit"
+                  variant="contained"
+                  startIcon={
+                    creationState.isLoading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <Save />
+                    )
+                  }
+                  disabled={creationState.isLoading || !isValid}
+                  fullWidth={false}
+                >
+                  {isEditing ? 'Зберегти зміни' : 'Створити клієнта'}
+                </ActionButton>
+
+                <ActionButton
+                  variant="outlined"
+                  disabled={creationState.isLoading}
+                  onClick={onCancel}
+                  fullWidth={false}
+                >
+                  Скасувати
+                </ActionButton>
+              </Box>
+            </FormSection>
+          </form>
+        </StepContainer>
+      </Box>
     </Box>
   );
 };

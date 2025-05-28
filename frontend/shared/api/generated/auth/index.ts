@@ -1,11 +1,15 @@
 /**
- * @fileoverview Публічне API домену Auth
- *
- * Експортує всі функції, типи та хуки для автентифікації та авторизації
+ * @fileoverview Auto-generated index для auth API
+ * 
+ * Цей файл автоматично генерується скриптом create-api-index.js
+ * НЕ РЕДАГУЙТЕ ВРУЧНУ!
  */
 
-// Експорт всіх функцій та хуків
+// API функції для домену auth
 export * from './aksiApi';
 
-// Експорт типів та схем
+// Типи та схеми для домену auth
 export * from './aksiApi.schemas';
+
+// Zod схеми для валідації
+export * as zodSchemas from './zod/aksiApi';

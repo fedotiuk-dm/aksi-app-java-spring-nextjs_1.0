@@ -1,11 +1,15 @@
 /**
- * @fileoverview Публічне API домену Order
- *
- * Експортує всі функції, типи та хуки для роботи з замовленнями та пов'язаними операціями
+ * @fileoverview Auto-generated index для order API
+ * 
+ * Цей файл автоматично генерується скриптом create-api-index.js
+ * НЕ РЕДАГУЙТЕ ВРУЧНУ!
  */
 
-// Експорт всіх функцій та хуків
+// API функції для домену order
 export * from './aksiApi';
 
-// Експорт типів та схем
+// Типи та схеми для домену order
 export * from './aksiApi.schemas';
+
+// Zod схеми для валідації
+export * as zodSchemas from './zod/aksiApi';

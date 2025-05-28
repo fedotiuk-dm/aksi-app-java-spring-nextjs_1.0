@@ -1,90 +1,142 @@
 #!/usr/bin/env node
 /**
- * @fileoverview Скрипт для автоматичного створення index.ts файлів для згенерованих API доменів
+ * @fileoverview Скрипт для автоматичного створення index.ts файлів у згенерованих API доменах
+ *
+ * Цей скрипт:
+ * - Сканує папки shared/api/generated/
+ * - Створює index.ts файли для кожного домену
+ * - Експортує всі API функції та типи
+ * - Створює загальний index для всіх доменів
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// Мапа доменів та їх описів
-const DOMAIN_DESCRIPTIONS = {
-  auth: 'автентифікації та авторизації',
-  branch: 'роботи з пунктами прийому',
-  client: 'роботи з клієнтами та підписами',
-  order: "роботи з замовленнями та пов'язаними операціями",
-  pricing: 'ціноутворення та прайс-листів',
-  user: 'роботи з користувачами системи',
-  receipt: 'роботи з квитанціями',
-  test: 'тестування API',
-  full: 'повного API (всі endpoints)',
-};
+const GENERATED_API_PATH = path.join(__dirname, '../shared/api/generated');
+const DOMAINS = ['auth', 'branch', 'client', 'order', 'pricing', 'receipt', 'test'];
 
 /**
- * Створює index.ts файл для домену
+ * Створює index.ts файл для конкретного домену
  */
-function createIndexFile(domainPath, domainName) {
-  const domainDescription = DOMAIN_DESCRIPTIONS[domainName] || `роботи з ${domainName}`;
-  const capitalizedDomain = domainName.charAt(0).toUpperCase() + domainName.slice(1);
+function createDomainIndex(domainName) {
+  const domainPath = path.join(GENERATED_API_PATH, domainName);
 
-  const indexContent = `/**
- * @fileoverview Публічне API домену ${capitalizedDomain}
- *
- * Експортує всі функції, типи та хуки для ${domainDescription}
- */
-
-// Експорт всіх функцій та хуків
-export * from './aksiApi';
-
-// Експорт типів та схем
-export * from './aksiApi.schemas';
-`;
-
-  const indexPath = path.join(domainPath, 'index.ts');
-
-  try {
-    fs.writeFileSync(indexPath, indexContent, 'utf8');
-    console.log(`✅ Створено ${indexPath}`);
-  } catch (error) {
-    console.error(`❌ Помилка створення ${indexPath}:`, error.message);
-  }
-}
-
-/**
- * Головна функція
- */
-function main() {
-  const generatedApiPath = path.join(__dirname, '..', 'shared', 'api', 'generated');
-
-  if (!fs.existsSync(generatedApiPath)) {
-    console.log('📁 Папка generated API не знайдена');
+  if (!fs.existsSync(domainPath)) {
+    console.log(`⏭️  Пропускаємо ${domainName} - папка не існує`);
     return;
   }
 
-  const domains = fs
-    .readdirSync(generatedApiPath, { withFileTypes: true })
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
+  const indexPath = path.join(domainPath, 'index.ts');
+  const apiFilePath = path.join(domainPath, 'aksiApi.ts');
+  const schemasFilePath = path.join(domainPath, 'aksiApi.schemas.ts');
+  const zodPath = path.join(domainPath, 'zod');
 
-  console.log(`🔄 Знайдено доменів: ${domains.join(', ')}`);
+  let exports = [];
 
-  domains.forEach((domain) => {
-    const domainPath = path.join(generatedApiPath, domain);
-    const aksiApiPath = path.join(domainPath, 'aksiApi.ts');
+  // Експортуємо API функції якщо є
+  if (fs.existsSync(apiFilePath)) {
+    exports.push(`// API функції для домену ${domainName}`);
+    exports.push(`export * from './aksiApi';`);
+    exports.push('');
+  }
 
-    // Перевіряємо, чи існує згенерований aksiApi.ts
-    if (fs.existsSync(aksiApiPath)) {
-      createIndexFile(domainPath, domain);
-    } else {
-      console.log(`⚠️  Пропущено ${domain} - немає aksiApi.ts`);
+  // Експортуємо типи якщо є
+  if (fs.existsSync(schemasFilePath)) {
+    exports.push(`// Типи та схеми для домену ${domainName}`);
+    exports.push(`export * from './aksiApi.schemas';`);
+    exports.push('');
+  }
+
+  // Експортуємо Zod схеми якщо є
+  if (fs.existsSync(zodPath)) {
+    const zodIndexPath = path.join(zodPath, 'aksiApi.ts');
+    if (fs.existsSync(zodIndexPath)) {
+      exports.push(`// Zod схеми для валідації`);
+      exports.push(`export * as zodSchemas from './zod/aksiApi';`);
+      exports.push('');
+    }
+  }
+
+  if (exports.length > 0) {
+    const content = [
+      `/**`,
+      ` * @fileoverview Auto-generated index для ${domainName} API`,
+      ` * `,
+      ` * Цей файл автоматично генерується скриптом create-api-index.js`,
+      ` * НЕ РЕДАГУЙТЕ ВРУЧНУ!`,
+      ` */`,
+      '',
+      ...exports,
+    ].join('\n');
+
+    fs.writeFileSync(indexPath, content, 'utf8');
+    console.log(`✅ Створено index для домену: ${domainName}`);
+  }
+}
+
+/**
+ * Створює загальний index.ts файл
+ */
+function createMainIndex() {
+  const mainIndexPath = path.join(GENERATED_API_PATH, 'index.ts');
+
+  let exports = [
+    `/**`,
+    ` * @fileoverview Головний index для всіх згенерованих API`,
+    ` * `,
+    ` * Цей файл автоматично генерується скриптом create-api-index.js`,
+    ` * НЕ РЕДАГУЙТЕ ВРУЧНУ!`,
+    ` */`,
+    '',
+  ];
+
+  DOMAINS.forEach((domain) => {
+    const domainPath = path.join(GENERATED_API_PATH, domain);
+    const domainIndexPath = path.join(domainPath, 'index.ts');
+
+    if (fs.existsSync(domainIndexPath)) {
+      exports.push(`// ${domain.charAt(0).toUpperCase() + domain.slice(1)} домен`);
+      exports.push(`export * as ${domain}Api from './${domain}';`);
+      exports.push('');
     }
   });
 
-  console.log('🎉 Завершено створення index.ts файлів!');
+  // Додаємо експорт full API якщо є
+  const fullApiPath = path.join(GENERATED_API_PATH, 'full');
+  if (fs.existsSync(fullApiPath)) {
+    exports.push(`// Повний API без розбивки по доменах`);
+    exports.push(`export * as fullApi from './full';`);
+    exports.push('');
+  }
+
+  const content = exports.join('\n');
+  fs.writeFileSync(mainIndexPath, content, 'utf8');
+  console.log(`✅ Створено головний index файл`);
 }
 
-// Запускаємо якщо скрипт викликається напряму
+/**
+ * Основна функція
+ */
+function main() {
+  console.log('🚀 Створення index файлів для API...');
+
+  // Створюємо папку якщо не існує
+  if (!fs.existsSync(GENERATED_API_PATH)) {
+    fs.mkdirSync(GENERATED_API_PATH, { recursive: true });
+  }
+
+  // Створюємо index для кожного домену
+  DOMAINS.forEach(createDomainIndex);
+
+  // Створюємо головний index
+  createMainIndex();
+
+  console.log('🎉 Завершено створення index файлів!');
+}
+
+// Запускаємо якщо це головний модуль
 if (require.main === module) {
   main();
 }
 
-module.exports = { main, createIndexFile };
+module.exports = { createDomainIndex, createMainIndex, main };

@@ -6,18 +6,23 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
+  InfiniteData,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -260,6 +265,72 @@ export const getTestAuthEndpointQueryKey = () => {
     }
 
     
+export const getTestAuthEndpointInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof testAuthEndpoint>>>, TError = ErrorResponse>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testAuthEndpoint>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTestAuthEndpointQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof testAuthEndpoint>>> = ({ signal }) => testAuthEndpoint(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof testAuthEndpoint>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TestAuthEndpointInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof testAuthEndpoint>>>
+export type TestAuthEndpointInfiniteQueryError = ErrorResponse
+
+
+export function useTestAuthEndpointInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testAuthEndpoint>>>, TError = ErrorResponse>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testAuthEndpoint>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof testAuthEndpoint>>,
+          TError,
+          Awaited<ReturnType<typeof testAuthEndpoint>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTestAuthEndpointInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testAuthEndpoint>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testAuthEndpoint>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof testAuthEndpoint>>,
+          TError,
+          Awaited<ReturnType<typeof testAuthEndpoint>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTestAuthEndpointInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testAuthEndpoint>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testAuthEndpoint>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірка доступності
+ */
+
+export function useTestAuthEndpointInfinite<TData = InfiniteData<Awaited<ReturnType<typeof testAuthEndpoint>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof testAuthEndpoint>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTestAuthEndpointInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getTestAuthEndpointQueryOptions = <TData = Awaited<ReturnType<typeof testAuthEndpoint>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof testAuthEndpoint>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 

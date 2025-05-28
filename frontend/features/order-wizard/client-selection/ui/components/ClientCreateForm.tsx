@@ -1,71 +1,73 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Save, Cancel } from '@mui/icons-material';
 import { Alert, Box } from '@mui/material';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
+import {
+  clientFormSchema,
+  type ClientFormData,
+} from '@/domain/wizard/services/stage-1-client-and-order/client-management';
 import { StepContainer, ActionButton, FormSection } from '@/shared/ui';
 
+// Компоненти
 import { ClientFormFields } from './ClientFormFields';
 
-import type { ClientData } from '@/domain/wizard/services/stage-1-client-and-order-info';
-import type { UseFormReturn } from 'react-hook-form';
-
 interface ClientCreateFormProps {
-  // Дані з useClientForm хука
-  form: UseFormReturn<ClientData> & {
-    isCreating: boolean;
-    existingClient: boolean;
-  };
+  // Стан операції створення
+  isLoading: boolean;
+  error?: string | null;
 
-  // Обробники подій (тільки UI події)
-  onSubmit: (data: ClientData) => Promise<void>;
+  // Обробники подій
+  onSubmit: (data: ClientFormData) => Promise<void>;
   onCancel: () => void;
 
   // Опції UI
   className?: string;
   title?: string;
-  buttonSize?: 'small' | 'medium' | 'large';
-  hideCancel?: boolean;
   submitLabel?: string;
   cancelLabel?: string;
 }
 
 /**
- * Компонент форми створення нового клієнта (DDD архітектура)
- *
- * FSD принципи:
- * - Тільки UI логіка та відображення
- * - Отримує всі дані з useClientForm хука
- * - Не містить бізнес-логіки
+ * Компонент форми створення нового клієнта (DDD архітектура + Shared UI)
  */
 export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
-  form,
+  isLoading,
+  error,
   onSubmit,
   onCancel,
   className,
   title = 'Створити нового клієнта',
-  buttonSize = 'medium',
-  hideCancel = false,
   submitLabel = 'Створити клієнта',
   cancelLabel = 'Скасувати',
 }) => {
+  // Форма з Zod валідацією
   const {
+    control,
     handleSubmit,
     formState: { errors, isValid },
-    watch,
-    setValue,
-    isCreating,
-    existingClient,
-  } = form;
-
-  const handleFormSubmit = handleSubmit(async (data: ClientData) => {
-    await onSubmit(data);
+  } = useForm<ClientFormData>({
+    resolver: zodResolver(clientFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      phone: '',
+      email: '',
+      address: '',
+      communicationChannels: ['PHONE'],
+      source: 'OTHER',
+      sourceDetails: '',
+      informationSourceOther: '',
+    },
   });
 
-  const handleFieldChange = (field: keyof ClientData, value: unknown) => {
-    setValue(field, value as ClientData[typeof field]);
-  };
+  const handleFormSubmit = handleSubmit(async (data: ClientFormData) => {
+    await onSubmit(data);
+  });
 
   return (
     <StepContainer
@@ -73,48 +75,38 @@ export const ClientCreateForm: React.FC<ClientCreateFormProps> = ({
       subtitle="Додайте нового клієнта до бази даних хімчистки"
       className={className}
     >
-      {/* Відображення попереджень про існуючого клієнта */}
-      {existingClient && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          <Box>
-            <strong>Увага!</strong> Клієнт з такими даними вже може існувати в базі даних. Перевірте
-            правильність введених даних.
-          </Box>
+      {/* Помилки */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
         </Alert>
       )}
 
+      {/* Форма */}
       <Box component="form" onSubmit={handleFormSubmit}>
         <FormSection title="Особисті дані" subtitle="Основна інформація про клієнта" required>
-          <ClientFormFields
-            formData={watch()}
-            onChange={handleFieldChange}
-            size="medium"
-            showAllFields={true}
-            errors={errors}
-          />
+          <ClientFormFields control={control} errors={errors} showAllFields={true} />
         </FormSection>
 
-        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-          {!hideCancel && (
-            <ActionButton
-              variant="outlined"
-              onClick={onCancel}
-              disabled={isCreating}
-              startIcon={<Cancel />}
-              size={buttonSize}
-            >
-              {cancelLabel}
-            </ActionButton>
-          )}
+        {/* Кнопки */}
+        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 3 }}>
+          <ActionButton
+            variant="outlined"
+            onClick={onCancel}
+            disabled={isLoading}
+            startIcon={<Cancel />}
+            type="button"
+          >
+            {cancelLabel}
+          </ActionButton>
 
           <ActionButton
             type="submit"
             variant="contained"
-            disabled={!isValid || isCreating}
-            loading={isCreating}
+            disabled={!isValid}
+            loading={isLoading}
             startIcon={<Save />}
-            size={buttonSize}
-            loadingText="Збереження..."
+            loadingText="Створення..."
           >
             {submitLabel}
           </ActionButton>

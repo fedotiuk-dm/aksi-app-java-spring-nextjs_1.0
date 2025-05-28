@@ -2,130 +2,166 @@
 
 import { PersonAdd, PersonSearch } from '@mui/icons-material';
 import { Box, Paper, Typography, Button, Stepper, Step, StepLabel, Alert } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { useClientManagement } from '@/domain/wizard/hooks';
+// 🔥 Новий уніфікований хук з доменного шару
+import {
+  useClientApiOperations,
+  type ClientSearchState,
+} from '@/domain/wizard/hooks/stage-1-client-and-order';
 
+// Компоненти
 import { ClientFormPanel } from './components/ClientFormPanel';
 import { ClientSearchPanel } from './components/ClientSearchPanel';
 import { ClientSelectedPanel } from './components/ClientSelectedPanel';
 
-import type {
-  ClientSearchResult,
-  ClientData,
-} from '@/domain/wizard/services/stage-1-client-and-order-info';
+// Типи з API та домену
+import type { ClientFormData } from '@/domain/wizard/services/stage-1-client-and-order/client-management/client-validation.service';
+import type { ClientResponse } from '@/shared/api/generated/client';
 
 type ClientSelectionMode = 'search' | 'create' | 'selected';
 
 /**
- * Головний компонент етапу вибору клієнта
+ * Головний компонент етапу вибору клієнта (оновлений для DDD архітектури)
  */
 export const ClientSelectionStep: React.FC = () => {
   const [mode, setMode] = useState<ClientSelectionMode>('search');
+  const [selectedClient, setSelectedClient] = useState<ClientResponse | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isNewClient, setIsNewClient] = useState(false);
 
-  // === ДОМЕННА ЛОГІКА ===
+  // === ДОМЕННИЙ ХУК ===
   const {
-    // Пошук
-    searchQuery,
+    // Дані
+    allClients,
+    isLoadingClients,
+    clientsError,
     searchResults,
     isSearching,
     searchError,
-    searchClients,
-    clearSearch,
 
-    // Форма
-    formMethods,
-    isCreatingClient,
-    isUpdatingClient,
+    // Операції
+    isCreating,
+    isUpdating,
+    isDeleting,
+    operationError,
+
+    // Методи
+    searchClientsWithPagination,
     createClient,
     updateClient,
-    validateClientData,
-
-    // Вибір
-    selectedClient,
-    isNewClient,
-    selectClient,
-    selectNewClient,
-    clearSelection,
-    proceedToNextStep,
+    deleteClient,
+    refreshClients,
 
     // Утиліти
-    formatPhone,
-    createClientSummary,
-    ContactMethod,
-    InformationSource,
-  } = useClientManagement();
+    clearSearchResults,
+    clearErrors,
+  } = useClientApiOperations();
+
+  // === ЕФЕКТИ ===
+
+  // Завантажуємо початковий список клієнтів
+  useEffect(() => {
+    const clientsList = Array.isArray(allClients) ? allClients : [];
+    if (!isLoadingClients && clientsList.length === 0) {
+      refreshClients();
+    }
+  }, [isLoadingClients, allClients, refreshClients]);
 
   // === ОБРОБНИКИ ПОДІЙ ===
-  const handleSelectExistingClient = async (client: ClientSearchResult) => {
-    const result = await selectClient(client);
-    if (result.success) {
+
+  const handleSelectExistingClient = async (client: ClientResponse) => {
+    try {
+      setSelectedClient(client);
+      setIsNewClient(false);
       setMode('selected');
+    } catch (error) {
+      console.error('Помилка вибору клієнта:', error);
     }
   };
 
-  const handleCreateOrUpdateClient = async (data: ClientData) => {
-    let result;
-
-    // Якщо є вибраний клієнт, то це оновлення
-    if (selectedClient) {
-      result = await updateClient(selectedClient.id || '', data);
-    } else {
-      // Інакше це створення нового клієнта
-      result = await createClient(data);
-    }
-
-    if (result.success && result.client) {
-      if (selectedClient) {
-        // Оновлюємо вибраного клієнта
-        await selectClient(result.client);
-      } else {
-        // Вибираємо нового клієнта
-        await selectNewClient(result.client);
+  const handleCreateClient = async (clientData: ClientFormData) => {
+    try {
+      const newClient = await createClient(clientData);
+      if (newClient) {
+        setSelectedClient(newClient);
+        setIsNewClient(true);
+        setMode('selected');
       }
-      setMode('selected');
+    } catch (error) {
+      console.error('Помилка створення клієнта:', error);
+    }
+  };
+
+  const handleUpdateClient = async (clientData: ClientFormData) => {
+    if (!selectedClient?.id) return;
+
+    try {
+      const updatedClient = await updateClient(selectedClient.id, clientData);
+      if (updatedClient) {
+        setSelectedClient(updatedClient);
+        setMode('selected');
+      }
+    } catch (error) {
+      console.error('Помилка оновлення клієнта:', error);
     }
   };
 
   const handleBackToSearch = () => {
-    clearSelection();
+    setSelectedClient(null);
+    setIsNewClient(false);
+    clearErrors();
     setMode('search');
   };
 
   const handleCreateNewClient = () => {
-    clearSelection();
-    formMethods.reset({
-      firstName: '',
-      lastName: '',
-      phone: '',
-      email: '',
-      address: '',
-      contactMethods: [ContactMethod.PHONE],
-      informationSource: InformationSource.OTHER,
-      informationSourceOther: '',
-    });
+    setSelectedClient(null);
+    setIsNewClient(false);
+    clearErrors();
     setMode('create');
   };
 
   const handleEditClient = () => {
-    // Ініціалізуємо форму з даними вибраного клієнта
-    if (selectedClient) {
-      formMethods.reset({
-        firstName: selectedClient.firstName || '',
-        lastName: selectedClient.lastName || '',
-        phone: selectedClient.phone || '',
-        email: selectedClient.email || '',
-        address: selectedClient.address || '',
-        contactMethods: selectedClient.contactMethods || [ContactMethod.PHONE],
-        informationSource: selectedClient.informationSource || InformationSource.OTHER,
-        informationSourceOther: selectedClient.informationSourceOther || '',
-      });
-    }
     setMode('create');
   };
 
-  // === ЕТАПИ ВІЗАРДА ===
-  const steps = ['Пошук клієнта', 'Підтвердження вибору', 'Завершення'];
+  const handleSearch = async (term: string) => {
+    setSearchTerm(term);
+    if (term.length >= 2) {
+      try {
+        await searchClientsWithPagination({
+          query: term,
+          page: 0,
+          size: 20,
+        });
+      } catch (error) {
+        console.error('Помилка пошуку:', error);
+      }
+    } else {
+      clearSearchResults();
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    clearSearchResults();
+  };
+
+  const handlePageChange = async (page: number) => {
+    if (searchTerm) {
+      try {
+        await searchClientsWithPagination({
+          query: searchTerm,
+          page,
+          size: 20,
+        });
+      } catch (error) {
+        console.error('Помилка зміни сторінки:', error);
+      }
+    }
+  };
+
+  // === ДОПОМІЖНІ МЕТОДИ ===
 
   const getActiveStep = () => {
     switch (mode) {
@@ -138,6 +174,37 @@ export const ClientSelectionStep: React.FC = () => {
         return 0;
     }
   };
+
+  // Визначаємо клієнтів для відображення
+  const clientsList = Array.isArray(allClients) ? allClients : [];
+  const displayClients = searchTerm.length >= 2 ? searchResults : clientsList;
+
+  // Форматуємо клієнтів для компонента
+  const formattedClients = displayClients.map((client) => ({
+    client,
+    formatted: {
+      fullName: `${client.firstName ?? ''} ${client.lastName ?? ''}`.trim() || 'Без імені',
+      contactInfo: [client.phone, client.email].filter(Boolean).join(', '),
+      address: client.address || 'Адреса не вказана',
+      source: client.source || 'Не вказано',
+      orderCount: `${client.orderCount || 0} замовлень`,
+      lastUpdate: client.updatedAt
+        ? new Date(client.updatedAt).toLocaleDateString('uk-UA')
+        : 'Невідомо',
+    },
+  }));
+
+  // Створюємо searchState для сумісності з компонентом
+  const searchState: ClientSearchState = {
+    searchTerm,
+    isSearching: isSearching,
+    searchResults: displayClients,
+    hasSearched: searchTerm.length >= 2,
+    searchError: searchError,
+  };
+
+  // === ЕТАПИ ВІЗАРДА ===
+  const steps = ['Пошук/створення клієнта', 'Підтвердження вибору', 'Завершення'];
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
@@ -157,6 +224,13 @@ export const ClientSelectionStep: React.FC = () => {
         </Stepper>
       </Box>
 
+      {/* Показуємо помилки */}
+      {(clientsError || searchError || operationError) && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Помилка: {clientsError || searchError || operationError}
+        </Alert>
+      )}
+
       {/* Головний контент */}
       <Paper elevation={1} sx={{ p: 3 }}>
         {mode === 'search' && (
@@ -168,6 +242,7 @@ export const ClientSelectionStep: React.FC = () => {
                 startIcon={<PersonSearch />}
                 onClick={() => setMode('search')}
                 size="large"
+                disabled={isLoadingClients}
               >
                 Знайти існуючого клієнта
               </Button>
@@ -183,51 +258,53 @@ export const ClientSelectionStep: React.FC = () => {
 
             {/* Панель пошуку */}
             <ClientSearchPanel
-              searchQuery={searchQuery}
-              searchResults={searchResults}
-              isSearching={isSearching}
-              searchError={searchError}
-              searchClients={searchClients}
-              clearSearch={clearSearch}
-              formatPhone={formatPhone}
-              createClientSummary={createClientSummary}
+              searchState={searchState}
+              formattedClients={formattedClients}
+              onSearchTermChange={handleSearch}
+              onClearSearch={handleClearSearch}
+              onPageChange={handlePageChange}
               onSelectClient={handleSelectExistingClient}
-              showBackButton={false}
             />
           </Box>
         )}
 
         {mode === 'create' && (
           <ClientFormPanel
-            formMethods={formMethods}
-            isCreating={isCreatingClient}
-            isUpdating={isUpdatingClient}
-            onSubmit={handleCreateOrUpdateClient}
-            onBack={handleBackToSearch}
-            ContactMethod={ContactMethod}
-            InformationSource={InformationSource}
-            validateClientData={validateClientData}
-            isEditing={!!selectedClient}
+            creationState={{
+              isLoading: isCreating || isUpdating,
+              isError: !!operationError,
+              errorMessage: operationError || '',
+            }}
+            selectedClient={selectedClient}
+            onSubmit={selectedClient ? handleUpdateClient : handleCreateClient}
+            onCancel={handleBackToSearch}
+            onValidate={(data: ClientFormData) => ({ isValid: true, errors: [] })}
+            isEditMode={!!selectedClient}
           />
         )}
 
         {mode === 'selected' && selectedClient && (
           <ClientSelectedPanel
-            client={selectedClient}
+            selectedClient={selectedClient}
+            clientInfo={{
+              client: selectedClient,
+              isNew: isNewClient,
+              formattedInfo: {
+                fullName:
+                  `${selectedClient.firstName ?? ''} ${selectedClient.lastName ?? ''}`.trim(),
+                phone: selectedClient.phone ?? '',
+                email: selectedClient.email ?? '',
+                address: selectedClient.address ?? '',
+              },
+            }}
             isNewClient={isNewClient}
-            formatPhone={formatPhone}
-            createClientSummary={createClientSummary}
             onEdit={handleEditClient}
-            onChangeClient={handleBackToSearch}
-            onProceed={proceedToNextStep}
+            onBack={handleBackToSearch}
+            onContinue={() => {
+              console.log('Переходимо до наступного етапу');
+              // Тут буде логіка переходу до наступного етапу
+            }}
           />
-        )}
-
-        {/* Помилки */}
-        {searchError && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            {searchError}
-          </Alert>
         )}
       </Paper>
     </Box>

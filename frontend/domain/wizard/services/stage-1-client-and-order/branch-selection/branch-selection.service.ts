@@ -1,116 +1,191 @@
-import {
-  getActiveBranches,
-  getBranchById,
-  getBranchByCode,
-  type WizardBranch,
-} from '@/domain/wizard/adapters/branch';
-import {
-  branchSelectionSchema,
-  branchFilterSchema,
-  type BranchSelectionData,
-  type BranchFilterData,
-} from '@/domain/wizard/schemas';
+import { branchSelectionSchema, branchFilterSchema } from '@/domain/wizard/schemas';
 
 import { BaseWizardService } from '../../base.service';
 
+import type { Branch } from '../../../types';
+import type { BranchLocationDTO } from '@/shared/api/generated/branch';
+
 /**
- * Мінімалістський сервіс для вибору філії
- * Розмір: ~70 рядків (дотримання ліміту)
+ * Сервіс для бізнес-логіки вибору філії
  *
- * Відповідальність (ТІЛЬКИ):
- * - Композиція branch адаптерів для отримання філій
- * - Валідація через централізовані Zod схеми
- * - Мінімальна фільтрація активних філій
+ * Відповідальність (ТІЛЬКИ бізнес-логіка):
+ * - Валідація вибору філії через Zod схеми
+ * - Фільтрація та сортування філій
+ * - Бізнес-правила для вибору філії
+ * - Перетворення API типів в доменні типи
  *
- * НЕ дублює:
- * - API виклики (роль branch адаптерів)
- * - Мапінг даних (роль адаптерів)
+ * НЕ робить:
+ * - API виклики (роль хуків + Orval)
  * - Збереження стану (роль Zustand)
  * - Кешування (роль TanStack Query)
- * - Схеми валідації (роль централізованих schemas)
  */
+
+export interface BranchFilterCriteria {
+  searchTerm?: string;
+  activeOnly?: boolean;
+  region?: string;
+  sortBy?: 'name' | 'code' | 'address';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface BranchSelectionResult {
+  isValid: boolean;
+  errors: string[];
+  selectedBranch?: Branch;
+}
 
 export class BranchSelectionService extends BaseWizardService {
   protected readonly serviceName = 'BranchSelectionService';
 
   /**
-   * Композиція: адаптер + фільтрація активних
+   * Перетворення API типу в доменний тип
    */
-  async getActiveBranches(): Promise<WizardBranch[]> {
-    const result = await getActiveBranches();
-    return result.success ? result.data || [] : [];
+  mapApiToDomain(branchDto: BranchLocationDTO): Branch {
+    return {
+      id: branchDto.id || '',
+      name: branchDto.name || '',
+      address: branchDto.address || '',
+      phone: branchDto.phone,
+      code: branchDto.code || '',
+      active: branchDto.active ?? true,
+      createdAt: branchDto.createdAt || new Date().toISOString(),
+      updatedAt: branchDto.updatedAt || new Date().toISOString(),
+    };
   }
 
   /**
-   * Композиція: адаптер + отримання за ID
+   * Валідація вибору філії
    */
-  async getBranchById(id: string): Promise<WizardBranch | null> {
-    const result = await getBranchById(id);
-    return result.success ? result.data || null : null;
+  validateBranchSelection(branchId: string, branches: Branch[]): BranchSelectionResult {
+    const errors: string[] = [];
+
+    if (!branchId.trim()) {
+      errors.push('Необхідно вибрати пункт прийому');
+    }
+
+    const selectedBranch = branches.find((b) => b.id === branchId);
+
+    if (!selectedBranch) {
+      errors.push('Вибрана філія не знайдена');
+    } else {
+      if (!selectedBranch.active) {
+        errors.push('Вибрана філія неактивна');
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      selectedBranch,
+    };
   }
 
   /**
-   * Композиція: адаптер + пошук за кодом
+   * Фільтрація філій за критеріями
    */
-  async getBranchByCode(code: string): Promise<WizardBranch | null> {
-    const result = await getBranchByCode(code);
-    return result.success ? result.data || null : null;
-  }
-
-  /**
-   * Валідація вибору філії через централізовану схему
-   */
-  validateBranchSelection(data: unknown) {
-    return branchSelectionSchema.safeParse(data);
-  }
-
-  /**
-   * Валідація фільтра філій через централізовану схему
-   */
-  validateBranchFilter(data: unknown) {
-    return branchFilterSchema.safeParse(data);
-  }
-
-  /**
-   * Фільтрація філій за пошуком - мінімальна логіка
-   * Приймає типізовані параметри
-   */
-  filterBranches(branches: WizardBranch[], filterData: BranchFilterData): WizardBranch[] {
-    const { searchTerm, activeOnly } = filterData;
-
-    let result = branches;
+  filterBranches(branches: Branch[], criteria: BranchFilterCriteria): Branch[] {
+    let result = [...branches];
 
     // Фільтр по активності
-    if (activeOnly) {
+    if (criteria.activeOnly) {
       result = result.filter((branch) => branch.active);
     }
 
     // Фільтр по пошуку
-    if (searchTerm?.trim()) {
-      const term = searchTerm.toLowerCase();
+    if (criteria.searchTerm?.trim()) {
+      const term = criteria.searchTerm.toLowerCase();
       result = result.filter(
-        (branch: WizardBranch) =>
+        (branch) =>
           branch.name.toLowerCase().includes(term) ||
           branch.address.toLowerCase().includes(term) ||
           branch.code.toLowerCase().includes(term)
       );
     }
 
+    // Сортування
+    if (criteria.sortBy) {
+      result.sort((a, b) => {
+        let aValue = '';
+        let bValue = '';
+
+        switch (criteria.sortBy) {
+          case 'name':
+            aValue = a.name;
+            bValue = b.name;
+            break;
+          case 'code':
+            aValue = a.code;
+            bValue = b.code;
+            break;
+          case 'address':
+            aValue = a.address;
+            bValue = b.address;
+            break;
+        }
+
+        const comparison = aValue.localeCompare(bValue, 'uk');
+        return criteria.sortOrder === 'desc' ? -comparison : comparison;
+      });
+    }
+
     return result;
   }
 
   /**
-   * Перевірка чи філія активна
+   * Рекомендація філії на основі адреси клієнта
    */
-  isBranchActive(branch: WizardBranch): boolean {
-    return branch.active;
+  recommendBranchByAddress(clientAddress: string, branches: Branch[]): Branch | null {
+    if (!clientAddress.trim() || branches.length === 0) {
+      return null;
+    }
+
+    const addressLower = clientAddress.toLowerCase();
+
+    // Шукаємо за містом в адресі
+    const cityMatches = branches.filter((branch) => {
+      const branchAddress = branch.address.toLowerCase();
+      // Простий пошук спільних слів
+      const addressWords = addressLower.split(/\s+/);
+      const branchWords = branchAddress.split(/\s+/);
+
+      return addressWords.some(
+        (word) =>
+          word.length > 3 && branchWords.some((branchWord: string) => branchWord.includes(word))
+      );
+    });
+
+    if (cityMatches.length > 0) {
+      // Повертаємо першу активну
+      return cityMatches.find((branch) => branch.active) || cityMatches[0];
+    }
+
+    return null;
   }
 
   /**
-   * Перевірка валідності вибору філії
+   * Отримання статистики філій
    */
-  isValidBranchSelection(data: BranchSelectionData): boolean {
-    const validation = this.validateBranchSelection(data);
-    return validation.success;
+  getBranchStatistics(branches: Branch[]) {
+    return {
+      total: branches.length,
+      active: branches.filter((b) => b.active).length,
+      inactive: branches.filter((b) => !b.active).length,
+      hasPhone: branches.filter((b) => !!b.phone).length,
+    };
+  }
+
+  /**
+   * Перевірка чи можна використовувати філію для нового замовлення
+   */
+  canUseForNewOrder(branch: Branch): { canUse: boolean; reason?: string } {
+    if (!branch.active) {
+      return { canUse: false, reason: 'Філія неактивна' };
+    }
+
+    if (!branch.code) {
+      return { canUse: false, reason: 'Відсутній код філії' };
+    }
+
+    return { canUse: true };
   }
 }

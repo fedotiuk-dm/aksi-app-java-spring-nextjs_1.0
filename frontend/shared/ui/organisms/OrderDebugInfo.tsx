@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import { useWizardNavigation, useWizardState, useWizardStore } from '@/domain/wizard';
+import { useWizardNavigation, useWizardStore } from '@/domain/wizard';
 
 interface OrderDebugInfoProps {
   show?: boolean;
@@ -28,7 +28,6 @@ export const OrderDebugInfo: React.FC<OrderDebugInfoProps> = ({
   title = 'Діагностика замовлення',
 }) => {
   const wizardNavigation = useWizardNavigation();
-  const wizardState = useWizardState();
   const wizardStore = useWizardStore();
 
   if (!show) return null;
@@ -50,13 +49,9 @@ export const OrderDebugInfo: React.FC<OrderDebugInfoProps> = ({
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               <Chip label={`Крок: ${wizardNavigation.currentStep}`} size="small" color="primary" />
               <Chip
-                label={
-                  wizardNavigation.isItemWizardActive
-                    ? 'Item Wizard: Активний'
-                    : 'Item Wizard: Неактивний'
-                }
+                label={`Підкрок: ${wizardNavigation.currentSubStep || 'відсутній'}`}
                 size="small"
-                color={wizardNavigation.isItemWizardActive ? 'success' : 'default'}
+                color="info"
               />
             </Box>
           </Paper>
@@ -86,30 +81,6 @@ export const OrderDebugInfo: React.FC<OrderDebugInfoProps> = ({
             </Box>
           </Paper>
 
-          {/* Статус готовності */}
-          <Paper variant="outlined" sx={{ p: 2 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              Статус готовності
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              <Chip
-                label={wizardState.hasErrors ? 'Є помилки' : 'Без помилок'}
-                size="small"
-                color={wizardState.hasErrors ? 'error' : 'success'}
-              />
-              <Chip
-                label={wizardState.hasWarnings ? 'Є попередження' : 'Без попереджень'}
-                size="small"
-                color={wizardState.hasWarnings ? 'warning' : 'success'}
-              />
-              <Chip
-                label={wizardState.isLoading ? 'Завантаження' : 'Готово'}
-                size="small"
-                color={wizardState.isLoading ? 'info' : 'default'}
-              />
-            </Box>
-          </Paper>
-
           {/* Wizard context */}
           <Paper variant="outlined" sx={{ p: 2 }}>
             <Typography variant="subtitle2" gutterBottom>
@@ -129,9 +100,8 @@ export const OrderDebugInfo: React.FC<OrderDebugInfoProps> = ({
                   {
                     selectedClientId: wizardStore.selectedClientId,
                     isNewClient: wizardStore.isNewClient,
-                    errors: wizardState.errors,
-                    warnings: wizardState.warnings,
-                    isLoading: wizardState.isLoading,
+                    currentStep: wizardNavigation.currentStep,
+                    currentSubStep: wizardNavigation.currentSubStep,
                   },
                   null,
                   2

@@ -6,18 +6,23 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
+  InfiniteData,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -67,6 +72,72 @@ export const getGetClientByIdQueryKey = (id: string,) => {
     }
 
     
+export const getGetClientByIdInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getClientById>>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetClientByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getClientById>>> = ({ signal }) => getClientById(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetClientByIdInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getClientById>>>
+export type GetClientByIdInfiniteQueryError = ErrorResponse
+
+
+export function useGetClientByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getClientById>>>, TError = ErrorResponse>(
+ id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getClientById>>,
+          TError,
+          Awaited<ReturnType<typeof getClientById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetClientByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getClientById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getClientById>>,
+          TError,
+          Awaited<ReturnType<typeof getClientById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetClientByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getClientById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати клієнта за ID
+ */
+
+export function useGetClientByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getClientById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetClientByIdInfiniteQueryOptions(id,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetClientByIdQueryOptions = <TData = Awaited<ReturnType<typeof getClientById>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getClientById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -352,6 +423,72 @@ export const getGetAllClientsQueryKey = (params?: GetAllClientsParams,) => {
     }
 
     
+export const getGetAllClientsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getAllClients>>>, TError = ErrorResponse>(params?: GetAllClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAllClientsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllClients>>> = ({ signal }) => getAllClients(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllClients>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAllClientsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getAllClients>>>
+export type GetAllClientsInfiniteQueryError = ErrorResponse
+
+
+export function useGetAllClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllClients>>>, TError = ErrorResponse>(
+ params: undefined |  GetAllClientsParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllClients>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllClients>>,
+          TError,
+          Awaited<ReturnType<typeof getAllClients>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllClients>>>, TError = ErrorResponse>(
+ params?: GetAllClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllClients>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllClients>>,
+          TError,
+          Awaited<ReturnType<typeof getAllClients>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllClients>>>, TError = ErrorResponse>(
+ params?: GetAllClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати всіх клієнтів
+ */
+
+export function useGetAllClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAllClients>>>, TError = ErrorResponse>(
+ params?: GetAllClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAllClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAllClientsInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetAllClientsQueryOptions = <TData = Awaited<ReturnType<typeof getAllClients>>, TError = ErrorResponse>(params?: GetAllClientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -573,6 +710,72 @@ export const getGetSignatureByIdQueryKey = (id: string,) => {
     }
 
     
+export const getGetSignatureByIdInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getSignatureById>>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSignatureByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSignatureById>>> = ({ signal }) => getSignatureById(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSignatureByIdInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getSignatureById>>>
+export type GetSignatureByIdInfiniteQueryError = ErrorResponse
+
+
+export function useGetSignatureByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignatureById>>>, TError = ErrorResponse>(
+ id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSignatureById>>,
+          TError,
+          Awaited<ReturnType<typeof getSignatureById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSignatureByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignatureById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSignatureById>>,
+          TError,
+          Awaited<ReturnType<typeof getSignatureById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSignatureByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignatureById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати підпис за ID
+ */
+
+export function useGetSignatureByIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignatureById>>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSignatureByIdInfiniteQueryOptions(id,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetSignatureByIdQueryOptions = <TData = Awaited<ReturnType<typeof getSignatureById>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSignatureById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -662,6 +865,72 @@ export const getGetSignaturesByOrderIdQueryKey = (orderId: string,) => {
     }
 
     
+export const getGetSignaturesByOrderIdInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getSignaturesByOrderId>>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignaturesByOrderId>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSignaturesByOrderIdQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSignaturesByOrderId>>> = ({ signal }) => getSignaturesByOrderId(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignaturesByOrderId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSignaturesByOrderIdInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getSignaturesByOrderId>>>
+export type GetSignaturesByOrderIdInfiniteQueryError = ErrorResponse
+
+
+export function useGetSignaturesByOrderIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignaturesByOrderId>>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignaturesByOrderId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSignaturesByOrderId>>,
+          TError,
+          Awaited<ReturnType<typeof getSignaturesByOrderId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSignaturesByOrderIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignaturesByOrderId>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignaturesByOrderId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSignaturesByOrderId>>,
+          TError,
+          Awaited<ReturnType<typeof getSignaturesByOrderId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSignaturesByOrderIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignaturesByOrderId>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignaturesByOrderId>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати всі підписи для замовлення
+ */
+
+export function useGetSignaturesByOrderIdInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignaturesByOrderId>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignaturesByOrderId>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSignaturesByOrderIdInfiniteQueryOptions(orderId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetSignaturesByOrderIdQueryOptions = <TData = Awaited<ReturnType<typeof getSignaturesByOrderId>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSignaturesByOrderId>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -753,6 +1022,77 @@ export const getGetSignatureByOrderIdAndTypeQueryKey = (orderId: string,
     }
 
     
+export const getGetSignatureByOrderIdAndTypeInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>>, TError = ErrorResponse>(orderId: string,
+    signatureType: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSignatureByOrderIdAndTypeQueryKey(orderId,signatureType);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>> = ({ signal }) => getSignatureByOrderIdAndType(orderId,signatureType, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId && signatureType), ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSignatureByOrderIdAndTypeInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>>
+export type GetSignatureByOrderIdAndTypeInfiniteQueryError = ErrorResponse
+
+
+export function useGetSignatureByOrderIdAndTypeInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>>, TError = ErrorResponse>(
+ orderId: string,
+    signatureType: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>,
+          TError,
+          Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSignatureByOrderIdAndTypeInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>>, TError = ErrorResponse>(
+ orderId: string,
+    signatureType: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>,
+          TError,
+          Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSignatureByOrderIdAndTypeInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>>, TError = ErrorResponse>(
+ orderId: string,
+    signatureType: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати підпис за типом для замовлення
+ */
+
+export function useGetSignatureByOrderIdAndTypeInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>>, TError = ErrorResponse>(
+ orderId: string,
+    signatureType: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSignatureByOrderIdAndTypeInfiniteQueryOptions(orderId,signatureType,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getGetSignatureByOrderIdAndTypeQueryOptions = <TData = Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>, TError = ErrorResponse>(orderId: string,
     signatureType: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSignatureByOrderIdAndType>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
@@ -849,6 +1189,73 @@ export const getSearchClientsQueryKey = (params: SearchClientsParams,) => {
     }
 
     
+export const getSearchClientsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(params: SearchClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSearchClientsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchClients>>> = ({ signal }) => searchClients(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SearchClientsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof searchClients>>>
+export type SearchClientsInfiniteQueryError = ErrorResponse
+
+
+export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(
+ params: SearchClientsParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchClients>>,
+          TError,
+          Awaited<ReturnType<typeof searchClients>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(
+ params: SearchClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchClients>>,
+          TError,
+          Awaited<ReturnType<typeof searchClients>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(
+ params: SearchClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @deprecated
+ * @summary Пошук клієнтів
+ */
+
+export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(
+ params: SearchClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSearchClientsInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
 export const getSearchClientsQueryOptions = <TData = Awaited<ReturnType<typeof searchClients>>, TError = ErrorResponse>(params: SearchClientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 

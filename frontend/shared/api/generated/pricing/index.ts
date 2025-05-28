@@ -1,11 +1,15 @@
 /**
- * @fileoverview Публічне API домену Pricing
- *
- * Експортує всі функції, типи та хуки для ціноутворення та прайс-листів
+ * @fileoverview Auto-generated index для pricing API
+ * 
+ * Цей файл автоматично генерується скриптом create-api-index.js
+ * НЕ РЕДАГУЙТЕ ВРУЧНУ!
  */
 
-// Експорт всіх функцій та хуків
+// API функції для домену pricing
 export * from './aksiApi';
 
-// Експорт типів та схем
+// Типи та схеми для домену pricing
 export * from './aksiApi.schemas';
+
+// Zod схеми для валідації
+export * as zodSchemas from './zod/aksiApi';

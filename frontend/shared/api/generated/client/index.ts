@@ -1,11 +1,15 @@
 /**
- * @fileoverview Публічне API домену Client
- *
- * Експортує всі функції, типи та хуки для роботи з клієнтами та підписами
+ * @fileoverview Auto-generated index для client API
+ * 
+ * Цей файл автоматично генерується скриптом create-api-index.js
+ * НЕ РЕДАГУЙТЕ ВРУЧНУ!
  */
 
-// Експорт всіх функцій та хуків
+// API функції для домену client
 export * from './aksiApi';
 
-// Експорт типів та схем
+// Типи та схеми для домену client
 export * from './aksiApi.schemas';
+
+// Zod схеми для валідації
+export * as zodSchemas from './zod/aksiApi';

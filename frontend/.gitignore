@@ -89,6 +89,8 @@ next-env.d.ts
 .project
 .classpath
 .settings/
+.github/
+.husky/
 
 # Системні файли
 Thumbs.db

@@ -1,11 +1,15 @@
 /**
- * @fileoverview Публічне API домену Branch
- *
- * Експортує всі функції, типи та хуки для роботи з пунктами прийому
+ * @fileoverview Auto-generated index для branch API
+ * 
+ * Цей файл автоматично генерується скриптом create-api-index.js
+ * НЕ РЕДАГУЙТЕ ВРУЧНУ!
  */
 
-// Експорт всіх функцій та хуків
+// API функції для домену branch
 export * from './aksiApi';
 
-// Експорт типів та схем
+// Типи та схеми для домену branch
 export * from './aksiApi.schemas';
+
+// Zod схеми для валідації
+export * as zodSchemas from './zod/aksiApi';
