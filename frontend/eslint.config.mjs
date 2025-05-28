@@ -20,6 +20,7 @@ const compat = new FlatCompat({
 const ignorePatterns = [
   // Автогенеровані файли
   '**/lib/api/generated/**/*',
+  '**/shared/api/generated/**/*',
   '**/.next/**/*',
   '**/node_modules/**/*',
   '**/build/**/*',
@@ -44,6 +45,7 @@ const ignorePatterns = [
 
   // Папка API
   '**/lib/api/**',
+  '**/shared/api/generated/**',
 ];
 
 // Базові налаштування Next.js
@@ -65,6 +67,7 @@ const eslintConfig = [
       ...ignorePatterns,
       '**/features/order-wizard/client-selection/utils/validation-utils.ts',
       '**/lib/api/**',
+      '**/shared/api/generated/**',
     ],
     plugins: {
       '@typescript-eslint': tsPlugin,
@@ -88,7 +91,7 @@ const eslintConfig = [
       'no-restricted-imports': [
         'error',
         {
-          patterns: ['**/lib/api/generated/**/*'],
+          patterns: ['**/lib/api/generated/**/*', '**/shared/api/generated/**/!(index)*'],
         },
       ],
       // Базові правила TypeScript
@@ -228,7 +231,7 @@ const eslintConfig = [
   // Спеціальні правила для API клієнтів
   {
     files: ['**/*.tsx', '**/*.ts'],
-    ignores: ['**/lib/api/generated/**/*.ts'],
+    ignores: ['**/lib/api/generated/**/*.ts', '**/shared/api/generated/**/*.ts'],
     rules: {
       // Заборона прямих імпортів з папки generated
       'no-restricted-imports': [
@@ -236,7 +239,7 @@ const eslintConfig = [
         {
           patterns: [
             {
-              group: ['@/lib/api/generated/*/!(index)'],
+              group: ['**/lib/api/generated/**/!(index)*', '**/shared/api/generated/**/!(index)*'],
               message: 'Не імпортуйте напряму з папки generated. Використовуйте індексні файли.',
             },
           ],
@@ -253,7 +256,7 @@ const eslintConfig = [
 
   // Вимкнення перевірок для автогенерованого коду
   {
-    files: ['**/lib/api/generated/**/*.ts'],
+    files: ['**/lib/api/generated/**/*.ts', '**/shared/api/generated/**/*.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       'no-unused-vars': 'off',

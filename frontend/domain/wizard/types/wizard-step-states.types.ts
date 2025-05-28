@@ -39,6 +39,16 @@ export interface ClientSearchResult {
 }
 
 /**
+ * Критерії пошуку клієнтів
+ */
+export interface ClientSearchCriteria {
+  searchTerm: string;
+  searchBy: Array<'lastName' | 'firstName' | 'phone' | 'email' | 'address'>;
+  limit?: number;
+  includeRecentOrders?: boolean;
+}
+
+/**
  * Типи філій на основі API структур
  */
 export interface Branch {

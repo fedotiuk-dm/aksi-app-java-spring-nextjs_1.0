@@ -126,4 +126,27 @@ export class WizardNavigationService {
   static canNavigateBack(currentStep: WizardStep): boolean {
     return this.getPreviousStep(currentStep) !== null;
   }
+
+  /**
+   * Перевірка доступності кроку на основі завершених кроків
+   */
+  static isStepAccessible(targetStep: WizardStep, completedSteps: WizardStep[]): boolean {
+    const stepOrder: WizardStep[] = [
+      WizardStep.CLIENT_SELECTION,
+      WizardStep.BRANCH_SELECTION,
+      WizardStep.ITEM_MANAGER,
+      WizardStep.ORDER_PARAMETERS,
+      WizardStep.CONFIRMATION,
+    ];
+
+    const targetIndex = stepOrder.indexOf(targetStep);
+    if (targetIndex === -1) return false;
+
+    // Перший крок завжди доступний
+    if (targetIndex === 0) return true;
+
+    // Крок доступний якщо попередній крок завершений
+    const previousStep = stepOrder[targetIndex - 1];
+    return completedSteps.includes(previousStep);
+  }
 }

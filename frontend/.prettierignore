@@ -1,5 +1,6 @@
 # Автогенеровані файли
 lib/api/generated/**/*
+shared/api/generated/**/*
 .next/**/*
 node_modules/**/*
 build/**/*

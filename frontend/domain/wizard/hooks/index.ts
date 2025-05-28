@@ -1,49 +1,25 @@
 /**
- * @fileoverview Публічне API для wizard хуків
+ * @fileoverview Головний файл експорту хуків wizard домену
  * @module domain/wizard/hooks
- *
- * Архітектура "DDD inside, FSD outside":
- * - Хуки організовані за етапами Order Wizard
- * - Кожен етап має свої специфічні хуки
- * - Спільні хуки винесені в окрему папку
- * - Композиційні хуки об'єднують функціональність етапів
  */
 
-// === Спільні хуки (навігація, стан, форми) ===
-export { useWizardNavigation, useWizardState, useWizardForm } from './shared';
+// === НАВІГАЦІЯ ===
+export * from './navigation';
 
-// === ЕТАП 1: Клієнт та базова інформація (ЗАВЕРШЕНО) ===
-export * from './steps/client-selection';
+// === ЕТАП 1: Клієнт та замовлення ===
+export * from './stage-1-client-and-order';
 
-// === ЕТАП 2: Вибір філії та ініціація замовлення ===
-//export * from './steps/branch-selection';
+// === ЕТАП 2: Управління предметами ===
+export * from './stage-2-item-management';
 
-// === ЕТАП 3: Менеджер предметів (циклічний процес) ===
-// export {
-//   useItemManager,
-//   useItemWizard,
-//   useItemBasicInfo,
-//   useItemCharacteristics,
-//   useItemDefectsAndStains,
-//   useItemPricingCalculator,
-//   useItemPhotos,
-//   useItemManagementStep
-// } from './steps/item-management';
+// === ЕТАП 3: Параметри замовлення ===
+export * from './stage-3-order-params';
 
-// === ЕТАП 4: Загальні параметри замовлення ===
-// export {
-//   useOrderExecution,
-//   useOrderDiscounts,
-//   useOrderPayment,
-//   useOrderAdditionalInfo,
-//   useOrderParametersStep
-// } from './steps/order-parameters';
+// === ЕТАП 4: Підтвердження та завершення ===
+export * from './stage-4-confirmation';
 
-// === ЕТАП 5: Підтвердження та завершення ===
-// export {
-//   useOrderReview,
-//   useOrderLegalAspects,
-//   useReceiptGeneration,
-//   useOrderFinalization,
-//   useOrderCompletionStep
-// } from './steps/order-completion';
+// === СПІЛЬНІ ХУКИ ===
+export * from './shared';
+
+// === ГОЛОВНИЙ КОМПОЗИЦІЙНИЙ ХУК ===
+export { useWizardComposition } from './use-wizard-composition.hook';

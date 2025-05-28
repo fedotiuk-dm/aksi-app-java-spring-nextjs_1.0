@@ -52,6 +52,7 @@ export type {
   OrderConfirmationState,
   AllStepsState,
   ClientSearchResult,
+  ClientSearchCriteria,
   Branch,
   OrderItem,
   OrderSummary,

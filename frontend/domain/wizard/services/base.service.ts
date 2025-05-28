@@ -63,21 +63,21 @@ export abstract class BaseWizardService {
   /**
    * Логування інформації
    */
-  protected logInfo(message: string, data?: any): void {
+  protected logInfo(message: string, data?: unknown): void {
     console.log(`[${this.serviceName}] ${message}`, data || '');
   }
 
   /**
    * Логування помилок
    */
-  protected logError(message: string, error?: any): void {
+  protected logError(message: string, error?: unknown): void {
     console.error(`[${this.serviceName}] ${message}`, error || '');
   }
 
   /**
    * Логування попереджень
    */
-  protected logWarning(message: string, data?: any): void {
+  protected logWarning(message: string, data?: unknown): void {
     console.warn(`[${this.serviceName}] ${message}`, data || '');
   }
 
@@ -127,7 +127,7 @@ export abstract class BaseWizardService {
   /**
    * Перевірка чи є значення порожнім
    */
-  protected isEmpty(value: any): boolean {
+  protected isEmpty(value: unknown): boolean {
     if (value === null || value === undefined) return true;
     if (typeof value === 'string') return value.trim() === '';
     if (Array.isArray(value)) return value.length === 0;

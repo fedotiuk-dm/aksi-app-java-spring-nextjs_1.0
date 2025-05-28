@@ -6,7 +6,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-import { WizardMode } from '../types';
+import { WizardMode, WizardStep, ItemWizardStep } from '../types';
 
 import type { ClientSearchResult, WizardContext, Branch } from '../types';
 
@@ -18,6 +18,11 @@ interface WizardState {
   isInitialized: boolean;
   context: WizardContext | null;
   mode: WizardMode;
+
+  // Navigation state
+  currentStep: WizardStep;
+  currentSubStep: ItemWizardStep | undefined;
+  completedSteps: WizardStep[];
 
   // Loading states
   isLoading: boolean;
@@ -32,6 +37,13 @@ interface WizardState {
   selectedBranchId: string | null;
   selectedBranch: Branch | null;
   branchValidationError: string | null;
+
+  // Stage-2: Item management state
+  orderItems: any[] | null;
+
+  // Stage-3: Order parameters state
+  executionParams: any | null;
+  selectedDiscount: any | null;
 
   // Changes tracking
   hasUnsavedChanges: boolean;
@@ -50,6 +62,12 @@ interface WizardActions {
   initialize: (context: WizardContext) => { success: boolean; errors?: string[] };
   setMode: (mode: WizardMode) => void;
 
+  // Navigation actions
+  setCurrentStep: (step: WizardStep) => void;
+  setCurrentSubStep: (subStep: ItemWizardStep | undefined) => void;
+  addCompletedStep: (step: WizardStep) => void;
+  removeCompletedStep: (step: WizardStep) => void;
+
   // Loading actions
   setLoading: (loading: boolean) => void;
 
@@ -66,6 +84,16 @@ interface WizardActions {
   // Item wizard actions
   startItemWizard: () => void;
   completeItemWizard: () => void;
+
+  // Stage-2: Item management actions
+  setOrderItems: (items: any[]) => void;
+  addOrderItem: (item: any) => void;
+  updateOrderItem: (itemId: string, item: any) => void;
+  removeOrderItem: (itemId: string) => void;
+
+  // Stage-3: Order parameters actions
+  setExecutionParams: (params: any) => void;
+  setSelectedDiscount: (discount: any | null) => void;
 
   // Changes tracking
   markUnsavedChanges: () => void;
@@ -89,6 +117,9 @@ const initialState: WizardState = {
   isInitialized: false,
   context: null,
   mode: WizardMode.CREATE,
+  currentStep: WizardStep.CLIENT_SELECTION,
+  currentSubStep: undefined,
+  completedSteps: [],
   isLoading: false,
   isItemWizardActive: false,
   selectedClientId: null,
@@ -97,6 +128,9 @@ const initialState: WizardState = {
   selectedBranchId: null,
   selectedBranch: null,
   branchValidationError: null,
+  orderItems: null,
+  executionParams: null,
+  selectedDiscount: null,
   hasUnsavedChanges: false,
   lastSavedAt: null,
   errors: [],
@@ -145,6 +179,29 @@ export const useWizardStore = create<WizardState & WizardActions>()(
 
       setMode: (mode) => set({ mode }, false, 'wizard/setMode'),
 
+      // Navigation actions
+      setCurrentStep: (step) => set({ currentStep: step }, false, 'wizard/setCurrentStep'),
+      setCurrentSubStep: (subStep) =>
+        set({ currentSubStep: subStep }, false, 'wizard/setCurrentSubStep'),
+      addCompletedStep: (step) =>
+        set(
+          (state) => ({
+            completedSteps: state.completedSteps.includes(step)
+              ? state.completedSteps
+              : [...state.completedSteps, step],
+          }),
+          false,
+          'wizard/addCompletedStep'
+        ),
+      removeCompletedStep: (step) =>
+        set(
+          (state) => ({
+            completedSteps: state.completedSteps.filter((s) => s !== step),
+          }),
+          false,
+          'wizard/removeCompletedStep'
+        ),
+
       // Loading actions
       setLoading: (loading) => set({ isLoading: loading }, false, 'wizard/setLoading'),
 
@@ -184,6 +241,43 @@ export const useWizardStore = create<WizardState & WizardActions>()(
 
       completeItemWizard: () =>
         set({ isItemWizardActive: false }, false, 'wizard/completeItemWizard'),
+
+      // Stage-2: Item management actions
+      setOrderItems: (items) => set({ orderItems: items }, false, 'wizard/setOrderItems'),
+
+      addOrderItem: (item) =>
+        set(
+          (state) => ({
+            orderItems: state.orderItems ? [...state.orderItems, item] : [item],
+          }),
+          false,
+          'wizard/addOrderItem'
+        ),
+
+      updateOrderItem: (itemId, item) =>
+        set(
+          (state) => ({
+            orderItems: state.orderItems?.map((i) => (i.id === itemId ? item : i)),
+          }),
+          false,
+          'wizard/updateOrderItem'
+        ),
+
+      removeOrderItem: (itemId) =>
+        set(
+          (state) => ({
+            orderItems: state.orderItems?.filter((i) => i.id !== itemId),
+          }),
+          false,
+          'wizard/removeOrderItem'
+        ),
+
+      // Stage-3: Order parameters actions
+      setExecutionParams: (params) =>
+        set({ executionParams: params }, false, 'wizard/setExecutionParams'),
+
+      setSelectedDiscount: (discount) =>
+        set({ selectedDiscount: discount }, false, 'wizard/setSelectedDiscount'),
 
       // Changes tracking
       markUnsavedChanges: () =>

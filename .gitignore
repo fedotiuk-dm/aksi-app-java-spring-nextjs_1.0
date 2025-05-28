@@ -75,3 +75,4 @@ temp/
 Thumbs.db
 logs/
 *.log
+node_modules

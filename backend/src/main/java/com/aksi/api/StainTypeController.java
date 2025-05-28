@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/stain-types")
 @RequiredArgsConstructor
-@Tag(name = "StainType", description = "API для управління типами плям")
+@Tag(name = "Pricing - Stain Types", description = "API для управління типами плям")
 @Slf4j
 public class StainTypeController {
 
