@@ -1,11 +1,17 @@
 /**
  * @fileoverview Публічне API для хуків Stage 1 - Client and Order
  *
- * Експорт оновлених хуків, що використовують Orval + Zod + React Query
- * Замінює старі хуки новим централізованим API хуком
+ * Експорт спрощених хуків, що використовують Orval + Zod безпосередньо
  */
 
-// === ОСНОВНИЙ API ХУК ===
+// === СПРОЩЕНІ ХУКИ (НОВА АРХІТЕКТУРА) ===
+export {
+  useClientOperations,
+  useClientDetails,
+  useQuickClientSearch,
+} from './use-client-operations.hook';
+
+// === СКЛАДНИЙ ХУК (СТАРША АРХІТЕКТУРА) ===
 export {
   useClientApiOperations,
   type ClientSearchState,
@@ -13,7 +19,7 @@ export {
 } from './use-client-api-operations.hook';
 
 // === BACKWARD COMPATIBILITY ===
-// Перехідні експорти для існуючого UI (будуть видалені пізніше)
-export { useClientApiOperations as useClientSearch } from './use-client-api-operations.hook';
-export { useClientApiOperations as useClientCreation } from './use-client-api-operations.hook';
-export { useClientApiOperations as useClientSelection } from './use-client-api-operations.hook';
+// Перехідні експорти для існуючого UI
+export { useClientOperations as useClientSearch } from './use-client-operations.hook';
+export { useClientOperations as useClientCreation } from './use-client-operations.hook';
+export { useClientOperations as useClientSelection } from './use-client-operations.hook';

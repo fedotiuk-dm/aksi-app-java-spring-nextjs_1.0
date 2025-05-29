@@ -1,120 +1,282 @@
+import { z } from 'zod';
+
 import {
-  saveCustomerSignature,
-  saveClientSignature,
-  getSignatureById,
-  getTermsOfService,
-  validateSignature,
-  type WizardCustomerSignatureCreateData,
-  type WizardCustomerSignature,
-  type WizardSignatureData,
-  type WizardSignatureResult,
-  type WizardTermsData,
-} from '@/domain/wizard/adapters/order';
-import { legalDataSchema } from '@/domain/wizard/schemas';
+  saveSignatureBody,
+  saveSignature201Response,
+  getSignatureById200Response,
+  getSignaturesByOrderId200Response,
+  getSignatureByOrderIdAndType200Response,
+} from '@/shared/api/generated/client/zod';
 
 import { BaseWizardService } from '../../base.service';
 
 /**
- * Мінімалістський сервіс для юридичних аспектів (Етап 4.2)
- * Розмір: ~120 рядків (дотримання ліміту)
+ * Сервіс для бізнес-логіки юридичних аспектів (Stage 4.2)
  *
- * Відповідальність (ТІЛЬКИ):
- * - Композиція order адаптерів для підпису та юридичних документів
- * - Валідація юридичних даних через централізовану Zod схему
- * - Обробка цифрового підпису
+ * Відповідальність (ТІЛЬКИ бізнес-логіка):
+ * - Валідація підписів через orval Zod схеми
+ * - Бізнес-правила для цифрового підпису
  * - Управління умовами надання послуг
+ * - Валідація прийняття юридичних умов
  *
- * НЕ дублює:
- * - Отримання документів (роль order адаптерів)
- * - Збереження підпису (роль order адаптерів)
- * - Схеми валідації (роль централізованих schemas)
+ * НЕ робить:
+ * - API виклики (роль хуків + Orval)
+ * - Збереження стану (роль Zustand)
+ * - Кешування (роль TanStack Query)
+ * - Відображення UI (роль компонентів)
  */
 
-// Типи результатів валідації підпису
-export interface SignatureValidation {
+// Використовуємо orval схеми напряму
+export type SignatureCreateData = z.infer<typeof saveSignatureBody>;
+export type SignatureData = z.infer<typeof saveSignature201Response>;
+export type SignatureInfo = z.infer<typeof getSignatureById200Response>;
+export type OrderSignatures = z.infer<typeof getSignaturesByOrderId200Response>;
+export type TypedSignature = z.infer<typeof getSignatureByOrderIdAndType200Response>;
+
+// Енум типів підписів
+export type SignatureType = 'CUSTOMER_RECEIPT' | 'CUSTOMER_PICKUP' | 'EMPLOYEE' | 'MANAGER';
+
+// Локальна композитна схема для валідації юридичних даних
+const legalValidationSchema = z.object({
+  agreementAccepted: z.boolean().refine((val) => val === true, {
+    message: 'Необхідно прийняти умови надання послуг',
+  }),
+  signatureRequired: z.boolean().optional().default(true),
+  customerSignature: z.string().optional(),
+  witnessRequired: z.boolean().optional().default(false),
+  witnessSignature: z.string().optional(),
+  documentsProvided: z.array(z.string()).optional(),
+});
+
+export type LegalValidationData = z.infer<typeof legalValidationSchema>;
+
+// Схема для валідації підпису
+const signatureValidationSchema = saveSignatureBody.extend({
+  minLength: z.number().min(10).default(10),
+  maxLength: z.number().max(5000).default(5000),
+  mustAcceptTerms: z.boolean().default(true),
+});
+
+export type SignatureValidationData = z.infer<typeof signatureValidationSchema>;
+
+export interface LegalValidationResult {
   isValid: boolean;
-  reason?: string;
+  errors: string[];
+  warnings: string[];
+  missingRequirements: string[];
+}
+
+export interface SignatureValidationResult {
+  isValid: boolean;
+  errors: string[];
+  validatedData?: SignatureCreateData;
 }
 
 export interface LegalDocument {
   title: string;
   url: string;
-  type: 'law' | 'regulation' | 'standard';
+  type: 'law' | 'regulation' | 'standard' | 'company_policy';
+  description?: string;
+  mandatory: boolean;
+}
+
+export interface TermsOfService {
+  version: string;
+  title: string;
+  content: string[];
+  effectiveDate: string;
+  lastModified: string;
 }
 
 export class LegalAspectsService extends BaseWizardService {
   protected readonly serviceName = 'LegalAspectsService';
 
   /**
-   * Композиція: збереження підпису клієнта (новий API)
+   * Валідація юридичних даних через orval Zod схему
    */
-  async saveClientSignature(
-    signatureData: WizardSignatureData,
-    termsAccepted: boolean = true
-  ): Promise<WizardSignatureResult | null> {
-    const result = await saveClientSignature(signatureData, termsAccepted);
-    return result.success ? result.data || null : null;
-  }
+  validateLegalData(legalData: LegalValidationData): LegalValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    const missingRequirements: string[] = [];
 
-  /**
-   * Композиція: збереження підпису через стандартний адаптер
-   */
-  async saveCustomerSignature(
-    signatureData: WizardCustomerSignatureCreateData,
-    termsAccepted: boolean = true
-  ): Promise<WizardCustomerSignature | null> {
-    const result = await saveCustomerSignature(signatureData, termsAccepted);
-    return result.success ? result.data || null : null;
-  }
+    try {
+      // Валідація через локальну схему
+      const validation = legalValidationSchema.safeParse(legalData);
+      if (!validation.success) {
+        errors.push(...validation.error.errors.map((e: z.ZodIssue) => e.message));
+      }
 
-  /**
-   * Композиція: отримання підпису через адаптер
-   */
-  async getSignature(signatureId: string): Promise<WizardCustomerSignature | null> {
-    const result = await getSignatureById(signatureId);
-    return result.success ? result.data || null : null;
-  }
+      // Бізнес-логіка валідації
+      if (legalData.signatureRequired && !legalData.customerSignature) {
+        missingRequirements.push('Необхідний цифровий підпис клієнта');
+      }
 
-  /**
-   * Композиція: валідація підпису через адаптер
-   */
-  async validateSignature(signatureData: string): Promise<SignatureValidation> {
-    const result = await validateSignature(signatureData);
-    if (result.success && result.data) {
-      return result.data;
+      if (legalData.witnessRequired && !legalData.witnessSignature) {
+        missingRequirements.push('Необхідний підпис свідка');
+      }
+
+      if (!legalData.agreementAccepted) {
+        missingRequirements.push('Клієнт повинен прийняти умови надання послуг');
+      }
+
+      // Попередження
+      if (legalData.customerSignature && legalData.customerSignature.length < 20) {
+        warnings.push('Підпис клієнта може бути занадто коротким');
+      }
+
+      if (!legalData.documentsProvided || legalData.documentsProvided.length === 0) {
+        warnings.push('Не вказано які документи надані клієнту');
+      }
+
+      return {
+        isValid: errors.length === 0 && missingRequirements.length === 0,
+        errors,
+        warnings,
+        missingRequirements,
+      };
+    } catch (error) {
+      return {
+        isValid: false,
+        errors: ['Невідома помилка валідації юридичних даних'],
+        warnings: [],
+        missingRequirements: [],
+      };
     }
-    return { isValid: false, reason: result.error || 'Помилка валідації' };
   }
 
   /**
-   * Композиція: отримання умов послуг через адаптер
+   * Валідація підпису через orval Zod схему
    */
-  async getTermsOfService(): Promise<WizardTermsData | null> {
-    const result = await getTermsOfService();
-    return result.success ? result.data || null : null;
+  validateSignature(signatureData: SignatureValidationData): SignatureValidationResult {
+    const errors: string[] = [];
+
+    try {
+      // Валідація через orval схему
+      const orvalValidation = saveSignatureBody.safeParse(signatureData);
+      if (!orvalValidation.success) {
+        errors.push(...orvalValidation.error.errors.map((e: z.ZodIssue) => e.message));
+      }
+
+      // Додаткова валідація через розширену схему
+      const extendedValidation = signatureValidationSchema.safeParse(signatureData);
+      if (!extendedValidation.success) {
+        errors.push(...extendedValidation.error.errors.map((e: z.ZodIssue) => e.message));
+      }
+
+      // Бізнес-логіка валідації підпису
+      if (!signatureData.signatureData || signatureData.signatureData.trim().length === 0) {
+        errors.push('Підпис не може бути порожнім');
+      }
+
+      if (signatureData.signatureData && signatureData.signatureData.length < 10) {
+        errors.push('Підпис занадто короткий (мінімум 10 символів)');
+      }
+
+      if (signatureData.signatureData && signatureData.signatureData.length > 5000) {
+        errors.push('Підпис занадто довгий (максимум 5000 символів)');
+      }
+
+      if (signatureData.mustAcceptTerms && !signatureData.termsAccepted) {
+        errors.push('Необхідно прийняти умови користування');
+      }
+
+      const validatedData = orvalValidation.success ? orvalValidation.data : undefined;
+
+      return {
+        isValid: errors.length === 0,
+        errors,
+        validatedData,
+      };
+    } catch (error) {
+      return {
+        isValid: false,
+        errors: ['Невідома помилка валідації підпису'],
+      };
+    }
   }
 
   /**
-   * Валідація юридичних даних через централізовану схему
+   * Перевірка типу підпису
    */
-  validateLegalData(data: unknown) {
-    return legalDataSchema.safeParse(data);
+  validateSignatureType(signatureType: string): { isValid: boolean; errors: string[] } {
+    const validTypes: SignatureType[] = [
+      'CUSTOMER_RECEIPT',
+      'CUSTOMER_PICKUP',
+      'EMPLOYEE',
+      'MANAGER',
+    ];
+
+    if (!validTypes.includes(signatureType as SignatureType)) {
+      return {
+        isValid: false,
+        errors: [`Недопустимий тип підпису: ${signatureType}. Дозволені: ${validTypes.join(', ')}`],
+      };
+    }
+
+    return { isValid: true, errors: [] };
   }
 
   /**
-   * Отримання стандартних умов послуг
+   * Отримання типів підписів з описом
    */
-  getStandardTerms(): string[] {
+  getSignatureTypes(): Array<{
+    type: SignatureType;
+    label: string;
+    description: string;
+    required: boolean;
+  }> {
     return [
-      'Термін виконання замовлення вказаний орієнтовно',
-      'Хімчистка не несе відповідальності за ризики вказані у квитанції',
-      'Вироби видаються тільки при наявності квитанції',
-      'Претензії приймаються протягом 3 днів після видачі',
+      {
+        type: 'CUSTOMER_RECEIPT',
+        label: 'Підпис клієнта при здачі',
+        description: 'Підпис клієнта під час здавання речей до хімчистки',
+        required: true,
+      },
+      {
+        type: 'CUSTOMER_PICKUP',
+        label: 'Підпис клієнта при отриманні',
+        description: 'Підпис клієнта під час отримання речей з хімчистки',
+        required: false,
+      },
+      {
+        type: 'EMPLOYEE',
+        label: 'Підпис співробітника',
+        description: 'Підпис співробітника, який приймає замовлення',
+        required: true,
+      },
+      {
+        type: 'MANAGER',
+        label: 'Підпис менеджера',
+        description: 'Підпис менеджера для особливих випадків',
+        required: false,
+      },
     ];
   }
 
   /**
-   * Отримання посилань на нормативні документи
+   * Отримання стандартних умов надання послуг
+   */
+  getTermsOfService(): TermsOfService {
+    return {
+      version: '2.1',
+      title: 'Умови надання послуг хімчистки',
+      content: [
+        'Термін виконання замовлення вказаний орієнтовно та може бути змінений з технічних причин',
+        'Хімчистка не несе відповідальності за ризики, вказані у квитанції та підтверджені клієнтом',
+        'Вироби видаються тільки при наявності квитанції та документа, що посвідчує особу',
+        'Претензії щодо якості надання послуг приймаються протягом 3 днів після видачі замовлення',
+        'У випадку втрати квитанції, видача замовлення здійснюється за особливою процедурою',
+        'Клієнт несе відповідальність за достовірність інформації про характеристики виробів',
+        'Хімчистка має право відмовитися від виконання замовлення у випадку неможливості обробки',
+        'Строк зберігання готового замовлення складає 30 днів з дати готовності',
+      ],
+      effectiveDate: '2024-01-01T00:00:00Z',
+      lastModified: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Отримання обов'язкових юридичних документів
    */
   getLegalDocuments(): LegalDocument[] {
     return [
@@ -122,12 +284,186 @@ export class LegalAspectsService extends BaseWizardService {
         title: 'Закон України "Про захист прав споживачів"',
         url: 'https://zakon.rada.gov.ua/laws/show/1023-12',
         type: 'law',
+        description: 'Основний закон про права споживачів в Україні',
+        mandatory: true,
       },
       {
         title: 'ДСТУ 7946:2015 "Послуги хімічної чистки"',
         url: 'https://dstu.gov.ua/ua/catalog/std?id=36895',
         type: 'standard',
+        description: 'Національний стандарт України для послуг хімчистки',
+        mandatory: true,
+      },
+      {
+        title: 'Правила побутового обслуговування',
+        url: 'https://zakon.rada.gov.ua/laws/show/z0786-94',
+        type: 'regulation',
+        description: 'Правила надання послуг у сфері побутового обслуговування',
+        mandatory: true,
+      },
+      {
+        title: 'Політика конфіденційності компанії',
+        url: '/legal/privacy-policy',
+        type: 'company_policy',
+        description: 'Внутрішня політика обробки персональних даних',
+        mandatory: false,
       },
     ];
+  }
+
+  /**
+   * Перевірка необхідності додаткових підписів
+   */
+  checkAdditionalSignatureRequirements(orderData: {
+    totalAmount: number;
+    hasRisks: boolean;
+    isUrgent: boolean;
+    hasSpecialConditions: boolean;
+  }): {
+    managerSignatureRequired: boolean;
+    witnessRequired: boolean;
+    additionalDocuments: string[];
+    reasons: string[];
+  } {
+    const reasons: string[] = [];
+    const additionalDocuments: string[] = [];
+    let managerSignatureRequired = false;
+    let witnessRequired = false;
+
+    // Великі суми потребують підпису менеджера
+    if (orderData.totalAmount > 10000) {
+      managerSignatureRequired = true;
+      reasons.push('Сума замовлення перевищує 10,000 грн');
+    }
+
+    // Ризиковані замовлення
+    if (orderData.hasRisks) {
+      witnessRequired = true;
+      reasons.push('Замовлення містить ризики пошкодження');
+      additionalDocuments.push('Додаткова угода про ризики');
+    }
+
+    // Термінові замовлення
+    if (orderData.isUrgent) {
+      additionalDocuments.push('Угода про термінове виконання');
+      reasons.push('Термінове виконання замовлення');
+    }
+
+    // Особливі умови
+    if (orderData.hasSpecialConditions) {
+      managerSignatureRequired = true;
+      reasons.push('Замовлення має особливі умови виконання');
+    }
+
+    return {
+      managerSignatureRequired,
+      witnessRequired,
+      additionalDocuments,
+      reasons,
+    };
+  }
+
+  /**
+   * Генерація тексту угоди для конкретного замовлення
+   */
+  generateOrderAgreementText(orderData: {
+    receiptNumber: string;
+    clientName: string;
+    totalAmount: number;
+    expectedDate: string;
+    risks?: string[];
+  }): string {
+    const { receiptNumber, clientName, totalAmount, expectedDate, risks = [] } = orderData;
+
+    let agreementText = `
+УГОДА про надання послуг хімчистки
+
+Квитанція №: ${receiptNumber}
+Клієнт: ${clientName}
+Сума: ${this.formatAmount(totalAmount)}
+Очікувана дата готовності: ${this.formatDate(expectedDate)}
+
+Умови надання послуг:
+${this.getTermsOfService()
+  .content.map((term, index) => `${index + 1}. ${term}`)
+  .join('\n')}
+    `;
+
+    if (risks.length > 0) {
+      agreementText += `\n\nВИЯВЛЕНІ РИЗИКИ:\n${risks.map((risk, index) => `${index + 1}. ${risk}`).join('\n')}`;
+      agreementText +=
+        '\n\nКлієнт підтверджує, що ознайомлений з ризиками та погоджується на обробку.';
+    }
+
+    agreementText += '\n\nПідписуючи цю угоду, клієнт підтверджує згоду з усіма умовами.';
+
+    return agreementText.trim();
+  }
+
+  /**
+   * Форматування суми в гривнях
+   */
+  private formatAmount(amount: number): string {
+    return new Intl.NumberFormat('uk-UA', {
+      style: 'currency',
+      currency: 'UAH',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  }
+
+  /**
+   * Форматування дати
+   */
+  private formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('uk-UA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  }
+
+  /**
+   * Перевірка дійсності підпису (базова валідація)
+   */
+  isSignatureValid(signatureData: string): {
+    isValid: boolean;
+    quality: 'poor' | 'fair' | 'good' | 'excellent';
+    issues: string[];
+  } {
+    const issues: string[] = [];
+    let quality: 'poor' | 'fair' | 'good' | 'excellent' = 'poor';
+
+    if (!signatureData || signatureData.trim().length === 0) {
+      issues.push('Підпис порожній');
+      return { isValid: false, quality: 'poor', issues };
+    }
+
+    // Оцінка якості підпису за довжиною
+    if (signatureData.length < 10) {
+      issues.push('Підпис занадто короткий');
+      quality = 'poor';
+    } else if (signatureData.length < 50) {
+      quality = 'fair';
+    } else if (signatureData.length < 200) {
+      quality = 'good';
+    } else {
+      quality = 'excellent';
+    }
+
+    // Перевірка на шаблонні підписи
+    if (signatureData.includes('signature') || signatureData.includes('test')) {
+      issues.push('Підпис схожий на тестовий');
+      quality = 'poor';
+    }
+
+    return {
+      isValid: issues.length === 0,
+      quality,
+      issues,
+    };
   }
 }

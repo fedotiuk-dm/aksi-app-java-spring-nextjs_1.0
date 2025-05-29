@@ -7,7 +7,7 @@ import {
 
 import { BaseWizardService } from '../../base.service';
 
-import type { Branch } from '../../../types';
+import type { BranchData } from '../../../types';
 
 /**
  * Сервіс для бізнес-логіки вибору філії
@@ -46,7 +46,7 @@ const branchSelectionSchema = z.object({
 export interface BranchSelectionResult {
   isValid: boolean;
   errors: string[];
-  selectedBranch?: Branch;
+  selectedBranch?: BranchData;
 }
 
 export class BranchSelectionService extends BaseWizardService {
@@ -55,7 +55,7 @@ export class BranchSelectionService extends BaseWizardService {
   /**
    * Перетворення API типу в доменний тип
    */
-  mapApiToDomain(branchDto: BranchLocationDTO): Branch {
+  mapApiToDomain(branchDto: BranchLocationDTO): BranchData {
     return {
       id: branchDto.id || '',
       name: branchDto.name || '',
@@ -71,7 +71,7 @@ export class BranchSelectionService extends BaseWizardService {
   /**
    * Валідація вибору філії через Zod схему
    */
-  validateBranchSelection(branchId: string, branches: Branch[]): BranchSelectionResult {
+  validateBranchSelection(branchId: string, branches: BranchData[]): BranchSelectionResult {
     const errors: string[] = [];
 
     if (!branchId.trim()) {
@@ -138,7 +138,7 @@ export class BranchSelectionService extends BaseWizardService {
   /**
    * Фільтрація філій за критеріями
    */
-  filterBranches(branches: Branch[], criteria: BranchFilterCriteria): Branch[] {
+  filterBranches(branches: BranchData[], criteria: BranchFilterCriteria): BranchData[] {
     let result = [...branches];
 
     // Фільтр по активності (з orval схеми)
@@ -189,7 +189,7 @@ export class BranchSelectionService extends BaseWizardService {
   /**
    * Рекомендація філії на основі адреси клієнта
    */
-  recommendBranchByAddress(clientAddress: string, branches: Branch[]): Branch | null {
+  recommendBranchByAddress(clientAddress: string, branches: BranchData[]): BranchData | null {
     if (!clientAddress.trim() || branches.length === 0) {
       return null;
     }
@@ -220,7 +220,7 @@ export class BranchSelectionService extends BaseWizardService {
   /**
    * Отримання статистики філій
    */
-  getBranchStatistics(branches: Branch[]) {
+  getBranchStatistics(branches: BranchData[]) {
     return {
       total: branches.length,
       active: branches.filter((b) => b.active).length,
@@ -232,7 +232,7 @@ export class BranchSelectionService extends BaseWizardService {
   /**
    * Перевірка чи можна використовувати філію для нового замовлення
    */
-  canUseForNewOrder(branch: Branch): { canUse: boolean; reason?: string } {
+  canUseForNewOrder(branch: BranchData): { canUse: boolean; reason?: string } {
     if (!branch.active) {
       return { canUse: false, reason: 'Філія неактивна' };
     }
