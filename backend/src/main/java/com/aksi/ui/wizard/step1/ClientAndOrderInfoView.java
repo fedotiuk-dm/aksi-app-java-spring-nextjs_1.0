@@ -1,86 +1,66 @@
 package com.aksi.ui.wizard.step1;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
-import com.aksi.domain.branch.dto.BranchLocationDTO;
-import com.aksi.domain.branch.service.BranchLocationService;
 import com.aksi.domain.client.dto.ClientResponse;
-import com.aksi.domain.client.dto.CreateClientRequest;
-import com.aksi.domain.client.service.ClientService;
+import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.ui.wizard.dto.OrderWizardData;
+import com.aksi.ui.wizard.step1.mapper.Step1WizardDataMapper;
+import com.aksi.ui.wizard.step1.service.WizardDataRestoreService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * UI компонент для першого етапу Order Wizard.
+ * Головний UI компонент для першого етапу Order Wizard.
+ * Координатор компонентів згідно з принципами DDD та SOLID.
  * Відповідає за вибір/створення клієнта та базову інформацію замовлення.
+ * Використовує компонентну архітектуру для mapper та service логіки.
  */
 @Slf4j
 public class ClientAndOrderInfoView extends VerticalLayout {
 
     private final OrderWizardData wizardData;
     private final Runnable onCompleted;
+    private final ApplicationContext applicationContext;
 
-    @Autowired
-    private ClientService clientService;
+    // Service компоненти
+    private final Step1WizardDataMapper orderWizardDataMapper;
+    private final WizardDataRestoreService wizardDataRestoreService;
 
-    @Autowired
-    private BranchLocationService branchLocationService;
+    // UI компоненти
+    private ClientSelectionComponent clientSelectionComponent;
+    private ClientCreationFormComponent clientCreationFormComponent;
+    private OrderBasicInfoComponent orderBasicInfoComponent;
 
-    // Client selection components
-    private TextField clientSearchField;
-    private ComboBox<ClientResponse> clientSelector;
-    private Button newClientButton;
-
-    // Client form components (for new client)
-    private VerticalLayout clientFormContainer;
-    private FormLayout clientForm;
-    private TextField lastNameField;
-    private TextField firstNameField;
-    private TextField phoneField;
-    private TextField emailField;
-    private Button saveClientButton;
-
-    // Order info components
-    private FormLayout orderForm;
-    private TextField receiptNumberField;
-    private TextField tagNumberField;
-    private ComboBox<BranchLocationDTO> branchSelector;
-
-    // Navigation
+    // Навігація
     private Button nextStepButton;
 
-    // Selected client data
+    // Поточний стан
     private ClientResponse selectedClientResponse;
 
-    public ClientAndOrderInfoView(OrderWizardData wizardData, Runnable onCompleted) {
+    public ClientAndOrderInfoView(OrderWizardData wizardData, Runnable onCompleted,
+                                 ApplicationContext applicationContext) {
         this.wizardData = wizardData;
         this.onCompleted = onCompleted;
+        this.applicationContext = applicationContext;
+
+        // Ініціалізація service компонентів
+        this.orderWizardDataMapper = applicationContext.getBean(Step1WizardDataMapper.class);
+        this.wizardDataRestoreService = applicationContext.getBean(WizardDataRestoreService.class);
 
         initializeLayout();
-        createClientSelectionSection();
-        createClientFormSection();
-        createOrderInfoSection();
+        createComponents();
+        setupComponentInteractions();
         createNavigationSection();
+        restoreDataFromWizard();
 
-        updateFormVisibility();
-        loadData();
-
-        log.info("ClientAndOrderInfoView initialized");
+        log.info("ClientAndOrderInfoView initialized with component-based architecture");
     }
 
     private void initializeLayout() {
@@ -89,83 +69,31 @@ public class ClientAndOrderInfoView extends VerticalLayout {
         setSpacing(true);
     }
 
-    private void createClientSelectionSection() {
-        add(new H3("Оберіть або створіть клієнта"));
+    private void createComponents() {
+        // Створення компонентів через Spring ApplicationContext
+        clientSelectionComponent = applicationContext.getBean(ClientSelectionComponent.class);
+        clientCreationFormComponent = applicationContext.getBean(ClientCreationFormComponent.class);
+        orderBasicInfoComponent = applicationContext.getBean(OrderBasicInfoComponent.class);
 
-        HorizontalLayout searchLayout = new HorizontalLayout();
-        searchLayout.setWidthFull();
-        searchLayout.setAlignItems(Alignment.END);
-
-        clientSearchField = new TextField("Пошук клієнта");
-        clientSearchField.setPlaceholder("Введіть прізвище, телефон або email");
-        clientSearchField.setWidthFull();
-        clientSearchField.addValueChangeListener(e -> searchClients(e.getValue()));
-
-        clientSelector = new ComboBox<>("Оберіть клієнта");
-        clientSelector.setItemLabelGenerator(client ->
-            String.format("%s %s (%s)", client.getLastName(), client.getFirstName(), client.getPhone()));
-        clientSelector.setWidthFull();
-        clientSelector.addValueChangeListener(e -> onClientSelected(e.getValue()));
-
-        newClientButton = new Button("Новий клієнт");
-        newClientButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        newClientButton.addClickListener(e -> showNewClientForm());
-
-        searchLayout.add(clientSearchField, clientSelector, newClientButton);
-        add(searchLayout);
+        // Додавання до layout
+        add(clientSelectionComponent);
+        add(clientCreationFormComponent);
+        add(orderBasicInfoComponent);
     }
 
-    private void createClientFormSection() {
-        clientForm = new FormLayout();
-        clientForm.setResponsiveSteps(
-            new FormLayout.ResponsiveStep("0", 1),
-            new FormLayout.ResponsiveStep("500px", 2)
-        );
+    private void setupComponentInteractions() {
+        // Налаштування взаємодії між компонентами
+        clientSelectionComponent.setOnClientSelected(this::handleClientSelected);
+        clientSelectionComponent.setOnNewClientRequested(this::handleNewClientRequest);
 
-        lastNameField = new TextField("Прізвище *");
-        firstNameField = new TextField("Ім'я *");
-        phoneField = new TextField("Телефон *");
-        emailField = new TextField("Email");
+        clientCreationFormComponent.setOnClientCreated(this::handleClientCreated);
 
-        lastNameField.setRequired(true);
-        firstNameField.setRequired(true);
-        phoneField.setRequired(true);
-
-        saveClientButton = new Button("Зберегти клієнта");
-        saveClientButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-        saveClientButton.addClickListener(e -> saveNewClient());
-
-        clientForm.add(lastNameField, firstNameField, phoneField, emailField);
-
-        clientFormContainer = new VerticalLayout();
-        clientFormContainer.add(new H3("Новий клієнт"), clientForm, saveClientButton);
-        clientFormContainer.setVisible(false);
-
-        add(clientFormContainer);
-    }
-
-    private void createOrderInfoSection() {
-        add(new H3("Інформація про замовлення"));
-
-        orderForm = new FormLayout();
-        orderForm.setResponsiveSteps(
-            new FormLayout.ResponsiveStep("0", 1),
-            new FormLayout.ResponsiveStep("500px", 2)
-        );
-
-        receiptNumberField = new TextField("Номер квитанції *");
-        receiptNumberField.setValue(generateReceiptNumber());
-        receiptNumberField.setRequired(true);
-
-        tagNumberField = new TextField("Унікальна мітка");
-        tagNumberField.setPlaceholder("Введіть або скануйте");
-
-        branchSelector = new ComboBox<>("Пункт прийому *");
-        branchSelector.setItemLabelGenerator(BranchLocationDTO::getName);
-        branchSelector.setRequired(true);
-
-        orderForm.add(receiptNumberField, tagNumberField, branchSelector);
-        add(orderForm);
+        // Відстеження змін у базовій інформації замовлення
+        orderBasicInfoComponent.setOnReceiptNumberChanged(value -> validateForm());
+        orderBasicInfoComponent.setOnBranchChanged(branch -> {
+            validateForm();
+            updateWizardDataWithBranch();
+        });
     }
 
     private void createNavigationSection() {
@@ -182,151 +110,101 @@ public class ClientAndOrderInfoView extends VerticalLayout {
         add(navigation);
     }
 
-    private void loadData() {
-        try {
-            // Завантажити активні філії
-            List<BranchLocationDTO> branches = branchLocationService.getActiveBranchLocations();
-            branchSelector.setItems(branches);
-            if (!branches.isEmpty()) {
-                branchSelector.setValue(branches.get(0)); // Вибрати першу за замовчуванням
-            }
-
-            // Якщо дані вже збережені в wizardData, відновити їх
-            if (wizardData.getSelectedClient() != null) {
-                // TODO: конвертувати ClientEntity в ClientResponse для відображення
-                log.info("Client already selected: {}", wizardData.getSelectedClient().getLastName());
-            }
-
-            if (wizardData.getDraftOrder().getReceiptNumber() != null) {
-                receiptNumberField.setValue(wizardData.getDraftOrder().getReceiptNumber());
-            }
-
-            validateForm();
-
-        } catch (Exception e) {
-            log.error("Error loading data for ClientAndOrderInfoView", e);
-            Notification.show("Помилка завантаження даних: " + e.getMessage())
-                .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
+    private void handleClientSelected(ClientResponse client) {
+        this.selectedClientResponse = client;
+        clientCreationFormComponent.hideForm();
+        validateForm();
+        log.info("Client selected: {} {}", client.getLastName(), client.getFirstName());
     }
 
-    private void searchClients(String searchTerm) {
-        if (searchTerm == null || searchTerm.trim().length() < 2) {
-            clientSelector.setItems();
-            return;
-        }
-
-        try {
-            @SuppressWarnings("deprecation")
-            List<ClientResponse> clients = clientService.searchClients(searchTerm.trim());
-            clientSelector.setItems(clients);
-        } catch (Exception e) {
-            log.error("Error searching clients", e);
-            Notification.show("Помилка пошуку клієнтів: " + e.getMessage())
-                .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
-    }
-
-    private void onClientSelected(ClientResponse client) {
-        if (client != null) {
-            this.selectedClientResponse = client;
-            // TODO: конвертувати ClientResponse в ClientEntity
-            hideNewClientForm();
-            validateForm();
-            log.info("Client selected: {} {}", client.getLastName(), client.getFirstName());
-        }
-    }
-
-    private void showNewClientForm() {
-        clientFormContainer.setVisible(true);
-        clientSelector.clear();
-        selectedClientResponse = null;
+    private void handleNewClientRequest() {
+        this.selectedClientResponse = null;
+        clientCreationFormComponent.showForm();
         validateForm();
     }
 
-    private void hideNewClientForm() {
-        clientFormContainer.setVisible(false);
-    }
-
-    private void saveNewClient() {
-        if (!validateClientForm()) {
-            return;
-        }
-
-        try {
-            CreateClientRequest request = CreateClientRequest.builder()
-                .lastName(lastNameField.getValue().trim())
-                .firstName(firstNameField.getValue().trim())
-                .phone(phoneField.getValue().trim())
-                .email(emailField.getValue() != null ? emailField.getValue().trim() : null)
-                .build();
-
-            ClientResponse savedClient = clientService.createClient(request);
-            this.selectedClientResponse = savedClient;
-
-            clearClientForm();
-            hideNewClientForm();
-
-            Notification.show("Клієнта успішно створено")
-                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-
-            validateForm();
-            log.info("New client created: {} {}", savedClient.getLastName(), savedClient.getFirstName());
-
-        } catch (Exception e) {
-            log.error("Error creating client", e);
-            Notification.show("Помилка при створенні клієнта: " + e.getMessage())
-                .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
-    }
-
-    private boolean validateClientForm() {
-        return lastNameField.getValue() != null && !lastNameField.getValue().trim().isEmpty() &&
-               firstNameField.getValue() != null && !firstNameField.getValue().trim().isEmpty() &&
-               phoneField.getValue() != null && !phoneField.getValue().trim().isEmpty();
-    }
-
-    private void clearClientForm() {
-        lastNameField.clear();
-        firstNameField.clear();
-        phoneField.clear();
-        emailField.clear();
+    private void handleClientCreated(ClientResponse client) {
+        this.selectedClientResponse = client;
+        clientSelectionComponent.clearSelection();
+        validateForm();
     }
 
     private void validateForm() {
         boolean clientSelected = selectedClientResponse != null;
-        boolean receiptNumberValid = receiptNumberField.getValue() != null &&
-                                   !receiptNumberField.getValue().trim().isEmpty();
-        boolean branchSelected = branchSelector.getValue() != null;
+        boolean orderInfoValid = orderBasicInfoComponent.isValid();
 
-        nextStepButton.setEnabled(clientSelected && receiptNumberValid && branchSelected);
+        nextStepButton.setEnabled(clientSelected && orderInfoValid);
+    }
+
+    private void updateWizardDataWithBranch() {
+        if (orderBasicInfoComponent.getSelectedBranch() != null) {
+            // Використовуємо mapper для конвертації DTO в Entity
+            wizardData.getDraftOrder().setBranchLocation(
+                orderWizardDataMapper.mapBranchLocationDTOToEntity(
+                    orderBasicInfoComponent.getSelectedBranch()
+                )
+            );
+            log.debug("Updated wizard data with branch: {}",
+                orderBasicInfoComponent.getSelectedBranch().getName());
+        }
+    }
+
+    private void restoreDataFromWizard() {
+        wizardDataRestoreService.logRestoredData(wizardData);
+
+        if (!wizardDataRestoreService.hasDataToRestore(wizardData)) {
+            return;
+        }
+
+        // Відновити дані клієнта якщо є
+        ClientResponse restoredClient = wizardDataRestoreService.restoreClientResponse(wizardData);
+        if (restoredClient != null) {
+            this.selectedClientResponse = restoredClient;
+            log.info("Restored client data: {} {}", restoredClient.getLastName(), restoredClient.getFirstName());
+        }
+
+        // Відновити номер квитанції
+        String receiptNumber = wizardDataRestoreService.restoreReceiptNumber(wizardData);
+        if (receiptNumber != null) {
+            orderBasicInfoComponent.setReceiptNumber(receiptNumber);
+        }
+
+        // Відновити номер мітки
+        String tagNumber = wizardDataRestoreService.restoreTagNumber(wizardData);
+        if (tagNumber != null) {
+            orderBasicInfoComponent.setTagNumber(tagNumber);
+        }
+
+        validateForm();
     }
 
     private void completeStep() {
-        // TODO: конвертувати ClientResponse в ClientEntity
-        // wizardData.setClient(convertedClient, selectedClientResponse.getId() == null);
+        // Конвертувати ClientResponse в ClientEntity використовуючи mapper
+        if (selectedClientResponse != null) {
+            ClientEntity clientEntity = orderWizardDataMapper.mapClientResponseToEntity(selectedClientResponse);
+            boolean isNewClient = orderWizardDataMapper.isNewClient(selectedClientResponse);
+
+            wizardData.setClient(clientEntity, isNewClient);
+            log.debug("Mapped and set client entity: {} {}",
+                clientEntity.getLastName(), clientEntity.getFirstName());
+        }
 
         // Зберегти інформацію про замовлення
         wizardData.setOrderBasicInfo(
-            receiptNumberField.getValue().trim(),
-            tagNumberField.getValue() != null ? tagNumberField.getValue().trim() : null,
+            orderBasicInfoComponent.getReceiptNumber(),
+            orderBasicInfoComponent.getTagNumber(),
             LocalDateTime.now().plusDays(2) // Тимчасово, буде розраховано на етапі 3
         );
 
-        // TODO: встановити філію після конвертації DTO в Entity
-        // wizardData.getDraftOrder().setBranchLocation(convertedBranch);
+        // Встановити філію (вже збережено в updateWizardDataWithBranch)
+        updateWizardDataWithBranch();
 
-        log.info("Step 1 completed for receipt: {}", receiptNumberField.getValue());
+        log.info("Step 1 completed for receipt: {} with branch: {}",
+            orderBasicInfoComponent.getReceiptNumber(),
+            orderBasicInfoComponent.getSelectedBranch() != null ?
+                orderBasicInfoComponent.getSelectedBranch().getName() : "null");
 
         // Перейти до наступного етапу
         onCompleted.run();
-    }
-
-    private String generateReceiptNumber() {
-        return "RCP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-    }
-
-    private void updateFormVisibility() {
-        // Додаткова логіка для динамічного відображення форм
     }
 }

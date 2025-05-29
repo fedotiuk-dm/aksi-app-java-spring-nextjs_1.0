@@ -3,20 +3,33 @@ FROM bellsoft/liberica-runtime-container:jdk-21-musl
 
 WORKDIR /app
 
-# Add tools needed for development
+# Add tools needed for development including Node.js and udev for Vaadin
 RUN apk add --no-cache \
     bash \
     curl \
     wget \
-    openjdk21 \
+    openjdk21-jdk \
     maven \
-    shadow
+    shadow \
+    nodejs \
+    npm \
+    eudev \
+    eudev-libs \
+    eudev-dev \
+    procps \
+    util-linux
+
+# Створити директорії для udev
+RUN mkdir -p /run/udev \
+    && mkdir -p /etc/udev/rules.d
 
 # Set environment variables for development
 ENV SPRING_PROFILES_ACTIVE=dev
 ENV JAVA_OPTS="-Xms512m -Xmx1024m"
 ENV MAVEN_OPTS="-Xmx1024m"
 ENV PATH="/app:${PATH}"
+# Додати змінні для udev
+ENV UDEV=1
 
 # Expose ports: Spring Boot and Debug
 EXPOSE 8080 5005

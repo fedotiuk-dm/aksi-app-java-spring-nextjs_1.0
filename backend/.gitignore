@@ -37,5 +37,4 @@ build/
 .vscode/
 
 ### Локальні налаштування ###
-**/application-local.yml
-**/application-local.properties 
+

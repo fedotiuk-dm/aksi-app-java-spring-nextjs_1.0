@@ -5,6 +5,18 @@ spring:
     include: files
   main:
     allow-circular-references: true
+    banner-mode: console
+  output:
+    ansi:
+      enabled: always
+      console-available: true
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: false
+  session:
+    store-type: none
   mail:
     host: smtp.gmail.com
     port: 587
@@ -64,6 +76,9 @@ spring:
     devmode:
       liveReload:
         enabled: false
+      # Налаштування для запобігання проблем серіалізації
+      sessionSerialization:
+        enabled: false
     frontend:
       hotdeploy: false
     pnpm:
@@ -72,6 +87,8 @@ spring:
       enable: false
     url-mapping: /*
     exclude-urls: /swagger-ui/**,/v3/api-docs/**,/swagger-resources/**,/webjars/**,/docs/**
+    # Режим розробки
+    productionMode: false
 
 server:
   port: 8080
@@ -84,10 +101,20 @@ server:
     connection-timeout: 30000 # 30 секунд
     max-http-header-size: 65536 # 64KB
     max-swallow-size: 10485760 # 10MB
+    # Налаштування для dev-режиму
+    basedir: ${java.io.tmpdir}/tomcat-aksi
+    accesslog:
+      enabled: false
   compression:
     enabled: true # Увімкнути стиснення відповідей
     mime-types: application/json,application/xml,text/html,text/plain
     min-response-size: 2048 # Стискати відповіді більше 2KB
+  servlet:
+    session:
+      # Налаштування сесій для dev-режиму
+      persistent: false # Вимкнути збереження сесій між перезапусками
+      timeout: 30m
+      store-dir: ${java.io.tmpdir}/aksi-sessions
 
 # Налаштування JWT
 jwt:
@@ -136,17 +163,22 @@ logging:
     root: WARN
     org.springframework: WARN
     org.springframework.web: WARN
-    com.aksi: WARN
+    com.aksi: INFO
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
-    com.aksi.config: WARN
+    com.aksi.config: INFO
     org.springframework.security: WARN
     org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR
+    org.mapstruct: INFO
+    com.vaadin: WARN
+    org.atmosphere: WARN
   file:
     name: logs/aksi-app.log
+  ansi:
+    enabled: always
   pattern:
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    console: "%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %cyan(%logger{15}) - %msg%n"
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } --- [%t] %-40.40logger{39} : %m%n%wEx"
 
 # Налаштування OpenAPI/Swagger
 springdoc:

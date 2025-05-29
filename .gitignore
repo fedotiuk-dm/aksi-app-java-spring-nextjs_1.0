@@ -16,9 +16,9 @@ backend/.mvn/wrapper/maven-wrapper.jar
 backend/logs/
 backend/*.log
 # Не виключати основну конфігурацію, але виключити специфічні для середовищ
-backend/src/main/resources/application-dev.yml
-backend/src/main/resources/application-prod.yml
-backend/src/main/resources/application-staging.yml
+#backend/src/main/resources/application-dev.yml
+#backend/src/main/resources/application-prod.yml
+#backend/src/main/resources/application-staging.yml
 
 # Фронтенд
 frontend/node_modules/

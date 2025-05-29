@@ -88,6 +88,10 @@ services:
       context: ../backend
       dockerfile: Dockerfile.dev
     container_name: backend-dev
+    # Додаємо привілеї для роботи з системними ресурсами
+    privileged: false
+    cap_add:
+      - SYS_ADMIN
     expose:
       - "8080"
     ports:
@@ -103,8 +107,12 @@ services:
       SPRING_MAIL_TEST-CONNECTION: "false"
       # Вимикаємо health checks для різних сервісів
       MANAGEMENT_HEALTH_MAIL_ENABLED: "false"
-      # JVM аргументи для кольорового виводу логів
-      JAVA_OPTS: "-Dspring.output.ansi.enabled=always -Dspring.main.banner-mode=console"
+      # Налаштування для udev
+      UDEV: "1"
+      OSHI_OS_DISABLE: "false"
+      SPRING_JPA_OPEN_IN_VIEW: "false"
+      # JVM аргументи для кольорового виводу логів та udev
+      JAVA_OPTS: "-Dspring.output.ansi.enabled=always -Dspring.main.banner-mode=console -Djansi.force=true -Djansi.passthrough=true -Djava.library.path=/usr/lib -Dvaadin.devmode.sessionSerialization.enabled=false -Dvaadin.devmode.liveReload.enabled=false -Dcom.vaadin.flow.internal.StateTree.level=OFF -Dcom.vaadin.flow.internal.StateNode.level=OFF"
     volumes:
       - ../backend:/app # Монтуємо весь проект для автоматичного перезавантаження
       - backend_m2_cache:/root/.m2 # Кеш Maven в Docker volume для уникнення проблем з правами

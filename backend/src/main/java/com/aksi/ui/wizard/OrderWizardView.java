@@ -1,7 +1,11 @@
 package com.aksi.ui.wizard;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
 import com.aksi.ui.MainLayout;
 import com.aksi.ui.wizard.dto.OrderWizardData;
+import com.aksi.ui.wizard.step1.ClientAndOrderInfoView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
@@ -10,6 +14,8 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,10 +25,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Route(value = "order-wizard", layout = MainLayout.class)
 @PageTitle("Оформлення замовлення | Хімчистка")
+@SpringComponent
+@UIScope
 @Slf4j
 public class OrderWizardView extends VerticalLayout {
 
     private final OrderWizardData wizardData;
+    private final ApplicationContext applicationContext;
 
     // Tabs for navigation
     private Tabs stepTabs;
@@ -36,8 +45,10 @@ public class OrderWizardView extends VerticalLayout {
 
     private int currentStep = 0;
 
-    public OrderWizardView() {
+    @Autowired
+    public OrderWizardView(ApplicationContext applicationContext) {
         this.wizardData = new OrderWizardData();
+        this.applicationContext = applicationContext;
         initializeLayout();
         initializeTabs();
         showStep(0); // Почати з першого етапу
@@ -101,15 +112,7 @@ public class OrderWizardView extends VerticalLayout {
     }
 
     private Component createStep1View() {
-        VerticalLayout step1 = new VerticalLayout();
-        step1.add(new H2("Етап 1: Клієнт та базова інформація"));
-
-        // TODO: Тут буде повна реалізація ClientAndOrderInfoView
-        Button nextButton = new Button("Далі до предметів");
-        nextButton.addClickListener(e -> onStep1Completed());
-
-        step1.add(nextButton);
-        return step1;
+        return new ClientAndOrderInfoView(wizardData, this::onStep1Completed, applicationContext);
     }
 
     private Component createStep2View() {
