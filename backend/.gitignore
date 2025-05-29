@@ -37,4 +37,5 @@ build/
 .vscode/
 
 ### Локальні налаштування ###
-
+backend/node_modules
+*.node_modules
