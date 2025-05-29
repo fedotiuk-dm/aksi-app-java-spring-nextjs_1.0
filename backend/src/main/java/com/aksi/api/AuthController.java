@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Authentication", description = "API для автентифікації та реєстрації користувачів")
-public class AuthController {
+public class AuthController extends BaseApiController {
 
     private final AuthService authService;
 

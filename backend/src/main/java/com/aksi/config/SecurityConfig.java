@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,12 +13,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,87 +25,70 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final AuthenticationProvider authenticationProvider;
-
     /**
      * Налаштування ланцюжка фільтрів безпеки.
-     * @param http об'єкт HttpSecurity
-     * @return налаштований SecurityFilterChain
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.info("Налаштування SecurityFilterChain");
-        try {
-            // Визначення активного профілю
-            String activeProfile = System.getProperty("spring.profiles.active",
-                    System.getenv("SPRING_PROFILES_ACTIVE") != null ?
-                        System.getenv("SPRING_PROFILES_ACTIVE") : "dev");
 
-            // Загальні URL-шляхи, доступні всім
-            String[] publicUrls = {
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-                "/webjars/**",
-                "/swagger-resources/**",
-                "/actuator/**"
-            };
+        http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(sess -> sess
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/", false)
+                .permitAll())
+            .logout(logout -> logout.permitAll())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    // Swagger/OpenAPI - розширений список
+                    "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                    "/swagger-resources/**", "/webjars/**", "/swagger",
+                    "/api-docs", "/api-docs/**", "/swagger-ui/index.html",
+                    "/docs", "/docs/**",
+                    // Actuator
+                    "/actuator/**",
+                    // Auth endpoints (API)
+                    "/api/auth/**",
+                    // Всі API endpoints
+                    "/api/**",
+                    // Vaadin ресурси (статичні файли)
+                    "/VAADIN/**", "/frontend/**", "/images/**", "/icons/**",
+                    "/connect/**", "/vite/**",
+                    // Vaadin внутрішні запити (важливо для WebSocket)
+                    "/vaadinServlet/**", "/vaadinServlet/UIDL/**",
+                    "/vaadinServlet/HEARTBEAT/**", "/vaadinServlet/PUSH/**",
+                    // Authentication pages
+                    "/login", "/logout"
+                ).permitAll()
+                // Vaadin framework внутрішні запити
+                .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
+                // Vaadin UI сторінки потребують авторизації (крім login/logout)
+                .requestMatchers("/", "/dashboard", "/dashboard/**", "/clients/**", "/orders/**")
+                .authenticated()
+                // Решта запитів - дозволяємо
+                .anyRequest().permitAll()
+            );
 
-            // Спільна конфігурація для всіх профілів
-            http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-            // Специфічна конфігурація залежно від профілю
-            if ("dev".equals(activeProfile)) {
-                http.authorizeHttpRequests(auth -> auth
-                    .requestMatchers(publicUrls).permitAll()
-                    .anyRequest().permitAll()
-                );
-            } else {
-                http.authorizeHttpRequests(auth -> auth
-                    .requestMatchers(publicUrls).permitAll()
-                    .requestMatchers("/auth/**").permitAll()
-                    .anyRequest().authenticated()
-                );
-            }
-
-            log.info("SecurityFilterChain успішно налаштовано");
-            return http.build();
-        } catch (Exception e) {
-            log.error("Помилка при налаштуванні SecurityFilterChain: {}", e.getMessage(), e);
-            throw e;
-        }
+        return http.build();
     }
 
     /**
-     * Конфігурація CORS (Cross-Origin Resource Sharing).
-     * @return джерело конфігурації CORS для забезпечення міждоменних запитів
+     * Конфігурація CORS.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
         configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Type",
-            "X-Requested-With",
-            "Accept",
-            "Origin",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers"
-        ));
-        configuration.setAllowCredentials(false); // Змінюємо на false при allowedOrigins="*"
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -117,9 +97,7 @@ public class SecurityConfig {
     }
 
     /**
-     * Менеджер автентифікації для логіну та реєстрації.
-     * @param config конфігурація
-     * @return менеджер автентифікації для обробки запитів авторизації
+     * Менеджер автентифікації.
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
