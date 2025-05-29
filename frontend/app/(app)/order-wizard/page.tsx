@@ -1,23 +1,17 @@
 'use client';
 
-import { Box, Container, Typography } from '@mui/material';
+import { Container } from '@mui/material';
 
-import { ClientSelectionStep } from '@/features/order-wizard/client-selection/ui/ClientSelectionStep';
+import { OrderWizardContainer } from '@/features/order-wizard';
 
 /**
- * Тестова сторінка для першого кроку Order Wizard
- * Повністю ізольована від інших компонентів
+ * Сторінка Order Wizard - повний візард для створення замовлень
+ * Використовує архітектуру "DDD inside, FSD outside"
  */
-export default function OrderWizardTestPage() {
+export default function OrderWizardPage() {
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Тест: Вибір клієнта
-      </Typography>
-
-      <Box sx={{ mt: 3 }}>
-        <ClientSelectionStep />
-      </Box>
+    <Container maxWidth="xl" sx={{ py: 2 }}>
+      <OrderWizardContainer />
     </Container>
   );
 }
