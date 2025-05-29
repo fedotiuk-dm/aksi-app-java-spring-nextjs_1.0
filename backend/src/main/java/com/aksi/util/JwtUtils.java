@@ -13,11 +13,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Утилітарний клас для роботи з JWT.
  */
 @Component
+@Slf4j
 public class JwtUtils {
 
     @Value("${jwt.secret}")
@@ -28,6 +31,14 @@ public class JwtUtils {
 
     @Value("${jwt.refresh.expiration:604800000}")
     private long refreshTokenExpiration;
+
+    @PostConstruct
+    public void init() {
+        if (jwtSecret == null || jwtSecret.trim().isEmpty()) {
+            throw new IllegalStateException("JWT secret не налаштовано");
+        }
+        log.info("JwtUtils ініціалізовано успішно");
+    }
 
     /**
      * Витягує ім'я користувача з JWT токена.

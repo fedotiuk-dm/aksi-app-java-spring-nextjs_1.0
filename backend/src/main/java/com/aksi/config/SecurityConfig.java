@@ -12,11 +12,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.aksi.util.JwtUtils;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -26,7 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 @EnableWebSecurity
 @EnableMethodSecurity
 @Slf4j
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtUtils jwtUtils;
+    private final UserDetailsService userDetailsService;
 
     /**
      * Налаштування ланцюжка фільтрів безпеки.
@@ -35,47 +44,36 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.info("Налаштування SecurityFilterChain");
 
+        JwtAuthenticationFilter jwtAuthFilter = new JwtAuthenticationFilter(jwtUtils, userDetailsService);
+
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(sess -> sess
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/", false)
                 .permitAll())
             .logout(logout -> logout.permitAll())
             .authorizeHttpRequests(auth -> auth
+                // Публічні ендпоінти - не потребують автентифікації
                 .requestMatchers(
-                    // Swagger/OpenAPI - розширений список
-                    "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
-                    "/swagger-resources/**", "/webjars/**", "/swagger",
-                    "/api-docs", "/api-docs/**", "/swagger-ui/index.html",
-                    "/docs", "/docs/**",
-                    // Actuator
+                    "/login", "/register", "/",
+                    "/auth/**",
                     "/actuator/**",
-                    // Auth endpoints (API)
-                    "/api/auth/**",
-                    // Всі API endpoints
-                    "/api/**",
-                    // Vaadin ресурси (статичні файли)
-                    "/VAADIN/**", "/frontend/**", "/images/**", "/icons/**",
-                    "/connect/**", "/vite/**",
-                    // Vaadin внутрішні запити (важливо для WebSocket)
-                    "/vaadinServlet/**", "/vaadinServlet/UIDL/**",
-                    "/vaadinServlet/HEARTBEAT/**", "/vaadinServlet/PUSH/**",
-                    // Authentication pages
-                    "/login", "/logout"
+                    "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
+                    "/VAADIN/**", "/vaadinServlet/**", "/frontend/**", "/themes/**",
+                    "/icons/**", "/images/**", "/styles/**", "/js/**"
                 ).permitAll()
-                // Vaadin framework внутрішні запити
-                .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
-                // Vaadin UI сторінки потребують авторизації (крім login/logout)
-                .requestMatchers("/", "/dashboard", "/dashboard/**", "/clients/**", "/orders/**")
-                .authenticated()
-                // Решта запитів - дозволяємо
+                // API ендпоінти - потребують автентифікації
+                .requestMatchers("/api/**").authenticated()
+                // Vaadin views - можуть мати власну логіку автентифікації
                 .anyRequest().permitAll()
             );
 
+        log.info("SecurityFilterChain налаштовано");
         return http.build();
     }
 

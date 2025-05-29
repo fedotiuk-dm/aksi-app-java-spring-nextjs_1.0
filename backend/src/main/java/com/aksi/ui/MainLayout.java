@@ -86,6 +86,9 @@ public class MainLayout extends AppLayout {
         // Головна сторінка
         list.add(createNavigationItem("Головна", DashboardView.class, VaadinIcon.DASHBOARD.create()));
 
+        // Order Wizard
+        list.add(createNavigationItem("Нове замовлення", com.aksi.ui.wizard.OrderWizardView.class, VaadinIcon.PLUS_CIRCLE.create()));
+
         // Клієнти
         list.add(createNavigationItem("Клієнти", ClientsView.class, VaadinIcon.USERS.create()));
 
