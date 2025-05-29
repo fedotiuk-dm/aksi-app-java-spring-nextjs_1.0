@@ -1,18 +1,8 @@
 package com.aksi.domain.client.service;
 
-import java.util.List;
-
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.domain.client.entity.AddressEntity;
-import com.aksi.domain.client.entity.ClientEntity;
-import com.aksi.domain.client.mapper.AddressMapper;
-import com.aksi.domain.client.repository.ClientRepository;
-
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -20,19 +10,19 @@ import lombok.extern.slf4j.Slf4j;
  * після оновлення бази даних. Виконується автоматично при старті програми.
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class AddressMigrationService {
 
-    private final ClientRepository clientRepository;
-    private final AddressMapper addressMapper;
-
     /**
      * Виконується після запуску контексту Spring і мігрує дані адрес.
+     * Тимчасово відключено для усунення проблем з autoCommit.
      */
-    @EventListener(ContextRefreshedEvent.class)
+    // @EventListener(ContextRefreshedEvent.class)
     @Transactional
     public void migrateAddresses() {
+        log.info("Міграція адрес тимчасово відключена");
+
+        /*
         log.info("Початок міграції адрес клієнтів...");
 
         // Отримуємо всіх клієнтів з непустою адресою і без address_id
@@ -69,35 +59,6 @@ public class AddressMigrationService {
         // Зберігаємо зміни
         clientRepository.saveAll(clientsWithOldAddresses);
         log.info("Міграцію адрес клієнтів завершено успішно");
-    }
-
-    /**
-     * Перевіряє наявність поля і його значення в об'єкті через рефлексію.
-     */
-    private boolean hasFieldWithValue(Object obj, String fieldName) {
-        try {
-            java.lang.reflect.Field field = obj.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            Object value = field.get(obj);
-            return value != null && (!(value instanceof String) || !((String) value).isEmpty());
-        } catch (NoSuchFieldException | IllegalAccessException | SecurityException e) {
-            log.warn("Помилка при перевірці поля {}: {}", fieldName, e.getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Отримує значення поля об'єкта через рефлексію.
-     */
-    private String getFieldValue(Object obj, String fieldName) {
-        try {
-            java.lang.reflect.Field field = obj.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            Object value = field.get(obj);
-            return value instanceof String ? (String) value : null;
-        } catch (NoSuchFieldException | IllegalAccessException | SecurityException e) {
-            log.warn("Помилка при отриманні значення поля {}: {}", fieldName, e.getMessage());
-            return null;
-        }
+        */
     }
 }

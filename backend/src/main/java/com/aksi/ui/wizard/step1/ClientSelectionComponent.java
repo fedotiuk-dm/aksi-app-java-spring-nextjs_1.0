@@ -2,8 +2,6 @@ package com.aksi.ui.wizard.step1;
 
 import java.util.function.Consumer;
 
-import org.springframework.stereotype.Component;
-
 import com.aksi.domain.client.dto.ClientPageResponse;
 import com.aksi.domain.client.dto.ClientResponse;
 import com.aksi.domain.client.dto.ClientSearchRequest;
@@ -24,6 +22,8 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +37,8 @@ import lombok.extern.slf4j.Slf4j;
  * - Детальне логування з emoji
  * - Зручний вибір клієнтів одним кліком
  */
-@Component
+@SpringComponent
+@UIScope
 @Slf4j
 public class ClientSelectionComponent extends VerticalLayout {
 
@@ -304,7 +305,7 @@ public class ClientSelectionComponent extends VerticalLayout {
             searchRequest.setPage(0);
             searchRequest.setSize(50); // Збільшуємо для Grid
 
-            log.info("�� ПОШУК ЗАПИТ: query='{}', page={}, size={}",
+            log.info("🔄 ПОШУК ЗАПИТ: query='{}', page={}, size={}",
                 searchRequest.getQuery(), searchRequest.getPage(), searchRequest.getSize());
 
             ClientPageResponse response = clientService.searchClients(searchRequest);

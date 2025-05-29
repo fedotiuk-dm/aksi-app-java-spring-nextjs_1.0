@@ -13,8 +13,9 @@ import com.aksi.ui.wizard.step1.enums.InformationSourceUIEnum;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Builder для створення CreateClientRequest з UI даних.
- * Відповідає за конвертацію UI даних в доменний запит.
+ * Builder компонент для створення запитів клієнта.
+ * Domain логіка згідно з DDD принципами.
+ * Цей компонент не є UI компонентом, тому використовує стандартний @Component.
  */
 @Component
 @Slf4j

@@ -12,11 +12,12 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.spring.annotation.UIScope;
 
+import jakarta.annotation.security.PermitAll;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,13 +26,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Route(value = "order-wizard", layout = MainLayout.class)
 @PageTitle("Оформлення замовлення | Хімчистка")
-@SpringComponent
-@UIScope
+@PermitAll
 @Slf4j
-public class OrderWizardView extends VerticalLayout {
+public class OrderWizardView extends VerticalLayout implements BeforeEnterObserver {
 
-    private final OrderWizardData wizardData;
     private final ApplicationContext applicationContext;
+    private OrderWizardData wizardData;
 
     // Tabs for navigation
     private Tabs stepTabs;
@@ -43,20 +43,29 @@ public class OrderWizardView extends VerticalLayout {
     // Current step container
     private VerticalLayout stepContainer;
 
+    // Step components - cache to avoid recreation issues
+    private Component currentStepView;
+
     private int currentStep = 0;
 
     @Autowired
     public OrderWizardView(ApplicationContext applicationContext) {
-        this.wizardData = new OrderWizardData();
         this.applicationContext = applicationContext;
+        log.info("OrderWizardView creating...");
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        // Initialize data and UI on navigation
+        this.wizardData = new OrderWizardData();
         initializeLayout();
         initializeTabs();
         showStep(0); // Почати з першого етапу
-
-        log.info("OrderWizardView initialized");
+        log.info("OrderWizardView initialized and ready");
     }
 
     private void initializeLayout() {
+        removeAll(); // Clean any existing content
         setSizeFull();
         setPadding(true);
         setSpacing(true);
@@ -92,30 +101,54 @@ public class OrderWizardView extends VerticalLayout {
     }
 
     private void showStep(int stepIndex) {
-        stepContainer.removeAll();
-        currentStep = stepIndex;
+        try {
+            log.info("Showing step: {} (current: {})", stepIndex, currentStep);
 
-        Component stepView = createStepView(stepIndex);
-        stepContainer.add(stepView);
+            // Safely remove current component if exists
+            if (currentStepView != null && stepContainer.getChildren().anyMatch(c -> c.equals(currentStepView))) {
+                log.debug("Removing current step view from container");
+                stepContainer.remove(currentStepView);
+            }
 
-        log.info("Showing step: {}", stepIndex);
+            currentStep = stepIndex;
+            currentStepView = createStepView(stepIndex);
+
+            if (currentStepView != null) {
+                stepContainer.add(currentStepView);
+                log.debug("Added new step view to container");
+            } else {
+                log.warn("Created step view is null for step: {}", stepIndex);
+            }
+        } catch (Exception e) {
+            log.error("Error during step transition to step {}: {}", stepIndex, e.getMessage(), e);
+            // Fallback to prevent UI corruption
+            stepContainer.removeAll();
+            stepContainer.add(createErrorStep(stepIndex, e));
+        }
     }
 
     private Component createStepView(int stepIndex) {
-        return switch (stepIndex) {
-            case 0 -> createStep1View();
-            case 1 -> createStep2View();
-            case 2 -> createStep3View();
-            case 3 -> createStep4View();
-            default -> createStep1View();
-        };
+        try {
+            return switch (stepIndex) {
+                case 0 -> createStep1View();
+                case 1 -> createStep2View();
+                case 2 -> createStep3View();
+                case 3 -> createStep4View();
+                default -> createStep1View();
+            };
+        } catch (Exception e) {
+            log.error("Error creating step view for step {}: {}", stepIndex, e.getMessage(), e);
+            return createErrorStep(stepIndex, e);
+        }
     }
 
     private Component createStep1View() {
+        log.debug("Creating Step 1 view");
         return new ClientAndOrderInfoView(wizardData, this::onStep1Completed, applicationContext);
     }
 
     private Component createStep2View() {
+        log.debug("Creating Step 2 view");
         VerticalLayout step2 = new VerticalLayout();
         step2.add(new H2("Етап 2: Менеджер предметів"));
 
@@ -128,6 +161,7 @@ public class OrderWizardView extends VerticalLayout {
     }
 
     private Component createStep3View() {
+        log.debug("Creating Step 3 view");
         VerticalLayout step3 = new VerticalLayout();
         step3.add(new H2("Етап 3: Параметри замовлення"));
 
@@ -140,6 +174,7 @@ public class OrderWizardView extends VerticalLayout {
     }
 
     private Component createStep4View() {
+        log.debug("Creating Step 4 view");
         VerticalLayout step4 = new VerticalLayout();
         step4.add(new H2("Етап 4: Підтвердження та завершення"));
 
@@ -151,43 +186,61 @@ public class OrderWizardView extends VerticalLayout {
         return step4;
     }
 
+    private Component createErrorStep(int stepIndex, Exception error) {
+        VerticalLayout errorLayout = new VerticalLayout();
+        errorLayout.add(new H2("Помилка завантаження етапу " + (stepIndex + 1)));
+        errorLayout.add("Сталася помилка: " + error.getMessage());
+
+        Button retryButton = new Button("Спробувати ще раз");
+        retryButton.addClickListener(e -> showStep(stepIndex));
+        errorLayout.add(retryButton);
+
+        return errorLayout;
+    }
+
     /**
      * Callback для завершення етапу 1 - інформація про клієнта
      */
     private void onStep1Completed() {
+        log.info("Step 1 completed");
         itemsTab.setEnabled(true);
         stepTabs.setSelectedTab(itemsTab);
         showStep(1);
-        log.info("Step 1 completed");
     }
 
     /**
      * Callback для завершення етапу 2 - предмети замовлення
      */
     private void onStep2Completed() {
+        log.info("Step 2 completed");
         parametersTab.setEnabled(true);
         stepTabs.setSelectedTab(parametersTab);
         showStep(2);
-        log.info("Step 2 completed");
     }
 
     /**
      * Callback для завершення етапу 3 - параметри замовлення
      */
     private void onStep3Completed() {
+        log.info("Step 3 completed");
         confirmationTab.setEnabled(true);
         stepTabs.setSelectedTab(confirmationTab);
         showStep(3);
-        log.info("Step 3 completed");
     }
 
     /**
      * Callback для завершення всього процесу оформлення
      */
     private void onOrderCompleted() {
-        // Логіка завершення замовлення та перенаправлення
-        getUI().ifPresent(ui -> ui.navigate("orders"));
         log.info("Order completed, navigating to orders view");
+        // Safely navigate away
+        getUI().ifPresent(ui -> {
+            try {
+                ui.navigate("orders");
+            } catch (Exception e) {
+                log.error("Error navigating to orders view: {}", e.getMessage(), e);
+            }
+        });
     }
 
     private void setTabsEnabled(boolean enabled) {

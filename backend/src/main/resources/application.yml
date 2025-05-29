@@ -75,20 +75,23 @@ spring:
   vaadin:
     devmode:
       liveReload:
-        enabled: false
+        enabled: true
       # Налаштування для запобігання проблем серіалізації
       sessionSerialization:
         enabled: false
     frontend:
-      hotdeploy: false
+      hotdeploy: true
     pnpm:
-      enable: false
+      enable: true
     npm:
-      enable: false
+      enable: true
     url-mapping: /*
     exclude-urls: /swagger-ui/**,/v3/api-docs/**,/swagger-resources/**,/webjars/**,/docs/**
     # Режим розробки
     productionMode: false
+    # Увімкнення режиму розробки
+    servlet:
+      dev-mode: true
 
 server:
   port: 8080

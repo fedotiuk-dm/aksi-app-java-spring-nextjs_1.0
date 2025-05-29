@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.springframework.stereotype.Component;
-
 import com.aksi.domain.branch.dto.BranchLocationDTO;
 import com.aksi.domain.branch.service.BranchLocationService;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -24,6 +22,8 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +37,8 @@ import lombok.extern.slf4j.Slf4j;
  * - Пункт прийому замовлення (вибір філії)
  * - Дата створення замовлення (автоматично)
  */
-@Component
+@SpringComponent
+@UIScope
 @Slf4j
 public class OrderBasicInfoComponent extends VerticalLayout {
 

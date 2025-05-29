@@ -1,8 +1,21 @@
 spring:
   datasource:
-    url: jdbc:postgresql://aksi-postgres:5432/aksi_cleaners_db_v5?schema=public
+    url: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5
     username: aksi_user
     password: 1911
+    driver-class-name: org.postgresql.Driver
+    schema: public
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 900000
+      leak-detection-threshold: 60000
+      validation-timeout: 5000
+      initialization-fail-timeout: 1
+      connection-test-query: SELECT 1
+      auto-commit: false
   jpa:
     hibernate:
       ddl-auto: validate
@@ -10,21 +23,81 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 20
+          order_inserts: true
+          order_updates: true
+          batch_versioned_data: true
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+    open-in-view: false
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: public
+    contexts: default
+    clear-checksums: true
+
+# Додаткові налаштування для dev-режиму
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,liquibase
+  endpoint:
+    health:
+      show-details: always
+    liquibase:
+      enabled: true
 
 server:
   port: 8080
+  tomcat:
+    connection-timeout: 20000
+    max-connections: 50
+    max-threads: 50
+    min-spare-threads: 10
+
+vaadin:
+  devmode:
+    liveReload:
+      enabled: true
+    optimizeBundle: false
+  frontend:
+    hotdeploy: true
+    compile:
+      timeout: 300
+  pnpm:
+    enable: true
+  npm:
+    enable: true
+  servlet:
+    dev-mode: true
+    session:
+      timeout: 30m
+  productionMode: false
+  whitelisted-packages: com.aksi
 
 logging:
   level:
     root: WARN
     org.springframework: WARN
     org.springframework.web: WARN
-    com.aksi: WARN
-    org.hibernate.SQL: WARN
+    com.aksi: INFO
+    org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
-    com.aksi.config: WARN
+    com.aksi.config: INFO
     org.springframework.security: WARN
     org.springframework.boot: WARN
     org.springframework.boot.autoconfigure: WARN
-    com.zaxxer.hikari: WARN
-    liquibase: WARN
+    com.zaxxer.hikari: INFO
+    liquibase: INFO
+    com.aksi.ui: DEBUG
+    com.vaadin.flow: WARN
+
+# Додаткові системні властивості для оптимізації
+system:
+  properties:
+    vaadin.frontend.compile.timeout: 300000
+    vaadin.frontend.hotdeploy: true

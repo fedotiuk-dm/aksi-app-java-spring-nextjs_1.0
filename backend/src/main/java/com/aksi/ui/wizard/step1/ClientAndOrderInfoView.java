@@ -70,30 +70,105 @@ public class ClientAndOrderInfoView extends VerticalLayout {
     }
 
     private void createComponents() {
-        // Створення компонентів через Spring ApplicationContext
-        clientSelectionComponent = applicationContext.getBean(ClientSelectionComponent.class);
-        clientCreationFormComponent = applicationContext.getBean(ClientCreationFormComponent.class);
-        orderBasicInfoComponent = applicationContext.getBean(OrderBasicInfoComponent.class);
+        // Безпечне створення компонентів через Spring ApplicationContext з валідацією
+        try {
+            clientSelectionComponent = applicationContext.getBean(ClientSelectionComponent.class);
+            if (clientSelectionComponent == null) {
+                log.error("❌ ПОМИЛКА: ClientSelectionComponent не може бути створений");
+                throw new IllegalStateException("ClientSelectionComponent не доступний");
+            }
 
-        // Додавання до layout
-        add(clientSelectionComponent);
-        add(clientCreationFormComponent);
-        add(orderBasicInfoComponent);
+            clientCreationFormComponent = applicationContext.getBean(ClientCreationFormComponent.class);
+            if (clientCreationFormComponent == null) {
+                log.error("❌ ПОМИЛКА: ClientCreationFormComponent не може бути створений");
+                throw new IllegalStateException("ClientCreationFormComponent не доступний");
+            }
+
+            orderBasicInfoComponent = applicationContext.getBean(OrderBasicInfoComponent.class);
+            if (orderBasicInfoComponent == null) {
+                log.error("❌ ПОМИЛКА: OrderBasicInfoComponent не може бути створений");
+                throw new IllegalStateException("OrderBasicInfoComponent не доступний");
+            }
+
+            log.info("✅ УСПІХ: всі компоненти успішно створені");
+
+            // Безпечне додавання до layout
+            addComponentSafely(clientSelectionComponent);
+            addComponentSafely(clientCreationFormComponent);
+            addComponentSafely(orderBasicInfoComponent);
+
+        } catch (Exception e) {
+            log.error("❌ КРИТИЧНА ПОМИЛКА: Не вдалося створити компоненти: {}", e.getMessage(), e);
+            createFallbackComponents();
+        }
+    }
+
+    private void addComponentSafely(com.vaadin.flow.component.Component component) {
+        try {
+            if (component != null && !getChildren().anyMatch(c -> c.equals(component))) {
+                add(component);
+                log.debug("🔧 ДОДАНО: компонент {} безпечно додано до layout", component.getClass().getSimpleName());
+            }
+        } catch (Exception e) {
+            log.error("❌ ПОМИЛКА ДОДАВАННЯ: не вдалося додати компонент {}: {}",
+                      component != null ? component.getClass().getSimpleName() : "null", e.getMessage());
+        }
+    }
+
+    private void createFallbackComponents() {
+        log.warn("⚠️ FALLBACK: створюю резервні компоненти");
+        removeAll();
+
+        // Простий fallback UI
+        add(new com.vaadin.flow.component.html.H3("Помилка завантаження компонентів"));
+        add(new com.vaadin.flow.component.html.Span("Сталася помилка під час ініціалізації форми. Спробуйте перезавантажити сторінку."));
+
+        com.vaadin.flow.component.button.Button refreshButton = new com.vaadin.flow.component.button.Button("Перезавантажити");
+        refreshButton.addClickListener(e -> getUI().ifPresent(ui -> ui.getPage().reload()));
+        add(refreshButton);
     }
 
     private void setupComponentInteractions() {
-        // Налаштування взаємодії між компонентами
-        clientSelectionComponent.setOnClientSelected(this::handleClientSelected);
-        clientSelectionComponent.setOnNewClientRequested(this::handleNewClientRequest);
+        // Безпечне налаштування взаємодії між компонентами з обробкою помилок
+        try {
+            if (clientSelectionComponent != null) {
+                clientSelectionComponent.setOnClientSelected(this::handleClientSelected);
+                clientSelectionComponent.setOnNewClientRequested(this::handleNewClientRequest);
+                log.debug("✅ ClientSelectionComponent callbacks налаштовано");
+            }
 
-        clientCreationFormComponent.setOnClientCreated(this::handleClientCreated);
+            if (clientCreationFormComponent != null) {
+                clientCreationFormComponent.setOnClientCreated(this::handleClientCreated);
+                log.debug("✅ ClientCreationFormComponent callbacks налаштовано");
+            }
 
-        // Відстеження змін у базовій інформації замовлення
-        orderBasicInfoComponent.setOnReceiptNumberChanged(value -> validateForm());
-        orderBasicInfoComponent.setOnBranchChanged(branch -> {
-            validateForm();
-            updateWizardDataWithBranch();
-        });
+            if (orderBasicInfoComponent != null) {
+                // Відстеження змін у базовій інформації замовлення з безпечними callbacks
+                orderBasicInfoComponent.setOnReceiptNumberChanged(value -> {
+                    try {
+                        validateForm();
+                        log.debug("📄 Receipt number changed: {}", value);
+                    } catch (Exception e) {
+                        log.error("❌ Помилка при обробці зміни номера квитанції: {}", e.getMessage());
+                    }
+                });
+
+                orderBasicInfoComponent.setOnBranchChanged(branch -> {
+                    try {
+                        validateForm();
+                        updateWizardDataWithBranch();
+                        log.debug("🏢 Branch changed: {}", branch != null ? branch.getName() : "null");
+                    } catch (Exception e) {
+                        log.error("❌ Помилка при обробці зміни філії: {}", e.getMessage());
+                    }
+                });
+                log.debug("✅ OrderBasicInfoComponent callbacks налаштовано");
+            }
+
+            log.info("✅ УСПІХ: всі interaction callbacks успішно налаштовані");
+        } catch (Exception e) {
+            log.error("❌ ПОМИЛКА: Не вдалося налаштувати component interactions: {}", e.getMessage(), e);
+        }
     }
 
     private void createNavigationSection() {
@@ -130,22 +205,38 @@ public class ClientAndOrderInfoView extends VerticalLayout {
     }
 
     private void validateForm() {
-        boolean clientSelected = selectedClientResponse != null;
-        boolean orderInfoValid = orderBasicInfoComponent.isValid();
+        try {
+            boolean clientSelected = selectedClientResponse != null;
+            boolean orderInfoValid = orderBasicInfoComponent != null && orderBasicInfoComponent.isValid();
 
-        nextStepButton.setEnabled(clientSelected && orderInfoValid);
+            if (nextStepButton != null) {
+                nextStepButton.setEnabled(clientSelected && orderInfoValid);
+                log.debug("🔍 Form validation: client={}, orderInfo={}, nextEnabled={}",
+                         clientSelected, orderInfoValid, (clientSelected && orderInfoValid));
+            }
+        } catch (Exception e) {
+            log.error("❌ Помилка валідації форми: {}", e.getMessage());
+            // Fallback: disable next button on validation error
+            if (nextStepButton != null) {
+                nextStepButton.setEnabled(false);
+            }
+        }
     }
 
     private void updateWizardDataWithBranch() {
-        if (orderBasicInfoComponent.getSelectedBranch() != null) {
-            // Використовуємо mapper для конвертації DTO в Entity
-            wizardData.getDraftOrder().setBranchLocation(
-                orderWizardDataMapper.mapBranchLocationDTOToEntity(
-                    orderBasicInfoComponent.getSelectedBranch()
-                )
-            );
-            log.debug("Updated wizard data with branch: {}",
-                orderBasicInfoComponent.getSelectedBranch().getName());
+        try {
+            if (orderBasicInfoComponent != null && orderBasicInfoComponent.getSelectedBranch() != null) {
+                // Використовуємо mapper для конвертації DTO в Entity
+                wizardData.getDraftOrder().setBranchLocation(
+                    orderWizardDataMapper.mapBranchLocationDTOToEntity(
+                        orderBasicInfoComponent.getSelectedBranch()
+                    )
+                );
+                log.debug("🏢 Updated wizard data with branch: {}",
+                    orderBasicInfoComponent.getSelectedBranch().getName());
+            }
+        } catch (Exception e) {
+            log.error("❌ Помилка оновлення даних wizard з філією: {}", e.getMessage(), e);
         }
     }
 
@@ -179,32 +270,51 @@ public class ClientAndOrderInfoView extends VerticalLayout {
     }
 
     private void completeStep() {
-        // Конвертувати ClientResponse в ClientEntity використовуючи mapper
-        if (selectedClientResponse != null) {
-            ClientEntity clientEntity = orderWizardDataMapper.mapClientResponseToEntity(selectedClientResponse);
-            boolean isNewClient = orderWizardDataMapper.isNewClient(selectedClientResponse);
+        try {
+            // Конвертувати ClientResponse в ClientEntity використовуючи mapper
+            if (selectedClientResponse != null) {
+                ClientEntity clientEntity = orderWizardDataMapper.mapClientResponseToEntity(selectedClientResponse);
+                boolean isNewClient = orderWizardDataMapper.isNewClient(selectedClientResponse);
 
-            wizardData.setClient(clientEntity, isNewClient);
-            log.debug("Mapped and set client entity: {} {}",
-                clientEntity.getLastName(), clientEntity.getFirstName());
+                wizardData.setClient(clientEntity, isNewClient);
+                log.debug("👤 Mapped and set client entity: {} {}",
+                    clientEntity.getLastName(), clientEntity.getFirstName());
+            }
+
+            // Зберегти інформацію про замовлення з валідацією
+            if (orderBasicInfoComponent != null) {
+                wizardData.setOrderBasicInfo(
+                    orderBasicInfoComponent.getReceiptNumber(),
+                    orderBasicInfoComponent.getTagNumber(),
+                    LocalDateTime.now().plusDays(2) // Тимчасово, буде розраховано на етапі 3
+                );
+
+                log.info("📋 Step 1 completed for receipt: {} with branch: {}",
+                    orderBasicInfoComponent.getReceiptNumber(),
+                    orderBasicInfoComponent.getSelectedBranch() != null ?
+                        orderBasicInfoComponent.getSelectedBranch().getName() : "null");
+            }
+
+            // Встановити філію (вже збережено в updateWizardDataWithBranch)
+            updateWizardDataWithBranch();
+
+            // Безпечний перехід до наступного етапу
+            if (onCompleted != null) {
+                onCompleted.run();
+            } else {
+                log.warn("⚠️ onCompleted callback не встановлено");
+            }
+
+        } catch (Exception e) {
+            log.error("❌ КРИТИЧНА ПОМИЛКА при завершенні етапу 1: {}", e.getMessage(), e);
+            // Show user notification about error
+            if (getUI().isPresent()) {
+                com.vaadin.flow.component.notification.Notification.show(
+                    "Сталася помилка при завершенні етапу. Спробуйте ще раз.",
+                    3000,
+                    com.vaadin.flow.component.notification.Notification.Position.MIDDLE
+                );
+            }
         }
-
-        // Зберегти інформацію про замовлення
-        wizardData.setOrderBasicInfo(
-            orderBasicInfoComponent.getReceiptNumber(),
-            orderBasicInfoComponent.getTagNumber(),
-            LocalDateTime.now().plusDays(2) // Тимчасово, буде розраховано на етапі 3
-        );
-
-        // Встановити філію (вже збережено в updateWizardDataWithBranch)
-        updateWizardDataWithBranch();
-
-        log.info("Step 1 completed for receipt: {} with branch: {}",
-            orderBasicInfoComponent.getReceiptNumber(),
-            orderBasicInfoComponent.getSelectedBranch() != null ?
-                orderBasicInfoComponent.getSelectedBranch().getName() : "null");
-
-        // Перейти до наступного етапу
-        onCompleted.run();
     }
 }

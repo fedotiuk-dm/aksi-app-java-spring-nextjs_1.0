@@ -111,8 +111,13 @@ services:
       UDEV: "1"
       OSHI_OS_DISABLE: "false"
       SPRING_JPA_OPEN_IN_VIEW: "false"
+      # Оптимізації Vaadin для швидшої збірки
+      VAADIN_FRONTEND_HOTDEPLOY: "true"
+      VAADIN_DEVMODE_OPTIMIZEBUNDLE: "false"
+      VAADIN_DEVMODE_LIVERELOAD_ENABLED: "false"
+      VAADIN_FRONTEND_COMPILE_TIMEOUT: "300"
       # JVM аргументи для кольорового виводу логів та udev
-      JAVA_OPTS: "-Dspring.output.ansi.enabled=always -Dspring.main.banner-mode=console -Djansi.force=true -Djansi.passthrough=true -Djava.library.path=/usr/lib -Dvaadin.devmode.sessionSerialization.enabled=false -Dvaadin.devmode.liveReload.enabled=false -Dcom.vaadin.flow.internal.StateTree.level=OFF -Dcom.vaadin.flow.internal.StateNode.level=OFF"
+      JAVA_OPTS: "-Dspring.output.ansi.enabled=always -Dspring.main.banner-mode=console -Djansi.force=true -Djansi.passthrough=true -Djava.library.path=/usr/lib -Dvaadin.devmode.sessionSerialization.enabled=false -Dvaadin.devmode.liveReload.enabled=false -Dcom.vaadin.flow.internal.StateTree.level=OFF -Dcom.vaadin.flow.internal.StateNode.level=OFF -Dvaadin.frontend.hotdeploy=true -Dvaadin.devmode.optimizeBundle=false"
     volumes:
       - ../backend:/app # Монтуємо весь проект для автоматичного перезавантаження
       - backend_m2_cache:/root/.m2 # Кеш Maven в Docker volume для уникнення проблем з правами
