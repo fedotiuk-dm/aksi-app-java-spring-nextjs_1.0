@@ -39,3 +39,5 @@ build/
 ### Локальні налаштування ###
 backend/node_modules
 *.node_modules
+node_modules/
+frontend/
