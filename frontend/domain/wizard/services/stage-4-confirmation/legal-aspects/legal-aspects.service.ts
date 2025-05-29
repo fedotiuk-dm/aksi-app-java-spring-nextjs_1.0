@@ -135,6 +135,7 @@ export class LegalAspectsService extends BaseWizardService {
         missingRequirements,
       };
     } catch (error) {
+      this.logError('validateLegalData', error);
       return {
         isValid: false,
         errors: ['Невідома помилка валідації юридичних даних'],
@@ -188,6 +189,7 @@ export class LegalAspectsService extends BaseWizardService {
         validatedData,
       };
     } catch (error) {
+      this.logError('validateSignature', error);
       return {
         isValid: false,
         errors: ['Невідома помилка валідації підпису'],

@@ -162,6 +162,7 @@ export class OrderReviewService extends BaseWizardService {
         validatedParams,
       };
     } catch (error) {
+      this.logError('validateReviewParams', error);
       return {
         isValid: false,
         errors: ['Невідома помилка валідації параметрів'],
@@ -193,6 +194,7 @@ export class OrderReviewService extends BaseWizardService {
         validatedOptions: validation.data,
       };
     } catch (error) {
+      this.logError('validateReviewOptions', error);
       return {
         isValid: false,
         errors: ['Помилка валідації опцій перегляду'],

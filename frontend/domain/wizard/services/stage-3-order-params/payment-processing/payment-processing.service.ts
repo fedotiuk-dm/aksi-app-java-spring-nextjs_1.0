@@ -26,6 +26,7 @@ import { BaseWizardService } from '../../base.service';
 
 // Використовуємо orval схеми напряму
 export type PaymentApplicationData = z.infer<typeof applyPaymentBody>;
+export type PaymentApplicationParams = z.infer<typeof applyPaymentParams>;
 export type OrderPaymentInfo = z.infer<typeof getOrderPayment200Response>;
 export type PrepaymentData = z.infer<typeof addPrepaymentParams>;
 
@@ -51,6 +52,12 @@ export interface PaymentValidationResult {
   isValid: boolean;
   errors: string[];
   validatedData?: PaymentApplicationData;
+}
+
+export interface PaymentParamsValidationResult {
+  isValid: boolean;
+  errors: string[];
+  validatedParams?: PaymentApplicationParams;
 }
 
 export interface FinancialSummary {
@@ -127,9 +134,12 @@ export class PaymentProcessingService extends BaseWizardService {
         validatedData,
       };
     } catch (error) {
+      this.logError('validatePaymentData', error);
       return {
         isValid: false,
-        errors: ['Невідома помилка валідації платіжних даних'],
+        errors: [
+          `Невідома помилка валідації платіжних даних: ${error instanceof Error ? error.message : 'Невідома помилка'}`,
+        ],
       };
     }
   }
@@ -164,6 +174,7 @@ export class PaymentProcessingService extends BaseWizardService {
         overpaymentAmount,
       };
     } catch (error) {
+      this.logError('calculateFinancialSummary', error);
       // Повертаємо безпечні значення за замовчуванням
       return {
         totalAmount: data.totalAmount || 0,
@@ -290,5 +301,41 @@ export class PaymentProcessingService extends BaseWizardService {
       isValid: errors.length === 0,
       errors,
     };
+  }
+
+  /**
+   * Валідація параметрів застосування платежу через orval Zod схему
+   */
+  validatePaymentParams(params: { orderId: string }): PaymentParamsValidationResult {
+    const errors: string[] = [];
+
+    try {
+      // Валідація через orval схему
+      const orvalValidation = applyPaymentParams.safeParse(params);
+      if (!orvalValidation.success) {
+        errors.push(...orvalValidation.error.errors.map((e: z.ZodIssue) => e.message));
+      }
+
+      // Додаткова бізнес-валідація
+      if (!params.orderId || params.orderId.trim().length === 0) {
+        errors.push("ID замовлення обов'язкове для застосування платежу");
+      }
+
+      const validatedParams = orvalValidation.success ? orvalValidation.data : undefined;
+
+      return {
+        isValid: errors.length === 0,
+        errors,
+        validatedParams,
+      };
+    } catch (error) {
+      this.logError('validatePaymentParams', error);
+      return {
+        isValid: false,
+        errors: [
+          `Невідома помилка валідації параметрів платежу: ${error instanceof Error ? error.message : 'Невідома помилка'}`,
+        ],
+      };
+    }
   }
 }

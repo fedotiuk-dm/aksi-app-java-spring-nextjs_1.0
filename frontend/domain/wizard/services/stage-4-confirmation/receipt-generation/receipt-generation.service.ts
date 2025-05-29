@@ -11,6 +11,7 @@ import {
 } from '@/shared/api/generated/receipt/zod';
 
 import { BaseWizardService } from '../../base.service';
+import { PaymentMethodType } from '../../stage-3-order-params/payment-processing/payment-processing.service';
 
 /**
  * Сервіс для бізнес-логіки генерації квитанції (Stage 4.4)
@@ -73,6 +74,7 @@ export interface ReceiptOrderInfo {
   expectedDeliveryDate: string;
   deliveryTime: string;
   expediteType?: 'STANDARD' | 'EXPRESS_48H' | 'EXPRESS_24H';
+  expediteLabel: string;
 }
 
 export interface ReceiptClientInfo {
@@ -189,6 +191,7 @@ export class ReceiptGenerationService extends BaseWizardService {
 
   // Константи для часто використовуваних значень
   private readonly DEFAULT_NOT_SPECIFIED = 'Не вказано';
+  private readonly DEFAULT_UNKNOWN_ERROR = 'Невідома помилка';
 
   private readonly companyInfo = {
     name: 'АКСІ Хімчистка',
@@ -234,9 +237,12 @@ export class ReceiptGenerationService extends BaseWizardService {
         validatedParams,
       };
     } catch (error) {
+      this.logError('validatePdfGeneration', error);
       return {
         isValid: false,
-        errors: ['Невідома помилка валідації параметрів PDF'],
+        errors: [
+          `Невідома помилка валідації параметрів PDF: ${error instanceof Error ? error.message : this.DEFAULT_UNKNOWN_ERROR}`,
+        ],
       };
     }
   }
@@ -278,9 +284,12 @@ export class ReceiptGenerationService extends BaseWizardService {
         validatedParams,
       };
     } catch (error) {
+      this.logError('validateEmailReceipt', error);
       return {
         isValid: false,
-        errors: ['Невідома помилка валідації email параметрів'],
+        errors: [
+          `Невідома помилка валідації email параметрів: ${error instanceof Error ? error.message : this.DEFAULT_UNKNOWN_ERROR}`,
+        ],
       };
     }
   }
@@ -310,9 +319,12 @@ export class ReceiptGenerationService extends BaseWizardService {
         validatedParams,
       };
     } catch (error) {
+      this.logError('validateReceiptDataParams', error);
       return {
         isValid: false,
-        errors: ['Невідома помилка валідації параметрів даних'],
+        errors: [
+          `Невідома помилка валідації параметрів даних: ${error instanceof Error ? error.message : this.DEFAULT_UNKNOWN_ERROR}`,
+        ],
       };
     }
   }
@@ -350,9 +362,12 @@ export class ReceiptGenerationService extends BaseWizardService {
         structuredData: errors.length === 0 ? structuredData : undefined,
       };
     } catch (error) {
+      this.logError('structureReceiptData', error);
       return {
         isValid: false,
-        errors: ['Помилка структурування даних квитанції'],
+        errors: [
+          `Помилка структурування даних квитанції: ${error instanceof Error ? error.message : this.DEFAULT_UNKNOWN_ERROR}`,
+        ],
         warnings: [],
         missingData: [],
       };
@@ -550,6 +565,9 @@ export class ReceiptGenerationService extends BaseWizardService {
       expectedDeliveryDate: this.formatDate(receiptData.expectedCompletionDate),
       deliveryTime: 'після 14:00',
       expediteType: receiptData.expediteType,
+      expediteLabel: receiptData.expediteType
+        ? expediteLabels[receiptData.expediteType]
+        : expediteLabels.STANDARD,
     };
   }
 
@@ -715,9 +733,26 @@ export class ReceiptGenerationService extends BaseWizardService {
       finalAmount: financialInfo.finalAmount || 0,
       prepaymentAmount: financialInfo.prepaymentAmount || 0,
       balanceAmount: financialInfo.balanceAmount || 0,
-      paymentMethod: (receiptData.paymentMethod as any) || 'CASH',
+      paymentMethod: this.validatePaymentMethod(receiptData.paymentMethod),
       formattedBreakdown: breakdown,
     };
+  }
+
+  /**
+   * Валідація та нормалізація способу оплати
+   */
+  private validatePaymentMethod(paymentMethod: unknown): PaymentMethodType {
+    const validMethods: PaymentMethodType[] = ['TERMINAL', 'CASH', 'BANK_TRANSFER'];
+
+    if (
+      typeof paymentMethod === 'string' &&
+      validMethods.includes(paymentMethod as PaymentMethodType)
+    ) {
+      return paymentMethod as PaymentMethodType;
+    }
+
+    // За замовчуванням повертаємо готівку
+    return 'CASH';
   }
 
   /**

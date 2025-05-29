@@ -114,6 +114,7 @@ export class OrderValidationService extends BaseWizardService {
         validatedParams,
       };
     } catch (error) {
+      this.logError('validateCompleteOrderParams', error);
       return {
         isValid: false,
         errors: ['Невідома помилка валідації параметрів завершення'],
@@ -146,6 +147,7 @@ export class OrderValidationService extends BaseWizardService {
         validatedParams,
       };
     } catch (error) {
+      this.logError('validateStatusUpdate', error);
       return {
         isValid: false,
         errors: ['Невідома помилка валідації статусу'],
@@ -180,6 +182,7 @@ export class OrderValidationService extends BaseWizardService {
         criticalIssues,
       };
     } catch (error) {
+      this.logError('validateOrder', error);
       return {
         isValid: false,
         errors: ['Невідома помилка валідації замовлення'],
@@ -290,6 +293,7 @@ export class OrderValidationService extends BaseWizardService {
         recommendations,
       };
     } catch (error) {
+      this.logError('validateConsistency', error);
       return {
         isConsistent: false,
         dataInconsistencies: ['Помилка під час перевірки консистентності'],

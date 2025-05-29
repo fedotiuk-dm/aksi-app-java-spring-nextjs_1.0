@@ -1,11 +1,9 @@
 import { z } from 'zod';
 
-import { completeOrderParams, completeOrder200Response } from '@/shared/api/generated/order/zod';
+import { completeOrder200Response } from '@/shared/api/generated/order/zod';
 import {
   generatePdfReceiptBody,
-  generatePdfReceipt200Response,
   sendReceiptByEmailBody,
-  sendReceiptByEmail200Response,
   getReceiptData200Response,
 } from '@/shared/api/generated/receipt/zod';
 
@@ -126,6 +124,7 @@ export class CompletionService extends BaseWizardService {
         validatedData,
       };
     } catch (error) {
+      this.logError('validateCompletionData', error);
       return {
         isValid: false,
         errors: ['Невідома помилка валідації даних завершення'],
@@ -219,6 +218,7 @@ export class CompletionService extends BaseWizardService {
         preparedData: orvalValidation.data,
       };
     } catch (error) {
+      this.logError('prepareReceiptData', error);
       return {
         isValid: false,
         errors: ['Помилка підготовки даних квитанції'],
@@ -271,6 +271,7 @@ export class CompletionService extends BaseWizardService {
 
       return { isValid: true, errors: [] };
     } catch (error) {
+      this.logError('validateEmailReceipt', error);
       return {
         isValid: false,
         errors: ['Помилка валідації email даних'],
@@ -367,11 +368,18 @@ export class CompletionService extends BaseWizardService {
       errors.push('Цифровий підпис не може бути порожнім');
     }
 
+    if (!expectedData || expectedData.trim().length === 0) {
+      errors.push('Відсутні дані для валідації підпису');
+    }
+
     if (signature && signature.length < 10) {
       errors.push('Цифровий підпис занадто короткий');
     }
 
-    // Тут можна додати більш складну логіку валідації підпису
+    // Базова перевірка відповідності підпису очікуваним даним
+    if (signature && expectedData && !signature.includes(expectedData.slice(0, 8))) {
+      errors.push('Підпис не відповідає очікуваним даним');
+    }
 
     return {
       isValid: errors.length === 0,
