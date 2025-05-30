@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.aksi.domain.client.entity.ClientEntity;
+import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.entity.OrderEntity;
 import com.aksi.domain.order.entity.OrderItemEntity;
 
@@ -28,6 +29,9 @@ public class OrderWizardData {
     // Поточний предмет що додається (для підвізарда)
     private OrderItemEntity currentItem;
 
+    // Тимчасовий список предметів (DTO) для роботи з UI
+    private List<OrderItemDTO> items;
+
     // Список завантажених фото для поточного предмета
     private List<String> tempPhotoPaths;
 
@@ -43,6 +47,7 @@ public class OrderWizardData {
             .finalAmount(BigDecimal.ZERO)
             .draft(true)
             .build();
+        this.items = new ArrayList<>();
         this.tempPhotoPaths = new ArrayList<>();
     }
 
@@ -97,7 +102,7 @@ public class OrderWizardData {
      * Перевірити завершеність етапу 2
      */
     private void checkStep2Completion() {
-        step2Complete = !draftOrder.getItems().isEmpty();
+        step2Complete = !items.isEmpty() || !draftOrder.getItems().isEmpty();
     }
 
     /**
@@ -112,7 +117,7 @@ public class OrderWizardData {
      * Отримати кількість предметів у замовленні
      */
     public int getItemsCount() {
-        return draftOrder.getItems().size();
+        return Math.max(items.size(), draftOrder.getItems().size());
     }
 
     /**
