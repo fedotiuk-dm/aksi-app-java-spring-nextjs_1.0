@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.service.ItemCharacteristicsService;
+import com.aksi.ui.wizard.step2.substeps.item_characteristics.domain.CharacteristicsValidator;
 import com.aksi.ui.wizard.step2.substeps.item_characteristics.domain.ItemCharacteristicsState;
 import com.aksi.ui.wizard.step2.substeps.item_characteristics.events.CharacteristicsEvents;
 
@@ -20,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 public class CharacteristicsManagementService {
 
     private final ItemCharacteristicsService characteristicsService;
+
+    // НОВЕ: Винесена логіка валідації
+    private final CharacteristicsValidator validator = new CharacteristicsValidator();
 
     // Event handlers
     private Consumer<CharacteristicsEvents> eventHandler;
@@ -158,13 +162,38 @@ public class CharacteristicsManagementService {
         try {
             publishEvent(new CharacteristicsEvents.CharacteristicsValidationRequested(currentState));
 
-            // Валідація відбувається автоматично в domain model при створенні стану
+            // ВИПРАВЛЕННЯ: Використовуємо новий валідатор з детальною логікою
+            var validationResult = validator.validateCharacteristics(currentState);
+
+            log.debug("🔍 Результат валідації: isValid={}, errors={}",
+                validationResult.isValid(), validationResult.errors());
+
             publishEvent(new CharacteristicsEvents.CharacteristicsValidationCompleted(
-                    currentState.isValid(),
-                    currentState.getValidationErrors()
+                    validationResult.isValid(),
+                    validationResult.errors()
             ));
 
-            return currentState;
+            // Оновлюємо стан з результатами валідації
+            return ItemCharacteristicsState.builder()
+                    .itemCategory(currentState.getItemCategory())
+                    .itemName(currentState.getItemName())
+                    .material(currentState.getMaterial())
+                    .color(currentState.getColor())
+                    .customColor(currentState.getCustomColor())
+                    .fillerType(currentState.getFillerType())
+                    .customFillerType(currentState.getCustomFillerType())
+                    .fillerCompressed(currentState.getFillerCompressed())
+                    .wearDegree(currentState.getWearDegree())
+                    .availableMaterials(currentState.getAvailableMaterials())
+                    .availableColors(currentState.getAvailableColors())
+                    .availableFillerTypes(currentState.getAvailableFillerTypes())
+                    .availableWearDegrees(currentState.getAvailableWearDegrees())
+                    .isValid(validationResult.isValid())
+                    .validationErrors(validationResult.errors())
+                    .fillerSectionVisible(currentState.isFillerSectionVisible())
+                    .customColorVisible(currentState.isCustomColorVisible())
+                    .customFillerVisible(currentState.isCustomFillerVisible())
+                    .build();
 
         } catch (Exception ex) {
             log.error("Помилка валідації характеристик: {}", ex.getMessage(), ex);

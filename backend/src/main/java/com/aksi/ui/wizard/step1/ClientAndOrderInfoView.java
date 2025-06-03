@@ -1,11 +1,16 @@
 package com.aksi.ui.wizard.step1;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import org.springframework.context.ApplicationContext;
 
 import com.aksi.domain.client.dto.ClientResponse;
 import com.aksi.domain.client.entity.ClientEntity;
+import com.aksi.domain.order.dto.CreateOrderRequest;
+import com.aksi.domain.order.dto.OrderDTO;
+import com.aksi.domain.order.model.ExpediteType;
+import com.aksi.domain.order.service.OrderService;
 import com.aksi.ui.wizard.dto.OrderWizardData;
 import com.aksi.ui.wizard.step1.mapper.Step1WizardDataMapper;
 import com.aksi.ui.wizard.step1.service.WizardDataRestoreService;
@@ -209,6 +214,9 @@ public class ClientAndOrderInfoView extends VerticalLayout {
             boolean clientSelected = selectedClientResponse != null;
             boolean orderInfoValid = orderBasicInfoComponent != null && orderBasicInfoComponent.isValid();
 
+            log.info("🔍 ВАЛІДАЦІЯ STEP 1: client={}, orderInfo={}, nextEnabled={}",
+                clientSelected, orderInfoValid, (clientSelected && orderInfoValid));
+
             if (nextStepButton != null) {
                 nextStepButton.setEnabled(clientSelected && orderInfoValid);
                 log.debug("🔍 Form validation: client={}, orderInfo={}, nextEnabled={}",
@@ -269,6 +277,13 @@ public class ClientAndOrderInfoView extends VerticalLayout {
         validateForm();
     }
 
+    /**
+     * Отримання оновлених даних wizard'а з поточного стану форми.
+     */
+    public OrderWizardData getUpdatedWizardData() {
+        return wizardData; // Дані вже оновлюються в completeStep()
+    }
+
     private void completeStep() {
         try {
             // Конвертувати ClientResponse в ClientEntity використовуючи mapper
@@ -298,6 +313,11 @@ public class ClientAndOrderInfoView extends VerticalLayout {
             // Встановити філію (вже збережено в updateWizardDataWithBranch)
             updateWizardDataWithBranch();
 
+            // НОВЕ: Створюємо замовлення в базі даних
+            if (shouldCreateOrderInDatabase()) {
+                createOrderDraft();
+            }
+
             // Безпечний перехід до наступного етапу
             if (onCompleted != null) {
                 onCompleted.run();
@@ -306,15 +326,64 @@ public class ClientAndOrderInfoView extends VerticalLayout {
             }
 
         } catch (Exception e) {
-            log.error("❌ КРИТИЧНА ПОМИЛКА при завершенні етапу 1: {}", e.getMessage(), e);
-            // Show user notification about error
-            if (getUI().isPresent()) {
-                com.vaadin.flow.component.notification.Notification.show(
-                    "Сталася помилка при завершенні етапу. Спробуйте ще раз.",
-                    3000,
-                    com.vaadin.flow.component.notification.Notification.Position.MIDDLE
-                );
-            }
+            log.error("❌ Помилка завершення step 1: {}", e.getMessage(), e);
+            showErrorNotification("Помилка збереження: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Перевіряє чи потрібно створювати замовлення в базі даних.
+     */
+    private boolean shouldCreateOrderInDatabase() {
+        return wizardData.getDraftOrder().getId() == null &&
+               wizardData.getSelectedClient() != null &&
+               orderBasicInfoComponent != null &&
+               orderBasicInfoComponent.getSelectedBranch() != null;
+    }
+
+    /**
+     * Створює чернетку замовлення в базі даних.
+     */
+    private void createOrderDraft() {
+        try {
+            log.debug("🔄 Створення чернетки замовлення в базі даних");
+
+            // Отримуємо OrderService з ApplicationContext
+            OrderService orderService = applicationContext.getBean(OrderService.class);
+
+            // Створюємо запит для API
+            CreateOrderRequest request = CreateOrderRequest.builder()
+                .clientId(wizardData.getSelectedClient().getId())
+                .branchLocationId(orderBasicInfoComponent.getSelectedBranch().getId())
+                .tagNumber(orderBasicInfoComponent.getTagNumber())
+                .expediteType(ExpediteType.STANDARD)
+                .draft(true)
+                .items(new ArrayList<>()) // Предмети будуть додані пізніше
+                .build();
+
+            // Викликаємо API
+            OrderDTO createdOrder = orderService.saveOrderDraft(request);
+
+            // Оновлюємо wizardData з ID створеного замовлення
+            wizardData.getDraftOrder().setId(createdOrder.getId());
+            wizardData.getDraftOrder().setReceiptNumber(createdOrder.getReceiptNumber());
+
+            log.info("✅ Створено чернетку замовлення з ID: {} та номером квитанції: {}",
+                    createdOrder.getId(), createdOrder.getReceiptNumber());
+
+        } catch (Exception e) {
+            log.error("❌ Помилка створення чернетки замовлення: {}", e.getMessage(), e);
+            throw new RuntimeException("Не вдалося створити замовлення: " + e.getMessage(), e);
+        }
+    }
+
+    private void showErrorNotification(String message) {
+        if (getUI().isPresent()) {
+            com.vaadin.flow.component.notification.Notification.show(
+                message,
+                3000,
+                com.vaadin.flow.component.notification.Notification.Position.MIDDLE
+            );
         }
     }
 }

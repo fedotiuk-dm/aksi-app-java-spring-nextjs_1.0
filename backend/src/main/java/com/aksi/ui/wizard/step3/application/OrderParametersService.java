@@ -6,27 +6,36 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+
+import com.aksi.domain.order.model.ExpediteType;
+import com.aksi.domain.order.model.PaymentMethod;
+import com.aksi.domain.order.service.OrderService;
 import com.aksi.ui.wizard.dto.OrderWizardData;
 import com.aksi.ui.wizard.step3.domain.OrderParametersState;
 import com.aksi.ui.wizard.step3.domain.OrderParametersState.DiscountType;
-import com.aksi.ui.wizard.step3.domain.OrderParametersState.ItemInfo;
-import com.aksi.ui.wizard.step3.domain.OrderParametersState.PaymentMethod;
 import com.aksi.ui.wizard.step3.domain.OrderParametersState.UrgencyOption;
 import com.aksi.ui.wizard.step3.events.OrderParametersEvents;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Application Service для управління параметрами замовлення.
- * Координує domain логіку та публікує події для UI.
+ * Application Service для координації параметрів замовлення.
+ * Містить бізнес-логіку обробки параметрів, валідації та координації зі зовнішніми сервісами.
  */
+@Service
+@RequiredArgsConstructor
 @Slf4j
 public class OrderParametersService {
 
+    private final OrderService orderService;
+
+    // Event handler для координації з UI
     private Consumer<OrderParametersEvents> eventHandler;
 
     /**
-     * Встановлює обробник подій.
+     * Встановлює event handler.
      */
     public void setEventHandler(Consumer<OrderParametersEvents> eventHandler) {
         this.eventHandler = eventHandler;
@@ -42,18 +51,26 @@ public class OrderParametersService {
             publishEvent(OrderParametersEvents.loadingStarted("initialization", "Ініціалізація параметрів замовлення"));
 
             // Конвертуємо предмети до ItemInfo
-            List<ItemInfo> items = wizardData.getItems().stream()
-                .map(item -> new ItemInfo(item.getCategory(), item.getName()))
+            List<OrderParametersState.ItemInfo> items = wizardData.getItems().stream()
+                .map(item -> new OrderParametersState.ItemInfo(item.getCategory(), item.getName()))
                 .collect(Collectors.toList());
 
-            // Створюємо початковий стан
-            OrderParametersState initialState = OrderParametersState.createInitial(items, wizardData.getTotalAmount());
+            // Створюємо початковий стан з базовою сумою предметів
+            BigDecimal itemsTotal = wizardData.getItems().stream()
+                .map(item -> item.getTotalPrice())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            OrderParametersState initialState = OrderParametersState.createInitial(items, itemsTotal);
+
+            // Оновлюємо загальну суму в wizard data
+            wizardData.getDraftOrder().setTotalAmount(itemsTotal);
+            wizardData.getDraftOrder().setFinalAmount(itemsTotal);
 
             // Публікуємо події
             publishEvent(OrderParametersEvents.parametersInitialized(
                 initialState,
                 wizardData.getDraftOrder().getReceiptNumber(),
-                wizardData.getTotalAmount(),
+                initialState.getTotalAmount(),
                 wizardData.getItems().size()
             ));
 
@@ -66,7 +83,7 @@ public class OrderParametersService {
 
             publishEvent(OrderParametersEvents.loadingCompleted("initialization", true, "Параметри ініціалізовано успішно"));
 
-            log.info("Параметри замовлення ініціалізовано успішно");
+            log.info("Параметри замовлення ініціалізовано успішно з сумою: {}", initialState.getTotalAmount());
             return initialState;
 
         } catch (Exception ex) {
@@ -200,11 +217,11 @@ public class OrderParametersService {
     /**
      * Оновлює спосіб оплати.
      */
-    public OrderParametersState updatePaymentMethod(OrderParametersState currentState, PaymentMethod newPaymentMethod) {
+    public OrderParametersState updatePaymentMethod(OrderParametersState currentState, OrderParametersState.PaymentMethod newPaymentMethod) {
         try {
             log.debug("Оновлення способу оплати: {} -> {}", currentState.getPaymentMethod(), newPaymentMethod);
 
-            PaymentMethod previousMethod = currentState.getPaymentMethod();
+            OrderParametersState.PaymentMethod previousMethod = currentState.getPaymentMethod();
             OrderParametersState updatedState = currentState.withPaymentMethod(newPaymentMethod);
 
             publishEvent(OrderParametersEvents.paymentChanged(newPaymentMethod, previousMethod));
@@ -328,15 +345,29 @@ public class OrderParametersService {
                 return;
             }
 
+            publishEvent(OrderParametersEvents.loadingStarted("save_order", "Збереження замовлення"));
+
             // Оновлюємо wizardData з параметрами
             OrderWizardData updatedWizardData = updateWizardDataFromState(wizardData, currentState);
 
+            // Зберігаємо замовлення в базу даних перед переходом до step 4
+            var orderEntity = updatedWizardData.getDraftOrder();
+            orderEntity.setDraft(false); // Відмічаємо, що це вже не чернетка
+
+            var savedOrderDto = orderService.saveOrder(orderEntity);
+            log.info("Order saved to database with ID: {}", savedOrderDto.getId());
+
+            // Оновлюємо ID замовлення у wizard data
+            orderEntity.setId(savedOrderDto.getId());
+
+            publishEvent(OrderParametersEvents.loadingCompleted("save_order", true, "Замовлення збережено"));
             publishEvent(OrderParametersEvents.readyToProceed(updatedWizardData, currentState, true));
 
-            log.info("Готовий до переходу на наступний етап");
+            log.info("Готовий до переходу на наступний етап, замовлення збережено з ID: {}", savedOrderDto.getId());
 
         } catch (Exception ex) {
             log.error("Помилка підготовки до переходу: {}", ex.getMessage(), ex);
+            publishEvent(OrderParametersEvents.loadingCompleted("save_order", false, "Помилка збереження замовлення"));
             publishEvent(OrderParametersEvents.error("proceed_next", ex.getMessage(), ex, "PROCEED_ERROR"));
         }
     }
@@ -365,6 +396,34 @@ public class OrderParametersService {
         publishEvent(OrderParametersEvents.cancelRequested(reason));
     }
 
+    /**
+     * Перераховує загальну вартість на основі поточних параметрів.
+     */
+    public OrderParametersState recalculateTotal(OrderParametersState currentState, BigDecimal baseAmount) {
+        try {
+            log.debug("Перерахунок загальної вартості: базова сума = {}", baseAmount);
+
+            OrderParametersState updatedState = currentState.withBaseAmount(baseAmount);
+
+            publishEvent(OrderParametersEvents.calculationCompleted("total_recalculation", updatedState.getTotalAmount(), "Загальна вартість перерахована"));
+            publishEvent(OrderParametersEvents.financialStateChanged(
+                updatedState.getTotalAmount(),
+                updatedState.getPaidAmount(),
+                updatedState.getDebtAmount(),
+                updatedState.isFullyPaid(),
+                updatedState.getPaymentMethod()
+            ));
+            publishEvent(OrderParametersEvents.stateUpdated(updatedState, "total_recalculated"));
+
+            return updatedState;
+
+        } catch (Exception ex) {
+            log.error("Помилка перерахунку загальної вартості: {}", ex.getMessage(), ex);
+            publishEvent(OrderParametersEvents.error("recalculate_total", ex.getMessage(), ex, "CALCULATION_ERROR"));
+            return currentState;
+        }
+    }
+
     // Приватні методи
 
     private void publishEvent(OrderParametersEvents event) {
@@ -388,16 +447,60 @@ public class OrderParametersService {
     }
 
     private OrderWizardData updateWizardDataFromState(OrderWizardData wizardData, OrderParametersState state) {
+        var orderEntity = wizardData.getDraftOrder();
+
         // Оновлюємо дату виконання
         if (state.getExpectedCompletionDateTime() != null) {
-            wizardData.getDraftOrder().setExpectedCompletionDate(state.getExpectedCompletionDateTime());
+            orderEntity.setExpectedCompletionDate(state.getExpectedCompletionDateTime());
         }
 
-        // TODO: Додати оновлення інших параметрів в OrderWizardData
-        // - терміновість
-        // - знижки
-        // - спосіб оплати
-        // - примітки
+        // Оновлюємо терміновість
+        if (state.getUrgencyOption() != null) {
+            switch (state.getUrgencyOption()) {
+                case STANDARD -> orderEntity.setExpediteType(ExpediteType.STANDARD);
+                case URGENT_48H -> orderEntity.setExpediteType(ExpediteType.EXPRESS_48H);
+                case URGENT_24H -> orderEntity.setExpediteType(ExpediteType.EXPRESS_24H);
+            }
+        }
+
+        // Оновлюємо спосіб оплати
+        if (state.getPaymentMethod() != null) {
+            PaymentMethod domainPaymentMethod = switch (state.getPaymentMethod()) {
+                case TERMINAL -> PaymentMethod.TERMINAL;
+                case CASH -> PaymentMethod.CASH;
+                case BANK_TRANSFER -> PaymentMethod.BANK_TRANSFER;
+            };
+            orderEntity.setPaymentMethod(domainPaymentMethod);
+        }
+
+        // Оновлюємо фінансові дані
+        if (state.getTotalAmount() != null) {
+            orderEntity.setTotalAmount(state.getTotalAmount());
+            orderEntity.setFinalAmount(state.getTotalAmount());
+        }
+
+        if (state.getPaidAmount() != null) {
+            orderEntity.setPrepaymentAmount(state.getPaidAmount());
+        }
+
+        // Оновлюємо примітки
+        if (state.getOrderNotes() != null) {
+            orderEntity.setCustomerNotes(state.getOrderNotes());
+        }
+
+        if (state.getClientRequirements() != null) {
+            orderEntity.setAdditionalRequirements(state.getClientRequirements());
+        }
+
+        // Оновлюємо знижку
+        if (state.getDiscountType() != OrderParametersState.DiscountType.NONE) {
+            // TODO: Додати поля для знижки в OrderEntity або зберігати як метадані
+            log.debug("Знижка застосована: {} ({}%)", state.getDiscountType(), state.getEffectiveDiscountPercent());
+        }
+
+        log.debug("WizardData оновлено з параметрами: дата={}, терміновість={}, оплата={}, сума={}",
+                state.getExpectedCompletionDateTime(), state.getUrgencyOption(),
+                state.getPaymentMethod(), state.getTotalAmount());
 
         return wizardData;
     }

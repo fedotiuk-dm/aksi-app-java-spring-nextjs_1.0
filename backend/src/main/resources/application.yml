@@ -35,6 +35,8 @@ spring:
     default-schema: public
     contexts: default
     clear-checksums: true
+    # Тільки валідні Spring Boot Liquibase властивості
+    drop-first: false
     parameters:
       create-uuid-extension: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
   datasource:
@@ -84,7 +86,7 @@ spring:
     pnpm:
       enable: true
     npm:
-      enable: true
+      enable: false
     url-mapping: /*
     exclude-urls: /swagger-ui/**,/v3/api-docs/**,/swagger-resources/**,/webjars/**,/docs/**
     # Режим розробки

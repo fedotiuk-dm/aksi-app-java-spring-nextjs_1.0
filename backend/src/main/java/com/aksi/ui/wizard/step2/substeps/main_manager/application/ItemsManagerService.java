@@ -64,7 +64,7 @@ public class ItemsManagerService {
     }
 
     /**
-     * Завантажує предмети замовлення.
+     * Завантажує предмети замовлення з бази даних або локального списку.
      */
     public ItemsManagerState loadItems(ItemsManagerState currentState) {
         log.debug("Завантаження предметів замовлення");
@@ -90,6 +90,23 @@ public class ItemsManagerService {
                 // Використовуємо локальний список
                 items = wizardData.getItems();
                 log.debug("Використано {} предметів з локального списку", items.size());
+            }
+
+            // ДЕТАЛЬНЕ ЛОГУВАННЯ
+            log.info("🔍 ДЕТАЛЬНА ІНФОРМАЦІЯ ПРО ПРЕДМЕТИ:");
+            log.info("   - Кількість предметів: {}", items.size());
+            log.info("   - З бази даних: {}", fromDatabase);
+            log.info("   - ID замовлення: {}", wizardData.getDraftOrder().getId());
+            log.info("   - Предмети у wizardData: {}", wizardData.getItems().size());
+
+            if (!items.isEmpty()) {
+                for (int i = 0; i < items.size(); i++) {
+                    OrderItemDTO item = items.get(i);
+                    log.info("   - Предмет {}: {} (ID: {}, Категорія: {}, Ціна: {})",
+                            i + 1, item.getName(), item.getId(), item.getCategory(), item.getTotalPrice());
+                }
+            } else {
+                log.warn("⚠️ СПИСОК ПРЕДМЕТІВ ПОРОЖНІЙ!");
             }
 
             publishEvent(new ItemsManagerEvents.ItemsLoaded(items, fromDatabase));
@@ -290,6 +307,22 @@ public class ItemsManagerService {
         boolean isReady = currentState.isReadyForNext();
         String buttonText = currentState.getContinueButtonText();
 
+        log.debug("🔍 ДЕТАЛЬНА ІНФОРМАЦІЯ ВАЛІДАЦІЇ:");
+        log.debug("   - isReady: {}", isReady);
+        log.debug("   - hasItems: {}", currentState.isHasItems());
+        log.debug("   - items.size(): {}", currentState.getItems().size());
+        log.debug("   - buttonText: {}", buttonText);
+
+        // ВИПРАВЛЕННЯ: Перевіряємо що список предметів насправді порожній
+        if (!isReady && currentState.getItems().isEmpty()) {
+            log.warn("⚠️ Показуємо помилку валідації - список предметів порожній");
+            publishEvent(new ItemsManagerEvents.ManagerValidationCompleted(
+                    false,
+                    List.of("Додайте хоча б один предмет до замовлення"),
+                    false
+            ));
+        }
+
         publishEvent(new ItemsManagerEvents.ReadyToContinue(
                 isReady,
                 buttonText,
@@ -306,14 +339,15 @@ public class ItemsManagerService {
         try {
             publishEvent(new ItemsManagerEvents.ManagerValidationRequested(currentState));
 
-            // Валідація відбувається автоматично в domain model
-            publishEvent(new ItemsManagerEvents.ManagerValidationCompleted(
-                    currentState.isValid(),
-                    currentState.getValidationMessages(),
-                    currentState.isReadyForNext()
-            ));
+            // ВИПРАВЛЕННЯ: Валідація відбувається автоматично в domain model,
+            // але не показуємо помилки одразу
+            // publishEvent(new ItemsManagerEvents.ManagerValidationCompleted(
+            //         currentState.isValid(),
+            //         currentState.getValidationMessages(),
+            //         currentState.isReadyForNext()
+            // ));
 
-            // Оновлюємо стан UI
+            // Оновлюємо стан UI без показу валідаційних помилок
             updateUIState(currentState);
 
             return currentState;

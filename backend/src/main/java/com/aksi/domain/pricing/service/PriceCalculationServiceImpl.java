@@ -82,8 +82,17 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
         }
 
         // Отримуємо категорію для роботи з одиницями виміру
+        log.debug("🔍 Пошук категорії з кодом: '{}'", categoryCode);
         ServiceCategoryEntity category = serviceCategoryRepository.findByCode(categoryCode)
-                .orElseThrow(() -> EntityNotFoundException.withMessage("Категорія з кодом " + categoryCode + " не знайдена"));
+                .orElseThrow(() -> {
+                    // Додаємо логінг доступних категорій
+                    List<ServiceCategoryEntity> availableCategories = serviceCategoryRepository.findAll();
+                    log.error("❌ Категорія з кодом '{}' не знайдена. Доступні категорії:", categoryCode);
+                    availableCategories.forEach(cat ->
+                        log.error("  - id: {}, code: '{}', name: '{}'", cat.getId(), cat.getCode(), cat.getName())
+                    );
+                    return EntityNotFoundException.withMessage("Категорія з кодом " + categoryCode + " не знайдена");
+                });
 
         // Отримуємо рекомендовану одиницю виміру
         String recommendedUnitOfMeasure = unitOfMeasureService.getRecommendedUnitOfMeasure(category.getId(), itemName);
@@ -122,7 +131,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
                     .categoryCode(categoryCode)
                     .calculationDetails(calculationDetails)
                     .build();
-            
+
             // Використовуємо новий метод з доменним об'єктом
             currentPrice = modifierCalculationService.calculatePrice(calculationParams);
         }

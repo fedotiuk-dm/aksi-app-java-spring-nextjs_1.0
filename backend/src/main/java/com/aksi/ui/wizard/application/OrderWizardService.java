@@ -5,10 +5,12 @@ import java.util.function.Consumer;
 
 import org.springframework.stereotype.Service;
 
+import com.aksi.domain.order.service.OrderService;
 import com.aksi.ui.wizard.domain.OrderWizardState;
 import com.aksi.ui.wizard.dto.OrderWizardData;
 import com.aksi.ui.wizard.events.OrderWizardEvents;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -16,8 +18,11 @@ import lombok.extern.slf4j.Slf4j;
  * Управляє станом wizard'а та координує взаємодію між етапами.
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class OrderWizardService {
+
+    private final OrderService orderService;
 
     // Event handler для координації з UI
     private Consumer<OrderWizardEvents> eventHandler;
@@ -44,8 +49,10 @@ public class OrderWizardService {
             publishEvent(OrderWizardEvents.stateUpdated(initialState, "Ініціалізація", -1, 0));
             publishProgressUpdate(initialState);
             publishNavigationUpdate(initialState);
+            publishStepViewRequest(initialState, false);
+            publishUIStateUpdate(initialState);
 
-            log.info("Order Wizard initialized with session ID: {}", sessionId);
+            log.info("Order Wizard initialized with session ID: {} and Step 1 requested", sessionId);
             return initialState;
 
         } catch (Exception e) {
@@ -194,7 +201,7 @@ public class OrderWizardService {
             log.info("Completing step: {} with updated data", currentState.getCurrentStep());
 
             var stepName = currentState.getCurrentWizardStep().getTitle();
-            var newState = currentState.withWizardData(updatedData);
+            var newState = currentState.completeCurrentStep(updatedData);
 
             publishEvent(OrderWizardEvents.stepCompleted(
                 currentState.getCurrentStep(),
@@ -205,7 +212,8 @@ public class OrderWizardService {
             publishEvent(OrderWizardEvents.dataUpdated(updatedData, currentState.getWizardData(), stepName, currentState.getCurrentStep()));
             publishEvent(OrderWizardEvents.stateUpdated(newState, "Завершення етапу " + stepName, currentState.getCurrentStep(), currentState.getCurrentStep()));
 
-            log.info("Step {} completed successfully", currentState.getCurrentStep());
+            log.info("Step {} completed successfully, next step enabled: {}",
+                currentState.getCurrentStep(), newState.getEnabledSteps());
             return newState;
 
         } catch (Exception e) {
@@ -262,18 +270,32 @@ public class OrderWizardService {
         try {
             log.info("Completing wizard from step: {}", currentState.getCurrentStep());
 
+            // Зберігаємо замовлення в базу даних
+            var wizardData = currentState.getWizardData();
+            var orderEntity = wizardData.getDraftOrder();
+
+            // Встановлюємо, що це вже не чернетка
+            orderEntity.setDraft(false);
+
+            // Зберігаємо замовлення
+            var savedOrderDto = orderService.saveOrder(orderEntity);
+            log.info("Order saved to database with ID: {}", savedOrderDto.getId());
+
+            // Оновлюємо ID замовлення у wizard data
+            orderEntity.setId(savedOrderDto.getId());
+
             var completedState = currentState.complete();
 
             publishEvent(OrderWizardEvents.wizardCompleted(
                 completedState.getWizardData(),
                 completedState,
-                "Замовлення успішно створено"
+                "Замовлення успішно створено та збережено"
             ));
             publishEvent(OrderWizardEvents.stateUpdated(completedState, "Завершення wizard'а", currentState.getCurrentStep(), currentState.getCurrentStep()));
             publishProgressUpdate(completedState);
             publishNavigationUpdate(completedState);
 
-            log.info("Wizard completed successfully");
+            log.info("Wizard completed successfully, order saved with ID: {}", savedOrderDto.getId());
             return completedState;
 
         } catch (Exception e) {

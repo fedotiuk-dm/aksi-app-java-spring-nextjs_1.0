@@ -64,11 +64,7 @@ public class MaterialSelectionComponent extends VerticalLayout {
         log.debug("Завантаження {} матеріалів", materials.size());
 
         materialComboBox.setItems(materials);
-
-        // Якщо є тільки один матеріал, автоматично вибираємо його
-        if (materials.size() == 1) {
-            materialComboBox.setValue(materials.get(0));
-        }
+        log.debug("Матеріали завантажено в ComboBox");
     }
 
     /**

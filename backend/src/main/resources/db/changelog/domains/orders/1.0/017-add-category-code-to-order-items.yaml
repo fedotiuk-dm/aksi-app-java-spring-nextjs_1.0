@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: orders-1.0-017
+      author: aksi-team
+      comment: Add category_code field to order_items table
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            - columnExists:
+                tableName: order_items
+                columnName: category_code
+      changes:
+        - addColumn:
+            tableName: order_items
+            columns:
+              - column:
+                  name: category_code
+                  type: VARCHAR(255)
+                  remarks: Код категорії послуги (наприклад, CLOTHING, LEATHER)
+        - createIndex:
+            tableName: order_items
+            indexName: idx_order_items_category_code
+            columns:
+              - column:
+                  name: category_code
+        - sql:
+            comment: Update existing records with category codes based on category names
+            sql: |
+              UPDATE order_items
+              SET category_code = CASE
+                  WHEN category = 'Чистка одягу та текстилю' THEN 'CLOTHING'
+                  WHEN category = 'Прання білизни' THEN 'LAUNDRY'
+                  WHEN category = 'Прасування' THEN 'IRONING'
+                  WHEN category = 'Чистка та відновлення шкіряних виробів' THEN 'LEATHER'
+                  WHEN category = 'Дублянки' THEN 'PADDING'
+                  WHEN category = 'Вироби із натурального хутра' THEN 'FUR'
+                  WHEN category = 'Фарбування текстильних виробів' THEN 'DYEING'
+                  WHEN category = 'Додаткові послуги' THEN 'ADDITIONAL_SERVICES'
+                  ELSE 'CLOTHING'
+              END
+              WHERE category_code IS NULL;
+            rollback:
+              - sql:
+                  sql: "UPDATE order_items SET category_code = NULL;"

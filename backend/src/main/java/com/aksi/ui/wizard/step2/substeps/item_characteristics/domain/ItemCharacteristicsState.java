@@ -185,9 +185,10 @@ public class ItemCharacteristicsState {
             String customFillerType,
             String wearDegree) {
 
+        // ВИПРАВЛЕННЯ: Валідацію винесено в CharacteristicsValidator
+        // Тут тільки базова валідація для створення стану
         var errors = new java.util.ArrayList<String>();
 
-        // Обов'язкові поля
         if (material == null || material.trim().isEmpty()) {
             errors.add("Матеріал є обов'язковим");
         }
@@ -196,26 +197,12 @@ public class ItemCharacteristicsState {
             errors.add("Колір є обов'язковим");
         }
 
-        // Валідація власного кольору
-        if (isCustomColor(color) && (customColor == null || customColor.trim().isEmpty())) {
-            errors.add("Необхідно вказати власний колір");
-        }
-
-        // Валідація наповнювача для відповідних категорій
-        if (fillerSectionVisible && isFillerRequiredForCategory()) {
-            if (fillerType == null || fillerType.trim().isEmpty()) {
-                errors.add("Тип наповнювача є обов'язковим для цієї категорії");
-            } else if ("Інше".equals(fillerType) &&
-                      (customFillerType == null || customFillerType.trim().isEmpty())) {
-                errors.add("Необхідно вказати тип наповнювача");
-            }
-        }
-
         return new ValidationResult(errors.isEmpty(), List.copyOf(errors));
     }
 
     /**
      * Перевіряє чи наповнювач обов'язковий для категорії.
+     * СПРОЩЕНА версія, основна логіка в CharacteristicsValidator.
      */
     private boolean isFillerRequiredForCategory() {
         if (itemCategory == null) {
@@ -241,15 +228,13 @@ public class ItemCharacteristicsState {
     }
 
     /**
-     * Перевіряє чи є всі обов'язкові поля заповнені.
+     * СПРОЩЕНИЙ метод перевірки обов'язкових полів.
+     * Основна логіка винесена в CharacteristicsValidator.
      */
     public boolean hasRequiredFields() {
-        return material != null && !material.trim().isEmpty() &&
-               color != null && !color.trim().isEmpty() &&
-               (!isCustomColor(color) || (customColor != null && !customColor.trim().isEmpty())) &&
-               (!fillerSectionVisible || !isFillerRequiredForCategory() ||
-                (fillerType != null && (!isCustomFiller(fillerType) ||
-                 (customFillerType != null && !customFillerType.trim().isEmpty()))));
+        // Використовуємо валідатор замість складної логіки тут
+        var validator = new CharacteristicsValidator();
+        return validator.hasAllRequiredFields(this);
     }
 
     /**

@@ -290,7 +290,7 @@ public class BasicInfoManagementService {
     }
 
     /**
-     * Застосовує основну інформацію до предмета замовлення.
+     * Застосовує стан основної інформації до предмета.
      */
     public OrderItemDTO applyBasicInfoToItem(OrderItemDTO item, ItemBasicInfoState basicInfoState) {
         log.debug("Застосування основної інформації до предмета: {}", basicInfoState.getSelectedItemName());
@@ -298,6 +298,22 @@ public class BasicInfoManagementService {
         try {
             // Застосовуємо основну інформацію
             item.setCategory(basicInfoState.getSelectedCategoryName());
+
+            // Знаходимо код категорії за ID
+            if (basicInfoState.getSelectedCategoryId() != null) {
+                try {
+                    ServiceCategoryDTO categoryDto = serviceCategoryService.getCategoryById(
+                            UUID.fromString(basicInfoState.getSelectedCategoryId())
+                    );
+                    item.setCategoryCode(categoryDto.getCode());
+                } catch (Exception ex) {
+                    log.warn("Не вдалося отримати код категорії за ID {}: {}",
+                             basicInfoState.getSelectedCategoryId(), ex.getMessage());
+                    // Як fallback - використовуємо назву
+                    item.setCategoryCode(basicInfoState.getSelectedCategoryName());
+                }
+            }
+
             item.setName(basicInfoState.getSelectedItemName());
             item.setQuantity(basicInfoState.getQuantity());
             item.setUnitOfMeasure(basicInfoState.getUnitOfMeasure());

@@ -110,7 +110,8 @@ public class OrderParametersState {
             .isValid(validateExpectedDate(newDate))
             .validationMessages(generateValidationMessages(newDate, discountType, paidAmount, totalAmount))
             .canProceedToNext(validateExpectedDate(newDate) && validateFinancials(paidAmount, totalAmount))
-            .build();
+            .build()
+            .withRecalculatedTotal();
     }
 
     /**
@@ -124,7 +125,8 @@ public class OrderParametersState {
             .urgencyOption(newUrgency)
             .isValid(validateExpectedDate(newDate))
             .validationMessages(generateValidationMessages(newDate, discountType, paidAmount, totalAmount))
-            .build();
+            .build()
+            .withRecalculatedTotal();
     }
 
     /**
@@ -145,7 +147,8 @@ public class OrderParametersState {
             .showDiscountWarning(!warnings.isEmpty())
             .isValid(validateDiscount(newDiscountType, newCustomPercent))
             .validationMessages(generateValidationMessages(expectedCompletionDate, newDiscountType, paidAmount, totalAmount))
-            .build();
+            .build()
+            .withRecalculatedTotal();
     }
 
     /**
@@ -156,7 +159,8 @@ public class OrderParametersState {
             .customDiscountPercent(newPercent)
             .isValid(validateDiscount(discountType, newPercent))
             .validationMessages(generateValidationMessages(expectedCompletionDate, discountType, paidAmount, totalAmount))
-            .build();
+            .build()
+            .withRecalculatedTotal();
     }
 
     /**
@@ -191,6 +195,49 @@ public class OrderParametersState {
             .orderNotes(orderNotes != null ? orderNotes : "")
             .clientRequirements(clientRequirements != null ? clientRequirements : "")
             .build();
+    }
+
+    /**
+     * Перераховує загальну вартість на основі поточних параметрів.
+     */
+    public OrderParametersState withRecalculatedTotal() {
+        // Базова сума предметів (без модифікаторів)
+        BigDecimal baseAmount = totalAmount != null ? totalAmount : BigDecimal.ZERO;
+
+        // Застосовуємо знижку
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        if (hasDiscount()) {
+            BigDecimal discountPercent = getEffectiveDiscountPercent();
+            discountAmount = baseAmount.multiply(discountPercent).divide(BigDecimal.valueOf(100));
+        }
+
+        // Застосовуємо надбавку за терміновість
+        BigDecimal urgencyAmount = BigDecimal.ZERO;
+        if (isUrgentOrder()) {
+            BigDecimal urgencyPercent = BigDecimal.valueOf(urgencyOption.getSurchargePercent());
+            urgencyAmount = baseAmount.multiply(urgencyPercent).divide(BigDecimal.valueOf(100));
+        }
+
+        // Розраховуємо фінальну суму
+        BigDecimal calculatedTotal = baseAmount.subtract(discountAmount).add(urgencyAmount);
+
+        // Перераховуємо борг
+        BigDecimal newDebtAmount = calculateDebtAmount(calculatedTotal, paidAmount);
+
+        return toBuilder()
+            .totalAmount(calculatedTotal)
+            .debtAmount(newDebtAmount)
+            .build();
+    }
+
+    /**
+     * Встановлює базову суму предметів та перераховує загальну вартість.
+     */
+    public OrderParametersState withBaseAmount(BigDecimal baseAmount) {
+        return toBuilder()
+            .totalAmount(baseAmount)
+            .build()
+            .withRecalculatedTotal();
     }
 
     // Бізнес-логіка

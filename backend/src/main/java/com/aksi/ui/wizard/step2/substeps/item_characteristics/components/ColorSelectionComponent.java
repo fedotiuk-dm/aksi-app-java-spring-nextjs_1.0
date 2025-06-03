@@ -129,6 +129,7 @@ public class ColorSelectionComponent extends VerticalLayout {
 
         this.availableColors = colors;
         colorComboBox.setItems(colors);
+        log.debug("Кольори завантажено в ComboBox");
     }
 
     /**

@@ -7,11 +7,16 @@ import org.mapstruct.factory.Mappers;
 
 import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.order.entity.OrderEntity;
-import com.aksi.domain.order.entity.OrderItemEntity;
 import com.aksi.ui.wizard.dto.OrderWizardData;
 
 /**
  * MapStruct mapper для конвертації між UI DTO та доменними об'єктами Order Wizard.
+ *
+ * Згідно з документацією Order Wizard обробляє 4 етапи:
+ * - Етап 1: Клієнт та базова інформація замовлення
+ * - Етап 2: Менеджер предметів (циклічний процес)
+ * - Етап 3: Загальні параметри замовлення
+ * - Етап 4: Підтвердження та завершення
  */
 @Mapper(componentModel = "spring")
 public interface OrderWizardMapper {
@@ -19,11 +24,14 @@ public interface OrderWizardMapper {
     OrderWizardMapper INSTANCE = Mappers.getMapper(OrderWizardMapper.class);
 
     /**
-     * Конвертувати OrderWizardData у OrderEntity для збереження
+     * Конвертувати OrderWizardData у OrderEntity для збереження після завершення wizard'а.
+     * Використовується на етапі 4 (підтвердження) для створення фінального замовлення.
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "updatedDate", ignore = true)
+    @Mapping(target = "isPrinted", ignore = true)
+    @Mapping(target = "isEmailed", ignore = true)
     @Mapping(source = "draftOrder.receiptNumber", target = "receiptNumber")
     @Mapping(source = "draftOrder.tagNumber", target = "tagNumber")
     @Mapping(source = "selectedClient", target = "client")
@@ -48,11 +56,12 @@ public interface OrderWizardMapper {
     @Mapping(source = "draftOrder.termsAccepted", target = "termsAccepted")
     @Mapping(source = "draftOrder.finalizedAt", target = "finalizedAt")
     @Mapping(source = "draftOrder.draft", target = "draft")
-    @Mapping(source = "draftOrder.items", target = "items")
+    @Mapping(target = "items", ignore = true) // items обробляються окремо через draftOrder.items
     OrderEntity toOrderEntity(OrderWizardData wizardData);
 
     /**
-     * Оновити існуючий OrderEntity з даних OrderWizardData
+     * Оновити існуючий OrderEntity з даних OrderWizardData.
+     * Використовується для збереження змін під час роботи з wizard'ом.
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
@@ -60,7 +69,8 @@ public interface OrderWizardMapper {
     void updateOrderEntity(@MappingTarget OrderEntity target, OrderWizardData source);
 
     /**
-     * Створити OrderWizardData з існуючого OrderEntity (для редагування)
+     * Створити OrderWizardData з існуючого OrderEntity (для редагування).
+     * Використовується для відновлення стану wizard'а з існуючого замовлення.
      */
     @Mapping(target = "selectedClient", source = "client")
     @Mapping(target = "newClient", constant = "false")
@@ -70,10 +80,15 @@ public interface OrderWizardMapper {
     @Mapping(target = "step2Complete", expression = "java(isStep2Complete(order))")
     @Mapping(target = "step3Complete", expression = "java(isStep3Complete(order))")
     @Mapping(target = "draftOrder", source = ".")
+    @Mapping(target = "items", ignore = true) // items обробляються через OrderMapper окремо
     OrderWizardData fromOrderEntity(OrderEntity order);
 
     /**
-     * Допоміжні методи для визначення завершеності етапів
+     * Допоміжні методи для визначення завершеності етапів wizard'а
+     */
+
+    /**
+     * Етап 1 завершений, якщо обрано клієнта і введено номер квитанції
      */
     default boolean isStep1Complete(OrderEntity order) {
         return order.getClient() != null &&
@@ -81,10 +96,16 @@ public interface OrderWizardMapper {
                !order.getReceiptNumber().trim().isEmpty();
     }
 
+    /**
+     * Етап 2 завершений, якщо додано хоча б один предмет до замовлення
+     */
     default boolean isStep2Complete(OrderEntity order) {
         return order.getItems() != null && !order.getItems().isEmpty();
     }
 
+    /**
+     * Етап 3 завершений, якщо встановлено дату виконання та спосіб оплати
+     */
     default boolean isStep3Complete(OrderEntity order) {
         return order.getExpectedCompletionDate() != null &&
                order.getPaymentMethod() != null;

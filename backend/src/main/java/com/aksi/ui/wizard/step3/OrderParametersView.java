@@ -8,6 +8,7 @@ import com.aksi.ui.wizard.step3.application.OrderParametersService;
 import com.aksi.ui.wizard.step3.components.AdditionalInfoComponent;
 import com.aksi.ui.wizard.step3.components.DiscountComponent;
 import com.aksi.ui.wizard.step3.components.ExecutionParametersComponent;
+import com.aksi.ui.wizard.step3.components.OrderSummaryComponent;
 import com.aksi.ui.wizard.step3.components.ParametersNavigationComponent;
 import com.aksi.ui.wizard.step3.components.PaymentComponent;
 import com.aksi.ui.wizard.step3.domain.OrderParametersState;
@@ -36,6 +37,7 @@ public class OrderParametersView extends VerticalLayout {
     // UI компоненти
     private H3 title;
     private Span subtitle;
+    private OrderSummaryComponent orderSummary;
     private ExecutionParametersComponent executionParameters;
     private DiscountComponent discountComponent;
     private PaymentComponent paymentComponent;
@@ -48,6 +50,7 @@ public class OrderParametersView extends VerticalLayout {
 
     public OrderParametersView(
             OrderWizardData wizardData,
+            com.aksi.domain.order.service.OrderService orderService,
             Consumer<OrderWizardData> onNext,
             Runnable onPrevious,
             Runnable onCancel) {
@@ -57,8 +60,8 @@ public class OrderParametersView extends VerticalLayout {
         this.onPrevious = onPrevious;
         this.onCancel = onCancel;
 
-        // Ініціалізуємо сервіс
-        this.parametersService = new OrderParametersService();
+        // Ініціалізуємо сервіс з переданим OrderService
+        this.parametersService = new OrderParametersService(orderService);
 
         initializeComponents();
         initializeLayout();
@@ -81,6 +84,7 @@ public class OrderParametersView extends VerticalLayout {
         subtitle.getStyle().set("color", "var(--lumo-secondary-text-color)");
 
         // Компоненти
+        orderSummary = new OrderSummaryComponent();
         executionParameters = new ExecutionParametersComponent();
         discountComponent = new DiscountComponent();
         paymentComponent = new PaymentComponent();
@@ -94,7 +98,7 @@ public class OrderParametersView extends VerticalLayout {
         setSpacing(true);
         setDefaultHorizontalComponentAlignment(Alignment.STRETCH);
 
-        add(title, subtitle, executionParameters, discountComponent,
+        add(title, subtitle, orderSummary, executionParameters, discountComponent,
             paymentComponent, additionalInfo, navigation);
     }
 
@@ -103,11 +107,25 @@ public class OrderParametersView extends VerticalLayout {
         parametersService.setEventHandler(this::handleParametersEvent);
 
         // Налаштовуємо обробники для UI компонентів
+        setupOrderSummaryHandlers();
         setupExecutionParametersHandlers();
         setupDiscountHandlers();
         setupPaymentHandlers();
         setupAdditionalInfoHandlers();
         setupNavigationHandlers();
+    }
+
+    private void setupOrderSummaryHandlers() {
+        orderSummary.setOnTotalChanged(newTotal -> {
+            // Оновлюємо загальну суму в draft order
+            currentWizardData.getDraftOrder().setFinalAmount(newTotal);
+            currentWizardData.getDraftOrder().setTotalAmount(newTotal);
+
+            // Перераховуємо стан з новою базовою сумою
+            currentState = parametersService.recalculateTotal(currentState, newTotal);
+
+            log.debug("Загальна сума оновлена до: {}", newTotal);
+        });
     }
 
     private void setupExecutionParametersHandlers() {
@@ -163,6 +181,9 @@ public class OrderParametersView extends VerticalLayout {
 
     private void initializeData() {
         currentState = parametersService.initializeParameters(currentWizardData);
+
+        // Передаємо предмети до компонента підсумку
+        orderSummary.setOrderItems(currentWizardData.getItems());
     }
 
     /**
@@ -334,6 +355,13 @@ public class OrderParametersView extends VerticalLayout {
 
     private void handleFinancialStateChanged(OrderParametersEvents.FinancialStateChanged financialStateChanged) {
         paymentComponent.showFinancialSummary();
+
+        // Оновлюємо підзаголовок з новою сумою
+        subtitle.setText(String.format("Замовлення: %s | Предметів: %d | Сума: ₴%.2f",
+                currentWizardData.getDraftOrder().getReceiptNumber(),
+                currentWizardData.getItems().size(),
+                financialStateChanged.totalAmount().doubleValue()));
+
         log.debug("Фінансовий стан змінений: всього={}, сплачено={}, борг={}",
                 financialStateChanged.totalAmount(), financialStateChanged.paidAmount(), financialStateChanged.debtAmount());
     }
@@ -361,6 +389,8 @@ public class OrderParametersView extends VerticalLayout {
      */
     private void updateAllComponentsFromState() {
         if (currentState != null) {
+            orderSummary.updateFromState(currentState);
+            orderSummary.setOrderItems(currentWizardData.getItems());
             executionParameters.updateFromState(currentState);
             discountComponent.updateFromState(currentState);
             paymentComponent.updateFromState(currentState);

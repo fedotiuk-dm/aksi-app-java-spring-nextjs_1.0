@@ -38,6 +38,9 @@ spring:
     default-schema: public
     contexts: default
     clear-checksums: true
+    drop-first: false
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 # Додаткові налаштування для dev-режиму
 management:
@@ -58,12 +61,15 @@ server:
     max-connections: 50
     max-threads: 50
     min-spare-threads: 10
+  shutdown: graceful # Graceful shutdown
 
 vaadin:
   devmode:
     liveReload:
       enabled: true
     optimizeBundle: false
+    sessionSerialization:
+      enabled: false
   frontend:
     hotdeploy: true
     compile:
@@ -71,7 +77,7 @@ vaadin:
   pnpm:
     enable: true
   npm:
-    enable: true
+    enable: false
   servlet:
     dev-mode: true
     session:

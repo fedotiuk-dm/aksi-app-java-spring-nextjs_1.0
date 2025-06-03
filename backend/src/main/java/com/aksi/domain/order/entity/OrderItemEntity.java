@@ -57,6 +57,9 @@ public class OrderItemEntity {
     @Column(name = "category")
     private String category;
 
+    @Column(name = "category_code")
+    private String categoryCode;
+
     @Column(name = "color")
     private String color;
 

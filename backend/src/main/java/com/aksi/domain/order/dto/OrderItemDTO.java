@@ -47,6 +47,8 @@ public class OrderItemDTO {
 
     private String category;
 
+    private String categoryCode;
+
     private String color;
 
     private String material;

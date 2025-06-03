@@ -231,6 +231,29 @@ public class OrderWizardState {
     }
 
     /**
+     * Завершення поточного етапу з даними.
+     * Активує наступний етап для навігації.
+     */
+    public OrderWizardState completeCurrentStep(OrderWizardData updatedData) {
+        var newCompletedSteps = new HashSet<>(completedSteps);
+        newCompletedSteps.add(currentStep);
+
+        // Активуємо наступний етап якщо він існує
+        var newEnabledSteps = new HashSet<>(enabledSteps);
+        if (currentStep < MAX_STEP) {
+            newEnabledSteps.add(currentStep + 1);
+        }
+
+        return this.toBuilder()
+                .wizardData(updatedData)
+                .completedSteps(newCompletedSteps)
+                .enabledSteps(newEnabledSteps)
+                .canNavigateNext(currentStep < MAX_STEP)
+                .lastModifiedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
      * Enum для етапів wizard'а з метаданими.
      */
     public enum WizardStep {

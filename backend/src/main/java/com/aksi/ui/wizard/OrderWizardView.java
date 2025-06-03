@@ -325,6 +325,12 @@ public class OrderWizardView extends VerticalLayout implements BeforeEnterObserv
                 public void onWizardCompleted() {
                     handleWizardCompletionRequest();
                 }
+
+                @Override
+                public void onWizardCompletedWithData(OrderWizardData data) {
+                    handleStepCompletionRequestWithData(data);
+                    handleWizardCompletionRequest();
+                }
             };
 
             // Створюємо новий view

@@ -252,10 +252,27 @@ public class ItemsMainManagerView extends VerticalLayout {
 
     private void handleContinueRequest() {
         log.debug("Запит на продовження до наступного етапу");
+
+        // ВИПРАВЛЕННЯ: Перезавантажуємо актуальний стан перед перевіркою
+        log.info("🔄 Перезавантаження актуального стану перед переходом...");
+        currentState = managerService.loadItems(currentState);
+
         managerService.requestContinueToNextStep(currentState);
 
+        log.info("🔍 ДЕТАЛЬНА ІНФОРМАЦІЯ ПРО ПЕРЕХІД:");
+        log.info("   - currentState.isReadyForNext(): {}", currentState.isReadyForNext());
+        log.info("   - onContinueToNextStep != null: {}", onContinueToNextStep != null);
+        log.info("   - currentState items: {}", currentState.getItems().size());
+
         if (currentState.isReadyForNext() && onContinueToNextStep != null) {
+            log.info("✅ ВИКЛИКАЄМО callback onContinueToNextStep.run()");
             onContinueToNextStep.run();
+            log.info("✅ callback onContinueToNextStep.run() ВИКОНАНО");
+        } else {
+            log.warn("❌ CALLBACK НЕ ВИКЛИКАЄТЬСЯ:");
+            log.warn("   - isReadyForNext: {}", currentState.isReadyForNext());
+            log.warn("   - callback існує: {}", onContinueToNextStep != null);
+            log.warn("   - кількість предметів: {}", currentState.getItems().size());
         }
     }
 

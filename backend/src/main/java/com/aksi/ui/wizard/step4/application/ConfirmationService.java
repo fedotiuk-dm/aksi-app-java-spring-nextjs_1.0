@@ -89,7 +89,7 @@ public class ConfirmationService {
     }
 
     /**
-     * Генерує квитанцію.
+     * Генерує квитанцію для замовлення.
      */
     public ConfirmationState generateReceipt(ConfirmationState currentState) {
         try {
@@ -98,12 +98,18 @@ public class ConfirmationService {
 
             var wizardData = currentState.getWizardData();
             var receiptNumber = currentState.getReceiptNumber();
+            var orderId = wizardData.getDraftOrder().getId();
+
+            // Перевіряємо чи є ID замовлення
+            if (orderId == null) {
+                throw new IllegalStateException("Order ID is null. Order must be saved before generating receipt.");
+            }
 
             publishEvent(ConfirmationEvents.receiptRequested(wizardData, receiptNumber, "PDF"));
 
-            // Генеруємо квитанцію
+            // Генеруємо квитанцію з реальним ID замовлення
             var request = ReceiptGenerationRequest.builder()
-                    .orderId(java.util.UUID.randomUUID()) // TODO: Використати реальний ID
+                    .orderId(orderId)
                     .format("PDF")
                     .includeSignature(true)
                     .build();
@@ -122,7 +128,7 @@ public class ConfirmationService {
             publishEvent(ConfirmationEvents.loadingCompleted(ConfirmationState.OPERATION_RECEIPT_GENERATION, true,
                     "Квитанція успішно згенерована"));
 
-            log.info("Receipt generated for order: {}", receiptNumber);
+            log.info("Receipt generated for order ID: {} with receipt number: {}", orderId, receiptNumber);
             return newState;
 
         } catch (Exception e) {

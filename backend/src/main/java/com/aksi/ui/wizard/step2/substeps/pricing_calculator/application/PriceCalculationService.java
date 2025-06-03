@@ -49,14 +49,14 @@ public class PriceCalculationService {
 
             // Створюємо початковий стан
             PriceCalculationState initialState = PriceCalculationState.createInitial(
-                    item.getCategory(),
+                    item.getCategoryCode() != null ? item.getCategoryCode() : item.getCategory(),
                     item.getName(),
                     basePrice
             );
 
             // Повідомляємо про завантаження базової ціни
             publishEvent(new PriceCalculationEvents.BasePriceLoaded(
-                    item.getCategory(),
+                    item.getCategoryCode() != null ? item.getCategoryCode() : item.getCategory(),
                     item.getName(),
                     basePrice
             ));
@@ -182,18 +182,19 @@ public class PriceCalculationService {
     }
 
     /**
-     * Завантажує базову ціну для предмета.
+     * Завантажує базову ціну для предмета з бази даних.
      */
     private BigDecimal loadBasePriceForItem(OrderItemDTO item) {
         try {
             return priceCalculationService.getBasePrice(
-                    item.getCategory(),
+                    item.getCategoryCode() != null ? item.getCategoryCode() : item.getCategory(),
                     item.getName(),
                     item.getColor()
             );
         } catch (Exception ex) {
             log.error("Помилка завантаження базової ціни для {} - {}: {}",
-                     item.getCategory(), item.getName(), ex.getMessage(), ex);
+                     item.getCategoryCode() != null ? item.getCategoryCode() : item.getCategory(),
+                     item.getName(), ex.getMessage(), ex);
             // Якщо не вдалося завантажити, повертаємо існуючу ціну або нуль
             return item.getUnitPrice() != null ? item.getUnitPrice() : BigDecimal.ZERO;
         }

@@ -57,6 +57,10 @@ public class ItemsManagerView extends VerticalLayout {
         this.onStepComplete = onStepComplete;
         this.onStepBack = onStepBack;
 
+        log.info("🔍 ІНІЦІАЛІЗАЦІЯ ItemsManagerView:");
+        log.info("   - onStepComplete callback: {}", onStepComplete != null ? "встановлено" : "NULL");
+        log.info("   - onStepBack callback: {}", onStepBack != null ? "встановлено" : "NULL");
+
         initializeLayout();
         showMainManager();
 
@@ -75,6 +79,9 @@ public class ItemsManagerView extends VerticalLayout {
         try {
             removeAll();
             isInSubWizard = false;
+
+            log.info("🔍 СТВОРЕННЯ ItemsMainManagerView:");
+            log.info("   - передаємо onStepComplete: {}", onStepComplete != null ? "встановлено" : "NULL");
 
             currentView = new ItemsMainManagerView(
                     orderItemManagementService,
@@ -138,18 +145,41 @@ public class ItemsManagerView extends VerticalLayout {
         try {
             log.info("Завершено роботу з предметом: {}", item.getName());
 
-            // Зберегти предмет
-            if (item.getId() == null) {
-                // Новий предмет - додаємо до локального списку
-                wizardData.getItems().add(item);
-                log.debug("Новий предмет додано до локального списку: {}", item.getName());
+            // ВАЖЛИВО: зберігаємо предмет в базі даних одразу, якщо є ID замовлення
+            if (wizardData.getDraftOrder().getId() != null) {
+                if (item.getId() == null) {
+                    // Новий предмет - зберігаємо в БД
+                    OrderItemDTO savedItem = orderItemManagementService.addOrderItem(
+                            wizardData.getDraftOrder().getId(),
+                            item
+                    );
+                    // Додаємо збережений предмет з ID до локального списку
+                    wizardData.getItems().add(savedItem);
+                    log.info("✅ Новий предмет збережено в БД з ID: {}", savedItem.getId());
+                } else {
+                    // Оновлення існуючого предмета в БД
+                    OrderItemDTO updatedItem = orderItemManagementService.updateOrderItem(
+                            wizardData.getDraftOrder().getId(),
+                            item.getId(),
+                            item
+                    );
+                    // Оновлюємо в локальному списку
+                    wizardData.getItems().removeIf(existingItem ->
+                            existingItem.getId() != null && existingItem.getId().equals(item.getId()));
+                    wizardData.getItems().add(updatedItem);
+                    log.info("✅ Предмет оновлено в БД: {}", updatedItem.getName());
+                }
             } else {
-                // Оновлення існуючого предмета
-                wizardData.getItems().removeIf(existingItem ->
-                        existingItem.getId() != null && existingItem.getId().equals(item.getId()));
-                wizardData.getItems().add(item);
-
-                log.debug("Предмет оновлено в локальному списку: {}", item.getName());
+                // Якщо замовлення ще не створене в БД, додаємо тільки локально
+                if (item.getId() == null) {
+                    wizardData.getItems().add(item);
+                    log.debug("Новий предмет додано до локального списку: {}", item.getName());
+                } else {
+                    wizardData.getItems().removeIf(existingItem ->
+                            existingItem.getId() != null && existingItem.getId().equals(item.getId()));
+                    wizardData.getItems().add(item);
+                    log.debug("Предмет оновлено в локальному списку: {}", item.getName());
+                }
             }
 
             // Повернення до головного менеджера
@@ -157,6 +187,13 @@ public class ItemsManagerView extends VerticalLayout {
 
         } catch (Exception ex) {
             log.error("Помилка при збереженні предмета {}: {}", item.getName(), ex.getMessage(), ex);
+
+            // Показуємо користувачу помилку
+            com.vaadin.flow.component.notification.Notification.show(
+                "Помилка збереження предмета: " + ex.getMessage(),
+                5000,
+                com.vaadin.flow.component.notification.Notification.Position.MIDDLE
+            );
         }
     }
 

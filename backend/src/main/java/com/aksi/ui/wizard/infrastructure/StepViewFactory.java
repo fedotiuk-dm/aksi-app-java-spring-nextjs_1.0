@@ -31,7 +31,10 @@ public class StepViewFactory {
     public Component createStepView(int stepNumber, OrderWizardData wizardData,
                                    StepViewCallbacks callbacks) {
         try {
-            log.info("Creating view for step: {}", stepNumber);
+            log.info("🏗️ СТВОРЕННЯ VIEW: Creating view for step: {} with wizard data: hasClient={}, hasItems={}",
+                stepNumber,
+                wizardData.getSelectedClient() != null,
+                wizardData.getItems() != null ? wizardData.getItems().size() : 0);
 
             return switch (stepNumber) {
                 case 0 -> createStep1View(wizardData, callbacks);
@@ -55,11 +58,17 @@ public class StepViewFactory {
         log.debug("Creating Step 1 view - Client and Order Info");
 
         try {
-            var view = new com.aksi.ui.wizard.step1.ClientAndOrderInfoView(
-                wizardData,
-                callbacks::onStepCompleted,
-                applicationContext
-            );
+            // Створюємо callback який буде встановлений після створення view
+            Runnable stepCompletedCallback = () -> {
+                callbacks.onStepCompletedWithData(wizardData);
+            };
+
+            com.aksi.ui.wizard.step1.ClientAndOrderInfoView view =
+                new com.aksi.ui.wizard.step1.ClientAndOrderInfoView(
+                    wizardData,
+                    stepCompletedCallback,
+                    applicationContext
+                );
 
             log.debug("Step 1 view created successfully");
             return view;
@@ -125,8 +134,14 @@ public class StepViewFactory {
         log.debug("Creating Step 3 view - Order Parameters");
 
         try {
+            // Отримуємо OrderService з ApplicationContext
+            var orderService = applicationContext.getBean(
+                "orderServiceImpl",
+                com.aksi.domain.order.service.OrderService.class);
+
             var view = new com.aksi.ui.wizard.step3.OrderParametersView(
                 wizardData,
+                orderService,
                 callbacks::onStepCompletedWithData,
                 callbacks::onStepBack,
                 callbacks::onCancel
@@ -148,15 +163,15 @@ public class StepViewFactory {
         log.debug("Creating Step 4 view - Confirmation");
 
         try {
-            // Отримуємо ReceiptService з ApplicationContext
-            var receiptService = applicationContext.getBean(
-                "receiptServiceImpl",
-                com.aksi.domain.order.service.ReceiptService.class);
+            // Отримуємо ConfirmationService з ApplicationContext
+            var confirmationService = applicationContext.getBean(
+                "confirmationService",
+                com.aksi.ui.wizard.step4.application.ConfirmationService.class);
 
             var view = new com.aksi.ui.wizard.step4.ConfirmationView(
                 wizardData,
-                receiptService,
-                callbacks::onWizardCompleted,
+                confirmationService,
+                callbacks::onWizardCompletedWithData,
                 callbacks::onStepBack,
                 callbacks::onCancel
             );
@@ -301,5 +316,6 @@ public class StepViewFactory {
         void onStepBack();
         void onCancel();
         void onWizardCompleted();
+        void onWizardCompletedWithData(OrderWizardData data);
     }
 }

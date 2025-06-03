@@ -6,7 +6,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.order.constants.ItemCharacteristicsConstants;
+import com.aksi.domain.pricing.entity.ItemColorEntity;
+import com.aksi.domain.pricing.entity.ItemMaterialEntity;
 import com.aksi.domain.pricing.enums.RiskLevel;
+import com.aksi.domain.pricing.repository.ItemColorRepository;
+import com.aksi.domain.pricing.repository.ItemMaterialRepository;
 import com.aksi.domain.pricing.service.DefectTypeService;
 import com.aksi.domain.pricing.service.StainTypeService;
 
@@ -24,6 +28,10 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     private final StainTypeService stainTypeService;
     private final DefectTypeService defectTypeService;
 
+    // Нові залежності для роботи з БД
+    private final ItemColorRepository itemColorRepository;
+    private final ItemMaterialRepository itemMaterialRepository;
+
     // ---------- Характеристики предмета ----------
 
     /**
@@ -32,7 +40,22 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     @Override
     public List<String> getMaterialsByCategory(String category) {
         log.debug("Отримання доступних матеріалів для категорії: {}", category);
-        return ItemCharacteristicsConstants.Materials.getMaterialsByCategory(category);
+
+        // Читаємо з БД
+        List<ItemMaterialEntity> materials = itemMaterialRepository.findByActiveTrueOrderBySortOrderAsc();
+        List<String> materialNames = materials.stream()
+                .map(ItemMaterialEntity::getNameUa)
+                .collect(Collectors.toList());
+
+        log.debug("Отримано {} матеріалів з БД: {}", materialNames.size(), materialNames);
+
+        // Якщо в БД немає даних, використовуємо константи як fallback
+        if (materialNames.isEmpty()) {
+            log.warn("БД не містить матеріалів, використовуємо константи");
+            return ItemCharacteristicsConstants.Materials.getMaterialsByCategory(category);
+        }
+
+        return materialNames;
     }
 
     /**
@@ -41,7 +64,22 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     @Override
     public List<String> getAllColors() {
         log.debug("Отримання всіх базових кольорів");
-        return ItemCharacteristicsConstants.Colors.getAllColors();
+
+        // Читаємо з БД
+        List<ItemColorEntity> colors = itemColorRepository.findByActiveTrueOrderBySortOrderAsc();
+        List<String> colorNames = colors.stream()
+                .map(ItemColorEntity::getNameUa)
+                .collect(Collectors.toList());
+
+        log.debug("Отримано {} кольорів з БД: {}", colorNames.size(), colorNames);
+
+        // Якщо в БД немає даних, використовуємо константи як fallback
+        if (colorNames.isEmpty()) {
+            log.warn("БД не містить кольорів, використовуємо константи");
+            return ItemCharacteristicsConstants.Colors.getAllColors();
+        }
+
+        return colorNames;
     }
 
     /**
@@ -50,6 +88,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     @Override
     public List<String> getAllFillerTypes() {
         log.debug("Отримання типів наповнювачів");
+        // Поки що використовуємо константи для наповнювачів
         return ItemCharacteristicsConstants.FillerTypes.getAllFillerTypes();
     }
 
@@ -59,6 +98,7 @@ public class ItemCharacteristicsServiceImpl implements ItemCharacteristicsServic
     @Override
     public List<String> getAllWearDegrees() {
         log.debug("Отримання ступенів зносу");
+        // Поки що використовуємо константи для ступенів зносу
         return ItemCharacteristicsConstants.WearDegrees.getAllWearDegrees();
     }
 
