@@ -28,4 +28,12 @@ public interface OrderItemPhotoRepository extends JpaRepository<OrderItemPhotoEn
      * @param itemId ID предмета замовлення
      */
     void deleteByOrderItemId(UUID itemId);
+
+    /**
+     * Підрахувати кількість фотографій для вказаного предмета замовлення.
+     *
+     * @param itemId ID предмета замовлення
+     * @return кількість фотографій
+     */
+    int countByOrderItemId(UUID itemId);
 }

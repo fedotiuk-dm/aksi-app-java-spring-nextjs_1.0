@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aksi.domain.order.dto.OrderItemPhotoDTO;
 import com.aksi.domain.order.service.OrderItemPhotoService;
+import com.aksi.exception.FileValidationException;
 import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -97,6 +98,10 @@ public class OrderItemPhotoController {
             OrderItemPhotoDTO uploadedPhoto = orderItemPhotoService.uploadPhoto(itemId, file, description);
             return ApiResponseUtils.created(uploadedPhoto, "Фотографію успішно завантажено для предмета замовлення: {}",
                 itemId);
+        } catch (FileValidationException e) {
+            return ApiResponseUtils.badRequest("Помилка валідації файлу",
+                "Файл не пройшов валідацію для предмета замовлення: {}. Причина: {}",
+                itemId, e.getMessage());
         } catch (IllegalArgumentException e) {
             return ApiResponseUtils.badRequest("Неможливо завантажити фотографію",
                 "Не вдалося завантажити фотографію для предмета замовлення: {}. Причина: {}",

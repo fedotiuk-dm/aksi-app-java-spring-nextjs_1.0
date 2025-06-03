@@ -72,7 +72,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             return null;
         }
 
-        return "/api/files/" + fileName;
+        return "/files/" + fileName;
     }
 
     @Override

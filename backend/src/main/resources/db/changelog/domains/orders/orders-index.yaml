@@ -47,3 +47,6 @@ databaseChangeLog:
   - include:
       file: 1.0/016-remove-old-branch-location-field.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 1.0/017-add-timestamps-to-order-items.yaml
+      relativeToChangelogFile: true

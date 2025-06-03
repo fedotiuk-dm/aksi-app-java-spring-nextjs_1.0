@@ -17,6 +17,7 @@ import com.aksi.domain.order.repository.OrderItemPhotoRepository;
 import com.aksi.domain.order.repository.OrderItemRepository;
 import com.aksi.exception.EntityNotFoundException;
 import com.aksi.service.file.FileStorageService;
+import com.aksi.service.file.FileValidationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ public class OrderItemPhotoServiceImpl implements OrderItemPhotoService {
     private final OrderItemPhotoRepository orderItemPhotoRepository;
     private final OrderItemRepository orderItemRepository;
     private final FileStorageService fileStorageService;
+    private final FileValidationService fileValidationService;
 
     @Override
     @Transactional(readOnly = true)
@@ -48,6 +50,13 @@ public class OrderItemPhotoServiceImpl implements OrderItemPhotoService {
     public OrderItemPhotoDTO uploadPhoto(UUID itemId, MultipartFile file, String description) throws IOException {
         OrderItemEntity orderItem = orderItemRepository.findById(itemId)
                 .orElseThrow(() -> EntityNotFoundException.withMessage("Предмет замовлення з ID " + itemId + " не знайдено"));
+
+        // Валідуємо файл
+        fileValidationService.validatePhotoFile(file);
+
+        // Перевіряємо кількість існуючих фото (максимум 5 на предмет)
+        int currentPhotoCount = orderItemPhotoRepository.countByOrderItemId(itemId);
+        fileValidationService.validatePhotoCount(currentPhotoCount, 5);
 
         // Зберігаємо файл
         String filePath = fileStorageService.storeFile(file);

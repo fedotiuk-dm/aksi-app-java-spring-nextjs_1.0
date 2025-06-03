@@ -1,7 +1,11 @@
 package com.aksi.domain.order.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -95,6 +99,14 @@ public class OrderItemEntity {
 
     @Column(name = "defects_notes", length = 1000)
     private String defectsNotes;
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     /**
      * Розрахувати повну вартість предмету.

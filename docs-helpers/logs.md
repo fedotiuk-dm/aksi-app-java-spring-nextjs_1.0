@@ -1,39 +1,3 @@
-backend-dev       | 2025-06-03 17:09:09 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 180 ms. Found 15 JPA repository interfaces.
-backend-dev       | 2025-06-03 17:09:10 WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration' of type [org.springframework.statemachine.config.configuration.StateMachineAnnotationPostProcessorConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [org.springframework.statemachine.processor.stateMachineAnnotationPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
-backend-dev       | 2025-06-03 17:09:10 INFO  o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port 8080 (http)
-backend-dev       | 2025-06-03 17:09:10 INFO  o.a.c.c.StandardService - Starting service [Tomcat]
-backend-dev       | 2025-06-03 17:09:10 INFO  o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.39]
-backend-dev       | 2025-06-03 17:09:11 INFO  o.a.c.c.C.[.[.[/api] - Initializing Spring embedded WebApplicationContext
-backend-dev       | 2025-06-03 17:09:11 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2488 ms
-backend-dev       | 2025-06-03 17:09:11 DEBUG c.a.c.CorsConfig - Додано дозволене джерело CORS: http://localhost:3000
-backend-dev       | 2025-06-03 17:09:11 DEBUG c.a.c.CorsConfig - Додано дозволене джерело CORS: http://127.0.0.1:3000
-backend-dev       | 2025-06-03 17:09:11 DEBUG c.a.c.CorsConfig - Додано додаткові джерела для dev-середовища
-backend-dev       | 2025-06-03 17:09:11 INFO  c.a.c.CorsConfig - CORS фільтр успішно налаштовано з 2 дозволеними джерелами
-backend-dev       | 2025-06-03 17:09:11 INFO  c.z.h.HikariDataSource - HikariPool-1 - Starting...
-backend-dev       | 2025-06-03 17:09:11 INFO  c.z.h.p.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@42566f7e
-backend-dev       | 2025-06-03 17:09:11 INFO  c.z.h.HikariDataSource - HikariPool-1 - Start completed.
-backend-dev       | 2025-06-03 17:09:11 INFO  l.lockservice - Successfully acquired change log lock
-backend-dev       | 2025-06-03 17:09:11 INFO  l.command - Clearing database change log checksums for database postgresql
-backend-dev       | 2025-06-03 17:09:11 INFO  l.lockservice - Successfully released change log lock
-backend-dev       | 2025-06-03 17:09:11 INFO  l.command - Command execution complete
-backend-dev       | 2025-06-03 17:09:12 INFO  l.changelog - Reading from public.databasechangelog
-backend-dev       | 2025-06-03 17:09:12 INFO  l.changelog - Reading from public.databasechangelog
-backend-dev       | 2025-06-03 17:09:12 INFO  liquibase.ui - Database is up to date, no changesets to execute
-backend-dev       | 2025-06-03 17:09:12 INFO  l.changelog - Reading from public.databasechangelog
-backend-dev       | 2025-06-03 17:09:12 INFO  liquibase.util - UPDATE SUMMARY
-backend-dev       | 2025-06-03 17:09:12 INFO  liquibase.util - Run:                          0
-backend-dev       | 2025-06-03 17:09:12 INFO  liquibase.util - Previously run:              49
-backend-dev       | 2025-06-03 17:09:12 INFO  liquibase.util - Filtered out:                 0
-backend-dev       | 2025-06-03 17:09:12 INFO  liquibase.util - -------------------------------
-backend-dev       | 2025-06-03 17:09:12 INFO  liquibase.util - Total change sets:           49
-backend-dev       | 2025-06-03 17:09:12 INFO  liquibase.util - Update summary generated
-backend-dev       | 2025-06-03 17:09:12 INFO  l.command - Command execution complete
-backend-dev       | 2025-06-03 17:09:13 INFO  o.h.j.i.u.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-backend-dev       | 2025-06-03 17:09:13 INFO  o.h.Version - HHH000412: Hibernate ORM core version 6.6.11.Final
-backend-dev       | 2025-06-03 17:09:13 INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-backend-dev       | 2025-06-03 17:09:13 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-backend-dev       | 2025-06-03 17:09:13 WARN  o.h.o.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-backend-dev       | 2025-06-03 17:09:13 INFO  o.h.o.c.pooling - HHH10001005: Database info:
 backend-dev       | 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 backend-dev       | 	Database driver: undefined/unknown
 backend-dev       | 	Database version: 17.5
@@ -41,13 +5,11 @@ backend-dev       | 	Autocommit mode: undefined/unknown
 backend-dev       | 	Isolation level: undefined/unknown
 backend-dev       | 	Minimum pool size: undefined/unknown
 backend-dev       | 	Maximum pool size: undefined/unknown
-frontend-dev      |  ✓ Compiled /login in 7.2s
-frontend-dev      |  HEAD /login?callbackUrl=%2F 200 in 7604ms
-backend-dev       | 2025-06-03 17:09:14 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-backend-dev       | 2025-06-03 17:09:14 ERROR o.s.o.j.LocalContainerEntityManagerFactoryBean - Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: wrong column type encountered in column [data_value] in table [order_wizard_state_data]; found [text (Types#VARCHAR)], but expecting [oid (Types#CLOB)]
-backend-dev       | 2025-06-03 17:09:14 ERROR o.s.b.w.e.t.TomcatStarter - Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'jwtAuthenticationFilter' defined in file [/app/target/classes/com/aksi/config/JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'userDetailsConfig' defined in file [/app/target/classes/com/aksi/config/UserDetailsConfig.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.aksi.domain.user.repository.UserRepository defined in @EnableJpaRepositories declared on AksiApplication: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
-backend-dev       | 2025-06-03 17:09:14 INFO  o.a.c.c.StandardService - Stopping service [Tomcat]
-backend-dev       | 2025-06-03 17:09:14 WARN  o.a.c.l.WebappClassLoaderBase - The web application [api] appears to have started a thread named [HikariPool-1 housekeeper] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+backend-dev       | 2025-06-03 21:20:04 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+backend-dev       | 2025-06-03 21:20:04 ERROR o.s.o.j.LocalContainerEntityManagerFactoryBean - Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: missing column [created_at] in table [order_items]
+backend-dev       | 2025-06-03 21:20:04 ERROR o.s.b.w.e.t.TomcatStarter - Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'jwtAuthenticationFilter' defined in file [/app/target/classes/com/aksi/config/JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'userDetailsConfig' defined in file [/app/target/classes/com/aksi/config/UserDetailsConfig.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.aksi.domain.user.repository.UserRepository defined in @EnableJpaRepositories declared on AksiApplication: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+backend-dev       | 2025-06-03 21:20:04 INFO  o.a.c.c.StandardService - Stopping service [Tomcat]
+backend-dev       | 2025-06-03 21:20:04 WARN  o.a.c.l.WebappClassLoaderBase - The web application [api] appears to have started a thread named [HikariPool-1 housekeeper] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
 backend-dev       |  java.base/jdk.internal.misc.Unsafe.park(Native Method)
 backend-dev       |  java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
 backend-dev       |  java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1763)
@@ -57,7 +19,7 @@ backend-dev       |  java.base/java.util.concurrent.ThreadPoolExecutor.getTask(T
 backend-dev       |  java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
 backend-dev       |  java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 backend-dev       |  java.base/java.lang.Thread.run(Thread.java:1583)
-backend-dev       | 2025-06-03 17:09:14 WARN  o.a.c.l.WebappClassLoaderBase - The web application [api] appears to have started a thread named [HikariPool-1 connection adder] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+backend-dev       | 2025-06-03 21:20:04 WARN  o.a.c.l.WebappClassLoaderBase - The web application [api] appears to have started a thread named [HikariPool-1 connection adder] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
 backend-dev       |  java.base/jdk.internal.misc.Unsafe.park(Native Method)
 backend-dev       |  java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
 backend-dev       |  java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1763)
@@ -66,13 +28,13 @@ backend-dev       |  java.base/java.util.concurrent.ThreadPoolExecutor.getTask(T
 backend-dev       |  java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
 backend-dev       |  java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 backend-dev       |  java.base/java.lang.Thread.run(Thread.java:1583)
-backend-dev       | 2025-06-03 17:09:14 WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
-backend-dev       | 2025-06-03 17:09:14 INFO  c.z.h.HikariDataSource - HikariPool-1 - Shutdown initiated...
-backend-dev       | 2025-06-03 17:09:14 INFO  c.z.h.HikariDataSource - HikariPool-1 - Shutdown completed.
-backend-dev       | 2025-06-03 17:09:14 INFO  o.s.b.a.l.ConditionEvaluationReportLogger -
+backend-dev       | 2025-06-03 21:20:04 WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+backend-dev       | 2025-06-03 21:20:04 INFO  c.z.h.HikariDataSource - HikariPool-1 - Shutdown initiated...
+backend-dev       | 2025-06-03 21:20:04 INFO  c.z.h.HikariDataSource - HikariPool-1 - Shutdown completed.
+backend-dev       | 2025-06-03 21:20:05 INFO  o.s.b.a.l.ConditionEvaluationReportLogger -
 backend-dev       |
 backend-dev       | Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-backend-dev       | 2025-06-03 17:09:14 ERROR o.s.b.SpringApplication - Application run failed
+backend-dev       | 2025-06-03 21:20:05 ERROR o.s.b.SpringApplication - Application run failed
 backend-dev       | org.springframework.context.ApplicationContextException: Unable to start web server
 backend-dev       | 	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:170)
 backend-dev       | 	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:621)
@@ -194,7 +156,7 @@ backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFa
 backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
 backend-dev       | 	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
 backend-dev       | 	... 92 common frames omitted
-backend-dev       | Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: wrong column type encountered in column [data_value] in table [order_wizard_state_data]; found [text (Types#VARCHAR)], but expecting [oid (Types#CLOB)]
+backend-dev       | Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: missing column [created_at] in table [order_items]
 backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1812)
 backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
 backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
@@ -204,16 +166,15 @@ backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFa
 backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
 backend-dev       | 	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
 backend-dev       | 	... 104 common frames omitted
-backend-dev       | Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: wrong column type encountered in column [data_value] in table [order_wizard_state_data]; found [text (Types#VARCHAR)], but expecting [oid (Types#CLOB)]
+backend-dev       | Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: missing column [created_at] in table [order_items]
 backend-dev       | 	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431)
 backend-dev       | 	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400)
 backend-dev       | 	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366)
 backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1859)
 backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808)
 backend-dev       | 	... 111 common frames omitted
-backend-dev       | Caused by: org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: wrong column type encountered in column [data_value] in table [order_wizard_state_data]; found [text (Types#VARCHAR)], but expecting [oid (Types#CLOB)]
-backend-dev       | 	at org.hibernate.tool.schema.internal.AbstractSchemaValidator.validateColumnType(AbstractSchemaValidator.java:169)
-backend-dev       | 	at org.hibernate.tool.schema.internal.AbstractSchemaValidator.validateTable(AbstractSchemaValidator.java:156)
+backend-dev       | Caused by: org.hibernate.tool.schema.spi.SchemaManagementException: Schema-validation: missing column [created_at] in table [order_items]
+backend-dev       | 	at org.hibernate.tool.schema.internal.AbstractSchemaValidator.validateTable(AbstractSchemaValidator.java:149)
 backend-dev       | 	at org.hibernate.tool.schema.internal.GroupedSchemaValidatorImpl.validateTables(GroupedSchemaValidatorImpl.java:46)
 backend-dev       | 	at org.hibernate.tool.schema.internal.AbstractSchemaValidator.performValidation(AbstractSchemaValidator.java:99)
 backend-dev       | 	at org.hibernate.tool.schema.internal.AbstractSchemaValidator.doValidation(AbstractSchemaValidator.java:77)
@@ -233,6 +194,6 @@ backend-dev       | 	... 115 common frames omitted
 backend-dev       | [INFO] ------------------------------------------------------------------------
 backend-dev       | [INFO] BUILD SUCCESS
 backend-dev       | [INFO] ------------------------------------------------------------------------
-backend-dev       | [INFO] Total time:  11.931 s
-backend-dev       | [INFO] Finished at: 2025-06-03T17:09:14Z
+backend-dev       | [INFO] Total time:  21.685 s
+backend-dev       | [INFO] Finished at: 2025-06-03T21:20:05Z
 backend-dev       | [INFO] ------------------------------------------------------------------------

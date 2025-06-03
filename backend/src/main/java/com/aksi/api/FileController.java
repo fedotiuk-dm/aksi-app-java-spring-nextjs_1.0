@@ -3,7 +3,6 @@ package com.aksi.api;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/files")
 @Slf4j
-@Profile("disabled") // Тимчасово відключений
 @Tag(name = "Files API", description = "API для доступу до файлів")
 public class FileController {
 

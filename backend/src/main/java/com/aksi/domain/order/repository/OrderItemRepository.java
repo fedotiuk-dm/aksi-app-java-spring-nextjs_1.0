@@ -23,6 +23,22 @@ public interface OrderItemRepository extends JpaRepository<OrderItemEntity, UUID
     List<OrderItemEntity> findByOrderId(UUID orderId);
 
     /**
+     * Знайти всі предмети для вказаного замовлення, впорядковані за датою створення.
+     *
+     * @param orderId ID замовлення
+     * @return список предметів замовлення
+     */
+    List<OrderItemEntity> findByOrderIdOrderByCreatedAt(UUID orderId);
+
+    /**
+     * Підрахувати кількість предметів у замовленні.
+     *
+     * @param orderId ID замовлення
+     * @return кількість предметів
+     */
+    long countByOrderId(UUID orderId);
+
+    /**
      * Видалити всі предмети для вказаного замовлення.
      *
      * @param orderId ID замовлення
