@@ -17,6 +17,9 @@ export * as clientApi from './client';
 // Order домен
 export * as orderApi from './order';
 
+// Order wizard домен
+export * as orderwizardApi from './order-wizard';
+
 // Pricing домен
 export * as pricingApi from './pricing';
 

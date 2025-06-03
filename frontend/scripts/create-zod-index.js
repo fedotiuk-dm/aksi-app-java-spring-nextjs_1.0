@@ -98,7 +98,7 @@ function createZodIndex(domainName) {
     `/**`,
     ` * Константи домену для валідації`,
     ` */`,
-    `export const ${domainName.toUpperCase()}_VALIDATION = {`,
+    `export const ${domainName.toUpperCase().replace(/-/g, '_')}_VALIDATION = {`,
     `  DOMAIN_NAME: '${domainName}',`,
     `  safeValidate,`,
     `  validateOrThrow,`,
@@ -221,7 +221,16 @@ function main() {
     createMainZodIndex();
   } else {
     console.log('🚀 Створення всіх Zod index файлів');
-    const domains = ['auth', 'branch', 'client', 'order', 'pricing', 'receipt', 'test'];
+    const domains = [
+      'auth',
+      'branch',
+      'client',
+      'order',
+      'order-wizard',
+      'pricing',
+      'receipt',
+      'test',
+    ];
     domains.forEach(createZodIndex);
     createMainZodIndex();
   }

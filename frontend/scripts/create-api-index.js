@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 
 const GENERATED_API_PATH = path.join(__dirname, '../shared/api/generated');
-const DOMAINS = ['auth', 'branch', 'client', 'order', 'pricing', 'receipt', 'test'];
+const DOMAINS = ['auth', 'branch', 'client', 'order', 'order-wizard', 'pricing', 'receipt', 'test'];
 
 /**
  * Створює index.ts файл для конкретного домену
@@ -95,8 +95,12 @@ function createMainIndex() {
     const domainIndexPath = path.join(domainPath, 'index.ts');
 
     if (fs.existsSync(domainIndexPath)) {
-      exports.push(`// ${domain.charAt(0).toUpperCase() + domain.slice(1)} домен`);
-      exports.push(`export * as ${domain}Api from './${domain}';`);
+      // Конвертуємо назву домену для валідного експорту (видаляємо дефіси)
+      const exportName = domain.replace(/-/g, '');
+      const displayName = domain.charAt(0).toUpperCase() + domain.slice(1).replace(/-/g, ' ');
+
+      exports.push(`// ${displayName} домен`);
+      exports.push(`export * as ${exportName}Api from './${domain}';`);
       exports.push('');
     }
   });
@@ -127,6 +131,9 @@ function main() {
 
   // Створюємо index для кожного домену
   DOMAINS.forEach(createDomainIndex);
+
+  // Створюємо index для full API окремо
+  createDomainIndex('full');
 
   // Створюємо головний index
   createMainIndex();

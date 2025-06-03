@@ -36,7 +36,7 @@ const DOMAIN_TAG_MAPPING = {
   // 👤 Домен client - клієнти та їх підписи
   client: ['Clients', 'Client - Signatures'],
 
-  // 📦 Домен order - замовлення та пов'язані операції
+  // 📦 Домен order - замовлення та пов'язані операції (без OrderWizard)
   order: [
     'Orders',
     'Order Completion',
@@ -47,6 +47,9 @@ const DOMAIN_TAG_MAPPING = {
     'Order Item Photos',
     'Payment for Order',
   ],
+
+  // 🧙‍♂️ Домен order-wizard - майстер створення замовлень (окремо винесено)
+  'order-wizard': ['Order Wizard'],
 
   // 💰 Домен pricing - ціноутворення та прайс-листи
   pricing: [
@@ -73,28 +76,28 @@ const DOMAIN_TAG_MAPPING = {
 
 // 🏗️ Функція для створення конфігурації домену (React Query + API)
 const createDomainConfig = (domainName: string, tags: string[], outputPath: string) => ({
-    input: {
-      target: API_BASE_URL,
-      filters: {
+  input: {
+    target: API_BASE_URL,
+    filters: {
       tags,
-      },
     },
-    output: {
+  },
+  output: {
     target: outputPath,
     client: 'react-query' as const,
     mode: 'split' as const,
-      override: {
+    override: {
       // 🔧 Кастомний mutator з error handling
-        mutator: {
-          path: MUTATOR_PATH,
-          name: MUTATOR_NAME,
+      mutator: {
+        path: MUTATOR_PATH,
+        name: MUTATOR_NAME,
         default: true,
-  },
+      },
 
       // 🎣 React Query конфігурація з advanced options
-        query: {
-          useQuery: true,
-          useMutation: true,
+      query: {
+        useQuery: true,
+        useMutation: true,
         useInfinite: true, // Додаємо infinite queries
         signal: true, // Підтримка AbortController
       },
@@ -122,22 +125,22 @@ const createDomainConfig = (domainName: string, tags: string[], outputPath: stri
       'node ./scripts/create-api-index.js',
       `echo "✅ Generated ${domainName} API"`,
     ],
-        },
+  },
 });
 
 // 🔥 Функція для створення конфігурації Zod схем
 const createZodConfig = (domainName: string, tags: string[], outputPath: string) => ({
-    input: {
-      target: API_BASE_URL,
-      filters: {
+  input: {
+    target: API_BASE_URL,
+    filters: {
       tags,
-      },
     },
-    output: {
+  },
+  output: {
     target: `${outputPath}/zod`,
     client: 'zod' as const,
     mode: 'split' as const,
-      override: {
+    override: {
       // 🔧 Zod-специфічні налаштування
       zod: {
         generate: {
@@ -166,7 +169,7 @@ const createZodConfig = (domainName: string, tags: string[], outputPath: string)
       `node ./scripts/create-zod-index.js ${domainName}`,
       `echo "✅ Generated ${domainName} Zod schemas"`,
     ],
-      },
+  },
 });
 
 const config: Config = {};
@@ -187,22 +190,22 @@ Object.entries(DOMAIN_TAG_MAPPING).forEach(([domainName, tags]) => {
 
 // 🌟 Додаткова конфігурація для повного API (без фільтрації)
 config['full-api'] = {
-    input: {
-      target: API_BASE_URL,
-    },
-    output: {
+  input: {
+    target: API_BASE_URL,
+  },
+  output: {
     target: './shared/api/generated/full',
     client: 'react-query' as const,
     mode: 'split' as const,
-      override: {
-        mutator: {
-          path: MUTATOR_PATH,
-          name: MUTATOR_NAME,
+    override: {
+      mutator: {
+        path: MUTATOR_PATH,
+        name: MUTATOR_NAME,
         default: true,
-        },
-        query: {
-          useQuery: true,
-          useMutation: true,
+      },
+      query: {
+        useQuery: true,
+        useMutation: true,
         useInfinite: true,
         signal: true,
         options: {
@@ -216,19 +219,19 @@ config['full-api'] = {
   },
   hooks: {
     afterAllFilesWrite: ['node ./scripts/create-api-index.js', 'echo "✅ Generated full API"'],
-        },
+  },
 };
 
 // 🔥 Повні Zod схеми
 config['full-zod'] = {
-    input: {
-      target: API_BASE_URL,
-    },
-    output: {
+  input: {
+    target: API_BASE_URL,
+  },
+  output: {
     target: './shared/api/generated/full/zod',
     client: 'zod' as const,
     mode: 'split' as const,
-      override: {
+    override: {
       zod: {
         generate: {
           body: true,

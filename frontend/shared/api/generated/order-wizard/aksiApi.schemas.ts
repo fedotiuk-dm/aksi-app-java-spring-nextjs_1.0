@@ -1181,3 +1181,17 @@ export interface OrderWizardDataResponse {
   validationErrors?: OrderWizardDataResponseValidationErrors;
 }
 
+export type CompleteWizard200 = { [key: string]: unknown };
+
+export type ExecuteActionBody = {[key: string]: unknown};
+
+export type ExecuteAction200 = { [key: string]: unknown };
+
+export type GetAvailableActions200 = {[key: string]: boolean};
+
+export type GetAllAvailableActions200 = {[key: string]: string};
+
+export type GetActiveWizards200 = {[key: string]: 'INITIAL' | 'CLIENT_SELECTION' | 'ORDER_INITIALIZATION' | 'ITEM_MANAGEMENT' | 'ITEM_WIZARD_ACTIVE' | 'ITEM_BASIC_INFO' | 'ITEM_CHARACTERISTICS' | 'ITEM_DEFECTS_STAINS' | 'ITEM_PRICING' | 'ITEM_PHOTOS' | 'ITEM_COMPLETED' | 'EXECUTION_PARAMS' | 'GLOBAL_DISCOUNTS' | 'PAYMENT_PROCESSING' | 'ADDITIONAL_INFO' | 'ORDER_CONFIRMATION' | 'ORDER_REVIEW' | 'LEGAL_ASPECTS' | 'RECEIPT_GENERATION' | 'COMPLETED' | 'CANCELLED'};
+
+export type CancelWizard200 = { [key: string]: unknown };
+

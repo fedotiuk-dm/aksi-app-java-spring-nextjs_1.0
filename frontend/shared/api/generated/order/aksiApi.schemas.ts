@@ -876,6 +876,72 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface OrderBasicInfoRequest {
+  branchId?: string;
+  uniqueTag?: string;
+}
+
+/**
+ * Поточний стан wizard
+ */
+export type OrderWizardSessionResponseCurrentState = typeof OrderWizardSessionResponseCurrentState[keyof typeof OrderWizardSessionResponseCurrentState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrderWizardSessionResponseCurrentState = {
+  INITIAL: 'INITIAL',
+  CLIENT_SELECTION: 'CLIENT_SELECTION',
+  ORDER_INITIALIZATION: 'ORDER_INITIALIZATION',
+  ITEM_MANAGEMENT: 'ITEM_MANAGEMENT',
+  ITEM_WIZARD_ACTIVE: 'ITEM_WIZARD_ACTIVE',
+  ITEM_BASIC_INFO: 'ITEM_BASIC_INFO',
+  ITEM_CHARACTERISTICS: 'ITEM_CHARACTERISTICS',
+  ITEM_DEFECTS_STAINS: 'ITEM_DEFECTS_STAINS',
+  ITEM_PRICING: 'ITEM_PRICING',
+  ITEM_PHOTOS: 'ITEM_PHOTOS',
+  ITEM_COMPLETED: 'ITEM_COMPLETED',
+  EXECUTION_PARAMS: 'EXECUTION_PARAMS',
+  GLOBAL_DISCOUNTS: 'GLOBAL_DISCOUNTS',
+  PAYMENT_PROCESSING: 'PAYMENT_PROCESSING',
+  ADDITIONAL_INFO: 'ADDITIONAL_INFO',
+  ORDER_CONFIRMATION: 'ORDER_CONFIRMATION',
+  ORDER_REVIEW: 'ORDER_REVIEW',
+  LEGAL_ASPECTS: 'LEGAL_ASPECTS',
+  RECEIPT_GENERATION: 'RECEIPT_GENERATION',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+/**
+ * Інформація про сесію Order Wizard
+ */
+export interface OrderWizardSessionResponse {
+  /** Унікальний ідентифікатор wizard */
+  wizardId?: string;
+  /** Поточний стан wizard */
+  currentState?: OrderWizardSessionResponseCurrentState;
+  /** ID клієнта (якщо вибрано) */
+  clientId?: string;
+  /** ID філії */
+  branchId?: string;
+  /** Номер квитанції */
+  receiptNumber?: string;
+  /** Унікальна мітка */
+  uniqueTag?: string;
+  /** Час створення замовлення */
+  orderCreationTime?: string;
+  /** Час створення сесії */
+  createdAt?: string;
+  /** Час останнього оновлення */
+  updatedAt?: string;
+  /** Час закінчення сесії */
+  expiresAt?: string;
+  /** Чи активна сесія */
+  isActive?: boolean;
+  /** Чи закінчилася сесія */
+  isExpired?: boolean;
+}
+
 export interface TestResponse {
   message?: string;
 }
@@ -1084,6 +1150,35 @@ export interface ModifierRecommendationDTO {
   recommendedValue?: number;
   priority?: ModifierRecommendationDTOPriority;
   riskWarning?: string;
+}
+
+/**
+ * Дані wizard (ключ-значення)
+ */
+export type OrderWizardDataResponseData = {[key: string]: unknown};
+
+/**
+ * Можливі дії в поточному стані
+ */
+export type OrderWizardDataResponseAvailableActions = {[key: string]: boolean};
+
+/**
+ * Валідаційні помилки (якщо є)
+ */
+export type OrderWizardDataResponseValidationErrors = {[key: string]: string};
+
+/**
+ * Дані Order Wizard сесії
+ */
+export interface OrderWizardDataResponse {
+  /** Інформація про сесію */
+  session?: OrderWizardSessionResponse;
+  /** Дані wizard (ключ-значення) */
+  data?: OrderWizardDataResponseData;
+  /** Можливі дії в поточному стані */
+  availableActions?: OrderWizardDataResponseAvailableActions;
+  /** Валідаційні помилки (якщо є) */
+  validationErrors?: OrderWizardDataResponseValidationErrors;
 }
 
 export type DeleteOrderItem204 = { [key: string]: unknown };
