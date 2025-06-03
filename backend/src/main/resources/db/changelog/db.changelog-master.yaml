@@ -28,3 +28,8 @@ databaseChangeLog:
   - include:
       file: domains/orders/orders-index.yaml
       relativeToChangelogFile: true
+
+  # Order Wizard State Machine
+  - include:
+      file: domains/order-wizard/order-wizard-index.yaml
+      relativeToChangelogFile: true

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  # Order Wizard State Machine Tables
+  - include:
+      file: 1.0/001-create-order-wizard-sessions-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/002-create-order-wizard-state-data-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 1.0/003-add-wizard-metadata-fields.yaml
+      relativeToChangelogFile: true

@@ -168,13 +168,14 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         // Отримуємо код філії (або 'XX' якщо код відсутній)
         String branchCode = branchLocation.getCode() != null ? branchLocation.getCode() : "XX";
 
-        // Формуємо номер з дати та часу
+        // Генеруємо номер квитанції у форматі: AKSI-[BRANCH_CODE]-YYYYMMDDHH-NNNN
         LocalDateTime now = LocalDateTime.now();
-        String year = String.valueOf(now.getYear()).substring(2); // Останні дві цифри року
-        String month = String.format("%02d", now.getMonthValue());
-        String day = String.format("%02d", now.getDayOfMonth());
-        String randomSuffix = String.format("%03d", (int) (Math.random() * 1000));
+        String dateStr = String.format("%04d%02d%02d%02d",
+            now.getYear(), now.getMonthValue(), now.getDayOfMonth(), now.getHour());
 
-        return branchCode + "-" + year + month + day + "-" + randomSuffix;
+        // Генеруємо випадкове 4-значне число
+        int random = (int) (Math.random() * 9000) + 1000;
+
+        return String.format("AKSI-%s-%s-%04d", branchCode, dateStr, random);
     }
 }

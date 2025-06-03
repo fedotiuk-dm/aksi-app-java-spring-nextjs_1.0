@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder userDetailsPasswordEncoder;
 
     @Value("${admin.username:admin}")
     private String adminUsername;
@@ -42,7 +42,7 @@ public class AdminInitializer implements CommandLineRunner {
                     .name("Адміністратор")
                     .username(adminUsername)
                     .email(adminEmail)
-                    .password(passwordEncoder.encode(adminPassword))
+                    .password(userDetailsPasswordEncoder.encode(adminPassword))
                     .role(RoleEntity.ADMIN)
                     .position("Головний адміністратор")
                     .active(true)

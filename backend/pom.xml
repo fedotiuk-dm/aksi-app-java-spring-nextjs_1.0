@@ -41,6 +41,7 @@
         <itextpdf.version>5.5.13.4</itextpdf.version>
         <zxing.version>3.5.3</zxing.version>
         <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
+        <spring-statemachine.version>4.0.0</spring-statemachine.version>
         <!-- Кодування для всього проекту -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -143,6 +144,13 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
+        </dependency>
+
+        <!-- Spring State Machine -->
+        <dependency>
+            <groupId>org.springframework.statemachine</groupId>
+            <artifactId>spring-statemachine-core</artifactId>
+            <version>${spring-statemachine.version}</version>
         </dependency>
 
         <!-- Lombok -->

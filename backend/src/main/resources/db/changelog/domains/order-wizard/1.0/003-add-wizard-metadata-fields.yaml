@@ -1,0 +1,97 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-add-wizard-metadata-fields
+      author: aksi-team
+      comment: "Додавання полів для відстеження wizard сесій в існуючих таблицях"
+
+      changes:
+        # Додаємо wizard_session_id до таблиці orders для зв'язку з wizard
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: wizard_session_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_created_by_wizard
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: false
+              - column:
+                  name: wizard_completion_time
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+
+        # Індекс для швидкого пошуку замовлень створених через wizard
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_wizard_session
+            columns:
+              - column:
+                  name: wizard_session_id
+
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_created_by_wizard
+            columns:
+              - column:
+                  name: is_created_by_wizard
+              - column:
+                  name: created_date
+
+        # Foreign key constraint для wizard session
+        - addForeignKeyConstraint:
+            constraintName: fk_orders_wizard_session
+            baseTableName: orders
+            baseColumnNames: wizard_session_id
+            referencedTableName: order_wizard_sessions
+            referencedColumnNames: id
+            onDelete: SET NULL
+
+        # Додаємо тригер для оновлення updated_at в order_wizard_sessions
+        - sql:
+            splitStatements: false
+            endDelimiter: ";"
+            sql: >
+              CREATE OR REPLACE FUNCTION update_wizard_sessions_updated_at()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                  NEW.updated_at = CURRENT_TIMESTAMP;
+                  RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql;
+
+        - sql:
+            splitStatements: false
+            endDelimiter: ";"
+            sql: >
+              CREATE TRIGGER trigger_update_wizard_sessions_updated_at
+                  BEFORE UPDATE ON order_wizard_sessions
+                  FOR EACH ROW
+                  EXECUTE FUNCTION update_wizard_sessions_updated_at();
+
+        # Тригер для оновлення updated_at в order_wizard_state_data
+        - sql:
+            splitStatements: false
+            endDelimiter: ";"
+            sql: >
+              CREATE OR REPLACE FUNCTION update_wizard_state_data_updated_at()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                  NEW.updated_at = CURRENT_TIMESTAMP;
+                  RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql;
+
+        - sql:
+            splitStatements: false
+            endDelimiter: ";"
+            sql: >
+              CREATE TRIGGER trigger_update_wizard_state_data_updated_at
+                  BEFORE UPDATE ON order_wizard_state_data
+                  FOR EACH ROW
+                  EXECUTE FUNCTION update_wizard_state_data_updated_at();
