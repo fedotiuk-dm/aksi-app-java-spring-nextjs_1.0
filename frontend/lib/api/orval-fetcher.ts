@@ -54,28 +54,65 @@ interface ApiErrorResponse {
 }
 
 // 🔐 Утиліти для роботи з токенами
-const getAuthToken = (): string | null => {
+// Кеш для токена
+let cachedToken: string | null = null;
+let tokenPromise: Promise<string | null> | null = null;
+
+const getAuthToken = async (): Promise<string | null> => {
   if (typeof window === 'undefined') return null;
 
-  // Спочатку шукаємо в localStorage (для SPA)
-  const localStorageToken = localStorage.getItem('auth_token');
-  if (localStorageToken) return localStorageToken;
+  // Якщо є кешований токен, повертаємо його
+  if (cachedToken) return cachedToken;
 
-  // Потім в cookies (fallback)
-  const cookieToken = document?.cookie
-    ?.split('; ')
-    ?.find((row) => row.startsWith('auth_token='))
-    ?.split('=')[1];
+  // Якщо вже виконується запит за токеном, чекаємо його
+  if (tokenPromise) return tokenPromise;
 
-  return cookieToken || null;
+  // Створюємо новий запит за токеном
+  tokenPromise = (async () => {
+    try {
+      const response = await fetch('/api/auth/token', {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        cachedToken = data.token || null;
+
+        // Debug logging
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔐 Auth token from API:', {
+            status: response.status,
+            hasToken: !!cachedToken,
+          });
+        }
+
+        return cachedToken;
+      } else {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔐 Auth token API failed:', response.status);
+        }
+        return null;
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('🔐 Auth token fetch error:', error);
+      }
+      return null;
+    } finally {
+      tokenPromise = null;
+    }
+  })();
+
+  return tokenPromise;
 };
 
 const clearAuthToken = (): void => {
   if (typeof window === 'undefined') return;
 
-  localStorage.removeItem('auth_token');
-  // Очищуємо cookie також
-  document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  // Очищуємо кеш токена
+  cachedToken = null;
+  tokenPromise = null;
 };
 
 // 🚀 Створюємо axios instance з базовою конфігурацією
@@ -114,9 +151,9 @@ const shouldRetry = (error: AxiosError, attempt: number): boolean => {
 
 // 📝 Request interceptor для авторизації та логування
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  async (config: InternalAxiosRequestConfig) => {
     // Додаємо токен авторизації
-    const token = getAuthToken();
+    const token = await getAuthToken();
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -295,8 +332,8 @@ export const apiUtils = {
   clearToken: clearAuthToken,
 
   // Перевірка чи є токен
-  hasValidToken(): boolean {
-    const token = getAuthToken();
+  async hasValidToken(): Promise<boolean> {
+    const token = await getAuthToken();
     if (!token) return false;
 
     // Можна додати перевірку на expire

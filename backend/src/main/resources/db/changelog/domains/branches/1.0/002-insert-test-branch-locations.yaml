@@ -1,0 +1,144 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-test-branch-locations
+      author: system
+      changes:
+        - insert:
+            tableName: branch_locations
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: "Головне відділення"
+              - column:
+                  name: address
+                  value: "Вінниця, вул. Замостянська, 33"
+              - column:
+                  name: phone
+                  value: "+380632913911"
+              - column:
+                  name: code
+                  value: "AKSI1"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: NOW()
+              - column:
+                  name: updated_at
+                  valueComputed: NOW()
+        - insert:
+            tableName: branch_locations
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: "Відділення на Перемоги"
+              - column:
+                  name: address
+                  value: "Вінниця, пр. Перемоги, 25"
+              - column:
+                  name: phone
+                  value: "+380632913912"
+              - column:
+                  name: code
+                  value: "AKSI2"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: NOW()
+              - column:
+                  name: updated_at
+                  valueComputed: NOW()
+        - insert:
+            tableName: branch_locations
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: "Відділення на Хрещатику"
+              - column:
+                  name: address
+                  value: "Вінниця, вул. Хрещатик, 15"
+              - column:
+                  name: phone
+                  value: "+380632913913"
+              - column:
+                  name: code
+                  value: "AKSI3"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: NOW()
+              - column:
+                  name: updated_at
+                  valueComputed: NOW()
+        - insert:
+            tableName: branch_locations
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: "Відділення біля Центрального ринку"
+              - column:
+                  name: address
+                  value: "Вінниця, вул. Соборна, 77"
+              - column:
+                  name: phone
+                  value: "+380632913914"
+              - column:
+                  name: code
+                  value: "AKSI4"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: NOW()
+              - column:
+                  name: updated_at
+                  valueComputed: NOW()
+        - insert:
+            tableName: branch_locations
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: "Відділення на Юності"
+              - column:
+                  name: address
+                  value: "Вінниця, вул. Юності, 42"
+              - column:
+                  name: phone
+                  value: "+380632913915"
+              - column:
+                  name: code
+                  value: "AKSI5"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: NOW()
+              - column:
+                  name: updated_at
+                  valueComputed: NOW()
+      rollback:
+        - delete:
+            tableName: branch_locations
+            where: code IN ('AKSI1', 'AKSI2', 'AKSI3', 'AKSI4', 'AKSI5')

@@ -244,6 +244,8 @@ public class OrderWizardStateMachineService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
+        log.debug("Поточний користувач з Security Context: {}", username);
+
         return userRepository.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("Користувач не знайдений: " + username));
     }

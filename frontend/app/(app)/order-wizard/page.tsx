@@ -1,23 +1,21 @@
+/**
+ * @fileoverview Сторінка Order Wizard для хімчистки
+ * Головна сторінка для оформлення замовлень з покроковим інтерфейсом
+ */
+
 'use client';
 
-import { Box, Container, Typography } from '@mui/material';
-
-import { ClientSelectionStep } from '@/features/order-wizard/client-selection/ui/ClientSelectionStep';
+import { OrderWizard } from '@/features/order-wizard';
 
 /**
- * Тестова сторінка для першого кроку Order Wizard
- * Повністю ізольована від інших компонентів
+ * 🎯 Головна сторінка Order Wizard
+ *
+ * Інтегрує всі етапи оформлення замовлення:
+ * 1. Клієнт та базова інформація замовлення
+ * 2. Менеджер предметів (циклічний процес)
+ * 3. Загальні параметри замовлення
+ * 4. Підтвердження та завершення з формуванням квитанції
  */
-export default function OrderWizardTestPage() {
-  return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Тест: Вибір клієнта
-      </Typography>
-
-      <Box sx={{ mt: 3 }}>
-        <ClientSelectionStep />
-      </Box>
-    </Container>
-  );
+export default function OrderWizardPage() {
+  return <OrderWizard />;
 }

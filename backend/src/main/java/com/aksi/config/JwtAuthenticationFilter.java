@@ -45,7 +45,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String jwt;
             final String userEmail;
 
+            log.debug("JWT Filter: Processing request {} {}, Auth header: {}",
+                request.getMethod(), request.getRequestURI(),
+                authHeader != null ? "PRESENT" : "MISSING");
+
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                log.debug("JWT Filter: No valid auth header, proceeding without authentication");
                 filterChain.doFilter(request, response);
                 return;
             }
