@@ -48,4 +48,21 @@ public interface PriceListService {
      * @return Список доступних одиниць виміру
      */
     List<String> getAvailableUnitsOfMeasure(UUID categoryId);
+
+    /**
+     * Отримати елемент прайс-листа за назвою.
+     *
+     * @param name Назва елемента
+     * @return Елемент прайс-листа або null, якщо не знайдено
+     */
+    PriceListItemDTO getItemByName(String name);
+
+    /**
+     * Отримати елемент прайс-листа за назвою в рамках категорії.
+     *
+     * @param name Назва елемента
+     * @param categoryId ID категорії
+     * @return Елемент прайс-листа або null, якщо не знайдено
+     */
+    PriceListItemDTO getItemByNameAndCategory(String name, UUID categoryId);
 }

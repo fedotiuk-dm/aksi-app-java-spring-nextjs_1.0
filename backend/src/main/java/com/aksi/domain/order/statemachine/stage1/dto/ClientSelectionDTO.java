@@ -2,6 +2,7 @@ package com.aksi.domain.order.statemachine.stage1.dto;
 
 import java.util.List;
 
+import com.aksi.domain.client.dto.ClientProjection;
 import com.aksi.domain.client.dto.ClientResponse;
 
 import lombok.AllArgsConstructor;
@@ -31,7 +32,7 @@ public class ClientSelectionDTO {
     /**
      * Результати пошуку клієнтів.
      */
-    private List<ClientSummaryDto> searchResults;
+    private List<ClientProjection> searchResults;
 
     /**
      * Загальна кількість знайдених клієнтів.
@@ -63,81 +64,7 @@ public class ClientSelectionDTO {
      */
     private ClientResponse newClientData;
 
-    /**
-     * DTO для відображення клієнта у результатах пошуку.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ClientSummaryDto {
 
-        /**
-         * Ідентифікатор клієнта.
-         */
-        private String id;
-
-        /**
-         * Повне ім'я клієнта.
-         */
-        private String fullName;
-
-        /**
-         * Номер телефону.
-         */
-        private String phone;
-
-        /**
-         * Email (якщо є).
-         */
-        private String email;
-
-        /**
-         * Адреса (якщо є).
-         */
-        private String address;
-
-        /**
-         * Кількість попередніх замовлень.
-         */
-        private Integer previousOrdersCount;
-
-        /**
-         * Дата останнього замовлення.
-         */
-        private Long lastOrderDate;
-
-        /**
-         * Формує повне ім'я для відображення.
-         */
-        public String getDisplayName() {
-            return fullName != null ? fullName : "Клієнт без імені";
-        }
-
-        /**
-         * Формує рядок контактної інформації.
-         */
-        public String getContactInfo() {
-            StringBuilder sb = new StringBuilder();
-            if (phone != null && !phone.trim().isEmpty()) {
-                sb.append(phone);
-            }
-            if (email != null && !email.trim().isEmpty()) {
-                if (sb.length() > 0) {
-                    sb.append(" | ");
-                }
-                sb.append(email);
-            }
-            return sb.toString();
-        }
-
-        /**
-         * Перевіряє, чи є у клієнта попередні замовлення.
-         */
-        public boolean hasOrderHistory() {
-            return previousOrdersCount != null && previousOrdersCount > 0;
-        }
-    }
 
     /**
      * Режими роботи з клієнтом.

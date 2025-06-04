@@ -32,4 +32,12 @@ public interface ServiceCategoryService {
      * @return Категорія послуг
      */
     ServiceCategoryDTO getCategoryByCode(String code);
+
+    /**
+     * Отримати категорію послуг за назвою.
+     *
+     * @param name Назва категорії
+     * @return Категорія послуг або null, якщо не знайдено
+     */
+    ServiceCategoryDTO getCategoryByName(String name);
 }

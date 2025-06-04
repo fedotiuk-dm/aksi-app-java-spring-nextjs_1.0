@@ -15,6 +15,8 @@ import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 @Repository
 public interface PriceListItemRepository extends JpaRepository<PriceListItemEntity, UUID> {
     Optional<PriceListItemEntity> findByCatalogNumber(Integer catalogNumber);
+    Optional<PriceListItemEntity> findByName(String name);
+    Optional<PriceListItemEntity> findByNameAndCategory(String name, ServiceCategoryEntity category);
     List<PriceListItemEntity> findAllByCategory(ServiceCategoryEntity category);
     List<PriceListItemEntity> findAllByCategoryOrderByCatalogNumberAsc(ServiceCategoryEntity category);
     List<PriceListItemEntity> findAllByActiveTrue();

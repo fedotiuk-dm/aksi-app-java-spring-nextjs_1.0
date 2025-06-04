@@ -110,4 +110,39 @@ public class PriceListServiceImpl implements PriceListService {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public PriceListItemDTO getItemByName(String name) {
+        log.debug("Отримання елемента прайс-листа за назвою: {}", name);
+
+        PriceListItemEntity item = priceListItemRepository.findByName(name)
+                .orElse(null);
+
+        return item != null ? priceListMapper.toDto(item) : null;
+    }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public PriceListItemDTO getItemByNameAndCategory(String name, UUID categoryId) {
+        log.debug("Отримання елемента прайс-листа за назвою {} та категорією {}", name, categoryId);
+
+        ServiceCategoryEntity category = serviceCategoryRepository.findById(categoryId)
+                .orElse(null);
+
+        if (category == null) {
+            return null;
+        }
+
+        PriceListItemEntity item = priceListItemRepository.findByNameAndCategory(name, category)
+                .orElse(null);
+
+        return item != null ? priceListMapper.toDto(item) : null;
+    }
 }

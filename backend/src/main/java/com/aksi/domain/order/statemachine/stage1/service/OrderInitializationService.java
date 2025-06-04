@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.statemachine.StateContext;
 import org.springframework.stereotype.Service;
@@ -63,15 +62,12 @@ public class OrderInitializationService {
             // Завантажуємо доступні філії
             List<BranchLocationDTO> availableBranches = branchLocationService.getActiveBranchLocations();
 
-            // Конвертуємо в DTO для UI
-            List<OrderInitializationDTO.BranchSummaryDto> branchSummaries = availableBranches.stream()
-                .map(this::convertToBranchSummary)
-                .collect(Collectors.toList());
+            // Використовуємо готові BranchLocationDTO для UI
 
             // Створюємо початковий DTO
             OrderInitializationDTO dto = OrderInitializationDTO.builder()
                 .selectedClient(selectedClient)
-                .availableBranches(branchSummaries)
+                .availableBranches(availableBranches)
                 .orderCreationTime(LocalDateTime.now())
                 .canProceedToNext(false)
                 .build();
@@ -334,17 +330,5 @@ public class OrderInitializationService {
         dto.setCanProceedToNext(canProceed);
     }
 
-    /**
-     * Конвертує BranchLocationDTO у BranchSummaryDto для відображення в UI.
-     */
-    private OrderInitializationDTO.BranchSummaryDto convertToBranchSummary(BranchLocationDTO branch) {
-        return OrderInitializationDTO.BranchSummaryDto.builder()
-            .id(branch.getId() != null ? branch.getId().toString() : null)
-            .name(branch.getName())
-            .address(branch.getAddress())
-            .phone(branch.getPhone())
-            .isActive(branch.getActive())
-            .workingHours("9:00-18:00") // TODO: Додати поле робочих годин в BranchLocationDTO
-            .build();
-    }
+
 }

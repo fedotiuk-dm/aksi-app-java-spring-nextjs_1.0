@@ -49,7 +49,7 @@ public class OrderInitializationDTO {
     /**
      * Список доступних пунктів прийому.
      */
-    private List<BranchSummaryDto> availableBranches;
+    private List<BranchLocationDTO> availableBranches;
 
     /**
      * Дата створення замовлення.
@@ -71,79 +71,7 @@ public class OrderInitializationDTO {
      */
     private String previousReceiptNumber;
 
-    /**
-     * DTO для відображення філії у списку.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class BranchSummaryDto {
 
-        /**
-         * Ідентифікатор філії.
-         */
-        private String id;
-
-        /**
-         * Назва філії.
-         */
-        private String name;
-
-        /**
-         * Адреса філії.
-         */
-        private String address;
-
-        /**
-         * Чи активна філія.
-         */
-        private Boolean isActive;
-
-        /**
-         * Графік роботи.
-         */
-        private String workingHours;
-
-        /**
-         * Номер телефону філії.
-         */
-        private String phone;
-
-        /**
-         * Формує повну інформацію про філію для відображення.
-         */
-        public String getDisplayInfo() {
-            StringBuilder sb = new StringBuilder();
-            if (name != null && !name.trim().isEmpty()) {
-                sb.append(name);
-            }
-            if (address != null && !address.trim().isEmpty()) {
-                if (sb.length() > 0) {
-                    sb.append(" - ");
-                }
-                sb.append(address);
-            }
-            return sb.toString();
-        }
-
-        /**
-         * Формує контактну інформацію філії.
-         */
-        public String getContactInfo() {
-            StringBuilder sb = new StringBuilder();
-            if (phone != null && !phone.trim().isEmpty()) {
-                sb.append("Тел: ").append(phone);
-            }
-            if (workingHours != null && !workingHours.trim().isEmpty()) {
-                if (sb.length() > 0) {
-                    sb.append(" | ");
-                }
-                sb.append("Режим: ").append(workingHours);
-            }
-            return sb.toString();
-        }
-    }
 
     /**
      * Перевіряє, чи обрано клієнта.

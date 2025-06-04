@@ -66,4 +66,18 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
 
         return priceListMapper.toDto(category);
     }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ServiceCategoryDTO getCategoryByName(String name) {
+        log.debug("Отримання категорії послуг за назвою: {}", name);
+
+        ServiceCategoryEntity category = serviceCategoryRepository.findByName(name)
+                .orElse(null);
+
+        return category != null ? priceListMapper.toDto(category) : null;
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.domain.client.dto.ClientPageResponse;
+import com.aksi.domain.client.dto.ClientProjection;
 import com.aksi.domain.client.dto.ClientResponse;
 import com.aksi.domain.client.dto.ClientSearchRequest;
 import com.aksi.domain.client.service.ClientService;
@@ -73,23 +74,23 @@ public class ClientSelectionService {
             ClientPageResponse pageResponse = clientService.searchClients(searchRequest);
             List<ClientResponse> searchResults = pageResponse.getContent();
 
-            // Конвертуємо в DTO для UI
-            List<ClientSelectionDTO.ClientSummaryDto> clientSummaries = searchResults.stream()
-                .map(this::convertToClientSummary)
+            // Конвертуємо ClientResponse в ClientProjection для UI
+            List<ClientProjection> clientProjections = searchResults.stream()
+                .map(this::convertToClientProjection)
                 .collect(Collectors.toList());
 
             // Оновлюємо DTO
             ClientSelectionDTO dto = getOrCreateClientSelectionDTO(context);
             dto.setSearchQuery(searchQuery);
-            dto.setSearchResults(clientSummaries);
-            dto.setTotalResultsCount(clientSummaries.size());
+            dto.setSearchResults(clientProjections);
+            dto.setTotalResultsCount(clientProjections.size());
             dto.setCanProceedToNext(false); // Поки не обрано клієнта
 
             // Зберігаємо оновлені дані
             context.getExtendedState().getVariables().put("clientSelectionData", dto);
 
             log.info("Знайдено {} клієнтів для wizard: {} за запитом: {}",
-                clientSummaries.size(), wizardId, searchQuery);
+                clientProjections.size(), wizardId, searchQuery);
 
         } catch (Exception e) {
             log.error("Помилка пошуку клієнтів для wizard {}: {}", wizardId, e.getMessage(), e);
@@ -263,41 +264,34 @@ public class ClientSelectionService {
     }
 
     /**
-     * Конвертує ClientResponse у ClientSummaryDto для відображення в UI.
+     * Конвертує ClientResponse у ClientProjection для відображення в UI.
      */
-    private ClientSelectionDTO.ClientSummaryDto convertToClientSummary(ClientResponse client) {
-        return ClientSelectionDTO.ClientSummaryDto.builder()
-            .id(client.getId() != null ? client.getId().toString() : null)
-            .fullName(buildFullName(client))
-            .phone(client.getPhone())
-            .email(client.getEmail())
-            .address(buildAddress(client))
-            .previousOrdersCount(0) // TODO: Додати підрахунок замовлень
-            .lastOrderDate(null) // TODO: Додати дату останнього замовлення
-            .build();
-    }
-
-    /**
-     * Формує повне ім'я клієнта.
-     */
-    private String buildFullName(ClientResponse client) {
-        StringBuilder sb = new StringBuilder();
-        if (client.getFirstName() != null && !client.getFirstName().trim().isEmpty()) {
-            sb.append(client.getFirstName());
-        }
-        if (client.getLastName() != null && !client.getLastName().trim().isEmpty()) {
-            if (sb.length() > 0) {
-                sb.append(" ");
+    private ClientProjection convertToClientProjection(ClientResponse client) {
+        return new ClientProjection() {
+            @Override
+            public UUID getId() {
+                return client.getId();
             }
-            sb.append(client.getLastName());
-        }
-        return sb.toString();
-    }
 
-    /**
-     * Формує адресу клієнта.
-     */
-    private String buildAddress(ClientResponse client) {
-        return client.getAddress() != null ? client.getAddress() : "";
+            @Override
+            public String getFirstName() {
+                return client.getFirstName();
+            }
+
+            @Override
+            public String getLastName() {
+                return client.getLastName();
+            }
+
+            @Override
+            public String getPhone() {
+                return client.getPhone();
+            }
+
+            @Override
+            public String getEmail() {
+                return client.getEmail();
+            }
+        };
     }
 }

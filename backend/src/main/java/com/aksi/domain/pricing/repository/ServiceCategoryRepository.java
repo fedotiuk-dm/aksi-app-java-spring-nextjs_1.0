@@ -13,6 +13,7 @@ import com.aksi.domain.pricing.entity.ServiceCategoryEntity;
 @Repository
 public interface ServiceCategoryRepository extends JpaRepository<ServiceCategoryEntity, UUID> {
     Optional<ServiceCategoryEntity> findByCode(String code);
+    Optional<ServiceCategoryEntity> findByName(String name);
     List<ServiceCategoryEntity> findAllByOrderBySortOrderAsc();
     List<ServiceCategoryEntity> findByActiveIsTrueOrderBySortOrder();
 
