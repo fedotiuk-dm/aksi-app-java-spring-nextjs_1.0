@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.domain.branch.entity.BranchLocationEntity;
 import com.aksi.domain.branch.repository.BranchLocationRepository;
+import com.aksi.domain.branch.service.BranchValidator;
 import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.client.repository.ClientRepository;
 import com.aksi.domain.order.dto.CreateOrderRequest;
@@ -22,6 +23,7 @@ import com.aksi.domain.order.entity.OrderItemEntity;
 import com.aksi.domain.order.mapper.OrderMapper;
 import com.aksi.domain.order.model.OrderStatusEnum;
 import com.aksi.domain.order.repository.OrderRepository;
+import com.aksi.domain.order.service.ReceiptNumberGenerator;
 import com.aksi.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,8 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     private final ClientRepository clientRepository;
     private final BranchLocationRepository branchLocationRepository;
     private final OrderMapper orderMapper;
+    private final ReceiptNumberGenerator receiptNumberGenerator;
+    private final BranchValidator branchValidator;
 
     @Override
     @Transactional(readOnly = true)
@@ -84,7 +88,9 @@ public class OrderManagementServiceImpl implements OrderManagementService {
         order.setBranchLocation(branchLocation);
 
         // Генеруємо номер квитанції
-        order.setReceiptNumber(generateReceiptNumber(branchLocation.getId()));
+        String branchCode = branchValidator.getBranchCodeOrDefault(
+            mapToBranchLocationDTO(branchLocation), "DEF");
+        order.setReceiptNumber(receiptNumberGenerator.generate(branchCode));
         order.setClient(client);
         order.setStatus(OrderStatusEnum.NEW);
         order.setCreatedDate(LocalDateTime.now());
@@ -165,17 +171,23 @@ public class OrderManagementServiceImpl implements OrderManagementService {
                     "Пункт прийому замовлень не знайдено", branchLocationId
                 ));
 
-        // Отримуємо код філії (або 'XX' якщо код відсутній)
-        String branchCode = branchLocation.getCode() != null ? branchLocation.getCode() : "XX";
+        // Використовуємо єдиний генератор номерів
+        String branchCode = branchLocation.getCode() != null ? branchLocation.getCode() : "DEF";
+        return receiptNumberGenerator.generate(branchCode);
+    }
 
-        // Генеруємо номер квитанції у форматі: AKSI-[BRANCH_CODE]-YYYYMMDDHH-NNNN
-        LocalDateTime now = LocalDateTime.now();
-        String dateStr = String.format("%04d%02d%02d%02d",
-            now.getYear(), now.getMonthValue(), now.getDayOfMonth(), now.getHour());
-
-        // Генеруємо випадкове 4-значне число
-        int random = (int) (Math.random() * 9000) + 1000;
-
-        return String.format("AKSI-%s-%s-%04d", branchCode, dateStr, random);
+    /**
+     * Конвертує BranchLocationEntity в BranchLocationDTO для роботи з валідатором.
+     */
+    private com.aksi.domain.branch.dto.BranchLocationDTO mapToBranchLocationDTO(BranchLocationEntity entity) {
+        com.aksi.domain.branch.dto.BranchLocationDTO dto = new com.aksi.domain.branch.dto.BranchLocationDTO();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setCode(entity.getCode());
+        dto.setActive(entity.getActive());
+        dto.setAddress(entity.getAddress());
+        dto.setPhone(entity.getPhone());
+        // email поле може не існувати в entity
+        return dto;
     }
 }

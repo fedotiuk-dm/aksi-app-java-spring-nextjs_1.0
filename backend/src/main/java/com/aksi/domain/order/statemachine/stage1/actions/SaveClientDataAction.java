@@ -5,29 +5,23 @@ import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Component;
 
 import com.aksi.domain.client.dto.ClientResponse;
-import com.aksi.domain.client.dto.CreateClientRequest;
-import com.aksi.domain.client.service.ClientService;
 import com.aksi.domain.order.statemachine.OrderEvent;
 import com.aksi.domain.order.statemachine.OrderState;
-import com.aksi.domain.order.statemachine.stage1.mapper.ClientWizardMapper;
-import com.aksi.domain.order.statemachine.stage1.validator.ClientDataValidator;
+import com.aksi.domain.order.statemachine.stage1.service.Stage1WizardService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Action для збереження даних клієнта
- * Використовує реальний ClientService для роботи з базою даних
- * Спрощено через MapStruct mapper та окремий валідатор
+ * Action для збереження даних клієнта в Stage 1.
+ * Використовує новий Stage1WizardService для роботи з клієнтами.
  */
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class SaveClientDataAction implements Action<OrderState, OrderEvent> {
 
-    private final ClientService clientService;
-    private final ClientWizardMapper clientMapper;
-    private final ClientDataValidator clientValidator;
+    private final Stage1WizardService stage1WizardService;
 
     @Override
     public void execute(StateContext<OrderState, OrderEvent> context) {
@@ -44,17 +38,30 @@ public class SaveClientDataAction implements Action<OrderState, OrderEvent> {
                 throw new IllegalArgumentException("Некоректні дані клієнта");
             }
 
-            ClientResponse savedClient = clientValidator.isNewClient(clientResponse)
-                ? createNewClient(clientResponse, wizardId)
-                : getExistingClient(clientResponse, wizardId);
+            // Визначаємо тип дії: вибір існуючого або створення нового клієнта
+            String actionType = (String) context.getMessageHeaders().get("actionType");
 
-            // Зберігаємо дані клієнта в контексті
-            context.getExtendedState().getVariables().put("clientId", savedClient.getId());
-            context.getExtendedState().getVariables().put("clientData", savedClient);
+            if (actionType == null) {
+                throw new IllegalArgumentException("Тип дії не вказано");
+            }
 
-            // Маскуємо чутливі дані в логах
-            log.info("Дані клієнта збережено для wizard: {} (телефон: {}****)",
-                wizardId, getMaskedPhone(savedClient.getPhone()));
+            switch (actionType) {
+                case "selectExisting" -> {
+                    // Вибір існуючого клієнта
+                    String clientId = clientResponse.getId() != null ? clientResponse.getId().toString() : null;
+                    if (clientId == null) {
+                        throw new IllegalArgumentException("ID клієнта не вказано для вибору існуючого клієнта");
+                    }
+                    stage1WizardService.selectClient(wizardId, clientId, context);
+                }
+                case "createNew" -> {
+                    // Збереження даних нового клієнта
+                    stage1WizardService.saveNewClientData(wizardId, clientResponse, context);
+                }
+                default -> throw new IllegalArgumentException("Невідомий тип дії: " + actionType);
+            }
+
+            log.info("Дані клієнта успішно оброблено для wizard: {} (тип дії: {})", wizardId, actionType);
 
         } catch (IllegalArgumentException e) {
             log.error("Некоректні дані клієнта для wizard {}: {}", wizardId, e.getMessage());
@@ -67,40 +74,5 @@ public class SaveClientDataAction implements Action<OrderState, OrderEvent> {
                 "Помилка збереження клієнта: " + e.getMessage());
             throw e;
         }
-    }
-
-    /**
-     * Створює нового клієнта використовуючи MapStruct mapper
-     */
-    private ClientResponse createNewClient(ClientResponse clientData, String wizardId) {
-        CreateClientRequest createRequest = clientMapper.toCreateClientRequest(clientData);
-        ClientResponse newClient = clientService.createClient(createRequest);
-
-        log.info("Створено нового клієнта {} для wizard: {}",
-            newClient.getId(), wizardId);
-
-        return newClient;
-    }
-
-    /**
-     * Отримує існуючого клієнта
-     */
-    private ClientResponse getExistingClient(ClientResponse clientData, String wizardId) {
-        ClientResponse existingClient = clientService.getClientById(clientData.getId());
-
-        log.info("Використано існуючого клієнта {} для wizard: {}",
-            existingClient.getId(), wizardId);
-
-        return existingClient;
-    }
-
-    /**
-     * Маскує номер телефону для безпечного логування
-     */
-    private String getMaskedPhone(String phone) {
-        if (phone == null || phone.length() < 6) {
-            return "****";
-        }
-        return phone.substring(0, Math.min(phone.length() - 4, 6));
     }
 }
