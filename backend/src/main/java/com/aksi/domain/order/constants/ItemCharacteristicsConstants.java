@@ -157,83 +157,52 @@ public final class ItemCharacteristicsConstants {
         }
     }
 
+
+
     /**
-     * Доступні типи плям.
+     * Категорії, для яких потрібно показувати секцію наповнювача.
      */
-    public static final class StainTypes {
-        private StainTypes() {
+    public static final class FillerCategories {
+        private FillerCategories() {
             // Приватний конструктор
         }
 
-        public static final String FAT = "Жир";
-        public static final String BLOOD = "Кров";
-        public static final String PROTEIN = "Білок";
-        public static final String WINE = "Вино";
-        public static final String COFFEE = "Кава";
-        public static final String GRASS = "Трава";
-        public static final String INK = "Чорнило";
-        public static final String COSMETICS = "Косметика";
-        public static final String OTHER = "Інше";
+        // Ключові слова для категорій з наповнювачем
+        private static final String[] FILLER_KEYWORDS = {
+                "куртк", "пальт", "подушк", "ковдр", "жилет",
+                "жакет", "пуховик", "парк", "плед", "одіял"
+        };
 
         /**
-         * Отримати всі типи плям.
+         * Перевіряє чи потрібно показувати секцію наповнювача для категорії.
          *
-         * @return Список типів плям
+         * @param categoryCode Код категорії
+         * @return true, якщо потрібно показувати секцію наповнювача
          */
-        public static List<String> getAllStainTypes() {
-            return Arrays.asList(
-                    FAT, BLOOD, PROTEIN, WINE, COFFEE, GRASS, INK, COSMETICS, OTHER
-            );
-        }
-    }
+        public static boolean shouldShowFillerSection(String categoryCode) {
+            if (categoryCode == null || categoryCode.trim().isEmpty()) {
+                return false;
+            }
 
-    /**
-     * Доступні типи дефектів та ризиків.
-     */
-    public static final class DefectsAndRisks {
-        private DefectsAndRisks() {
-            // Приватний конструктор
-        }
+            String category = categoryCode.toLowerCase();
 
-        // Дефекти
-        public static final String WORN = "Потертості";
-        public static final String TORN = "Порване";
-        public static final String MISSING_HARDWARE = "Відсутність фурнітури";
-        public static final String DAMAGED_HARDWARE = "Пошкодження фурнітури";
+            // Перевіряємо наявність ключових слів
+            for (String keyword : FILLER_KEYWORDS) {
+                if (category.contains(keyword)) {
+                    return true;
+                }
+            }
 
-        // Ризики
-        public static final String COLOR_CHANGE_RISK = "Ризики зміни кольору";
-        public static final String DEFORMATION_RISK = "Ризики деформації";
-        public static final String NO_GUARANTEE = "Без гарантій";
-
-        /**
-         * Отримати всі типи дефектів та ризиків.
-         *
-         * @return Список типів дефектів та ризиків
-         */
-        public static List<String> getAllDefectsAndRisks() {
-            return Arrays.asList(
-                    WORN, TORN, MISSING_HARDWARE, DAMAGED_HARDWARE,
-                    COLOR_CHANGE_RISK, DEFORMATION_RISK, NO_GUARANTEE
-            );
+            return false;
         }
 
         /**
-         * Отримати тільки дефекти.
+         * Отримати всі ключові слова для категорій з наповнювачем.
          *
-         * @return Список дефектів
+         * @return Масив ключових слів
          */
-        public static List<String> getDefects() {
-            return Arrays.asList(WORN, TORN, MISSING_HARDWARE, DAMAGED_HARDWARE);
-        }
-
-        /**
-         * Отримати тільки ризики.
-         *
-         * @return Список ризиків
-         */
-        public static List<String> getRisks() {
-            return Arrays.asList(COLOR_CHANGE_RISK, DEFORMATION_RISK, NO_GUARANTEE);
+        public static String[] getFillerKeywords() {
+            return FILLER_KEYWORDS.clone();
         }
     }
 }

@@ -163,4 +163,15 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
   cache:
-    disabled: true # Вимкнено кешування для виправлення помилок
+    disabled: true # Вімкнено кешування для виправлення помилок
+
+# Налаштування валюти та локалізації
+app:
+  currency:
+    code: UAH
+    symbol: грн
+    decimal-places: 2
+    locale: uk_UA
+    use-grouping-separator: true
+    grouping-separator: " "
+    decimal-separator: "."
