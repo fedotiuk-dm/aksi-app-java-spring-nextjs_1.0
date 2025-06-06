@@ -2,11 +2,14 @@ package com.aksi.domain.order.statemachine.stage1.validator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
 import com.aksi.domain.client.dto.ClientResponse;
+import com.aksi.domain.client.entity.CommunicationChannelEntity;
+import com.aksi.domain.client.enums.ClientSource;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,6 +67,31 @@ public class ClientDataValidator {
             }
         }
 
+                // Валідація адреси (необов'язкове поле, але якщо вказано - має бути валідним)
+        if (client.getAddress() != null && !client.getAddress().trim().isEmpty()) {
+            if (!isValidAddress(client.getAddress())) {
+                errors.add("Адреса клієнта має некоректний формат або перевищує 200 символів");
+            }
+        }
+
+        // Валідація способів зв'язку (необов'язкове поле)
+        if (client.getCommunicationChannels() != null && !client.getCommunicationChannels().isEmpty()) {
+            validateCommunicationChannels(client.getCommunicationChannels(), errors);
+        }
+
+        // Валідація джерела інформації (необов'язкове поле)
+        if (client.getSource() != null) {
+            if (!isValidInfoSource(client.getSource())) {
+                errors.add("Джерело інформації має некоректне значення");
+            }
+        }
+
+        // Валідація додаткових деталей джерела (якщо обрано "Інше")
+        if (client.getSource() != null && client.getSource().name().equals("OTHER") &&
+            (client.getSourceDetails() == null || client.getSourceDetails().trim().isEmpty())) {
+            errors.add("При виборі 'Інше' джерело інформації має бути уточнено");
+        }
+
         return errors.isEmpty() ? ValidationResult.valid() : ValidationResult.invalid(errors);
     }
 
@@ -104,6 +132,64 @@ public class ClientDataValidator {
         }
 
         return EMAIL_PATTERN.matcher(email.trim()).matches();
+    }
+
+    /**
+     * Перевіряє коректність адреси клієнта
+     */
+    private boolean isValidAddress(String address) {
+        if (address == null || address.trim().isEmpty()) {
+            return true; // Адреса не обов'язкова
+        }
+
+        String cleanAddress = address.trim();
+
+        // Перевірка довжини (максимум 200 символів)
+        if (cleanAddress.length() > 200) {
+            return false;
+        }
+
+        // Адреса може містити літери, цифри, пробіли та спеціальні символи
+        return cleanAddress.matches("^[\\p{L}\\p{N}\\s\\.,\\-/№#]+$");
+    }
+
+    /**
+     * Валідує способи зв'язку (communication channels)
+     */
+    private void validateCommunicationChannels(Set<CommunicationChannelEntity> channels, List<String> errors) {
+        if (channels == null || channels.isEmpty()) {
+            return; // Способи зв'язку не обов'язкові
+        }
+
+        // Перевіряємо, що всі канали є валідними enum значеннями
+        for (CommunicationChannelEntity channel : channels) {
+            if (channel == null) {
+                errors.add("Некоректний спосіб зв'язку: null значення не дозволено");
+            }
+        }
+
+        // Логічна перевірка: якщо обрано SMS або Viber, має бути вказаний телефон
+        if ((channels.contains(CommunicationChannelEntity.SMS) ||
+             channels.contains(CommunicationChannelEntity.VIBER)) &&
+            !channels.contains(CommunicationChannelEntity.PHONE)) {
+            // Примітка: це логічне попередження, не критична помилка
+            log.debug("Обрано SMS/Viber без основного телефону - може потребувати уваги");
+        }
+    }
+
+    /**
+     * Перевіряє коректність джерела інформації
+     */
+    private boolean isValidInfoSource(ClientSource source) {
+        if (source == null) {
+            return true; // Джерело не обов'язкове
+        }
+
+        // Всі значення enum ClientSource є валідними
+        return source == ClientSource.INSTAGRAM ||
+               source == ClientSource.GOOGLE ||
+               source == ClientSource.RECOMMENDATION ||
+               source == ClientSource.OTHER;
     }
 
     /**

@@ -90,10 +90,83 @@ public class OrderBasicInfoValidator {
             return; // порожній рядок дозволений
         }
 
-        if (uniqueTag.trim().length() > 100) {
+        String cleanTag = uniqueTag.trim();
+
+        if (cleanTag.length() > 100) {
             errors.add("Унікальна мітка не може бути довшою за 100 символів");
+            return;
         }
-        // будь-який непорожній рядок до 100 символів дозволений
+
+        // Перевірка формату для різних типів міток
+        if (isPotentialBarcode(cleanTag)) {
+            if (!isValidBarcodeFormat(cleanTag)) {
+                errors.add("Штрих-код має некоректний формат");
+            }
+        } else if (isPotentialQRCode(cleanTag)) {
+            if (!isValidQRCodeFormat(cleanTag)) {
+                errors.add("QR-код має некоректний формат");
+            }
+        } else {
+            // Звичайний текст - перевіряємо на допустимі символи
+            if (!isValidTextTag(cleanTag)) {
+                errors.add("Унікальна мітка містить недопустимі символи");
+            }
+        }
+    }
+
+    /**
+     * Перевіряє, чи схожа мітка на штрих-код (тільки цифри)
+     */
+    private boolean isPotentialBarcode(String tag) {
+        return tag.matches("^\\d+$") && tag.length() >= 8 && tag.length() <= 18;
+    }
+
+    /**
+     * Перевіряє, чи схожа мітка на QR-код (містить спеціальні символи)
+     */
+    private boolean isPotentialQRCode(String tag) {
+        return tag.contains("://") || tag.startsWith("http") || tag.matches(".*[{}\\[\\]]+.*");
+    }
+
+    /**
+     * Валідує формат штрих-коду
+     */
+    private boolean isValidBarcodeFormat(String barcode) {
+        // EAN-13: 13 цифр
+        if (barcode.length() == 13) {
+            return barcode.matches("^\\d{13}$");
+        }
+        // EAN-8: 8 цифр
+        if (barcode.length() == 8) {
+            return barcode.matches("^\\d{8}$");
+        }
+        // UPC-A: 12 цифр
+        if (barcode.length() == 12) {
+            return barcode.matches("^\\d{12}$");
+        }
+        // Code 128: від 8 до 18 символів
+        if (barcode.length() >= 8 && barcode.length() <= 18) {
+            return barcode.matches("^\\d+$");
+        }
+        return false;
+    }
+
+    /**
+     * Валідує формат QR-коду
+     */
+    private boolean isValidQRCodeFormat(String qrCode) {
+        // QR-код може містити різний контент, тому перевіряємо основні обмеження
+        return qrCode.length() <= 100 && // максимальна довжина для UI
+               !qrCode.contains("\n") && // без переносів рядків
+               !qrCode.contains("\r");   // без каретки
+    }
+
+    /**
+     * Валідує звичайний текстовий тег
+     */
+    private boolean isValidTextTag(String tag) {
+        // Дозволяємо літери, цифри, тире, підкреслення та пробіли
+        return tag.matches("^[\\p{L}\\p{N}\\s\\-_]+$");
     }
 
     /**

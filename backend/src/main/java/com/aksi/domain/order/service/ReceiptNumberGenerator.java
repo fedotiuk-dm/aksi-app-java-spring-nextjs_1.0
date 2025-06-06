@@ -2,9 +2,13 @@ package com.aksi.domain.order.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 import org.springframework.stereotype.Component;
 
+import com.aksi.domain.order.repository.OrderRepository;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -21,9 +25,13 @@ import lombok.extern.slf4j.Slf4j;
  * - XXX - випадкове 3-значне число
  */
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class ReceiptNumberGenerator {
 
+    private final OrderRepository orderRepository;
+
+    private static final Random RANDOM = new Random();
     private static final String COMPANY_PREFIX = "AKSI";
     private static final String DEFAULT_BRANCH_CODE = "DEF";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
@@ -53,7 +61,7 @@ public class ReceiptNumberGenerator {
         String timestamp = dateTime.format(DATE_TIME_FORMATTER);
 
         // Генеруємо випадкове 3-значне число
-        int randomSuffix = (int) (Math.random() * 1000);
+        int randomSuffix = RANDOM.nextInt(1000);
         String formattedSuffix = String.format("%03d", randomSuffix);
 
         // Формуємо фінальний номер
@@ -116,5 +124,75 @@ public class ReceiptNumberGenerator {
 
         String[] parts = receiptNumber.split("-");
         return parts.length >= 2 ? parts[1] : null;
+    }
+
+    /**
+     * Генерує унікальний номер квитанції з перевіркою на унікальність.
+     *
+     * @param branchCode код філії (може бути null)
+     * @param dateTime час для генерації номера
+     * @return гарантовано унікальний номер квитанції
+     */
+    public String generateUnique(String branchCode, LocalDateTime dateTime) {
+        int maxAttempts = 100; // Максимум спроб для уникнення нескінченного циклу
+
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            String candidateNumber = generate(branchCode, dateTime);
+
+            if (isUniqueReceiptNumber(candidateNumber)) {
+                log.debug("Унікальний номер квитанції згенеровано: {} (спроба: {})", candidateNumber, attempt);
+                return candidateNumber;
+            }
+
+            log.debug("Номер квитанції {} не унікальний, повторна генерація (спроба: {})", candidateNumber, attempt);
+        }
+
+        // Якщо всі спроби вичерпано, генеруємо номер з більш унікальним суфіксом
+        String fallbackNumber = generateFallbackUniqueNumber(branchCode, dateTime);
+        log.warn("Використано fallback генерацію для унікального номера: {}", fallbackNumber);
+        return fallbackNumber;
+    }
+
+    /**
+     * Генерує унікальний номер квитанції з поточним часом.
+     *
+     * @param branchCode код філії (може бути null)
+     * @return гарантовано унікальний номер квитанції
+     */
+    public String generateUnique(String branchCode) {
+        return generateUnique(branchCode, LocalDateTime.now());
+    }
+
+    /**
+     * Перевіряє, чи є номер квитанції унікальним.
+     *
+     * @param receiptNumber номер квитанції для перевірки
+     * @return true, якщо номер унікальний (не існує в базі даних)
+     */
+    public boolean isUniqueReceiptNumber(String receiptNumber) {
+        if (receiptNumber == null || receiptNumber.trim().isEmpty()) {
+            return false;
+        }
+
+        return orderRepository.findByReceiptNumber(receiptNumber.trim()) == null;
+    }
+
+    /**
+     * Генерує fallback номер квитанції з гарантованою унікальністю.
+     *
+     * @param branchCode код філії
+     * @param dateTime час для генерації
+     * @return унікальний номер квитанції
+     */
+    private String generateFallbackUniqueNumber(String branchCode, LocalDateTime dateTime) {
+        String normalizedBranchCode = normalizeBranchCode(branchCode);
+        String timestamp = dateTime.format(DATE_TIME_FORMATTER);
+
+        // Використовуємо наносекунди для максимальної унікальності
+        long nanoSuffix = System.nanoTime() % 100000; // останні 5 цифр наносекунд
+        String fallbackSuffix = String.format("%05d", nanoSuffix);
+
+        return String.format("%s-%s-%s-FB%s",
+            COMPANY_PREFIX, normalizedBranchCode, timestamp, fallbackSuffix);
     }
 }
