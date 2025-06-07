@@ -7,6 +7,12 @@ import com.aksi.domain.order.statemachine.stage1.actions.SaveClientDataAction;
 import com.aksi.domain.order.statemachine.stage1.actions.SaveOrderBasicInfoAction;
 import com.aksi.domain.order.statemachine.stage1.guards.ClientValidGuard;
 import com.aksi.domain.order.statemachine.stage1.guards.OrderBasicInfoValidGuard;
+import com.aksi.domain.order.statemachine.stage2.actions.InitializeStage2Action;
+import com.aksi.domain.order.statemachine.stage2.actions.StartItemWizardAction;
+import com.aksi.domain.order.statemachine.stage2.actions.CompleteItemWizardAction;
+import com.aksi.domain.order.statemachine.stage2.actions.DeleteItemAction;
+import com.aksi.domain.order.statemachine.stage2.guards.CanCompleteStage2Guard;
+import com.aksi.domain.order.statemachine.stage2.guards.CanStartItemWizardGuard;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -32,11 +38,20 @@ import org.springframework.statemachine.state.State;
 @Slf4j
 public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<OrderState, OrderEvent> {
 
+    // Stage 1 Actions and Guards
     private final InitializeOrderAction initializeOrderAction;
     private final SaveClientDataAction saveClientDataAction;
     private final SaveOrderBasicInfoAction saveOrderBasicInfoAction;
     private final ClientValidGuard clientValidGuard;
     private final OrderBasicInfoValidGuard orderBasicInfoValidGuard;
+
+    // Stage 2 Actions and Guards
+    private final InitializeStage2Action initializeStage2Action;
+    private final StartItemWizardAction startItemWizardAction;
+    private final CompleteItemWizardAction completeItemWizardAction;
+    private final DeleteItemAction deleteItemAction;
+    private final CanCompleteStage2Guard canCompleteStage2Guard;
+    private final CanStartItemWizardGuard canStartItemWizardGuard;
 
     @Override
     public void configure(StateMachineConfigurationConfigurer<OrderState, OrderEvent> config)
@@ -59,8 +74,29 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
                 .state(OrderState.CLIENT_SELECTION)
                 .state(OrderState.ORDER_INITIALIZATION)
 
-                // === ЕТАП 2: Менеджер предметів (тимчасово для переходу) ===
+                // === ЕТАП 2: Менеджер предметів ===
                 .state(OrderState.ITEM_MANAGEMENT)
+
+                // Підвізард предметів (циклічний)
+                .state(OrderState.ITEM_WIZARD_ACTIVE)
+                .state(OrderState.ITEM_BASIC_INFO)
+                .state(OrderState.ITEM_CHARACTERISTICS)
+                .state(OrderState.ITEM_DEFECTS_STAINS)
+                .state(OrderState.ITEM_PRICING)
+                .state(OrderState.ITEM_PHOTOS)
+                .state(OrderState.ITEM_COMPLETED)
+
+                // === ЕТАП 3: Загальні параметри замовлення ===
+                .state(OrderState.EXECUTION_PARAMS)
+                .state(OrderState.GLOBAL_DISCOUNTS)
+                .state(OrderState.PAYMENT_PROCESSING)
+                .state(OrderState.ADDITIONAL_INFO)
+
+                // === ЕТАП 4: Підтвердження та завершення ===
+                .state(OrderState.ORDER_CONFIRMATION)
+                .state(OrderState.ORDER_REVIEW)
+                .state(OrderState.LEGAL_ASPECTS)
+                .state(OrderState.RECEIPT_GENERATION)
 
                 // Фінальні стани
                 .state(OrderState.COMPLETED)
@@ -87,16 +123,168 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
                 .action(saveClientDataAction)
                 .guard(clientValidGuard)
 
-            // === ЕТАП 1.2: Базова інформація замовлення ===
+                        // === ЕТАП 1.2 -> ЕТАП 2: Базова інформація замовлення + ініціалізація етапу 2 ===
             .and()
             .withExternal()
                 .source(OrderState.ORDER_INITIALIZATION)
                 .target(OrderState.ITEM_MANAGEMENT)
                 .event(OrderEvent.ORDER_INFO_COMPLETED)
-                .action(saveOrderBasicInfoAction)
+                .action(saveOrderBasicInfoAction, initializeStage2Action)
                 .guard(orderBasicInfoValidGuard)
 
+            // === ЕТАП 2: Менеджер предметів ===
+
+            // Запуск підвізарда предметів
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_MANAGEMENT)
+                .target(OrderState.ITEM_WIZARD_ACTIVE)
+                .event(OrderEvent.ADD_ITEM)
+                .action(startItemWizardAction)
+                .guard(canStartItemWizardGuard)
+
+            // Початок підвізарда - перехід до основної інформації
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_WIZARD_ACTIVE)
+                .target(OrderState.ITEM_BASIC_INFO)
+                .event(OrderEvent.START_ITEM_WIZARD)
+
+            // Підвізард: 2.1 -> 2.2
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_BASIC_INFO)
+                .target(OrderState.ITEM_CHARACTERISTICS)
+                .event(OrderEvent.BASIC_INFO_COMPLETED)
+
+            // Підвізард: 2.2 -> 2.3
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_CHARACTERISTICS)
+                .target(OrderState.ITEM_DEFECTS_STAINS)
+                .event(OrderEvent.CHARACTERISTICS_COMPLETED)
+
+            // Підвізард: 2.3 -> 2.4
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_DEFECTS_STAINS)
+                .target(OrderState.ITEM_PRICING)
+                .event(OrderEvent.DEFECTS_COMPLETED)
+
+            // Підвізард: 2.4 -> 2.5
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_PRICING)
+                .target(OrderState.ITEM_PHOTOS)
+                .event(OrderEvent.PRICING_COMPLETED)
+
+            // Підвізард: 2.5 -> Завершення
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_PHOTOS)
+                .target(OrderState.ITEM_COMPLETED)
+                .event(OrderEvent.PHOTOS_COMPLETED)
+
+            // Пропуск фото (необов'язковий крок)
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_PHOTOS)
+                .target(OrderState.ITEM_COMPLETED)
+                .event(OrderEvent.SKIP_PHOTOS)
+
+            // Завершення підвізарда - додавання предмета до замовлення
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_COMPLETED)
+                .target(OrderState.ITEM_MANAGEMENT)
+                .event(OrderEvent.ITEM_ADDED)
+                .action(completeItemWizardAction)
+
+            // Видалення предмета (внутрішній перехід в ITEM_MANAGEMENT)
+            .and()
+            .withInternal()
+                .source(OrderState.ITEM_MANAGEMENT)
+                .event(OrderEvent.DELETE_ITEM)
+                .action(deleteItemAction)
+
+            // Завершення етапу 2 - перехід до етапу 3
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_MANAGEMENT)
+                .target(OrderState.EXECUTION_PARAMS)
+                .event(OrderEvent.ITEMS_COMPLETED)
+                .guard(canCompleteStage2Guard)
+
+            // === Навігація назад в підвізарді ===
+
+            // 2.2 -> 2.1
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_CHARACTERISTICS)
+                .target(OrderState.ITEM_BASIC_INFO)
+                .event(OrderEvent.GO_BACK)
+
+            // 2.3 -> 2.2
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_DEFECTS_STAINS)
+                .target(OrderState.ITEM_CHARACTERISTICS)
+                .event(OrderEvent.GO_BACK)
+
+            // 2.4 -> 2.3
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_PRICING)
+                .target(OrderState.ITEM_DEFECTS_STAINS)
+                .event(OrderEvent.GO_BACK)
+
+            // 2.5 -> 2.4
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_PHOTOS)
+                .target(OrderState.ITEM_PRICING)
+                .event(OrderEvent.GO_BACK)
+
+            // === Скасування підвізарда ===
+
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_WIZARD_ACTIVE)
+                .target(OrderState.ITEM_MANAGEMENT)
+                .event(OrderEvent.CANCEL_ITEM_WIZARD)
+
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_BASIC_INFO)
+                .target(OrderState.ITEM_MANAGEMENT)
+                .event(OrderEvent.CANCEL_ITEM_WIZARD)
+
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_CHARACTERISTICS)
+                .target(OrderState.ITEM_MANAGEMENT)
+                .event(OrderEvent.CANCEL_ITEM_WIZARD)
+
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_DEFECTS_STAINS)
+                .target(OrderState.ITEM_MANAGEMENT)
+                .event(OrderEvent.CANCEL_ITEM_WIZARD)
+
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_PRICING)
+                .target(OrderState.ITEM_MANAGEMENT)
+                .event(OrderEvent.CANCEL_ITEM_WIZARD)
+
+            .and()
+            .withExternal()
+                .source(OrderState.ITEM_PHOTOS)
+                .target(OrderState.ITEM_MANAGEMENT)
+                .event(OrderEvent.CANCEL_ITEM_WIZARD)
+
             // === Скасування на будь-якому етапі ===
+
             .and()
             .withExternal()
                 .source(OrderState.CLIENT_SELECTION)
@@ -109,9 +297,15 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
                 .target(OrderState.CANCELLED)
                 .event(OrderEvent.CANCEL_ORDER)
 
-                            .and()
+            .and()
             .withExternal()
                 .source(OrderState.ITEM_MANAGEMENT)
+                .target(OrderState.CANCELLED)
+                .event(OrderEvent.CANCEL_ORDER)
+
+            .and()
+            .withExternal()
+                .source(OrderState.EXECUTION_PARAMS)
                 .target(OrderState.CANCELLED)
                 .event(OrderEvent.CANCEL_ORDER);
     }

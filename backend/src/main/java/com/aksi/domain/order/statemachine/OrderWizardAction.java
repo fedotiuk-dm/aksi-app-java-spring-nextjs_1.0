@@ -1,11 +1,14 @@
 package com.aksi.domain.order.statemachine;
 
+import lombok.Getter;
+
 /**
  * Доступні дії користувача в Order Wizard
  *
  * Відповідає за визначення всіх можливих операцій,
  * які може виконати користувач в різних станах wizard
  */
+@Getter
 public enum OrderWizardAction {
 
     // === БАЗОВІ ДІЇ (завжди доступні) ===
@@ -54,10 +57,6 @@ public enum OrderWizardAction {
 
     OrderWizardAction(String description) {
         this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     /**
