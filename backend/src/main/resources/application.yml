@@ -23,6 +23,7 @@ spring:
     default-schema: public
     contexts: default
     clear-checksums: true
+    drop-first: false
     parameters:
       create-uuid-extension: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
   datasource:

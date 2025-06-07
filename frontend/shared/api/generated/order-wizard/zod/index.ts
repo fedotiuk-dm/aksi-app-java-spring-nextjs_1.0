@@ -1,6 +1,6 @@
 /**
  * @fileoverview Zod схеми для домену order-wizard
- *
+ * 
  * Цей файл автоматично генерується скриптом create-zod-index.js
  * НЕ РЕДАГУЙТЕ ВРУЧНУ!
  */
@@ -22,14 +22,14 @@ export function safeValidate<T>(
   data: unknown
 ): { success: true; data: T } | { success: false; errors: string[] } {
   const result = schema.safeParse(data);
-
+  
   if (result.success) {
     return { success: true, data: result.data };
   }
-
+  
   return {
     success: false,
-    errors: result.error.errors.map((err) => `${err.path.join('.')}: ${err.message}`),
+    errors: result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
   };
 }
 
@@ -38,11 +38,11 @@ export function safeValidate<T>(
  */
 export function validateOrThrow<T>(schema: z.ZodType<T>, data: unknown): T {
   const result = safeValidate(schema, data);
-
+  
   if (!result.success) {
     throw new Error(`Validation failed: ${result.errors.join(', ')}`);
   }
-
+  
   return result.data;
 }
 

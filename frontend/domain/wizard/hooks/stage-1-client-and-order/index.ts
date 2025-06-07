@@ -1,11 +1,60 @@
 /**
- * @fileoverview Публічне API для хуків Stage 1 - Client and Order
+ * @fileoverview Експорт хуків для етапу 1: Клієнт та базова інформація замовлення
  *
- * Простий підхід: все через Spring State Machine
+ * Цей етап включає:
+ * - Пошук існуючих клієнтів
+ * - Створення нових клієнтів
+ * - Оновлення клієнтів
+ * - Вибір філії прийому
+ * - Базову інформацію замовлення
  */
 
-// === ORDER WIZARD HOOK ===
-export { useOrderWizard, type OrderWizardHook } from './use-order-wizard.hook';
+// =====================================
+// Хуки для роботи з клієнтами
+// =====================================
 
-// === BRANCH LOCATIONS HOOK ===
-export { useBranchLocations, type BranchLocationsHook } from './use-branch-locations.hook';
+export { useClientSearch } from './useClientSearch';
+export { useClientCreate } from './useClientCreate';
+export { useClientUpdate } from './useClientUpdate';
+export { useClientSelection } from './useClientSelection';
+
+// =====================================
+// Хуки для базової інформації замовлення
+// =====================================
+
+export { useOrderBasicInfo } from './useOrderBasicInfo';
+export { useReceiptNumberGeneration } from './useReceiptNumberGeneration';
+export { useUniqueTagValidation } from './useUniqueTagValidation';
+
+// =====================================
+// Хуки для філій
+// =====================================
+
+export { useBranchLocations } from './useBranchLocations';
+
+// =====================================
+// Типи
+// =====================================
+
+export type {
+  // Клієнти
+  Client,
+  CreateClientData,
+  UpdateClientData,
+  ClientSearchParams,
+  ClientSearchRequestData,
+  UseClientSearchReturn,
+  UseClientCreateReturn,
+  UseClientUpdateReturn,
+  UseClientSelectionReturn,
+
+  // Базова інформація замовлення
+  OrderBasicInfo,
+  UseOrderBasicInfoReturn,
+  UseReceiptNumberGenerationReturn,
+  UseUniqueTagValidationReturn,
+
+  // Філії
+  BranchLocation,
+  UseBranchLocationsReturn,
+} from './types';
