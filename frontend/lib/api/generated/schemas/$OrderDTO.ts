@@ -100,10 +100,10 @@ export const $OrderDTO = {
         draft: {
             type: 'boolean',
         },
-        emailed: {
+        printed: {
             type: 'boolean',
         },
-        printed: {
+        emailed: {
             type: 'boolean',
         },
     },

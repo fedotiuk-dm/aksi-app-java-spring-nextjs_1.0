@@ -47,6 +47,7 @@ public class ClientServiceImpl implements ClientService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ClientResponse> getAllClients() {
         log.debug("Отримання списку всіх клієнтів");
         return clientRepository.findAll().stream()
@@ -55,6 +56,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClientPageResponse getAllClientsPaged(int page, int size) {
         log.debug("Отримання списку всіх клієнтів з пагінацією: сторінка {}, розмір {}", page, size);
         Pageable pageable = PageRequest.of(page, size);
@@ -77,6 +79,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ClientResponse> searchClients(String keyword) {
         log.debug("Пошук клієнтів за ключовим словом: {}", keyword);
         return clientRepository.searchByKeyword(keyword).stream()
@@ -85,6 +88,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClientPageResponse searchClients(ClientSearchRequest request) {
         log.debug("Пошук клієнтів з пагінацією: {}", request);
 

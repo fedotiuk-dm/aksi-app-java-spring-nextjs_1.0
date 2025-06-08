@@ -440,8 +440,8 @@ export const updateOrderStatus200Response = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 
 export const updateOrderStatus400Response = zod.object({
@@ -647,8 +647,8 @@ export const addPrepayment200Response = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 
 export const addPrepayment400Response = zod.object({
@@ -854,8 +854,8 @@ export const applyDiscount200Response = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 
 export const applyDiscount400Response = zod.object({
@@ -1060,8 +1060,8 @@ export const convertDraftToOrder200Response = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 
 export const convertDraftToOrder400Response = zod.object({
@@ -1266,8 +1266,8 @@ export const completeOrder200Response = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 
 export const completeOrder400Response = zod.object({
@@ -1588,8 +1588,8 @@ export const getAllOrders200ResponseItem = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 export const getAllOrders200Response = zod.array(getAllOrders200ResponseItem)
 
@@ -1847,8 +1847,8 @@ export const createOrder201Response = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 
 export const createOrder400Response = zod.object({
@@ -2629,8 +2629,8 @@ export const finalizeOrder200Response = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 
 export const finalizeOrder400Response = zod.object({
@@ -2887,8 +2887,8 @@ export const saveOrderDraft201Response = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 
 export const saveOrderDraft400Response = zod.object({
@@ -3518,8 +3518,8 @@ export const getOrderById200Response = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 
 export const getOrderById400Response = zod.object({
@@ -3779,8 +3779,8 @@ export const getDraftOrders200ResponseItem = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 export const getDraftOrders200Response = zod.array(getDraftOrders200ResponseItem)
 
@@ -4088,8 +4088,8 @@ export const getActiveOrders200ResponseItem = zod.object({
   "finalizedAt": zod.string().datetime({}).optional(),
   "express": zod.boolean().optional(),
   "draft": zod.boolean().optional(),
-  "emailed": zod.boolean().optional(),
-  "printed": zod.boolean().optional()
+  "printed": zod.boolean().optional(),
+  "emailed": zod.boolean().optional()
 }).strict()
 export const getActiveOrders200Response = zod.array(getActiveOrders200ResponseItem)
 

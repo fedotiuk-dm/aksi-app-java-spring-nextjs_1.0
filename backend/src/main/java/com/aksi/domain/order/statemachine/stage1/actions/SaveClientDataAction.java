@@ -1,0 +1,96 @@
+package com.aksi.domain.order.statemachine.stage1.actions;
+
+import java.util.UUID;
+
+import org.springframework.statemachine.StateContext;
+import org.springframework.statemachine.action.Action;
+import org.springframework.stereotype.Component;
+
+import com.aksi.domain.client.dto.CreateClientRequest;
+import com.aksi.domain.order.statemachine.OrderEvent;
+import com.aksi.domain.order.statemachine.OrderState;
+import com.aksi.domain.order.statemachine.stage1.service.Stage1CoordinationService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * Action для збереження даних клієнта в Stage 1.
+ * Використовує Stage1CoordinationService для роботи з клієнтами.
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class SaveClientDataAction implements Action<OrderState, OrderEvent> {
+
+    private final Stage1CoordinationService coordinationService;
+
+    @Override
+    public void execute(StateContext<OrderState, OrderEvent> context) {
+        String wizardId = (String) context.getExtendedState().getVariables().get("wizardId");
+        log.info("Збереження даних клієнта для wizard: {}", wizardId);
+
+        try {
+            // Визначаємо тип дії з headers повідомлення
+            String actionType = (String) context.getMessageHeaders().get("actionType");
+
+            if (actionType == null) {
+                throw new IllegalArgumentException("Тип дії не вказано");
+            }
+
+            switch (actionType) {
+                case "selectExisting" -> handleSelectExistingClient(context);
+                case "createNew" -> handleCreateNewClient(context);
+                case "switchToSearch" -> handleSwitchToSearch(context);
+                case "switchToCreate" -> handleSwitchToCreate(context);
+                default -> throw new IllegalArgumentException("Невідомий тип дії: " + actionType);
+            }
+
+            log.info("Дані клієнта успішно оброблено для wizard: {} (тип дії: {})", wizardId, actionType);
+
+        } catch (IllegalArgumentException e) {
+            log.error("Некоректні дані клієнта для wizard {}: {}", wizardId, e.getMessage());
+            context.getExtendedState().getVariables().put("lastError",
+                "Некоректні дані клієнта: " + e.getMessage());
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Помилка збереження клієнта для wizard {}: {}", wizardId, e.getMessage(), e);
+            context.getExtendedState().getVariables().put("lastError",
+                "Помилка збереження клієнта: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    private void handleSelectExistingClient(StateContext<OrderState, OrderEvent> context) {
+        Object clientIdObj = context.getMessageHeaders().get("clientId");
+
+        if (!(clientIdObj instanceof String clientIdStr)) {
+            throw new IllegalArgumentException("ID клієнта не вказано або має неправильний тип");
+        }
+
+        try {
+            UUID clientId = UUID.fromString(clientIdStr);
+            coordinationService.getOperationsService().selectExistingClient(clientId, context);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Некоректний формат ID клієнта: " + clientIdStr);
+        }
+    }
+
+    private void handleCreateNewClient(StateContext<OrderState, OrderEvent> context) {
+        Object clientDataObj = context.getMessageHeaders().get("clientData");
+
+        if (!(clientDataObj instanceof CreateClientRequest request)) {
+            throw new IllegalArgumentException("Дані для створення клієнта відсутні або мають неправильний тип");
+        }
+
+        coordinationService.getOperationsService().createNewClient(request, context);
+    }
+
+    private void handleSwitchToSearch(StateContext<OrderState, OrderEvent> context) {
+        coordinationService.getOperationsService().switchToSearchExistingMode(context);
+    }
+
+    private void handleSwitchToCreate(StateContext<OrderState, OrderEvent> context) {
+        coordinationService.getOperationsService().switchToCreateNewClientMode(context);
+    }
+}

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.order.dto.receipt.EmailReceiptRequest;
@@ -18,7 +19,9 @@ import com.aksi.domain.order.dto.receipt.EmailReceiptResponse;
 import com.aksi.domain.order.dto.receipt.PdfReceiptResponse;
 import com.aksi.domain.order.dto.receipt.ReceiptDTO;
 import com.aksi.domain.order.dto.receipt.ReceiptGenerationRequest;
+import com.aksi.domain.order.service.ReceiptNumberGenerator;
 import com.aksi.domain.order.service.ReceiptService;
+import com.aksi.domain.order.service.order.OrderManagementService;
 import com.aksi.util.ApiResponseUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +45,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ReceiptController {
 
     private final ReceiptService receiptService;
+    private final OrderManagementService orderManagementService;
+    private final ReceiptNumberGenerator receiptNumberGenerator;
 
     @GetMapping("/{orderId}")
     @Operation(summary = "Отримати дані для квитанції",
@@ -83,7 +88,7 @@ public class ReceiptController {
 
         try {
             PdfReceiptResponse response = receiptService.generatePdfReceipt(request);
-            return ApiResponseUtils.ok(response, "PDF-квитанцію успішно згенеровано для замовлення з ID: {}", 
+            return ApiResponseUtils.ok(response, "PDF-квитанцію успішно згенеровано для замовлення з ID: {}",
                     request.getOrderId());
         } catch (IllegalArgumentException e) {
             return ApiResponseUtils.notFound("Замовлення не знайдено",
@@ -94,7 +99,7 @@ public class ReceiptController {
                     request.getOrderId(), e.getMessage());
         }
     }
-    
+
     @GetMapping("/pdf/download/{orderId}")
     @Operation(summary = "Завантажити PDF-квитанцію",
                description = "Завантажує PDF-квитанцію для замовлення як файл")
@@ -140,7 +145,7 @@ public class ReceiptController {
 
         try {
             EmailReceiptResponse response = receiptService.emailReceipt(request);
-            return ApiResponseUtils.ok(response, "Квитанцію успішно відправлено на email: {}", 
+            return ApiResponseUtils.ok(response, "Квитанцію успішно відправлено на email: {}",
                     response.getRecipientEmail());
         } catch (IllegalArgumentException e) {
             return ApiResponseUtils.notFound("Замовлення не знайдено",
@@ -149,6 +154,54 @@ public class ReceiptController {
             return ApiResponseUtils.internalServerError("Помилка при відправці квитанції на email",
                     "Виникла помилка при відправці квитанції на email для замовлення з ID: {}. Причина: {}",
                     request.getOrderId(), e.getMessage());
+        }
+    }
+
+    @GetMapping("/generate-number")
+    @Operation(summary = "Генерувати номер квитанції",
+               description = "Генерує унікальний номер квитанції для нового замовлення")
+    @ApiResponse(responseCode = "200", description = "Номер квитанції успішно згенеровано")
+    @ApiResponse(responseCode = "400", description = "Невірні параметри запиту")
+    @ApiResponse(responseCode = "500", description = "Помилка сервера при генерації номера")
+    public ResponseEntity<?> generateReceiptNumber(
+            @Parameter(description = "ID філії/пункту прийому", required = false)
+            @RequestParam(required = false) UUID branchLocationId) {
+
+        log.debug("Запит на генерацію номера квитанції для філії: {}", branchLocationId);
+
+        try {
+            String receiptNumber;
+
+            if (branchLocationId != null) {
+                receiptNumber = orderManagementService.generateReceiptNumber(branchLocationId);
+            } else {
+                // Якщо філія не вказана, використовуємо дефолтний код філії
+                receiptNumber = receiptNumberGenerator.generate("DEF");
+                log.debug("Використано дефолтний код філії для генерації номера квитанції");
+            }
+
+            log.info("Успішно згенеровано номер квитанції: {} для філії: {}", receiptNumber, branchLocationId);
+
+            return ApiResponseUtils.ok(
+                receiptNumber,
+                "Успішно згенеровано номер квитанції: {}",
+                receiptNumber
+            );
+
+        } catch (IllegalArgumentException e) {
+            log.warn("Невірні параметри для генерації номера квитанції: {}", e.getMessage());
+            return ApiResponseUtils.badRequest(
+                "Невірні параметри запиту",
+                "Не вдалося згенерувати номер квитанції. Причина: {}",
+                e.getMessage()
+            );
+        } catch (Exception e) {
+            log.error("Помилка при генерації номера квитанції для філії {}: {}", branchLocationId, e.getMessage(), e);
+            return ApiResponseUtils.internalServerError(
+                "Помилка сервера при генерації номера",
+                "Не вдалося згенерувати номер квитанції. Причина: {}",
+                e.getMessage()
+            );
         }
     }
 }
