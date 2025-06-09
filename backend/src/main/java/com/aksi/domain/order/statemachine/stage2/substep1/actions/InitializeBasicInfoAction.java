@@ -12,14 +12,14 @@ import com.aksi.domain.order.statemachine.stage2.substep1.enums.ItemBasicInfoSta
 import com.aksi.domain.order.statemachine.stage2.substep1.service.ItemBasicInfoCoordinationService;
 
 /**
- * Action для ініціалізації підетапу 2.1
+ * Action для ініціалізації підетапу основної інформації про предмет
  */
 @Component
-public class InitializeSubstepAction implements Action<ItemBasicInfoState, ItemBasicInfoEvent> {
+public class InitializeBasicInfoAction implements Action<ItemBasicInfoState, ItemBasicInfoEvent> {
 
     private final ItemBasicInfoCoordinationService coordinationService;
 
-    public InitializeSubstepAction(ItemBasicInfoCoordinationService coordinationService) {
+    public InitializeBasicInfoAction(ItemBasicInfoCoordinationService coordinationService) {
         this.coordinationService = coordinationService;
     }
 

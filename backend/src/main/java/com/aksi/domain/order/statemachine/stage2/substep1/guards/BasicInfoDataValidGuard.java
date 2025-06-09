@@ -11,14 +11,14 @@ import com.aksi.domain.order.statemachine.stage2.substep1.enums.ItemBasicInfoSta
 import com.aksi.domain.order.statemachine.stage2.substep1.service.ItemBasicInfoCoordinationService;
 
 /**
- * Guard для перевірки валідності всіх даних
+ * Guard для перевірки чи всі дані основної інформації валідні та повні
  */
 @Component
-public class DataValidGuard implements Guard<ItemBasicInfoState, ItemBasicInfoEvent> {
+public class BasicInfoDataValidGuard implements Guard<ItemBasicInfoState, ItemBasicInfoEvent> {
 
     private final ItemBasicInfoCoordinationService coordinationService;
 
-    public DataValidGuard(ItemBasicInfoCoordinationService coordinationService) {
+    public BasicInfoDataValidGuard(ItemBasicInfoCoordinationService coordinationService) {
         this.coordinationService = coordinationService;
     }
 
