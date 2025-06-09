@@ -33,8 +33,8 @@ public class ClientSelectedGuard implements Guard<Stage1State, Stage1Event> {
     private ClientSelectionDTO getClientSelectionFromContext(StateContext<Stage1State, Stage1Event> context) {
         Object clientSelectionObj = context.getExtendedState().getVariables().get("clientSelection");
 
-        if (clientSelectionObj instanceof ClientSelectionDTO) {
-            return (ClientSelectionDTO) clientSelectionObj;
+        if (clientSelectionObj instanceof ClientSelectionDTO clientSelection) {
+            return clientSelection;
         }
 
         return null;
