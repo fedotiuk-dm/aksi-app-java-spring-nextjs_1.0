@@ -1,14 +1,13 @@
 package com.aksi.domain.order.statemachine.stage1.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.aksi.domain.branch.dto.BranchLocationDTO;
-import com.aksi.domain.order.statemachine.stage1.enums.BasicOrderInfoStatus;
-import com.aksi.domain.order.statemachine.stage1.enums.ReceiptNumberGenerationType;
 
 /**
- * DTO для базової інформації замовлення (етап 1.2).
- * Містить тільки 4 поля: номер квитанції, унікальну мітку, філію, дату створення.
+ * DTO для базової інформації замовлення в етапі 1.3.
+ * Містить всі необхідні поля для створення базової інформації про замовлення.
  */
 public class BasicOrderInfoDTO {
 
@@ -23,82 +22,107 @@ public class BasicOrderInfoDTO {
     private String uniqueTag;
 
     /**
-     * Пункт прийому замовлення (філія).
+     * Обрана філія для прийому замовлення.
      */
-    private BranchLocationDTO branchLocation;
+    private BranchLocationDTO selectedBranch;
 
     /**
-     * Дата створення замовлення (автоматично).
+     * ID обраної філії (для простішого маппінгу).
      */
-    private LocalDateTime createdAt;
+    private UUID selectedBranchId;
 
     /**
-     * Статус базової інформації.
+     * Дата створення замовлення (встановлюється автоматично).
      */
-    private BasicOrderInfoStatus status;
+    private LocalDateTime creationDate;
 
     /**
-     * Тип генерації номера квитанції.
+     * Прапорець, чи номер квитанції згенеровано.
      */
-    private ReceiptNumberGenerationType receiptGenerationType;
+    private boolean receiptNumberGenerated;
+
+    /**
+     * Прапорець, чи унікальна мітка введена.
+     */
+    private boolean uniqueTagEntered;
+
+    /**
+     * Прапорець, чи філію обрано.
+     */
+    private boolean branchSelected;
+
+    /**
+     * Прапорець, чи дату створення встановлено.
+     */
+    private boolean creationDateSet;
 
     // Конструктори
     public BasicOrderInfoDTO() {
-        this.createdAt = LocalDateTime.now();
-        this.status = BasicOrderInfoStatus.EMPTY;
-        this.receiptGenerationType = ReceiptNumberGenerationType.AUTOMATIC;
+        this.receiptNumberGenerated = false;
+        this.uniqueTagEntered = false;
+        this.branchSelected = false;
+        this.creationDateSet = false;
     }
 
-    public BasicOrderInfoDTO(String receiptNumber, String uniqueTag, BranchLocationDTO branchLocation) {
+    public BasicOrderInfoDTO(String receiptNumber, String uniqueTag,
+                           BranchLocationDTO selectedBranch, LocalDateTime creationDate) {
         this();
         this.receiptNumber = receiptNumber;
         this.uniqueTag = uniqueTag;
-        this.branchLocation = branchLocation;
-        updateStatus();
+        this.selectedBranch = selectedBranch;
+        this.selectedBranchId = selectedBranch != null ? selectedBranch.getId() : null;
+        this.creationDate = creationDate;
+
+        this.receiptNumberGenerated = receiptNumber != null && !receiptNumber.trim().isEmpty();
+        this.uniqueTagEntered = uniqueTag != null && !uniqueTag.trim().isEmpty();
+        this.branchSelected = selectedBranch != null;
+        this.creationDateSet = creationDate != null;
     }
 
-    // Методи валідації
-    public boolean hasReceiptNumber() {
-        return receiptNumber != null && !receiptNumber.trim().isEmpty();
-    }
+    // Допоміжні методи для валідації
 
-    public boolean hasUniqueTag() {
-        return uniqueTag != null && !uniqueTag.trim().isEmpty();
-    }
-
-    public boolean hasBranchLocation() {
-        return branchLocation != null && branchLocation.getId() != null;
-    }
-
-    public boolean hasCreatedAt() {
-        return createdAt != null;
-    }
-
-    public boolean hasAllRequiredFields() {
-        return hasReceiptNumber() && hasUniqueTag() && hasBranchLocation();
+    /**
+     * Перевіряє, чи всі обов'язкові поля заповнені.
+     */
+    public boolean isComplete() {
+        return receiptNumberGenerated && uniqueTagEntered &&
+               branchSelected && creationDateSet;
     }
 
     /**
-     * Оновлює статус на основі заповнених полів.
+     * Перевіряє, чи є мінімальні дані для збереження як чернетка.
      */
-    private void updateStatus() {
-        if (!hasReceiptNumber() && !hasUniqueTag() && !hasBranchLocation()) {
-            this.status = BasicOrderInfoStatus.EMPTY;
-        } else if (hasAllRequiredFields()) {
-            this.status = BasicOrderInfoStatus.READY_FOR_VALIDATION;
-        } else {
-            this.status = BasicOrderInfoStatus.PARTIAL;
-        }
+    public boolean hasMinimumData() {
+        return receiptNumberGenerated || uniqueTagEntered || branchSelected;
     }
 
-    // Getters і Setters
+    /**
+     * Перевіряє, чи номер квитанції валідний.
+     */
+    public boolean isReceiptNumberValid() {
+        return receiptNumber != null &&
+               receiptNumber.trim().length() >= 5 &&
+               receiptNumber.matches("^[A-Z0-9\\-]+$");
+    }
+
+    /**
+     * Перевіряє, чи унікальна мітка валідна.
+     */
+    public boolean isUniqueTagValid() {
+        return uniqueTag != null &&
+               uniqueTag.trim().length() >= 3 &&
+               uniqueTag.trim().length() <= 50;
+    }
+
+    // Геттери та сеттери
+
     public String getReceiptNumber() {
         return receiptNumber;
     }
 
     public void setReceiptNumber(String receiptNumber) {
         this.receiptNumber = receiptNumber;
-        updateStatus();
+        this.receiptNumberGenerated = receiptNumber != null && !receiptNumber.trim().isEmpty();
     }
 
     public String getUniqueTag() {
@@ -107,40 +131,50 @@ public class BasicOrderInfoDTO {
 
     public void setUniqueTag(String uniqueTag) {
         this.uniqueTag = uniqueTag;
-        updateStatus();
+        this.uniqueTagEntered = uniqueTag != null && !uniqueTag.trim().isEmpty();
     }
 
-    public BranchLocationDTO getBranchLocation() {
-        return branchLocation;
+    public BranchLocationDTO getSelectedBranch() {
+        return selectedBranch;
     }
 
-    public void setBranchLocation(BranchLocationDTO branchLocation) {
-        this.branchLocation = branchLocation;
-        updateStatus();
+    public void setSelectedBranch(BranchLocationDTO selectedBranch) {
+        this.selectedBranch = selectedBranch;
+        this.selectedBranchId = selectedBranch != null ? selectedBranch.getId() : null;
+        this.branchSelected = selectedBranch != null;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public UUID getSelectedBranchId() {
+        return selectedBranchId;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setSelectedBranchId(UUID selectedBranchId) {
+        this.selectedBranchId = selectedBranchId;
     }
 
-    public BasicOrderInfoStatus getStatus() {
-        return status;
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
-    public void setStatus(BasicOrderInfoStatus status) {
-        this.status = status;
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+        this.creationDateSet = creationDate != null;
     }
 
-    public ReceiptNumberGenerationType getReceiptGenerationType() {
-        return receiptGenerationType;
+    public boolean isReceiptNumberGenerated() {
+        return receiptNumberGenerated;
     }
 
-    public void setReceiptGenerationType(ReceiptNumberGenerationType receiptGenerationType) {
-        this.receiptGenerationType = receiptGenerationType;
+    public boolean isUniqueTagEntered() {
+        return uniqueTagEntered;
+    }
+
+    public boolean isBranchSelected() {
+        return branchSelected;
+    }
+
+    public boolean isCreationDateSet() {
+        return creationDateSet;
     }
 
     @Override
@@ -148,10 +182,12 @@ public class BasicOrderInfoDTO {
         return "BasicOrderInfoDTO{" +
                 "receiptNumber='" + receiptNumber + '\'' +
                 ", uniqueTag='" + uniqueTag + '\'' +
-                ", branchLocation=" + (branchLocation != null ? branchLocation.getName() : null) +
-                ", createdAt=" + createdAt +
-                ", status=" + status +
-                ", receiptGenerationType=" + receiptGenerationType +
+                ", selectedBranchId=" + selectedBranchId +
+                ", creationDate=" + creationDate +
+                ", receiptNumberGenerated=" + receiptNumberGenerated +
+                ", uniqueTagEntered=" + uniqueTagEntered +
+                ", branchSelected=" + branchSelected +
+                ", creationDateSet=" + creationDateSet +
                 '}';
     }
 }
