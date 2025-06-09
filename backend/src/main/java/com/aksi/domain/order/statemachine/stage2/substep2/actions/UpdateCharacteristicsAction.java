@@ -12,15 +12,15 @@ import com.aksi.domain.order.statemachine.stage2.substep2.enums.ItemCharacterist
 import com.aksi.domain.order.statemachine.stage2.substep2.service.ItemCharacteristicsCoordinationService;
 
 /**
- * Action для ініціалізації підетапу 2.2 "Характеристики предмета".
- * Виконується при переході до стану STARTED.
+ * Action для оновлення характеристик предмета в підетапі 2.2.
+ * Виконується при оновленні матеріалу, кольору, наповнювача або ступеня зносу.
  */
 @Component
-public class InitializeCharacteristicsAction implements Action<ItemCharacteristicsState, ItemCharacteristicsEvent> {
+public class UpdateCharacteristicsAction implements Action<ItemCharacteristicsState, ItemCharacteristicsEvent> {
 
     private final ItemCharacteristicsCoordinationService coordinationService;
 
-    public InitializeCharacteristicsAction(final ItemCharacteristicsCoordinationService coordinationService) {
+    public UpdateCharacteristicsAction(final ItemCharacteristicsCoordinationService coordinationService) {
         this.coordinationService = coordinationService;
     }
 
@@ -33,32 +33,30 @@ public class InitializeCharacteristicsAction implements Action<ItemCharacteristi
                 throw new IllegalStateException("SessionId не знайдено в контексті");
             }
 
-            // Отримуємо itemId з контексту
-            final UUID itemId = context.getExtendedState().get("itemId", UUID.class);
-            if (itemId == null) {
-                throw new IllegalStateException("ItemId не знайдено в контексті");
+            // Отримуємо поточні дані з контексту
+            ItemCharacteristicsDTO currentData = context.getExtendedState()
+                    .get("characteristicsData", ItemCharacteristicsDTO.class);
+            if (currentData == null) {
+                throw new IllegalStateException("CharacteristicsData не знайдено в контексті");
             }
 
-            // Ініціалізуємо підетап через CoordinationService
-            final ItemCharacteristicsDTO initializedData = coordinationService.initializeSubstep(sessionId, itemId);
+            // Оновлюємо дані через CoordinationService
+            coordinationService.updateData(sessionId, currentData);
 
-            // Зберігаємо дані в контексті
-            context.getExtendedState().getVariables().put("characteristicsData", initializedData);
-
-            // Створюємо контекст через CoordinationService
-            coordinationService.createContext(sessionId);
+            // Очищуємо помилки, якщо були
+            coordinationService.clearError(sessionId);
 
         } catch (IllegalStateException | IllegalArgumentException e) {
             // Помилки стану або аргументів
             final UUID sessionId = context.getExtendedState().get("sessionId", UUID.class);
             if (sessionId != null) {
-                coordinationService.setError(sessionId, "Помилка ініціалізації характеристик: " + e.getMessage());
+                coordinationService.setError(sessionId, "Помилка оновлення характеристик: " + e.getMessage());
             }
         } catch (RuntimeException e) {
             // Інші неочікувані помилки виконання
             final UUID sessionId = context.getExtendedState().get("sessionId", UUID.class);
             if (sessionId != null) {
-                coordinationService.setError(sessionId, "Неочікувана помилка ініціалізації характеристик: " + e.getMessage());
+                coordinationService.setError(sessionId, "Неочікувана помилка оновлення характеристик: " + e.getMessage());
             }
         }
     }

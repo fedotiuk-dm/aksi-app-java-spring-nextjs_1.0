@@ -7,114 +7,87 @@ import com.aksi.domain.order.statemachine.stage2.substep2.validator.ItemCharacte
 import com.aksi.domain.order.statemachine.stage2.substep2.validator.ValidationResult;
 
 /**
- * Сервіс консолідації валідації характеристик предмета
+ * Сервіс валідації підетапу 2.2 "Характеристики предмета".
+ * Консолідує всі валідатори та забезпечує єдиний інтерфейс для валідації.
  */
 @Service
 public class ItemCharacteristicsValidationService {
 
-    private final ItemCharacteristicsValidator characteristicsValidator;
+    private final ItemCharacteristicsValidator validator;
 
-    public ItemCharacteristicsValidationService(ItemCharacteristicsValidator characteristicsValidator) {
-        this.characteristicsValidator = characteristicsValidator;
+    public ItemCharacteristicsValidationService(final ItemCharacteristicsValidator validator) {
+        this.validator = validator;
     }
 
     /**
-     * Повна валідація характеристик предмета
+     * Валідація всіх характеристик предмета.
      */
-    public ValidationResult validateComplete(ItemCharacteristicsDTO dto) {
-        return characteristicsValidator.validateCharacteristics(dto);
+    public ValidationResult validateAllCharacteristics(final ItemCharacteristicsDTO dto) {
+        return validator.validateCharacteristics(dto);
     }
 
     /**
-     * Валідація окремого поля матеріалу
+     * Валідація тільки матеріалу.
      */
-    public ValidationResult validateMaterial(String material) {
-        return characteristicsValidator.validateMaterial(material);
+    public ValidationResult validateMaterial(final String material) {
+        return validator.validateMaterial(material);
     }
 
     /**
-     * Валідація окремого поля кольору
+     * Валідація тільки кольору.
      */
-    public ValidationResult validateColor(String color) {
-        return characteristicsValidator.validateColor(color);
+    public ValidationResult validateColor(final String color) {
+        return validator.validateColor(color);
     }
 
     /**
-     * Валідація окремого поля ступеню зносу
+     * Валідація тільки ступеня зносу.
      */
-    public ValidationResult validateWearDegree(String wearDegree) {
-        return characteristicsValidator.validateWearDegree(wearDegree);
+    public ValidationResult validateWearDegree(final String wearDegree) {
+        return validator.validateWearDegree(wearDegree);
     }
 
     /**
-     * Валідація окремого поля наповнювача
+     * Валідація тільки наповнювача.
      */
-    public ValidationResult validateFiller(String fillerType) {
-        return characteristicsValidator.validateFiller(fillerType);
+    public ValidationResult validateFiller(final String fillerType) {
+        return validator.validateFiller(fillerType);
     }
 
     /**
-     * Перевірка повноти заповнення обов'язкових полів
+     * Перевірка повноти заповнення даних.
      */
-    public ValidationResult validateCompleteness(ItemCharacteristicsDTO dto) {
-        return characteristicsValidator.validateCompleteness(dto);
+    public ValidationResult validateCompleteness(final ItemCharacteristicsDTO dto) {
+        return validator.validateCompleteness(dto);
     }
 
     /**
-     * Валідація при переході до наступного кроку
+     * Перевірка готовності до переходу на наступний етап.
      */
-    public ValidationResult validateForNext(ItemCharacteristicsDTO dto) {
-        // Спочатку перевіряємо повноту
-        ValidationResult completenessResult = validateCompleteness(dto);
+    public ValidationResult validateReadinessForNextStep(final ItemCharacteristicsDTO dto) {
+        // Спочатку перевіряємо повноту даних
+        final ValidationResult completenessResult = validateCompleteness(dto);
         if (!completenessResult.isValid()) {
             return completenessResult;
         }
 
-        // Потім повну валідацію
-        return validateComplete(dto);
+        // Потім перевіряємо всі характеристики
+        return validateAllCharacteristics(dto);
     }
 
     /**
-     * Валідація при зберіганні проміжних даних
+     * Швидка перевірка валідності основних полів.
      */
-    public ValidationResult validateForSave(ItemCharacteristicsDTO dto) {
-        // Для збереження проміжних даних, перевіряємо тільки заповнені поля
-        if (dto == null) {
-            return ValidationResult.success();
+    public boolean isBasicDataValid(final ItemCharacteristicsDTO dto) {
+        if (dto == null || dto.getCurrentItem() == null) {
+            return false;
         }
 
-        ValidationResult result = ValidationResult.success();
-
-        // Валідуємо тільки якщо поле заповнене
-        if (dto.getMaterial() != null && !dto.getMaterial().trim().isEmpty()) {
-            ValidationResult materialResult = validateMaterial(dto.getMaterial());
-            if (!materialResult.isValid()) {
-                return materialResult;
-            }
-        }
-
-        if (dto.getColor() != null && !dto.getColor().trim().isEmpty()) {
-            ValidationResult colorResult = validateColor(dto.getColor());
-            if (!colorResult.isValid()) {
-                return colorResult;
-            }
-        }
-
-        if (dto.getWearDegree() != null && !dto.getWearDegree().trim().isEmpty()) {
-            ValidationResult wearResult = validateWearDegree(dto.getWearDegree());
-            if (!wearResult.isValid()) {
-                return wearResult;
-            }
-        }
-
-        if (Boolean.TRUE.equals(dto.getShowFillerSection()) &&
-            dto.getFillerType() != null && !dto.getFillerType().trim().isEmpty()) {
-            ValidationResult fillerResult = validateFiller(dto.getFillerType());
-            if (!fillerResult.isValid()) {
-                return fillerResult;
-            }
-        }
-
-        return result;
+        return dto.getCurrentItem().getMaterial() != null &&
+               !dto.getCurrentItem().getMaterial().trim().isEmpty() &&
+               dto.getCurrentItem().getColor() != null &&
+               !dto.getCurrentItem().getColor().trim().isEmpty() &&
+               dto.getCurrentItem().getWearDegree() != null &&
+               !dto.getCurrentItem().getWearDegree().trim().isEmpty();
     }
 }

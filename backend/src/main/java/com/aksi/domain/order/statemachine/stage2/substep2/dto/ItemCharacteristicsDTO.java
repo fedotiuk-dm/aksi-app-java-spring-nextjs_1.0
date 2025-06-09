@@ -1,79 +1,114 @@
 package com.aksi.domain.order.statemachine.stage2.substep2.dto;
 
+import com.aksi.domain.order.dto.OrderItemAddRequest;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * DTO для характеристик предмета (підетап 2.2)
+ * DTO для управління станом підетапу 2.2 "Характеристики предмета".
+ * Використовує domain DTO згідно з архітектурними правилами.
  */
 @Data
-@Builder(toBuilder = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemCharacteristicsDTO {
 
     /**
-     * Матеріал предмета
+     * Поточний запит на додавання предмета (містить характеристики).
      */
-    private String material;
+    private OrderItemAddRequest currentItem;
 
     /**
-     * Колір предмета
+     * Чи завершено вибір матеріалу.
      */
-    private String color;
+    @Builder.Default
+    private boolean materialSelectionCompleted = false;
 
     /**
-     * Тип наповнювача (для відповідних категорій)
+     * Чи завершено вибір кольору.
      */
-    private String fillerType;
+    @Builder.Default
+    private boolean colorSelectionCompleted = false;
 
     /**
-     * Чи збитий наповнювач
+     * Чи завершено вибір наповнювача.
      */
-    private Boolean isFillerDamaged;
+    @Builder.Default
+    private boolean fillerSelectionCompleted = false;
 
     /**
-     * Ступінь зносу у відсотках
+     * Чи завершено вибір ступеня зносу.
      */
-    private String wearDegree;
+    @Builder.Default
+    private boolean wearDegreeSelectionCompleted = false;
 
     /**
-     * Примітки щодо характеристик
+     * Перевіряє, чи всі обов'язкові дані заповнені.
+     *
+     * @return true, якщо дані валідні
      */
-    private String notes;
-
-    /**
-     * Чи потрібно показувати секцію наповнювача для даної категорії
-     */
-    private Boolean showFillerSection;
-
-    /**
-     * Чи всі обов'язкові поля заповнені
-     */
-    public boolean isComplete() {
-        boolean basicFieldsComplete = material != null && !material.trim().isEmpty() &&
-                color != null && !color.trim().isEmpty() &&
-                wearDegree != null && !wearDegree.trim().isEmpty();
-
-        // Якщо показується секція наповнювача, то вона також обов'язкова
-        if (Boolean.TRUE.equals(showFillerSection)) {
-            return basicFieldsComplete &&
-                   fillerType != null && !fillerType.trim().isEmpty();
-        }
-
-        return basicFieldsComplete;
+    public boolean isDataValid() {
+        return materialSelectionCompleted && colorSelectionCompleted && wearDegreeSelectionCompleted;
     }
 
     /**
-     * Створити порожній DTO з базовими налаштуваннями
+     * Перевіряє, чи є матеріал.
+     *
+     * @return true, якщо матеріал вибраний
      */
-    public static ItemCharacteristicsDTO createEmpty() {
-        return ItemCharacteristicsDTO.builder()
-                .material("")
-                .color("")
-                .fillerType("")
-                .isFillerDamaged(false)
-                .wearDegree("")
-                .notes("")
-                .showFillerSection(false)
-                .build();
+    public boolean hasMaterial() {
+        if (currentItem == null) {
+            return false;
+        }
+        return currentItem.getMaterial() != null && !currentItem.getMaterial().trim().isEmpty();
+    }
+
+    /**
+     * Перевіряє, чи є колір.
+     *
+     * @return true, якщо колір вибраний
+     */
+    public boolean hasColor() {
+        if (currentItem == null) {
+            return false;
+        }
+        return currentItem.getColor() != null && !currentItem.getColor().trim().isEmpty();
+    }
+
+    /**
+     * Перевіряє, чи є наповнювач.
+     *
+     * @return true, якщо наповнювач вибраний
+     */
+    public boolean hasFiller() {
+        if (currentItem == null) {
+            return false;
+        }
+        return currentItem.getFillerType() != null && !currentItem.getFillerType().trim().isEmpty();
+    }
+
+    /**
+     * Перевіряє, чи є ступінь зносу.
+     *
+     * @return true, якщо ступінь зносу вибраний
+     */
+    public boolean hasWearDegree() {
+        if (currentItem == null) {
+            return false;
+        }
+        return currentItem.getWearDegree() != null && !currentItem.getWearDegree().trim().isEmpty();
+    }
+
+    /**
+     * Ініціалізує currentItem, якщо він null.
+     */
+    public void ensureCurrentItemExists() {
+        if (currentItem == null) {
+            currentItem = OrderItemAddRequest.builder().build();
+        }
     }
 }

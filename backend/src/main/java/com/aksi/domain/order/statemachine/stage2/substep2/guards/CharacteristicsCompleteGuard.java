@@ -12,15 +12,15 @@ import com.aksi.domain.order.statemachine.stage2.substep2.enums.ItemCharacterist
 import com.aksi.domain.order.statemachine.stage2.substep2.service.ItemCharacteristicsCoordinationService;
 
 /**
- * Guard для перевірки вибору матеріалу в підетапі 2.2.
- * Перевіряє чи можна переходити до стану MATERIAL_SELECTED.
+ * Guard для перевірки готовності завершення характеристик в підетапі 2.2.
+ * Перевіряє чи можна переходити до стану COMPLETED.
  */
 @Component
-public class MaterialSelectedGuard implements Guard<ItemCharacteristicsState, ItemCharacteristicsEvent> {
+public class CharacteristicsCompleteGuard implements Guard<ItemCharacteristicsState, ItemCharacteristicsEvent> {
 
     private final ItemCharacteristicsCoordinationService coordinationService;
 
-    public MaterialSelectedGuard(final ItemCharacteristicsCoordinationService coordinationService) {
+    public CharacteristicsCompleteGuard(final ItemCharacteristicsCoordinationService coordinationService) {
         this.coordinationService = coordinationService;
     }
 
@@ -40,8 +40,8 @@ public class MaterialSelectedGuard implements Guard<ItemCharacteristicsState, It
                 return false;
             }
 
-            // Перевіряємо, чи матеріал вибраний через CoordinationService
-            return data.hasMaterial() && coordinationService.isCharacteristicsValid(sessionId);
+            // Перевіряємо готовність до завершення через CoordinationService
+            return data.isDataValid() && coordinationService.isCharacteristicsComplete(sessionId);
 
         } catch (Exception e) {
             // Логування помилки і повернення false

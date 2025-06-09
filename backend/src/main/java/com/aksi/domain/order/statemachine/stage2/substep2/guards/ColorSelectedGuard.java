@@ -12,43 +12,40 @@ import com.aksi.domain.order.statemachine.stage2.substep2.enums.ItemCharacterist
 import com.aksi.domain.order.statemachine.stage2.substep2.service.ItemCharacteristicsCoordinationService;
 
 /**
- * Guard для перевірки чи колір вибрано
+ * Guard для перевірки вибору кольору в підетапі 2.2.
+ * Перевіряє чи можна переходити до стану COLOR_SELECTED.
  */
 @Component
 public class ColorSelectedGuard implements Guard<ItemCharacteristicsState, ItemCharacteristicsEvent> {
 
     private final ItemCharacteristicsCoordinationService coordinationService;
 
-    public ColorSelectedGuard(ItemCharacteristicsCoordinationService coordinationService) {
+    public ColorSelectedGuard(final ItemCharacteristicsCoordinationService coordinationService) {
         this.coordinationService = coordinationService;
     }
 
     @Override
-    public boolean evaluate(StateContext<ItemCharacteristicsState, ItemCharacteristicsEvent> context) {
+    public boolean evaluate(final StateContext<ItemCharacteristicsState, ItemCharacteristicsEvent> context) {
         try {
-            UUID sessionId = getSessionId(context);
+            // Отримуємо sessionId з контексту
+            final UUID sessionId = context.getExtendedState().get("sessionId", UUID.class);
             if (sessionId == null) {
                 return false;
             }
 
-            ItemCharacteristicsDTO data = coordinationService.getCurrentData(sessionId);
-            if (data == null || data.getColor() == null || data.getColor().trim().isEmpty()) {
+            // Отримуємо поточні дані з контексту
+            final ItemCharacteristicsDTO data = context.getExtendedState()
+                    .get("characteristicsData", ItemCharacteristicsDTO.class);
+            if (data == null) {
                 return false;
             }
 
-            // Валідуємо колір через координатор
-            return coordinationService.validateColor(data.getColor()).isValid();
+            // Перевіряємо, чи колір вибраний через CoordinationService
+            return data.hasColor() && coordinationService.isCharacteristicsValid(sessionId);
 
         } catch (Exception e) {
+            // Логування помилки і повернення false
             return false;
         }
-    }
-
-    private UUID getSessionId(StateContext<ItemCharacteristicsState, ItemCharacteristicsEvent> context) {
-        Object sessionIdObj = context.getExtendedState().getVariables().get("sessionId");
-        if (sessionIdObj instanceof UUID uuid) {
-            return uuid;
-        }
-        return null;
     }
 }

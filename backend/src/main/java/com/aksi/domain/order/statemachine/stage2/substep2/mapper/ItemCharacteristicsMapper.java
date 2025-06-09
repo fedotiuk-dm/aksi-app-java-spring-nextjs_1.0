@@ -1,133 +1,237 @@
 package com.aksi.domain.order.statemachine.stage2.substep2.mapper;
 
-import com.aksi.domain.order.constants.ItemCharacteristicsConstants;
+import org.springframework.stereotype.Component;
+
 import com.aksi.domain.order.dto.OrderItemAddRequest;
-import com.aksi.domain.order.dto.OrderItemDTO;
+import com.aksi.domain.order.dto.OrderItemDetailedDTO;
 import com.aksi.domain.order.statemachine.stage2.substep2.dto.ItemCharacteristicsDTO;
 
 /**
- * Маппер для перетворення даних характеристик предмета
+ * Мапер для підетапу 2.2 "Характеристики предмета".
+ * Перетворює між внутрішнім DTO та domain DTO згідно з архітектурними правилами.
  */
+@Component
 public class ItemCharacteristicsMapper {
 
-    private ItemCharacteristicsMapper() {
-        // Приватний конструктор для статичного класу
+    /**
+     * Створює ItemCharacteristicsDTO з OrderItemAddRequest.
+     *
+     * @param orderItem запит на додавання предмета
+     * @return DTO для управління станом характеристик
+     */
+    public ItemCharacteristicsDTO fromOrderItemAddRequest(final OrderItemAddRequest orderItem) {
+        return ItemCharacteristicsDTO.builder()
+                .currentItem(orderItem)
+                .materialSelectionCompleted(false)
+                .colorSelectionCompleted(false)
+                .fillerSelectionCompleted(false)
+                .wearDegreeSelectionCompleted(false)
+                .build();
     }
 
     /**
-     * Перетворення з DTO характеристик в запит додавання предмета
+     * Оновлює OrderItemAddRequest з новим матеріалом.
+     *
+     * @param request існуючий запит
+     * @param material новий матеріал
+     * @return оновлений запит
      */
-    public static OrderItemAddRequest toOrderItemAddRequest(ItemCharacteristicsDTO characteristicsDTO) {
-        if (characteristicsDTO == null) {
-            return OrderItemAddRequest.builder().build();
-        }
-
+    public OrderItemAddRequest updateWithMaterial(final OrderItemAddRequest request, final String material) {
         return OrderItemAddRequest.builder()
-                .material(characteristicsDTO.getMaterial())
-                .color(characteristicsDTO.getColor())
-                .fillerType(characteristicsDTO.getFillerType())
-                .fillerCompressed(characteristicsDTO.getIsFillerDamaged())
-                .wearDegree(characteristicsDTO.getWearDegree())
-                .defectsNotes(buildNotesWithCharacteristics(characteristicsDTO))
+                .id(request.getId())
+                .orderId(request.getOrderId())
+                .description(request.getDescription())
+                .quantity(request.getQuantity())
+                .unitPrice(request.getUnitPrice())
+                .totalPrice(request.getTotalPrice())
+                .category(request.getCategory())
+                .color(request.getColor())
+                .material(material)
+                .unitOfMeasure(request.getUnitOfMeasure())
+                .defects(request.getDefects())
+                .specialInstructions(request.getSpecialInstructions())
+                .fillerType(request.getFillerType())
+                .fillerCompressed(request.getFillerCompressed())
+                .wearDegree(request.getWearDegree())
+                .stains(request.getStains())
+                .otherStains(request.getOtherStains())
+                .defectsAndRisks(request.getDefectsAndRisks())
+                .noGuaranteeReason(request.getNoGuaranteeReason())
+                .defectsNotes(request.getDefectsNotes())
                 .build();
     }
 
     /**
-     * Перетворення з DTO предмета в DTO характеристик
+     * Оновлює OrderItemAddRequest з новим кольором.
+     *
+     * @param request існуючий запит
+     * @param color новий колір
+     * @return оновлений запит
      */
-    public static ItemCharacteristicsDTO fromOrderItemDTO(OrderItemDTO orderItemDTO) {
-        if (orderItemDTO == null) {
-            return ItemCharacteristicsDTO.createEmpty();
-        }
+    public OrderItemAddRequest updateWithColor(final OrderItemAddRequest request, final String color) {
+        return OrderItemAddRequest.builder()
+                .id(request.getId())
+                .orderId(request.getOrderId())
+                .description(request.getDescription())
+                .quantity(request.getQuantity())
+                .unitPrice(request.getUnitPrice())
+                .totalPrice(request.getTotalPrice())
+                .category(request.getCategory())
+                .color(color)
+                .material(request.getMaterial())
+                .unitOfMeasure(request.getUnitOfMeasure())
+                .defects(request.getDefects())
+                .specialInstructions(request.getSpecialInstructions())
+                .fillerType(request.getFillerType())
+                .fillerCompressed(request.getFillerCompressed())
+                .wearDegree(request.getWearDegree())
+                .stains(request.getStains())
+                .otherStains(request.getOtherStains())
+                .defectsAndRisks(request.getDefectsAndRisks())
+                .noGuaranteeReason(request.getNoGuaranteeReason())
+                .defectsNotes(request.getDefectsNotes())
+                .build();
+    }
+
+    /**
+     * Оновлює OrderItemAddRequest з новим наповнювачем.
+     *
+     * @param request існуючий запит
+     * @param fillerType тип наповнювача
+     * @param fillerCompressed чи збитий наповнювач
+     * @return оновлений запит
+     */
+    public OrderItemAddRequest updateWithFiller(final OrderItemAddRequest request,
+                                               final String fillerType,
+                                               final Boolean fillerCompressed) {
+        return OrderItemAddRequest.builder()
+                .id(request.getId())
+                .orderId(request.getOrderId())
+                .description(request.getDescription())
+                .quantity(request.getQuantity())
+                .unitPrice(request.getUnitPrice())
+                .totalPrice(request.getTotalPrice())
+                .category(request.getCategory())
+                .color(request.getColor())
+                .material(request.getMaterial())
+                .unitOfMeasure(request.getUnitOfMeasure())
+                .defects(request.getDefects())
+                .specialInstructions(request.getSpecialInstructions())
+                .fillerType(fillerType)
+                .fillerCompressed(fillerCompressed)
+                .wearDegree(request.getWearDegree())
+                .stains(request.getStains())
+                .otherStains(request.getOtherStains())
+                .defectsAndRisks(request.getDefectsAndRisks())
+                .noGuaranteeReason(request.getNoGuaranteeReason())
+                .defectsNotes(request.getDefectsNotes())
+                .build();
+    }
+
+    /**
+     * Оновлює OrderItemAddRequest з новим ступенем зносу.
+     *
+     * @param request існуючий запит
+     * @param wearDegree ступінь зносу
+     * @return оновлений запит
+     */
+    public OrderItemAddRequest updateWithWearDegree(final OrderItemAddRequest request, final String wearDegree) {
+        return OrderItemAddRequest.builder()
+                .id(request.getId())
+                .orderId(request.getOrderId())
+                .description(request.getDescription())
+                .quantity(request.getQuantity())
+                .unitPrice(request.getUnitPrice())
+                .totalPrice(request.getTotalPrice())
+                .category(request.getCategory())
+                .color(request.getColor())
+                .material(request.getMaterial())
+                .unitOfMeasure(request.getUnitOfMeasure())
+                .defects(request.getDefects())
+                .specialInstructions(request.getSpecialInstructions())
+                .fillerType(request.getFillerType())
+                .fillerCompressed(request.getFillerCompressed())
+                .wearDegree(wearDegree)
+                .stains(request.getStains())
+                .otherStains(request.getOtherStains())
+                .defectsAndRisks(request.getDefectsAndRisks())
+                .noGuaranteeReason(request.getNoGuaranteeReason())
+                .defectsNotes(request.getDefectsNotes())
+                .build();
+    }
+
+    /**
+     * Повне оновлення OrderItemAddRequest з усіма характеристиками.
+     *
+     * @param request існуючий запит
+     * @param material матеріал
+     * @param color колір
+     * @param fillerType тип наповнювача
+     * @param fillerCompressed чи збитий наповнювач
+     * @param wearDegree ступінь зносу
+     * @return повністю оновлений запит
+     */
+    public OrderItemAddRequest updateWithAllCharacteristics(final OrderItemAddRequest request,
+                                                           final String material,
+                                                           final String color,
+                                                           final String fillerType,
+                                                           final Boolean fillerCompressed,
+                                                           final String wearDegree) {
+        return OrderItemAddRequest.builder()
+                .id(request.getId())
+                .orderId(request.getOrderId())
+                .description(request.getDescription())
+                .quantity(request.getQuantity())
+                .unitPrice(request.getUnitPrice())
+                .totalPrice(request.getTotalPrice())
+                .category(request.getCategory())
+                .color(color)
+                .material(material)
+                .unitOfMeasure(request.getUnitOfMeasure())
+                .defects(request.getDefects())
+                .specialInstructions(request.getSpecialInstructions())
+                .fillerType(fillerType)
+                .fillerCompressed(fillerCompressed)
+                .wearDegree(wearDegree)
+                .stains(request.getStains())
+                .otherStains(request.getOtherStains())
+                .defectsAndRisks(request.getDefectsAndRisks())
+                .noGuaranteeReason(request.getNoGuaranteeReason())
+                .defectsNotes(request.getDefectsNotes())
+                .build();
+    }
+
+    /**
+     * Витягує характеристики з OrderItemDetailedDTO.
+     *
+     * @param orderItem деталізований предмет замовлення
+     * @return DTO з характеристиками
+     */
+    public ItemCharacteristicsDTO fromOrderItemDetailedDTO(final OrderItemDetailedDTO orderItem) {
+        final OrderItemAddRequest currentItem = OrderItemAddRequest.builder()
+                .material(orderItem.getMaterial())
+                .color(orderItem.getColor())
+                .fillerType(orderItem.getFiller())
+                .fillerCompressed(orderItem.isFillerClumped())
+                .wearDegree(String.valueOf(orderItem.getWearPercentage()))
+                .build();
 
         return ItemCharacteristicsDTO.builder()
-                .material(orderItemDTO.getMaterial())
-                .color(orderItemDTO.getColor())
-                .fillerType(orderItemDTO.getFillerType())
-                .isFillerDamaged(orderItemDTO.getFillerCompressed())
-                .wearDegree(orderItemDTO.getWearDegree())
-                .notes(orderItemDTO.getDefectsNotes())
-                .showFillerSection(shouldShowFillerSection(orderItemDTO.getCategory()))
+                .currentItem(currentItem)
+                .materialSelectionCompleted(orderItem.getMaterial() != null)
+                .colorSelectionCompleted(orderItem.getColor() != null)
+                .fillerSelectionCompleted(orderItem.getFiller() != null)
+                .wearDegreeSelectionCompleted(orderItem.getWearPercentage() != null)
                 .build();
     }
 
     /**
-     * Оновлення існуючого DTO характеристик з новими даними
+     * Перетворює ItemCharacteristicsDTO у OrderItemAddRequest.
+     *
+     * @param dto DTO зі станом характеристик
+     * @return запит на додавання предмета
      */
-    public static ItemCharacteristicsDTO updateWithNewData(
-            ItemCharacteristicsDTO existingDTO,
-            String field,
-            Object value) {
-
-        if (existingDTO == null) {
-            existingDTO = ItemCharacteristicsDTO.createEmpty();
-        }
-
-        ItemCharacteristicsDTO.ItemCharacteristicsDTOBuilder builder = existingDTO.toBuilder();
-
-        switch (field.toLowerCase()) {
-            case "material" -> builder.material((String) value);
-            case "color" -> builder.color((String) value);
-            case "fillertype" -> builder.fillerType((String) value);
-            case "isfillerdamaged" -> builder.isFillerDamaged((Boolean) value);
-            case "weardegree" -> builder.wearDegree((String) value);
-            case "notes" -> builder.notes((String) value);
-            case "showfillersection" -> builder.showFillerSection((Boolean) value);
-            default -> {
-                // Невідоме поле - ігноруємо
-            }
-        }
-
-        return builder.build();
-    }
-
-    /**
-     * Створення DTO з урахуванням категорії для визначення необхідності секції наповнювача
-     */
-    public static ItemCharacteristicsDTO createForCategory(String categoryCode) {
-        return ItemCharacteristicsDTO.builder()
-                .material("")
-                .color("")
-                .fillerType("")
-                .isFillerDamaged(false)
-                .wearDegree("")
-                .notes("")
-                .showFillerSection(shouldShowFillerSection(categoryCode))
-                .build();
-    }
-
-    /**
-     * Створення примітки з характеристиками для збереження в OrderItem
-     */
-    private static String buildNotesWithCharacteristics(ItemCharacteristicsDTO dto) {
-        StringBuilder notes = new StringBuilder();
-
-        if (dto.getNotes() != null && !dto.getNotes().trim().isEmpty()) {
-            notes.append(dto.getNotes()).append(" ");
-        }
-
-        // Додаємо інформацію про наповнювач, якщо є
-        if (dto.getFillerType() != null && !dto.getFillerType().trim().isEmpty()) {
-            notes.append("Наповнювач: ").append(dto.getFillerType());
-
-            if (Boolean.TRUE.equals(dto.getIsFillerDamaged())) {
-                notes.append(" (збитий)");
-            }
-            notes.append(". ");
-        }
-
-        // Додаємо інформацію про ступінь зносу
-        if (dto.getWearDegree() != null && !dto.getWearDegree().trim().isEmpty()) {
-            notes.append("Знос: ").append(dto.getWearDegree()).append(". ");
-        }
-
-        return notes.toString().trim();
-    }
-
-    /**
-     * Визначення чи потрібно показувати секцію наповнювача
-     */
-    private static boolean shouldShowFillerSection(String categoryCode) {
-        return ItemCharacteristicsConstants.FillerCategories.shouldShowFillerSection(categoryCode);
+    public OrderItemAddRequest toOrderItemAddRequest(final ItemCharacteristicsDTO dto) {
+        return dto.getCurrentItem();
     }
 }

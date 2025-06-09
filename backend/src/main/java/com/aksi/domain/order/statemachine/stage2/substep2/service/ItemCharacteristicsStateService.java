@@ -10,7 +10,8 @@ import com.aksi.domain.order.statemachine.stage2.substep2.dto.ItemCharacteristic
 import com.aksi.domain.order.statemachine.stage2.substep2.enums.ItemCharacteristicsState;
 
 /**
- * Сервіс для управління станом підетапу характеристик предмета
+ * Сервіс управління станом підетапу 2.2 "Характеристики предмета".
+ * Відповідає за збереження та управління контекстом стану.
  */
 @Service
 public class ItemCharacteristicsStateService {
@@ -18,203 +19,157 @@ public class ItemCharacteristicsStateService {
     private final Map<UUID, ItemCharacteristicsContext> contexts = new ConcurrentHashMap<>();
 
     /**
-     * Контекст підетапу характеристик предмета
+     * Контекст стану підетапу характеристик предмета.
      */
     public static class ItemCharacteristicsContext {
         private ItemCharacteristicsState currentState;
-        private ItemCharacteristicsDTO characteristicsData;
-        private String categoryCode;
-        private long lastUpdated;
+        private ItemCharacteristicsDTO data;
+        private String errorMessage;
 
         public ItemCharacteristicsContext() {
             this.currentState = ItemCharacteristicsState.NOT_STARTED;
-            this.characteristicsData = ItemCharacteristicsDTO.createEmpty();
-            this.lastUpdated = System.currentTimeMillis();
+            this.data = new ItemCharacteristicsDTO();
         }
 
-        // Getters та Setters
+        // Getters and Setters
         public ItemCharacteristicsState getCurrentState() {
             return currentState;
         }
 
-        public void setCurrentState(ItemCharacteristicsState currentState) {
+        public void setCurrentState(final ItemCharacteristicsState currentState) {
             this.currentState = currentState;
-            this.lastUpdated = System.currentTimeMillis();
         }
 
-        public ItemCharacteristicsDTO getCharacteristicsData() {
-            return characteristicsData;
+        public ItemCharacteristicsDTO getData() {
+            return data;
         }
 
-        public void setCharacteristicsData(ItemCharacteristicsDTO characteristicsData) {
-            this.characteristicsData = characteristicsData;
-            this.lastUpdated = System.currentTimeMillis();
+        public void setData(final ItemCharacteristicsDTO data) {
+            this.data = data;
         }
 
-        public String getCategoryCode() {
-            return categoryCode;
+        public String getErrorMessage() {
+            return errorMessage;
         }
 
-        public void setCategoryCode(String categoryCode) {
-            this.categoryCode = categoryCode;
-            this.lastUpdated = System.currentTimeMillis();
+        public void setErrorMessage(final String errorMessage) {
+            this.errorMessage = errorMessage;
         }
 
-        public long getLastUpdated() {
-            return lastUpdated;
+        public boolean hasError() {
+            return errorMessage != null && !errorMessage.trim().isEmpty();
         }
-    }
 
-    /**
-     * Отримати контекст для сесії
-     */
-    public ItemCharacteristicsContext getContext(UUID sessionId) {
-        return contexts.computeIfAbsent(sessionId, k -> new ItemCharacteristicsContext());
-    }
-
-    /**
-     * Зберегти контекст для сесії
-     */
-    public void saveContext(UUID sessionId, ItemCharacteristicsContext context) {
-        if (sessionId != null && context != null) {
-            contexts.put(sessionId, context);
+        public void clearError() {
+            this.errorMessage = null;
         }
     }
 
     /**
-     * Видалити контекст сесії
+     * Створює новий контекст для сесії.
      */
-    public void removeContext(UUID sessionId) {
-        if (sessionId != null) {
-            contexts.remove(sessionId);
-        }
-    }
-
-    /**
-     * Отримати поточний стан підетапу
-     */
-    public ItemCharacteristicsState getCurrentState(UUID sessionId) {
-        ItemCharacteristicsContext context = getContext(sessionId);
-        return context.getCurrentState();
-    }
-
-    /**
-     * Встановити поточний стан підетапу
-     */
-    public void setCurrentState(UUID sessionId, ItemCharacteristicsState state) {
-        ItemCharacteristicsContext context = getContext(sessionId);
-        context.setCurrentState(state);
-        saveContext(sessionId, context);
-    }
-
-    /**
-     * Отримати дані характеристик
-     */
-    public ItemCharacteristicsDTO getCharacteristicsData(UUID sessionId) {
-        ItemCharacteristicsContext context = getContext(sessionId);
-        return context.getCharacteristicsData();
-    }
-
-    /**
-     * Оновити дані характеристик
-     */
-    public void updateCharacteristicsData(UUID sessionId, ItemCharacteristicsDTO data) {
-        ItemCharacteristicsContext context = getContext(sessionId);
-        context.setCharacteristicsData(data);
-        saveContext(sessionId, context);
-    }
-
-    /**
-     * Встановити код категорії для контексту
-     */
-    public void setCategoryCode(UUID sessionId, String categoryCode) {
-        ItemCharacteristicsContext context = getContext(sessionId);
-        context.setCategoryCode(categoryCode);
-        saveContext(sessionId, context);
-    }
-
-    /**
-     * Отримати код категорії з контексту
-     */
-    public String getCategoryCode(UUID sessionId) {
-        ItemCharacteristicsContext context = getContext(sessionId);
-        return context.getCategoryCode();
-    }
-
-    /**
-     * Перевірити чи контекст існує
-     */
-    public boolean hasContext(UUID sessionId) {
-        return sessionId != null && contexts.containsKey(sessionId);
-    }
-
-    /**
-     * Ініціалізувати новий контекст
-     */
-    public ItemCharacteristicsContext initializeContext(UUID sessionId, String categoryCode) {
-        ItemCharacteristicsContext context = new ItemCharacteristicsContext();
-        context.setCategoryCode(categoryCode);
-
-        // Створюємо DTO з урахуванням категорії
-        ItemCharacteristicsDTO dto = ItemCharacteristicsDTO.createEmpty();
-        dto = dto.toBuilder()
-                .showFillerSection(shouldShowFillerSection(categoryCode))
-                .build();
-
-        context.setCharacteristicsData(dto);
-        saveContext(sessionId, context);
-
+    public ItemCharacteristicsContext createContext(final UUID sessionId) {
+        final ItemCharacteristicsContext context = new ItemCharacteristicsContext();
+        contexts.put(sessionId, context);
         return context;
     }
 
     /**
-     * Скинути контекст до початкового стану
+     * Отримує контекст за ідентифікатором сесії.
      */
-    public void resetContext(UUID sessionId) {
-        ItemCharacteristicsContext context = getContext(sessionId);
-        String categoryCode = context.getCategoryCode();
-
-        context.setCurrentState(ItemCharacteristicsState.NOT_STARTED);
-        context.setCharacteristicsData(ItemCharacteristicsDTO.createEmpty());
-
-        // Відновлюємо категорію та налаштування для неї
-        if (categoryCode != null) {
-            context.setCategoryCode(categoryCode);
-            ItemCharacteristicsDTO dto = context.getCharacteristicsData();
-            dto = dto.toBuilder()
-                    .showFillerSection(shouldShowFillerSection(categoryCode))
-                    .build();
-            context.setCharacteristicsData(dto);
-        }
-
-        saveContext(sessionId, context);
+    public ItemCharacteristicsContext getContext(final UUID sessionId) {
+        return contexts.get(sessionId);
     }
 
     /**
-     * Отримати кількість активних сесій
+     * Оновлює стан контексту.
      */
-    public int getActiveSessionsCount() {
-        return contexts.size();
+    public void updateState(final UUID sessionId, final ItemCharacteristicsState newState) {
+        final ItemCharacteristicsContext context = contexts.get(sessionId);
+        if (context != null) {
+            context.setCurrentState(newState);
+        }
     }
 
     /**
-     * Очистити старі контексти (старіше 24 годин)
+     * Оновлює дані в контексті.
      */
-    public void cleanupOldContexts() {
-        long cutoffTime = System.currentTimeMillis() - (24 * 60 * 60 * 1000); // 24 години
-        contexts.entrySet().removeIf(entry -> entry.getValue().getLastUpdated() < cutoffTime);
+    public void updateData(final UUID sessionId, final ItemCharacteristicsDTO data) {
+        final ItemCharacteristicsContext context = contexts.get(sessionId);
+        if (context != null) {
+            context.setData(data);
+        }
     }
 
-    // Приватні методи
-
-    private boolean shouldShowFillerSection(String categoryCode) {
-        if (categoryCode == null) {
-            return false;
+    /**
+     * Встановлює помилку в контексті.
+     */
+    public void setError(final UUID sessionId, final String errorMessage) {
+        final ItemCharacteristicsContext context = contexts.get(sessionId);
+        if (context != null) {
+            context.setErrorMessage(errorMessage);
         }
-        // Тут можна додати логіку визначення чи потрібна секція наповнювача
-        // На основі категорії предмета
-        return categoryCode.toLowerCase().contains("куртк") ||
-               categoryCode.toLowerCase().contains("пальт") ||
-               categoryCode.toLowerCase().contains("подушк");
+    }
+
+    /**
+     * Очищає помилку в контексті.
+     */
+    public void clearError(final UUID sessionId) {
+        final ItemCharacteristicsContext context = contexts.get(sessionId);
+        if (context != null) {
+            context.clearError();
+        }
+    }
+
+    /**
+     * Видаляє контекст сесії.
+     */
+    public void removeContext(final UUID sessionId) {
+        contexts.remove(sessionId);
+    }
+
+    /**
+     * Перевіряє чи існує контекст для сесії.
+     */
+    public boolean hasContext(final UUID sessionId) {
+        return contexts.containsKey(sessionId);
+    }
+
+    /**
+     * Отримує поточний стан для сесії.
+     */
+    public ItemCharacteristicsState getCurrentState(final UUID sessionId) {
+        final ItemCharacteristicsContext context = getContext(sessionId);
+        return context != null ? context.getCurrentState() : ItemCharacteristicsState.NOT_STARTED;
+    }
+
+    /**
+     * Перевіряє чи є помилка в сесії.
+     */
+    public boolean hasError(final UUID sessionId) {
+        final ItemCharacteristicsContext context = getContext(sessionId);
+        return context != null && context.hasError();
+    }
+
+    /**
+     * Отримує повідомлення про помилку для сесії.
+     */
+    public String getErrorMessage(final UUID sessionId) {
+        final ItemCharacteristicsContext context = getContext(sessionId);
+        return context != null ? context.getErrorMessage() : null;
+    }
+
+    /**
+     * Перевіряє чи існує активна сесія.
+     */
+    public boolean hasActiveSession(final UUID sessionId) {
+        return hasContext(sessionId);
+    }
+
+    /**
+     * Завершує сесію та очищає контекст.
+     */
+    public void terminateSession(final UUID sessionId) {
+        removeContext(sessionId);
     }
 }

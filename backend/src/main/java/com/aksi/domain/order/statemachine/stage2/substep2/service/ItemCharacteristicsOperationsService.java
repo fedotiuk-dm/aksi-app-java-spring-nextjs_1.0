@@ -1,107 +1,133 @@
 package com.aksi.domain.order.statemachine.stage2.substep2.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.aksi.domain.order.constants.ItemCharacteristicsConstants;
+import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.service.ItemCharacteristicsService;
+import com.aksi.domain.order.service.OrderService;
 
 /**
- * Сервіс операцій для характеристик предмета - тонка обгортка над доменними сервісами
+ * Сервіс операцій підетапу 2.2 "Характеристики предмета".
+ * Тонка обгортка для роботи з доменними сервісами.
+ * НЕ містить бізнес-логіки, тільки делегує виклики.
  */
 @Service
 public class ItemCharacteristicsOperationsService {
 
+    private final OrderService orderService;
     private final ItemCharacteristicsService itemCharacteristicsService;
 
-    public ItemCharacteristicsOperationsService(ItemCharacteristicsService itemCharacteristicsService) {
+    public ItemCharacteristicsOperationsService(
+            final OrderService orderService,
+            final ItemCharacteristicsService itemCharacteristicsService) {
+        this.orderService = orderService;
         this.itemCharacteristicsService = itemCharacteristicsService;
     }
 
+    // ========== Операції з предметами замовлення ==========
+
     /**
-     * Отримати всі доступні матеріали
+     * Отримує поточний предмет замовлення.
      */
-    public List<String> getAllMaterials() {
-        return ItemCharacteristicsConstants.Materials.getAllMaterials();
+    public OrderItemDTO getCurrentOrderItem(final UUID orderId, final UUID itemId) {
+        return orderService.getOrderItem(orderId, itemId)
+                .orElse(null);
     }
 
     /**
-     * Отримати матеріали для певної категорії
+     * Отримує список всіх предметів замовлення.
      */
-    public List<String> getMaterialsByCategory(String category) {
+    public List<OrderItemDTO> getAllOrderItems(final UUID orderId) {
+        return orderService.getOrderItems(orderId);
+    }
+
+    /**
+     * Оновлює предмет в замовленні.
+     */
+    public OrderItemDTO updateOrderItem(final UUID orderId, final UUID itemId,
+                                        final OrderItemDTO itemDTO) {
+        return orderService.updateOrderItem(orderId, itemId, itemDTO);
+    }
+
+    /**
+     * Додає новий предмет до замовлення.
+     */
+    public OrderItemDTO addOrderItem(final UUID orderId, final OrderItemDTO itemDTO) {
+        return orderService.addOrderItem(orderId, itemDTO);
+    }
+
+    /**
+     * Видаляє предмет із замовлення.
+     */
+    public void deleteOrderItem(final UUID orderId, final UUID itemId) {
+        orderService.deleteOrderItem(orderId, itemId);
+    }
+
+    /**
+     * Перевіряє чи існує предмет в замовленні.
+     */
+    public boolean orderItemExists(final UUID orderId, final UUID itemId) {
+        return orderService.getOrderItem(orderId, itemId).isPresent();
+    }
+
+    // ========== Операції з характеристиками предметів ==========
+
+    /**
+     * Отримує доступні матеріали для категорії.
+     */
+    public List<String> getAvailableMaterials(final String category) {
         return itemCharacteristicsService.getMaterialsByCategory(category);
     }
 
     /**
-     * Отримати всі базові кольори
+     * Отримує всі доступні кольори.
      */
     public List<String> getAllColors() {
-        return ItemCharacteristicsConstants.Colors.getAllColors();
+        return itemCharacteristicsService.getAllColors();
     }
 
     /**
-     * Отримати всі типи наповнювачів
+     * Отримує всі типи наповнювачів.
      */
     public List<String> getAllFillerTypes() {
-        return ItemCharacteristicsConstants.FillerTypes.getAllFillerTypes();
+        return itemCharacteristicsService.getAllFillerTypes();
     }
 
     /**
-     * Отримати всі ступені зносу
+     * Отримує всі ступені зносу.
      */
     public List<String> getAllWearDegrees() {
-        return ItemCharacteristicsConstants.WearDegrees.getAllWearDegrees();
+        return itemCharacteristicsService.getAllWearDegrees();
     }
 
     /**
-     * Перевірити чи потрібно показувати секцію наповнювача для категорії
+     * Отримує типи плям.
      */
-    public boolean shouldShowFillerSection(String categoryCode) {
-        return ItemCharacteristicsConstants.FillerCategories.shouldShowFillerSection(categoryCode);
+    public List<String> getAllStainTypes() {
+        return itemCharacteristicsService.getAllStainTypes();
     }
 
     /**
-     * Отримати коефіцієнт зносу для розрахунку ціни
+     * Отримує дефекти та ризики.
      */
-    public double getWearFactor(String wearDegree) {
-        return ItemCharacteristicsConstants.WearDegrees.getWearFactor(wearDegree);
+    public List<String> getAllDefectsAndRisks() {
+        return itemCharacteristicsService.getAllDefectsAndRisks();
     }
 
     /**
-     * Перевірити валідність матеріалу
+     * Отримує тільки дефекти.
      */
-    public boolean isValidMaterial(String material) {
-        if (material == null || material.trim().isEmpty()) {
-            return false;
-        }
-        return getAllMaterials().contains(material.trim());
+    public List<String> getDefects() {
+        return itemCharacteristicsService.getDefects();
     }
 
     /**
-     * Перевірити валідність типу наповнювача
+     * Отримує тільки ризики.
      */
-    public boolean isValidFillerType(String fillerType) {
-        if (fillerType == null || fillerType.trim().isEmpty()) {
-            return false;
-        }
-        return getAllFillerTypes().contains(fillerType.trim());
-    }
-
-    /**
-     * Перевірити валідність ступеню зносу
-     */
-    public boolean isValidWearDegree(String wearDegree) {
-        if (wearDegree == null || wearDegree.trim().isEmpty()) {
-            return false;
-        }
-        return getAllWearDegrees().contains(wearDegree.trim());
-    }
-
-    /**
-     * Перевірити валідність кольору
-     */
-    public boolean isValidColor(String color) {
-        return color != null && !color.trim().isEmpty() && color.trim().length() <= 50;
+    public List<String> getRisks() {
+        return itemCharacteristicsService.getRisks();
     }
 }

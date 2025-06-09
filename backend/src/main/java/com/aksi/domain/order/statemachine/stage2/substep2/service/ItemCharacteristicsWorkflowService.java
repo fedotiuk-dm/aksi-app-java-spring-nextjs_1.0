@@ -1,13 +1,15 @@
 package com.aksi.domain.order.statemachine.stage2.substep2.service;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.aksi.domain.order.dto.OrderItemAddRequest;
+import com.aksi.domain.order.dto.OrderItemDTO;
 import com.aksi.domain.order.statemachine.stage2.substep2.dto.ItemCharacteristicsDTO;
 import com.aksi.domain.order.statemachine.stage2.substep2.enums.ItemCharacteristicsState;
 import com.aksi.domain.order.statemachine.stage2.substep2.mapper.ItemCharacteristicsMapper;
+import com.aksi.domain.order.statemachine.stage2.substep2.service.ItemCharacteristicsStateService.ItemCharacteristicsContext;
 import com.aksi.domain.order.statemachine.stage2.substep2.validator.ValidationResult;
 
 /**
@@ -19,116 +21,232 @@ public class ItemCharacteristicsWorkflowService {
     private final ItemCharacteristicsStateService stateService;
     private final ItemCharacteristicsValidationService validationService;
     private final ItemCharacteristicsOperationsService operationsService;
+    private final ItemCharacteristicsMapper mapper;
 
     public ItemCharacteristicsWorkflowService(
             ItemCharacteristicsStateService stateService,
             ItemCharacteristicsValidationService validationService,
-            ItemCharacteristicsOperationsService operationsService) {
+            ItemCharacteristicsOperationsService operationsService,
+            ItemCharacteristicsMapper mapper) {
         this.stateService = stateService;
         this.validationService = validationService;
         this.operationsService = operationsService;
+        this.mapper = mapper;
     }
 
     /**
-     * Початок підетапу характеристик
+     * Ініціалізує підетап характеристик для вказаного предмета.
      */
-    public ItemCharacteristicsDTO startSubstep(UUID sessionId, String categoryCode) {
-        stateService.initializeContext(sessionId, categoryCode);
-        stateService.setCurrentState(sessionId, ItemCharacteristicsState.SELECTING_MATERIAL);
+    public ItemCharacteristicsDTO initializeCharacteristics(final UUID sessionId, final UUID orderId, final UUID itemId) {
+        // Створюємо контекст
+        final ItemCharacteristicsContext context = stateService.createContext(sessionId);
 
-        ItemCharacteristicsDTO dto = ItemCharacteristicsMapper.createForCategory(categoryCode);
-        stateService.updateCharacteristicsData(sessionId, dto);
+        // Отримуємо дані предмета з замовлення
+        final OrderItemDTO orderItem = operationsService.getCurrentOrderItem(orderId, itemId);
+        if (orderItem == null) {
+            context.setErrorMessage("Предмет не знайдено в замовленні");
+            stateService.updateState(sessionId, ItemCharacteristicsState.ERROR);
+            return context.getData();
+        }
+
+        // Створюємо DTO на основі даних предмета
+        final OrderItemAddRequest itemRequest = convertToAddRequest(orderItem);
+        final ItemCharacteristicsDTO dto = mapper.fromOrderItemAddRequest(itemRequest);
+
+        // Оновлюємо контекст
+        context.setData(dto);
+        stateService.updateState(sessionId, ItemCharacteristicsState.SELECTING_MATERIAL);
 
         return dto;
     }
 
     /**
-     * Обробка вибору матеріалу
+     * Оновлює матеріал предмета.
      */
-    public ItemCharacteristicsDTO selectMaterial(UUID sessionId, String material) {
-        ValidationResult validation = validationService.validateMaterial(material);
-        if (!validation.isValid()) {
-            throw new IllegalArgumentException("Невірний матеріал: " + validation.getFirstError());
+    public ItemCharacteristicsDTO updateMaterial(final UUID sessionId, final String material) {
+        final ItemCharacteristicsContext context = stateService.getContext(sessionId);
+        if (context == null) {
+            throw new IllegalStateException("Контекст сесії не знайдено");
         }
 
-        ItemCharacteristicsDTO current = stateService.getCharacteristicsData(sessionId);
-        ItemCharacteristicsDTO updated = current.toBuilder()
-                .material(material)
-                .build();
-
-        stateService.updateCharacteristicsData(sessionId, updated);
-        stateService.setCurrentState(sessionId, ItemCharacteristicsState.SELECTING_COLOR);
-
-        return updated;
-    }
-
-    /**
-     * Обробка вибору кольору
-     */
-    public ItemCharacteristicsDTO selectColor(UUID sessionId, String color) {
-        ValidationResult validation = validationService.validateColor(color);
-        if (!validation.isValid()) {
-            throw new IllegalArgumentException("Невірний колір: " + validation.getFirstError());
+        // Валідуємо матеріал
+        final ValidationResult validationResult = validationService.validateMaterial(material);
+        if (!validationResult.isValid()) {
+            context.setErrorMessage(validationResult.getFirstError());
+            return context.getData();
         }
 
-        ItemCharacteristicsDTO current = stateService.getCharacteristicsData(sessionId);
-        ItemCharacteristicsDTO updated = current.toBuilder()
-                .color(color)
-                .build();
+        // Конвертуємо в OrderItemAddRequest для mapper
+        final OrderItemAddRequest currentRequest = mapper.toOrderItemAddRequest(context.getData());
+        final OrderItemAddRequest updatedRequest = mapper.updateWithMaterial(currentRequest, material);
+        final ItemCharacteristicsDTO updatedDto = mapper.fromOrderItemAddRequest(updatedRequest);
 
-        stateService.updateCharacteristicsData(sessionId, updated);
+        context.setData(updatedDto);
+        context.clearError();
 
-        if (Boolean.TRUE.equals(updated.getShowFillerSection())) {
-            stateService.setCurrentState(sessionId, ItemCharacteristicsState.SELECTING_FILLER);
-        } else {
-            stateService.setCurrentState(sessionId, ItemCharacteristicsState.SELECTING_WEAR_DEGREE);
+        // Оновлюємо стан якщо всі поля матеріалу заповнені
+        if (updatedDto.isMaterialSelectionCompleted()) {
+            stateService.updateState(sessionId, ItemCharacteristicsState.SELECTING_COLOR);
         }
 
-        return updated;
+        return updatedDto;
     }
 
     /**
-     * Завершення підетапу
+     * Оновлює колір предмета.
      */
-    public ItemCharacteristicsDTO completeSubstep(UUID sessionId) {
-        ItemCharacteristicsDTO current = stateService.getCharacteristicsData(sessionId);
-
-        ValidationResult validation = validationService.validateForNext(current);
-        if (!validation.isValid()) {
-            stateService.setCurrentState(sessionId, ItemCharacteristicsState.ERROR);
-            throw new IllegalStateException("Дані не пройшли валідацію: " + validation.getFirstError());
+    public ItemCharacteristicsDTO updateColor(final UUID sessionId, final String color) {
+        final ItemCharacteristicsContext context = stateService.getContext(sessionId);
+        if (context == null) {
+            throw new IllegalStateException("Контекст сесії не знайдено");
         }
 
-        stateService.setCurrentState(sessionId, ItemCharacteristicsState.COMPLETED);
-        return current;
+        // Валідуємо колір
+        final ValidationResult validationResult = validationService.validateColor(color);
+        if (!validationResult.isValid()) {
+            context.setErrorMessage(validationResult.getFirstError());
+            return context.getData();
+        }
+
+        // Конвертуємо в OrderItemAddRequest для mapper
+        final OrderItemAddRequest currentRequest = mapper.toOrderItemAddRequest(context.getData());
+        final OrderItemAddRequest updatedRequest = mapper.updateWithColor(currentRequest, color);
+        final ItemCharacteristicsDTO updatedDto = mapper.fromOrderItemAddRequest(updatedRequest);
+
+        context.setData(updatedDto);
+        context.clearError();
+
+        // Оновлюємо стан якщо всі поля кольору заповнені
+        if (updatedDto.isColorSelectionCompleted()) {
+            stateService.updateState(sessionId, ItemCharacteristicsState.SELECTING_FILLER);
+        }
+
+        return updatedDto;
     }
 
     /**
-     * Отримання поточних даних
+     * Оновлює наповнювач предмета.
      */
-    public ItemCharacteristicsDTO getCurrentData(UUID sessionId) {
-        return stateService.getCharacteristicsData(sessionId);
+    public ItemCharacteristicsDTO updateFiller(final UUID sessionId, final String fillerType) {
+        final ItemCharacteristicsContext context = stateService.getContext(sessionId);
+        if (context == null) {
+            throw new IllegalStateException("Контекст сесії не знайдено");
+        }
+
+        // Валідуємо наповнювач якщо він вказаний
+        if (fillerType != null && !fillerType.trim().isEmpty()) {
+            final ValidationResult validationResult = validationService.validateFiller(fillerType);
+            if (!validationResult.isValid()) {
+                context.setErrorMessage(validationResult.getFirstError());
+                return context.getData();
+            }
+        }
+
+        // Конвертуємо в OrderItemAddRequest для mapper
+        final OrderItemAddRequest currentRequest = mapper.toOrderItemAddRequest(context.getData());
+        final OrderItemAddRequest updatedRequest = mapper.updateWithFiller(currentRequest, fillerType, false);
+        final ItemCharacteristicsDTO updatedDto = mapper.fromOrderItemAddRequest(updatedRequest);
+
+        context.setData(updatedDto);
+        context.clearError();
+
+        // Оновлюємо стан якщо секція наповнювача завершена
+        if (updatedDto.isFillerSelectionCompleted()) {
+            stateService.updateState(sessionId, ItemCharacteristicsState.SELECTING_WEAR_DEGREE);
+        }
+
+        return updatedDto;
     }
 
     /**
-     * Отримання поточного стану
+     * Оновлює ступінь зносу предмета.
      */
-    public ItemCharacteristicsState getCurrentState(UUID sessionId) {
-        return stateService.getCurrentState(sessionId);
+    public ItemCharacteristicsDTO updateWearDegree(final UUID sessionId, final String wearDegree) {
+        final ItemCharacteristicsContext context = stateService.getContext(sessionId);
+        if (context == null) {
+            throw new IllegalStateException("Контекст сесії не знайдено");
+        }
+
+        // Валідуємо ступінь зносу
+        final ValidationResult validationResult = validationService.validateWearDegree(wearDegree);
+        if (!validationResult.isValid()) {
+            context.setErrorMessage(validationResult.getFirstError());
+            return context.getData();
+        }
+
+        // Конвертуємо в OrderItemAddRequest для mapper
+        final OrderItemAddRequest currentRequest = mapper.toOrderItemAddRequest(context.getData());
+        final OrderItemAddRequest updatedRequest = mapper.updateWithWearDegree(currentRequest, wearDegree);
+        final ItemCharacteristicsDTO updatedDto = mapper.fromOrderItemAddRequest(updatedRequest);
+
+        context.setData(updatedDto);
+        context.clearError();
+
+        // Оновлюємо стан якщо всі поля ступеня зносу заповнені
+        if (updatedDto.isWearDegreeSelectionCompleted()) {
+            stateService.updateState(sessionId, ItemCharacteristicsState.COMPLETED);
+        }
+
+        return updatedDto;
     }
 
     /**
-     * Отримання списку матеріалів
+     * Завершує підетап характеристик та зберігає зміни.
      */
-    public List<String> getAvailableMaterials(UUID sessionId) {
-        String categoryCode = stateService.getCategoryCode(sessionId);
-        return operationsService.getMaterialsByCategory(categoryCode);
+    public ItemCharacteristicsDTO completeCharacteristics(final UUID sessionId, final UUID orderId, final UUID itemId) {
+        final ItemCharacteristicsContext context = stateService.getContext(sessionId);
+        if (context == null) {
+            throw new IllegalStateException("Контекст сесії не знайдено");
+        }
+
+        // Валідуємо готовність до завершення
+        final ValidationResult validationResult = validationService.validateReadinessForNextStep(context.getData());
+        if (!validationResult.isValid()) {
+            context.setErrorMessage(validationResult.getFirstError());
+            stateService.updateState(sessionId, ItemCharacteristicsState.ERROR);
+            return context.getData();
+        }
+
+        // Конвертуємо DTO назад в OrderItemDTO та зберігаємо
+        final OrderItemAddRequest updatedRequest = mapper.toOrderItemAddRequest(context.getData());
+        final OrderItemDTO updatedItem = convertToItemDTO(updatedRequest);
+        operationsService.updateOrderItem(orderId, itemId, updatedItem);
+
+        // Завершуємо підетап
+        stateService.updateState(sessionId, ItemCharacteristicsState.COMPLETED);
+
+        return context.getData();
     }
 
     /**
-     * Отримання списку кольорів
+     * Отримує поточні дані характеристик.
      */
-    public List<String> getAvailableColors() {
-        return operationsService.getAllColors();
+    public ItemCharacteristicsDTO getCurrentData(final UUID sessionId) {
+        final ItemCharacteristicsContext context = stateService.getContext(sessionId);
+        return context != null ? context.getData() : new ItemCharacteristicsDTO();
+    }
+
+
+
+    // Приватні методи для конвертації
+
+    private OrderItemAddRequest convertToAddRequest(final OrderItemDTO orderItem) {
+        final OrderItemAddRequest request = new OrderItemAddRequest();
+        request.setMaterial(orderItem.getMaterial());
+        request.setColor(orderItem.getColor());
+        request.setFillerType(orderItem.getFillerType());
+        request.setWearDegree(orderItem.getWearDegree());
+        // Додаткові поля за потреби
+        return request;
+    }
+
+    private OrderItemDTO convertToItemDTO(final OrderItemAddRequest request) {
+        final OrderItemDTO dto = new OrderItemDTO();
+        dto.setMaterial(request.getMaterial());
+        dto.setColor(request.getColor());
+        dto.setFillerType(request.getFillerType());
+        dto.setWearDegree(request.getWearDegree());
+        // Додаткові поля за потреби
+        return dto;
     }
 }
