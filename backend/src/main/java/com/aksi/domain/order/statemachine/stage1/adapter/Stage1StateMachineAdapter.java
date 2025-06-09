@@ -1,109 +1,138 @@
 package com.aksi.domain.order.statemachine.stage1.adapter;
 
-import org.springframework.statemachine.StateContext;
-import org.springframework.stereotype.Component;
+import java.util.List;
+import java.util.UUID;
 
-import com.aksi.domain.order.statemachine.OrderEvent;
-import com.aksi.domain.order.statemachine.OrderState;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aksi.domain.client.dto.ClientResponse;
+import com.aksi.domain.client.dto.CreateClientRequest;
+import com.aksi.domain.order.statemachine.stage1.dto.ClientSelectionDTO;
 import com.aksi.domain.order.statemachine.stage1.service.Stage1CoordinationService;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.aksi.domain.order.statemachine.stage1.service.Stage1StateService.Stage1Context;
+import com.aksi.domain.order.statemachine.stage1.validator.ValidationResult;
 
 /**
- * Адаптер для інтеграції Stage 1 координатора з State Machine.
- *
- * Відокремлює логіку State Machine від основної бізнес-логіки координації,
- * дотримуючись принципу Single Responsibility.
- *
- * Етап: 1 (Клієнт та базова інформація замовлення)
- * Підетапи: 1.1 Вибір або створення клієнта, 1.2 Базова інформація замовлення
+ * REST API адаптер для Stage1 State Machine.
  */
-@Slf4j
-@Component
-@RequiredArgsConstructor
+@RestController
+@RequestMapping("/order-wizard/stage1")
 public class Stage1StateMachineAdapter {
 
     private final Stage1CoordinationService coordinationService;
 
-    /**
-     * Ініціалізує етап 1 з усіма підетапами.
-     */
-    public void initializeStage1(StateContext<OrderState, OrderEvent> context) {
-        log.debug("State Machine: Ініціалізація етапу 1 - Клієнт та базова інформація замовлення");
-
-        String wizardId = extractWizardId(context);
-        coordinationService.initializeStage1(wizardId, context);
+    public Stage1StateMachineAdapter(Stage1CoordinationService coordinationService) {
+        this.coordinationService = coordinationService;
     }
 
     /**
-     * Завершує підетап вибору клієнта та переходить до базової інформації замовлення.
+     * Ініціалізація нової сесії Stage1.
      */
-    public void finishClientSelectionAndStartOrderInfo(StateContext<OrderState, OrderEvent> context) {
-        log.debug("State Machine: Перехід від вибору клієнта до базової інформації замовлення");
-
-        String wizardId = extractWizardId(context);
-        coordinationService.finishClientSelectionAndStartOrderInfo(wizardId, context);
+    @PostMapping("/session")
+    public ResponseEntity<String> initializeSession() {
+        String sessionId = coordinationService.initializeSession();
+        return ResponseEntity.ok(sessionId);
     }
 
     /**
-     * Фіналізує весь етап 1.
+     * Отримання контексту сесії.
      */
-    public void finalizeStage1(StateContext<OrderState, OrderEvent> context) {
-        log.debug("State Machine: Фіналізація етапу 1");
-
-        String wizardId = extractWizardId(context);
-        coordinationService.finalizeStage1(wizardId, context);
-    }
-
-    /**
-     * Отримує поточний підетап етапу 1.
-     */
-    public String getCurrentStep(StateContext<OrderState, OrderEvent> context) {
-        return coordinationService.getCurrentStep(context);
-    }
-
-    /**
-     * Перевіряє чи завершено підетап вибору клієнта.
-     */
-    public boolean isClientSelectionCompleted(StateContext<OrderState, OrderEvent> context) {
-        return coordinationService.isClientSelectionCompleted(context);
-    }
-
-    /**
-     * Перевіряє чи ініціалізовано підетап базової інформації замовлення.
-     */
-    public boolean isOrderInfoInitialized(StateContext<OrderState, OrderEvent> context) {
-        return coordinationService.isOrderInfoInitialized(context);
-    }
-
-    /**
-     * Валідує чи етап 1 готовий до завершення.
-     */
-    public boolean validateStage1Completion(StateContext<OrderState, OrderEvent> context) {
-        log.debug("State Machine: Валідація готовності етапу 1");
-
-        return coordinationService.validateStage1Completion(context);
-    }
-
-    /**
-     * Очищує дані етапу 1.
-     */
-    public void clearStage1Data(StateContext<OrderState, OrderEvent> context) {
-        log.debug("State Machine: Очищення даних етапу 1");
-
-        // Очищення виконується в координаційному сервісі
-        coordinationService.finalizeStage1(extractWizardId(context), context);
-    }
-
-    /**
-     * Отримує wizardId з контексту State Machine.
-     */
-    private String extractWizardId(StateContext<OrderState, OrderEvent> context) {
-        Object wizardIdObj = context.getExtendedState().getVariables().get("wizardId");
-        if (wizardIdObj instanceof String) {
-            return (String) wizardIdObj;
+    @GetMapping("/session/{sessionId}")
+    public ResponseEntity<Stage1Context> getSession(@PathVariable String sessionId) {
+        if (!coordinationService.sessionExists(sessionId)) {
+            return ResponseEntity.notFound().build();
         }
-        throw new IllegalStateException("WizardId не знайдено в контексті State Machine");
+        Stage1Context context = coordinationService.getSession(sessionId);
+        return ResponseEntity.ok(context);
+    }
+
+    /**
+     * Пошук клієнтів.
+     */
+    @GetMapping("/clients/search")
+    public ResponseEntity<List<ClientResponse>> searchClients(@RequestParam String searchTerm) {
+        List<ClientResponse> clients = coordinationService.searchClients(searchTerm);
+        return ResponseEntity.ok(clients);
+    }
+
+    /**
+     * Отримання клієнта за ID.
+     */
+    @GetMapping("/clients/{clientId}")
+    public ResponseEntity<ClientResponse> getClientById(@PathVariable UUID clientId) {
+        if (!coordinationService.clientExists(clientId)) {
+            return ResponseEntity.notFound().build();
+        }
+        ClientResponse client = coordinationService.getClientById(clientId);
+        return ResponseEntity.ok(client);
+    }
+
+    /**
+     * Створення нового клієнта.
+     */
+    @PostMapping("/clients")
+    public ResponseEntity<ClientResponse> createClient(@RequestBody CreateClientRequest request) {
+        ClientResponse client = coordinationService.createClient(request);
+        return ResponseEntity.ok(client);
+    }
+
+    /**
+     * Встановлення вибору клієнта в сесію.
+     */
+    @PostMapping("/session/{sessionId}/client-selection")
+    public ResponseEntity<ValidationResult> setClientSelection(
+            @PathVariable String sessionId,
+            @RequestBody ClientSelectionDTO clientSelection) {
+
+        if (!coordinationService.sessionExists(sessionId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ValidationResult validation = coordinationService.validateClientSelection(clientSelection);
+        if (!validation.isValid()) {
+            return ResponseEntity.badRequest().body(validation);
+        }
+
+        coordinationService.setClientSelectionInSession(sessionId, clientSelection);
+        return ResponseEntity.ok(validation);
+    }
+
+    /**
+     * Перевірка готовності вибору клієнта.
+     */
+    @GetMapping("/session/{sessionId}/client-selection/ready")
+    public ResponseEntity<Boolean> isClientSelectionReady(@PathVariable String sessionId) {
+        if (!coordinationService.sessionExists(sessionId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Stage1Context context = coordinationService.getSession(sessionId);
+        boolean ready = coordinationService.isClientSelectionReady(context.getClientSelection());
+        return ResponseEntity.ok(ready);
+    }
+
+    /**
+     * Завершення Stage1.
+     */
+    @PostMapping("/session/{sessionId}/complete")
+    public ResponseEntity<String> completeStage1(@PathVariable String sessionId) {
+        if (!coordinationService.sessionExists(sessionId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Stage1Context context = coordinationService.getSession(sessionId);
+        if (!coordinationService.isStage1Ready(context.getClientSelection())) {
+            return ResponseEntity.badRequest().body("Stage1 не готовий до завершення");
+        }
+
+        coordinationService.completeSession(sessionId);
+        return ResponseEntity.ok("Stage1 завершено успішно");
     }
 }

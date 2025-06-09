@@ -15,14 +15,14 @@ import lombok.extern.slf4j.Slf4j;
  * Єдиний сервіс для генерації номерів квитанцій у всьому проекті.
  *
  * Забезпечує консистентний формат номерів квитанцій:
- * AKSI-[BRANCH_CODE]-YYYYMMDD-HHMMSS-XXX
+ * AKSI-[BRANCH_CODE]-YYYYMMDD-HHMMSS-ХХХ
  *
  * Де:
  * - AKSI - префікс компанії
  * - BRANCH_CODE - код філії (DEF якщо відсутній)
  * - YYYYMMDD - дата
  * - HHMMSS - час
- * - XXX - випадкове 3-значне число
+ * - ХХХ - випадкове 3-значне число
  */
 @Component
 @RequiredArgsConstructor
@@ -106,7 +106,7 @@ public class ReceiptNumberGenerator {
             return false;
         }
 
-        // Перевіряємо паттерн: AKSI-[BRANCH]-YYYYMMDD-HHMMSS-XXX
+        // Перевіряємо паттерн: AKSI-[BRANCH]-YYYYMMDD-HHMMSS-ХХХ
         String pattern = "^AKSI-[A-Z0-9]{1,10}-\\d{8}-\\d{6}-\\d{3}$";
         return receiptNumber.matches(pattern);
     }
