@@ -4,10 +4,9 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.guard.Guard;
 import org.springframework.stereotype.Component;
 
-import com.aksi.domain.order.statemachine.stage1.dto.NewClientFormDTO;
 import com.aksi.domain.order.statemachine.stage1.enums.NewClientFormEvent;
 import com.aksi.domain.order.statemachine.stage1.enums.NewClientFormState;
-import com.aksi.domain.order.statemachine.stage1.service.NewClientFormValidationService;
+import com.aksi.domain.order.statemachine.stage1.service.NewClientFormCoordinationService;
 
 /**
  * Guard для перевірки готовності форми нового клієнта до завершення.
@@ -16,20 +15,21 @@ import com.aksi.domain.order.statemachine.stage1.service.NewClientFormValidation
 @Component
 public class NewClientFormCompleteGuard implements Guard<NewClientFormState, NewClientFormEvent> {
 
-    private final NewClientFormValidationService validationService;
+    private final NewClientFormCoordinationService coordinationService;
 
-    public NewClientFormCompleteGuard(NewClientFormValidationService validationService) {
-        this.validationService = validationService;
+    public NewClientFormCompleteGuard(NewClientFormCoordinationService coordinationService) {
+        this.coordinationService = coordinationService;
     }
 
     @Override
     public boolean evaluate(StateContext<NewClientFormState, NewClientFormEvent> context) {
-        NewClientFormDTO formData = context.getExtendedState().get("formData", NewClientFormDTO.class);
+        String sessionId = context.getExtendedState().get("sessionId", String.class);
 
-        if (formData == null) {
+        if (sessionId == null) {
             return false;
         }
 
-        return validationService.isFormReadyForSubmission(formData);
+        // Використовуємо CoordinationService для перевірки готовності завершення
+        return coordinationService.isFormComplete(sessionId);
     }
 }

@@ -210,4 +210,22 @@ public class BasicOrderInfoCoordinationService {
     public BasicOrderInfoDTO sanitize(BasicOrderInfoDTO dto) {
         return BasicOrderInfoMapper.sanitize(dto);
     }
+
+    // ========== Делегування ValidationService для Guards ==========
+
+    /**
+     * Перевіряє чи базова інформація валідна через sessionId для Guards
+     */
+    public boolean isBasicOrderInfoValid(String sessionId) {
+        BasicOrderInfoDTO data = getCurrentData(sessionId);
+        return validationService.isBasicOrderInfoValid(data);
+    }
+
+    /**
+     * Перевіряє чи базова інформація готова через sessionId для Guards
+     */
+    public boolean isBasicOrderInfoReady(String sessionId) {
+        BasicOrderInfoDTO data = getCurrentData(sessionId);
+        return validationService.isBasicOrderInfoReady(data);
+    }
 }

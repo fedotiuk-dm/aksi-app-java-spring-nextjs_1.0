@@ -10,6 +10,7 @@ import com.aksi.domain.order.statemachine.stage1.dto.ClientSearchResultDTO;
 import com.aksi.domain.order.statemachine.stage1.enums.ClientSearchState;
 import com.aksi.domain.order.statemachine.stage1.mapper.ClientSearchMapper;
 import com.aksi.domain.order.statemachine.stage1.service.ClientSearchStateService.ClientSearchContext;
+import com.aksi.domain.order.statemachine.stage1.validator.ClientSearchValidationResult;
 import com.aksi.domain.order.statemachine.stage1.validator.ValidationResult;
 
 /**
@@ -209,5 +210,43 @@ public class ClientSearchCoordinationService {
         removeSearchContext(sessionId);
     }
 
+    // ========== Делегування ValidationService для Guards ==========
 
+    /**
+     * Перевіряє чи критерії пошуку валідні через sessionId для Guards
+     */
+    public boolean areSearchCriteriaValid(String sessionId) {
+        ClientSearchContext context = getSearchContext(sessionId);
+        if (context == null || context.getSearchCriteria() == null) {
+            return false;
+        }
+        return validationService.areSearchCriteriaValid(context.getSearchCriteria());
+    }
+
+    // ========== Делегування ValidationService для адаптера ==========
+
+    /**
+     * Повна валідація критеріїв пошуку з поверненням структурованого результату.
+     */
+    public ClientSearchValidationResult validateCriteria(String sessionId) {
+        ClientSearchContext context = getSearchContext(sessionId);
+        return validationService.validateCriteriaStructured(context.getSearchCriteria());
+    }
+
+    /**
+     * Валідація критичних критеріїв з поверненням структурованого результату.
+     */
+    public ClientSearchValidationResult validateCritical(String sessionId) {
+        ClientSearchContext context = getSearchContext(sessionId);
+        return validationService.validateCriticalStructured(context.getSearchCriteria());
+    }
+
+    /**
+     * Генерує звіт валідації.
+     */
+    public String getValidationReport(String sessionId) {
+        ClientSearchContext context = getSearchContext(sessionId);
+        ValidationResult result = validationService.validateSearchCriteria(context.getSearchCriteria());
+        return String.join("; ", result.getErrorMessages());
+    }
 }

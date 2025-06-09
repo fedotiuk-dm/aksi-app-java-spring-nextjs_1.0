@@ -3,6 +3,7 @@ package com.aksi.domain.order.statemachine.stage1.service;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.order.statemachine.stage1.dto.NewClientFormDTO;
+import com.aksi.domain.order.statemachine.stage1.validator.NewClientFormValidationResult;
 import com.aksi.domain.order.statemachine.stage1.validator.NewClientFormValidator;
 import com.aksi.domain.order.statemachine.stage1.validator.ValidationResult;
 
@@ -57,5 +58,58 @@ public class NewClientFormValidationService {
      */
     public boolean hasMinimumRequiredData(NewClientFormDTO formData) {
         return validateRequiredFields(formData).isValid();
+    }
+
+    // ========== Методи для Guards ==========
+
+    /**
+     * Перевіряє чи форма валідна для Guards
+     */
+    public boolean isFormValid(NewClientFormDTO formData) {
+        if (formData == null) {
+            return false;
+        }
+        ValidationResult result = validateNewClientForm(formData);
+        return result.isValid();
+    }
+
+    /**
+     * Перевіряє чи форма готова до завершення для Guards
+     */
+    public boolean isFormComplete(NewClientFormDTO formData) {
+        return isFormReadyForSubmission(formData);
+    }
+
+    // ========== Методи для адаптера з NewClientFormValidationResult ==========
+
+    /**
+     * Повна валідація форми з поверненням структурованого результату.
+     */
+    public NewClientFormValidationResult validateCompleteStructured(NewClientFormDTO formData) {
+        ValidationResult result = validateNewClientForm(formData);
+        return convertToStructuredResult(result);
+    }
+
+    /**
+     * Валідація критичних полів з поверненням структурованого результату.
+     */
+    public NewClientFormValidationResult validateCriticalStructured(NewClientFormDTO formData) {
+        ValidationResult result = validateRequiredFields(formData);
+        return convertToStructuredResult(result);
+    }
+
+    /**
+     * Перетворює ValidationResult в NewClientFormValidationResult.
+     */
+    private NewClientFormValidationResult convertToStructuredResult(ValidationResult result) {
+        NewClientFormValidationResult structuredResult = new NewClientFormValidationResult();
+
+        if (!result.isValid()) {
+            structuredResult.setValid(false);
+            structuredResult.setErrorMessages(result.getErrorMessages());
+            structuredResult.setDetailedReport(String.join("; ", result.getErrorMessages()));
+        }
+
+        return structuredResult;
     }
 }

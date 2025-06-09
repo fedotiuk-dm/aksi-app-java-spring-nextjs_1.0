@@ -4,11 +4,9 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.guard.Guard;
 import org.springframework.stereotype.Component;
 
-import com.aksi.domain.order.statemachine.stage1.dto.BasicOrderInfoDTO;
 import com.aksi.domain.order.statemachine.stage1.enums.BasicOrderInfoEvent;
 import com.aksi.domain.order.statemachine.stage1.enums.BasicOrderInfoState;
-import com.aksi.domain.order.statemachine.stage1.service.BasicOrderInfoValidationService;
-import com.aksi.domain.order.statemachine.stage1.validator.BasicOrderInfoValidationResult;
+import com.aksi.domain.order.statemachine.stage1.service.BasicOrderInfoCoordinationService;
 
 /**
  * Guard для перевірки валідності базової інформації замовлення.
@@ -17,21 +15,21 @@ import com.aksi.domain.order.statemachine.stage1.validator.BasicOrderInfoValidat
 @Component
 public class BasicOrderInfoValidGuard implements Guard<BasicOrderInfoState, BasicOrderInfoEvent> {
 
-    private final BasicOrderInfoValidationService validationService;
+    private final BasicOrderInfoCoordinationService coordinationService;
 
-    public BasicOrderInfoValidGuard(BasicOrderInfoValidationService validationService) {
-        this.validationService = validationService;
+    public BasicOrderInfoValidGuard(BasicOrderInfoCoordinationService coordinationService) {
+        this.coordinationService = coordinationService;
     }
 
     @Override
     public boolean evaluate(StateContext<BasicOrderInfoState, BasicOrderInfoEvent> context) {
-        BasicOrderInfoDTO basicOrderInfo = context.getExtendedState().get("basicOrderInfo", BasicOrderInfoDTO.class);
+        String sessionId = context.getExtendedState().get("sessionId", String.class);
 
-        if (basicOrderInfo == null) {
+        if (sessionId == null) {
             return false;
         }
 
-        BasicOrderInfoValidationResult result = validationService.validateComplete(basicOrderInfo);
-        return result.isValid();
+        // Використовуємо CoordinationService для перевірки валідності
+        return coordinationService.isBasicOrderInfoValid(sessionId);
     }
 }

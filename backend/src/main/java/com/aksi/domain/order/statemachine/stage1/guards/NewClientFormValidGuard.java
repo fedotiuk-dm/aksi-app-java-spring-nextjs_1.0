@@ -4,11 +4,9 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.guard.Guard;
 import org.springframework.stereotype.Component;
 
-import com.aksi.domain.order.statemachine.stage1.dto.NewClientFormDTO;
 import com.aksi.domain.order.statemachine.stage1.enums.NewClientFormEvent;
 import com.aksi.domain.order.statemachine.stage1.enums.NewClientFormState;
-import com.aksi.domain.order.statemachine.stage1.service.NewClientFormValidationService;
-import com.aksi.domain.order.statemachine.stage1.validator.ValidationResult;
+import com.aksi.domain.order.statemachine.stage1.service.NewClientFormCoordinationService;
 
 /**
  * Guard для перевірки валідності форми нового клієнта.
@@ -17,21 +15,21 @@ import com.aksi.domain.order.statemachine.stage1.validator.ValidationResult;
 @Component
 public class NewClientFormValidGuard implements Guard<NewClientFormState, NewClientFormEvent> {
 
-    private final NewClientFormValidationService validationService;
+    private final NewClientFormCoordinationService coordinationService;
 
-    public NewClientFormValidGuard(NewClientFormValidationService validationService) {
-        this.validationService = validationService;
+    public NewClientFormValidGuard(NewClientFormCoordinationService coordinationService) {
+        this.coordinationService = coordinationService;
     }
 
     @Override
     public boolean evaluate(StateContext<NewClientFormState, NewClientFormEvent> context) {
-        NewClientFormDTO formData = context.getExtendedState().get("formData", NewClientFormDTO.class);
+        String sessionId = context.getExtendedState().get("sessionId", String.class);
 
-        if (formData == null) {
+        if (sessionId == null) {
             return false;
         }
 
-        ValidationResult result = validationService.validateNewClientForm(formData);
-        return result.isValid();
+        // Використовуємо CoordinationService для перевірки валідності форми
+        return coordinationService.isFormValid(sessionId);
     }
 }

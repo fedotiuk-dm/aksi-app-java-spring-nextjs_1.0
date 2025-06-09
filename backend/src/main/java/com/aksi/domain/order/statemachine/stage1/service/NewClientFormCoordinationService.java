@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import com.aksi.domain.client.dto.ClientResponse;
 import com.aksi.domain.client.dto.CreateClientRequest;
 import com.aksi.domain.order.statemachine.stage1.dto.NewClientFormDTO;
+import com.aksi.domain.order.statemachine.stage1.enums.NewClientFormState;
 import com.aksi.domain.order.statemachine.stage1.mapper.NewClientFormMapper;
 import com.aksi.domain.order.statemachine.stage1.service.NewClientFormStateService.NewClientFormContext;
+import com.aksi.domain.order.statemachine.stage1.validator.NewClientFormValidationResult;
 import com.aksi.domain.order.statemachine.stage1.validator.ValidationResult;
 
 /**
@@ -172,5 +174,58 @@ public class NewClientFormCoordinationService {
             return searchClientsByPhone(formData.getPhone());
         }
         return List.of();
+    }
+
+    // ========== Делегування ValidationService для Guards ==========
+
+    /**
+     * Перевіряє чи форма валідна через sessionId для Guards
+     */
+    public boolean isFormValid(String sessionId) {
+        NewClientFormDTO formData = getFormDataFromSession(sessionId);
+        return validationService.isFormValid(formData);
+    }
+
+    /**
+     * Перевіряє чи форма готова до завершення через sessionId для Guards
+     */
+    public boolean isFormComplete(String sessionId) {
+        NewClientFormDTO formData = getFormDataFromSession(sessionId);
+        return validationService.isFormComplete(formData);
+    }
+
+    // ========== Методи для адаптера з NewClientFormValidationResult ==========
+
+    /**
+     * Повна валідація форми з поверненням структурованого результату.
+     */
+    public NewClientFormValidationResult validateComplete(String sessionId) {
+        NewClientFormDTO formData = getFormDataFromSession(sessionId);
+        return validationService.validateCompleteStructured(formData);
+    }
+
+    /**
+     * Валідація критичних полів з поверненням структурованого результату.
+     */
+    public NewClientFormValidationResult validateCritical(String sessionId) {
+        NewClientFormDTO formData = getFormDataFromSession(sessionId);
+        return validationService.validateCriticalStructured(formData);
+    }
+
+    /**
+     * Отримує поточний стан сесії.
+     */
+    public NewClientFormState getCurrentState(String sessionId) {
+        // Тут буде логіка отримання стану з state machine
+        // Поки що повертаємо INIT
+        return NewClientFormState.INIT;
+    }
+
+    /**
+     * Генерує звіт валідації.
+     */
+    public String getValidationReport(String sessionId) {
+        NewClientFormValidationResult result = validateComplete(sessionId);
+        return result.getDetailedReport();
     }
 }

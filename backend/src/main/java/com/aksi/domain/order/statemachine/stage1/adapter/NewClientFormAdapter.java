@@ -1,5 +1,7 @@
 package com.aksi.domain.order.statemachine.stage1.adapter;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.client.dto.ClientResponse;
-import com.aksi.domain.client.dto.CreateClientRequest;
 import com.aksi.domain.order.statemachine.stage1.dto.NewClientFormDTO;
+import com.aksi.domain.order.statemachine.stage1.enums.NewClientFormState;
 import com.aksi.domain.order.statemachine.stage1.service.NewClientFormCoordinationService;
-import com.aksi.domain.order.statemachine.stage1.validator.ValidationResult;
+import com.aksi.domain.order.statemachine.stage1.validator.NewClientFormValidationResult;
 
 /**
  * REST адаптер для форми нового клієнта.
- * Етап 1.2: Форма створення нового клієнта.
+ * Забезпечує HTTP API для роботи з формою створення нового клієнта.
  */
 @RestController
 @RequestMapping("/order-wizard/stage1/new-client-form")
@@ -31,31 +33,44 @@ public class NewClientFormAdapter {
     }
 
     /**
-     * Ініціалізує нову сесію форми.
+     * Ініціалізує новий контекст форми.
      */
     @PostMapping("/initialize")
-    public ResponseEntity<String> initializeForm() {
+    public ResponseEntity<String> initializeContext() {
         String sessionId = coordinationService.initializeFormSession();
         return ResponseEntity.ok(sessionId);
     }
 
     /**
-     * Отримує дані форми з сесії.
+     * Отримує поточний стан форми.
      */
-    @GetMapping("/session/{sessionId}")
-    public ResponseEntity<NewClientFormDTO> getFormData(@PathVariable String sessionId) {
+    @GetMapping("/session/{sessionId}/state")
+    public ResponseEntity<NewClientFormState> getCurrentState(@PathVariable String sessionId) {
         if (!coordinationService.formSessionExists(sessionId)) {
             return ResponseEntity.notFound().build();
         }
 
-        NewClientFormDTO formData = coordinationService.getFormDataFromSession(sessionId);
-        return ResponseEntity.ok(formData);
+        NewClientFormState state = coordinationService.getCurrentState(sessionId);
+        return ResponseEntity.ok(state);
     }
 
     /**
-     * Оновлює дані форми в сесії.
+     * Отримує поточні дані форми.
      */
-    @PutMapping("/session/{sessionId}")
+    @GetMapping("/session/{sessionId}/data")
+    public ResponseEntity<NewClientFormDTO> getCurrentData(@PathVariable String sessionId) {
+        if (!coordinationService.formSessionExists(sessionId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        NewClientFormDTO data = coordinationService.getFormDataFromSession(sessionId);
+        return ResponseEntity.ok(data);
+    }
+
+    /**
+     * Оновлює дані форми.
+     */
+    @PutMapping("/session/{sessionId}/data")
     public ResponseEntity<Void> updateFormData(
             @PathVariable String sessionId,
             @RequestBody NewClientFormDTO formData) {
@@ -69,67 +84,67 @@ public class NewClientFormAdapter {
     }
 
     /**
-     * Валідує поточні дані форми.
+     * Валідує дані форми.
      */
     @PostMapping("/session/{sessionId}/validate")
-    public ResponseEntity<ValidationResult> validateForm(@PathVariable String sessionId) {
+    public ResponseEntity<NewClientFormValidationResult> validateData(@PathVariable String sessionId) {
         if (!coordinationService.formSessionExists(sessionId)) {
             return ResponseEntity.notFound().build();
         }
 
-        NewClientFormDTO formData = coordinationService.getFormDataFromSession(sessionId);
-        ValidationResult result = coordinationService.validateNewClientForm(formData);
+        NewClientFormValidationResult result = coordinationService.validateComplete(sessionId);
         return ResponseEntity.ok(result);
     }
 
     /**
-     * Валідує тільки обов'язкові поля.
+     * Валідує критичні поля форми.
      */
-    @PostMapping("/session/{sessionId}/validate-required")
-    public ResponseEntity<ValidationResult> validateRequiredFields(@PathVariable String sessionId) {
+    @PostMapping("/session/{sessionId}/validate-critical")
+    public ResponseEntity<NewClientFormValidationResult> validateCritical(@PathVariable String sessionId) {
         if (!coordinationService.formSessionExists(sessionId)) {
             return ResponseEntity.notFound().build();
         }
 
-        NewClientFormDTO formData = coordinationService.getFormDataFromSession(sessionId);
-        ValidationResult result = coordinationService.validateRequiredFields(formData);
+        NewClientFormValidationResult result = coordinationService.validateCritical(sessionId);
         return ResponseEntity.ok(result);
     }
 
     /**
-     * Перевіряє чи готова форма для відправки.
+     * Перевіряє дублікати клієнтів.
      */
-    @GetMapping("/session/{sessionId}/ready-for-submission")
-    public ResponseEntity<Boolean> isReadyForSubmission(@PathVariable String sessionId) {
+    @PostMapping("/session/{sessionId}/check-duplicates")
+    public ResponseEntity<List<ClientResponse>> checkDuplicates(@PathVariable String sessionId) {
         if (!coordinationService.formSessionExists(sessionId)) {
             return ResponseEntity.notFound().build();
         }
 
         NewClientFormDTO formData = coordinationService.getFormDataFromSession(sessionId);
-        boolean ready = coordinationService.isFormReadyForSubmission(formData);
-        return ResponseEntity.ok(ready);
+        List<ClientResponse> duplicates = coordinationService.checkForDuplicates(formData);
+        return ResponseEntity.ok(duplicates);
     }
 
     /**
-     * Створює клієнта з даних форми.
+     * Створює нового клієнта.
      */
     @PostMapping("/session/{sessionId}/create-client")
     public ResponseEntity<ClientResponse> createClient(@PathVariable String sessionId) {
-        try {
-            ClientResponse client = coordinationService.createClientFromForm(sessionId);
-            return ResponseEntity.ok(client);
-        } catch (IllegalStateException e) {
+        if (!coordinationService.formSessionExists(sessionId)) {
             return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e) {
+        }
+
+        try {
+            ClientResponse createdClient = coordinationService.createClientFromForm(sessionId);
+            return ResponseEntity.ok(createdClient);
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     /**
-     * Завершує сесію форми.
+     * Завершує роботу з формою.
      */
     @PostMapping("/session/{sessionId}/complete")
-    public ResponseEntity<Void> completeSession(@PathVariable String sessionId) {
+    public ResponseEntity<Void> completeForm(@PathVariable String sessionId) {
         if (!coordinationService.formSessionExists(sessionId)) {
             return ResponseEntity.notFound().build();
         }
@@ -139,10 +154,10 @@ public class NewClientFormAdapter {
     }
 
     /**
-     * Видаляє сесію форми.
+     * Скасовує роботу з формою.
      */
     @DeleteMapping("/session/{sessionId}")
-    public ResponseEntity<Void> removeSession(@PathVariable String sessionId) {
+    public ResponseEntity<Void> cancelForm(@PathVariable String sessionId) {
         if (!coordinationService.formSessionExists(sessionId)) {
             return ResponseEntity.notFound().build();
         }
@@ -152,11 +167,15 @@ public class NewClientFormAdapter {
     }
 
     /**
-     * Перетворює дані форми в запит на створення.
+     * Отримує звіт валідації.
      */
-    @PostMapping("/convert-to-create-request")
-    public ResponseEntity<CreateClientRequest> convertToCreateRequest(@RequestBody NewClientFormDTO formData) {
-        CreateClientRequest request = coordinationService.convertToCreateRequest(formData);
-        return ResponseEntity.ok(request);
+    @GetMapping("/session/{sessionId}/validation-report")
+    public ResponseEntity<String> getValidationReport(@PathVariable String sessionId) {
+        if (!coordinationService.formSessionExists(sessionId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String report = coordinationService.getValidationReport(sessionId);
+        return ResponseEntity.ok(report);
     }
 }

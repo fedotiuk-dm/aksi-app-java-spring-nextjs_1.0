@@ -183,4 +183,24 @@ public class BasicOrderInfoValidationService {
 
         return report.toString();
     }
+
+    // ========== Методи для Guards ==========
+
+    /**
+     * Перевіряє чи базова інформація валідна для Guards
+     */
+    public boolean isBasicOrderInfoValid(BasicOrderInfoDTO basicOrderInfo) {
+        if (basicOrderInfo == null) {
+            return false;
+        }
+        BasicOrderInfoValidationResult result = validateComplete(basicOrderInfo);
+        return result.isValid();
+    }
+
+    /**
+     * Перевіряє чи базова інформація готова для Guards
+     */
+    public boolean isBasicOrderInfoReady(BasicOrderInfoDTO basicOrderInfo) {
+        return isReadyForNextStage(basicOrderInfo);
+    }
 }
