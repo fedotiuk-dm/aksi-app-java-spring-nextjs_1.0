@@ -1,7 +1,7 @@
 package com.aksi.domain.order.statemachine.stage1.enums;
 
 /**
- * Події пошуку клієнта в етапі 1.1.
+ * Події пошуку клієнта для Stage 1.1.
  */
 public enum ClientSearchEvent {
 
@@ -11,32 +11,47 @@ public enum ClientSearchEvent {
     START_SEARCH,
 
     /**
-     * Введено критерії пошуку.
+     * Пошук за телефоном.
      */
-    SEARCH_CRITERIA_ENTERED,
+    SEARCH_BY_PHONE,
 
     /**
-     * Виконати пошук.
+     * Пошук за іменем.
      */
-    EXECUTE_SEARCH,
+    SEARCH_BY_NAME,
 
     /**
-     * Обрати клієнта зі списку.
+     * Загальний пошук.
      */
-    SELECT_CLIENT,
+    GENERAL_SEARCH,
 
     /**
-     * Перейти до створення нового клієнта.
+     * Результати пошуку знайдені.
      */
-    SWITCH_TO_CREATE_NEW,
+    RESULTS_FOUND,
 
     /**
-     * Завершити вибір клієнта.
+     * Результати пошуку порожні.
      */
-    COMPLETE_CLIENT_SELECTION,
+    NO_RESULTS_FOUND,
 
     /**
-     * Очистити результати пошуку.
+     * Клієнт вибраний.
      */
-    CLEAR_SEARCH
+    CLIENT_SELECTED,
+
+    /**
+     * Помилка під час пошуку.
+     */
+    SEARCH_ERROR,
+
+    /**
+     * Скасування пошуку.
+     */
+    CANCEL_SEARCH,
+
+    /**
+     * Повернення до пошуку.
+     */
+    BACK_TO_SEARCH
 }

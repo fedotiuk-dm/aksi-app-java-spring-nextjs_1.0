@@ -36,6 +36,16 @@ public class ClientSearchCriteriaDTO {
      */
     private String generalSearchTerm;
 
+    /**
+     * Номер сторінки (з нуля).
+     */
+    private int page = 0;
+
+    /**
+     * Розмір сторінки.
+     */
+    private int size = 10;
+
     // Конструктори
     public ClientSearchCriteriaDTO() {}
 
@@ -100,6 +110,22 @@ public class ClientSearchCriteriaDTO {
         this.generalSearchTerm = generalSearchTerm;
     }
 
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
     /**
      * Перевіряє чи є хоча б один критерій пошуку.
      */
@@ -129,6 +155,8 @@ public class ClientSearchCriteriaDTO {
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
                 ", generalSearchTerm='" + generalSearchTerm + '\'' +
+                ", page=" + page +
+                ", size=" + size +
                 '}';
     }
 }
