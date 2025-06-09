@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.aksi.domain.client.entity.CommunicationChannelEntity;
 import com.aksi.domain.client.enums.ClientSource;
+import com.aksi.domain.order.statemachine.stage1.enums.NewClientFormStatus;
 
 /**
  * DTO для форми створення нового клієнта в Stage1.
@@ -27,10 +28,16 @@ public class NewClientFormDTO {
     private ClientSource informationSource;
     private String sourceDetails;      // Деталі для "Інше" джерело
 
+    // Статус форми
+    private NewClientFormStatus status;
+
     // Конструктори
-    public NewClientFormDTO() {}
+    public NewClientFormDTO() {
+        this.status = NewClientFormStatus.EMPTY;
+    }
 
     public NewClientFormDTO(String firstName, String lastName, String phone) {
+        this();
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
@@ -101,6 +108,14 @@ public class NewClientFormDTO {
         this.sourceDetails = sourceDetails;
     }
 
+    public NewClientFormStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(NewClientFormStatus status) {
+        this.status = status;
+    }
+
     // Утилітарні методи
     public boolean hasRequiredFields() {
         return firstName != null && !firstName.trim().isEmpty() &&
@@ -144,6 +159,7 @@ public class NewClientFormDTO {
                 ", communicationChannels=" + communicationChannels +
                 ", informationSource=" + informationSource +
                 ", sourceDetails='" + sourceDetails + '\'' +
+                ", status=" + status +
                 '}';
     }
 }

@@ -152,7 +152,7 @@ public class NewClientFormCoordinationService {
 
         ValidationResult validation = validateNewClientForm(formData);
         if (!validation.isValid()) {
-            throw new IllegalArgumentException("Форма містить помилки: " + validation.getErrors());
+            throw new IllegalArgumentException("Форма містить помилки: " + validation.getAllErrorsAsString());
         }
 
         CreateClientRequest request = convertToCreateRequest(formData);

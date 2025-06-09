@@ -50,6 +50,20 @@ public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
     OrderEntity findByReceiptNumber(String receiptNumber);
 
     /**
+     * Знайти замовлення за унікальною міткою (tagNumber).
+     * @param tagNumber унікальна мітка
+     * @return замовлення з вказаною міткою або null
+     */
+    OrderEntity findByTagNumber(String tagNumber);
+
+    /**
+     * Перевіряє чи існує замовлення з вказаною унікальною міткою.
+     * @param tagNumber унікальна мітка
+     * @return true якщо замовлення з такою міткою існує
+     */
+    boolean existsByTagNumber(String tagNumber);
+
+    /**
      * Знайти замовлення за ID клієнта.
      * @param clientId ідентифікатор
      * @return список всіх замовлень клієнта

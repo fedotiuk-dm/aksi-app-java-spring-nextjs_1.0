@@ -5,8 +5,8 @@ import org.springframework.statemachine.guard.Guard;
 import org.springframework.stereotype.Component;
 
 import com.aksi.domain.order.statemachine.stage1.dto.NewClientFormDTO;
-import com.aksi.domain.order.statemachine.stage1.enums.Stage1Event;
-import com.aksi.domain.order.statemachine.stage1.enums.Stage1State;
+import com.aksi.domain.order.statemachine.stage1.enums.ClientSearchEvent;
+import com.aksi.domain.order.statemachine.stage1.enums.ClientSearchState;
 import com.aksi.domain.order.statemachine.stage1.service.NewClientFormValidationService;
 
 /**
@@ -14,7 +14,7 @@ import com.aksi.domain.order.statemachine.stage1.service.NewClientFormValidation
  * Перевіряє, чи форма заповнена правильно та готова до створення клієнта.
  */
 @Component
-public class NewClientFormReadyGuard implements Guard<Stage1State, Stage1Event> {
+public class NewClientFormReadyGuard implements Guard<ClientSearchState, ClientSearchEvent> {
 
     private final NewClientFormValidationService validationService;
 
@@ -23,7 +23,7 @@ public class NewClientFormReadyGuard implements Guard<Stage1State, Stage1Event> 
     }
 
     @Override
-    public boolean evaluate(StateContext<Stage1State, Stage1Event> context) {
+    public boolean evaluate(StateContext<ClientSearchState, ClientSearchEvent> context) {
         NewClientFormDTO formData = getNewClientFormFromContext(context);
 
         if (formData == null) {
@@ -36,7 +36,7 @@ public class NewClientFormReadyGuard implements Guard<Stage1State, Stage1Event> 
     /**
      * Отримання NewClientFormDTO з контексту State Machine.
      */
-    private NewClientFormDTO getNewClientFormFromContext(StateContext<Stage1State, Stage1Event> context) {
+    private NewClientFormDTO getNewClientFormFromContext(StateContext<ClientSearchState, ClientSearchEvent> context) {
         Object formDataObj = context.getExtendedState().getVariables().get("newClientForm");
 
         if (formDataObj instanceof NewClientFormDTO formData) {

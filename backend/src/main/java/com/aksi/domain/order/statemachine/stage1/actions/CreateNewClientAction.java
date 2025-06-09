@@ -6,15 +6,15 @@ import org.springframework.stereotype.Component;
 
 import com.aksi.domain.client.dto.ClientResponse;
 import com.aksi.domain.order.statemachine.stage1.dto.NewClientFormDTO;
-import com.aksi.domain.order.statemachine.stage1.enums.Stage1Event;
-import com.aksi.domain.order.statemachine.stage1.enums.Stage1State;
+import com.aksi.domain.order.statemachine.stage1.enums.ClientSearchEvent;
+import com.aksi.domain.order.statemachine.stage1.enums.ClientSearchState;
 import com.aksi.domain.order.statemachine.stage1.service.NewClientFormCoordinationService;
 
 /**
  * Action для обробки створення нового клієнта з форми.
  */
 @Component
-public class CreateNewClientAction implements Action<Stage1State, Stage1Event> {
+public class CreateNewClientAction implements Action<ClientSearchState, ClientSearchEvent> {
 
     private final NewClientFormCoordinationService coordinationService;
 
@@ -23,7 +23,7 @@ public class CreateNewClientAction implements Action<Stage1State, Stage1Event> {
     }
 
     @Override
-    public void execute(StateContext<Stage1State, Stage1Event> context) {
+    public void execute(StateContext<ClientSearchState, ClientSearchEvent> context) {
         String sessionId = getSessionId(context);
         NewClientFormDTO formData = getNewClientFormFromContext(context);
 
@@ -71,7 +71,7 @@ public class CreateNewClientAction implements Action<Stage1State, Stage1Event> {
     /**
      * Отримання sessionId з контексту.
      */
-    private String getSessionId(StateContext<Stage1State, Stage1Event> context) {
+    private String getSessionId(StateContext<ClientSearchState, ClientSearchEvent> context) {
         Object sessionIdObj = context.getExtendedState().getVariables().get("sessionId");
         return sessionIdObj instanceof String ? (String) sessionIdObj : null;
     }
@@ -79,7 +79,7 @@ public class CreateNewClientAction implements Action<Stage1State, Stage1Event> {
     /**
      * Отримання NewClientFormDTO з контексту.
      */
-    private NewClientFormDTO getNewClientFormFromContext(StateContext<Stage1State, Stage1Event> context) {
+    private NewClientFormDTO getNewClientFormFromContext(StateContext<ClientSearchState, ClientSearchEvent> context) {
         Object formDataObj = context.getExtendedState().getVariables().get("newClientForm");
         return formDataObj instanceof NewClientFormDTO ? (NewClientFormDTO) formDataObj : null;
     }
