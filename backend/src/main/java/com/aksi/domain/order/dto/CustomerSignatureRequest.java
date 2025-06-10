@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
  * DTO для запиту на збереження підпису клієнта.
  */
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerSignatureRequest {
