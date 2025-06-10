@@ -253,9 +253,13 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <argLine>
+                        -Xmx2048m -Xms512m
                         -javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.15.11/byte-buddy-agent-1.15.11.jar
                         -XX:+EnableDynamicAgentLoading
                     </argLine>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <testFailureIgnore>false</testFailureIgnore>
                 </configuration>
             </plugin>
 
