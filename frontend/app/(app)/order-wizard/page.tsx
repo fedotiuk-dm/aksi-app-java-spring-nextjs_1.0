@@ -5,7 +5,7 @@
 
 'use client';
 
-import { OrderWizard } from '@/features/order-wizard';
+import { OrderWizardContainer } from '@/features/order-wizard/ui';
 
 /**
  * 🎯 Головна сторінка Order Wizard
@@ -17,5 +17,5 @@ import { OrderWizard } from '@/features/order-wizard';
  * 4. Підтвердження та завершення з формуванням квитанції
  */
 export default function OrderWizardPage() {
-  return <OrderWizard />;
+  return <OrderWizardContainer />;
 }

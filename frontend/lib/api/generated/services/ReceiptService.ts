@@ -119,4 +119,34 @@ export class ReceiptService {
             },
         });
     }
+    /**
+     * Генерувати номер квитанції
+     * Генерує унікальний номер квитанції для нового замовлення
+     * @returns any Номер квитанції успішно згенеровано
+     * @throws ApiError
+     */
+    public static generateReceiptNumber({
+        branchLocationId,
+    }: {
+        /**
+         * ID філії/пункту прийому
+         */
+        branchLocationId?: string,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/receipts/generate-number',
+            query: {
+                'branchLocationId': branchLocationId,
+            },
+            errors: {
+                400: `Невірні параметри запиту`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+                500: `Помилка сервера при генерації номера`,
+            },
+        });
+    }
 }

@@ -32,8 +32,8 @@ export type OrderDTO = {
     finalizedAt?: string;
     express?: boolean;
     draft?: boolean;
-    printed?: boolean;
     emailed?: boolean;
+    printed?: boolean;
 };
 export namespace OrderDTO {
     export enum status {

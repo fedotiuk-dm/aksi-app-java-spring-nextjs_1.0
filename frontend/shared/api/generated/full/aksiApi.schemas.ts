@@ -312,8 +312,8 @@ export interface OrderDTO {
   finalizedAt?: string;
   express?: boolean;
   draft?: boolean;
-  printed?: boolean;
   emailed?: boolean;
+  printed?: boolean;
 }
 
 export type OrderSummaryDTOStatus = typeof OrderSummaryDTOStatus[keyof typeof OrderSummaryDTOStatus];
@@ -876,72 +876,6 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface OrderBasicInfoRequest {
-  branchId?: string;
-  uniqueTag?: string;
-}
-
-/**
- * Поточний стан wizard
- */
-export type OrderWizardSessionResponseCurrentState = typeof OrderWizardSessionResponseCurrentState[keyof typeof OrderWizardSessionResponseCurrentState];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrderWizardSessionResponseCurrentState = {
-  INITIAL: 'INITIAL',
-  CLIENT_SELECTION: 'CLIENT_SELECTION',
-  ORDER_INITIALIZATION: 'ORDER_INITIALIZATION',
-  ITEM_MANAGEMENT: 'ITEM_MANAGEMENT',
-  ITEM_WIZARD_ACTIVE: 'ITEM_WIZARD_ACTIVE',
-  ITEM_BASIC_INFO: 'ITEM_BASIC_INFO',
-  ITEM_CHARACTERISTICS: 'ITEM_CHARACTERISTICS',
-  ITEM_DEFECTS_STAINS: 'ITEM_DEFECTS_STAINS',
-  ITEM_PRICING: 'ITEM_PRICING',
-  ITEM_PHOTOS: 'ITEM_PHOTOS',
-  ITEM_COMPLETED: 'ITEM_COMPLETED',
-  EXECUTION_PARAMS: 'EXECUTION_PARAMS',
-  GLOBAL_DISCOUNTS: 'GLOBAL_DISCOUNTS',
-  PAYMENT_PROCESSING: 'PAYMENT_PROCESSING',
-  ADDITIONAL_INFO: 'ADDITIONAL_INFO',
-  ORDER_CONFIRMATION: 'ORDER_CONFIRMATION',
-  ORDER_REVIEW: 'ORDER_REVIEW',
-  LEGAL_ASPECTS: 'LEGAL_ASPECTS',
-  RECEIPT_GENERATION: 'RECEIPT_GENERATION',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-} as const;
-
-/**
- * Інформація про сесію Order Wizard
- */
-export interface OrderWizardSessionResponse {
-  /** Унікальний ідентифікатор wizard */
-  wizardId?: string;
-  /** Поточний стан wizard */
-  currentState?: OrderWizardSessionResponseCurrentState;
-  /** ID клієнта (якщо вибрано) */
-  clientId?: string;
-  /** ID філії */
-  branchId?: string;
-  /** Номер квитанції */
-  receiptNumber?: string;
-  /** Унікальна мітка */
-  uniqueTag?: string;
-  /** Час створення замовлення */
-  orderCreationTime?: string;
-  /** Час створення сесії */
-  createdAt?: string;
-  /** Час останнього оновлення */
-  updatedAt?: string;
-  /** Час закінчення сесії */
-  expiresAt?: string;
-  /** Чи активна сесія */
-  isActive?: boolean;
-  /** Чи закінчилася сесія */
-  isExpired?: boolean;
-}
-
 export interface TestResponse {
   message?: string;
 }
@@ -1132,6 +1066,140 @@ export interface OrderItemDetailedDTO {
   photos?: OrderItemPhotoDTO[];
 }
 
+export interface WorkflowMap {
+  description?: string;
+  steps?: WorkflowStep[];
+  note?: string;
+}
+
+export interface WorkflowStep {
+  step?: number;
+  title?: string;
+  description?: string;
+  isReady?: boolean;
+}
+
+export interface SystemStats {
+  allAdaptersReady?: boolean;
+  readyAdaptersCount?: number;
+  totalAdapters?: number;
+  readinessPercentage?: number;
+  status?: string;
+  timestamp?: string;
+}
+
+export interface StageStatus {
+  status?: string;
+  adaptersCount?: number;
+  description?: string;
+  isReady?: boolean;
+}
+
+export interface MethodInfo {
+  httpMethod?: string;
+  endpoint?: string;
+  description?: string;
+}
+
+export interface StageMethods {
+  stageNumber?: number;
+  methods?: MethodInfo[];
+}
+
+export interface StageInfo {
+  stageNumber?: number;
+  title?: string;
+  description?: string;
+  substeps?: string[];
+  adapterClass?: string;
+  isReady?: boolean;
+}
+
+export interface StageStatusInfo {
+  status?: string;
+  adaptersCount?: number;
+  description?: string;
+}
+
+export type StagesStatusStages = {[key: string]: StageStatusInfo};
+
+export interface StagesStatus {
+  stages?: StagesStatusStages;
+  overall?: string;
+  totalReadyStages?: number;
+  totalStages?: number;
+  totalAdapters?: number;
+}
+
+export interface HealthStatus {
+  status?: string;
+  version?: string;
+  allStagesReady?: boolean;
+  totalStages?: number;
+  totalSubsteps?: number;
+  totalAdapters?: number;
+  architecture?: string;
+}
+
+export interface CompleteApiMap {
+  main?: MainApi;
+  stage1?: Stage1Api;
+  stage2?: Stage2Api;
+  stage3?: Stage3Api;
+  stage4?: Stage4Api;
+  baseUrl?: string;
+  documentation?: string;
+}
+
+export interface MainApi {
+  description?: string;
+  endpoint?: string;
+  adapterClass?: string;
+}
+
+export interface Stage1Api {
+  description?: string;
+  clientSearch?: string;
+  newClientForm?: string;
+  basicOrderInfo?: string;
+  operations?: string[];
+}
+
+export interface Stage2Api {
+  description?: string;
+  main?: string;
+  substeps?: Substeps;
+  operations?: string[];
+}
+
+export interface Stage3Api {
+  description?: string;
+  main?: string;
+  operations?: string[];
+}
+
+export interface Stage4Api {
+  description?: string;
+  main?: string;
+  operations?: string[];
+}
+
+export interface Substeps {
+  substep1?: string;
+  substep2?: string;
+  substep3?: string;
+  substep4?: string;
+  substep5?: string;
+}
+
+export type AdaptersInfoAdapters = {[key: string]: string};
+
+export interface AdaptersInfo {
+  title?: string;
+  adapters?: AdaptersInfoAdapters;
+  description?: string;
+}
+
 export type ModifierRecommendationDTOPriority = typeof ModifierRecommendationDTOPriority[keyof typeof ModifierRecommendationDTOPriority];
 
 
@@ -1150,35 +1218,6 @@ export interface ModifierRecommendationDTO {
   recommendedValue?: number;
   priority?: ModifierRecommendationDTOPriority;
   riskWarning?: string;
-}
-
-/**
- * Дані wizard (ключ-значення)
- */
-export type OrderWizardDataResponseData = {[key: string]: unknown};
-
-/**
- * Можливі дії в поточному стані
- */
-export type OrderWizardDataResponseAvailableActions = {[key: string]: boolean};
-
-/**
- * Валідаційні помилки (якщо є)
- */
-export type OrderWizardDataResponseValidationErrors = {[key: string]: string};
-
-/**
- * Дані Order Wizard сесії
- */
-export interface OrderWizardDataResponse {
-  /** Інформація про сесію */
-  session?: OrderWizardSessionResponse;
-  /** Дані wizard (ключ-значення) */
-  data?: OrderWizardDataResponseData;
-  /** Можливі дії в поточному стані */
-  availableActions?: OrderWizardDataResponseAvailableActions;
-  /** Валідаційні помилки (якщо є) */
-  validationErrors?: OrderWizardDataResponseValidationErrors;
 }
 
 export type GetStainTypeById200 = { [key: string]: unknown };
@@ -1315,16 +1354,6 @@ export type RefreshToken200 = { [key: string]: unknown };
 
 export type Login200 = { [key: string]: unknown };
 
-export type CompleteWizard200 = { [key: string]: unknown };
-
-export type ExecuteActionBody = {[key: string]: unknown};
-
-export type ExecuteAction200 = { [key: string]: unknown };
-
-export type SubmitOrderBasicInfo200 = { [key: string]: unknown };
-
-export type SubmitClientData200 = { [key: string]: unknown };
-
 export type GetRecommendedUnitOfMeasureParams = {
 categoryId: string;
 itemName: string;
@@ -1345,6 +1374,17 @@ export type GetCategoryById200 = { [key: string]: unknown };
 export type GetCategoryByCode200 = { [key: string]: unknown };
 
 export type DownloadPdfReceipt200 = { [key: string]: unknown };
+
+export type GenerateReceiptNumberParams = {
+/**
+ * ID філії/пункту прийому
+ */
+branchLocationId?: string;
+};
+
+export type GenerateReceiptNumber200 = { [key: string]: unknown };
+
+export type GenerateReceiptNumber500 = { [key: string]: unknown };
 
 export type GetModifiersForServiceCategory200 = { [key: string]: unknown };
 
@@ -1456,6 +1496,8 @@ export type GetMaterialsParams = {
 category?: string;
 };
 
+export type GetFile200 = { [key: string]: unknown };
+
 export type GetDefectTypeByCode200 = { [key: string]: unknown };
 
 export type SearchClientsParams = {
@@ -1465,17 +1507,7 @@ export type SearchClientsParams = {
 keyword: string;
 };
 
-export type GetAvailableActions200 = {[key: string]: boolean};
-
-export type GetStage1Data200 = { [key: string]: unknown };
-
-export type GetAllAvailableActions200 = {[key: string]: string};
-
-export type GetActiveWizards200 = {[key: string]: 'INITIAL' | 'CLIENT_SELECTION' | 'ORDER_INITIALIZATION' | 'ITEM_MANAGEMENT' | 'ITEM_WIZARD_ACTIVE' | 'ITEM_BASIC_INFO' | 'ITEM_CHARACTERISTICS' | 'ITEM_DEFECTS_STAINS' | 'ITEM_PRICING' | 'ITEM_PHOTOS' | 'ITEM_COMPLETED' | 'EXECUTION_PARAMS' | 'GLOBAL_DISCOUNTS' | 'PAYMENT_PROCESSING' | 'ADDITIONAL_INFO' | 'ORDER_CONFIRMATION' | 'ORDER_REVIEW' | 'LEGAL_ASPECTS' | 'RECEIPT_GENERATION' | 'COMPLETED' | 'CANCELLED'};
-
 export type HealthCheck200 = {[key: string]: unknown};
 
 export type CancelOrder204 = { [key: string]: unknown };
-
-export type CancelWizard200 = { [key: string]: unknown };
 
