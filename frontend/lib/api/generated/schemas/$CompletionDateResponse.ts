@@ -2,12 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $FixedModifierQuantity = {
+export const $CompletionDateResponse = {
     properties: {
-        modifierCode: {
+        expectedCompletionDate: {
             type: 'string',
+            format: 'date-time',
         },
-        quantity: {
+        standardProcessingHours: {
+            type: 'number',
+            format: 'int32',
+        },
+        expeditedProcessingHours: {
             type: 'number',
             format: 'int32',
         },

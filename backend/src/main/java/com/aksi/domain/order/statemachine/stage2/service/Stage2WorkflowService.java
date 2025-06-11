@@ -45,7 +45,7 @@ public class Stage2WorkflowService {
         final List<OrderItemDTO> existingItems = operationsService.getOrderItems(orderId);
 
         // Створюємо менеджер з існуючими даними
-        final ItemManagerDTO manager = mapper.fromExistingItems(orderId, existingItems);
+        final ItemManagerDTO manager = mapper.fromExistingItems(context.getSessionId(), orderId, existingItems);
 
         // Зберігаємо в контексті
         stateService.updateManagerData(context.getSessionId(), manager);

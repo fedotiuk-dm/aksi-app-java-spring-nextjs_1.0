@@ -16,6 +16,383 @@ export interface ErrorResponse {
   path?: string;
 }
 
+export type PaymentCalculationRequestPaymentMethod = typeof PaymentCalculationRequestPaymentMethod[keyof typeof PaymentCalculationRequestPaymentMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PaymentCalculationRequestPaymentMethod = {
+  TERMINAL: 'TERMINAL',
+  CASH: 'CASH',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+} as const;
+
+export interface PaymentCalculationRequest {
+  orderId: string;
+  paymentMethod: PaymentCalculationRequestPaymentMethod;
+  /** @minimum 0 */
+  prepaymentAmount?: number;
+}
+
+export type PaymentCalculationResponsePaymentMethod = typeof PaymentCalculationResponsePaymentMethod[keyof typeof PaymentCalculationResponsePaymentMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PaymentCalculationResponsePaymentMethod = {
+  TERMINAL: 'TERMINAL',
+  CASH: 'CASH',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+} as const;
+
+export interface PaymentCalculationResponse {
+  orderId?: string;
+  paymentMethod?: PaymentCalculationResponsePaymentMethod;
+  totalAmount?: number;
+  discountAmount?: number;
+  finalAmount?: number;
+  prepaymentAmount?: number;
+  balanceAmount?: number;
+}
+
+export type PaymentConfigurationDTOPaymentMethod = typeof PaymentConfigurationDTOPaymentMethod[keyof typeof PaymentConfigurationDTOPaymentMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PaymentConfigurationDTOPaymentMethod = {
+  TERMINAL: 'TERMINAL',
+  CASH: 'CASH',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+} as const;
+
+export interface PaymentConfigurationDTO {
+  sessionId?: string;
+  orderId?: string;
+  paymentRequest?: PaymentCalculationRequest;
+  paymentResponse?: PaymentCalculationResponse;
+  totalAmount?: number;
+  paidAmount?: number;
+  remainingAmount?: number;
+  isValid?: boolean;
+  validationMessage?: string;
+  lastUpdated?: string;
+  fullyPaid?: boolean;
+  prepaymentAmount?: number;
+  paymentMethod?: PaymentConfigurationDTOPaymentMethod;
+  readyForCompletion?: boolean;
+  paymentConfigComplete?: boolean;
+}
+
+export interface ValidationResult {
+  valid?: boolean;
+  errors?: string[];
+  warnings?: string[];
+  message?: string;
+  firstError?: string;
+  errorCount?: number;
+  firstWarning?: string;
+  warningCount?: number;
+  fullMessage?: string;
+}
+
+export type CompletionDateCalculationRequestExpediteType = typeof CompletionDateCalculationRequestExpediteType[keyof typeof CompletionDateCalculationRequestExpediteType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CompletionDateCalculationRequestExpediteType = {
+  STANDARD: 'STANDARD',
+  EXPRESS_48H: 'EXPRESS_48H',
+  EXPRESS_24H: 'EXPRESS_24H',
+} as const;
+
+export interface CompletionDateCalculationRequest {
+  /** @minItems 1 */
+  serviceCategoryIds: string[];
+  expediteType: CompletionDateCalculationRequestExpediteType;
+}
+
+export interface CompletionDateResponse {
+  expectedCompletionDate?: string;
+  standardProcessingHours?: number;
+  expeditedProcessingHours?: number;
+}
+
+export type ExecutionParamsDTOExpediteType = typeof ExecutionParamsDTOExpediteType[keyof typeof ExecutionParamsDTOExpediteType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExecutionParamsDTOExpediteType = {
+  STANDARD: 'STANDARD',
+  EXPRESS_48H: 'EXPRESS_48H',
+  EXPRESS_24H: 'EXPRESS_24H',
+} as const;
+
+export interface ExecutionParamsDTO {
+  sessionId?: string;
+  serviceCategoryIds?: string[];
+  completionDateRequest?: CompletionDateCalculationRequest;
+  completionDateResponse?: CompletionDateResponse;
+  manualExecutionDate?: string;
+  useManualDate?: boolean;
+  needsRecalculation?: boolean;
+  lastUpdated?: string;
+  expediteType?: ExecutionParamsDTOExpediteType;
+  readyForCompletion?: boolean;
+  executionParamsComplete?: boolean;
+  effectiveExecutionDate?: string;
+}
+
+export type DiscountConfigurationDTODiscountType = typeof DiscountConfigurationDTODiscountType[keyof typeof DiscountConfigurationDTODiscountType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DiscountConfigurationDTODiscountType = {
+  NO_DISCOUNT: 'NO_DISCOUNT',
+  EVERCARD: 'EVERCARD',
+  SOCIAL_MEDIA: 'SOCIAL_MEDIA',
+  MILITARY: 'MILITARY',
+  CUSTOM: 'CUSTOM',
+} as const;
+
+export interface DiscountConfigurationDTO {
+  sessionId?: string;
+  orderId?: string;
+  discountRequest?: OrderDiscountRequest;
+  discountResponse?: OrderDiscountResponse;
+  excludedCategoryIds?: string[];
+  originalAmount?: number;
+  discountAmount?: number;
+  finalAmount?: number;
+  isValid?: boolean;
+  validationMessage?: string;
+  lastUpdated?: string;
+  discountType?: DiscountConfigurationDTODiscountType;
+  discountPercentage?: number;
+  discountDescription?: string;
+  readyForCompletion?: boolean;
+  discountConfigComplete?: boolean;
+}
+
+export type OrderDiscountRequestDiscountType = typeof OrderDiscountRequestDiscountType[keyof typeof OrderDiscountRequestDiscountType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrderDiscountRequestDiscountType = {
+  NO_DISCOUNT: 'NO_DISCOUNT',
+  EVERCARD: 'EVERCARD',
+  SOCIAL_MEDIA: 'SOCIAL_MEDIA',
+  MILITARY: 'MILITARY',
+  CUSTOM: 'CUSTOM',
+} as const;
+
+export interface OrderDiscountRequest {
+  orderId: string;
+  discountType: OrderDiscountRequestDiscountType;
+  /**
+   * @minimum 0
+   * @maximum 100
+   */
+  discountPercentage?: number;
+  /**
+   * @minLength 0
+   * @maxLength 255
+   */
+  discountDescription?: string;
+}
+
+export type OrderDiscountResponseDiscountType = typeof OrderDiscountResponseDiscountType[keyof typeof OrderDiscountResponseDiscountType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrderDiscountResponseDiscountType = {
+  NO_DISCOUNT: 'NO_DISCOUNT',
+  EVERCARD: 'EVERCARD',
+  SOCIAL_MEDIA: 'SOCIAL_MEDIA',
+  MILITARY: 'MILITARY',
+  CUSTOM: 'CUSTOM',
+} as const;
+
+export interface OrderDiscountResponse {
+  orderId?: string;
+  discountType?: OrderDiscountResponseDiscountType;
+  discountPercentage?: number;
+  discountDescription?: string;
+  totalAmount?: number;
+  discountAmount?: number;
+  finalAmount?: number;
+  nonDiscountableCategories?: string[];
+  nonDiscountableAmount?: number;
+}
+
+export interface AdditionalInfoDTO {
+  sessionId?: string;
+  orderId?: string;
+  additionalInfoRequest?: AdditionalRequirementsRequest;
+  additionalInfoResponse?: AdditionalRequirementsResponse;
+  hasAdditionalRequirements?: boolean;
+  hasCustomerNotes?: boolean;
+  isValid?: boolean;
+  validationMessage?: string;
+  lastUpdated?: string;
+  customerNotes?: string;
+  additionalRequirements?: string;
+  readyForCompletion?: boolean;
+  additionalInfoComplete?: boolean;
+}
+
+export interface AdditionalRequirementsRequest {
+  orderId: string;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  additionalRequirements?: string;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  customerNotes?: string;
+}
+
+export interface AdditionalRequirementsResponse {
+  orderId?: string;
+  additionalRequirements?: string;
+  customerNotes?: string;
+}
+
+export interface OrderItemDTO {
+  id?: string;
+  orderId?: string;
+  /**
+   * @minLength 0
+   * @maxLength 255
+   */
+  name: string;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  /** @minimum 1 */
+  quantity: number;
+  unitPrice: number;
+  totalPrice?: number;
+  category?: string;
+  color?: string;
+  material?: string;
+  unitOfMeasure?: string;
+  defects?: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  specialInstructions?: string;
+  fillerType?: string;
+  fillerCompressed?: boolean;
+  wearDegree?: string;
+  stains?: string;
+  otherStains?: string;
+  defectsAndRisks?: string;
+  noGuaranteeReason?: string;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  defectsNotes?: string;
+}
+
+export interface ItemManagerDTO {
+  sessionId?: string;
+  orderId?: string;
+  addedItems?: OrderItemDTO[];
+  totalAmount?: number;
+  itemCount?: number;
+  canProceedToNextStage?: boolean;
+  activeWizardId?: string;
+  editingItemId?: string;
+  currentStatus?: string;
+  wizardActive?: boolean;
+  editMode?: boolean;
+}
+
+export type NewClientFormDTOCommunicationChannelsItem = typeof NewClientFormDTOCommunicationChannelsItem[keyof typeof NewClientFormDTOCommunicationChannelsItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const NewClientFormDTOCommunicationChannelsItem = {
+  PHONE: 'PHONE',
+  SMS: 'SMS',
+  VIBER: 'VIBER',
+} as const;
+
+export type NewClientFormDTOInformationSource = typeof NewClientFormDTOInformationSource[keyof typeof NewClientFormDTOInformationSource];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const NewClientFormDTOInformationSource = {
+  INSTAGRAM: 'INSTAGRAM',
+  GOOGLE: 'GOOGLE',
+  RECOMMENDATION: 'RECOMMENDATION',
+  OTHER: 'OTHER',
+} as const;
+
+export type NewClientFormDTOStatus = typeof NewClientFormDTOStatus[keyof typeof NewClientFormDTOStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const NewClientFormDTOStatus = {
+  EMPTY: 'EMPTY',
+  BASIC_FILLED: 'BASIC_FILLED',
+  DETAILED_FILLED: 'DETAILED_FILLED',
+  COMMUNICATION_SET: 'COMMUNICATION_SET',
+  SOURCE_SET: 'SOURCE_SET',
+  READY_FOR_VALIDATION: 'READY_FOR_VALIDATION',
+  VALID: 'VALID',
+  INVALID: 'INVALID',
+} as const;
+
+export interface NewClientFormDTO {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  communicationChannels?: NewClientFormDTOCommunicationChannelsItem[];
+  informationSource?: NewClientFormDTOInformationSource;
+  sourceDetails?: string;
+  status?: NewClientFormDTOStatus;
+  fullName?: string;
+  otherInformationSource?: boolean;
+}
+
+export interface BasicOrderInfoDTO {
+  receiptNumber?: string;
+  uniqueTag?: string;
+  selectedBranch?: BranchLocationDTO;
+  selectedBranchId?: string;
+  creationDate?: string;
+  receiptNumberGenerated?: boolean;
+  uniqueTagEntered?: boolean;
+  branchSelected?: boolean;
+  creationDateSet?: boolean;
+  complete?: boolean;
+  receiptNumberValid?: boolean;
+  uniqueTagValid?: boolean;
+}
+
+export interface BranchLocationDTO {
+  id?: string;
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 1 */
+  address: string;
+  /** @pattern ^\+ ? [0-9\s-()]{10,15}$ */
+  phone?: string;
+  /** @minLength 1 */
+  code: string;
+  active?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 /**
  * Рівень ризику: LOW, MEDIUM, HIGH
  */
@@ -99,47 +476,6 @@ export interface ServiceCategoryDTO {
   items?: PriceListItemDTO[];
 }
 
-export interface OrderItemDTO {
-  id?: string;
-  orderId?: string;
-  /**
-   * @minLength 0
-   * @maxLength 255
-   */
-  name: string;
-  /**
-   * @minLength 0
-   * @maxLength 1000
-   */
-  description?: string;
-  /** @minimum 1 */
-  quantity: number;
-  unitPrice: number;
-  totalPrice?: number;
-  category?: string;
-  color?: string;
-  material?: string;
-  unitOfMeasure?: string;
-  defects?: string;
-  /**
-   * @minLength 0
-   * @maxLength 500
-   */
-  specialInstructions?: string;
-  fillerType?: string;
-  fillerCompressed?: boolean;
-  wearDegree?: string;
-  stains?: string;
-  otherStains?: string;
-  defectsAndRisks?: string;
-  noGuaranteeReason?: string;
-  /**
-   * @minLength 0
-   * @maxLength 1000
-   */
-  defectsNotes?: string;
-}
-
 export interface AddressDTO {
   /**
    * @minLength 2
@@ -176,21 +512,6 @@ export interface AddressDTO {
    * @maxLength 500
    */
   fullAddress?: string;
-}
-
-export interface BranchLocationDTO {
-  id?: string;
-  /** @minLength 1 */
-  name: string;
-  /** @minLength 1 */
-  address: string;
-  /** @pattern ^\+ ? [0-9\s-()]{10,15}$ */
-  phone?: string;
-  /** @minLength 1 */
-  code: string;
-  active?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 export interface ClientCategoryDTO {
@@ -461,25 +782,98 @@ export interface BranchLocationUpdateRequest {
   active?: boolean;
 }
 
-/**
- * Дані підпису клієнта
- */
-export interface CustomerSignatureRequest {
-  orderId: string;
-  /** @minLength 1 */
-  signatureData: string;
-  termsAccepted: boolean;
-  signatureType?: string;
+export interface ReceiptBranchInfoDTO {
+  branchName?: string;
+  address?: string;
+  phone?: string;
+  operatorName?: string;
 }
 
-export interface CustomerSignatureResponse {
-  id?: string;
+export interface ReceiptClientInfoDTO {
+  lastName?: string;
+  firstName?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  communicationChannels?: string[];
+}
+
+export type ReceiptConfigurationDTOCurrentState = typeof ReceiptConfigurationDTOCurrentState[keyof typeof ReceiptConfigurationDTOCurrentState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ReceiptConfigurationDTOCurrentState = {
+  STAGE4_INITIALIZED: 'STAGE4_INITIALIZED',
+  ORDER_SUMMARY_REVIEW: 'ORDER_SUMMARY_REVIEW',
+  LEGAL_ACCEPTANCE: 'LEGAL_ACCEPTANCE',
+  LEGAL_ACCEPTANCE_COMPLETED: 'LEGAL_ACCEPTANCE_COMPLETED',
+  RECEIPT_GENERATION: 'RECEIPT_GENERATION',
+  RECEIPT_GENERATED: 'RECEIPT_GENERATED',
+  ORDER_COMPLETION: 'ORDER_COMPLETION',
+  STAGE4_COMPLETED: 'STAGE4_COMPLETED',
+  STAGE4_ERROR: 'STAGE4_ERROR',
+} as const;
+
+export interface ReceiptConfigurationDTO {
+  sessionId?: string;
+  currentState?: ReceiptConfigurationDTOCurrentState;
+  generationRequest?: ReceiptGenerationRequest;
+  generatedReceipt?: ReceiptDTO;
+  pdfGenerated?: boolean;
+  emailSent?: boolean;
+  readyForPrint?: boolean;
+  pdfFilePath?: string;
+  generationTimestamp?: string;
+  validationMessage?: string;
+  hasValidationErrors?: boolean;
+}
+
+export type ReceiptDTOExpediteType = typeof ReceiptDTOExpediteType[keyof typeof ReceiptDTOExpediteType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ReceiptDTOExpediteType = {
+  STANDARD: 'STANDARD',
+  EXPRESS_48H: 'EXPRESS_48H',
+  EXPRESS_24H: 'EXPRESS_24H',
+} as const;
+
+export type ReceiptDTOPaymentMethod = typeof ReceiptDTOPaymentMethod[keyof typeof ReceiptDTOPaymentMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ReceiptDTOPaymentMethod = {
+  TERMINAL: 'TERMINAL',
+  CASH: 'CASH',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+} as const;
+
+export interface ReceiptDTO {
   orderId?: string;
-  signatureData?: string;
+  receiptNumber?: string;
+  tagNumber?: string;
+  createdDate?: string;
+  expectedCompletionDate?: string;
+  expediteType?: ReceiptDTOExpediteType;
+  branchInfo?: ReceiptBranchInfoDTO;
+  clientInfo?: ReceiptClientInfoDTO;
+  items?: ReceiptItemDTO[];
+  financialInfo?: ReceiptFinancialInfoDTO;
+  legalTerms?: string;
+  customerSignatureData?: string;
   termsAccepted?: boolean;
-  signatureType?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  additionalNotes?: string;
+  paymentMethod?: ReceiptDTOPaymentMethod;
+}
+
+export interface ReceiptFinancialInfoDTO {
+  totalAmount?: number;
+  discountAmount?: number;
+  discountType?: string;
+  expediteSurcharge?: number;
+  finalAmount?: number;
+  prepaymentAmount?: number;
+  balanceAmount?: number;
 }
 
 /**
@@ -491,47 +885,298 @@ export interface ReceiptGenerationRequest {
   includeSignature?: boolean;
 }
 
-export interface PdfReceiptResponse {
-  orderId?: string;
-  pdfUrl?: string;
-  pdfData?: string;
-  generatedAt?: string;
-  format?: string;
-  includeSignature?: boolean;
-  fileSize?: number;
-  fileName?: string;
+export interface ReceiptItemDTO {
+  id?: string;
+  orderNumber?: number;
+  name?: string;
+  serviceCategory?: string;
+  quantity?: number;
+  unitOfMeasure?: string;
+  material?: string;
+  color?: string;
+  filler?: string;
+  wearPercentage?: number;
+  basePrice?: number;
+  finalPrice?: number;
+  priceModifiers?: ReceiptPriceModifierDTO[];
+  stains?: string[];
+  defects?: string[];
+  notes?: string;
 }
 
-/**
- * Параметри відправки квитанції
- */
-export interface EmailReceiptRequest {
-  orderId: string;
-  /** @minLength 1 */
-  recipientEmail: string;
-  subject?: string;
-  message?: string;
-  includeSignature?: boolean;
+export interface ReceiptPriceModifierDTO {
+  name?: string;
+  description?: string;
+  percentageValue?: number;
+  fixedValue?: number;
+  impact?: number;
 }
 
-export type EmailReceiptResponseStatus = typeof EmailReceiptResponseStatus[keyof typeof EmailReceiptResponseStatus];
+export type OrderConfirmationDTOCurrentState = typeof OrderConfirmationDTOCurrentState[keyof typeof OrderConfirmationDTOCurrentState];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const EmailReceiptResponseStatus = {
-  SENT: 'SENT',
-  FAILED: 'FAILED',
-  PENDING: 'PENDING',
+export const OrderConfirmationDTOCurrentState = {
+  STAGE4_INITIALIZED: 'STAGE4_INITIALIZED',
+  ORDER_SUMMARY_REVIEW: 'ORDER_SUMMARY_REVIEW',
+  LEGAL_ACCEPTANCE: 'LEGAL_ACCEPTANCE',
+  LEGAL_ACCEPTANCE_COMPLETED: 'LEGAL_ACCEPTANCE_COMPLETED',
+  RECEIPT_GENERATION: 'RECEIPT_GENERATION',
+  RECEIPT_GENERATED: 'RECEIPT_GENERATED',
+  ORDER_COMPLETION: 'ORDER_COMPLETION',
+  STAGE4_COMPLETED: 'STAGE4_COMPLETED',
+  STAGE4_ERROR: 'STAGE4_ERROR',
 } as const;
 
-export interface EmailReceiptResponse {
-  orderId?: string;
-  recipientEmail?: string;
-  sentAt?: string;
-  messageId?: string;
-  status?: EmailReceiptResponseStatus;
-  subject?: string;
+export interface OrderConfirmationDTO {
+  sessionId?: string;
+  currentState?: OrderConfirmationDTOCurrentState;
+  orderSummary?: OrderDetailedSummaryResponse;
+  readyForConfirmation?: boolean;
+  summaryReviewed?: boolean;
+  validationMessage?: string;
+  hasValidationErrors?: boolean;
+}
+
+/**
+ * Тип термінового виконання
+ */
+export type OrderDetailedSummaryResponseExpediteType = typeof OrderDetailedSummaryResponseExpediteType[keyof typeof OrderDetailedSummaryResponseExpediteType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrderDetailedSummaryResponseExpediteType = {
+  STANDARD: 'STANDARD',
+  EXPRESS_48H: 'EXPRESS_48H',
+  EXPRESS_24H: 'EXPRESS_24H',
+} as const;
+
+/**
+ * Детальний підсумок замовлення для етапу перегляду та підтвердження
+ */
+export interface OrderDetailedSummaryResponse {
+  /** ID замовлення */
+  id?: string;
+  /** Номер квитанції замовлення */
+  receiptNumber?: string;
+  /** Номер мітки замовлення */
+  tagNumber?: string;
+  /** Детальна інформація про клієнта */
+  client?: ClientResponse;
+  /** Філія, в якій оформлено замовлення */
+  branchLocation?: BranchLocationDTO;
+  /** Список предметів замовлення з детальними розрахунками */
+  items?: OrderItemDetailedDTO[];
+  /** Загальна вартість замовлення до знижок */
+  totalAmount?: number;
+  /** Сума знижки */
+  discountAmount?: number;
+  /** Сума надбавки за терміновість */
+  expediteSurchargeAmount?: number;
+  /** Фінальна вартість замовлення з урахуванням знижок та надбавок */
+  finalAmount?: number;
+  /** Сума передоплати */
+  prepaymentAmount?: number;
+  /** Сума до сплати при отриманні */
+  balanceAmount?: number;
+  /** Тип термінового виконання */
+  expediteType?: OrderDetailedSummaryResponseExpediteType;
+  /** Очікувана дата виконання замовлення */
+  expectedCompletionDate?: string;
+  /** Дата створення замовлення */
+  createdDate?: string;
+  /** Примітки клієнта */
+  customerNotes?: string;
+  /** Тип знижки */
+  discountType?: string;
+  /** Відсоток знижки */
+  discountPercentage?: number;
+}
+
+/**
+ * Детальна інформація про предмет замовлення з розрахунком вартості
+ */
+export interface OrderItemDetailedDTO {
+  /** ID предмета замовлення */
+  id?: string;
+  /** Найменування предмета */
+  name?: string;
+  /** Категорія послуги */
+  category?: string;
+  /** Кількість */
+  quantity?: number;
+  /** Одиниця виміру */
+  unitOfMeasure?: string;
+  /** Матеріал предмета */
+  material?: string;
+  /** Колір предмета */
+  color?: string;
+  /** Наповнювач предмета */
+  filler?: string;
+  /** Прапорець, що вказує, чи є наповнювач збитим */
+  fillerClumped?: boolean;
+  /** Ступінь зносу (у відсотках) */
+  wearPercentage?: number;
+  /** Список виявлених плям на предметі */
+  stains?: string[];
+  /** Список виявлених дефектів та ризиків */
+  defects?: string[];
+  /** Примітки щодо дефектів */
+  defectNotes?: string;
+  /** Базова ціна предмета */
+  basePrice?: number;
+  /** Список застосованих модифікаторів ціни */
+  priceModifiers?: PriceModifierDTO[];
+  /** Фінальна ціна предмета */
+  finalPrice?: number;
+  /** Фотографії предмета */
+  photos?: OrderItemPhotoDTO[];
+}
+
+export type OrderCompletionDTOCurrentState = typeof OrderCompletionDTOCurrentState[keyof typeof OrderCompletionDTOCurrentState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrderCompletionDTOCurrentState = {
+  STAGE4_INITIALIZED: 'STAGE4_INITIALIZED',
+  ORDER_SUMMARY_REVIEW: 'ORDER_SUMMARY_REVIEW',
+  LEGAL_ACCEPTANCE: 'LEGAL_ACCEPTANCE',
+  LEGAL_ACCEPTANCE_COMPLETED: 'LEGAL_ACCEPTANCE_COMPLETED',
+  RECEIPT_GENERATION: 'RECEIPT_GENERATION',
+  RECEIPT_GENERATED: 'RECEIPT_GENERATED',
+  ORDER_COMPLETION: 'ORDER_COMPLETION',
+  STAGE4_COMPLETED: 'STAGE4_COMPLETED',
+  STAGE4_ERROR: 'STAGE4_ERROR',
+} as const;
+
+export interface OrderCompletionDTO {
+  sessionId?: string;
+  currentState?: OrderCompletionDTOCurrentState;
+  finalizationRequest?: OrderFinalizationRequest;
+  orderProcessed?: boolean;
+  orderSaved?: boolean;
+  wizardCompleted?: boolean;
+  completionTimestamp?: string;
+  createdOrderNumber?: string;
+  completionMessage?: string;
+  hasValidationErrors?: boolean;
+}
+
+export interface OrderFinalizationRequest {
+  orderId: string;
+  signatureData?: string;
+  termsAccepted?: boolean;
+  sendReceiptByEmail?: boolean;
+  generatePrintableReceipt?: boolean;
+  comments?: string;
+}
+
+/**
+ * Дані підпису клієнта
+ */
+export interface CustomerSignatureRequest {
+  orderId: string;
+  /** @minLength 1 */
+  signatureData: string;
+  termsAccepted: boolean;
+  signatureType?: string;
+}
+
+export type LegalAcceptanceDTOCurrentState = typeof LegalAcceptanceDTOCurrentState[keyof typeof LegalAcceptanceDTOCurrentState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LegalAcceptanceDTOCurrentState = {
+  STAGE4_INITIALIZED: 'STAGE4_INITIALIZED',
+  ORDER_SUMMARY_REVIEW: 'ORDER_SUMMARY_REVIEW',
+  LEGAL_ACCEPTANCE: 'LEGAL_ACCEPTANCE',
+  LEGAL_ACCEPTANCE_COMPLETED: 'LEGAL_ACCEPTANCE_COMPLETED',
+  RECEIPT_GENERATION: 'RECEIPT_GENERATION',
+  RECEIPT_GENERATED: 'RECEIPT_GENERATED',
+  ORDER_COMPLETION: 'ORDER_COMPLETION',
+  STAGE4_COMPLETED: 'STAGE4_COMPLETED',
+  STAGE4_ERROR: 'STAGE4_ERROR',
+} as const;
+
+export interface LegalAcceptanceDTO {
+  sessionId?: string;
+  currentState?: LegalAcceptanceDTOCurrentState;
+  signatureRequest?: CustomerSignatureRequest;
+  termsRead?: boolean;
+  signatureCaptured?: boolean;
+  legalConfirmed?: boolean;
+  acceptanceTimestamp?: string;
+  validationMessage?: string;
+  hasValidationErrors?: boolean;
+}
+
+export interface PhotoDocumentationDTO {
+  sessionId?: string;
+  itemId?: string;
+  photos?: OrderItemPhotoDTO[];
+  maxPhotosAllowed?: number;
+  maxFileSizeMB?: number;
+  documentationCompleted?: boolean;
+  startTime?: string;
+  completionTime?: string;
+  notes?: string;
+}
+
+export type SubstepResultDTOCurrentState = typeof SubstepResultDTOCurrentState[keyof typeof SubstepResultDTOCurrentState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SubstepResultDTOCurrentState = {
+  INITIAL: 'INITIAL',
+  UPLOADING_PHOTOS: 'UPLOADING_PHOTOS',
+  PROCESSING_PHOTOS: 'PROCESSING_PHOTOS',
+  REVIEWING_PHOTOS: 'REVIEWING_PHOTOS',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+} as const;
+
+export type SubstepResultDTOPreviousState = typeof SubstepResultDTOPreviousState[keyof typeof SubstepResultDTOPreviousState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SubstepResultDTOPreviousState = {
+  INITIAL: 'INITIAL',
+  UPLOADING_PHOTOS: 'UPLOADING_PHOTOS',
+  PROCESSING_PHOTOS: 'PROCESSING_PHOTOS',
+  REVIEWING_PHOTOS: 'REVIEWING_PHOTOS',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+} as const;
+
+export type SubstepResultDTOAvailableEventsItem = typeof SubstepResultDTOAvailableEventsItem[keyof typeof SubstepResultDTOAvailableEventsItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SubstepResultDTOAvailableEventsItem = {
+  INITIALIZE: 'INITIALIZE',
+  START_UPLOAD: 'START_UPLOAD',
+  UPLOAD_PHOTO: 'UPLOAD_PHOTO',
+  PROCESS_PHOTOS: 'PROCESS_PHOTOS',
+  PROCESSING_COMPLETED: 'PROCESSING_COMPLETED',
+  REVIEW_PHOTOS: 'REVIEW_PHOTOS',
+  DELETE_PHOTO: 'DELETE_PHOTO',
+  COMPLETE_DOCUMENTATION: 'COMPLETE_DOCUMENTATION',
+  EDIT_PHOTOS: 'EDIT_PHOTOS',
+  HANDLE_ERROR: 'HANDLE_ERROR',
+  RESET_AFTER_ERROR: 'RESET_AFTER_ERROR',
+} as const;
+
+export interface SubstepResultDTO {
+  sessionId?: string;
+  currentState?: SubstepResultDTOCurrentState;
+  previousState?: SubstepResultDTOPreviousState;
+  success?: boolean;
   message?: string;
+  details?: string;
+  data?: PhotoDocumentationDTO;
+  availableEvents?: SubstepResultDTOAvailableEventsItem[];
+  validationErrors?: string[];
+  timestamp?: string;
 }
 
 export interface CalculationDetailsDTO {
@@ -544,6 +1189,87 @@ export interface CalculationDetailsDTO {
   priceBefore?: number;
   priceAfter?: number;
   priceDifference?: number;
+}
+
+/**
+ * Кількість для модифікатора з фіксованою ціною
+ */
+export interface FixedModifierQuantityDTO {
+  /**
+   * ID модифікатора
+   * @minLength 1
+   * @pattern ^MOD_[A-Z_]+$
+   */
+  modifierId: string;
+  /**
+   * Кількість одиниць для модифікатора
+   * @minimum 1
+   * @maximum 100
+   */
+  quantity: number;
+}
+
+/**
+ * Запит на розрахунок ціни предмету з модифікаторами
+ */
+export interface PriceCalculationRequestDTO {
+  /**
+   * Код категорії послуги
+   * @minLength 1
+   * @pattern ^[A-Z_]+$
+   */
+  categoryCode: string;
+  /**
+   * Найменування предмету з прайс-листа
+   * @minLength 0
+   * @maxLength 255
+   */
+  itemName: string;
+  /**
+   * Колір предмету
+   * @maxLength 100
+   */
+  color?: string;
+  /**
+   * Кількість предметів
+   * @minimum 1
+   * @maximum 1000
+   */
+  quantity: number;
+  /** Список кодів модифікаторів для застосування */
+  modifierCodes?: string[];
+  /**
+   * Список ID модифікаторів для застосування
+   * @minItems 0
+   * @maxItems 20
+   */
+  modifierIds?: string[];
+  /**
+   * Значення відсотків для модифікаторів діапазону
+   * @minItems 0
+   * @maxItems 10
+   */
+  rangeModifierValues?: RangeModifierValueDTO[];
+  /**
+   * Кількості для модифікаторів з фіксованою ціною
+   * @minItems 0
+   * @maxItems 10
+   */
+  fixedModifierQuantities?: FixedModifierQuantityDTO[];
+  /** Чи термінове замовлення */
+  expedited?: boolean;
+  /**
+   * Відсоток надбавки за терміновість
+   * @minimum 0
+   * @maximum 200
+   */
+  expeditePercent?: number;
+  /**
+   * Відсоток знижки
+   * @minimum 0
+   * @maximum 50
+   */
+  discountPercent?: number;
 }
 
 /**
@@ -595,40 +1321,213 @@ export interface PriceCalculationResponseDTO {
   calculationDetails?: CalculationDetailsDTO[];
 }
 
-export interface FixedModifierQuantity {
-  modifierCode?: string;
-  quantity?: number;
+export interface PriceDiscountDTO {
+  calculationRequest?: PriceCalculationRequestDTO;
+  calculationResponse?: PriceCalculationResponseDTO;
+  selectedModifierIds?: string[];
+  rangeModifierValues?: RangeModifierValueDTO[];
+  fixedModifierQuantities?: FixedModifierQuantityDTO[];
+  calculationNotes?: string;
+  calculationCompleted?: boolean;
+  hasCalculationErrors?: boolean;
+  errorMessage?: string;
+  basePrice?: number;
+  finalPrice?: number;
+  calculationDetails?: CalculationDetailsDTO[];
+  modifiersCount?: number;
 }
 
 /**
- * Запит на розрахунок ціни для предмета
+ * Значення відсотка для модифікатора діапазону
  */
-export interface PriceCalculationRequestDTO {
-  /** Код категорії послуги */
-  categoryCode: string;
-  /** Найменування предмету з прайс-листа */
-  itemName: string;
-  /** Колір предмету */
-  color?: string;
-  /** Кількість предметів */
-  quantity: number;
-  /** Список кодів модифікаторів */
-  modifierCodes?: string[];
-  /** Значення для модифікаторів з діапазоном */
-  rangeModifierValues?: RangeModifierValue[];
-  /** Кількості для фіксованих модифікаторів */
-  fixedModifierQuantities?: FixedModifierQuantity[];
-  /** Чи термінове замовлення */
-  expedited?: boolean;
-  /** Відсоток надбавки за терміновість */
-  expeditePercent?: number;
-  /** Відсоток знижки */
-  discountPercent?: number;
+export interface RangeModifierValueDTO {
+  /**
+   * ID модифікатора
+   * @minLength 1
+   * @pattern ^MOD_[A-Z_]+$
+   */
+  modifierId: string;
+  /**
+   * Вибраний відсоток для модифікатора
+   * @minimum 0
+   * @maximum 200
+   */
+  percentage: number;
 }
 
-export interface RangeModifierValue {
-  modifierCode?: string;
-  value?: number;
+export interface AddModifierRequest {
+  modifierId?: string;
+  rangeValue?: number;
+  quantity?: number;
+}
+
+export interface InitializeSubstepRequest {
+  basicInfo?: ItemBasicInfoDTO;
+  characteristics?: ItemCharacteristicsDTO;
+  stainsDefects?: StainsDefectsDTO;
+}
+
+export interface ItemBasicInfoDTO {
+  itemId?: string;
+  serviceCategory?: ServiceCategoryDTO;
+  priceListItem?: PriceListItemDTO;
+  unitOfMeasure?: string;
+  quantity?: number;
+  totalBasePrice?: number;
+  valid?: boolean;
+  complete?: boolean;
+}
+
+export interface ItemCharacteristicsDTO {
+  currentItem?: OrderItemAddRequest;
+  materialSelectionCompleted?: boolean;
+  colorSelectionCompleted?: boolean;
+  fillerSelectionCompleted?: boolean;
+  wearDegreeSelectionCompleted?: boolean;
+  dataValid?: boolean;
+}
+
+export interface OrderItemAddRequest {
+  id?: string;
+  orderId?: string;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  /** @minimum 1 */
+  quantity: number;
+  unitPrice: number;
+  totalPrice?: number;
+  category?: string;
+  color?: string;
+  material?: string;
+  unitOfMeasure?: string;
+  defects?: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  specialInstructions?: string;
+  fillerType?: string;
+  fillerCompressed?: boolean;
+  wearDegree?: string;
+  stains?: string;
+  otherStains?: string;
+  defectsAndRisks?: string;
+  noGuaranteeReason?: string;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  defectsNotes?: string;
+}
+
+export interface StainsDefectsDTO {
+  currentItem?: OrderItemAddRequest;
+  stainsSelectionCompleted?: boolean;
+  defectsSelectionCompleted?: boolean;
+  dataValid?: boolean;
+  noGuaranteeReasonRequired?: boolean;
+  noGuarantee?: boolean;
+}
+
+export type StainsDefectsContextCurrentState = typeof StainsDefectsContextCurrentState[keyof typeof StainsDefectsContextCurrentState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const StainsDefectsContextCurrentState = {
+  NOT_STARTED: 'NOT_STARTED',
+  SELECTING_STAINS: 'SELECTING_STAINS',
+  SELECTING_DEFECTS: 'SELECTING_DEFECTS',
+  ENTERING_NOTES: 'ENTERING_NOTES',
+  VALIDATING_DATA: 'VALIDATING_DATA',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+} as const;
+
+export interface StainsDefectsContext {
+  currentState?: StainsDefectsContextCurrentState;
+  data?: StainsDefectsDTO;
+  errorMessage?: string;
+}
+
+export interface ClientSearchCriteriaDTO {
+  lastName?: string;
+  firstName?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  generalSearchTerm?: string;
+  page?: number;
+  size?: number;
+}
+
+export interface ClientSearchResultDTO {
+  clients?: ClientResponse[];
+  searchCriteria?: ClientSearchCriteriaDTO;
+  totalElements?: number;
+  totalPages?: number;
+  pageNumber?: number;
+  pageSize?: number;
+  hasPrevious?: boolean;
+  hasNext?: boolean;
+  searchTimeMs?: number;
+  exactSearch?: boolean;
+  firstClient?: ClientResponse;
+}
+
+export interface CustomerSignatureResponse {
+  id?: string;
+  orderId?: string;
+  signatureData?: string;
+  termsAccepted?: boolean;
+  signatureType?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PdfReceiptResponse {
+  orderId?: string;
+  pdfUrl?: string;
+  pdfData?: string;
+  generatedAt?: string;
+  format?: string;
+  includeSignature?: boolean;
+  fileSize?: number;
+  fileName?: string;
+}
+
+/**
+ * Параметри відправки квитанції
+ */
+export interface EmailReceiptRequest {
+  orderId: string;
+  /** @minLength 1 */
+  recipientEmail: string;
+  subject?: string;
+  message?: string;
+  includeSignature?: boolean;
+}
+
+export type EmailReceiptResponseStatus = typeof EmailReceiptResponseStatus[keyof typeof EmailReceiptResponseStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EmailReceiptResponseStatus = {
+  SENT: 'SENT',
+  FAILED: 'FAILED',
+  PENDING: 'PENDING',
+} as const;
+
+export interface EmailReceiptResponse {
+  orderId?: string;
+  recipientEmail?: string;
+  sentAt?: string;
+  messageId?: string;
+  status?: EmailReceiptResponseStatus;
+  subject?: string;
+  message?: string;
 }
 
 export type CreateOrderRequestExpediteType = typeof CreateOrderRequestExpediteType[keyof typeof CreateOrderRequestExpediteType];
@@ -664,89 +1563,6 @@ export interface CreateOrderRequest {
   internalNotes?: string;
   expediteType?: CreateOrderRequestExpediteType;
   draft?: boolean;
-}
-
-export interface AdditionalRequirementsRequest {
-  orderId: string;
-  /**
-   * @minLength 0
-   * @maxLength 1000
-   */
-  additionalRequirements?: string;
-  /**
-   * @minLength 0
-   * @maxLength 1000
-   */
-  customerNotes?: string;
-}
-
-export type PaymentCalculationRequestPaymentMethod = typeof PaymentCalculationRequestPaymentMethod[keyof typeof PaymentCalculationRequestPaymentMethod];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PaymentCalculationRequestPaymentMethod = {
-  TERMINAL: 'TERMINAL',
-  CASH: 'CASH',
-  BANK_TRANSFER: 'BANK_TRANSFER',
-} as const;
-
-export interface PaymentCalculationRequest {
-  orderId: string;
-  paymentMethod: PaymentCalculationRequestPaymentMethod;
-  /** @minimum 0 */
-  prepaymentAmount?: number;
-}
-
-export interface OrderFinalizationRequest {
-  orderId: string;
-  signatureData?: string;
-  termsAccepted?: boolean;
-  sendReceiptByEmail?: boolean;
-  generatePrintableReceipt?: boolean;
-  comments?: string;
-}
-
-export type OrderDiscountRequestDiscountType = typeof OrderDiscountRequestDiscountType[keyof typeof OrderDiscountRequestDiscountType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrderDiscountRequestDiscountType = {
-  NO_DISCOUNT: 'NO_DISCOUNT',
-  EVERCARD: 'EVERCARD',
-  SOCIAL_MEDIA: 'SOCIAL_MEDIA',
-  MILITARY: 'MILITARY',
-  CUSTOM: 'CUSTOM',
-} as const;
-
-export interface OrderDiscountRequest {
-  orderId: string;
-  discountType: OrderDiscountRequestDiscountType;
-  /**
-   * @minimum 0
-   * @maximum 100
-   */
-  discountPercentage?: number;
-  /**
-   * @minLength 0
-   * @maxLength 255
-   */
-  discountDescription?: string;
-}
-
-export type CompletionDateCalculationRequestExpediteType = typeof CompletionDateCalculationRequestExpediteType[keyof typeof CompletionDateCalculationRequestExpediteType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CompletionDateCalculationRequestExpediteType = {
-  STANDARD: 'STANDARD',
-  EXPRESS_48H: 'EXPRESS_48H',
-  EXPRESS_24H: 'EXPRESS_24H',
-} as const;
-
-export interface CompletionDateCalculationRequest {
-  /** @minItems 1 */
-  serviceCategoryIds: string[];
-  expediteType: CompletionDateCalculationRequestExpediteType;
 }
 
 export type CreateClientRequestCommunicationChannelsItem = typeof CreateClientRequestCommunicationChannelsItem[keyof typeof CreateClientRequestCommunicationChannelsItem];
@@ -876,194 +1692,48 @@ export interface LoginRequest {
   password: string;
 }
 
+export type Stage3ContextCurrentState = typeof Stage3ContextCurrentState[keyof typeof Stage3ContextCurrentState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Stage3ContextCurrentState = {
+  STAGE3_INIT: 'STAGE3_INIT',
+  EXECUTION_PARAMS_INIT: 'EXECUTION_PARAMS_INIT',
+  DATE_SELECTION: 'DATE_SELECTION',
+  URGENCY_SELECTION: 'URGENCY_SELECTION',
+  EXECUTION_PARAMS_COMPLETED: 'EXECUTION_PARAMS_COMPLETED',
+  DISCOUNT_CONFIG_INIT: 'DISCOUNT_CONFIG_INIT',
+  DISCOUNT_TYPE_SELECTION: 'DISCOUNT_TYPE_SELECTION',
+  DISCOUNT_VALIDATION: 'DISCOUNT_VALIDATION',
+  DISCOUNT_CONFIG_COMPLETED: 'DISCOUNT_CONFIG_COMPLETED',
+  PAYMENT_CONFIG_INIT: 'PAYMENT_CONFIG_INIT',
+  PAYMENT_METHOD_SELECTION: 'PAYMENT_METHOD_SELECTION',
+  PAYMENT_AMOUNT_CALCULATION: 'PAYMENT_AMOUNT_CALCULATION',
+  PAYMENT_CONFIG_COMPLETED: 'PAYMENT_CONFIG_COMPLETED',
+  ADDITIONAL_INFO_INIT: 'ADDITIONAL_INFO_INIT',
+  NOTES_INPUT: 'NOTES_INPUT',
+  REQUIREMENTS_INPUT: 'REQUIREMENTS_INPUT',
+  ADDITIONAL_INFO_COMPLETED: 'ADDITIONAL_INFO_COMPLETED',
+  STAGE3_COMPLETED: 'STAGE3_COMPLETED',
+  STAGE3_ERROR: 'STAGE3_ERROR',
+} as const;
+
+export interface Stage3Context {
+  sessionId?: string;
+  currentState?: Stage3ContextCurrentState;
+  lastUpdated?: string;
+  executionParams?: ExecutionParamsDTO;
+  discountConfiguration?: DiscountConfigurationDTO;
+  paymentConfiguration?: PaymentConfigurationDTO;
+  additionalInfo?: AdditionalInfoDTO;
+  lastAction?: string;
+  lastError?: string;
+  valid?: boolean;
+  completedSubstepsCount?: number;
+}
+
 export interface TestResponse {
   message?: string;
-}
-
-export interface ReceiptBranchInfoDTO {
-  branchName?: string;
-  address?: string;
-  phone?: string;
-  operatorName?: string;
-}
-
-export interface ReceiptClientInfoDTO {
-  lastName?: string;
-  firstName?: string;
-  phone?: string;
-  email?: string;
-  address?: string;
-  communicationChannels?: string[];
-}
-
-export type ReceiptDTOExpediteType = typeof ReceiptDTOExpediteType[keyof typeof ReceiptDTOExpediteType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ReceiptDTOExpediteType = {
-  STANDARD: 'STANDARD',
-  EXPRESS_48H: 'EXPRESS_48H',
-  EXPRESS_24H: 'EXPRESS_24H',
-} as const;
-
-export type ReceiptDTOPaymentMethod = typeof ReceiptDTOPaymentMethod[keyof typeof ReceiptDTOPaymentMethod];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ReceiptDTOPaymentMethod = {
-  TERMINAL: 'TERMINAL',
-  CASH: 'CASH',
-  BANK_TRANSFER: 'BANK_TRANSFER',
-} as const;
-
-export interface ReceiptDTO {
-  orderId?: string;
-  receiptNumber?: string;
-  tagNumber?: string;
-  createdDate?: string;
-  expectedCompletionDate?: string;
-  expediteType?: ReceiptDTOExpediteType;
-  branchInfo?: ReceiptBranchInfoDTO;
-  clientInfo?: ReceiptClientInfoDTO;
-  items?: ReceiptItemDTO[];
-  financialInfo?: ReceiptFinancialInfoDTO;
-  legalTerms?: string;
-  customerSignatureData?: string;
-  termsAccepted?: boolean;
-  additionalNotes?: string;
-  paymentMethod?: ReceiptDTOPaymentMethod;
-}
-
-export interface ReceiptFinancialInfoDTO {
-  totalAmount?: number;
-  discountAmount?: number;
-  discountType?: string;
-  expediteSurcharge?: number;
-  finalAmount?: number;
-  prepaymentAmount?: number;
-  balanceAmount?: number;
-}
-
-export interface ReceiptItemDTO {
-  id?: string;
-  orderNumber?: number;
-  name?: string;
-  serviceCategory?: string;
-  quantity?: number;
-  unitOfMeasure?: string;
-  material?: string;
-  color?: string;
-  filler?: string;
-  wearPercentage?: number;
-  basePrice?: number;
-  finalPrice?: number;
-  priceModifiers?: ReceiptPriceModifierDTO[];
-  stains?: string[];
-  defects?: string[];
-  notes?: string;
-}
-
-export interface ReceiptPriceModifierDTO {
-  name?: string;
-  description?: string;
-  percentageValue?: number;
-  fixedValue?: number;
-  impact?: number;
-}
-
-/**
- * Тип термінового виконання
- */
-export type OrderDetailedSummaryResponseExpediteType = typeof OrderDetailedSummaryResponseExpediteType[keyof typeof OrderDetailedSummaryResponseExpediteType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrderDetailedSummaryResponseExpediteType = {
-  STANDARD: 'STANDARD',
-  EXPRESS_48H: 'EXPRESS_48H',
-  EXPRESS_24H: 'EXPRESS_24H',
-} as const;
-
-/**
- * Детальний підсумок замовлення для етапу перегляду та підтвердження
- */
-export interface OrderDetailedSummaryResponse {
-  /** ID замовлення */
-  id?: string;
-  /** Номер квитанції замовлення */
-  receiptNumber?: string;
-  /** Номер мітки замовлення */
-  tagNumber?: string;
-  /** Детальна інформація про клієнта */
-  client?: ClientResponse;
-  /** Філія, в якій оформлено замовлення */
-  branchLocation?: BranchLocationDTO;
-  /** Список предметів замовлення з детальними розрахунками */
-  items?: OrderItemDetailedDTO[];
-  /** Загальна вартість замовлення до знижок */
-  totalAmount?: number;
-  /** Сума знижки */
-  discountAmount?: number;
-  /** Сума надбавки за терміновість */
-  expediteSurchargeAmount?: number;
-  /** Фінальна вартість замовлення з урахуванням знижок та надбавок */
-  finalAmount?: number;
-  /** Сума передоплати */
-  prepaymentAmount?: number;
-  /** Сума до сплати при отриманні */
-  balanceAmount?: number;
-  /** Тип термінового виконання */
-  expediteType?: OrderDetailedSummaryResponseExpediteType;
-  /** Очікувана дата виконання замовлення */
-  expectedCompletionDate?: string;
-  /** Дата створення замовлення */
-  createdDate?: string;
-  /** Примітки клієнта */
-  customerNotes?: string;
-  /** Тип знижки */
-  discountType?: string;
-  /** Відсоток знижки */
-  discountPercentage?: number;
-}
-
-/**
- * Детальна інформація про предмет замовлення з розрахунком вартості
- */
-export interface OrderItemDetailedDTO {
-  /** ID предмета замовлення */
-  id?: string;
-  /** Найменування предмета */
-  name?: string;
-  /** Категорія послуги */
-  category?: string;
-  /** Кількість */
-  quantity?: number;
-  /** Одиниця виміру */
-  unitOfMeasure?: string;
-  /** Матеріал предмета */
-  material?: string;
-  /** Колір предмета */
-  color?: string;
-  /** Наповнювач предмета */
-  filler?: string;
-  /** Прапорець, що вказує, чи є наповнювач збитим */
-  fillerClumped?: boolean;
-  /** Ступінь зносу (у відсотках) */
-  wearPercentage?: number;
-  /** Список виявлених плям на предметі */
-  stains?: string[];
-  /** Список виявлених дефектів та ризиків */
-  defects?: string[];
-  /** Примітки щодо дефектів */
-  defectNotes?: string;
-  /** Базова ціна предмета */
-  basePrice?: number;
-  /** Список застосованих модифікаторів ціни */
-  priceModifiers?: PriceModifierDTO[];
-  /** Фінальна ціна предмета */
-  finalPrice?: number;
-  /** Фотографії предмета */
-  photos?: OrderItemPhotoDTO[];
 }
 
 export interface WorkflowMap {
@@ -1263,6 +1933,129 @@ export type SetActiveStatusParams = {
 active: boolean;
 };
 
+export type ValidateReceiptConfiguration200 = { [key: string]: unknown };
+
+export type ValidateOrderConfirmation200 = { [key: string]: unknown };
+
+export type ValidateOrderCompletion200 = { [key: string]: unknown };
+
+export type ValidateLegalAcceptance200 = { [key: string]: unknown };
+
+export type SaveSignature200 = { [key: string]: unknown };
+
+export type UpdateReceiptConfiguration200 = { [key: string]: unknown };
+
+export type UpdateOrderConfirmation200 = { [key: string]: unknown };
+
+export type UpdateOrderCompletion1200 = { [key: string]: unknown };
+
+export type UpdateLegalAcceptance200 = { [key: string]: unknown };
+
+export type CloseSession200 = { [key: string]: unknown };
+
+export type GenerateReceipt200 = { [key: string]: unknown };
+
+export type GeneratePdfReceipt200 = { [key: string]: unknown };
+
+export type InitializeStage4200 = { [key: string]: unknown };
+
+export type FinalizeOrder200 = { [key: string]: unknown };
+
+export type AddPhotoBody = {
+  file: Blob;
+};
+
+export type ProcessStainSelectionParams = {
+selectedStains?: string;
+otherStains?: string;
+};
+
+export type ProcessDefectNotesParams = {
+defectNotes?: string;
+};
+
+export type GoBackParams = {
+targetState: GoBackTargetState;
+};
+
+export type GoBackTargetState = typeof GoBackTargetState[keyof typeof GoBackTargetState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GoBackTargetState = {
+  NOT_STARTED: 'NOT_STARTED',
+  SELECTING_STAINS: 'SELECTING_STAINS',
+  SELECTING_DEFECTS: 'SELECTING_DEFECTS',
+  ENTERING_NOTES: 'ENTERING_NOTES',
+  VALIDATING_DATA: 'VALIDATING_DATA',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+} as const;
+
+export type ProcessDefectSelectionParams = {
+selectedDefects?: string;
+noGuaranteeReason?: string;
+};
+
+export type SelectWearLevelParams = {
+wearPercentage: number;
+};
+
+export type SelectMaterialParams = {
+materialId: string;
+};
+
+export type SelectFillerParams = {
+fillerType?: string;
+isFillerDamaged?: boolean;
+};
+
+export type SelectColorParams = {
+color: string;
+};
+
+export type InitializeSubstep2Params = {
+itemId: string;
+};
+
+export type CompleteSubstep2200 = {[key: string]: unknown};
+
+export type SelectPriceListItemParams = {
+itemId: string;
+};
+
+export type SelectServiceCategoryParams = {
+categoryId: string;
+};
+
+export type EnterQuantityParams = {
+quantity: number;
+};
+
+export type ValidateNewClientForm200 = { [key: string]: unknown };
+
+export type SelectClientParams = {
+clientId: string;
+};
+
+export type SearchClientsByPhoneParams = {
+phone: string;
+};
+
+export type ValidateBasicOrderInfo200 = { [key: string]: unknown };
+
+export type SetUniqueTagParams = {
+uniqueTag: string;
+};
+
+export type SelectBranchParams = {
+branchId: string;
+};
+
+export type GenerateReceiptNumberParams = {
+branchCode: string;
+};
+
 export type GetStainTypesParams = {
 activeOnly?: boolean;
 riskLevel?: GetStainTypesRiskLevel;
@@ -1354,6 +2147,158 @@ export type RefreshToken200 = { [key: string]: unknown };
 
 export type Login200 = { [key: string]: unknown };
 
+export type ValidateComplete200 = { [key: string]: unknown };
+
+export type GetSessionContext200 = { [key: string]: unknown };
+
+export type GetCurrentState200 = { [key: string]: unknown };
+
+export type GetOrderSummary200 = { [key: string]: unknown };
+
+export type GetSessionState200 = typeof GetSessionState200[keyof typeof GetSessionState200];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetSessionState200 = {
+  STAGE3_INIT: 'STAGE3_INIT',
+  EXECUTION_PARAMS_INIT: 'EXECUTION_PARAMS_INIT',
+  DATE_SELECTION: 'DATE_SELECTION',
+  URGENCY_SELECTION: 'URGENCY_SELECTION',
+  EXECUTION_PARAMS_COMPLETED: 'EXECUTION_PARAMS_COMPLETED',
+  DISCOUNT_CONFIG_INIT: 'DISCOUNT_CONFIG_INIT',
+  DISCOUNT_TYPE_SELECTION: 'DISCOUNT_TYPE_SELECTION',
+  DISCOUNT_VALIDATION: 'DISCOUNT_VALIDATION',
+  DISCOUNT_CONFIG_COMPLETED: 'DISCOUNT_CONFIG_COMPLETED',
+  PAYMENT_CONFIG_INIT: 'PAYMENT_CONFIG_INIT',
+  PAYMENT_METHOD_SELECTION: 'PAYMENT_METHOD_SELECTION',
+  PAYMENT_AMOUNT_CALCULATION: 'PAYMENT_AMOUNT_CALCULATION',
+  PAYMENT_CONFIG_COMPLETED: 'PAYMENT_CONFIG_COMPLETED',
+  ADDITIONAL_INFO_INIT: 'ADDITIONAL_INFO_INIT',
+  NOTES_INPUT: 'NOTES_INPUT',
+  REQUIREMENTS_INPUT: 'REQUIREMENTS_INPUT',
+  ADDITIONAL_INFO_COMPLETED: 'ADDITIONAL_INFO_COMPLETED',
+  STAGE3_COMPLETED: 'STAGE3_COMPLETED',
+  STAGE3_ERROR: 'STAGE3_ERROR',
+} as const;
+
+export type GetNextSubstep200 = typeof GetNextSubstep200[keyof typeof GetNextSubstep200];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetNextSubstep200 = {
+  STAGE3_INIT: 'STAGE3_INIT',
+  EXECUTION_PARAMS_INIT: 'EXECUTION_PARAMS_INIT',
+  DATE_SELECTION: 'DATE_SELECTION',
+  URGENCY_SELECTION: 'URGENCY_SELECTION',
+  EXECUTION_PARAMS_COMPLETED: 'EXECUTION_PARAMS_COMPLETED',
+  DISCOUNT_CONFIG_INIT: 'DISCOUNT_CONFIG_INIT',
+  DISCOUNT_TYPE_SELECTION: 'DISCOUNT_TYPE_SELECTION',
+  DISCOUNT_VALIDATION: 'DISCOUNT_VALIDATION',
+  DISCOUNT_CONFIG_COMPLETED: 'DISCOUNT_CONFIG_COMPLETED',
+  PAYMENT_CONFIG_INIT: 'PAYMENT_CONFIG_INIT',
+  PAYMENT_METHOD_SELECTION: 'PAYMENT_METHOD_SELECTION',
+  PAYMENT_AMOUNT_CALCULATION: 'PAYMENT_AMOUNT_CALCULATION',
+  PAYMENT_CONFIG_COMPLETED: 'PAYMENT_CONFIG_COMPLETED',
+  ADDITIONAL_INFO_INIT: 'ADDITIONAL_INFO_INIT',
+  NOTES_INPUT: 'NOTES_INPUT',
+  REQUIREMENTS_INPUT: 'REQUIREMENTS_INPUT',
+  ADDITIONAL_INFO_COMPLETED: 'ADDITIONAL_INFO_COMPLETED',
+  STAGE3_COMPLETED: 'STAGE3_COMPLETED',
+  STAGE3_ERROR: 'STAGE3_ERROR',
+} as const;
+
+export type GetAvailableModifiersParams = {
+categoryCode: string;
+};
+
+export type GetRecommendedModifiersParams = {
+categoryCode: string;
+itemName: string;
+};
+
+export type GetAvailableEvents200Item = typeof GetAvailableEvents200Item[keyof typeof GetAvailableEvents200Item];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetAvailableEvents200Item = {
+  INITIALIZE: 'INITIALIZE',
+  CALCULATE_BASE_PRICE: 'CALCULATE_BASE_PRICE',
+  SELECT_MODIFIERS: 'SELECT_MODIFIERS',
+  ADD_MODIFIER: 'ADD_MODIFIER',
+  REMOVE_MODIFIER: 'REMOVE_MODIFIER',
+  CALCULATE_FINAL_PRICE: 'CALCULATE_FINAL_PRICE',
+  CONFIRM_CALCULATION: 'CONFIRM_CALCULATION',
+  RESET_CALCULATION: 'RESET_CALCULATION',
+  HANDLE_ERROR: 'HANDLE_ERROR',
+} as const;
+
+export type GetCurrentState2200 = typeof GetCurrentState2200[keyof typeof GetCurrentState2200];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetCurrentState2200 = {
+  NOT_STARTED: 'NOT_STARTED',
+  INITIALIZING: 'INITIALIZING',
+  ITEMS_MANAGER_SCREEN: 'ITEMS_MANAGER_SCREEN',
+  ITEM_WIZARD_ACTIVE: 'ITEM_WIZARD_ACTIVE',
+  READY_TO_PROCEED: 'READY_TO_PROCEED',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+} as const;
+
+export type GetNewClientFormState200 = typeof GetNewClientFormState200[keyof typeof GetNewClientFormState200];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetNewClientFormState200 = {
+  INIT: 'INIT',
+  FILLING_BASIC_INFO: 'FILLING_BASIC_INFO',
+  FILLING_CONTACT_INFO: 'FILLING_CONTACT_INFO',
+  VALIDATING: 'VALIDATING',
+  CHECKING_DUPLICATES: 'CHECKING_DUPLICATES',
+  DUPLICATES_FOUND: 'DUPLICATES_FOUND',
+  SAVING: 'SAVING',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type GetClientSearchState200 = typeof GetClientSearchState200[keyof typeof GetClientSearchState200];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetClientSearchState200 = {
+  INIT: 'INIT',
+  READY_TO_SEARCH: 'READY_TO_SEARCH',
+  SEARCHING: 'SEARCHING',
+  RESULTS_FOUND: 'RESULTS_FOUND',
+  RESULTS_DISPLAYED: 'RESULTS_DISPLAYED',
+  NO_RESULTS: 'NO_RESULTS',
+  CLIENT_SELECTED: 'CLIENT_SELECTED',
+  CREATE_NEW_CLIENT_MODE: 'CREATE_NEW_CLIENT_MODE',
+  COMPLETED: 'COMPLETED',
+  SEARCH_ERROR: 'SEARCH_ERROR',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type GetBasicOrderInfoState200 = typeof GetBasicOrderInfoState200[keyof typeof GetBasicOrderInfoState200];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetBasicOrderInfoState200 = {
+  INIT: 'INIT',
+  GENERATING_RECEIPT_NUMBER: 'GENERATING_RECEIPT_NUMBER',
+  RECEIPT_NUMBER_GENERATED: 'RECEIPT_NUMBER_GENERATED',
+  ENTERING_UNIQUE_TAG: 'ENTERING_UNIQUE_TAG',
+  UNIQUE_TAG_ENTERED: 'UNIQUE_TAG_ENTERED',
+  SELECTING_BRANCH: 'SELECTING_BRANCH',
+  BRANCH_SELECTED: 'BRANCH_SELECTED',
+  SETTING_CREATION_DATE: 'SETTING_CREATION_DATE',
+  CREATION_DATE_SET: 'CREATION_DATE_SET',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+} as const;
+
 export type GetRecommendedUnitOfMeasureParams = {
 categoryId: string;
 itemName: string;
@@ -1375,16 +2320,16 @@ export type GetCategoryByCode200 = { [key: string]: unknown };
 
 export type DownloadPdfReceipt200 = { [key: string]: unknown };
 
-export type GenerateReceiptNumberParams = {
+export type GenerateReceiptNumber1Params = {
 /**
  * ID філії/пункту прийому
  */
 branchLocationId?: string;
 };
 
-export type GenerateReceiptNumber200 = { [key: string]: unknown };
+export type GenerateReceiptNumber1200 = { [key: string]: unknown };
 
-export type GenerateReceiptNumber500 = { [key: string]: unknown };
+export type GenerateReceiptNumber1500 = { [key: string]: unknown };
 
 export type GetModifiersForServiceCategory200 = { [key: string]: unknown };
 
@@ -1429,14 +2374,14 @@ materialType?: string;
 
 export type GetRiskWarnings200 = { [key: string]: unknown };
 
-export type GetRecommendedModifiersParams = {
+export type GetRecommendedModifiers1Params = {
 stains?: string[];
 defects?: string[];
 categoryCode?: string;
 materialType?: string;
 };
 
-export type GetRecommendedModifiers200 = { [key: string]: unknown };
+export type GetRecommendedModifiers1200 = { [key: string]: unknown };
 
 export type GetModifierByCode1200 = { [key: string]: unknown };
 
@@ -1500,7 +2445,7 @@ export type GetFile200 = { [key: string]: unknown };
 
 export type GetDefectTypeByCode200 = { [key: string]: unknown };
 
-export type SearchClientsParams = {
+export type SearchClients1Params = {
 /**
  * Ключове слово для пошуку
  */

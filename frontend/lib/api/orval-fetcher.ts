@@ -27,8 +27,7 @@ declare module 'axios' {
 }
 
 // 🔧 Конфігурація
-const BASE_URL =
-  process.env.NODE_ENV === 'production' ? 'http://localhost/api' : 'http://localhost:8080/api';
+const BASE_URL = 'http://localhost:8080/api';
 
 const DEFAULT_TIMEOUT = 30000; // 30 секунд
 const MAX_RETRY_ATTEMPTS = 3;

@@ -49,7 +49,6 @@ export const Stage1ClientSelection: React.FC<Props> = ({ wizard }) => {
     setSearchQuery,
     selectClient,
     clearSelectedClient,
-    clearSearchResults,
     startNewClientCreation,
     cancelNewClientCreation,
     createNewClient,
@@ -61,10 +60,14 @@ export const Stage1ClientSelection: React.FC<Props> = ({ wizard }) => {
     isLoading,
     isSearching,
     isCreating,
+    isCreatingOrder,
     error,
     searchResults,
     availableBranches,
     hasSearchResults,
+    searchPagination,
+    searchNextPage,
+    searchPreviousPage,
   } = stage1;
 
   const handleCreateClient = async (clientData: CreateClientRequest) => {
@@ -72,7 +75,7 @@ export const Stage1ClientSelection: React.FC<Props> = ({ wizard }) => {
   };
 
   const handleClearSearch = () => {
-    clearSearchResults();
+    setSearchQuery('');
   };
 
   return (
@@ -142,7 +145,7 @@ export const Stage1ClientSelection: React.FC<Props> = ({ wizard }) => {
                     {hasSearchResults && (
                       <Box sx={{ mt: 2 }}>
                         <Typography variant="subtitle2" gutterBottom>
-                          Результати пошуку:
+                          Результати пошуку: {searchPagination.totalElements} клієнтів знайдено
                         </Typography>
                         <List>
                           {searchResults.map((client) => (
@@ -183,6 +186,39 @@ export const Stage1ClientSelection: React.FC<Props> = ({ wizard }) => {
                             </ListItemButton>
                           ))}
                         </List>
+
+                        {/* Пагінація */}
+                        {searchPagination.totalPages > 1 && (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              mt: 2,
+                            }}
+                          >
+                            <Button
+                              size="small"
+                              onClick={searchPreviousPage}
+                              disabled={!searchPagination.hasPrevious || isSearching}
+                            >
+                              Попередня
+                            </Button>
+
+                            <Typography variant="body2" color="text.secondary">
+                              Сторінка {searchPagination.currentPage + 1} з{' '}
+                              {searchPagination.totalPages}
+                            </Typography>
+
+                            <Button
+                              size="small"
+                              onClick={searchNextPage}
+                              disabled={!searchPagination.hasNext || isSearching}
+                            >
+                              Наступна
+                            </Button>
+                          </Box>
+                        )}
                       </Box>
                     )}
                   </Box>
@@ -308,6 +344,21 @@ export const Stage1ClientSelection: React.FC<Props> = ({ wizard }) => {
                 ) : (
                   <Chip label="Заповніть всі обов'язкові поля" color="warning" variant="outlined" />
                 )}
+              </Box>
+
+              {/* Кнопка завершення етапу */}
+              <Box sx={{ mt: 3 }}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={completeStage1}
+                  disabled={!isStage1Valid || isCreatingOrder}
+                  startIcon={isCreatingOrder ? <CircularProgress size={20} /> : undefined}
+                >
+                  {isCreatingOrder
+                    ? 'Створення замовлення...'
+                    : 'Перейти до етапу 2: Менеджер предметів'}
+                </Button>
               </Box>
             </CardContent>
           </Card>

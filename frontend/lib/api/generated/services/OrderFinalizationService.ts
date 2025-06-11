@@ -48,7 +48,7 @@ export class OrderFinalizationService {
      * @returns OrderDTO Замовлення успішно завершено
      * @throws ApiError
      */
-    public static finalizeOrder({
+    public static finalizeOrder1({
         requestBody,
     }: {
         requestBody: OrderFinalizationRequest,

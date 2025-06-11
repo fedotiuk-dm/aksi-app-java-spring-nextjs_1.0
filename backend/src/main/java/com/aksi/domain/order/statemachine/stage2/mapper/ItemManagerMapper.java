@@ -34,9 +34,9 @@ public class ItemManagerMapper {
     /**
      * Створює ItemManagerDTO з існуючими предметами замовлення
      */
-    public ItemManagerDTO fromExistingItems(final UUID orderId, final List<OrderItemDTO> existingItems) {
+    public ItemManagerDTO fromExistingItems(final UUID sessionId, final UUID orderId, final List<OrderItemDTO> existingItems) {
         final ItemManagerDTO manager = ItemManagerDTO.builder()
-                .sessionId(UUID.randomUUID())
+                .sessionId(sessionId)
                 .orderId(orderId)
                 .addedItems(existingItems != null ? existingItems : new java.util.ArrayList<>())
                 .currentStatus("ITEMS_LOADED")

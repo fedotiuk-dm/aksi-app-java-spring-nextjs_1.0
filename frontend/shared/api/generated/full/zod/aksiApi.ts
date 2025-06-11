@@ -11,6 +11,885 @@ import {
 
 
 /**
+ * @summary Оновити конфігурацію оплати
+ */
+export const updatePaymentConfigParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const updatePaymentConfigBodyPaymentRequestPrepaymentAmountMin = 0;
+
+
+export const updatePaymentConfigBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "paymentRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']),
+  "prepaymentAmount": zod.number().min(updatePaymentConfigBodyPaymentRequestPrepaymentAmountMin).optional()
+}).strict().optional(),
+  "paymentResponse": zod.object({
+  "orderId": zod.string().uuid().optional(),
+  "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional(),
+  "totalAmount": zod.number().optional(),
+  "discountAmount": zod.number().optional(),
+  "finalAmount": zod.number().optional(),
+  "prepaymentAmount": zod.number().optional(),
+  "balanceAmount": zod.number().optional()
+}).strict().optional(),
+  "totalAmount": zod.number().optional(),
+  "paidAmount": zod.number().optional(),
+  "remainingAmount": zod.number().optional(),
+  "isValid": zod.boolean().optional(),
+  "validationMessage": zod.string().optional(),
+  "lastUpdated": zod.string().datetime({}).optional(),
+  "fullyPaid": zod.boolean().optional(),
+  "prepaymentAmount": zod.number().optional(),
+  "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional(),
+  "readyForCompletion": zod.boolean().optional(),
+  "paymentConfigComplete": zod.boolean().optional()
+}).strict()
+
+export const updatePaymentConfig200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const updatePaymentConfig400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updatePaymentConfig401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updatePaymentConfig403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updatePaymentConfig404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updatePaymentConfig409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновити параметри виконання
+ */
+export const updateExecutionParamsParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const updateExecutionParamsBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "serviceCategoryIds": zod.array(zod.string().uuid()).optional(),
+  "completionDateRequest": zod.object({
+  "serviceCategoryIds": zod.array(zod.string().uuid()).min(1),
+  "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H'])
+}).strict().optional(),
+  "completionDateResponse": zod.object({
+  "expectedCompletionDate": zod.string().datetime({}).optional(),
+  "standardProcessingHours": zod.number().optional(),
+  "expeditedProcessingHours": zod.number().optional()
+}).strict().optional(),
+  "manualExecutionDate": zod.string().date().optional(),
+  "useManualDate": zod.boolean().optional(),
+  "needsRecalculation": zod.boolean().optional(),
+  "lastUpdated": zod.string().datetime({}).optional(),
+  "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H']).optional(),
+  "readyForCompletion": zod.boolean().optional(),
+  "executionParamsComplete": zod.boolean().optional(),
+  "effectiveExecutionDate": zod.string().datetime({}).optional()
+}).strict()
+
+export const updateExecutionParams200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const updateExecutionParams400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateExecutionParams401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateExecutionParams403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateExecutionParams404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateExecutionParams409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновити конфігурацію знижок
+ */
+export const updateDiscountConfigParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const updateDiscountConfigBodyDiscountRequestDiscountPercentageMin = 0;
+
+export const updateDiscountConfigBodyDiscountRequestDiscountPercentageMax = 100;
+export const updateDiscountConfigBodyDiscountRequestDiscountDescriptionMin = 0;
+
+export const updateDiscountConfigBodyDiscountRequestDiscountDescriptionMax = 255;
+
+
+export const updateDiscountConfigBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "discountRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']),
+  "discountPercentage": zod.number().min(updateDiscountConfigBodyDiscountRequestDiscountPercentageMin).max(updateDiscountConfigBodyDiscountRequestDiscountPercentageMax).optional(),
+  "discountDescription": zod.string().min(updateDiscountConfigBodyDiscountRequestDiscountDescriptionMin).max(updateDiscountConfigBodyDiscountRequestDiscountDescriptionMax).optional()
+}).strict().optional(),
+  "discountResponse": zod.object({
+  "orderId": zod.string().uuid().optional(),
+  "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']).optional(),
+  "discountPercentage": zod.number().optional(),
+  "discountDescription": zod.string().optional(),
+  "totalAmount": zod.number().optional(),
+  "discountAmount": zod.number().optional(),
+  "finalAmount": zod.number().optional(),
+  "nonDiscountableCategories": zod.array(zod.string()).optional(),
+  "nonDiscountableAmount": zod.number().optional()
+}).strict().optional(),
+  "excludedCategoryIds": zod.array(zod.string().uuid()).optional(),
+  "originalAmount": zod.number().optional(),
+  "discountAmount": zod.number().optional(),
+  "finalAmount": zod.number().optional(),
+  "isValid": zod.boolean().optional(),
+  "validationMessage": zod.string().optional(),
+  "lastUpdated": zod.string().datetime({}).optional(),
+  "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']).optional(),
+  "discountPercentage": zod.number().optional(),
+  "discountDescription": zod.string().optional(),
+  "readyForCompletion": zod.boolean().optional(),
+  "discountConfigComplete": zod.boolean().optional()
+}).strict()
+
+export const updateDiscountConfig200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const updateDiscountConfig400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateDiscountConfig401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateDiscountConfig403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateDiscountConfig404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateDiscountConfig409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновити додаткову інформацію
+ */
+export const updateAdditionalInfoParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const updateAdditionalInfoBodyAdditionalInfoRequestAdditionalRequirementsMin = 0;
+
+export const updateAdditionalInfoBodyAdditionalInfoRequestAdditionalRequirementsMax = 1000;
+export const updateAdditionalInfoBodyAdditionalInfoRequestCustomerNotesMin = 0;
+
+export const updateAdditionalInfoBodyAdditionalInfoRequestCustomerNotesMax = 1000;
+
+
+export const updateAdditionalInfoBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "additionalInfoRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "additionalRequirements": zod.string().min(updateAdditionalInfoBodyAdditionalInfoRequestAdditionalRequirementsMin).max(updateAdditionalInfoBodyAdditionalInfoRequestAdditionalRequirementsMax).optional(),
+  "customerNotes": zod.string().min(updateAdditionalInfoBodyAdditionalInfoRequestCustomerNotesMin).max(updateAdditionalInfoBodyAdditionalInfoRequestCustomerNotesMax).optional()
+}).strict().optional(),
+  "additionalInfoResponse": zod.object({
+  "orderId": zod.string().uuid().optional(),
+  "additionalRequirements": zod.string().optional(),
+  "customerNotes": zod.string().optional()
+}).strict().optional(),
+  "hasAdditionalRequirements": zod.boolean().optional(),
+  "hasCustomerNotes": zod.boolean().optional(),
+  "isValid": zod.boolean().optional(),
+  "validationMessage": zod.string().optional(),
+  "lastUpdated": zod.string().datetime({}).optional(),
+  "customerNotes": zod.string().optional(),
+  "additionalRequirements": zod.string().optional(),
+  "readyForCompletion": zod.boolean().optional(),
+  "additionalInfoComplete": zod.boolean().optional()
+}).strict()
+
+export const updateAdditionalInfo200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const updateAdditionalInfo400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateAdditionalInfo401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateAdditionalInfo403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateAdditionalInfo404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateAdditionalInfo409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновлює існуючий предмет замовлення (з підвізарда)
+ */
+export const updateItemInOrderParams = zod.object({
+  "sessionId": zod.string().uuid(),
+  "itemId": zod.string().uuid()
+}).strict()
+
+export const updateItemInOrderBodyNameMin = 0;
+
+export const updateItemInOrderBodyNameMax = 255;
+export const updateItemInOrderBodyDescriptionMin = 0;
+
+export const updateItemInOrderBodyDescriptionMax = 1000;
+export const updateItemInOrderBodySpecialInstructionsMin = 0;
+
+export const updateItemInOrderBodySpecialInstructionsMax = 500;
+export const updateItemInOrderBodyDefectsNotesMin = 0;
+
+export const updateItemInOrderBodyDefectsNotesMax = 1000;
+
+
+export const updateItemInOrderBody = zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(updateItemInOrderBodyNameMin).max(updateItemInOrderBodyNameMax),
+  "description": zod.string().min(updateItemInOrderBodyDescriptionMin).max(updateItemInOrderBodyDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(updateItemInOrderBodySpecialInstructionsMin).max(updateItemInOrderBodySpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(updateItemInOrderBodyDefectsNotesMin).max(updateItemInOrderBodyDefectsNotesMax).optional()
+}).strict()
+
+export const updateItemInOrder200ResponseAddedItemsItemNameMin = 0;
+
+export const updateItemInOrder200ResponseAddedItemsItemNameMax = 255;
+export const updateItemInOrder200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const updateItemInOrder200ResponseAddedItemsItemDescriptionMax = 1000;
+export const updateItemInOrder200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const updateItemInOrder200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const updateItemInOrder200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const updateItemInOrder200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const updateItemInOrder200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(updateItemInOrder200ResponseAddedItemsItemNameMin).max(updateItemInOrder200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(updateItemInOrder200ResponseAddedItemsItemDescriptionMin).max(updateItemInOrder200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(updateItemInOrder200ResponseAddedItemsItemSpecialInstructionsMin).max(updateItemInOrder200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(updateItemInOrder200ResponseAddedItemsItemDefectsNotesMin).max(updateItemInOrder200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const updateItemInOrder400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateItemInOrder401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateItemInOrder403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateItemInOrder404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateItemInOrder409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Видаляє предмет з замовлення
+ */
+export const deleteItemFromOrderParams = zod.object({
+  "sessionId": zod.string().uuid(),
+  "itemId": zod.string().uuid()
+}).strict()
+
+export const deleteItemFromOrder200ResponseAddedItemsItemNameMin = 0;
+
+export const deleteItemFromOrder200ResponseAddedItemsItemNameMax = 255;
+export const deleteItemFromOrder200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const deleteItemFromOrder200ResponseAddedItemsItemDescriptionMax = 1000;
+export const deleteItemFromOrder200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const deleteItemFromOrder200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const deleteItemFromOrder200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const deleteItemFromOrder200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const deleteItemFromOrder200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(deleteItemFromOrder200ResponseAddedItemsItemNameMin).max(deleteItemFromOrder200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(deleteItemFromOrder200ResponseAddedItemsItemDescriptionMin).max(deleteItemFromOrder200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(deleteItemFromOrder200ResponseAddedItemsItemSpecialInstructionsMin).max(deleteItemFromOrder200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(deleteItemFromOrder200ResponseAddedItemsItemDefectsNotesMin).max(deleteItemFromOrder200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const deleteItemFromOrder400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const deleteItemFromOrder401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const deleteItemFromOrder403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const deleteItemFromOrder404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const deleteItemFromOrder409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує поточні дані форми
+ */
+export const getCurrentNewClientFormParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const getCurrentNewClientForm200Response = zod.object({
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "informationSource": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "status": zod.enum(['EMPTY', 'BASIC_FILLED', 'DETAILED_FILLED', 'COMMUNICATION_SET', 'SOURCE_SET', 'READY_FOR_VALIDATION', 'VALID', 'INVALID']).optional(),
+  "fullName": zod.string().optional(),
+  "otherInformationSource": zod.boolean().optional()
+}).strict()
+
+export const getCurrentNewClientForm400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentNewClientForm401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentNewClientForm403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentNewClientForm404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentNewClientForm409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновлює дані форми клієнта
+ */
+export const updateNewClientDataParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const updateNewClientDataBody = zod.object({
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "informationSource": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "status": zod.enum(['EMPTY', 'BASIC_FILLED', 'DETAILED_FILLED', 'COMMUNICATION_SET', 'SOURCE_SET', 'READY_FOR_VALIDATION', 'VALID', 'INVALID']).optional(),
+  "fullName": zod.string().optional(),
+  "otherInformationSource": zod.boolean().optional()
+}).strict()
+
+export const updateNewClientData400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateNewClientData401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateNewClientData403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateNewClientData404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateNewClientData409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує поточну базову інформацію
+ */
+export const getCurrentBasicOrderInfoParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const getCurrentBasicOrderInfo200ResponseSelectedBranchPhoneRegExp = new RegExp('^\\+ ? [0-9\\s-()]{10,15}$');
+
+
+export const getCurrentBasicOrderInfo200Response = zod.object({
+  "receiptNumber": zod.string().optional(),
+  "uniqueTag": zod.string().optional(),
+  "selectedBranch": zod.object({
+  "id": zod.string().uuid().optional(),
+  "name": zod.string().min(1),
+  "address": zod.string().min(1),
+  "phone": zod.string().regex(getCurrentBasicOrderInfo200ResponseSelectedBranchPhoneRegExp).optional(),
+  "code": zod.string().min(1),
+  "active": zod.boolean().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional()
+}).strict().optional(),
+  "selectedBranchId": zod.string().uuid().optional(),
+  "creationDate": zod.string().datetime({}).optional(),
+  "receiptNumberGenerated": zod.boolean().optional(),
+  "uniqueTagEntered": zod.boolean().optional(),
+  "branchSelected": zod.boolean().optional(),
+  "creationDateSet": zod.boolean().optional(),
+  "complete": zod.boolean().optional(),
+  "receiptNumberValid": zod.boolean().optional(),
+  "uniqueTagValid": zod.boolean().optional()
+}).strict()
+
+export const getCurrentBasicOrderInfo400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentBasicOrderInfo401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentBasicOrderInfo403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentBasicOrderInfo404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentBasicOrderInfo409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновлює базову інформацію
+ */
+export const updateBasicOrderInfoParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const updateBasicOrderInfoBodySelectedBranchPhoneRegExp = new RegExp('^\\+ ? [0-9\\s-()]{10,15}$');
+
+
+export const updateBasicOrderInfoBody = zod.object({
+  "receiptNumber": zod.string().optional(),
+  "uniqueTag": zod.string().optional(),
+  "selectedBranch": zod.object({
+  "id": zod.string().uuid().optional(),
+  "name": zod.string().min(1),
+  "address": zod.string().min(1),
+  "phone": zod.string().regex(updateBasicOrderInfoBodySelectedBranchPhoneRegExp).optional(),
+  "code": zod.string().min(1),
+  "active": zod.boolean().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional()
+}).strict().optional(),
+  "selectedBranchId": zod.string().uuid().optional(),
+  "creationDate": zod.string().datetime({}).optional(),
+  "receiptNumberGenerated": zod.boolean().optional(),
+  "uniqueTagEntered": zod.boolean().optional(),
+  "branchSelected": zod.boolean().optional(),
+  "creationDateSet": zod.boolean().optional(),
+  "complete": zod.boolean().optional(),
+  "receiptNumberValid": zod.boolean().optional(),
+  "uniqueTagValid": zod.boolean().optional()
+}).strict()
+
+export const updateBasicOrderInfo400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateBasicOrderInfo401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateBasicOrderInfo403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateBasicOrderInfo404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateBasicOrderInfo409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
  * Повертає тип плями за вказаним ідентифікатором
  * @summary Отримати тип плями за ID
  */
@@ -2747,6 +3626,6164 @@ export const setActiveStatus409Response = zod.object({
 
 
 /**
+ * @summary Валідація конфігурації квитанції
+ */
+export const validateReceiptConfigurationBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['STAGE4_INITIALIZED', 'ORDER_SUMMARY_REVIEW', 'LEGAL_ACCEPTANCE', 'LEGAL_ACCEPTANCE_COMPLETED', 'RECEIPT_GENERATION', 'RECEIPT_GENERATED', 'ORDER_COMPLETION', 'STAGE4_COMPLETED', 'STAGE4_ERROR']).optional(),
+  "generationRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "format": zod.string().optional(),
+  "includeSignature": zod.boolean().optional()
+}).strict().optional().describe('Параметри генерації квитанції'),
+  "generatedReceipt": zod.object({
+  "orderId": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "tagNumber": zod.string().optional(),
+  "createdDate": zod.string().datetime({}).optional(),
+  "expectedCompletionDate": zod.string().datetime({}).optional(),
+  "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H']).optional(),
+  "branchInfo": zod.object({
+  "branchName": zod.string().optional(),
+  "address": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "operatorName": zod.string().optional()
+}).strict().optional(),
+  "clientInfo": zod.object({
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "communicationChannels": zod.array(zod.string()).optional()
+}).strict().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "serviceCategory": zod.string().optional(),
+  "quantity": zod.number().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "material": zod.string().optional(),
+  "color": zod.string().optional(),
+  "filler": zod.string().optional(),
+  "wearPercentage": zod.number().optional(),
+  "basePrice": zod.number().optional(),
+  "finalPrice": zod.number().optional(),
+  "priceModifiers": zod.array(zod.object({
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "percentageValue": zod.number().optional(),
+  "fixedValue": zod.number().optional(),
+  "impact": zod.number().optional()
+}).strict()).optional(),
+  "stains": zod.array(zod.string()).optional(),
+  "defects": zod.array(zod.string()).optional(),
+  "notes": zod.string().optional()
+}).strict()).optional(),
+  "financialInfo": zod.object({
+  "totalAmount": zod.number().optional(),
+  "discountAmount": zod.number().optional(),
+  "discountType": zod.string().optional(),
+  "expediteSurcharge": zod.number().optional(),
+  "finalAmount": zod.number().optional(),
+  "prepaymentAmount": zod.number().optional(),
+  "balanceAmount": zod.number().optional()
+}).strict().optional(),
+  "legalTerms": zod.string().optional(),
+  "customerSignatureData": zod.string().optional(),
+  "termsAccepted": zod.boolean().optional(),
+  "additionalNotes": zod.string().optional(),
+  "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional()
+}).strict().optional(),
+  "pdfGenerated": zod.boolean().optional(),
+  "emailSent": zod.boolean().optional(),
+  "readyForPrint": zod.boolean().optional(),
+  "pdfFilePath": zod.string().optional(),
+  "generationTimestamp": zod.string().datetime({}).optional(),
+  "validationMessage": zod.string().optional(),
+  "hasValidationErrors": zod.boolean().optional()
+}).strict()
+
+export const validateReceiptConfiguration200Response = zod.object({
+
+})
+
+export const validateReceiptConfiguration400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateReceiptConfiguration401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateReceiptConfiguration403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateReceiptConfiguration404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateReceiptConfiguration409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідація підтвердження замовлення
+ */
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityMin = 2;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityMax = 100;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityRegExp = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetMin = 2;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetMax = 150;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingMin = 0;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingMax = 20;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentMin = 0;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentMax = 20;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeMin = 0;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeMax = 10;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeRegExp = new RegExp('^[0-9\\-]+$');
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressFullAddressMin = 5;
+
+export const validateOrderConfirmationBodyOrderSummaryClientStructuredAddressFullAddressMax = 500;
+export const validateOrderConfirmationBodyOrderSummaryClientPreferencesItemKeyMin = 0;
+
+export const validateOrderConfirmationBodyOrderSummaryClientPreferencesItemKeyMax = 100;
+export const validateOrderConfirmationBodyOrderSummaryClientPreferencesItemValueMin = 0;
+
+export const validateOrderConfirmationBodyOrderSummaryClientPreferencesItemValueMax = 255;
+export const validateOrderConfirmationBodyOrderSummaryBranchLocationPhoneRegExp = new RegExp('^\\+ ? [0-9\\s-()]{10,15}$');
+
+
+export const validateOrderConfirmationBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['STAGE4_INITIALIZED', 'ORDER_SUMMARY_REVIEW', 'LEGAL_ACCEPTANCE', 'LEGAL_ACCEPTANCE_COMPLETED', 'RECEIPT_GENERATION', 'RECEIPT_GENERATED', 'ORDER_COMPLETION', 'STAGE4_COMPLETED', 'STAGE4_ERROR']).optional(),
+  "orderSummary": zod.object({
+  "id": zod.string().uuid().optional().describe('ID замовлення'),
+  "receiptNumber": zod.string().optional().describe('Номер квитанції замовлення'),
+  "tagNumber": zod.string().optional().describe('Номер мітки замовлення'),
+  "client": zod.object({
+  "id": zod.string().uuid().optional(),
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "fullName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "structuredAddress": zod.object({
+  "city": zod.string().min(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityMin).max(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityMax).regex(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityRegExp).optional(),
+  "street": zod.string().min(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetMin).max(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetMax).regex(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetRegExp).optional(),
+  "building": zod.string().min(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingMin).max(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingMax).regex(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingRegExp).optional(),
+  "apartment": zod.string().min(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentMin).max(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentMax).regex(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentRegExp).optional(),
+  "postalCode": zod.string().min(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeMin).max(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeMax).regex(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeRegExp).optional(),
+  "fullAddress": zod.string().min(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressFullAddressMin).max(validateOrderConfirmationBodyOrderSummaryClientStructuredAddressFullAddressMax).optional()
+}).strict().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional(),
+  "category": zod.object({
+  "code": zod.string().optional(),
+  "displayName": zod.string().optional()
+}).strict().optional(),
+  "preferences": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "key": zod.string().min(validateOrderConfirmationBodyOrderSummaryClientPreferencesItemKeyMin).max(validateOrderConfirmationBodyOrderSummaryClientPreferencesItemKeyMax),
+  "value": zod.string().min(validateOrderConfirmationBodyOrderSummaryClientPreferencesItemValueMin).max(validateOrderConfirmationBodyOrderSummaryClientPreferencesItemValueMax).optional()
+}).strict()).optional(),
+  "recentOrders": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'NEW', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED']).optional(),
+  "totalAmount": zod.number().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "completionDate": zod.string().datetime({}).optional(),
+  "itemCount": zod.number().optional()
+}).strict()).optional(),
+  "orderCount": zod.number().optional()
+}).strict().optional(),
+  "branchLocation": zod.object({
+  "id": zod.string().uuid().optional(),
+  "name": zod.string().min(1),
+  "address": zod.string().min(1),
+  "phone": zod.string().regex(validateOrderConfirmationBodyOrderSummaryBranchLocationPhoneRegExp).optional(),
+  "code": zod.string().min(1),
+  "active": zod.boolean().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional()
+}).strict().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional().describe('ID предмета замовлення'),
+  "name": zod.string().optional().describe('Найменування предмета'),
+  "category": zod.string().optional().describe('Категорія послуги'),
+  "quantity": zod.number().optional().describe('Кількість'),
+  "unitOfMeasure": zod.string().optional().describe('Одиниця виміру'),
+  "material": zod.string().optional().describe('Матеріал предмета'),
+  "color": zod.string().optional().describe('Колір предмета'),
+  "filler": zod.string().optional().describe('Наповнювач предмета'),
+  "fillerClumped": zod.boolean().optional().describe('Прапорець, що вказує, чи є наповнювач збитим'),
+  "wearPercentage": zod.number().optional().describe('Ступінь зносу (у відсотках)'),
+  "stains": zod.array(zod.string()).optional().describe('Список виявлених плям на предметі'),
+  "defects": zod.array(zod.string()).optional().describe('Список виявлених дефектів та ризиків'),
+  "defectNotes": zod.string().optional().describe('Примітки щодо дефектів'),
+  "basePrice": zod.number().optional().describe('Базова ціна предмета'),
+  "priceModifiers": zod.array(zod.object({
+  "name": zod.string().optional().describe('Назва модифікатора'),
+  "description": zod.string().optional().describe('Опис модифікатора'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional().describe('Тип модифікатора'),
+  "value": zod.number().optional().describe('Значення модифікатора'),
+  "amount": zod.number().optional().describe('Сума модифікатора')
+}).strict().describe('Модифікатор ціни предмета замовлення')).optional().describe('Список застосованих модифікаторів ціни'),
+  "finalPrice": zod.number().optional().describe('Фінальна ціна предмета'),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional().describe('Фотографії предмета')
+}).strict().describe('Детальна інформація про предмет замовлення з розрахунком вартості')).optional().describe('Список предметів замовлення з детальними розрахунками'),
+  "totalAmount": zod.number().optional().describe('Загальна вартість замовлення до знижок'),
+  "discountAmount": zod.number().optional().describe('Сума знижки'),
+  "expediteSurchargeAmount": zod.number().optional().describe('Сума надбавки за терміновість'),
+  "finalAmount": zod.number().optional().describe('Фінальна вартість замовлення з урахуванням знижок та надбавок'),
+  "prepaymentAmount": zod.number().optional().describe('Сума передоплати'),
+  "balanceAmount": zod.number().optional().describe('Сума до сплати при отриманні'),
+  "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H']).optional().describe('Тип термінового виконання'),
+  "expectedCompletionDate": zod.string().datetime({}).optional().describe('Очікувана дата виконання замовлення'),
+  "createdDate": zod.string().datetime({}).optional().describe('Дата створення замовлення'),
+  "customerNotes": zod.string().optional().describe('Примітки клієнта'),
+  "discountType": zod.string().optional().describe('Тип знижки'),
+  "discountPercentage": zod.number().optional().describe('Відсоток знижки')
+}).strict().optional().describe('Детальний підсумок замовлення для етапу перегляду та підтвердження'),
+  "readyForConfirmation": zod.boolean().optional(),
+  "summaryReviewed": zod.boolean().optional(),
+  "validationMessage": zod.string().optional(),
+  "hasValidationErrors": zod.boolean().optional()
+}).strict()
+
+export const validateOrderConfirmation200Response = zod.object({
+
+})
+
+export const validateOrderConfirmation400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateOrderConfirmation401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateOrderConfirmation403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateOrderConfirmation404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateOrderConfirmation409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідація завершення замовлення
+ */
+export const validateOrderCompletionBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['STAGE4_INITIALIZED', 'ORDER_SUMMARY_REVIEW', 'LEGAL_ACCEPTANCE', 'LEGAL_ACCEPTANCE_COMPLETED', 'RECEIPT_GENERATION', 'RECEIPT_GENERATED', 'ORDER_COMPLETION', 'STAGE4_COMPLETED', 'STAGE4_ERROR']).optional(),
+  "finalizationRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "signatureData": zod.string().optional(),
+  "termsAccepted": zod.boolean().optional(),
+  "sendReceiptByEmail": zod.boolean().optional(),
+  "generatePrintableReceipt": zod.boolean().optional(),
+  "comments": zod.string().optional()
+}).strict().optional(),
+  "orderProcessed": zod.boolean().optional(),
+  "orderSaved": zod.boolean().optional(),
+  "wizardCompleted": zod.boolean().optional(),
+  "completionTimestamp": zod.string().datetime({}).optional(),
+  "createdOrderNumber": zod.string().optional(),
+  "completionMessage": zod.string().optional(),
+  "hasValidationErrors": zod.boolean().optional()
+}).strict()
+
+export const validateOrderCompletion200Response = zod.object({
+
+})
+
+export const validateOrderCompletion400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateOrderCompletion401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateOrderCompletion403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateOrderCompletion404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateOrderCompletion409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідація юридичного прийняття
+ */
+export const validateLegalAcceptanceBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['STAGE4_INITIALIZED', 'ORDER_SUMMARY_REVIEW', 'LEGAL_ACCEPTANCE', 'LEGAL_ACCEPTANCE_COMPLETED', 'RECEIPT_GENERATION', 'RECEIPT_GENERATED', 'ORDER_COMPLETION', 'STAGE4_COMPLETED', 'STAGE4_ERROR']).optional(),
+  "signatureRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "signatureData": zod.string().min(1),
+  "termsAccepted": zod.boolean(),
+  "signatureType": zod.string().optional()
+}).strict().optional().describe('Дані підпису клієнта'),
+  "termsRead": zod.boolean().optional(),
+  "signatureCaptured": zod.boolean().optional(),
+  "legalConfirmed": zod.boolean().optional(),
+  "acceptanceTimestamp": zod.string().datetime({}).optional(),
+  "validationMessage": zod.string().optional(),
+  "hasValidationErrors": zod.boolean().optional()
+}).strict()
+
+export const validateLegalAcceptance200Response = zod.object({
+
+})
+
+export const validateLegalAcceptance400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateLegalAcceptance401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateLegalAcceptance403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateLegalAcceptance404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateLegalAcceptance409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Збереження підпису клієнта
+ */
+export const saveSignatureBody = zod.object({
+  "orderId": zod.string().uuid(),
+  "signatureData": zod.string().min(1),
+  "termsAccepted": zod.boolean(),
+  "signatureType": zod.string().optional()
+}).strict().describe('Дані підпису клієнта')
+
+export const saveSignature200Response = zod.object({
+
+})
+
+export const saveSignature400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const saveSignature401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const saveSignature403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const saveSignature404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const saveSignature409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновлення конфігурації квитанції
+ */
+export const updateReceiptConfigurationParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const updateReceiptConfigurationBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['STAGE4_INITIALIZED', 'ORDER_SUMMARY_REVIEW', 'LEGAL_ACCEPTANCE', 'LEGAL_ACCEPTANCE_COMPLETED', 'RECEIPT_GENERATION', 'RECEIPT_GENERATED', 'ORDER_COMPLETION', 'STAGE4_COMPLETED', 'STAGE4_ERROR']).optional(),
+  "generationRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "format": zod.string().optional(),
+  "includeSignature": zod.boolean().optional()
+}).strict().optional().describe('Параметри генерації квитанції'),
+  "generatedReceipt": zod.object({
+  "orderId": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "tagNumber": zod.string().optional(),
+  "createdDate": zod.string().datetime({}).optional(),
+  "expectedCompletionDate": zod.string().datetime({}).optional(),
+  "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H']).optional(),
+  "branchInfo": zod.object({
+  "branchName": zod.string().optional(),
+  "address": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "operatorName": zod.string().optional()
+}).strict().optional(),
+  "clientInfo": zod.object({
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "communicationChannels": zod.array(zod.string()).optional()
+}).strict().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "serviceCategory": zod.string().optional(),
+  "quantity": zod.number().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "material": zod.string().optional(),
+  "color": zod.string().optional(),
+  "filler": zod.string().optional(),
+  "wearPercentage": zod.number().optional(),
+  "basePrice": zod.number().optional(),
+  "finalPrice": zod.number().optional(),
+  "priceModifiers": zod.array(zod.object({
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "percentageValue": zod.number().optional(),
+  "fixedValue": zod.number().optional(),
+  "impact": zod.number().optional()
+}).strict()).optional(),
+  "stains": zod.array(zod.string()).optional(),
+  "defects": zod.array(zod.string()).optional(),
+  "notes": zod.string().optional()
+}).strict()).optional(),
+  "financialInfo": zod.object({
+  "totalAmount": zod.number().optional(),
+  "discountAmount": zod.number().optional(),
+  "discountType": zod.string().optional(),
+  "expediteSurcharge": zod.number().optional(),
+  "finalAmount": zod.number().optional(),
+  "prepaymentAmount": zod.number().optional(),
+  "balanceAmount": zod.number().optional()
+}).strict().optional(),
+  "legalTerms": zod.string().optional(),
+  "customerSignatureData": zod.string().optional(),
+  "termsAccepted": zod.boolean().optional(),
+  "additionalNotes": zod.string().optional(),
+  "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional()
+}).strict().optional(),
+  "pdfGenerated": zod.boolean().optional(),
+  "emailSent": zod.boolean().optional(),
+  "readyForPrint": zod.boolean().optional(),
+  "pdfFilePath": zod.string().optional(),
+  "generationTimestamp": zod.string().datetime({}).optional(),
+  "validationMessage": zod.string().optional(),
+  "hasValidationErrors": zod.boolean().optional()
+}).strict()
+
+export const updateReceiptConfiguration200Response = zod.object({
+
+})
+
+export const updateReceiptConfiguration400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateReceiptConfiguration401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateReceiptConfiguration403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateReceiptConfiguration404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateReceiptConfiguration409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновлення підтвердження замовлення
+ */
+export const updateOrderConfirmationParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityMin = 2;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityMax = 100;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityRegExp = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetMin = 2;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetMax = 150;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingMin = 0;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingMax = 20;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentMin = 0;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentMax = 20;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeMin = 0;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeMax = 10;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeRegExp = new RegExp('^[0-9\\-]+$');
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressFullAddressMin = 5;
+
+export const updateOrderConfirmationBodyOrderSummaryClientStructuredAddressFullAddressMax = 500;
+export const updateOrderConfirmationBodyOrderSummaryClientPreferencesItemKeyMin = 0;
+
+export const updateOrderConfirmationBodyOrderSummaryClientPreferencesItemKeyMax = 100;
+export const updateOrderConfirmationBodyOrderSummaryClientPreferencesItemValueMin = 0;
+
+export const updateOrderConfirmationBodyOrderSummaryClientPreferencesItemValueMax = 255;
+export const updateOrderConfirmationBodyOrderSummaryBranchLocationPhoneRegExp = new RegExp('^\\+ ? [0-9\\s-()]{10,15}$');
+
+
+export const updateOrderConfirmationBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['STAGE4_INITIALIZED', 'ORDER_SUMMARY_REVIEW', 'LEGAL_ACCEPTANCE', 'LEGAL_ACCEPTANCE_COMPLETED', 'RECEIPT_GENERATION', 'RECEIPT_GENERATED', 'ORDER_COMPLETION', 'STAGE4_COMPLETED', 'STAGE4_ERROR']).optional(),
+  "orderSummary": zod.object({
+  "id": zod.string().uuid().optional().describe('ID замовлення'),
+  "receiptNumber": zod.string().optional().describe('Номер квитанції замовлення'),
+  "tagNumber": zod.string().optional().describe('Номер мітки замовлення'),
+  "client": zod.object({
+  "id": zod.string().uuid().optional(),
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "fullName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "structuredAddress": zod.object({
+  "city": zod.string().min(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityMin).max(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityMax).regex(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressCityRegExp).optional(),
+  "street": zod.string().min(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetMin).max(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetMax).regex(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressStreetRegExp).optional(),
+  "building": zod.string().min(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingMin).max(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingMax).regex(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressBuildingRegExp).optional(),
+  "apartment": zod.string().min(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentMin).max(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentMax).regex(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressApartmentRegExp).optional(),
+  "postalCode": zod.string().min(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeMin).max(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeMax).regex(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressPostalCodeRegExp).optional(),
+  "fullAddress": zod.string().min(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressFullAddressMin).max(updateOrderConfirmationBodyOrderSummaryClientStructuredAddressFullAddressMax).optional()
+}).strict().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional(),
+  "category": zod.object({
+  "code": zod.string().optional(),
+  "displayName": zod.string().optional()
+}).strict().optional(),
+  "preferences": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "key": zod.string().min(updateOrderConfirmationBodyOrderSummaryClientPreferencesItemKeyMin).max(updateOrderConfirmationBodyOrderSummaryClientPreferencesItemKeyMax),
+  "value": zod.string().min(updateOrderConfirmationBodyOrderSummaryClientPreferencesItemValueMin).max(updateOrderConfirmationBodyOrderSummaryClientPreferencesItemValueMax).optional()
+}).strict()).optional(),
+  "recentOrders": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'NEW', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED']).optional(),
+  "totalAmount": zod.number().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "completionDate": zod.string().datetime({}).optional(),
+  "itemCount": zod.number().optional()
+}).strict()).optional(),
+  "orderCount": zod.number().optional()
+}).strict().optional(),
+  "branchLocation": zod.object({
+  "id": zod.string().uuid().optional(),
+  "name": zod.string().min(1),
+  "address": zod.string().min(1),
+  "phone": zod.string().regex(updateOrderConfirmationBodyOrderSummaryBranchLocationPhoneRegExp).optional(),
+  "code": zod.string().min(1),
+  "active": zod.boolean().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional()
+}).strict().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional().describe('ID предмета замовлення'),
+  "name": zod.string().optional().describe('Найменування предмета'),
+  "category": zod.string().optional().describe('Категорія послуги'),
+  "quantity": zod.number().optional().describe('Кількість'),
+  "unitOfMeasure": zod.string().optional().describe('Одиниця виміру'),
+  "material": zod.string().optional().describe('Матеріал предмета'),
+  "color": zod.string().optional().describe('Колір предмета'),
+  "filler": zod.string().optional().describe('Наповнювач предмета'),
+  "fillerClumped": zod.boolean().optional().describe('Прапорець, що вказує, чи є наповнювач збитим'),
+  "wearPercentage": zod.number().optional().describe('Ступінь зносу (у відсотках)'),
+  "stains": zod.array(zod.string()).optional().describe('Список виявлених плям на предметі'),
+  "defects": zod.array(zod.string()).optional().describe('Список виявлених дефектів та ризиків'),
+  "defectNotes": zod.string().optional().describe('Примітки щодо дефектів'),
+  "basePrice": zod.number().optional().describe('Базова ціна предмета'),
+  "priceModifiers": zod.array(zod.object({
+  "name": zod.string().optional().describe('Назва модифікатора'),
+  "description": zod.string().optional().describe('Опис модифікатора'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional().describe('Тип модифікатора'),
+  "value": zod.number().optional().describe('Значення модифікатора'),
+  "amount": zod.number().optional().describe('Сума модифікатора')
+}).strict().describe('Модифікатор ціни предмета замовлення')).optional().describe('Список застосованих модифікаторів ціни'),
+  "finalPrice": zod.number().optional().describe('Фінальна ціна предмета'),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional().describe('Фотографії предмета')
+}).strict().describe('Детальна інформація про предмет замовлення з розрахунком вартості')).optional().describe('Список предметів замовлення з детальними розрахунками'),
+  "totalAmount": zod.number().optional().describe('Загальна вартість замовлення до знижок'),
+  "discountAmount": zod.number().optional().describe('Сума знижки'),
+  "expediteSurchargeAmount": zod.number().optional().describe('Сума надбавки за терміновість'),
+  "finalAmount": zod.number().optional().describe('Фінальна вартість замовлення з урахуванням знижок та надбавок'),
+  "prepaymentAmount": zod.number().optional().describe('Сума передоплати'),
+  "balanceAmount": zod.number().optional().describe('Сума до сплати при отриманні'),
+  "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H']).optional().describe('Тип термінового виконання'),
+  "expectedCompletionDate": zod.string().datetime({}).optional().describe('Очікувана дата виконання замовлення'),
+  "createdDate": zod.string().datetime({}).optional().describe('Дата створення замовлення'),
+  "customerNotes": zod.string().optional().describe('Примітки клієнта'),
+  "discountType": zod.string().optional().describe('Тип знижки'),
+  "discountPercentage": zod.number().optional().describe('Відсоток знижки')
+}).strict().optional().describe('Детальний підсумок замовлення для етапу перегляду та підтвердження'),
+  "readyForConfirmation": zod.boolean().optional(),
+  "summaryReviewed": zod.boolean().optional(),
+  "validationMessage": zod.string().optional(),
+  "hasValidationErrors": zod.boolean().optional()
+}).strict()
+
+export const updateOrderConfirmation200Response = zod.object({
+
+})
+
+export const updateOrderConfirmation400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateOrderConfirmation401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateOrderConfirmation403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateOrderConfirmation404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateOrderConfirmation409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновлення завершення замовлення
+ */
+export const updateOrderCompletion1Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const updateOrderCompletion1Body = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['STAGE4_INITIALIZED', 'ORDER_SUMMARY_REVIEW', 'LEGAL_ACCEPTANCE', 'LEGAL_ACCEPTANCE_COMPLETED', 'RECEIPT_GENERATION', 'RECEIPT_GENERATED', 'ORDER_COMPLETION', 'STAGE4_COMPLETED', 'STAGE4_ERROR']).optional(),
+  "finalizationRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "signatureData": zod.string().optional(),
+  "termsAccepted": zod.boolean().optional(),
+  "sendReceiptByEmail": zod.boolean().optional(),
+  "generatePrintableReceipt": zod.boolean().optional(),
+  "comments": zod.string().optional()
+}).strict().optional(),
+  "orderProcessed": zod.boolean().optional(),
+  "orderSaved": zod.boolean().optional(),
+  "wizardCompleted": zod.boolean().optional(),
+  "completionTimestamp": zod.string().datetime({}).optional(),
+  "createdOrderNumber": zod.string().optional(),
+  "completionMessage": zod.string().optional(),
+  "hasValidationErrors": zod.boolean().optional()
+}).strict()
+
+export const updateOrderCompletion1200Response = zod.object({
+
+})
+
+export const updateOrderCompletion1400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateOrderCompletion1401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateOrderCompletion1403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateOrderCompletion1404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateOrderCompletion1409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Оновлення юридичного прийняття
+ */
+export const updateLegalAcceptanceParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const updateLegalAcceptanceBody = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['STAGE4_INITIALIZED', 'ORDER_SUMMARY_REVIEW', 'LEGAL_ACCEPTANCE', 'LEGAL_ACCEPTANCE_COMPLETED', 'RECEIPT_GENERATION', 'RECEIPT_GENERATED', 'ORDER_COMPLETION', 'STAGE4_COMPLETED', 'STAGE4_ERROR']).optional(),
+  "signatureRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "signatureData": zod.string().min(1),
+  "termsAccepted": zod.boolean(),
+  "signatureType": zod.string().optional()
+}).strict().optional().describe('Дані підпису клієнта'),
+  "termsRead": zod.boolean().optional(),
+  "signatureCaptured": zod.boolean().optional(),
+  "legalConfirmed": zod.boolean().optional(),
+  "acceptanceTimestamp": zod.string().datetime({}).optional(),
+  "validationMessage": zod.string().optional(),
+  "hasValidationErrors": zod.boolean().optional()
+}).strict()
+
+export const updateLegalAcceptance200Response = zod.object({
+
+})
+
+export const updateLegalAcceptance400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateLegalAcceptance401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateLegalAcceptance403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateLegalAcceptance404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const updateLegalAcceptance409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Закриття сесії
+ */
+export const closeSessionParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const closeSession200Response = zod.object({
+
+})
+
+export const closeSession400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Генерація квитанції
+ */
+export const generateReceiptBody = zod.object({
+  "orderId": zod.string().uuid(),
+  "format": zod.string().optional(),
+  "includeSignature": zod.boolean().optional()
+}).strict().describe('Параметри генерації квитанції')
+
+export const generateReceipt200Response = zod.object({
+
+})
+
+export const generateReceipt400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generateReceipt401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generateReceipt403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generateReceipt404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generateReceipt409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Генерація PDF квитанції
+ */
+export const generatePdfReceiptBody = zod.object({
+  "orderId": zod.string().uuid(),
+  "format": zod.string().optional(),
+  "includeSignature": zod.boolean().optional()
+}).strict().describe('Параметри генерації квитанції')
+
+export const generatePdfReceipt200Response = zod.object({
+
+})
+
+export const generatePdfReceipt400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generatePdfReceipt401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generatePdfReceipt403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generatePdfReceipt404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generatePdfReceipt409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізація Stage4 для замовлення
+ */
+export const initializeStage4Params = zod.object({
+  "orderId": zod.string().uuid()
+}).strict()
+
+export const initializeStage4200Response = zod.object({
+
+})
+
+export const initializeStage4400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeStage4401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeStage4403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeStage4404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeStage4409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Фіналізація замовлення
+ */
+export const finalizeOrderBody = zod.object({
+  "orderId": zod.string().uuid(),
+  "signatureData": zod.string().optional(),
+  "termsAccepted": zod.boolean().optional(),
+  "sendReceiptByEmail": zod.boolean().optional(),
+  "generatePrintableReceipt": zod.boolean().optional(),
+  "comments": zod.string().optional()
+}).strict()
+
+export const finalizeOrder200Response = zod.object({
+
+})
+
+export const finalizeOrder400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const finalizeOrder401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const finalizeOrder403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const finalizeOrder404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const finalizeOrder409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Створити нову сесію Stage3
+ */
+export const createSessionBody = zod.string().uuid()
+
+export const createSession200Response = zod.string().uuid()
+
+export const createSession400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const createSession401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const createSession403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const createSession404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const createSession409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізувати Stage3 для сесії
+ */
+export const initializeStage3Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const initializeStage3400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeStage3401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeStage3403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeStage3404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeStage3409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Закрити сесію
+ */
+export const closeSession1Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const closeSession1400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession1401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession1403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession1404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession1409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Запускає новий підвізард додавання предмета
+ */
+export const startNewItemWizardParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const startNewItemWizard200ResponseAddedItemsItemNameMin = 0;
+
+export const startNewItemWizard200ResponseAddedItemsItemNameMax = 255;
+export const startNewItemWizard200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const startNewItemWizard200ResponseAddedItemsItemDescriptionMax = 1000;
+export const startNewItemWizard200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const startNewItemWizard200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const startNewItemWizard200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const startNewItemWizard200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const startNewItemWizard200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(startNewItemWizard200ResponseAddedItemsItemNameMin).max(startNewItemWizard200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(startNewItemWizard200ResponseAddedItemsItemDescriptionMin).max(startNewItemWizard200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(startNewItemWizard200ResponseAddedItemsItemSpecialInstructionsMin).max(startNewItemWizard200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(startNewItemWizard200ResponseAddedItemsItemDefectsNotesMin).max(startNewItemWizard200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const startNewItemWizard400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startNewItemWizard401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startNewItemWizard403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startNewItemWizard404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startNewItemWizard409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Запускає підвізард редагування існуючого предмета
+ */
+export const startEditItemWizardParams = zod.object({
+  "sessionId": zod.string().uuid(),
+  "itemId": zod.string().uuid()
+}).strict()
+
+export const startEditItemWizard200ResponseAddedItemsItemNameMin = 0;
+
+export const startEditItemWizard200ResponseAddedItemsItemNameMax = 255;
+export const startEditItemWizard200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const startEditItemWizard200ResponseAddedItemsItemDescriptionMax = 1000;
+export const startEditItemWizard200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const startEditItemWizard200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const startEditItemWizard200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const startEditItemWizard200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const startEditItemWizard200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(startEditItemWizard200ResponseAddedItemsItemNameMin).max(startEditItemWizard200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(startEditItemWizard200ResponseAddedItemsItemDescriptionMin).max(startEditItemWizard200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(startEditItemWizard200ResponseAddedItemsItemSpecialInstructionsMin).max(startEditItemWizard200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(startEditItemWizard200ResponseAddedItemsItemDefectsNotesMin).max(startEditItemWizard200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const startEditItemWizard400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startEditItemWizard401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startEditItemWizard403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startEditItemWizard404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startEditItemWizard409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Закриває активний підвізард без збереження
+ */
+export const closeWizardParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const closeWizard200ResponseAddedItemsItemNameMin = 0;
+
+export const closeWizard200ResponseAddedItemsItemNameMax = 255;
+export const closeWizard200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const closeWizard200ResponseAddedItemsItemDescriptionMax = 1000;
+export const closeWizard200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const closeWizard200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const closeWizard200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const closeWizard200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const closeWizard200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(closeWizard200ResponseAddedItemsItemNameMin).max(closeWizard200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(closeWizard200ResponseAddedItemsItemDescriptionMin).max(closeWizard200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(closeWizard200ResponseAddedItemsItemSpecialInstructionsMin).max(closeWizard200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(closeWizard200ResponseAddedItemsItemDefectsNotesMin).max(closeWizard200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const closeWizard400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeWizard401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeWizard403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeWizard404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeWizard409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Синхронізує стан менеджера
+ */
+export const synchronizeManagerParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const synchronizeManager200ResponseAddedItemsItemNameMin = 0;
+
+export const synchronizeManager200ResponseAddedItemsItemNameMax = 255;
+export const synchronizeManager200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const synchronizeManager200ResponseAddedItemsItemDescriptionMax = 1000;
+export const synchronizeManager200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const synchronizeManager200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const synchronizeManager200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const synchronizeManager200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const synchronizeManager200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(synchronizeManager200ResponseAddedItemsItemNameMin).max(synchronizeManager200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(synchronizeManager200ResponseAddedItemsItemDescriptionMin).max(synchronizeManager200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(synchronizeManager200ResponseAddedItemsItemSpecialInstructionsMin).max(synchronizeManager200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(synchronizeManager200ResponseAddedItemsItemDefectsNotesMin).max(synchronizeManager200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const synchronizeManager400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const synchronizeManager401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const synchronizeManager403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const synchronizeManager404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const synchronizeManager409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Додавання фотографії
+ */
+export const addPhotoParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const addPhotoBody = zod.object({
+  "file": zod.instanceof(File)
+}).strict()
+
+export const addPhoto200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const addPhoto400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addPhoto401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addPhoto403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addPhoto404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addPhoto409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Завершення фотодокументації
+ */
+export const completePhotoDocumentationParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const completePhotoDocumentation200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const completePhotoDocumentation400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completePhotoDocumentation401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completePhotoDocumentation403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completePhotoDocumentation404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completePhotoDocumentation409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізація підетапу 5 - Фотодокументація
+ */
+export const initializeSubstep5Params = zod.object({
+  "itemId": zod.string().uuid()
+}).strict()
+
+export const initializeSubstep5200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const initializeSubstep5400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep5401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep5403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep5404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep5409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Скидання розрахунку
+ */
+export const resetCalculationParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const resetCalculation200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const resetCalculation400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetCalculation401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetCalculation403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetCalculation404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetCalculation409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Додавання модифікатора до розрахунку
+ */
+export const addModifierParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const addModifierBody = zod.object({
+  "modifierId": zod.string().optional(),
+  "rangeValue": zod.number().optional(),
+  "quantity": zod.number().optional()
+}).strict()
+
+export const addModifier200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const addModifier400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addModifier401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addModifier403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addModifier404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addModifier409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізація підетапу 4
+ */
+export const initializeSubstep4Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const initializeSubstep4BodyCharacteristicsCurrentItemDescriptionMin = 0;
+
+export const initializeSubstep4BodyCharacteristicsCurrentItemDescriptionMax = 1000;
+export const initializeSubstep4BodyCharacteristicsCurrentItemSpecialInstructionsMin = 0;
+
+export const initializeSubstep4BodyCharacteristicsCurrentItemSpecialInstructionsMax = 500;
+export const initializeSubstep4BodyCharacteristicsCurrentItemDefectsNotesMin = 0;
+
+export const initializeSubstep4BodyCharacteristicsCurrentItemDefectsNotesMax = 1000;
+export const initializeSubstep4BodyStainsDefectsCurrentItemDescriptionMin = 0;
+
+export const initializeSubstep4BodyStainsDefectsCurrentItemDescriptionMax = 1000;
+export const initializeSubstep4BodyStainsDefectsCurrentItemSpecialInstructionsMin = 0;
+
+export const initializeSubstep4BodyStainsDefectsCurrentItemSpecialInstructionsMax = 500;
+export const initializeSubstep4BodyStainsDefectsCurrentItemDefectsNotesMin = 0;
+
+export const initializeSubstep4BodyStainsDefectsCurrentItemDefectsNotesMax = 1000;
+
+
+export const initializeSubstep4Body = zod.object({
+  "basicInfo": zod.object({
+  "itemId": zod.string().uuid().optional(),
+  "serviceCategory": zod.object({
+  "id": zod.string().uuid().optional(),
+  "code": zod.string().optional(),
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "sortOrder": zod.number().optional(),
+  "active": zod.boolean().optional(),
+  "standardProcessingDays": zod.number().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict()).optional()
+}).strict().optional(),
+  "priceListItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "quantity": zod.number().optional(),
+  "totalBasePrice": zod.number().optional(),
+  "valid": zod.boolean().optional(),
+  "complete": zod.boolean().optional()
+}).strict().optional(),
+  "characteristics": zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(initializeSubstep4BodyCharacteristicsCurrentItemDescriptionMin).max(initializeSubstep4BodyCharacteristicsCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(initializeSubstep4BodyCharacteristicsCurrentItemSpecialInstructionsMin).max(initializeSubstep4BodyCharacteristicsCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(initializeSubstep4BodyCharacteristicsCurrentItemDefectsNotesMin).max(initializeSubstep4BodyCharacteristicsCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "materialSelectionCompleted": zod.boolean().optional(),
+  "colorSelectionCompleted": zod.boolean().optional(),
+  "fillerSelectionCompleted": zod.boolean().optional(),
+  "wearDegreeSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional()
+}).strict().optional(),
+  "stainsDefects": zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(initializeSubstep4BodyStainsDefectsCurrentItemDescriptionMin).max(initializeSubstep4BodyStainsDefectsCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(initializeSubstep4BodyStainsDefectsCurrentItemSpecialInstructionsMin).max(initializeSubstep4BodyStainsDefectsCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(initializeSubstep4BodyStainsDefectsCurrentItemDefectsNotesMin).max(initializeSubstep4BodyStainsDefectsCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "stainsSelectionCompleted": zod.boolean().optional(),
+  "defectsSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional(),
+  "noGuaranteeReasonRequired": zod.boolean().optional(),
+  "noGuarantee": zod.boolean().optional()
+}).strict().optional()
+}).strict()
+
+export const initializeSubstep4200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const initializeSubstep4400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep4401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep4403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep4404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep4409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Підтвердження розрахунку та завершення підетапу
+ */
+export const confirmCalculationParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const confirmCalculation200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const confirmCalculation400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const confirmCalculation401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const confirmCalculation403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const confirmCalculation404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const confirmCalculation409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Розрахунок ціни
+ */
+export const calculatePriceBodyCalculationRequestCategoryCodeRegExp = new RegExp('^[A-Z_]+$');
+export const calculatePriceBodyCalculationRequestItemNameMin = 0;
+
+export const calculatePriceBodyCalculationRequestItemNameMax = 255;
+export const calculatePriceBodyCalculationRequestColorMax = 100;
+export const calculatePriceBodyCalculationRequestQuantityMax = 1000;
+export const calculatePriceBodyCalculationRequestModifierIdsMin = 0;
+
+export const calculatePriceBodyCalculationRequestModifierIdsMax = 20;
+export const calculatePriceBodyCalculationRequestRangeModifierValuesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const calculatePriceBodyCalculationRequestRangeModifierValuesItemPercentageMin = 0;
+
+export const calculatePriceBodyCalculationRequestRangeModifierValuesItemPercentageMax = 200;
+export const calculatePriceBodyCalculationRequestRangeModifierValuesMin = 0;
+
+export const calculatePriceBodyCalculationRequestRangeModifierValuesMax = 10;
+export const calculatePriceBodyCalculationRequestFixedModifierQuantitiesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const calculatePriceBodyCalculationRequestFixedModifierQuantitiesItemQuantityMax = 100;
+export const calculatePriceBodyCalculationRequestFixedModifierQuantitiesMin = 0;
+
+export const calculatePriceBodyCalculationRequestFixedModifierQuantitiesMax = 10;
+export const calculatePriceBodyCalculationRequestExpeditePercentMin = 0;
+
+export const calculatePriceBodyCalculationRequestExpeditePercentMax = 200;
+export const calculatePriceBodyCalculationRequestDiscountPercentMin = 0;
+
+export const calculatePriceBodyCalculationRequestDiscountPercentMax = 50;
+export const calculatePriceBodyCalculationResponseBaseUnitPriceMin = 0;
+export const calculatePriceBodyCalculationResponseBaseTotalPriceMin = 0;
+export const calculatePriceBodyCalculationResponseFinalUnitPriceMin = 0;
+export const calculatePriceBodyCalculationResponseFinalTotalPriceMin = 0;
+export const calculatePriceBodyRangeModifierValuesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const calculatePriceBodyRangeModifierValuesItemPercentageMin = 0;
+
+export const calculatePriceBodyRangeModifierValuesItemPercentageMax = 200;
+export const calculatePriceBodyFixedModifierQuantitiesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const calculatePriceBodyFixedModifierQuantitiesItemQuantityMax = 100;
+
+
+export const calculatePriceBody = zod.object({
+  "calculationRequest": zod.object({
+  "categoryCode": zod.string().min(1).regex(calculatePriceBodyCalculationRequestCategoryCodeRegExp).describe('Код категорії послуги'),
+  "itemName": zod.string().min(calculatePriceBodyCalculationRequestItemNameMin).max(calculatePriceBodyCalculationRequestItemNameMax).describe('Найменування предмету з прайс-листа'),
+  "color": zod.string().max(calculatePriceBodyCalculationRequestColorMax).optional().describe('Колір предмету'),
+  "quantity": zod.number().min(1).max(calculatePriceBodyCalculationRequestQuantityMax).describe('Кількість предметів'),
+  "modifierCodes": zod.array(zod.string()).optional().describe('Список кодів модифікаторів для застосування'),
+  "modifierIds": zod.array(zod.string()).min(calculatePriceBodyCalculationRequestModifierIdsMin).max(calculatePriceBodyCalculationRequestModifierIdsMax).optional().describe('Список ID модифікаторів для застосування'),
+  "rangeModifierValues": zod.array(zod.object({
+  "modifierId": zod.string().min(1).regex(calculatePriceBodyCalculationRequestRangeModifierValuesItemModifierIdRegExp).describe('ID модифікатора'),
+  "percentage": zod.number().min(calculatePriceBodyCalculationRequestRangeModifierValuesItemPercentageMin).max(calculatePriceBodyCalculationRequestRangeModifierValuesItemPercentageMax).describe('Вибраний відсоток для модифікатора')
+}).strict().describe('Значення відсотка для модифікатора діапазону')).min(calculatePriceBodyCalculationRequestRangeModifierValuesMin).max(calculatePriceBodyCalculationRequestRangeModifierValuesMax).optional().describe('Значення відсотків для модифікаторів діапазону'),
+  "fixedModifierQuantities": zod.array(zod.object({
+  "modifierId": zod.string().min(1).regex(calculatePriceBodyCalculationRequestFixedModifierQuantitiesItemModifierIdRegExp).describe('ID модифікатора'),
+  "quantity": zod.number().min(1).max(calculatePriceBodyCalculationRequestFixedModifierQuantitiesItemQuantityMax).describe('Кількість одиниць для модифікатора')
+}).strict().describe('Кількість для модифікатора з фіксованою ціною')).min(calculatePriceBodyCalculationRequestFixedModifierQuantitiesMin).max(calculatePriceBodyCalculationRequestFixedModifierQuantitiesMax).optional().describe('Кількості для модифікаторів з фіксованою ціною'),
+  "expedited": zod.boolean().optional().describe('Чи термінове замовлення'),
+  "expeditePercent": zod.number().min(calculatePriceBodyCalculationRequestExpeditePercentMin).max(calculatePriceBodyCalculationRequestExpeditePercentMax).optional().describe('Відсоток надбавки за терміновість'),
+  "discountPercent": zod.number().min(calculatePriceBodyCalculationRequestDiscountPercentMin).max(calculatePriceBodyCalculationRequestDiscountPercentMax).optional().describe('Відсоток знижки')
+}).strict().optional().describe('Запит на розрахунок ціни предмету з модифікаторами'),
+  "calculationResponse": zod.object({
+  "baseUnitPrice": zod.number().min(calculatePriceBodyCalculationResponseBaseUnitPriceMin).optional().describe('Початкова базова ціна за одиницю з прайс-листа'),
+  "quantity": zod.number().min(1).optional().describe('Кількість предметів'),
+  "baseTotalPrice": zod.number().min(calculatePriceBodyCalculationResponseBaseTotalPriceMin).optional().describe('Сума базових цін за всі предмети без модифікаторів'),
+  "unitOfMeasure": zod.enum(['шт', 'кг', 'кв.м', 'пара']).optional().describe('Одиниця виміру'),
+  "finalUnitPrice": zod.number().min(calculatePriceBodyCalculationResponseFinalUnitPriceMin).optional().describe('Кінцева ціна за одиницю з урахуванням всіх модифікаторів'),
+  "finalTotalPrice": zod.number().min(calculatePriceBodyCalculationResponseFinalTotalPriceMin).optional().describe('Загальна кінцева ціна за всі предмети з урахуванням всіх модифікаторів'),
+  "calculationDetails": zod.array(zod.object({
+  "step": zod.number().optional(),
+  "stepName": zod.string().optional(),
+  "description": zod.string().optional(),
+  "modifierCode": zod.string().optional(),
+  "modifierName": zod.string().optional(),
+  "modifierValue": zod.string().optional(),
+  "priceBefore": zod.number().optional(),
+  "priceAfter": zod.number().optional(),
+  "priceDifference": zod.number().optional()
+}).strict()).optional().describe('Список деталей розрахунку для кожного кроку обчислення')
+}).strict().optional().describe('Результат розрахунку ціни для предмета'),
+  "selectedModifierIds": zod.array(zod.string()).optional(),
+  "rangeModifierValues": zod.array(zod.object({
+  "modifierId": zod.string().min(1).regex(calculatePriceBodyRangeModifierValuesItemModifierIdRegExp).describe('ID модифікатора'),
+  "percentage": zod.number().min(calculatePriceBodyRangeModifierValuesItemPercentageMin).max(calculatePriceBodyRangeModifierValuesItemPercentageMax).describe('Вибраний відсоток для модифікатора')
+}).strict().describe('Значення відсотка для модифікатора діапазону')).optional(),
+  "fixedModifierQuantities": zod.array(zod.object({
+  "modifierId": zod.string().min(1).regex(calculatePriceBodyFixedModifierQuantitiesItemModifierIdRegExp).describe('ID модифікатора'),
+  "quantity": zod.number().min(1).max(calculatePriceBodyFixedModifierQuantitiesItemQuantityMax).describe('Кількість одиниць для модифікатора')
+}).strict().describe('Кількість для модифікатора з фіксованою ціною')).optional(),
+  "calculationNotes": zod.string().optional(),
+  "calculationCompleted": zod.boolean().optional(),
+  "hasCalculationErrors": zod.boolean().optional(),
+  "errorMessage": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "finalPrice": zod.number().optional(),
+  "calculationDetails": zod.array(zod.object({
+  "step": zod.number().optional(),
+  "stepName": zod.string().optional(),
+  "description": zod.string().optional(),
+  "modifierCode": zod.string().optional(),
+  "modifierName": zod.string().optional(),
+  "modifierValue": zod.string().optional(),
+  "priceBefore": zod.number().optional(),
+  "priceAfter": zod.number().optional(),
+  "priceDifference": zod.number().optional()
+}).strict()).optional(),
+  "modifiersCount": zod.number().optional()
+}).strict()
+
+export const calculatePrice200ResponseBaseUnitPriceMin = 0;
+export const calculatePrice200ResponseBaseTotalPriceMin = 0;
+export const calculatePrice200ResponseFinalUnitPriceMin = 0;
+export const calculatePrice200ResponseFinalTotalPriceMin = 0;
+
+
+export const calculatePrice200Response = zod.object({
+  "baseUnitPrice": zod.number().min(calculatePrice200ResponseBaseUnitPriceMin).optional().describe('Початкова базова ціна за одиницю з прайс-листа'),
+  "quantity": zod.number().min(1).optional().describe('Кількість предметів'),
+  "baseTotalPrice": zod.number().min(calculatePrice200ResponseBaseTotalPriceMin).optional().describe('Сума базових цін за всі предмети без модифікаторів'),
+  "unitOfMeasure": zod.enum(['шт', 'кг', 'кв.м', 'пара']).optional().describe('Одиниця виміру'),
+  "finalUnitPrice": zod.number().min(calculatePrice200ResponseFinalUnitPriceMin).optional().describe('Кінцева ціна за одиницю з урахуванням всіх модифікаторів'),
+  "finalTotalPrice": zod.number().min(calculatePrice200ResponseFinalTotalPriceMin).optional().describe('Загальна кінцева ціна за всі предмети з урахуванням всіх модифікаторів'),
+  "calculationDetails": zod.array(zod.object({
+  "step": zod.number().optional(),
+  "stepName": zod.string().optional(),
+  "description": zod.string().optional(),
+  "modifierCode": zod.string().optional(),
+  "modifierName": zod.string().optional(),
+  "modifierValue": zod.string().optional(),
+  "priceBefore": zod.number().optional(),
+  "priceAfter": zod.number().optional(),
+  "priceDifference": zod.number().optional()
+}).strict()).optional().describe('Список деталей розрахунку для кожного кроку обчислення')
+}).strict().describe('Результат розрахунку ціни для предмета')
+
+export const calculatePrice400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculatePrice401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculatePrice403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculatePrice404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculatePrice409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Розрахунок фінальної ціни з усіма модифікаторами
+ */
+export const calculateFinalPriceParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const calculateFinalPrice200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const calculateFinalPrice400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculateFinalPrice401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculateFinalPrice403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculateFinalPrice404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculateFinalPrice409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Розрахунок базової ціни предмета
+ */
+export const calculateBasePriceParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const calculateBasePrice200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const calculateBasePrice400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculateBasePrice401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculateBasePrice403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculateBasePrice404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const calculateBasePrice409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Обробка вибору плям
+ */
+export const processStainSelectionParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const processStainSelectionQueryParams = zod.object({
+  "selectedStains": zod.string().optional(),
+  "otherStains": zod.string().optional()
+}).strict()
+
+export const processStainSelection200ResponseDataCurrentItemDescriptionMin = 0;
+
+export const processStainSelection200ResponseDataCurrentItemDescriptionMax = 1000;
+export const processStainSelection200ResponseDataCurrentItemSpecialInstructionsMin = 0;
+
+export const processStainSelection200ResponseDataCurrentItemSpecialInstructionsMax = 500;
+export const processStainSelection200ResponseDataCurrentItemDefectsNotesMin = 0;
+
+export const processStainSelection200ResponseDataCurrentItemDefectsNotesMax = 1000;
+
+
+export const processStainSelection200Response = zod.object({
+  "currentState": zod.enum(['NOT_STARTED', 'SELECTING_STAINS', 'SELECTING_DEFECTS', 'ENTERING_NOTES', 'VALIDATING_DATA', 'COMPLETED', 'ERROR']).optional(),
+  "data": zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(processStainSelection200ResponseDataCurrentItemDescriptionMin).max(processStainSelection200ResponseDataCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(processStainSelection200ResponseDataCurrentItemSpecialInstructionsMin).max(processStainSelection200ResponseDataCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(processStainSelection200ResponseDataCurrentItemDefectsNotesMin).max(processStainSelection200ResponseDataCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "stainsSelectionCompleted": zod.boolean().optional(),
+  "defectsSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional(),
+  "noGuaranteeReasonRequired": zod.boolean().optional(),
+  "noGuarantee": zod.boolean().optional()
+}).strict().optional(),
+  "errorMessage": zod.string().optional()
+}).strict()
+
+export const processStainSelection400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processStainSelection401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processStainSelection403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processStainSelection404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processStainSelection409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Обробка додавання приміток про дефекти
+ */
+export const processDefectNotesParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const processDefectNotesQueryParams = zod.object({
+  "defectNotes": zod.string().optional()
+}).strict()
+
+export const processDefectNotes200ResponseDataCurrentItemDescriptionMin = 0;
+
+export const processDefectNotes200ResponseDataCurrentItemDescriptionMax = 1000;
+export const processDefectNotes200ResponseDataCurrentItemSpecialInstructionsMin = 0;
+
+export const processDefectNotes200ResponseDataCurrentItemSpecialInstructionsMax = 500;
+export const processDefectNotes200ResponseDataCurrentItemDefectsNotesMin = 0;
+
+export const processDefectNotes200ResponseDataCurrentItemDefectsNotesMax = 1000;
+
+
+export const processDefectNotes200Response = zod.object({
+  "currentState": zod.enum(['NOT_STARTED', 'SELECTING_STAINS', 'SELECTING_DEFECTS', 'ENTERING_NOTES', 'VALIDATING_DATA', 'COMPLETED', 'ERROR']).optional(),
+  "data": zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(processDefectNotes200ResponseDataCurrentItemDescriptionMin).max(processDefectNotes200ResponseDataCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(processDefectNotes200ResponseDataCurrentItemSpecialInstructionsMin).max(processDefectNotes200ResponseDataCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(processDefectNotes200ResponseDataCurrentItemDefectsNotesMin).max(processDefectNotes200ResponseDataCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "stainsSelectionCompleted": zod.boolean().optional(),
+  "defectsSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional(),
+  "noGuaranteeReasonRequired": zod.boolean().optional(),
+  "noGuarantee": zod.boolean().optional()
+}).strict().optional(),
+  "errorMessage": zod.string().optional()
+}).strict()
+
+export const processDefectNotes400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processDefectNotes401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processDefectNotes403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processDefectNotes404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processDefectNotes409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізація підетапу 3
+ */
+export const initializeSubstep3Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const initializeSubstep3BodyDescriptionMin = 0;
+
+export const initializeSubstep3BodyDescriptionMax = 1000;
+export const initializeSubstep3BodySpecialInstructionsMin = 0;
+
+export const initializeSubstep3BodySpecialInstructionsMax = 500;
+export const initializeSubstep3BodyDefectsNotesMin = 0;
+
+export const initializeSubstep3BodyDefectsNotesMax = 1000;
+
+
+export const initializeSubstep3Body = zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(initializeSubstep3BodyDescriptionMin).max(initializeSubstep3BodyDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(initializeSubstep3BodySpecialInstructionsMin).max(initializeSubstep3BodySpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(initializeSubstep3BodyDefectsNotesMin).max(initializeSubstep3BodyDefectsNotesMax).optional()
+}).strict()
+
+export const initializeSubstep3200ResponseDataCurrentItemDescriptionMin = 0;
+
+export const initializeSubstep3200ResponseDataCurrentItemDescriptionMax = 1000;
+export const initializeSubstep3200ResponseDataCurrentItemSpecialInstructionsMin = 0;
+
+export const initializeSubstep3200ResponseDataCurrentItemSpecialInstructionsMax = 500;
+export const initializeSubstep3200ResponseDataCurrentItemDefectsNotesMin = 0;
+
+export const initializeSubstep3200ResponseDataCurrentItemDefectsNotesMax = 1000;
+
+
+export const initializeSubstep3200Response = zod.object({
+  "currentState": zod.enum(['NOT_STARTED', 'SELECTING_STAINS', 'SELECTING_DEFECTS', 'ENTERING_NOTES', 'VALIDATING_DATA', 'COMPLETED', 'ERROR']).optional(),
+  "data": zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(initializeSubstep3200ResponseDataCurrentItemDescriptionMin).max(initializeSubstep3200ResponseDataCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(initializeSubstep3200ResponseDataCurrentItemSpecialInstructionsMin).max(initializeSubstep3200ResponseDataCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(initializeSubstep3200ResponseDataCurrentItemDefectsNotesMin).max(initializeSubstep3200ResponseDataCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "stainsSelectionCompleted": zod.boolean().optional(),
+  "defectsSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional(),
+  "noGuaranteeReasonRequired": zod.boolean().optional(),
+  "noGuarantee": zod.boolean().optional()
+}).strict().optional(),
+  "errorMessage": zod.string().optional()
+}).strict()
+
+export const initializeSubstep3400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep3401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep3403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep3404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep3409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Повернення до попереднього стану
+ */
+export const goBackParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const goBackQueryParams = zod.object({
+  "targetState": zod.enum(['NOT_STARTED', 'SELECTING_STAINS', 'SELECTING_DEFECTS', 'ENTERING_NOTES', 'VALIDATING_DATA', 'COMPLETED', 'ERROR'])
+}).strict()
+
+export const goBack200ResponseDataCurrentItemDescriptionMin = 0;
+
+export const goBack200ResponseDataCurrentItemDescriptionMax = 1000;
+export const goBack200ResponseDataCurrentItemSpecialInstructionsMin = 0;
+
+export const goBack200ResponseDataCurrentItemSpecialInstructionsMax = 500;
+export const goBack200ResponseDataCurrentItemDefectsNotesMin = 0;
+
+export const goBack200ResponseDataCurrentItemDefectsNotesMax = 1000;
+
+
+export const goBack200Response = zod.object({
+  "currentState": zod.enum(['NOT_STARTED', 'SELECTING_STAINS', 'SELECTING_DEFECTS', 'ENTERING_NOTES', 'VALIDATING_DATA', 'COMPLETED', 'ERROR']).optional(),
+  "data": zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(goBack200ResponseDataCurrentItemDescriptionMin).max(goBack200ResponseDataCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(goBack200ResponseDataCurrentItemSpecialInstructionsMin).max(goBack200ResponseDataCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(goBack200ResponseDataCurrentItemDefectsNotesMin).max(goBack200ResponseDataCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "stainsSelectionCompleted": zod.boolean().optional(),
+  "defectsSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional(),
+  "noGuaranteeReasonRequired": zod.boolean().optional(),
+  "noGuarantee": zod.boolean().optional()
+}).strict().optional(),
+  "errorMessage": zod.string().optional()
+}).strict()
+
+export const goBack400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const goBack401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const goBack403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const goBack404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const goBack409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Обробка вибору дефектів та ризиків
+ */
+export const processDefectSelectionParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const processDefectSelectionQueryParams = zod.object({
+  "selectedDefects": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional()
+}).strict()
+
+export const processDefectSelection200ResponseDataCurrentItemDescriptionMin = 0;
+
+export const processDefectSelection200ResponseDataCurrentItemDescriptionMax = 1000;
+export const processDefectSelection200ResponseDataCurrentItemSpecialInstructionsMin = 0;
+
+export const processDefectSelection200ResponseDataCurrentItemSpecialInstructionsMax = 500;
+export const processDefectSelection200ResponseDataCurrentItemDefectsNotesMin = 0;
+
+export const processDefectSelection200ResponseDataCurrentItemDefectsNotesMax = 1000;
+
+
+export const processDefectSelection200Response = zod.object({
+  "currentState": zod.enum(['NOT_STARTED', 'SELECTING_STAINS', 'SELECTING_DEFECTS', 'ENTERING_NOTES', 'VALIDATING_DATA', 'COMPLETED', 'ERROR']).optional(),
+  "data": zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(processDefectSelection200ResponseDataCurrentItemDescriptionMin).max(processDefectSelection200ResponseDataCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(processDefectSelection200ResponseDataCurrentItemSpecialInstructionsMin).max(processDefectSelection200ResponseDataCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(processDefectSelection200ResponseDataCurrentItemDefectsNotesMin).max(processDefectSelection200ResponseDataCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "stainsSelectionCompleted": zod.boolean().optional(),
+  "defectsSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional(),
+  "noGuaranteeReasonRequired": zod.boolean().optional(),
+  "noGuarantee": zod.boolean().optional()
+}).strict().optional(),
+  "errorMessage": zod.string().optional()
+}).strict()
+
+export const processDefectSelection400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processDefectSelection401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processDefectSelection403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processDefectSelection404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const processDefectSelection409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Завершення підетапу 3
+ */
+export const completeSubstep3Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const completeSubstep3200ResponseDataCurrentItemDescriptionMin = 0;
+
+export const completeSubstep3200ResponseDataCurrentItemDescriptionMax = 1000;
+export const completeSubstep3200ResponseDataCurrentItemSpecialInstructionsMin = 0;
+
+export const completeSubstep3200ResponseDataCurrentItemSpecialInstructionsMax = 500;
+export const completeSubstep3200ResponseDataCurrentItemDefectsNotesMin = 0;
+
+export const completeSubstep3200ResponseDataCurrentItemDefectsNotesMax = 1000;
+
+
+export const completeSubstep3200Response = zod.object({
+  "currentState": zod.enum(['NOT_STARTED', 'SELECTING_STAINS', 'SELECTING_DEFECTS', 'ENTERING_NOTES', 'VALIDATING_DATA', 'COMPLETED', 'ERROR']).optional(),
+  "data": zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(completeSubstep3200ResponseDataCurrentItemDescriptionMin).max(completeSubstep3200ResponseDataCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(completeSubstep3200ResponseDataCurrentItemSpecialInstructionsMin).max(completeSubstep3200ResponseDataCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(completeSubstep3200ResponseDataCurrentItemDefectsNotesMin).max(completeSubstep3200ResponseDataCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "stainsSelectionCompleted": zod.boolean().optional(),
+  "defectsSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional(),
+  "noGuaranteeReasonRequired": zod.boolean().optional(),
+  "noGuarantee": zod.boolean().optional()
+}).strict().optional(),
+  "errorMessage": zod.string().optional()
+}).strict()
+
+export const completeSubstep3400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeSubstep3401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeSubstep3403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeSubstep3404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeSubstep3409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідує всі вибрані характеристики
+ */
+export const validateCharacteristicsParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const validateCharacteristics200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const validateCharacteristics400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCharacteristics401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCharacteristics403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCharacteristics404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCharacteristics409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Вибирає ступінь зносу
+ */
+export const selectWearLevelParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const selectWearLevelQueryParams = zod.object({
+  "wearPercentage": zod.number()
+}).strict()
+
+export const selectWearLevel200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const selectWearLevel400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectWearLevel401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectWearLevel403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectWearLevel404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectWearLevel409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Вибирає матеріал предмета
+ */
+export const selectMaterialParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const selectMaterialQueryParams = zod.object({
+  "materialId": zod.string().uuid()
+}).strict()
+
+export const selectMaterial200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const selectMaterial400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectMaterial401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectMaterial403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectMaterial404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectMaterial409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Вибирає наповнювач
+ */
+export const selectFillerParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const selectFillerQueryIsFillerDamagedDefault = false;
+
+export const selectFillerQueryParams = zod.object({
+  "fillerType": zod.string().optional(),
+  "isFillerDamaged": zod.boolean().optional()
+}).strict()
+
+export const selectFiller200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const selectFiller400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectFiller401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectFiller403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectFiller404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectFiller409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Вибирає колір предмета
+ */
+export const selectColorParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const selectColorQueryParams = zod.object({
+  "color": zod.string()
+}).strict()
+
+export const selectColor200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const selectColor400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectColor401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectColor403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectColor404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectColor409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізує підетап 2 - Характеристики
+ */
+export const initializeSubstep2Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const initializeSubstep2QueryParams = zod.object({
+  "itemId": zod.string().uuid()
+}).strict()
+
+export const initializeSubstep2200ResponseCurrentItemDescriptionMin = 0;
+
+export const initializeSubstep2200ResponseCurrentItemDescriptionMax = 1000;
+export const initializeSubstep2200ResponseCurrentItemSpecialInstructionsMin = 0;
+
+export const initializeSubstep2200ResponseCurrentItemSpecialInstructionsMax = 500;
+export const initializeSubstep2200ResponseCurrentItemDefectsNotesMin = 0;
+
+export const initializeSubstep2200ResponseCurrentItemDefectsNotesMax = 1000;
+
+
+export const initializeSubstep2200Response = zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(initializeSubstep2200ResponseCurrentItemDescriptionMin).max(initializeSubstep2200ResponseCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(initializeSubstep2200ResponseCurrentItemSpecialInstructionsMin).max(initializeSubstep2200ResponseCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(initializeSubstep2200ResponseCurrentItemDefectsNotesMin).max(initializeSubstep2200ResponseCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "materialSelectionCompleted": zod.boolean().optional(),
+  "colorSelectionCompleted": zod.boolean().optional(),
+  "fillerSelectionCompleted": zod.boolean().optional(),
+  "wearDegreeSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional()
+}).strict()
+
+export const initializeSubstep2400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep2401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep2403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep2404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeSubstep2409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Завершує підетап 2
+ */
+export const completeSubstep2Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const completeSubstep2200Response = zod.record(zod.string(), zod.any())
+
+export const completeSubstep2400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeSubstep2401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeSubstep2403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeSubstep2404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeSubstep2409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Скасовує підетап 2
+ */
+export const cancelSubstep2Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const cancelSubstep2400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelSubstep2401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelSubstep2403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelSubstep2404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelSubstep2409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідує та завершує підетап 1
+ */
+export const validateAndCompleteSubstep1Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const validateAndCompleteSubstep1200Response = zod.object({
+  "itemId": zod.string().uuid().optional(),
+  "serviceCategory": zod.object({
+  "id": zod.string().uuid().optional(),
+  "code": zod.string().optional(),
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "sortOrder": zod.number().optional(),
+  "active": zod.boolean().optional(),
+  "standardProcessingDays": zod.number().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict()).optional()
+}).strict().optional(),
+  "priceListItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "quantity": zod.number().optional(),
+  "totalBasePrice": zod.number().optional(),
+  "valid": zod.boolean().optional(),
+  "complete": zod.boolean().optional()
+}).strict()
+
+export const validateAndCompleteSubstep1400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateAndCompleteSubstep1401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateAndCompleteSubstep1403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateAndCompleteSubstep1404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateAndCompleteSubstep1409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Вибирає предмет з прайс-листа
+ */
+export const selectPriceListItemParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const selectPriceListItemQueryParams = zod.object({
+  "itemId": zod.string().uuid()
+}).strict()
+
+export const selectPriceListItem200Response = zod.object({
+  "itemId": zod.string().uuid().optional(),
+  "serviceCategory": zod.object({
+  "id": zod.string().uuid().optional(),
+  "code": zod.string().optional(),
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "sortOrder": zod.number().optional(),
+  "active": zod.boolean().optional(),
+  "standardProcessingDays": zod.number().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict()).optional()
+}).strict().optional(),
+  "priceListItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "quantity": zod.number().optional(),
+  "totalBasePrice": zod.number().optional(),
+  "valid": zod.boolean().optional(),
+  "complete": zod.boolean().optional()
+}).strict()
+
+export const selectPriceListItem400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectPriceListItem401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectPriceListItem403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectPriceListItem404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectPriceListItem409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Вибирає категорію послуги
+ */
+export const selectServiceCategoryParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const selectServiceCategoryQueryParams = zod.object({
+  "categoryId": zod.string().uuid()
+}).strict()
+
+export const selectServiceCategory200Response = zod.object({
+  "itemId": zod.string().uuid().optional(),
+  "serviceCategory": zod.object({
+  "id": zod.string().uuid().optional(),
+  "code": zod.string().optional(),
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "sortOrder": zod.number().optional(),
+  "active": zod.boolean().optional(),
+  "standardProcessingDays": zod.number().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict()).optional()
+}).strict().optional(),
+  "priceListItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "quantity": zod.number().optional(),
+  "totalBasePrice": zod.number().optional(),
+  "valid": zod.boolean().optional(),
+  "complete": zod.boolean().optional()
+}).strict()
+
+export const selectServiceCategory400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectServiceCategory401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectServiceCategory403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectServiceCategory404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectServiceCategory409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Скидає підетап 1 до початкового стану
+ */
+export const resetSubstep1Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const resetSubstep1200Response = zod.object({
+  "itemId": zod.string().uuid().optional(),
+  "serviceCategory": zod.object({
+  "id": zod.string().uuid().optional(),
+  "code": zod.string().optional(),
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "sortOrder": zod.number().optional(),
+  "active": zod.boolean().optional(),
+  "standardProcessingDays": zod.number().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict()).optional()
+}).strict().optional(),
+  "priceListItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "quantity": zod.number().optional(),
+  "totalBasePrice": zod.number().optional(),
+  "valid": zod.boolean().optional(),
+  "complete": zod.boolean().optional()
+}).strict()
+
+export const resetSubstep1400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetSubstep1401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetSubstep1403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetSubstep1404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetSubstep1409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Вводить кількість
+ */
+export const enterQuantityParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const enterQuantityQueryParams = zod.object({
+  "quantity": zod.number()
+}).strict()
+
+export const enterQuantity200Response = zod.object({
+  "itemId": zod.string().uuid().optional(),
+  "serviceCategory": zod.object({
+  "id": zod.string().uuid().optional(),
+  "code": zod.string().optional(),
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "sortOrder": zod.number().optional(),
+  "active": zod.boolean().optional(),
+  "standardProcessingDays": zod.number().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict()).optional()
+}).strict().optional(),
+  "priceListItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "quantity": zod.number().optional(),
+  "totalBasePrice": zod.number().optional(),
+  "valid": zod.boolean().optional(),
+  "complete": zod.boolean().optional()
+}).strict()
+
+export const enterQuantity400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const enterQuantity401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const enterQuantity403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const enterQuantity404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const enterQuantity409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Починає новий підетап 1 - Основна інформація
+ */
+export const startSubstep1200Response = zod.object({
+  "itemId": zod.string().uuid().optional(),
+  "serviceCategory": zod.object({
+  "id": zod.string().uuid().optional(),
+  "code": zod.string().optional(),
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "sortOrder": zod.number().optional(),
+  "active": zod.boolean().optional(),
+  "standardProcessingDays": zod.number().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict()).optional()
+}).strict().optional(),
+  "priceListItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "quantity": zod.number().optional(),
+  "totalBasePrice": zod.number().optional(),
+  "valid": zod.boolean().optional(),
+  "complete": zod.boolean().optional()
+}).strict()
+
+export const startSubstep1400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startSubstep1401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startSubstep1403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startSubstep1404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startSubstep1409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Скидає сесію до початкового стану
+ */
+export const resetSessionParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const resetSession400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetSession401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetSession403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetSession404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetSession409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Додає новий предмет до замовлення (з підвізарда)
+ */
+export const addItemToOrderParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const addItemToOrderBodyNameMin = 0;
+
+export const addItemToOrderBodyNameMax = 255;
+export const addItemToOrderBodyDescriptionMin = 0;
+
+export const addItemToOrderBodyDescriptionMax = 1000;
+export const addItemToOrderBodySpecialInstructionsMin = 0;
+
+export const addItemToOrderBodySpecialInstructionsMax = 500;
+export const addItemToOrderBodyDefectsNotesMin = 0;
+
+export const addItemToOrderBodyDefectsNotesMax = 1000;
+
+
+export const addItemToOrderBody = zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(addItemToOrderBodyNameMin).max(addItemToOrderBodyNameMax),
+  "description": zod.string().min(addItemToOrderBodyDescriptionMin).max(addItemToOrderBodyDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(addItemToOrderBodySpecialInstructionsMin).max(addItemToOrderBodySpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(addItemToOrderBodyDefectsNotesMin).max(addItemToOrderBodyDefectsNotesMax).optional()
+}).strict()
+
+export const addItemToOrder200ResponseAddedItemsItemNameMin = 0;
+
+export const addItemToOrder200ResponseAddedItemsItemNameMax = 255;
+export const addItemToOrder200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const addItemToOrder200ResponseAddedItemsItemDescriptionMax = 1000;
+export const addItemToOrder200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const addItemToOrder200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const addItemToOrder200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const addItemToOrder200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const addItemToOrder200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(addItemToOrder200ResponseAddedItemsItemNameMin).max(addItemToOrder200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(addItemToOrder200ResponseAddedItemsItemDescriptionMin).max(addItemToOrder200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(addItemToOrder200ResponseAddedItemsItemSpecialInstructionsMin).max(addItemToOrder200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(addItemToOrder200ResponseAddedItemsItemDefectsNotesMin).max(addItemToOrder200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const addItemToOrder400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addItemToOrder401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addItemToOrder403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addItemToOrder404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const addItemToOrder409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізує новий сеанс менеджера предметів для замовлення
+ */
+export const initializeItemManagerParams = zod.object({
+  "orderId": zod.string().uuid()
+}).strict()
+
+export const initializeItemManager200ResponseAddedItemsItemNameMin = 0;
+
+export const initializeItemManager200ResponseAddedItemsItemNameMax = 255;
+export const initializeItemManager200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const initializeItemManager200ResponseAddedItemsItemDescriptionMax = 1000;
+export const initializeItemManager200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const initializeItemManager200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const initializeItemManager200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const initializeItemManager200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const initializeItemManager200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(initializeItemManager200ResponseAddedItemsItemNameMin).max(initializeItemManager200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(initializeItemManager200ResponseAddedItemsItemDescriptionMin).max(initializeItemManager200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(initializeItemManager200ResponseAddedItemsItemSpecialInstructionsMin).max(initializeItemManager200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(initializeItemManager200ResponseAddedItemsItemDefectsNotesMin).max(initializeItemManager200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const initializeItemManager400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeItemManager401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeItemManager403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeItemManager404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeItemManager409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Завершує етап 2 та переходить до наступного етапу
+ */
+export const completeStage2Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const completeStage2200ResponseAddedItemsItemNameMin = 0;
+
+export const completeStage2200ResponseAddedItemsItemNameMax = 255;
+export const completeStage2200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const completeStage2200ResponseAddedItemsItemDescriptionMax = 1000;
+export const completeStage2200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const completeStage2200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const completeStage2200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const completeStage2200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const completeStage2200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(completeStage2200ResponseAddedItemsItemNameMin).max(completeStage2200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(completeStage2200ResponseAddedItemsItemDescriptionMin).max(completeStage2200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(completeStage2200ResponseAddedItemsItemSpecialInstructionsMin).max(completeStage2200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(completeStage2200ResponseAddedItemsItemDefectsNotesMin).max(completeStage2200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const completeStage2400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeStage2401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeStage2403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeStage2404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeStage2409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідує форму клієнта
+ */
+export const validateNewClientFormParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const validateNewClientForm200Response = zod.object({
+
+})
+
+export const validateNewClientForm400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateNewClientForm401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateNewClientForm403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateNewClientForm404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateNewClientForm409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Створює нового клієнта
+ */
+export const createNewClientParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const createNewClient200ResponseStructuredAddressCityMin = 2;
+
+export const createNewClient200ResponseStructuredAddressCityMax = 100;
+
+export const createNewClient200ResponseStructuredAddressCityRegExp = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const createNewClient200ResponseStructuredAddressStreetMin = 2;
+
+export const createNewClient200ResponseStructuredAddressStreetMax = 150;
+
+export const createNewClient200ResponseStructuredAddressStreetRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const createNewClient200ResponseStructuredAddressBuildingMin = 0;
+
+export const createNewClient200ResponseStructuredAddressBuildingMax = 20;
+
+export const createNewClient200ResponseStructuredAddressBuildingRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const createNewClient200ResponseStructuredAddressApartmentMin = 0;
+
+export const createNewClient200ResponseStructuredAddressApartmentMax = 20;
+
+export const createNewClient200ResponseStructuredAddressApartmentRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const createNewClient200ResponseStructuredAddressPostalCodeMin = 0;
+
+export const createNewClient200ResponseStructuredAddressPostalCodeMax = 10;
+
+export const createNewClient200ResponseStructuredAddressPostalCodeRegExp = new RegExp('^[0-9\\-]+$');
+export const createNewClient200ResponseStructuredAddressFullAddressMin = 5;
+
+export const createNewClient200ResponseStructuredAddressFullAddressMax = 500;
+export const createNewClient200ResponsePreferencesItemKeyMin = 0;
+
+export const createNewClient200ResponsePreferencesItemKeyMax = 100;
+export const createNewClient200ResponsePreferencesItemValueMin = 0;
+
+export const createNewClient200ResponsePreferencesItemValueMax = 255;
+
+
+export const createNewClient200Response = zod.object({
+  "id": zod.string().uuid().optional(),
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "fullName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "structuredAddress": zod.object({
+  "city": zod.string().min(createNewClient200ResponseStructuredAddressCityMin).max(createNewClient200ResponseStructuredAddressCityMax).regex(createNewClient200ResponseStructuredAddressCityRegExp).optional(),
+  "street": zod.string().min(createNewClient200ResponseStructuredAddressStreetMin).max(createNewClient200ResponseStructuredAddressStreetMax).regex(createNewClient200ResponseStructuredAddressStreetRegExp).optional(),
+  "building": zod.string().min(createNewClient200ResponseStructuredAddressBuildingMin).max(createNewClient200ResponseStructuredAddressBuildingMax).regex(createNewClient200ResponseStructuredAddressBuildingRegExp).optional(),
+  "apartment": zod.string().min(createNewClient200ResponseStructuredAddressApartmentMin).max(createNewClient200ResponseStructuredAddressApartmentMax).regex(createNewClient200ResponseStructuredAddressApartmentRegExp).optional(),
+  "postalCode": zod.string().min(createNewClient200ResponseStructuredAddressPostalCodeMin).max(createNewClient200ResponseStructuredAddressPostalCodeMax).regex(createNewClient200ResponseStructuredAddressPostalCodeRegExp).optional(),
+  "fullAddress": zod.string().min(createNewClient200ResponseStructuredAddressFullAddressMin).max(createNewClient200ResponseStructuredAddressFullAddressMax).optional()
+}).strict().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional(),
+  "category": zod.object({
+  "code": zod.string().optional(),
+  "displayName": zod.string().optional()
+}).strict().optional(),
+  "preferences": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "key": zod.string().min(createNewClient200ResponsePreferencesItemKeyMin).max(createNewClient200ResponsePreferencesItemKeyMax),
+  "value": zod.string().min(createNewClient200ResponsePreferencesItemValueMin).max(createNewClient200ResponsePreferencesItemValueMax).optional()
+}).strict()).optional(),
+  "recentOrders": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'NEW', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED']).optional(),
+  "totalAmount": zod.number().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "completionDate": zod.string().datetime({}).optional(),
+  "itemCount": zod.number().optional()
+}).strict()).optional(),
+  "orderCount": zod.number().optional()
+}).strict()
+
+export const createNewClient400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const createNewClient401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const createNewClient403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const createNewClient404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const createNewClient409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Завершує створення клієнта
+ */
+export const completeNewClientCreationParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const completeNewClientCreation400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeNewClientCreation401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeNewClientCreation403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeNewClientCreation404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeNewClientCreation409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізує форму створення нового клієнта
+ */
+export const initializeNewClientForm200Response = zod.string()
+
+export const initializeNewClientForm400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeNewClientForm401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeNewClientForm403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeNewClientForm404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeNewClientForm409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Вибирає клієнта зі списку результатів
+ */
+export const selectClientParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const selectClientQueryParams = zod.object({
+  "clientId": zod.string().uuid()
+}).strict()
+
+export const selectClient400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectClient401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectClient403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectClient404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectClient409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Виконує пошук клієнтів з критеріями
+ */
+export const searchClientsParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const searchClientsBody = zod.object({
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "generalSearchTerm": zod.string().optional(),
+  "page": zod.number().optional(),
+  "size": zod.number().optional()
+}).strict()
+
+export const searchClients200ResponseClientsItemStructuredAddressCityMin = 2;
+
+export const searchClients200ResponseClientsItemStructuredAddressCityMax = 100;
+
+export const searchClients200ResponseClientsItemStructuredAddressCityRegExp = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const searchClients200ResponseClientsItemStructuredAddressStreetMin = 2;
+
+export const searchClients200ResponseClientsItemStructuredAddressStreetMax = 150;
+
+export const searchClients200ResponseClientsItemStructuredAddressStreetRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const searchClients200ResponseClientsItemStructuredAddressBuildingMin = 0;
+
+export const searchClients200ResponseClientsItemStructuredAddressBuildingMax = 20;
+
+export const searchClients200ResponseClientsItemStructuredAddressBuildingRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClients200ResponseClientsItemStructuredAddressApartmentMin = 0;
+
+export const searchClients200ResponseClientsItemStructuredAddressApartmentMax = 20;
+
+export const searchClients200ResponseClientsItemStructuredAddressApartmentRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClients200ResponseClientsItemStructuredAddressPostalCodeMin = 0;
+
+export const searchClients200ResponseClientsItemStructuredAddressPostalCodeMax = 10;
+
+export const searchClients200ResponseClientsItemStructuredAddressPostalCodeRegExp = new RegExp('^[0-9\\-]+$');
+export const searchClients200ResponseClientsItemStructuredAddressFullAddressMin = 5;
+
+export const searchClients200ResponseClientsItemStructuredAddressFullAddressMax = 500;
+export const searchClients200ResponseClientsItemPreferencesItemKeyMin = 0;
+
+export const searchClients200ResponseClientsItemPreferencesItemKeyMax = 100;
+export const searchClients200ResponseClientsItemPreferencesItemValueMin = 0;
+
+export const searchClients200ResponseClientsItemPreferencesItemValueMax = 255;
+export const searchClients200ResponseFirstClientStructuredAddressCityMin = 2;
+
+export const searchClients200ResponseFirstClientStructuredAddressCityMax = 100;
+
+export const searchClients200ResponseFirstClientStructuredAddressCityRegExp = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const searchClients200ResponseFirstClientStructuredAddressStreetMin = 2;
+
+export const searchClients200ResponseFirstClientStructuredAddressStreetMax = 150;
+
+export const searchClients200ResponseFirstClientStructuredAddressStreetRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const searchClients200ResponseFirstClientStructuredAddressBuildingMin = 0;
+
+export const searchClients200ResponseFirstClientStructuredAddressBuildingMax = 20;
+
+export const searchClients200ResponseFirstClientStructuredAddressBuildingRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClients200ResponseFirstClientStructuredAddressApartmentMin = 0;
+
+export const searchClients200ResponseFirstClientStructuredAddressApartmentMax = 20;
+
+export const searchClients200ResponseFirstClientStructuredAddressApartmentRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClients200ResponseFirstClientStructuredAddressPostalCodeMin = 0;
+
+export const searchClients200ResponseFirstClientStructuredAddressPostalCodeMax = 10;
+
+export const searchClients200ResponseFirstClientStructuredAddressPostalCodeRegExp = new RegExp('^[0-9\\-]+$');
+export const searchClients200ResponseFirstClientStructuredAddressFullAddressMin = 5;
+
+export const searchClients200ResponseFirstClientStructuredAddressFullAddressMax = 500;
+export const searchClients200ResponseFirstClientPreferencesItemKeyMin = 0;
+
+export const searchClients200ResponseFirstClientPreferencesItemKeyMax = 100;
+export const searchClients200ResponseFirstClientPreferencesItemValueMin = 0;
+
+export const searchClients200ResponseFirstClientPreferencesItemValueMax = 255;
+
+
+export const searchClients200Response = zod.object({
+  "clients": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "fullName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "structuredAddress": zod.object({
+  "city": zod.string().min(searchClients200ResponseClientsItemStructuredAddressCityMin).max(searchClients200ResponseClientsItemStructuredAddressCityMax).regex(searchClients200ResponseClientsItemStructuredAddressCityRegExp).optional(),
+  "street": zod.string().min(searchClients200ResponseClientsItemStructuredAddressStreetMin).max(searchClients200ResponseClientsItemStructuredAddressStreetMax).regex(searchClients200ResponseClientsItemStructuredAddressStreetRegExp).optional(),
+  "building": zod.string().min(searchClients200ResponseClientsItemStructuredAddressBuildingMin).max(searchClients200ResponseClientsItemStructuredAddressBuildingMax).regex(searchClients200ResponseClientsItemStructuredAddressBuildingRegExp).optional(),
+  "apartment": zod.string().min(searchClients200ResponseClientsItemStructuredAddressApartmentMin).max(searchClients200ResponseClientsItemStructuredAddressApartmentMax).regex(searchClients200ResponseClientsItemStructuredAddressApartmentRegExp).optional(),
+  "postalCode": zod.string().min(searchClients200ResponseClientsItemStructuredAddressPostalCodeMin).max(searchClients200ResponseClientsItemStructuredAddressPostalCodeMax).regex(searchClients200ResponseClientsItemStructuredAddressPostalCodeRegExp).optional(),
+  "fullAddress": zod.string().min(searchClients200ResponseClientsItemStructuredAddressFullAddressMin).max(searchClients200ResponseClientsItemStructuredAddressFullAddressMax).optional()
+}).strict().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional(),
+  "category": zod.object({
+  "code": zod.string().optional(),
+  "displayName": zod.string().optional()
+}).strict().optional(),
+  "preferences": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "key": zod.string().min(searchClients200ResponseClientsItemPreferencesItemKeyMin).max(searchClients200ResponseClientsItemPreferencesItemKeyMax),
+  "value": zod.string().min(searchClients200ResponseClientsItemPreferencesItemValueMin).max(searchClients200ResponseClientsItemPreferencesItemValueMax).optional()
+}).strict()).optional(),
+  "recentOrders": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'NEW', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED']).optional(),
+  "totalAmount": zod.number().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "completionDate": zod.string().datetime({}).optional(),
+  "itemCount": zod.number().optional()
+}).strict()).optional(),
+  "orderCount": zod.number().optional()
+}).strict()).optional(),
+  "searchCriteria": zod.object({
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "generalSearchTerm": zod.string().optional(),
+  "page": zod.number().optional(),
+  "size": zod.number().optional()
+}).strict().optional(),
+  "totalElements": zod.number().optional(),
+  "totalPages": zod.number().optional(),
+  "pageNumber": zod.number().optional(),
+  "pageSize": zod.number().optional(),
+  "hasPrevious": zod.boolean().optional(),
+  "hasNext": zod.boolean().optional(),
+  "searchTimeMs": zod.number().optional(),
+  "exactSearch": zod.boolean().optional(),
+  "firstClient": zod.object({
+  "id": zod.string().uuid().optional(),
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "fullName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "structuredAddress": zod.object({
+  "city": zod.string().min(searchClients200ResponseFirstClientStructuredAddressCityMin).max(searchClients200ResponseFirstClientStructuredAddressCityMax).regex(searchClients200ResponseFirstClientStructuredAddressCityRegExp).optional(),
+  "street": zod.string().min(searchClients200ResponseFirstClientStructuredAddressStreetMin).max(searchClients200ResponseFirstClientStructuredAddressStreetMax).regex(searchClients200ResponseFirstClientStructuredAddressStreetRegExp).optional(),
+  "building": zod.string().min(searchClients200ResponseFirstClientStructuredAddressBuildingMin).max(searchClients200ResponseFirstClientStructuredAddressBuildingMax).regex(searchClients200ResponseFirstClientStructuredAddressBuildingRegExp).optional(),
+  "apartment": zod.string().min(searchClients200ResponseFirstClientStructuredAddressApartmentMin).max(searchClients200ResponseFirstClientStructuredAddressApartmentMax).regex(searchClients200ResponseFirstClientStructuredAddressApartmentRegExp).optional(),
+  "postalCode": zod.string().min(searchClients200ResponseFirstClientStructuredAddressPostalCodeMin).max(searchClients200ResponseFirstClientStructuredAddressPostalCodeMax).regex(searchClients200ResponseFirstClientStructuredAddressPostalCodeRegExp).optional(),
+  "fullAddress": zod.string().min(searchClients200ResponseFirstClientStructuredAddressFullAddressMin).max(searchClients200ResponseFirstClientStructuredAddressFullAddressMax).optional()
+}).strict().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional(),
+  "category": zod.object({
+  "code": zod.string().optional(),
+  "displayName": zod.string().optional()
+}).strict().optional(),
+  "preferences": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "key": zod.string().min(searchClients200ResponseFirstClientPreferencesItemKeyMin).max(searchClients200ResponseFirstClientPreferencesItemKeyMax),
+  "value": zod.string().min(searchClients200ResponseFirstClientPreferencesItemValueMin).max(searchClients200ResponseFirstClientPreferencesItemValueMax).optional()
+}).strict()).optional(),
+  "recentOrders": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'NEW', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED']).optional(),
+  "totalAmount": zod.number().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "completionDate": zod.string().datetime({}).optional(),
+  "itemCount": zod.number().optional()
+}).strict()).optional(),
+  "orderCount": zod.number().optional()
+}).strict().optional()
+}).strict()
+
+export const searchClients400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const searchClients401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const searchClients403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const searchClients404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const searchClients409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Пошук клієнтів за телефоном
+ */
+export const searchClientsByPhoneParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const searchClientsByPhoneQueryParams = zod.object({
+  "phone": zod.string()
+}).strict()
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressCityMin = 2;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressCityMax = 100;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressCityRegExp = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressStreetMin = 2;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressStreetMax = 150;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressStreetRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressBuildingMin = 0;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressBuildingMax = 20;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressBuildingRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressApartmentMin = 0;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressApartmentMax = 20;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressApartmentRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressPostalCodeMin = 0;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressPostalCodeMax = 10;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressPostalCodeRegExp = new RegExp('^[0-9\\-]+$');
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressFullAddressMin = 5;
+
+export const searchClientsByPhone200ResponseClientsItemStructuredAddressFullAddressMax = 500;
+export const searchClientsByPhone200ResponseClientsItemPreferencesItemKeyMin = 0;
+
+export const searchClientsByPhone200ResponseClientsItemPreferencesItemKeyMax = 100;
+export const searchClientsByPhone200ResponseClientsItemPreferencesItemValueMin = 0;
+
+export const searchClientsByPhone200ResponseClientsItemPreferencesItemValueMax = 255;
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressCityMin = 2;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressCityMax = 100;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressCityRegExp = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressStreetMin = 2;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressStreetMax = 150;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressStreetRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressBuildingMin = 0;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressBuildingMax = 20;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressBuildingRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressApartmentMin = 0;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressApartmentMax = 20;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressApartmentRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressPostalCodeMin = 0;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressPostalCodeMax = 10;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressPostalCodeRegExp = new RegExp('^[0-9\\-]+$');
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressFullAddressMin = 5;
+
+export const searchClientsByPhone200ResponseFirstClientStructuredAddressFullAddressMax = 500;
+export const searchClientsByPhone200ResponseFirstClientPreferencesItemKeyMin = 0;
+
+export const searchClientsByPhone200ResponseFirstClientPreferencesItemKeyMax = 100;
+export const searchClientsByPhone200ResponseFirstClientPreferencesItemValueMin = 0;
+
+export const searchClientsByPhone200ResponseFirstClientPreferencesItemValueMax = 255;
+
+
+export const searchClientsByPhone200Response = zod.object({
+  "clients": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "fullName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "structuredAddress": zod.object({
+  "city": zod.string().min(searchClientsByPhone200ResponseClientsItemStructuredAddressCityMin).max(searchClientsByPhone200ResponseClientsItemStructuredAddressCityMax).regex(searchClientsByPhone200ResponseClientsItemStructuredAddressCityRegExp).optional(),
+  "street": zod.string().min(searchClientsByPhone200ResponseClientsItemStructuredAddressStreetMin).max(searchClientsByPhone200ResponseClientsItemStructuredAddressStreetMax).regex(searchClientsByPhone200ResponseClientsItemStructuredAddressStreetRegExp).optional(),
+  "building": zod.string().min(searchClientsByPhone200ResponseClientsItemStructuredAddressBuildingMin).max(searchClientsByPhone200ResponseClientsItemStructuredAddressBuildingMax).regex(searchClientsByPhone200ResponseClientsItemStructuredAddressBuildingRegExp).optional(),
+  "apartment": zod.string().min(searchClientsByPhone200ResponseClientsItemStructuredAddressApartmentMin).max(searchClientsByPhone200ResponseClientsItemStructuredAddressApartmentMax).regex(searchClientsByPhone200ResponseClientsItemStructuredAddressApartmentRegExp).optional(),
+  "postalCode": zod.string().min(searchClientsByPhone200ResponseClientsItemStructuredAddressPostalCodeMin).max(searchClientsByPhone200ResponseClientsItemStructuredAddressPostalCodeMax).regex(searchClientsByPhone200ResponseClientsItemStructuredAddressPostalCodeRegExp).optional(),
+  "fullAddress": zod.string().min(searchClientsByPhone200ResponseClientsItemStructuredAddressFullAddressMin).max(searchClientsByPhone200ResponseClientsItemStructuredAddressFullAddressMax).optional()
+}).strict().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional(),
+  "category": zod.object({
+  "code": zod.string().optional(),
+  "displayName": zod.string().optional()
+}).strict().optional(),
+  "preferences": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "key": zod.string().min(searchClientsByPhone200ResponseClientsItemPreferencesItemKeyMin).max(searchClientsByPhone200ResponseClientsItemPreferencesItemKeyMax),
+  "value": zod.string().min(searchClientsByPhone200ResponseClientsItemPreferencesItemValueMin).max(searchClientsByPhone200ResponseClientsItemPreferencesItemValueMax).optional()
+}).strict()).optional(),
+  "recentOrders": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'NEW', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED']).optional(),
+  "totalAmount": zod.number().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "completionDate": zod.string().datetime({}).optional(),
+  "itemCount": zod.number().optional()
+}).strict()).optional(),
+  "orderCount": zod.number().optional()
+}).strict()).optional(),
+  "searchCriteria": zod.object({
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "generalSearchTerm": zod.string().optional(),
+  "page": zod.number().optional(),
+  "size": zod.number().optional()
+}).strict().optional(),
+  "totalElements": zod.number().optional(),
+  "totalPages": zod.number().optional(),
+  "pageNumber": zod.number().optional(),
+  "pageSize": zod.number().optional(),
+  "hasPrevious": zod.boolean().optional(),
+  "hasNext": zod.boolean().optional(),
+  "searchTimeMs": zod.number().optional(),
+  "exactSearch": zod.boolean().optional(),
+  "firstClient": zod.object({
+  "id": zod.string().uuid().optional(),
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "fullName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "structuredAddress": zod.object({
+  "city": zod.string().min(searchClientsByPhone200ResponseFirstClientStructuredAddressCityMin).max(searchClientsByPhone200ResponseFirstClientStructuredAddressCityMax).regex(searchClientsByPhone200ResponseFirstClientStructuredAddressCityRegExp).optional(),
+  "street": zod.string().min(searchClientsByPhone200ResponseFirstClientStructuredAddressStreetMin).max(searchClientsByPhone200ResponseFirstClientStructuredAddressStreetMax).regex(searchClientsByPhone200ResponseFirstClientStructuredAddressStreetRegExp).optional(),
+  "building": zod.string().min(searchClientsByPhone200ResponseFirstClientStructuredAddressBuildingMin).max(searchClientsByPhone200ResponseFirstClientStructuredAddressBuildingMax).regex(searchClientsByPhone200ResponseFirstClientStructuredAddressBuildingRegExp).optional(),
+  "apartment": zod.string().min(searchClientsByPhone200ResponseFirstClientStructuredAddressApartmentMin).max(searchClientsByPhone200ResponseFirstClientStructuredAddressApartmentMax).regex(searchClientsByPhone200ResponseFirstClientStructuredAddressApartmentRegExp).optional(),
+  "postalCode": zod.string().min(searchClientsByPhone200ResponseFirstClientStructuredAddressPostalCodeMin).max(searchClientsByPhone200ResponseFirstClientStructuredAddressPostalCodeMax).regex(searchClientsByPhone200ResponseFirstClientStructuredAddressPostalCodeRegExp).optional(),
+  "fullAddress": zod.string().min(searchClientsByPhone200ResponseFirstClientStructuredAddressFullAddressMin).max(searchClientsByPhone200ResponseFirstClientStructuredAddressFullAddressMax).optional()
+}).strict().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional(),
+  "category": zod.object({
+  "code": zod.string().optional(),
+  "displayName": zod.string().optional()
+}).strict().optional(),
+  "preferences": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "key": zod.string().min(searchClientsByPhone200ResponseFirstClientPreferencesItemKeyMin).max(searchClientsByPhone200ResponseFirstClientPreferencesItemKeyMax),
+  "value": zod.string().min(searchClientsByPhone200ResponseFirstClientPreferencesItemValueMin).max(searchClientsByPhone200ResponseFirstClientPreferencesItemValueMax).optional()
+}).strict()).optional(),
+  "recentOrders": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'NEW', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED']).optional(),
+  "totalAmount": zod.number().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "completionDate": zod.string().datetime({}).optional(),
+  "itemCount": zod.number().optional()
+}).strict()).optional(),
+  "orderCount": zod.number().optional()
+}).strict().optional()
+}).strict()
+
+export const searchClientsByPhone400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const searchClientsByPhone401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const searchClientsByPhone403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const searchClientsByPhone404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const searchClientsByPhone409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Завершує пошук клієнта
+ */
+export const completeClientSearchParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const completeClientSearch400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeClientSearch401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeClientSearch403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeClientSearch404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeClientSearch409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Очищує результати пошуку
+ */
+export const clearClientSearchParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const clearClientSearch400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const clearClientSearch401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const clearClientSearch403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const clearClientSearch404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const clearClientSearch409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізує новий контекст пошуку клієнтів
+ */
+export const initializeClientSearch200Response = zod.string()
+
+export const initializeClientSearch400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeClientSearch401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeClientSearch403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeClientSearch404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeClientSearch409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Починає workflow базової інформації
+ */
+export const startBasicOrderWorkflow200Response = zod.string()
+
+export const startBasicOrderWorkflow400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startBasicOrderWorkflow401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startBasicOrderWorkflow403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startBasicOrderWorkflow404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const startBasicOrderWorkflow409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідує базову інформацію
+ */
+export const validateBasicOrderInfoParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const validateBasicOrderInfo200Response = zod.object({
+
+})
+
+export const validateBasicOrderInfo400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateBasicOrderInfo401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateBasicOrderInfo403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateBasicOrderInfo404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateBasicOrderInfo409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Встановлює унікальну мітку
+ */
+export const setUniqueTagParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const setUniqueTagQueryParams = zod.object({
+  "uniqueTag": zod.string()
+}).strict()
+
+export const setUniqueTag400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const setUniqueTag401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const setUniqueTag403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const setUniqueTag404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const setUniqueTag409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Вибирає філію для замовлення
+ */
+export const selectBranchParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const selectBranchQueryParams = zod.object({
+  "branchId": zod.string().uuid()
+}).strict()
+
+export const selectBranch400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectBranch401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectBranch403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectBranch404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const selectBranch409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Скидає базову інформацію до початкового стану
+ */
+export const resetBasicOrderInfoParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const resetBasicOrderInfo400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetBasicOrderInfo401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetBasicOrderInfo403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetBasicOrderInfo404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const resetBasicOrderInfo409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Генерує номер квитанції
+ */
+export const generateReceiptNumberParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const generateReceiptNumberQueryParams = zod.object({
+  "branchCode": zod.string()
+}).strict()
+
+export const generateReceiptNumber200Response = zod.string()
+
+export const generateReceiptNumber400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generateReceiptNumber401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generateReceiptNumber403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generateReceiptNumber404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const generateReceiptNumber409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Завершує збір базової інформації
+ */
+export const completeBasicOrderInfoParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const completeBasicOrderInfo400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeBasicOrderInfo401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeBasicOrderInfo403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeBasicOrderInfo404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const completeBasicOrderInfo409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Ініціалізує збір базової інформації замовлення
+ */
+export const initializeBasicOrderInfo200Response = zod.string()
+
+export const initializeBasicOrderInfo400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeBasicOrderInfo401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeBasicOrderInfo403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeBasicOrderInfo404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const initializeBasicOrderInfo409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
  * Повертає список всіх або тільки активних типів плям з можливістю фільтрації за рівнем ризику
  * @summary Отримати типи плям
  */
@@ -2870,14 +9907,14 @@ export const createStainType409Response = zod.object({
  * Зберігає новий або оновлює існуючий підпис клієнта
  * @summary Зберегти підпис клієнта
  */
-export const saveSignatureBody = zod.object({
+export const saveSignature1Body = zod.object({
   "orderId": zod.string().uuid(),
   "signatureData": zod.string().min(1),
   "termsAccepted": zod.boolean(),
   "signatureType": zod.string().optional()
 }).strict().describe('Дані підпису клієнта')
 
-export const saveSignature201Response = zod.object({
+export const saveSignature1201Response = zod.object({
   "id": zod.string().uuid().optional(),
   "orderId": zod.string().uuid().optional(),
   "signatureData": zod.string().optional(),
@@ -2887,7 +9924,7 @@ export const saveSignature201Response = zod.object({
   "updatedAt": zod.string().datetime({}).optional()
 }).strict()
 
-export const saveSignature400Response = zod.object({
+export const saveSignature1400Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -2895,7 +9932,7 @@ export const saveSignature400Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const saveSignature401Response = zod.object({
+export const saveSignature1401Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -2903,7 +9940,7 @@ export const saveSignature401Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const saveSignature403Response = zod.object({
+export const saveSignature1403Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -2911,7 +9948,7 @@ export const saveSignature403Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const saveSignature404Response = zod.object({
+export const saveSignature1404Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -2919,7 +9956,7 @@ export const saveSignature404Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const saveSignature409Response = zod.object({
+export const saveSignature1409Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -2932,13 +9969,13 @@ export const saveSignature409Response = zod.object({
  * Генерує PDF-квитанцію для замовлення з вказаними параметрами
  * @summary Згенерувати PDF-квитанцію
  */
-export const generatePdfReceiptBody = zod.object({
+export const generatePdfReceipt1Body = zod.object({
   "orderId": zod.string().uuid(),
   "format": zod.string().optional(),
   "includeSignature": zod.boolean().optional()
 }).strict().describe('Параметри генерації квитанції')
 
-export const generatePdfReceipt200Response = zod.object({
+export const generatePdfReceipt1200Response = zod.object({
   "orderId": zod.string().uuid().optional(),
   "pdfUrl": zod.string().optional(),
   "pdfData": zod.string().optional(),
@@ -2949,7 +9986,7 @@ export const generatePdfReceipt200Response = zod.object({
   "fileName": zod.string().optional()
 }).strict()
 
-export const generatePdfReceipt400Response = zod.object({
+export const generatePdfReceipt1400Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -2957,7 +9994,7 @@ export const generatePdfReceipt400Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const generatePdfReceipt401Response = zod.object({
+export const generatePdfReceipt1401Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -2965,7 +10002,7 @@ export const generatePdfReceipt401Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const generatePdfReceipt403Response = zod.object({
+export const generatePdfReceipt1403Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -2973,7 +10010,7 @@ export const generatePdfReceipt403Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const generatePdfReceipt404Response = zod.object({
+export const generatePdfReceipt1404Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -2981,7 +10018,7 @@ export const generatePdfReceipt404Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const generatePdfReceipt409Response = zod.object({
+export const generatePdfReceipt1409Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -3346,38 +10383,68 @@ export const getModifiersByCodes409Response = zod.object({
  * Детальний розрахунок ціни з урахуванням базової ціни, модифікаторів, знижок та терміновості
  * @summary Розрахувати ціну з урахуванням вибраних модифікаторів
  */
-export const calculatePriceBody = zod.object({
-  "categoryCode": zod.string().describe('Код категорії послуги'),
-  "itemName": zod.string().describe('Найменування предмету з прайс-листа'),
-  "color": zod.string().optional().describe('Колір предмету'),
-  "quantity": zod.number().describe('Кількість предметів'),
-  "modifierCodes": zod.array(zod.string()).optional().describe('Список кодів модифікаторів'),
+export const calculatePrice1BodyCategoryCodeRegExp = new RegExp('^[A-Z_]+$');
+export const calculatePrice1BodyItemNameMin = 0;
+
+export const calculatePrice1BodyItemNameMax = 255;
+export const calculatePrice1BodyColorMax = 100;
+export const calculatePrice1BodyQuantityMax = 1000;
+export const calculatePrice1BodyModifierIdsMin = 0;
+
+export const calculatePrice1BodyModifierIdsMax = 20;
+export const calculatePrice1BodyRangeModifierValuesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const calculatePrice1BodyRangeModifierValuesItemPercentageMin = 0;
+
+export const calculatePrice1BodyRangeModifierValuesItemPercentageMax = 200;
+export const calculatePrice1BodyRangeModifierValuesMin = 0;
+
+export const calculatePrice1BodyRangeModifierValuesMax = 10;
+export const calculatePrice1BodyFixedModifierQuantitiesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const calculatePrice1BodyFixedModifierQuantitiesItemQuantityMax = 100;
+export const calculatePrice1BodyFixedModifierQuantitiesMin = 0;
+
+export const calculatePrice1BodyFixedModifierQuantitiesMax = 10;
+export const calculatePrice1BodyExpeditePercentMin = 0;
+
+export const calculatePrice1BodyExpeditePercentMax = 200;
+export const calculatePrice1BodyDiscountPercentMin = 0;
+
+export const calculatePrice1BodyDiscountPercentMax = 50;
+
+
+export const calculatePrice1Body = zod.object({
+  "categoryCode": zod.string().min(1).regex(calculatePrice1BodyCategoryCodeRegExp).describe('Код категорії послуги'),
+  "itemName": zod.string().min(calculatePrice1BodyItemNameMin).max(calculatePrice1BodyItemNameMax).describe('Найменування предмету з прайс-листа'),
+  "color": zod.string().max(calculatePrice1BodyColorMax).optional().describe('Колір предмету'),
+  "quantity": zod.number().min(1).max(calculatePrice1BodyQuantityMax).describe('Кількість предметів'),
+  "modifierCodes": zod.array(zod.string()).optional().describe('Список кодів модифікаторів для застосування'),
+  "modifierIds": zod.array(zod.string()).min(calculatePrice1BodyModifierIdsMin).max(calculatePrice1BodyModifierIdsMax).optional().describe('Список ID модифікаторів для застосування'),
   "rangeModifierValues": zod.array(zod.object({
-  "modifierCode": zod.string().optional(),
-  "value": zod.number().optional()
-}).strict()).optional().describe('Значення для модифікаторів з діапазоном'),
+  "modifierId": zod.string().min(1).regex(calculatePrice1BodyRangeModifierValuesItemModifierIdRegExp).describe('ID модифікатора'),
+  "percentage": zod.number().min(calculatePrice1BodyRangeModifierValuesItemPercentageMin).max(calculatePrice1BodyRangeModifierValuesItemPercentageMax).describe('Вибраний відсоток для модифікатора')
+}).strict().describe('Значення відсотка для модифікатора діапазону')).min(calculatePrice1BodyRangeModifierValuesMin).max(calculatePrice1BodyRangeModifierValuesMax).optional().describe('Значення відсотків для модифікаторів діапазону'),
   "fixedModifierQuantities": zod.array(zod.object({
-  "modifierCode": zod.string().optional(),
-  "quantity": zod.number().optional()
-}).strict()).optional().describe('Кількості для фіксованих модифікаторів'),
+  "modifierId": zod.string().min(1).regex(calculatePrice1BodyFixedModifierQuantitiesItemModifierIdRegExp).describe('ID модифікатора'),
+  "quantity": zod.number().min(1).max(calculatePrice1BodyFixedModifierQuantitiesItemQuantityMax).describe('Кількість одиниць для модифікатора')
+}).strict().describe('Кількість для модифікатора з фіксованою ціною')).min(calculatePrice1BodyFixedModifierQuantitiesMin).max(calculatePrice1BodyFixedModifierQuantitiesMax).optional().describe('Кількості для модифікаторів з фіксованою ціною'),
   "expedited": zod.boolean().optional().describe('Чи термінове замовлення'),
-  "expeditePercent": zod.number().optional().describe('Відсоток надбавки за терміновість'),
-  "discountPercent": zod.number().optional().describe('Відсоток знижки')
-}).strict().describe('Запит на розрахунок ціни для предмета')
+  "expeditePercent": zod.number().min(calculatePrice1BodyExpeditePercentMin).max(calculatePrice1BodyExpeditePercentMax).optional().describe('Відсоток надбавки за терміновість'),
+  "discountPercent": zod.number().min(calculatePrice1BodyDiscountPercentMin).max(calculatePrice1BodyDiscountPercentMax).optional().describe('Відсоток знижки')
+}).strict().describe('Запит на розрахунок ціни предмету з модифікаторами')
 
-export const calculatePrice200ResponseBaseUnitPriceMin = 0;
-export const calculatePrice200ResponseBaseTotalPriceMin = 0;
-export const calculatePrice200ResponseFinalUnitPriceMin = 0;
-export const calculatePrice200ResponseFinalTotalPriceMin = 0;
+export const calculatePrice1200ResponseBaseUnitPriceMin = 0;
+export const calculatePrice1200ResponseBaseTotalPriceMin = 0;
+export const calculatePrice1200ResponseFinalUnitPriceMin = 0;
+export const calculatePrice1200ResponseFinalTotalPriceMin = 0;
 
 
-export const calculatePrice200Response = zod.object({
-  "baseUnitPrice": zod.number().min(calculatePrice200ResponseBaseUnitPriceMin).optional().describe('Початкова базова ціна за одиницю з прайс-листа'),
+export const calculatePrice1200Response = zod.object({
+  "baseUnitPrice": zod.number().min(calculatePrice1200ResponseBaseUnitPriceMin).optional().describe('Початкова базова ціна за одиницю з прайс-листа'),
   "quantity": zod.number().min(1).optional().describe('Кількість предметів'),
-  "baseTotalPrice": zod.number().min(calculatePrice200ResponseBaseTotalPriceMin).optional().describe('Сума базових цін за всі предмети без модифікаторів'),
+  "baseTotalPrice": zod.number().min(calculatePrice1200ResponseBaseTotalPriceMin).optional().describe('Сума базових цін за всі предмети без модифікаторів'),
   "unitOfMeasure": zod.enum(['шт', 'кг', 'кв.м', 'пара']).optional().describe('Одиниця виміру'),
-  "finalUnitPrice": zod.number().min(calculatePrice200ResponseFinalUnitPriceMin).optional().describe('Кінцева ціна за одиницю з урахуванням всіх модифікаторів'),
-  "finalTotalPrice": zod.number().min(calculatePrice200ResponseFinalTotalPriceMin).optional().describe('Загальна кінцева ціна за всі предмети з урахуванням всіх модифікаторів'),
+  "finalUnitPrice": zod.number().min(calculatePrice1200ResponseFinalUnitPriceMin).optional().describe('Кінцева ціна за одиницю з урахуванням всіх модифікаторів'),
+  "finalTotalPrice": zod.number().min(calculatePrice1200ResponseFinalTotalPriceMin).optional().describe('Загальна кінцева ціна за всі предмети з урахуванням всіх модифікаторів'),
   "calculationDetails": zod.array(zod.object({
   "step": zod.number().optional(),
   "stepName": zod.string().optional(),
@@ -3391,7 +10458,7 @@ export const calculatePrice200Response = zod.object({
 }).strict()).optional().describe('Список деталей розрахунку для кожного кроку обчислення')
 }).strict().describe('Результат розрахунку ціни для предмета')
 
-export const calculatePrice401Response = zod.object({
+export const calculatePrice1401Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -3399,7 +10466,7 @@ export const calculatePrice401Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const calculatePrice403Response = zod.object({
+export const calculatePrice1403Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -3407,7 +10474,7 @@ export const calculatePrice403Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const calculatePrice409Response = zod.object({
+export const calculatePrice1409Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -4452,7 +11519,7 @@ export const emailReceipt409Response = zod.object({
  * Фіналізує замовлення, зберігає підпис клієнта та змінює статус замовлення
  * @summary Завершити оформлення замовлення
  */
-export const finalizeOrderBody = zod.object({
+export const finalizeOrder1Body = zod.object({
   "orderId": zod.string().uuid(),
   "signatureData": zod.string().optional(),
   "termsAccepted": zod.boolean().optional(),
@@ -4461,62 +11528,62 @@ export const finalizeOrderBody = zod.object({
   "comments": zod.string().optional()
 }).strict()
 
-export const finalizeOrder200ResponseClientStructuredAddressCityMinOne = 2;
+export const finalizeOrder1200ResponseClientStructuredAddressCityMinOne = 2;
 
-export const finalizeOrder200ResponseClientStructuredAddressCityMaxOne = 100;
+export const finalizeOrder1200ResponseClientStructuredAddressCityMaxOne = 100;
 
-export const finalizeOrder200ResponseClientStructuredAddressCityRegExpOne = new RegExp('^[\\p{L}\\s.,\\-\']+$');
-export const finalizeOrder200ResponseClientStructuredAddressStreetMinOne = 2;
+export const finalizeOrder1200ResponseClientStructuredAddressCityRegExpOne = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const finalizeOrder1200ResponseClientStructuredAddressStreetMinOne = 2;
 
-export const finalizeOrder200ResponseClientStructuredAddressStreetMaxOne = 150;
+export const finalizeOrder1200ResponseClientStructuredAddressStreetMaxOne = 150;
 
-export const finalizeOrder200ResponseClientStructuredAddressStreetRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
-export const finalizeOrder200ResponseClientStructuredAddressBuildingMinOne = 0;
+export const finalizeOrder1200ResponseClientStructuredAddressStreetRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const finalizeOrder1200ResponseClientStructuredAddressBuildingMinOne = 0;
 
-export const finalizeOrder200ResponseClientStructuredAddressBuildingMaxOne = 20;
+export const finalizeOrder1200ResponseClientStructuredAddressBuildingMaxOne = 20;
 
-export const finalizeOrder200ResponseClientStructuredAddressBuildingRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
-export const finalizeOrder200ResponseClientStructuredAddressApartmentMinOne = 0;
+export const finalizeOrder1200ResponseClientStructuredAddressBuildingRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const finalizeOrder1200ResponseClientStructuredAddressApartmentMinOne = 0;
 
-export const finalizeOrder200ResponseClientStructuredAddressApartmentMaxOne = 20;
+export const finalizeOrder1200ResponseClientStructuredAddressApartmentMaxOne = 20;
 
-export const finalizeOrder200ResponseClientStructuredAddressApartmentRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
-export const finalizeOrder200ResponseClientStructuredAddressPostalCodeMinOne = 0;
+export const finalizeOrder1200ResponseClientStructuredAddressApartmentRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const finalizeOrder1200ResponseClientStructuredAddressPostalCodeMinOne = 0;
 
-export const finalizeOrder200ResponseClientStructuredAddressPostalCodeMaxOne = 10;
+export const finalizeOrder1200ResponseClientStructuredAddressPostalCodeMaxOne = 10;
 
-export const finalizeOrder200ResponseClientStructuredAddressPostalCodeRegExpOne = new RegExp('^[0-9\\-]+$');
-export const finalizeOrder200ResponseClientStructuredAddressFullAddressMinOne = 5;
+export const finalizeOrder1200ResponseClientStructuredAddressPostalCodeRegExpOne = new RegExp('^[0-9\\-]+$');
+export const finalizeOrder1200ResponseClientStructuredAddressFullAddressMinOne = 5;
 
-export const finalizeOrder200ResponseClientStructuredAddressFullAddressMaxOne = 500;
-export const finalizeOrder200ResponseClientPreferencesItemKeyMinOne = 0;
+export const finalizeOrder1200ResponseClientStructuredAddressFullAddressMaxOne = 500;
+export const finalizeOrder1200ResponseClientPreferencesItemKeyMinOne = 0;
 
-export const finalizeOrder200ResponseClientPreferencesItemKeyMaxOne = 100;
-export const finalizeOrder200ResponseClientPreferencesItemValueMinOne = 0;
+export const finalizeOrder1200ResponseClientPreferencesItemKeyMaxOne = 100;
+export const finalizeOrder1200ResponseClientPreferencesItemValueMinOne = 0;
 
-export const finalizeOrder200ResponseClientPreferencesItemValueMaxOne = 255;
-export const finalizeOrder200ResponseItemsItemNameMinOne = 0;
+export const finalizeOrder1200ResponseClientPreferencesItemValueMaxOne = 255;
+export const finalizeOrder1200ResponseItemsItemNameMinOne = 0;
 
-export const finalizeOrder200ResponseItemsItemNameMaxOne = 255;
-export const finalizeOrder200ResponseItemsItemDescriptionMinOne = 0;
+export const finalizeOrder1200ResponseItemsItemNameMaxOne = 255;
+export const finalizeOrder1200ResponseItemsItemDescriptionMinOne = 0;
 
-export const finalizeOrder200ResponseItemsItemDescriptionMaxOne = 1000;
-export const finalizeOrder200ResponseItemsItemSpecialInstructionsMinOne = 0;
+export const finalizeOrder1200ResponseItemsItemDescriptionMaxOne = 1000;
+export const finalizeOrder1200ResponseItemsItemSpecialInstructionsMinOne = 0;
 
-export const finalizeOrder200ResponseItemsItemSpecialInstructionsMaxOne = 500;
-export const finalizeOrder200ResponseItemsItemDefectsNotesMinOne = 0;
+export const finalizeOrder1200ResponseItemsItemSpecialInstructionsMaxOne = 500;
+export const finalizeOrder1200ResponseItemsItemDefectsNotesMinOne = 0;
 
-export const finalizeOrder200ResponseItemsItemDefectsNotesMaxOne = 1000;
-export const finalizeOrder200ResponseBranchLocationPhoneRegExpOne = new RegExp('^\\+ ? [0-9\\s-()]{10,15}$');
-export const finalizeOrder200ResponseCustomerNotesMinOne = 0;
+export const finalizeOrder1200ResponseItemsItemDefectsNotesMaxOne = 1000;
+export const finalizeOrder1200ResponseBranchLocationPhoneRegExpOne = new RegExp('^\\+ ? [0-9\\s-()]{10,15}$');
+export const finalizeOrder1200ResponseCustomerNotesMinOne = 0;
 
-export const finalizeOrder200ResponseCustomerNotesMaxOne = 1000;
-export const finalizeOrder200ResponseInternalNotesMinOne = 0;
+export const finalizeOrder1200ResponseCustomerNotesMaxOne = 1000;
+export const finalizeOrder1200ResponseInternalNotesMinOne = 0;
 
-export const finalizeOrder200ResponseInternalNotesMaxOne = 1000;
+export const finalizeOrder1200ResponseInternalNotesMaxOne = 1000;
 
 
-export const finalizeOrder200Response = zod.object({
+export const finalizeOrder1200Response = zod.object({
   "id": zod.string().uuid().optional(),
   "receiptNumber": zod.string().min(1),
   "tagNumber": zod.string().optional(),
@@ -4529,12 +11596,12 @@ export const finalizeOrder200Response = zod.object({
   "email": zod.string().optional(),
   "address": zod.string().optional(),
   "structuredAddress": zod.object({
-  "city": zod.string().min(finalizeOrder200ResponseClientStructuredAddressCityMinOne).max(finalizeOrder200ResponseClientStructuredAddressCityMaxOne).regex(finalizeOrder200ResponseClientStructuredAddressCityRegExpOne).optional(),
-  "street": zod.string().min(finalizeOrder200ResponseClientStructuredAddressStreetMinOne).max(finalizeOrder200ResponseClientStructuredAddressStreetMaxOne).regex(finalizeOrder200ResponseClientStructuredAddressStreetRegExpOne).optional(),
-  "building": zod.string().min(finalizeOrder200ResponseClientStructuredAddressBuildingMinOne).max(finalizeOrder200ResponseClientStructuredAddressBuildingMaxOne).regex(finalizeOrder200ResponseClientStructuredAddressBuildingRegExpOne).optional(),
-  "apartment": zod.string().min(finalizeOrder200ResponseClientStructuredAddressApartmentMinOne).max(finalizeOrder200ResponseClientStructuredAddressApartmentMaxOne).regex(finalizeOrder200ResponseClientStructuredAddressApartmentRegExpOne).optional(),
-  "postalCode": zod.string().min(finalizeOrder200ResponseClientStructuredAddressPostalCodeMinOne).max(finalizeOrder200ResponseClientStructuredAddressPostalCodeMaxOne).regex(finalizeOrder200ResponseClientStructuredAddressPostalCodeRegExpOne).optional(),
-  "fullAddress": zod.string().min(finalizeOrder200ResponseClientStructuredAddressFullAddressMinOne).max(finalizeOrder200ResponseClientStructuredAddressFullAddressMaxOne).optional()
+  "city": zod.string().min(finalizeOrder1200ResponseClientStructuredAddressCityMinOne).max(finalizeOrder1200ResponseClientStructuredAddressCityMaxOne).regex(finalizeOrder1200ResponseClientStructuredAddressCityRegExpOne).optional(),
+  "street": zod.string().min(finalizeOrder1200ResponseClientStructuredAddressStreetMinOne).max(finalizeOrder1200ResponseClientStructuredAddressStreetMaxOne).regex(finalizeOrder1200ResponseClientStructuredAddressStreetRegExpOne).optional(),
+  "building": zod.string().min(finalizeOrder1200ResponseClientStructuredAddressBuildingMinOne).max(finalizeOrder1200ResponseClientStructuredAddressBuildingMaxOne).regex(finalizeOrder1200ResponseClientStructuredAddressBuildingRegExpOne).optional(),
+  "apartment": zod.string().min(finalizeOrder1200ResponseClientStructuredAddressApartmentMinOne).max(finalizeOrder1200ResponseClientStructuredAddressApartmentMaxOne).regex(finalizeOrder1200ResponseClientStructuredAddressApartmentRegExpOne).optional(),
+  "postalCode": zod.string().min(finalizeOrder1200ResponseClientStructuredAddressPostalCodeMinOne).max(finalizeOrder1200ResponseClientStructuredAddressPostalCodeMaxOne).regex(finalizeOrder1200ResponseClientStructuredAddressPostalCodeRegExpOne).optional(),
+  "fullAddress": zod.string().min(finalizeOrder1200ResponseClientStructuredAddressFullAddressMinOne).max(finalizeOrder1200ResponseClientStructuredAddressFullAddressMaxOne).optional()
 }).strict().optional(),
   "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
   "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
@@ -4547,8 +11614,8 @@ export const finalizeOrder200Response = zod.object({
 }).strict().optional(),
   "preferences": zod.array(zod.object({
   "id": zod.string().uuid().optional(),
-  "key": zod.string().min(finalizeOrder200ResponseClientPreferencesItemKeyMinOne).max(finalizeOrder200ResponseClientPreferencesItemKeyMaxOne),
-  "value": zod.string().min(finalizeOrder200ResponseClientPreferencesItemValueMinOne).max(finalizeOrder200ResponseClientPreferencesItemValueMaxOne).optional()
+  "key": zod.string().min(finalizeOrder1200ResponseClientPreferencesItemKeyMinOne).max(finalizeOrder1200ResponseClientPreferencesItemKeyMaxOne),
+  "value": zod.string().min(finalizeOrder1200ResponseClientPreferencesItemValueMinOne).max(finalizeOrder1200ResponseClientPreferencesItemValueMaxOne).optional()
 }).strict()).optional(),
   "recentOrders": zod.array(zod.object({
   "id": zod.string().uuid().optional(),
@@ -4565,8 +11632,8 @@ export const finalizeOrder200Response = zod.object({
   "items": zod.array(zod.object({
   "id": zod.string().uuid().optional(),
   "orderId": zod.string().uuid().optional(),
-  "name": zod.string().min(finalizeOrder200ResponseItemsItemNameMinOne).max(finalizeOrder200ResponseItemsItemNameMaxOne),
-  "description": zod.string().min(finalizeOrder200ResponseItemsItemDescriptionMinOne).max(finalizeOrder200ResponseItemsItemDescriptionMaxOne).optional(),
+  "name": zod.string().min(finalizeOrder1200ResponseItemsItemNameMinOne).max(finalizeOrder1200ResponseItemsItemNameMaxOne),
+  "description": zod.string().min(finalizeOrder1200ResponseItemsItemDescriptionMinOne).max(finalizeOrder1200ResponseItemsItemDescriptionMaxOne).optional(),
   "quantity": zod.number().min(1),
   "unitPrice": zod.number(),
   "totalPrice": zod.number().optional(),
@@ -4575,7 +11642,7 @@ export const finalizeOrder200Response = zod.object({
   "material": zod.string().optional(),
   "unitOfMeasure": zod.string().optional(),
   "defects": zod.string().optional(),
-  "specialInstructions": zod.string().min(finalizeOrder200ResponseItemsItemSpecialInstructionsMinOne).max(finalizeOrder200ResponseItemsItemSpecialInstructionsMaxOne).optional(),
+  "specialInstructions": zod.string().min(finalizeOrder1200ResponseItemsItemSpecialInstructionsMinOne).max(finalizeOrder1200ResponseItemsItemSpecialInstructionsMaxOne).optional(),
   "fillerType": zod.string().optional(),
   "fillerCompressed": zod.boolean().optional(),
   "wearDegree": zod.string().optional(),
@@ -4583,7 +11650,7 @@ export const finalizeOrder200Response = zod.object({
   "otherStains": zod.string().optional(),
   "defectsAndRisks": zod.string().optional(),
   "noGuaranteeReason": zod.string().optional(),
-  "defectsNotes": zod.string().min(finalizeOrder200ResponseItemsItemDefectsNotesMinOne).max(finalizeOrder200ResponseItemsItemDefectsNotesMaxOne).optional()
+  "defectsNotes": zod.string().min(finalizeOrder1200ResponseItemsItemDefectsNotesMinOne).max(finalizeOrder1200ResponseItemsItemDefectsNotesMaxOne).optional()
 }).strict()).optional(),
   "totalAmount": zod.number().optional(),
   "discountAmount": zod.number().optional(),
@@ -4594,7 +11661,7 @@ export const finalizeOrder200Response = zod.object({
   "id": zod.string().uuid().optional(),
   "name": zod.string().min(1),
   "address": zod.string().min(1),
-  "phone": zod.string().regex(finalizeOrder200ResponseBranchLocationPhoneRegExpOne).optional(),
+  "phone": zod.string().regex(finalizeOrder1200ResponseBranchLocationPhoneRegExpOne).optional(),
   "code": zod.string().min(1),
   "active": zod.boolean().optional(),
   "createdAt": zod.string().datetime({}).optional(),
@@ -4606,8 +11673,8 @@ export const finalizeOrder200Response = zod.object({
   "updatedDate": zod.string().datetime({}).optional(),
   "expectedCompletionDate": zod.string().datetime({}).optional(),
   "completedDate": zod.string().datetime({}).optional(),
-  "customerNotes": zod.string().min(finalizeOrder200ResponseCustomerNotesMinOne).max(finalizeOrder200ResponseCustomerNotesMaxOne).optional(),
-  "internalNotes": zod.string().min(finalizeOrder200ResponseInternalNotesMinOne).max(finalizeOrder200ResponseInternalNotesMaxOne).optional(),
+  "customerNotes": zod.string().min(finalizeOrder1200ResponseCustomerNotesMinOne).max(finalizeOrder1200ResponseCustomerNotesMaxOne).optional(),
+  "internalNotes": zod.string().min(finalizeOrder1200ResponseInternalNotesMinOne).max(finalizeOrder1200ResponseInternalNotesMaxOne).optional(),
   "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H']).optional(),
   "completionComments": zod.string().optional(),
   "termsAccepted": zod.boolean().optional(),
@@ -4618,7 +11685,7 @@ export const finalizeOrder200Response = zod.object({
   "printed": zod.boolean().optional()
 }).strict()
 
-export const finalizeOrder400Response = zod.object({
+export const finalizeOrder1400Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -4626,7 +11693,7 @@ export const finalizeOrder400Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const finalizeOrder401Response = zod.object({
+export const finalizeOrder1401Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -4634,7 +11701,7 @@ export const finalizeOrder401Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const finalizeOrder403Response = zod.object({
+export const finalizeOrder1403Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -4642,7 +11709,7 @@ export const finalizeOrder403Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const finalizeOrder404Response = zod.object({
+export const finalizeOrder1404Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -4650,7 +11717,7 @@ export const finalizeOrder404Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const finalizeOrder409Response = zod.object({
+export const finalizeOrder1409Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -6051,6 +13118,2692 @@ export const login409Response = zod.object({
 
 
 /**
+ * @summary Повна валідація Stage4
+ */
+export const validateCompleteParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const validateComplete200Response = zod.object({
+
+})
+
+export const validateComplete400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateComplete401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateComplete403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateComplete404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateComplete409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання поточного контексту сесії
+ */
+export const getSessionContextParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getSessionContext200Response = zod.object({
+
+})
+
+export const getSessionContext400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionContext401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionContext403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionContext404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionContext409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання поточного стану Stage4
+ */
+export const getCurrentStateParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getCurrentState200Response = zod.object({
+
+})
+
+export const getCurrentState400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання детального підсумку замовлення
+ */
+export const getOrderSummaryParams = zod.object({
+  "orderId": zod.string().uuid()
+}).strict()
+
+export const getOrderSummary200Response = zod.object({
+
+})
+
+export const getOrderSummary400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getOrderSummary401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getOrderSummary403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getOrderSummary404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getOrderSummary409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідувати всі підетапи
+ */
+export const validateAllSubstepsParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const validateAllSubsteps200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const validateAllSubsteps400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateAllSubsteps401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateAllSubsteps403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateAllSubsteps404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateAllSubsteps409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримати стан сесії
+ */
+export const getSessionStateParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getSessionState200Response = zod.enum(['STAGE3_INIT', 'EXECUTION_PARAMS_INIT', 'DATE_SELECTION', 'URGENCY_SELECTION', 'EXECUTION_PARAMS_COMPLETED', 'DISCOUNT_CONFIG_INIT', 'DISCOUNT_TYPE_SELECTION', 'DISCOUNT_VALIDATION', 'DISCOUNT_CONFIG_COMPLETED', 'PAYMENT_CONFIG_INIT', 'PAYMENT_METHOD_SELECTION', 'PAYMENT_AMOUNT_CALCULATION', 'PAYMENT_CONFIG_COMPLETED', 'ADDITIONAL_INFO_INIT', 'NOTES_INPUT', 'REQUIREMENTS_INPUT', 'ADDITIONAL_INFO_COMPLETED', 'STAGE3_COMPLETED', 'STAGE3_ERROR'])
+
+export const getSessionState400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionState401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionState403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionState404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionState409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Перевірити готовність Stage3
+ */
+export const isStage3ReadyParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const isStage3Ready200Response = zod.boolean()
+
+export const isStage3Ready400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isStage3Ready401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isStage3Ready403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isStage3Ready404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isStage3Ready409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримати прогрес сесії
+ */
+export const getSessionProgressParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getSessionProgress200Response = zod.number()
+
+export const getSessionProgress400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionProgress401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionProgress403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionProgress404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionProgress409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Перевірити готовність конфігурації оплати
+ */
+export const isPaymentConfigReadyParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const isPaymentConfigReady200Response = zod.boolean()
+
+export const isPaymentConfigReady400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isPaymentConfigReady401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isPaymentConfigReady403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isPaymentConfigReady404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isPaymentConfigReady409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримати наступний підетап
+ */
+export const getNextSubstepParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getNextSubstep200Response = zod.enum(['STAGE3_INIT', 'EXECUTION_PARAMS_INIT', 'DATE_SELECTION', 'URGENCY_SELECTION', 'EXECUTION_PARAMS_COMPLETED', 'DISCOUNT_CONFIG_INIT', 'DISCOUNT_TYPE_SELECTION', 'DISCOUNT_VALIDATION', 'DISCOUNT_CONFIG_COMPLETED', 'PAYMENT_CONFIG_INIT', 'PAYMENT_METHOD_SELECTION', 'PAYMENT_AMOUNT_CALCULATION', 'PAYMENT_CONFIG_COMPLETED', 'ADDITIONAL_INFO_INIT', 'NOTES_INPUT', 'REQUIREMENTS_INPUT', 'ADDITIONAL_INFO_COMPLETED', 'STAGE3_COMPLETED', 'STAGE3_ERROR'])
+
+export const getNextSubstep400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getNextSubstep401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getNextSubstep403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getNextSubstep404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getNextSubstep409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Перевірити готовність параметрів виконання
+ */
+export const isExecutionParamsReadyParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const isExecutionParamsReady200Response = zod.boolean()
+
+export const isExecutionParamsReady400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isExecutionParamsReady401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isExecutionParamsReady403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isExecutionParamsReady404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isExecutionParamsReady409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Перевірити готовність конфігурації знижок
+ */
+export const isDiscountConfigReadyParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const isDiscountConfigReady200Response = zod.boolean()
+
+export const isDiscountConfigReady400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isDiscountConfigReady401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isDiscountConfigReady403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isDiscountConfigReady404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isDiscountConfigReady409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримати контекст сесії
+ */
+export const getSessionContext1Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getSessionContext1200ResponseDiscountConfigurationDiscountRequestDiscountPercentageMin = 0;
+
+export const getSessionContext1200ResponseDiscountConfigurationDiscountRequestDiscountPercentageMax = 100;
+export const getSessionContext1200ResponseDiscountConfigurationDiscountRequestDiscountDescriptionMin = 0;
+
+export const getSessionContext1200ResponseDiscountConfigurationDiscountRequestDiscountDescriptionMax = 255;
+export const getSessionContext1200ResponsePaymentConfigurationPaymentRequestPrepaymentAmountMin = 0;
+export const getSessionContext1200ResponseAdditionalInfoAdditionalInfoRequestAdditionalRequirementsMin = 0;
+
+export const getSessionContext1200ResponseAdditionalInfoAdditionalInfoRequestAdditionalRequirementsMax = 1000;
+export const getSessionContext1200ResponseAdditionalInfoAdditionalInfoRequestCustomerNotesMin = 0;
+
+export const getSessionContext1200ResponseAdditionalInfoAdditionalInfoRequestCustomerNotesMax = 1000;
+
+
+export const getSessionContext1200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['STAGE3_INIT', 'EXECUTION_PARAMS_INIT', 'DATE_SELECTION', 'URGENCY_SELECTION', 'EXECUTION_PARAMS_COMPLETED', 'DISCOUNT_CONFIG_INIT', 'DISCOUNT_TYPE_SELECTION', 'DISCOUNT_VALIDATION', 'DISCOUNT_CONFIG_COMPLETED', 'PAYMENT_CONFIG_INIT', 'PAYMENT_METHOD_SELECTION', 'PAYMENT_AMOUNT_CALCULATION', 'PAYMENT_CONFIG_COMPLETED', 'ADDITIONAL_INFO_INIT', 'NOTES_INPUT', 'REQUIREMENTS_INPUT', 'ADDITIONAL_INFO_COMPLETED', 'STAGE3_COMPLETED', 'STAGE3_ERROR']).optional(),
+  "lastUpdated": zod.string().datetime({}).optional(),
+  "executionParams": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "serviceCategoryIds": zod.array(zod.string().uuid()).optional(),
+  "completionDateRequest": zod.object({
+  "serviceCategoryIds": zod.array(zod.string().uuid()).min(1),
+  "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H'])
+}).strict().optional(),
+  "completionDateResponse": zod.object({
+  "expectedCompletionDate": zod.string().datetime({}).optional(),
+  "standardProcessingHours": zod.number().optional(),
+  "expeditedProcessingHours": zod.number().optional()
+}).strict().optional(),
+  "manualExecutionDate": zod.string().date().optional(),
+  "useManualDate": zod.boolean().optional(),
+  "needsRecalculation": zod.boolean().optional(),
+  "lastUpdated": zod.string().datetime({}).optional(),
+  "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H']).optional(),
+  "readyForCompletion": zod.boolean().optional(),
+  "executionParamsComplete": zod.boolean().optional(),
+  "effectiveExecutionDate": zod.string().datetime({}).optional()
+}).strict().optional(),
+  "discountConfiguration": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "discountRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']),
+  "discountPercentage": zod.number().min(getSessionContext1200ResponseDiscountConfigurationDiscountRequestDiscountPercentageMin).max(getSessionContext1200ResponseDiscountConfigurationDiscountRequestDiscountPercentageMax).optional(),
+  "discountDescription": zod.string().min(getSessionContext1200ResponseDiscountConfigurationDiscountRequestDiscountDescriptionMin).max(getSessionContext1200ResponseDiscountConfigurationDiscountRequestDiscountDescriptionMax).optional()
+}).strict().optional(),
+  "discountResponse": zod.object({
+  "orderId": zod.string().uuid().optional(),
+  "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']).optional(),
+  "discountPercentage": zod.number().optional(),
+  "discountDescription": zod.string().optional(),
+  "totalAmount": zod.number().optional(),
+  "discountAmount": zod.number().optional(),
+  "finalAmount": zod.number().optional(),
+  "nonDiscountableCategories": zod.array(zod.string()).optional(),
+  "nonDiscountableAmount": zod.number().optional()
+}).strict().optional(),
+  "excludedCategoryIds": zod.array(zod.string().uuid()).optional(),
+  "originalAmount": zod.number().optional(),
+  "discountAmount": zod.number().optional(),
+  "finalAmount": zod.number().optional(),
+  "isValid": zod.boolean().optional(),
+  "validationMessage": zod.string().optional(),
+  "lastUpdated": zod.string().datetime({}).optional(),
+  "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']).optional(),
+  "discountPercentage": zod.number().optional(),
+  "discountDescription": zod.string().optional(),
+  "readyForCompletion": zod.boolean().optional(),
+  "discountConfigComplete": zod.boolean().optional()
+}).strict().optional(),
+  "paymentConfiguration": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "paymentRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']),
+  "prepaymentAmount": zod.number().min(getSessionContext1200ResponsePaymentConfigurationPaymentRequestPrepaymentAmountMin).optional()
+}).strict().optional(),
+  "paymentResponse": zod.object({
+  "orderId": zod.string().uuid().optional(),
+  "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional(),
+  "totalAmount": zod.number().optional(),
+  "discountAmount": zod.number().optional(),
+  "finalAmount": zod.number().optional(),
+  "prepaymentAmount": zod.number().optional(),
+  "balanceAmount": zod.number().optional()
+}).strict().optional(),
+  "totalAmount": zod.number().optional(),
+  "paidAmount": zod.number().optional(),
+  "remainingAmount": zod.number().optional(),
+  "isValid": zod.boolean().optional(),
+  "validationMessage": zod.string().optional(),
+  "lastUpdated": zod.string().datetime({}).optional(),
+  "fullyPaid": zod.boolean().optional(),
+  "prepaymentAmount": zod.number().optional(),
+  "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional(),
+  "readyForCompletion": zod.boolean().optional(),
+  "paymentConfigComplete": zod.boolean().optional()
+}).strict().optional(),
+  "additionalInfo": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "additionalInfoRequest": zod.object({
+  "orderId": zod.string().uuid(),
+  "additionalRequirements": zod.string().min(getSessionContext1200ResponseAdditionalInfoAdditionalInfoRequestAdditionalRequirementsMin).max(getSessionContext1200ResponseAdditionalInfoAdditionalInfoRequestAdditionalRequirementsMax).optional(),
+  "customerNotes": zod.string().min(getSessionContext1200ResponseAdditionalInfoAdditionalInfoRequestCustomerNotesMin).max(getSessionContext1200ResponseAdditionalInfoAdditionalInfoRequestCustomerNotesMax).optional()
+}).strict().optional(),
+  "additionalInfoResponse": zod.object({
+  "orderId": zod.string().uuid().optional(),
+  "additionalRequirements": zod.string().optional(),
+  "customerNotes": zod.string().optional()
+}).strict().optional(),
+  "hasAdditionalRequirements": zod.boolean().optional(),
+  "hasCustomerNotes": zod.boolean().optional(),
+  "isValid": zod.boolean().optional(),
+  "validationMessage": zod.string().optional(),
+  "lastUpdated": zod.string().datetime({}).optional(),
+  "customerNotes": zod.string().optional(),
+  "additionalRequirements": zod.string().optional(),
+  "readyForCompletion": zod.boolean().optional(),
+  "additionalInfoComplete": zod.boolean().optional()
+}).strict().optional(),
+  "lastAction": zod.string().optional(),
+  "lastError": zod.string().optional(),
+  "valid": zod.boolean().optional(),
+  "completedSubstepsCount": zod.number().optional()
+}).strict()
+
+export const getSessionContext1400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionContext1401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionContext1403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionContext1404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSessionContext1409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Перевірити готовність додаткової інформації
+ */
+export const isAdditionalInfoReadyParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const isAdditionalInfoReady200Response = zod.boolean()
+
+export const isAdditionalInfoReady400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isAdditionalInfoReady401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isAdditionalInfoReady403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isAdditionalInfoReady404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const isAdditionalInfoReady409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідує поточний стан менеджера
+ */
+export const validateCurrentStateParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const validateCurrentState200Response = zod.object({
+  "valid": zod.boolean().optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "warnings": zod.array(zod.string()).optional(),
+  "message": zod.string().optional(),
+  "firstError": zod.string().optional(),
+  "errorCount": zod.number().optional(),
+  "firstWarning": zod.string().optional(),
+  "warningCount": zod.number().optional(),
+  "fullMessage": zod.string().optional()
+}).strict()
+
+export const validateCurrentState400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCurrentState401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCurrentState403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCurrentState404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCurrentState409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання статусу фотодокументації
+ */
+export const getDocumentationStatusParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getDocumentationStatus200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const getDocumentationStatus400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getDocumentationStatus401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getDocumentationStatus403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getDocumentationStatus404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getDocumentationStatus409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання даних фотодокументації
+ */
+export const getDocumentationDataParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getDocumentationData200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict()
+
+export const getDocumentationData400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getDocumentationData401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getDocumentationData403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getDocumentationData404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getDocumentationData409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Валідація поточного стану
+ */
+export const validateCurrentState1Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const validateCurrentState1200Response = zod.boolean()
+
+export const validateCurrentState1400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCurrentState1401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCurrentState1403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCurrentState1404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateCurrentState1409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Детальна валідація з результатом
+ */
+export const validateDetailedParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const validateDetailed200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const validateDetailed400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateDetailed401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateDetailed403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateDetailed404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const validateDetailed409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання поточного стану підетапу
+ */
+export const getCurrentState1Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getCurrentState1200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const getCurrentState1400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState1401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState1403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState1404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState1409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Перевірка існування сесії
+ */
+export const sessionExistsParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const sessionExists200Response = zod.boolean()
+
+export const sessionExists400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const sessionExists401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const sessionExists403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const sessionExists404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const sessionExists409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання доступних модифікаторів для категорії
+ */
+export const getAvailableModifiersQueryParams = zod.object({
+  "categoryCode": zod.string()
+}).strict()
+
+export const getAvailableModifiers200ResponseItem = zod.object({
+  "name": zod.string().optional().describe('Назва модифікатора'),
+  "description": zod.string().optional().describe('Опис модифікатора'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional().describe('Тип модифікатора'),
+  "value": zod.number().optional().describe('Значення модифікатора'),
+  "amount": zod.number().optional().describe('Сума модифікатора')
+}).strict().describe('Модифікатор ціни предмета замовлення')
+export const getAvailableModifiers200Response = zod.array(getAvailableModifiers200ResponseItem)
+
+export const getAvailableModifiers400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableModifiers401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableModifiers403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableModifiers404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableModifiers409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання рекомендованих модифікаторів
+ */
+export const getRecommendedModifiersQueryParams = zod.object({
+  "categoryCode": zod.string(),
+  "itemName": zod.string()
+}).strict()
+
+export const getRecommendedModifiers200ResponseItem = zod.object({
+  "name": zod.string().optional().describe('Назва модифікатора'),
+  "description": zod.string().optional().describe('Опис модифікатора'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional().describe('Тип модифікатора'),
+  "value": zod.number().optional().describe('Значення модифікатора'),
+  "amount": zod.number().optional().describe('Сума модифікатора')
+}).strict().describe('Модифікатор ціни предмета замовлення')
+export const getRecommendedModifiers200Response = zod.array(getRecommendedModifiers200ResponseItem)
+
+export const getRecommendedModifiers400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getRecommendedModifiers401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getRecommendedModifiers403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getRecommendedModifiers404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getRecommendedModifiers409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання доступних подій для поточного стану
+ */
+export const getAvailableEventsParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getAvailableEvents200ResponseItem = zod.enum(['INITIALIZE', 'CALCULATE_BASE_PRICE', 'SELECT_MODIFIERS', 'ADD_MODIFIER', 'REMOVE_MODIFIER', 'CALCULATE_FINAL_PRICE', 'CONFIRM_CALCULATION', 'RESET_CALCULATION', 'HANDLE_ERROR'])
+export const getAvailableEvents200Response = zod.array(getAvailableEvents200ResponseItem)
+
+export const getAvailableEvents400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableEvents401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableEvents403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableEvents404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableEvents409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання поточних даних сесії
+ */
+export const getCurrentDataParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getCurrentData200ResponseCalculationRequestCategoryCodeRegExp = new RegExp('^[A-Z_]+$');
+export const getCurrentData200ResponseCalculationRequestItemNameMin = 0;
+
+export const getCurrentData200ResponseCalculationRequestItemNameMax = 255;
+export const getCurrentData200ResponseCalculationRequestColorMax = 100;
+export const getCurrentData200ResponseCalculationRequestQuantityMax = 1000;
+export const getCurrentData200ResponseCalculationRequestModifierIdsMin = 0;
+
+export const getCurrentData200ResponseCalculationRequestModifierIdsMax = 20;
+export const getCurrentData200ResponseCalculationRequestRangeModifierValuesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const getCurrentData200ResponseCalculationRequestRangeModifierValuesItemPercentageMin = 0;
+
+export const getCurrentData200ResponseCalculationRequestRangeModifierValuesItemPercentageMax = 200;
+export const getCurrentData200ResponseCalculationRequestRangeModifierValuesMin = 0;
+
+export const getCurrentData200ResponseCalculationRequestRangeModifierValuesMax = 10;
+export const getCurrentData200ResponseCalculationRequestFixedModifierQuantitiesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const getCurrentData200ResponseCalculationRequestFixedModifierQuantitiesItemQuantityMax = 100;
+export const getCurrentData200ResponseCalculationRequestFixedModifierQuantitiesMin = 0;
+
+export const getCurrentData200ResponseCalculationRequestFixedModifierQuantitiesMax = 10;
+export const getCurrentData200ResponseCalculationRequestExpeditePercentMin = 0;
+
+export const getCurrentData200ResponseCalculationRequestExpeditePercentMax = 200;
+export const getCurrentData200ResponseCalculationRequestDiscountPercentMin = 0;
+
+export const getCurrentData200ResponseCalculationRequestDiscountPercentMax = 50;
+export const getCurrentData200ResponseCalculationResponseBaseUnitPriceMin = 0;
+export const getCurrentData200ResponseCalculationResponseBaseTotalPriceMin = 0;
+export const getCurrentData200ResponseCalculationResponseFinalUnitPriceMin = 0;
+export const getCurrentData200ResponseCalculationResponseFinalTotalPriceMin = 0;
+export const getCurrentData200ResponseRangeModifierValuesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const getCurrentData200ResponseRangeModifierValuesItemPercentageMin = 0;
+
+export const getCurrentData200ResponseRangeModifierValuesItemPercentageMax = 200;
+export const getCurrentData200ResponseFixedModifierQuantitiesItemModifierIdRegExp = new RegExp('^MOD_[A-Z_]+$');
+export const getCurrentData200ResponseFixedModifierQuantitiesItemQuantityMax = 100;
+
+
+export const getCurrentData200Response = zod.object({
+  "calculationRequest": zod.object({
+  "categoryCode": zod.string().min(1).regex(getCurrentData200ResponseCalculationRequestCategoryCodeRegExp).describe('Код категорії послуги'),
+  "itemName": zod.string().min(getCurrentData200ResponseCalculationRequestItemNameMin).max(getCurrentData200ResponseCalculationRequestItemNameMax).describe('Найменування предмету з прайс-листа'),
+  "color": zod.string().max(getCurrentData200ResponseCalculationRequestColorMax).optional().describe('Колір предмету'),
+  "quantity": zod.number().min(1).max(getCurrentData200ResponseCalculationRequestQuantityMax).describe('Кількість предметів'),
+  "modifierCodes": zod.array(zod.string()).optional().describe('Список кодів модифікаторів для застосування'),
+  "modifierIds": zod.array(zod.string()).min(getCurrentData200ResponseCalculationRequestModifierIdsMin).max(getCurrentData200ResponseCalculationRequestModifierIdsMax).optional().describe('Список ID модифікаторів для застосування'),
+  "rangeModifierValues": zod.array(zod.object({
+  "modifierId": zod.string().min(1).regex(getCurrentData200ResponseCalculationRequestRangeModifierValuesItemModifierIdRegExp).describe('ID модифікатора'),
+  "percentage": zod.number().min(getCurrentData200ResponseCalculationRequestRangeModifierValuesItemPercentageMin).max(getCurrentData200ResponseCalculationRequestRangeModifierValuesItemPercentageMax).describe('Вибраний відсоток для модифікатора')
+}).strict().describe('Значення відсотка для модифікатора діапазону')).min(getCurrentData200ResponseCalculationRequestRangeModifierValuesMin).max(getCurrentData200ResponseCalculationRequestRangeModifierValuesMax).optional().describe('Значення відсотків для модифікаторів діапазону'),
+  "fixedModifierQuantities": zod.array(zod.object({
+  "modifierId": zod.string().min(1).regex(getCurrentData200ResponseCalculationRequestFixedModifierQuantitiesItemModifierIdRegExp).describe('ID модифікатора'),
+  "quantity": zod.number().min(1).max(getCurrentData200ResponseCalculationRequestFixedModifierQuantitiesItemQuantityMax).describe('Кількість одиниць для модифікатора')
+}).strict().describe('Кількість для модифікатора з фіксованою ціною')).min(getCurrentData200ResponseCalculationRequestFixedModifierQuantitiesMin).max(getCurrentData200ResponseCalculationRequestFixedModifierQuantitiesMax).optional().describe('Кількості для модифікаторів з фіксованою ціною'),
+  "expedited": zod.boolean().optional().describe('Чи термінове замовлення'),
+  "expeditePercent": zod.number().min(getCurrentData200ResponseCalculationRequestExpeditePercentMin).max(getCurrentData200ResponseCalculationRequestExpeditePercentMax).optional().describe('Відсоток надбавки за терміновість'),
+  "discountPercent": zod.number().min(getCurrentData200ResponseCalculationRequestDiscountPercentMin).max(getCurrentData200ResponseCalculationRequestDiscountPercentMax).optional().describe('Відсоток знижки')
+}).strict().optional().describe('Запит на розрахунок ціни предмету з модифікаторами'),
+  "calculationResponse": zod.object({
+  "baseUnitPrice": zod.number().min(getCurrentData200ResponseCalculationResponseBaseUnitPriceMin).optional().describe('Початкова базова ціна за одиницю з прайс-листа'),
+  "quantity": zod.number().min(1).optional().describe('Кількість предметів'),
+  "baseTotalPrice": zod.number().min(getCurrentData200ResponseCalculationResponseBaseTotalPriceMin).optional().describe('Сума базових цін за всі предмети без модифікаторів'),
+  "unitOfMeasure": zod.enum(['шт', 'кг', 'кв.м', 'пара']).optional().describe('Одиниця виміру'),
+  "finalUnitPrice": zod.number().min(getCurrentData200ResponseCalculationResponseFinalUnitPriceMin).optional().describe('Кінцева ціна за одиницю з урахуванням всіх модифікаторів'),
+  "finalTotalPrice": zod.number().min(getCurrentData200ResponseCalculationResponseFinalTotalPriceMin).optional().describe('Загальна кінцева ціна за всі предмети з урахуванням всіх модифікаторів'),
+  "calculationDetails": zod.array(zod.object({
+  "step": zod.number().optional(),
+  "stepName": zod.string().optional(),
+  "description": zod.string().optional(),
+  "modifierCode": zod.string().optional(),
+  "modifierName": zod.string().optional(),
+  "modifierValue": zod.string().optional(),
+  "priceBefore": zod.number().optional(),
+  "priceAfter": zod.number().optional(),
+  "priceDifference": zod.number().optional()
+}).strict()).optional().describe('Список деталей розрахунку для кожного кроку обчислення')
+}).strict().optional().describe('Результат розрахунку ціни для предмета'),
+  "selectedModifierIds": zod.array(zod.string()).optional(),
+  "rangeModifierValues": zod.array(zod.object({
+  "modifierId": zod.string().min(1).regex(getCurrentData200ResponseRangeModifierValuesItemModifierIdRegExp).describe('ID модифікатора'),
+  "percentage": zod.number().min(getCurrentData200ResponseRangeModifierValuesItemPercentageMin).max(getCurrentData200ResponseRangeModifierValuesItemPercentageMax).describe('Вибраний відсоток для модифікатора')
+}).strict().describe('Значення відсотка для модифікатора діапазону')).optional(),
+  "fixedModifierQuantities": zod.array(zod.object({
+  "modifierId": zod.string().min(1).regex(getCurrentData200ResponseFixedModifierQuantitiesItemModifierIdRegExp).describe('ID модифікатора'),
+  "quantity": zod.number().min(1).max(getCurrentData200ResponseFixedModifierQuantitiesItemQuantityMax).describe('Кількість одиниць для модифікатора')
+}).strict().describe('Кількість для модифікатора з фіксованою ціною')).optional(),
+  "calculationNotes": zod.string().optional(),
+  "calculationCompleted": zod.boolean().optional(),
+  "hasCalculationErrors": zod.boolean().optional(),
+  "errorMessage": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "finalPrice": zod.number().optional(),
+  "calculationDetails": zod.array(zod.object({
+  "step": zod.number().optional(),
+  "stepName": zod.string().optional(),
+  "description": zod.string().optional(),
+  "modifierCode": zod.string().optional(),
+  "modifierName": zod.string().optional(),
+  "modifierValue": zod.string().optional(),
+  "priceBefore": zod.number().optional(),
+  "priceAfter": zod.number().optional(),
+  "priceDifference": zod.number().optional()
+}).strict()).optional(),
+  "modifiersCount": zod.number().optional()
+}).strict()
+
+export const getCurrentData400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentData401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentData403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentData404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentData409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання доступних типів плям
+ */
+export const getAvailableStainTypes200ResponseItem = zod.string()
+export const getAvailableStainTypes200Response = zod.array(getAvailableStainTypes200ResponseItem)
+
+export const getAvailableStainTypes400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableStainTypes401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableStainTypes403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableStainTypes404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableStainTypes409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання доступних типів дефектів
+ */
+export const getAvailableDefectTypes200ResponseItem = zod.string()
+export const getAvailableDefectTypes200Response = zod.array(getAvailableDefectTypes200ResponseItem)
+
+export const getAvailableDefectTypes400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableDefectTypes401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableDefectTypes403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableDefectTypes404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableDefectTypes409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримання поточного контексту
+ */
+export const getContextParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getContext200ResponseDataCurrentItemDescriptionMin = 0;
+
+export const getContext200ResponseDataCurrentItemDescriptionMax = 1000;
+export const getContext200ResponseDataCurrentItemSpecialInstructionsMin = 0;
+
+export const getContext200ResponseDataCurrentItemSpecialInstructionsMax = 500;
+export const getContext200ResponseDataCurrentItemDefectsNotesMin = 0;
+
+export const getContext200ResponseDataCurrentItemDefectsNotesMax = 1000;
+
+
+export const getContext200Response = zod.object({
+  "currentState": zod.enum(['NOT_STARTED', 'SELECTING_STAINS', 'SELECTING_DEFECTS', 'ENTERING_NOTES', 'VALIDATING_DATA', 'COMPLETED', 'ERROR']).optional(),
+  "data": zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(getContext200ResponseDataCurrentItemDescriptionMin).max(getContext200ResponseDataCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(getContext200ResponseDataCurrentItemSpecialInstructionsMin).max(getContext200ResponseDataCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(getContext200ResponseDataCurrentItemDefectsNotesMin).max(getContext200ResponseDataCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "stainsSelectionCompleted": zod.boolean().optional(),
+  "defectsSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional(),
+  "noGuaranteeReasonRequired": zod.boolean().optional(),
+  "noGuarantee": zod.boolean().optional()
+}).strict().optional(),
+  "errorMessage": zod.string().optional()
+}).strict()
+
+export const getContext400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getContext401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getContext403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getContext404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getContext409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує список доступних матеріалів
+ */
+export const getAvailableMaterialsParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getAvailableMaterials200ResponseItem = zod.string()
+export const getAvailableMaterials200Response = zod.array(getAvailableMaterials200ResponseItem)
+
+export const getAvailableMaterials400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableMaterials401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableMaterials403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableMaterials404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getAvailableMaterials409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує поточний стан підетапу 2
+ */
+export const getCurrentCharacteristicsParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getCurrentCharacteristics200ResponseCurrentItemDescriptionMin = 0;
+
+export const getCurrentCharacteristics200ResponseCurrentItemDescriptionMax = 1000;
+export const getCurrentCharacteristics200ResponseCurrentItemSpecialInstructionsMin = 0;
+
+export const getCurrentCharacteristics200ResponseCurrentItemSpecialInstructionsMax = 500;
+export const getCurrentCharacteristics200ResponseCurrentItemDefectsNotesMin = 0;
+
+export const getCurrentCharacteristics200ResponseCurrentItemDefectsNotesMax = 1000;
+
+
+export const getCurrentCharacteristics200Response = zod.object({
+  "currentItem": zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "description": zod.string().min(getCurrentCharacteristics200ResponseCurrentItemDescriptionMin).max(getCurrentCharacteristics200ResponseCurrentItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(getCurrentCharacteristics200ResponseCurrentItemSpecialInstructionsMin).max(getCurrentCharacteristics200ResponseCurrentItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(getCurrentCharacteristics200ResponseCurrentItemDefectsNotesMin).max(getCurrentCharacteristics200ResponseCurrentItemDefectsNotesMax).optional()
+}).strict().optional(),
+  "materialSelectionCompleted": zod.boolean().optional(),
+  "colorSelectionCompleted": zod.boolean().optional(),
+  "fillerSelectionCompleted": zod.boolean().optional(),
+  "wearDegreeSelectionCompleted": zod.boolean().optional(),
+  "dataValid": zod.boolean().optional()
+}).strict()
+
+export const getCurrentCharacteristics400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentCharacteristics401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentCharacteristics403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentCharacteristics404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentCharacteristics409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує поточний стан підетапу 1
+ */
+export const getSubstep1StatusParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getSubstep1Status200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const getSubstep1Status400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSubstep1Status401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSubstep1Status403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSubstep1Status404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSubstep1Status409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує список доступних категорій послуг
+ */
+export const getServiceCategories200ResponseItem = zod.object({
+  "id": zod.string().uuid().optional(),
+  "code": zod.string().optional(),
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "sortOrder": zod.number().optional(),
+  "active": zod.boolean().optional(),
+  "standardProcessingDays": zod.number().optional(),
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict()).optional()
+}).strict()
+export const getServiceCategories200Response = zod.array(getServiceCategories200ResponseItem)
+
+export const getServiceCategories400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getServiceCategories401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getServiceCategories403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getServiceCategories404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getServiceCategories409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує список предметів для категорії
+ */
+export const getItemsForCategoryParams = zod.object({
+  "categoryId": zod.string().uuid()
+}).strict()
+
+export const getItemsForCategory200ResponseItem = zod.object({
+  "id": zod.string().uuid().optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "catalogNumber": zod.number().optional(),
+  "name": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "basePrice": zod.number().optional(),
+  "priceBlack": zod.number().optional(),
+  "priceColor": zod.number().optional(),
+  "active": zod.boolean().optional()
+}).strict()
+export const getItemsForCategory200Response = zod.array(getItemsForCategory200ResponseItem)
+
+export const getItemsForCategory400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getItemsForCategory401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getItemsForCategory403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getItemsForCategory404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getItemsForCategory409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує поточний стан сесії
+ */
+export const getCurrentState2Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getCurrentState2200Response = zod.enum(['NOT_STARTED', 'INITIALIZING', 'ITEMS_MANAGER_SCREEN', 'ITEM_WIZARD_ACTIVE', 'READY_TO_PROCEED', 'COMPLETED', 'ERROR'])
+
+export const getCurrentState2400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState2401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState2403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState2404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentState2409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує кількість активних сесій
+ */
+export const getActiveSessionCount200Response = zod.number()
+
+export const getActiveSessionCount400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getActiveSessionCount401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getActiveSessionCount403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getActiveSessionCount404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getActiveSessionCount409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Перевіряє готовність до переходу на наступний етап
+ */
+export const checkReadinessToProceedParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const checkReadinessToProceed200Response = zod.boolean()
+
+export const checkReadinessToProceed400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const checkReadinessToProceed401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const checkReadinessToProceed403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const checkReadinessToProceed404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const checkReadinessToProceed409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує поточний стан менеджера предметів
+ */
+export const getCurrentManagerParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const getCurrentManager200ResponseAddedItemsItemNameMin = 0;
+
+export const getCurrentManager200ResponseAddedItemsItemNameMax = 255;
+export const getCurrentManager200ResponseAddedItemsItemDescriptionMin = 0;
+
+export const getCurrentManager200ResponseAddedItemsItemDescriptionMax = 1000;
+export const getCurrentManager200ResponseAddedItemsItemSpecialInstructionsMin = 0;
+
+export const getCurrentManager200ResponseAddedItemsItemSpecialInstructionsMax = 500;
+export const getCurrentManager200ResponseAddedItemsItemDefectsNotesMin = 0;
+
+export const getCurrentManager200ResponseAddedItemsItemDefectsNotesMax = 1000;
+
+
+export const getCurrentManager200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "addedItems": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().optional(),
+  "name": zod.string().min(getCurrentManager200ResponseAddedItemsItemNameMin).max(getCurrentManager200ResponseAddedItemsItemNameMax),
+  "description": zod.string().min(getCurrentManager200ResponseAddedItemsItemDescriptionMin).max(getCurrentManager200ResponseAddedItemsItemDescriptionMax).optional(),
+  "quantity": zod.number().min(1),
+  "unitPrice": zod.number(),
+  "totalPrice": zod.number().optional(),
+  "category": zod.string().optional(),
+  "color": zod.string().optional(),
+  "material": zod.string().optional(),
+  "unitOfMeasure": zod.string().optional(),
+  "defects": zod.string().optional(),
+  "specialInstructions": zod.string().min(getCurrentManager200ResponseAddedItemsItemSpecialInstructionsMin).max(getCurrentManager200ResponseAddedItemsItemSpecialInstructionsMax).optional(),
+  "fillerType": zod.string().optional(),
+  "fillerCompressed": zod.boolean().optional(),
+  "wearDegree": zod.string().optional(),
+  "stains": zod.string().optional(),
+  "otherStains": zod.string().optional(),
+  "defectsAndRisks": zod.string().optional(),
+  "noGuaranteeReason": zod.string().optional(),
+  "defectsNotes": zod.string().min(getCurrentManager200ResponseAddedItemsItemDefectsNotesMin).max(getCurrentManager200ResponseAddedItemsItemDefectsNotesMax).optional()
+}).strict()).optional(),
+  "totalAmount": zod.number().optional(),
+  "itemCount": zod.number().optional(),
+  "canProceedToNextStage": zod.boolean().optional(),
+  "activeWizardId": zod.string().uuid().optional(),
+  "editingItemId": zod.string().uuid().optional(),
+  "currentStatus": zod.string().optional(),
+  "wizardActive": zod.boolean().optional(),
+  "editMode": zod.boolean().optional()
+}).strict()
+
+export const getCurrentManager400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentManager401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentManager403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentManager404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getCurrentManager409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує поточний стан форми
+ */
+export const getNewClientFormStateParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const getNewClientFormState200Response = zod.enum(['INIT', 'FILLING_BASIC_INFO', 'FILLING_CONTACT_INFO', 'VALIDATING', 'CHECKING_DUPLICATES', 'DUPLICATES_FOUND', 'SAVING', 'COMPLETED', 'ERROR', 'CANCELLED'])
+
+export const getNewClientFormState400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getNewClientFormState401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getNewClientFormState403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getNewClientFormState404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getNewClientFormState409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує поточний стан пошуку
+ */
+export const getClientSearchStateParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const getClientSearchState200Response = zod.enum(['INIT', 'READY_TO_SEARCH', 'SEARCHING', 'RESULTS_FOUND', 'RESULTS_DISPLAYED', 'NO_RESULTS', 'CLIENT_SELECTED', 'CREATE_NEW_CLIENT_MODE', 'COMPLETED', 'SEARCH_ERROR', 'CANCELLED'])
+
+export const getClientSearchState400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getClientSearchState401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getClientSearchState403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getClientSearchState404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getClientSearchState409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує обраного клієнта
+ */
+export const getSelectedClientParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const getSelectedClient200ResponseStructuredAddressCityMin = 2;
+
+export const getSelectedClient200ResponseStructuredAddressCityMax = 100;
+
+export const getSelectedClient200ResponseStructuredAddressCityRegExp = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const getSelectedClient200ResponseStructuredAddressStreetMin = 2;
+
+export const getSelectedClient200ResponseStructuredAddressStreetMax = 150;
+
+export const getSelectedClient200ResponseStructuredAddressStreetRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const getSelectedClient200ResponseStructuredAddressBuildingMin = 0;
+
+export const getSelectedClient200ResponseStructuredAddressBuildingMax = 20;
+
+export const getSelectedClient200ResponseStructuredAddressBuildingRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const getSelectedClient200ResponseStructuredAddressApartmentMin = 0;
+
+export const getSelectedClient200ResponseStructuredAddressApartmentMax = 20;
+
+export const getSelectedClient200ResponseStructuredAddressApartmentRegExp = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const getSelectedClient200ResponseStructuredAddressPostalCodeMin = 0;
+
+export const getSelectedClient200ResponseStructuredAddressPostalCodeMax = 10;
+
+export const getSelectedClient200ResponseStructuredAddressPostalCodeRegExp = new RegExp('^[0-9\\-]+$');
+export const getSelectedClient200ResponseStructuredAddressFullAddressMin = 5;
+
+export const getSelectedClient200ResponseStructuredAddressFullAddressMax = 500;
+export const getSelectedClient200ResponsePreferencesItemKeyMin = 0;
+
+export const getSelectedClient200ResponsePreferencesItemKeyMax = 100;
+export const getSelectedClient200ResponsePreferencesItemValueMin = 0;
+
+export const getSelectedClient200ResponsePreferencesItemValueMax = 255;
+
+
+export const getSelectedClient200Response = zod.object({
+  "id": zod.string().uuid().optional(),
+  "lastName": zod.string().optional(),
+  "firstName": zod.string().optional(),
+  "fullName": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "address": zod.string().optional(),
+  "structuredAddress": zod.object({
+  "city": zod.string().min(getSelectedClient200ResponseStructuredAddressCityMin).max(getSelectedClient200ResponseStructuredAddressCityMax).regex(getSelectedClient200ResponseStructuredAddressCityRegExp).optional(),
+  "street": zod.string().min(getSelectedClient200ResponseStructuredAddressStreetMin).max(getSelectedClient200ResponseStructuredAddressStreetMax).regex(getSelectedClient200ResponseStructuredAddressStreetRegExp).optional(),
+  "building": zod.string().min(getSelectedClient200ResponseStructuredAddressBuildingMin).max(getSelectedClient200ResponseStructuredAddressBuildingMax).regex(getSelectedClient200ResponseStructuredAddressBuildingRegExp).optional(),
+  "apartment": zod.string().min(getSelectedClient200ResponseStructuredAddressApartmentMin).max(getSelectedClient200ResponseStructuredAddressApartmentMax).regex(getSelectedClient200ResponseStructuredAddressApartmentRegExp).optional(),
+  "postalCode": zod.string().min(getSelectedClient200ResponseStructuredAddressPostalCodeMin).max(getSelectedClient200ResponseStructuredAddressPostalCodeMax).regex(getSelectedClient200ResponseStructuredAddressPostalCodeRegExp).optional(),
+  "fullAddress": zod.string().min(getSelectedClient200ResponseStructuredAddressFullAddressMin).max(getSelectedClient200ResponseStructuredAddressFullAddressMax).optional()
+}).strict().optional(),
+  "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
+  "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
+  "sourceDetails": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "updatedAt": zod.string().datetime({}).optional(),
+  "category": zod.object({
+  "code": zod.string().optional(),
+  "displayName": zod.string().optional()
+}).strict().optional(),
+  "preferences": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "key": zod.string().min(getSelectedClient200ResponsePreferencesItemKeyMin).max(getSelectedClient200ResponsePreferencesItemKeyMax),
+  "value": zod.string().min(getSelectedClient200ResponsePreferencesItemValueMin).max(getSelectedClient200ResponsePreferencesItemValueMax).optional()
+}).strict()).optional(),
+  "recentOrders": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "receiptNumber": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'NEW', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELLED']).optional(),
+  "totalAmount": zod.number().optional(),
+  "createdAt": zod.string().datetime({}).optional(),
+  "completionDate": zod.string().datetime({}).optional(),
+  "itemCount": zod.number().optional()
+}).strict()).optional(),
+  "orderCount": zod.number().optional()
+}).strict()
+
+export const getSelectedClient400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSelectedClient401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSelectedClient403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSelectedClient404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getSelectedClient409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Отримує поточний стан базової інформації
+ */
+export const getBasicOrderInfoStateParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const getBasicOrderInfoState200Response = zod.enum(['INIT', 'GENERATING_RECEIPT_NUMBER', 'RECEIPT_NUMBER_GENERATED', 'ENTERING_UNIQUE_TAG', 'UNIQUE_TAG_ENTERED', 'SELECTING_BRANCH', 'BRANCH_SELECTED', 'SETTING_CREATION_DATE', 'CREATION_DATE_SET', 'COMPLETED', 'ERROR'])
+
+export const getBasicOrderInfoState400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getBasicOrderInfoState401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getBasicOrderInfoState403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getBasicOrderInfoState404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const getBasicOrderInfoState409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
  * @summary Отримати рекомендовану одиницю виміру для предмета
  */
 export const getRecommendedUnitOfMeasureQueryParams = zod.object({
@@ -6804,15 +16557,15 @@ export const downloadPdfReceipt409Response = zod.object({
  * Генерує унікальний номер квитанції для нового замовлення
  * @summary Генерувати номер квитанції
  */
-export const generateReceiptNumberQueryParams = zod.object({
+export const generateReceiptNumber1QueryParams = zod.object({
   "branchLocationId": zod.string().uuid().optional().describe('ID філії/пункту прийому')
 }).strict()
 
-export const generateReceiptNumber200Response = zod.object({
+export const generateReceiptNumber1200Response = zod.object({
 
 })
 
-export const generateReceiptNumber400Response = zod.object({
+export const generateReceiptNumber1400Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -6820,7 +16573,7 @@ export const generateReceiptNumber400Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const generateReceiptNumber401Response = zod.object({
+export const generateReceiptNumber1401Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -6828,7 +16581,7 @@ export const generateReceiptNumber401Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const generateReceiptNumber403Response = zod.object({
+export const generateReceiptNumber1403Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -6836,7 +16589,7 @@ export const generateReceiptNumber403Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const generateReceiptNumber404Response = zod.object({
+export const generateReceiptNumber1404Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -6844,7 +16597,7 @@ export const generateReceiptNumber404Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const generateReceiptNumber409Response = zod.object({
+export const generateReceiptNumber1409Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -6852,7 +16605,7 @@ export const generateReceiptNumber409Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const generateReceiptNumber500Response = zod.object({
+export const generateReceiptNumber1500Response = zod.object({
 
 })
 
@@ -7433,18 +17186,18 @@ export const getRiskWarnings409Response = zod.object({
  * Повертає список рекомендованих модифікаторів для предмета на основі його плям, дефектів, категорії та матеріалу
  * @summary Отримати рекомендовані модифікатори на основі плям та дефектів
  */
-export const getRecommendedModifiersQueryParams = zod.object({
+export const getRecommendedModifiers1QueryParams = zod.object({
   "stains": zod.array(zod.string()).optional(),
   "defects": zod.array(zod.string()).optional(),
   "categoryCode": zod.string().optional(),
   "materialType": zod.string().optional()
 }).strict()
 
-export const getRecommendedModifiers200Response = zod.object({
+export const getRecommendedModifiers1200Response = zod.object({
 
 })
 
-export const getRecommendedModifiers400Response = zod.object({
+export const getRecommendedModifiers1400Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -7452,7 +17205,7 @@ export const getRecommendedModifiers400Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const getRecommendedModifiers401Response = zod.object({
+export const getRecommendedModifiers1401Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -7460,7 +17213,7 @@ export const getRecommendedModifiers401Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const getRecommendedModifiers403Response = zod.object({
+export const getRecommendedModifiers1403Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -7468,7 +17221,7 @@ export const getRecommendedModifiers403Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const getRecommendedModifiers404Response = zod.object({
+export const getRecommendedModifiers1404Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -7476,7 +17229,7 @@ export const getRecommendedModifiers404Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const getRecommendedModifiers409Response = zod.object({
+export const getRecommendedModifiers1409Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -10011,47 +19764,47 @@ export const getDefectTypeByCode409Response = zod.object({
  * @deprecated
  * @summary Пошук клієнтів
  */
-export const searchClientsQueryParams = zod.object({
+export const searchClients1QueryParams = zod.object({
   "keyword": zod.string().describe('Ключове слово для пошуку')
 }).strict()
 
-export const searchClients200ResponseStructuredAddressCityMinOne = 2;
+export const searchClients1200ResponseStructuredAddressCityMinOne = 2;
 
-export const searchClients200ResponseStructuredAddressCityMaxOne = 100;
+export const searchClients1200ResponseStructuredAddressCityMaxOne = 100;
 
-export const searchClients200ResponseStructuredAddressCityRegExpOne = new RegExp('^[\\p{L}\\s.,\\-\']+$');
-export const searchClients200ResponseStructuredAddressStreetMinOne = 2;
+export const searchClients1200ResponseStructuredAddressCityRegExpOne = new RegExp('^[\\p{L}\\s.,\\-\']+$');
+export const searchClients1200ResponseStructuredAddressStreetMinOne = 2;
 
-export const searchClients200ResponseStructuredAddressStreetMaxOne = 150;
+export const searchClients1200ResponseStructuredAddressStreetMaxOne = 150;
 
-export const searchClients200ResponseStructuredAddressStreetRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
-export const searchClients200ResponseStructuredAddressBuildingMinOne = 0;
+export const searchClients1200ResponseStructuredAddressStreetRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\']+$');
+export const searchClients1200ResponseStructuredAddressBuildingMinOne = 0;
 
-export const searchClients200ResponseStructuredAddressBuildingMaxOne = 20;
+export const searchClients1200ResponseStructuredAddressBuildingMaxOne = 20;
 
-export const searchClients200ResponseStructuredAddressBuildingRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
-export const searchClients200ResponseStructuredAddressApartmentMinOne = 0;
+export const searchClients1200ResponseStructuredAddressBuildingRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClients1200ResponseStructuredAddressApartmentMinOne = 0;
 
-export const searchClients200ResponseStructuredAddressApartmentMaxOne = 20;
+export const searchClients1200ResponseStructuredAddressApartmentMaxOne = 20;
 
-export const searchClients200ResponseStructuredAddressApartmentRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
-export const searchClients200ResponseStructuredAddressPostalCodeMinOne = 0;
+export const searchClients1200ResponseStructuredAddressApartmentRegExpOne = new RegExp('^[\\p{L}\\s0-9.,\\-\'/]+$');
+export const searchClients1200ResponseStructuredAddressPostalCodeMinOne = 0;
 
-export const searchClients200ResponseStructuredAddressPostalCodeMaxOne = 10;
+export const searchClients1200ResponseStructuredAddressPostalCodeMaxOne = 10;
 
-export const searchClients200ResponseStructuredAddressPostalCodeRegExpOne = new RegExp('^[0-9\\-]+$');
-export const searchClients200ResponseStructuredAddressFullAddressMinOne = 5;
+export const searchClients1200ResponseStructuredAddressPostalCodeRegExpOne = new RegExp('^[0-9\\-]+$');
+export const searchClients1200ResponseStructuredAddressFullAddressMinOne = 5;
 
-export const searchClients200ResponseStructuredAddressFullAddressMaxOne = 500;
-export const searchClients200ResponsePreferencesItemKeyMinOne = 0;
+export const searchClients1200ResponseStructuredAddressFullAddressMaxOne = 500;
+export const searchClients1200ResponsePreferencesItemKeyMinOne = 0;
 
-export const searchClients200ResponsePreferencesItemKeyMaxOne = 100;
-export const searchClients200ResponsePreferencesItemValueMinOne = 0;
+export const searchClients1200ResponsePreferencesItemKeyMaxOne = 100;
+export const searchClients1200ResponsePreferencesItemValueMinOne = 0;
 
-export const searchClients200ResponsePreferencesItemValueMaxOne = 255;
+export const searchClients1200ResponsePreferencesItemValueMaxOne = 255;
 
 
-export const searchClients200Response = zod.object({
+export const searchClients1200Response = zod.object({
   "id": zod.string().uuid().optional(),
   "lastName": zod.string().optional(),
   "firstName": zod.string().optional(),
@@ -10060,12 +19813,12 @@ export const searchClients200Response = zod.object({
   "email": zod.string().optional(),
   "address": zod.string().optional(),
   "structuredAddress": zod.object({
-  "city": zod.string().min(searchClients200ResponseStructuredAddressCityMinOne).max(searchClients200ResponseStructuredAddressCityMaxOne).regex(searchClients200ResponseStructuredAddressCityRegExpOne).optional(),
-  "street": zod.string().min(searchClients200ResponseStructuredAddressStreetMinOne).max(searchClients200ResponseStructuredAddressStreetMaxOne).regex(searchClients200ResponseStructuredAddressStreetRegExpOne).optional(),
-  "building": zod.string().min(searchClients200ResponseStructuredAddressBuildingMinOne).max(searchClients200ResponseStructuredAddressBuildingMaxOne).regex(searchClients200ResponseStructuredAddressBuildingRegExpOne).optional(),
-  "apartment": zod.string().min(searchClients200ResponseStructuredAddressApartmentMinOne).max(searchClients200ResponseStructuredAddressApartmentMaxOne).regex(searchClients200ResponseStructuredAddressApartmentRegExpOne).optional(),
-  "postalCode": zod.string().min(searchClients200ResponseStructuredAddressPostalCodeMinOne).max(searchClients200ResponseStructuredAddressPostalCodeMaxOne).regex(searchClients200ResponseStructuredAddressPostalCodeRegExpOne).optional(),
-  "fullAddress": zod.string().min(searchClients200ResponseStructuredAddressFullAddressMinOne).max(searchClients200ResponseStructuredAddressFullAddressMaxOne).optional()
+  "city": zod.string().min(searchClients1200ResponseStructuredAddressCityMinOne).max(searchClients1200ResponseStructuredAddressCityMaxOne).regex(searchClients1200ResponseStructuredAddressCityRegExpOne).optional(),
+  "street": zod.string().min(searchClients1200ResponseStructuredAddressStreetMinOne).max(searchClients1200ResponseStructuredAddressStreetMaxOne).regex(searchClients1200ResponseStructuredAddressStreetRegExpOne).optional(),
+  "building": zod.string().min(searchClients1200ResponseStructuredAddressBuildingMinOne).max(searchClients1200ResponseStructuredAddressBuildingMaxOne).regex(searchClients1200ResponseStructuredAddressBuildingRegExpOne).optional(),
+  "apartment": zod.string().min(searchClients1200ResponseStructuredAddressApartmentMinOne).max(searchClients1200ResponseStructuredAddressApartmentMaxOne).regex(searchClients1200ResponseStructuredAddressApartmentRegExpOne).optional(),
+  "postalCode": zod.string().min(searchClients1200ResponseStructuredAddressPostalCodeMinOne).max(searchClients1200ResponseStructuredAddressPostalCodeMaxOne).regex(searchClients1200ResponseStructuredAddressPostalCodeRegExpOne).optional(),
+  "fullAddress": zod.string().min(searchClients1200ResponseStructuredAddressFullAddressMinOne).max(searchClients1200ResponseStructuredAddressFullAddressMaxOne).optional()
 }).strict().optional(),
   "communicationChannels": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional(),
   "source": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional(),
@@ -10078,8 +19831,8 @@ export const searchClients200Response = zod.object({
 }).strict().optional(),
   "preferences": zod.array(zod.object({
   "id": zod.string().uuid().optional(),
-  "key": zod.string().min(searchClients200ResponsePreferencesItemKeyMinOne).max(searchClients200ResponsePreferencesItemKeyMaxOne),
-  "value": zod.string().min(searchClients200ResponsePreferencesItemValueMinOne).max(searchClients200ResponsePreferencesItemValueMaxOne).optional()
+  "key": zod.string().min(searchClients1200ResponsePreferencesItemKeyMinOne).max(searchClients1200ResponsePreferencesItemKeyMaxOne),
+  "value": zod.string().min(searchClients1200ResponsePreferencesItemValueMinOne).max(searchClients1200ResponsePreferencesItemValueMaxOne).optional()
 }).strict()).optional(),
   "recentOrders": zod.array(zod.object({
   "id": zod.string().uuid().optional(),
@@ -10093,7 +19846,7 @@ export const searchClients200Response = zod.object({
   "orderCount": zod.number().optional()
 }).strict()
 
-export const searchClients400Response = zod.object({
+export const searchClients1400Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -10101,7 +19854,7 @@ export const searchClients400Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const searchClients401Response = zod.object({
+export const searchClients1401Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -10109,7 +19862,7 @@ export const searchClients401Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const searchClients403Response = zod.object({
+export const searchClients1403Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -10117,7 +19870,7 @@ export const searchClients403Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const searchClients404Response = zod.object({
+export const searchClients1404Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -10125,7 +19878,7 @@ export const searchClients404Response = zod.object({
   "path": zod.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
-export const searchClients409Response = zod.object({
+export const searchClients1409Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),
@@ -10322,6 +20075,502 @@ export const ping404Response = zod.object({
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
 
 export const ping409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Закриття сесії фотодокументації
+ */
+export const closeSession2Params = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const closeSession2400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession2401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession2403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession2404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const closeSession2409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Видалення фотографії
+ */
+export const removePhotoParams = zod.object({
+  "sessionId": zod.string().uuid(),
+  "photoId": zod.string().uuid()
+}).strict()
+
+export const removePhoto200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const removePhoto400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removePhoto401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removePhoto403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removePhoto404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removePhoto409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Видалення сесії
+ */
+export const removeSessionParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const removeSession400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removeSession401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removeSession403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removeSession404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removeSession409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Видалення модифікатора з розрахунку
+ */
+export const removeModifierParams = zod.object({
+  "sessionId": zod.string().uuid(),
+  "modifierId": zod.string()
+}).strict()
+
+export const removeModifier200Response = zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "currentState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "previousState": zod.enum(['INITIAL', 'UPLOADING_PHOTOS', 'PROCESSING_PHOTOS', 'REVIEWING_PHOTOS', 'COMPLETED', 'ERROR']).optional(),
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "details": zod.string().optional(),
+  "data": zod.object({
+  "sessionId": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.string().uuid().optional(),
+  "itemId": zod.string().uuid().optional(),
+  "fileUrl": zod.string().optional(),
+  "thumbnailUrl": zod.string().optional(),
+  "annotations": zod.string().optional(),
+  "description": zod.string().optional(),
+  "createdAt": zod.string().datetime({}).optional()
+}).strict()).optional(),
+  "maxPhotosAllowed": zod.number().optional(),
+  "maxFileSizeMB": zod.number().optional(),
+  "documentationCompleted": zod.boolean().optional(),
+  "startTime": zod.string().datetime({}).optional(),
+  "completionTime": zod.string().datetime({}).optional(),
+  "notes": zod.string().optional()
+}).strict().optional(),
+  "availableEvents": zod.array(zod.enum(['INITIALIZE', 'START_UPLOAD', 'UPLOAD_PHOTO', 'PROCESS_PHOTOS', 'PROCESSING_COMPLETED', 'REVIEW_PHOTOS', 'DELETE_PHOTO', 'COMPLETE_DOCUMENTATION', 'EDIT_PHOTOS', 'HANDLE_ERROR', 'RESET_AFTER_ERROR'])).optional(),
+  "validationErrors": zod.array(zod.string()).optional(),
+  "timestamp": zod.string().datetime({}).optional()
+}).strict()
+
+export const removeModifier400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removeModifier401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removeModifier403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removeModifier404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const removeModifier409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Завершує сесію підетапу 1
+ */
+export const finalizeSubstep1SessionParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const finalizeSubstep1Session400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const finalizeSubstep1Session401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const finalizeSubstep1Session403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const finalizeSubstep1Session404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const finalizeSubstep1Session409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Завершує сесію та звільняє ресурси
+ */
+export const terminateSessionParams = zod.object({
+  "sessionId": zod.string().uuid()
+}).strict()
+
+export const terminateSession400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const terminateSession401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const terminateSession403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const terminateSession404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const terminateSession409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Скасовує створення клієнта
+ */
+export const cancelNewClientCreationParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const cancelNewClientCreation400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelNewClientCreation401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelNewClientCreation403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelNewClientCreation404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelNewClientCreation409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Скасовує пошук клієнта
+ */
+export const cancelClientSearchParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const cancelClientSearch400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelClientSearch401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelClientSearch403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelClientSearch404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelClientSearch409Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
+ * @summary Скасовує збір базової інформації
+ */
+export const cancelBasicOrderInfoParams = zod.object({
+  "sessionId": zod.string()
+}).strict()
+
+export const cancelBasicOrderInfo400Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelBasicOrderInfo401Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelBasicOrderInfo403Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelBasicOrderInfo404Response = zod.object({
+  "timestamp": zod.string().optional(),
+  "status": zod.number().optional(),
+  "error": zod.string().optional(),
+  "message": zod.string().optional(),
+  "path": zod.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const cancelBasicOrderInfo409Response = zod.object({
   "timestamp": zod.string().optional(),
   "status": zod.number().optional(),
   "error": zod.string().optional(),

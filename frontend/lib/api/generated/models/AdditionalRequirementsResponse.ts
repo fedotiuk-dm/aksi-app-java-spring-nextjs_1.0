@@ -2,8 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type RangeModifierValue = {
-    modifierCode?: string;
-    value?: number;
+export type AdditionalRequirementsResponse = {
+    orderId?: string;
+    additionalRequirements?: string;
+    customerNotes?: string;
 };
 

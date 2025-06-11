@@ -17,7 +17,7 @@ export class ReceiptService {
      * @returns PdfReceiptResponse PDF-квитанція успішно згенерована
      * @throws ApiError
      */
-    public static generatePdfReceipt({
+    public static generatePdfReceipt1({
         requestBody,
     }: {
         requestBody: ReceiptGenerationRequest,
@@ -125,7 +125,7 @@ export class ReceiptService {
      * @returns any Номер квитанції успішно згенеровано
      * @throws ApiError
      */
-    public static generateReceiptNumber({
+    public static generateReceiptNumber1({
         branchLocationId,
     }: {
         /**

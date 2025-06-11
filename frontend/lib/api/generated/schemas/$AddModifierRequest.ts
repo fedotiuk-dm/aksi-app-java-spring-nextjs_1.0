@@ -2,13 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export const $RangeModifierValue = {
+export const $AddModifierRequest = {
     properties: {
-        modifierCode: {
+        modifierId: {
             type: 'string',
         },
-        value: {
+        rangeValue: {
             type: 'number',
+        },
+        quantity: {
+            type: 'number',
+            format: 'int32',
         },
     },
 } as const;

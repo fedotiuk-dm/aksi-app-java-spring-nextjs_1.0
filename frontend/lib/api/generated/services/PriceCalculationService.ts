@@ -39,7 +39,7 @@ export class PriceCalculationService {
      * @returns PriceCalculationResponseDTO Успішний розрахунок ціни
      * @throws ApiError
      */
-    public static calculatePrice({
+    public static calculatePrice1({
         requestBody,
     }: {
         requestBody: PriceCalculationRequestDTO,
@@ -99,7 +99,7 @@ export class PriceCalculationService {
      * @returns any OK
      * @throws ApiError
      */
-    public static getRecommendedModifiers({
+    public static getRecommendedModifiers1({
         stains,
         defects,
         categoryCode,

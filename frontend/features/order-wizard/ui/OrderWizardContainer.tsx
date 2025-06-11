@@ -23,6 +23,7 @@ import React from 'react';
 
 import {
   useOrderWizard,
+  useWizardNavigationStore,
   WIZARD_STAGES,
   WIZARD_STAGE_NAMES,
   type WizardStage,
@@ -30,13 +31,14 @@ import {
 
 // Імпорт компонентів етапів
 import { Stage1ClientSelection } from './stages/Stage1ClientSelection';
-// import { Stage2ItemsManagement } from './stages/Stage2ItemsManagement';
+import { Stage2ItemManager } from './stages/Stage2ItemManager';
 // import { Stage3OrderParameters } from './stages/Stage3OrderParameters';
 // import { Stage4Finalization } from './stages/Stage4Finalization';
 
 export const OrderWizardContainer: React.FC = () => {
   // Отримуємо всю функціональність з доменного шару
   const wizard = useOrderWizard();
+  const { orderId } = useWizardNavigationStore();
 
   const {
     coordinator: { currentStage, isWizardComplete, workflow, stagesStatus },
@@ -56,9 +58,11 @@ export const OrderWizardContainer: React.FC = () => {
 
       case WIZARD_STAGES.ITEMS_MANAGEMENT:
         return (
-          <Typography variant="h6" sx={{ p: 3 }}>
-            Етап 2: Менеджер предметів (у розробці)
-          </Typography>
+          <Stage2ItemManager
+            orderId={orderId || ''}
+            onComplete={goToNextStage}
+            onBack={goToPreviousStage}
+          />
         );
 
       case WIZARD_STAGES.ORDER_PARAMETERS:

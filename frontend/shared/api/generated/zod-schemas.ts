@@ -1,6 +1,6 @@
 /**
  * @fileoverview Загальний index для всіх Zod схем
- *
+ * 
  * Цей файл автоматично генерується скриптом create-zod-index.js
  * НЕ РЕДАГУЙТЕ ВРУЧНУ!
  */
@@ -51,8 +51,8 @@ export const zodUtils = {
   getValidationErrors<T>(schema: z.ZodType<T>, data: unknown): string[] {
     const result = schema.safeParse(data);
     if (result.success) return [];
-
-    return result.error.errors.map(err =>
+    
+    return result.error.errors.map(err => 
       `${err.path.join('.')}: ${err.message}`
     );
   },

@@ -48,7 +48,7 @@ public class Stage2SynchronizationService {
         final ItemManagerDTO currentManager = context.getManagerData();
         if (currentManager == null) {
             // Створюємо новий менеджер якщо його немає
-            final ItemManagerDTO newManager = mapper.fromExistingItems(context.getOrderId(), currentItems);
+            final ItemManagerDTO newManager = mapper.fromExistingItems(sessionId, context.getOrderId(), currentItems);
             stateService.updateManagerData(sessionId, newManager);
             return newManager;
         }
@@ -85,7 +85,7 @@ public class Stage2SynchronizationService {
         final Stage2Context context = stateService.createContext(orderId);
         final List<OrderItemDTO> existingItems = operationsService.getOrderItems(orderId);
 
-        final ItemManagerDTO manager = mapper.fromExistingItems(orderId, existingItems);
+        final ItemManagerDTO manager = mapper.fromExistingItems(context.getSessionId(), orderId, existingItems);
         stateService.updateManagerData(context.getSessionId(), manager);
         stateService.updateState(context.getSessionId(), Stage2State.ITEMS_MANAGER_SCREEN);
 

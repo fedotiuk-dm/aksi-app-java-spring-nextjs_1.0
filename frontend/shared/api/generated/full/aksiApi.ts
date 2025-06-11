@@ -31,9 +31,13 @@ import type {
 
 import type {
   AdaptersInfo,
+  AddModifierRequest,
+  AddPhotoBody,
+  AdditionalInfoDTO,
   AdditionalRequirementsRequest,
   ApplyDiscount1200,
   ApplyPayment200,
+  BasicOrderInfoDTO,
   BranchLocationCreateRequest,
   BranchLocationDTO,
   BranchLocationUpdateRequest,
@@ -42,8 +46,12 @@ import type {
   CancelOrder204,
   ClientPageResponse,
   ClientResponse,
+  ClientSearchCriteriaDTO,
   ClientSearchRequest,
+  ClientSearchResultDTO,
+  CloseSession200,
   CompleteApiMap,
+  CompleteSubstep2200,
   CompletionDateCalculationRequest,
   CreateCategory200,
   CreateClientRequest,
@@ -60,28 +68,41 @@ import type {
   DeleteOrderItem204,
   DeletePhoto204,
   DeleteStainType200,
+  DiscountConfigurationDTO,
   DownloadPdfReceipt200,
   EmailReceipt200,
   EmailReceiptRequest,
   EmailReceiptResponse,
+  EnterQuantityParams,
   ErrorResponse,
-  GenerateReceiptNumber200,
-  GenerateReceiptNumber500,
+  ExecutionParamsDTO,
+  FinalizeOrder200,
+  GeneratePdfReceipt200,
+  GenerateReceipt200,
+  GenerateReceiptNumber1200,
+  GenerateReceiptNumber1500,
+  GenerateReceiptNumber1Params,
   GenerateReceiptNumberParams,
   GetAllActiveCategories200,
   GetAllBranchLocationsParams,
   GetAllCategories200,
   GetAllClientsParams,
   GetAllModifiers200,
+  GetAvailableEvents200Item,
   GetAvailableModifiersForCategory200,
   GetAvailableModifiersForCategoryParams,
+  GetAvailableModifiersParams,
   GetAvailableUnitsOfMeasure200,
   GetBasePrice200,
   GetBasePriceParams,
+  GetBasicOrderInfoState200,
   GetCategoryByCode1200,
   GetCategoryByCode200,
   GetCategoryById1200,
   GetCategoryById200,
+  GetClientSearchState200,
+  GetCurrentState200,
+  GetCurrentState2200,
   GetDefectTypeByCode200,
   GetDefectTypeById200,
   GetDefectTypesParams,
@@ -100,11 +121,15 @@ import type {
   GetModifiersByCodes200,
   GetModifiersForServiceCategory1200,
   GetModifiersForServiceCategory200,
+  GetNewClientFormState200,
+  GetNextSubstep200,
   GetOrderDiscount200,
   GetOrderPayment200,
   GetOrderReceipt200,
   GetOrderReceiptParams,
-  GetRecommendedModifiers200,
+  GetOrderSummary200,
+  GetRecommendedModifiers1200,
+  GetRecommendedModifiers1Params,
   GetRecommendedModifiersForDefectsParams,
   GetRecommendedModifiersForStainsParams,
   GetRecommendedModifiersParams,
@@ -113,54 +138,101 @@ import type {
   GetRiskWarnings200,
   GetRiskWarningsForItemParams,
   GetRiskWarningsParams,
+  GetSessionContext200,
+  GetSessionState200,
   GetStainTypeByCode200,
   GetStainTypeById200,
   GetStainTypesParams,
+  GoBackParams,
   HealthCheck200,
   HealthStatus,
+  InitializeStage4200,
+  InitializeSubstep2Params,
+  InitializeSubstepRequest,
   IsUnitSupportedForItemParams,
+  ItemBasicInfoDTO,
+  ItemCharacteristicsDTO,
+  ItemManagerDTO,
+  LegalAcceptanceDTO,
   Login200,
   LoginRequest,
   ModifierRecommendationDTO,
+  NewClientFormDTO,
+  OrderCompletionDTO,
   OrderCompletionUpdateRequest,
+  OrderConfirmationDTO,
   OrderDTO,
   OrderDetailedSummaryResponse,
   OrderDiscountRequest,
   OrderFinalizationRequest,
+  OrderItemAddRequest,
   OrderItemDTO,
   OrderItemPhotoDTO,
   PaymentCalculationRequest,
+  PaymentConfigurationDTO,
   PdfReceiptResponse,
+  PhotoDocumentationDTO,
   PriceCalculationRequestDTO,
   PriceCalculationResponseDTO,
+  PriceDiscountDTO,
   PriceListItemDTO,
   PriceModifierDTO,
+  ProcessDefectNotesParams,
+  ProcessDefectSelectionParams,
+  ProcessStainSelectionParams,
+  ReceiptConfigurationDTO,
   ReceiptDTO,
   ReceiptGenerationRequest,
   RefreshToken200,
   Register200,
   RegisterRequest,
   RemoveDiscount200,
-  SearchClientsParams,
+  SaveSignature200,
+  SearchClients1Params,
+  SearchClientsByPhoneParams,
+  SelectBranchParams,
+  SelectClientParams,
+  SelectColorParams,
+  SelectFillerParams,
+  SelectMaterialParams,
+  SelectPriceListItemParams,
+  SelectServiceCategoryParams,
+  SelectWearLevelParams,
   ServiceCategoryDTO,
   SetActiveStatusParams,
+  SetUniqueTagParams,
+  Stage3Context,
   StageInfo,
   StageMethods,
   StageStatus,
   StagesStatus,
   StainTypeDTO,
+  StainsDefectsContext,
+  SubstepResultDTO,
   SystemStats,
   TestResponse,
   UpdateCategory200,
   UpdateClientRequest,
+  UpdateLegalAcceptance200,
   UpdateModifier200,
+  UpdateOrderCompletion1200,
   UpdateOrderCompletion200,
+  UpdateOrderConfirmation200,
   UpdatePhotoAnnotationsParams,
   UpdatePriceListItem200,
+  UpdateReceiptConfiguration200,
   UpdateRequirements200,
   UpdateStainType200,
   UploadPhotoBody,
   UploadPhotoParams,
+  ValidateBasicOrderInfo200,
+  ValidateComplete200,
+  ValidateLegalAcceptance200,
+  ValidateNewClientForm200,
+  ValidateOrderCompletion200,
+  ValidateOrderConfirmation200,
+  ValidateReceiptConfiguration200,
+  ValidationResult,
   WorkflowMap
 } from './aksiApi.schemas';
 
@@ -171,6 +243,833 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 
+/**
+ * @summary Оновити конфігурацію оплати
+ */
+export const updatePaymentConfig = (
+    sessionId: string,
+    paymentConfigurationDTO: PaymentConfigurationDTO,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/payment-config`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: paymentConfigurationDTO
+    },
+      options);
+    }
+  
+
+
+export const getUpdatePaymentConfigMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePaymentConfig>>, TError,{sessionId: string;data: PaymentConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePaymentConfig>>, TError,{sessionId: string;data: PaymentConfigurationDTO}, TContext> => {
+
+const mutationKey = ['updatePaymentConfig'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePaymentConfig>>, {sessionId: string;data: PaymentConfigurationDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updatePaymentConfig(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePaymentConfigMutationResult = NonNullable<Awaited<ReturnType<typeof updatePaymentConfig>>>
+    export type UpdatePaymentConfigMutationBody = PaymentConfigurationDTO
+    export type UpdatePaymentConfigMutationError = ErrorResponse
+
+    /**
+ * @summary Оновити конфігурацію оплати
+ */
+export const useUpdatePaymentConfig = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePaymentConfig>>, TError,{sessionId: string;data: PaymentConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updatePaymentConfig>>,
+        TError,
+        {sessionId: string;data: PaymentConfigurationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdatePaymentConfigMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Оновити параметри виконання
+ */
+export const updateExecutionParams = (
+    sessionId: string,
+    executionParamsDTO: ExecutionParamsDTO,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/execution-params`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: executionParamsDTO
+    },
+      options);
+    }
+  
+
+
+export const getUpdateExecutionParamsMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateExecutionParams>>, TError,{sessionId: string;data: ExecutionParamsDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateExecutionParams>>, TError,{sessionId: string;data: ExecutionParamsDTO}, TContext> => {
+
+const mutationKey = ['updateExecutionParams'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateExecutionParams>>, {sessionId: string;data: ExecutionParamsDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updateExecutionParams(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateExecutionParamsMutationResult = NonNullable<Awaited<ReturnType<typeof updateExecutionParams>>>
+    export type UpdateExecutionParamsMutationBody = ExecutionParamsDTO
+    export type UpdateExecutionParamsMutationError = ErrorResponse
+
+    /**
+ * @summary Оновити параметри виконання
+ */
+export const useUpdateExecutionParams = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateExecutionParams>>, TError,{sessionId: string;data: ExecutionParamsDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateExecutionParams>>,
+        TError,
+        {sessionId: string;data: ExecutionParamsDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateExecutionParamsMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Оновити конфігурацію знижок
+ */
+export const updateDiscountConfig = (
+    sessionId: string,
+    discountConfigurationDTO: DiscountConfigurationDTO,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/discount-config`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: discountConfigurationDTO
+    },
+      options);
+    }
+  
+
+
+export const getUpdateDiscountConfigMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDiscountConfig>>, TError,{sessionId: string;data: DiscountConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateDiscountConfig>>, TError,{sessionId: string;data: DiscountConfigurationDTO}, TContext> => {
+
+const mutationKey = ['updateDiscountConfig'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDiscountConfig>>, {sessionId: string;data: DiscountConfigurationDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updateDiscountConfig(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDiscountConfigMutationResult = NonNullable<Awaited<ReturnType<typeof updateDiscountConfig>>>
+    export type UpdateDiscountConfigMutationBody = DiscountConfigurationDTO
+    export type UpdateDiscountConfigMutationError = ErrorResponse
+
+    /**
+ * @summary Оновити конфігурацію знижок
+ */
+export const useUpdateDiscountConfig = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDiscountConfig>>, TError,{sessionId: string;data: DiscountConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateDiscountConfig>>,
+        TError,
+        {sessionId: string;data: DiscountConfigurationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateDiscountConfigMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Оновити додаткову інформацію
+ */
+export const updateAdditionalInfo = (
+    sessionId: string,
+    additionalInfoDTO: AdditionalInfoDTO,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/additional-info`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: additionalInfoDTO
+    },
+      options);
+    }
+  
+
+
+export const getUpdateAdditionalInfoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAdditionalInfo>>, TError,{sessionId: string;data: AdditionalInfoDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateAdditionalInfo>>, TError,{sessionId: string;data: AdditionalInfoDTO}, TContext> => {
+
+const mutationKey = ['updateAdditionalInfo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAdditionalInfo>>, {sessionId: string;data: AdditionalInfoDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updateAdditionalInfo(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateAdditionalInfoMutationResult = NonNullable<Awaited<ReturnType<typeof updateAdditionalInfo>>>
+    export type UpdateAdditionalInfoMutationBody = AdditionalInfoDTO
+    export type UpdateAdditionalInfoMutationError = ErrorResponse
+
+    /**
+ * @summary Оновити додаткову інформацію
+ */
+export const useUpdateAdditionalInfo = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAdditionalInfo>>, TError,{sessionId: string;data: AdditionalInfoDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateAdditionalInfo>>,
+        TError,
+        {sessionId: string;data: AdditionalInfoDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateAdditionalInfoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Оновлює існуючий предмет замовлення (з підвізарда)
+ */
+export const updateItemInOrder = (
+    sessionId: string,
+    itemId: string,
+    orderItemDTO: OrderItemDTO,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/items/${sessionId}/${itemId}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: orderItemDTO
+    },
+      options);
+    }
+  
+
+
+export const getUpdateItemInOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateItemInOrder>>, TError,{sessionId: string;itemId: string;data: OrderItemDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateItemInOrder>>, TError,{sessionId: string;itemId: string;data: OrderItemDTO}, TContext> => {
+
+const mutationKey = ['updateItemInOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateItemInOrder>>, {sessionId: string;itemId: string;data: OrderItemDTO}> = (props) => {
+          const {sessionId,itemId,data} = props ?? {};
+
+          return  updateItemInOrder(sessionId,itemId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateItemInOrderMutationResult = NonNullable<Awaited<ReturnType<typeof updateItemInOrder>>>
+    export type UpdateItemInOrderMutationBody = OrderItemDTO
+    export type UpdateItemInOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлює існуючий предмет замовлення (з підвізарда)
+ */
+export const useUpdateItemInOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateItemInOrder>>, TError,{sessionId: string;itemId: string;data: OrderItemDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateItemInOrder>>,
+        TError,
+        {sessionId: string;itemId: string;data: OrderItemDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateItemInOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Видаляє предмет з замовлення
+ */
+export const deleteItemFromOrder = (
+    sessionId: string,
+    itemId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/items/${sessionId}/${itemId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getDeleteItemFromOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteItemFromOrder>>, TError,{sessionId: string;itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteItemFromOrder>>, TError,{sessionId: string;itemId: string}, TContext> => {
+
+const mutationKey = ['deleteItemFromOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteItemFromOrder>>, {sessionId: string;itemId: string}> = (props) => {
+          const {sessionId,itemId} = props ?? {};
+
+          return  deleteItemFromOrder(sessionId,itemId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteItemFromOrderMutationResult = NonNullable<Awaited<ReturnType<typeof deleteItemFromOrder>>>
+    
+    export type DeleteItemFromOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Видаляє предмет з замовлення
+ */
+export const useDeleteItemFromOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteItemFromOrder>>, TError,{sessionId: string;itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteItemFromOrder>>,
+        TError,
+        {sessionId: string;itemId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteItemFromOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Отримує поточні дані форми
+ */
+export const getCurrentNewClientForm = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<NewClientFormDTO>(
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/data`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetCurrentNewClientFormQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/new-client/session/${sessionId}/data`] as const;
+    }
+
+    
+export const getGetCurrentNewClientFormInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getCurrentNewClientForm>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentNewClientFormQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentNewClientForm>>> = ({ signal }) => getCurrentNewClientForm(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentNewClientFormInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentNewClientForm>>>
+export type GetCurrentNewClientFormInfiniteQueryError = ErrorResponse
+
+
+export function useGetCurrentNewClientFormInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentNewClientForm>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentNewClientForm>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentNewClientForm>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentNewClientFormInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentNewClientForm>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentNewClientForm>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentNewClientForm>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentNewClientFormInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentNewClientForm>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточні дані форми
+ */
+
+export function useGetCurrentNewClientFormInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentNewClientForm>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentNewClientFormInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetCurrentNewClientFormQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentNewClientFormQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentNewClientForm>>> = ({ signal }) => getCurrentNewClientForm(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentNewClientFormQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentNewClientForm>>>
+export type GetCurrentNewClientFormQueryError = ErrorResponse
+
+
+export function useGetCurrentNewClientForm<TData = Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentNewClientForm>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentNewClientForm>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentNewClientForm<TData = Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentNewClientForm>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentNewClientForm>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentNewClientForm<TData = Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточні дані форми
+ */
+
+export function useGetCurrentNewClientForm<TData = Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentNewClientForm>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentNewClientFormQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Оновлює дані форми клієнта
+ */
+export const updateNewClientData = (
+    sessionId: string,
+    newClientFormDTO: NewClientFormDTO,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/data`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: newClientFormDTO
+    },
+      options);
+    }
+  
+
+
+export const getUpdateNewClientDataMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateNewClientData>>, TError,{sessionId: string;data: NewClientFormDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateNewClientData>>, TError,{sessionId: string;data: NewClientFormDTO}, TContext> => {
+
+const mutationKey = ['updateNewClientData'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateNewClientData>>, {sessionId: string;data: NewClientFormDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updateNewClientData(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateNewClientDataMutationResult = NonNullable<Awaited<ReturnType<typeof updateNewClientData>>>
+    export type UpdateNewClientDataMutationBody = NewClientFormDTO
+    export type UpdateNewClientDataMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлює дані форми клієнта
+ */
+export const useUpdateNewClientData = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateNewClientData>>, TError,{sessionId: string;data: NewClientFormDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateNewClientData>>,
+        TError,
+        {sessionId: string;data: NewClientFormDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateNewClientDataMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Отримує поточну базову інформацію
+ */
+export const getCurrentBasicOrderInfo = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<BasicOrderInfoDTO>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/data`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetCurrentBasicOrderInfoQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/basic-order/session/${sessionId}/data`] as const;
+    }
+
+    
+export const getGetCurrentBasicOrderInfoInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentBasicOrderInfoQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>> = ({ signal }) => getCurrentBasicOrderInfo(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentBasicOrderInfoInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>>
+export type GetCurrentBasicOrderInfoInfiniteQueryError = ErrorResponse
+
+
+export function useGetCurrentBasicOrderInfoInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentBasicOrderInfoInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentBasicOrderInfoInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточну базову інформацію
+ */
+
+export function useGetCurrentBasicOrderInfoInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentBasicOrderInfoInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetCurrentBasicOrderInfoQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentBasicOrderInfoQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>> = ({ signal }) => getCurrentBasicOrderInfo(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentBasicOrderInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>>
+export type GetCurrentBasicOrderInfoQueryError = ErrorResponse
+
+
+export function useGetCurrentBasicOrderInfo<TData = Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentBasicOrderInfo<TData = Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentBasicOrderInfo<TData = Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточну базову інформацію
+ */
+
+export function useGetCurrentBasicOrderInfo<TData = Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentBasicOrderInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentBasicOrderInfoQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Оновлює базову інформацію
+ */
+export const updateBasicOrderInfo = (
+    sessionId: string,
+    basicOrderInfoDTO: BasicOrderInfoDTO,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/data`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: basicOrderInfoDTO
+    },
+      options);
+    }
+  
+
+
+export const getUpdateBasicOrderInfoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBasicOrderInfo>>, TError,{sessionId: string;data: BasicOrderInfoDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateBasicOrderInfo>>, TError,{sessionId: string;data: BasicOrderInfoDTO}, TContext> => {
+
+const mutationKey = ['updateBasicOrderInfo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateBasicOrderInfo>>, {sessionId: string;data: BasicOrderInfoDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updateBasicOrderInfo(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateBasicOrderInfoMutationResult = NonNullable<Awaited<ReturnType<typeof updateBasicOrderInfo>>>
+    export type UpdateBasicOrderInfoMutationBody = BasicOrderInfoDTO
+    export type UpdateBasicOrderInfoMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлює базову інформацію
+ */
+export const useUpdateBasicOrderInfo = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBasicOrderInfo>>, TError,{sessionId: string;data: BasicOrderInfoDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateBasicOrderInfo>>,
+        TError,
+        {sessionId: string;data: BasicOrderInfoDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateBasicOrderInfoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * Повертає тип плями за вказаним ідентифікатором
  * @summary Отримати тип плями за ID
@@ -2685,6 +3584,4690 @@ export const useSetActiveStatus = <TError = ErrorResponse,
     }
     
 /**
+ * @summary Валідація конфігурації квитанції
+ */
+export const validateReceiptConfiguration = (
+    receiptConfigurationDTO: ReceiptConfigurationDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidateReceiptConfiguration200>(
+      {url: `/v1/order-wizard/stage4/validate/receipt-configuration`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: receiptConfigurationDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getValidateReceiptConfigurationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateReceiptConfiguration>>, TError,{data: ReceiptConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof validateReceiptConfiguration>>, TError,{data: ReceiptConfigurationDTO}, TContext> => {
+
+const mutationKey = ['validateReceiptConfiguration'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof validateReceiptConfiguration>>, {data: ReceiptConfigurationDTO}> = (props) => {
+          const {data} = props ?? {};
+
+          return  validateReceiptConfiguration(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ValidateReceiptConfigurationMutationResult = NonNullable<Awaited<ReturnType<typeof validateReceiptConfiguration>>>
+    export type ValidateReceiptConfigurationMutationBody = ReceiptConfigurationDTO
+    export type ValidateReceiptConfigurationMutationError = ErrorResponse
+
+    /**
+ * @summary Валідація конфігурації квитанції
+ */
+export const useValidateReceiptConfiguration = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateReceiptConfiguration>>, TError,{data: ReceiptConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof validateReceiptConfiguration>>,
+        TError,
+        {data: ReceiptConfigurationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getValidateReceiptConfigurationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Валідація підтвердження замовлення
+ */
+export const validateOrderConfirmation = (
+    orderConfirmationDTO: OrderConfirmationDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidateOrderConfirmation200>(
+      {url: `/v1/order-wizard/stage4/validate/order-confirmation`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: orderConfirmationDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getValidateOrderConfirmationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateOrderConfirmation>>, TError,{data: OrderConfirmationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof validateOrderConfirmation>>, TError,{data: OrderConfirmationDTO}, TContext> => {
+
+const mutationKey = ['validateOrderConfirmation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof validateOrderConfirmation>>, {data: OrderConfirmationDTO}> = (props) => {
+          const {data} = props ?? {};
+
+          return  validateOrderConfirmation(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ValidateOrderConfirmationMutationResult = NonNullable<Awaited<ReturnType<typeof validateOrderConfirmation>>>
+    export type ValidateOrderConfirmationMutationBody = OrderConfirmationDTO
+    export type ValidateOrderConfirmationMutationError = ErrorResponse
+
+    /**
+ * @summary Валідація підтвердження замовлення
+ */
+export const useValidateOrderConfirmation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateOrderConfirmation>>, TError,{data: OrderConfirmationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof validateOrderConfirmation>>,
+        TError,
+        {data: OrderConfirmationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getValidateOrderConfirmationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Валідація завершення замовлення
+ */
+export const validateOrderCompletion = (
+    orderCompletionDTO: OrderCompletionDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidateOrderCompletion200>(
+      {url: `/v1/order-wizard/stage4/validate/order-completion`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: orderCompletionDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getValidateOrderCompletionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateOrderCompletion>>, TError,{data: OrderCompletionDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof validateOrderCompletion>>, TError,{data: OrderCompletionDTO}, TContext> => {
+
+const mutationKey = ['validateOrderCompletion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof validateOrderCompletion>>, {data: OrderCompletionDTO}> = (props) => {
+          const {data} = props ?? {};
+
+          return  validateOrderCompletion(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ValidateOrderCompletionMutationResult = NonNullable<Awaited<ReturnType<typeof validateOrderCompletion>>>
+    export type ValidateOrderCompletionMutationBody = OrderCompletionDTO
+    export type ValidateOrderCompletionMutationError = ErrorResponse
+
+    /**
+ * @summary Валідація завершення замовлення
+ */
+export const useValidateOrderCompletion = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateOrderCompletion>>, TError,{data: OrderCompletionDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof validateOrderCompletion>>,
+        TError,
+        {data: OrderCompletionDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getValidateOrderCompletionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Валідація юридичного прийняття
+ */
+export const validateLegalAcceptance = (
+    legalAcceptanceDTO: LegalAcceptanceDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidateLegalAcceptance200>(
+      {url: `/v1/order-wizard/stage4/validate/legal-acceptance`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: legalAcceptanceDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getValidateLegalAcceptanceMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateLegalAcceptance>>, TError,{data: LegalAcceptanceDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof validateLegalAcceptance>>, TError,{data: LegalAcceptanceDTO}, TContext> => {
+
+const mutationKey = ['validateLegalAcceptance'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof validateLegalAcceptance>>, {data: LegalAcceptanceDTO}> = (props) => {
+          const {data} = props ?? {};
+
+          return  validateLegalAcceptance(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ValidateLegalAcceptanceMutationResult = NonNullable<Awaited<ReturnType<typeof validateLegalAcceptance>>>
+    export type ValidateLegalAcceptanceMutationBody = LegalAcceptanceDTO
+    export type ValidateLegalAcceptanceMutationError = ErrorResponse
+
+    /**
+ * @summary Валідація юридичного прийняття
+ */
+export const useValidateLegalAcceptance = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateLegalAcceptance>>, TError,{data: LegalAcceptanceDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof validateLegalAcceptance>>,
+        TError,
+        {data: LegalAcceptanceDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getValidateLegalAcceptanceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Збереження підпису клієнта
+ */
+export const saveSignature = (
+    customerSignatureRequest: CustomerSignatureRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SaveSignature200>(
+      {url: `/v1/order-wizard/stage4/signature/save`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: customerSignatureRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getSaveSignatureMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSignature>>, TError,{data: CustomerSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveSignature>>, TError,{data: CustomerSignatureRequest}, TContext> => {
+
+const mutationKey = ['saveSignature'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveSignature>>, {data: CustomerSignatureRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  saveSignature(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveSignatureMutationResult = NonNullable<Awaited<ReturnType<typeof saveSignature>>>
+    export type SaveSignatureMutationBody = CustomerSignatureRequest
+    export type SaveSignatureMutationError = ErrorResponse
+
+    /**
+ * @summary Збереження підпису клієнта
+ */
+export const useSaveSignature = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSignature>>, TError,{data: CustomerSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof saveSignature>>,
+        TError,
+        {data: CustomerSignatureRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getSaveSignatureMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Оновлення конфігурації квитанції
+ */
+export const updateReceiptConfiguration = (
+    sessionId: string,
+    receiptConfigurationDTO: ReceiptConfigurationDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<UpdateReceiptConfiguration200>(
+      {url: `/v1/order-wizard/stage4/session/${sessionId}/receipt-configuration`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: receiptConfigurationDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getUpdateReceiptConfigurationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateReceiptConfiguration>>, TError,{sessionId: string;data: ReceiptConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateReceiptConfiguration>>, TError,{sessionId: string;data: ReceiptConfigurationDTO}, TContext> => {
+
+const mutationKey = ['updateReceiptConfiguration'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateReceiptConfiguration>>, {sessionId: string;data: ReceiptConfigurationDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updateReceiptConfiguration(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateReceiptConfigurationMutationResult = NonNullable<Awaited<ReturnType<typeof updateReceiptConfiguration>>>
+    export type UpdateReceiptConfigurationMutationBody = ReceiptConfigurationDTO
+    export type UpdateReceiptConfigurationMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлення конфігурації квитанції
+ */
+export const useUpdateReceiptConfiguration = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateReceiptConfiguration>>, TError,{sessionId: string;data: ReceiptConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateReceiptConfiguration>>,
+        TError,
+        {sessionId: string;data: ReceiptConfigurationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateReceiptConfigurationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Оновлення підтвердження замовлення
+ */
+export const updateOrderConfirmation = (
+    sessionId: string,
+    orderConfirmationDTO: OrderConfirmationDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<UpdateOrderConfirmation200>(
+      {url: `/v1/order-wizard/stage4/session/${sessionId}/order-confirmation`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: orderConfirmationDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getUpdateOrderConfirmationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOrderConfirmation>>, TError,{sessionId: string;data: OrderConfirmationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateOrderConfirmation>>, TError,{sessionId: string;data: OrderConfirmationDTO}, TContext> => {
+
+const mutationKey = ['updateOrderConfirmation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateOrderConfirmation>>, {sessionId: string;data: OrderConfirmationDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updateOrderConfirmation(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateOrderConfirmationMutationResult = NonNullable<Awaited<ReturnType<typeof updateOrderConfirmation>>>
+    export type UpdateOrderConfirmationMutationBody = OrderConfirmationDTO
+    export type UpdateOrderConfirmationMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлення підтвердження замовлення
+ */
+export const useUpdateOrderConfirmation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOrderConfirmation>>, TError,{sessionId: string;data: OrderConfirmationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateOrderConfirmation>>,
+        TError,
+        {sessionId: string;data: OrderConfirmationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateOrderConfirmationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Оновлення завершення замовлення
+ */
+export const updateOrderCompletion1 = (
+    sessionId: string,
+    orderCompletionDTO: OrderCompletionDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<UpdateOrderCompletion1200>(
+      {url: `/v1/order-wizard/stage4/session/${sessionId}/order-completion`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: orderCompletionDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getUpdateOrderCompletion1MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOrderCompletion1>>, TError,{sessionId: string;data: OrderCompletionDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateOrderCompletion1>>, TError,{sessionId: string;data: OrderCompletionDTO}, TContext> => {
+
+const mutationKey = ['updateOrderCompletion1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateOrderCompletion1>>, {sessionId: string;data: OrderCompletionDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updateOrderCompletion1(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateOrderCompletion1MutationResult = NonNullable<Awaited<ReturnType<typeof updateOrderCompletion1>>>
+    export type UpdateOrderCompletion1MutationBody = OrderCompletionDTO
+    export type UpdateOrderCompletion1MutationError = ErrorResponse
+
+    /**
+ * @summary Оновлення завершення замовлення
+ */
+export const useUpdateOrderCompletion1 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOrderCompletion1>>, TError,{sessionId: string;data: OrderCompletionDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateOrderCompletion1>>,
+        TError,
+        {sessionId: string;data: OrderCompletionDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateOrderCompletion1MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Оновлення юридичного прийняття
+ */
+export const updateLegalAcceptance = (
+    sessionId: string,
+    legalAcceptanceDTO: LegalAcceptanceDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<UpdateLegalAcceptance200>(
+      {url: `/v1/order-wizard/stage4/session/${sessionId}/legal-acceptance`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: legalAcceptanceDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getUpdateLegalAcceptanceMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLegalAcceptance>>, TError,{sessionId: string;data: LegalAcceptanceDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateLegalAcceptance>>, TError,{sessionId: string;data: LegalAcceptanceDTO}, TContext> => {
+
+const mutationKey = ['updateLegalAcceptance'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateLegalAcceptance>>, {sessionId: string;data: LegalAcceptanceDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  updateLegalAcceptance(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateLegalAcceptanceMutationResult = NonNullable<Awaited<ReturnType<typeof updateLegalAcceptance>>>
+    export type UpdateLegalAcceptanceMutationBody = LegalAcceptanceDTO
+    export type UpdateLegalAcceptanceMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлення юридичного прийняття
+ */
+export const useUpdateLegalAcceptance = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLegalAcceptance>>, TError,{sessionId: string;data: LegalAcceptanceDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateLegalAcceptance>>,
+        TError,
+        {sessionId: string;data: LegalAcceptanceDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateLegalAcceptanceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Закриття сесії
+ */
+export const closeSession = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<CloseSession200>(
+      {url: `/v1/order-wizard/stage4/session/${sessionId}/close`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCloseSessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof closeSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof closeSession>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['closeSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof closeSession>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  closeSession(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CloseSessionMutationResult = NonNullable<Awaited<ReturnType<typeof closeSession>>>
+    
+    export type CloseSessionMutationError = ErrorResponse
+
+    /**
+ * @summary Закриття сесії
+ */
+export const useCloseSession = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof closeSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof closeSession>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCloseSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Генерація квитанції
+ */
+export const generateReceipt = (
+    receiptGenerationRequest: ReceiptGenerationRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GenerateReceipt200>(
+      {url: `/v1/order-wizard/stage4/receipt/generate`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: receiptGenerationRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getGenerateReceiptMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext> => {
+
+const mutationKey = ['generateReceipt'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateReceipt>>, {data: ReceiptGenerationRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  generateReceipt(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateReceiptMutationResult = NonNullable<Awaited<ReturnType<typeof generateReceipt>>>
+    export type GenerateReceiptMutationBody = ReceiptGenerationRequest
+    export type GenerateReceiptMutationError = ErrorResponse
+
+    /**
+ * @summary Генерація квитанції
+ */
+export const useGenerateReceipt = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof generateReceipt>>,
+        TError,
+        {data: ReceiptGenerationRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getGenerateReceiptMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Генерація PDF квитанції
+ */
+export const generatePdfReceipt = (
+    receiptGenerationRequest: ReceiptGenerationRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GeneratePdfReceipt200>(
+      {url: `/v1/order-wizard/stage4/receipt/generate-pdf`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: receiptGenerationRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getGeneratePdfReceiptMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generatePdfReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof generatePdfReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext> => {
+
+const mutationKey = ['generatePdfReceipt'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generatePdfReceipt>>, {data: ReceiptGenerationRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  generatePdfReceipt(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GeneratePdfReceiptMutationResult = NonNullable<Awaited<ReturnType<typeof generatePdfReceipt>>>
+    export type GeneratePdfReceiptMutationBody = ReceiptGenerationRequest
+    export type GeneratePdfReceiptMutationError = ErrorResponse
+
+    /**
+ * @summary Генерація PDF квитанції
+ */
+export const useGeneratePdfReceipt = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generatePdfReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof generatePdfReceipt>>,
+        TError,
+        {data: ReceiptGenerationRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getGeneratePdfReceiptMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізація Stage4 для замовлення
+ */
+export const initializeStage4 = (
+    orderId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<InitializeStage4200>(
+      {url: `/v1/order-wizard/stage4/initialize/${orderId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeStage4MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeStage4>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeStage4>>, TError,{orderId: string}, TContext> => {
+
+const mutationKey = ['initializeStage4'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeStage4>>, {orderId: string}> = (props) => {
+          const {orderId} = props ?? {};
+
+          return  initializeStage4(orderId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeStage4MutationResult = NonNullable<Awaited<ReturnType<typeof initializeStage4>>>
+    
+    export type InitializeStage4MutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізація Stage4 для замовлення
+ */
+export const useInitializeStage4 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeStage4>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeStage4>>,
+        TError,
+        {orderId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeStage4MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Фіналізація замовлення
+ */
+export const finalizeOrder = (
+    orderFinalizationRequest: OrderFinalizationRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<FinalizeOrder200>(
+      {url: `/v1/order-wizard/stage4/finalize`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: orderFinalizationRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getFinalizeOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeOrder>>, TError,{data: OrderFinalizationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof finalizeOrder>>, TError,{data: OrderFinalizationRequest}, TContext> => {
+
+const mutationKey = ['finalizeOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof finalizeOrder>>, {data: OrderFinalizationRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  finalizeOrder(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type FinalizeOrderMutationResult = NonNullable<Awaited<ReturnType<typeof finalizeOrder>>>
+    export type FinalizeOrderMutationBody = OrderFinalizationRequest
+    export type FinalizeOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Фіналізація замовлення
+ */
+export const useFinalizeOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeOrder>>, TError,{data: OrderFinalizationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof finalizeOrder>>,
+        TError,
+        {data: OrderFinalizationRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getFinalizeOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Створити нову сесію Stage3
+ */
+export const createSession = (
+    createSessionBody: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<string>(
+      {url: `/v1/order-wizard/stage3/sessions`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createSessionBody, signal
+    },
+      options);
+    }
+  
+
+
+export const getCreateSessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSession>>, TError,{data: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof createSession>>, TError,{data: string}, TContext> => {
+
+const mutationKey = ['createSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createSession>>, {data: string}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createSession(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createSession>>>
+    export type CreateSessionMutationBody = string
+    export type CreateSessionMutationError = ErrorResponse
+
+    /**
+ * @summary Створити нову сесію Stage3
+ */
+export const useCreateSession = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSession>>, TError,{data: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createSession>>,
+        TError,
+        {data: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізувати Stage3 для сесії
+ */
+export const initializeStage3 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/initialize`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeStage3MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeStage3>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeStage3>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['initializeStage3'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeStage3>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  initializeStage3(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeStage3MutationResult = NonNullable<Awaited<ReturnType<typeof initializeStage3>>>
+    
+    export type InitializeStage3MutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізувати Stage3 для сесії
+ */
+export const useInitializeStage3 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeStage3>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeStage3>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeStage3MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Закрити сесію
+ */
+export const closeSession1 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/close`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCloseSession1MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof closeSession1>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof closeSession1>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['closeSession1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof closeSession1>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  closeSession1(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CloseSession1MutationResult = NonNullable<Awaited<ReturnType<typeof closeSession1>>>
+    
+    export type CloseSession1MutationError = ErrorResponse
+
+    /**
+ * @summary Закрити сесію
+ */
+export const useCloseSession1 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof closeSession1>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof closeSession1>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCloseSession1MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Запускає новий підвізард додавання предмета
+ */
+export const startNewItemWizard = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/wizard/new/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getStartNewItemWizardMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startNewItemWizard>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof startNewItemWizard>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['startNewItemWizard'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startNewItemWizard>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  startNewItemWizard(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartNewItemWizardMutationResult = NonNullable<Awaited<ReturnType<typeof startNewItemWizard>>>
+    
+    export type StartNewItemWizardMutationError = ErrorResponse
+
+    /**
+ * @summary Запускає новий підвізард додавання предмета
+ */
+export const useStartNewItemWizard = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startNewItemWizard>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof startNewItemWizard>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStartNewItemWizardMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Запускає підвізард редагування існуючого предмета
+ */
+export const startEditItemWizard = (
+    sessionId: string,
+    itemId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/wizard/edit/${sessionId}/${itemId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getStartEditItemWizardMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startEditItemWizard>>, TError,{sessionId: string;itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof startEditItemWizard>>, TError,{sessionId: string;itemId: string}, TContext> => {
+
+const mutationKey = ['startEditItemWizard'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startEditItemWizard>>, {sessionId: string;itemId: string}> = (props) => {
+          const {sessionId,itemId} = props ?? {};
+
+          return  startEditItemWizard(sessionId,itemId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartEditItemWizardMutationResult = NonNullable<Awaited<ReturnType<typeof startEditItemWizard>>>
+    
+    export type StartEditItemWizardMutationError = ErrorResponse
+
+    /**
+ * @summary Запускає підвізард редагування існуючого предмета
+ */
+export const useStartEditItemWizard = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startEditItemWizard>>, TError,{sessionId: string;itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof startEditItemWizard>>,
+        TError,
+        {sessionId: string;itemId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStartEditItemWizardMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Закриває активний підвізард без збереження
+ */
+export const closeWizard = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/wizard/close/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCloseWizardMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof closeWizard>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof closeWizard>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['closeWizard'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof closeWizard>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  closeWizard(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CloseWizardMutationResult = NonNullable<Awaited<ReturnType<typeof closeWizard>>>
+    
+    export type CloseWizardMutationError = ErrorResponse
+
+    /**
+ * @summary Закриває активний підвізард без збереження
+ */
+export const useCloseWizard = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof closeWizard>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof closeWizard>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCloseWizardMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Синхронізує стан менеджера
+ */
+export const synchronizeManager = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/synchronize/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getSynchronizeManagerMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof synchronizeManager>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof synchronizeManager>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['synchronizeManager'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof synchronizeManager>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  synchronizeManager(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SynchronizeManagerMutationResult = NonNullable<Awaited<ReturnType<typeof synchronizeManager>>>
+    
+    export type SynchronizeManagerMutationError = ErrorResponse
+
+    /**
+ * @summary Синхронізує стан менеджера
+ */
+export const useSynchronizeManager = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof synchronizeManager>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof synchronizeManager>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getSynchronizeManagerMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Додавання фотографії
+ */
+export const addPhoto = (
+    sessionId: string,
+    addPhotoBody: AddPhotoBody,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/photos`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: addPhotoBody, signal
+    },
+      options);
+    }
+  
+
+
+export const getAddPhotoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addPhoto>>, TError,{sessionId: string;data: AddPhotoBody}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof addPhoto>>, TError,{sessionId: string;data: AddPhotoBody}, TContext> => {
+
+const mutationKey = ['addPhoto'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addPhoto>>, {sessionId: string;data: AddPhotoBody}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  addPhoto(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddPhotoMutationResult = NonNullable<Awaited<ReturnType<typeof addPhoto>>>
+    export type AddPhotoMutationBody = AddPhotoBody
+    export type AddPhotoMutationError = ErrorResponse
+
+    /**
+ * @summary Додавання фотографії
+ */
+export const useAddPhoto = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addPhoto>>, TError,{sessionId: string;data: AddPhotoBody}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof addPhoto>>,
+        TError,
+        {sessionId: string;data: AddPhotoBody},
+        TContext
+      > => {
+
+      const mutationOptions = getAddPhotoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Завершення фотодокументації
+ */
+export const completePhotoDocumentation = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/complete`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCompletePhotoDocumentationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completePhotoDocumentation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof completePhotoDocumentation>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['completePhotoDocumentation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completePhotoDocumentation>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  completePhotoDocumentation(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompletePhotoDocumentationMutationResult = NonNullable<Awaited<ReturnType<typeof completePhotoDocumentation>>>
+    
+    export type CompletePhotoDocumentationMutationError = ErrorResponse
+
+    /**
+ * @summary Завершення фотодокументації
+ */
+export const useCompletePhotoDocumentation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completePhotoDocumentation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof completePhotoDocumentation>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCompletePhotoDocumentationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізація підетапу 5 - Фотодокументація
+ */
+export const initializeSubstep5 = (
+    itemId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep5/initialize/${itemId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeSubstep5MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep5>>, TError,{itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep5>>, TError,{itemId: string}, TContext> => {
+
+const mutationKey = ['initializeSubstep5'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeSubstep5>>, {itemId: string}> = (props) => {
+          const {itemId} = props ?? {};
+
+          return  initializeSubstep5(itemId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeSubstep5MutationResult = NonNullable<Awaited<ReturnType<typeof initializeSubstep5>>>
+    
+    export type InitializeSubstep5MutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізація підетапу 5 - Фотодокументація
+ */
+export const useInitializeSubstep5 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep5>>, TError,{itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeSubstep5>>,
+        TError,
+        {itemId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeSubstep5MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Скидання розрахунку
+ */
+export const resetCalculation = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/reset/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getResetCalculationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetCalculation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof resetCalculation>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['resetCalculation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resetCalculation>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  resetCalculation(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResetCalculationMutationResult = NonNullable<Awaited<ReturnType<typeof resetCalculation>>>
+    
+    export type ResetCalculationMutationError = ErrorResponse
+
+    /**
+ * @summary Скидання розрахунку
+ */
+export const useResetCalculation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetCalculation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof resetCalculation>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getResetCalculationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Додавання модифікатора до розрахунку
+ */
+export const addModifier = (
+    sessionId: string,
+    addModifierRequest: AddModifierRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/modifiers/${sessionId}/add`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: addModifierRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getAddModifierMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addModifier>>, TError,{sessionId: string;data: AddModifierRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof addModifier>>, TError,{sessionId: string;data: AddModifierRequest}, TContext> => {
+
+const mutationKey = ['addModifier'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addModifier>>, {sessionId: string;data: AddModifierRequest}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  addModifier(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddModifierMutationResult = NonNullable<Awaited<ReturnType<typeof addModifier>>>
+    export type AddModifierMutationBody = AddModifierRequest
+    export type AddModifierMutationError = ErrorResponse
+
+    /**
+ * @summary Додавання модифікатора до розрахунку
+ */
+export const useAddModifier = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addModifier>>, TError,{sessionId: string;data: AddModifierRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof addModifier>>,
+        TError,
+        {sessionId: string;data: AddModifierRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getAddModifierMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізація підетапу 4
+ */
+export const initializeSubstep4 = (
+    sessionId: string,
+    initializeSubstepRequest: InitializeSubstepRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/initialize/${sessionId}`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: initializeSubstepRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeSubstep4MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep4>>, TError,{sessionId: string;data: InitializeSubstepRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep4>>, TError,{sessionId: string;data: InitializeSubstepRequest}, TContext> => {
+
+const mutationKey = ['initializeSubstep4'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeSubstep4>>, {sessionId: string;data: InitializeSubstepRequest}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  initializeSubstep4(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeSubstep4MutationResult = NonNullable<Awaited<ReturnType<typeof initializeSubstep4>>>
+    export type InitializeSubstep4MutationBody = InitializeSubstepRequest
+    export type InitializeSubstep4MutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізація підетапу 4
+ */
+export const useInitializeSubstep4 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep4>>, TError,{sessionId: string;data: InitializeSubstepRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeSubstep4>>,
+        TError,
+        {sessionId: string;data: InitializeSubstepRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeSubstep4MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Підтвердження розрахунку та завершення підетапу
+ */
+export const confirmCalculation = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/confirm/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getConfirmCalculationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmCalculation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof confirmCalculation>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['confirmCalculation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmCalculation>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  confirmCalculation(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmCalculationMutationResult = NonNullable<Awaited<ReturnType<typeof confirmCalculation>>>
+    
+    export type ConfirmCalculationMutationError = ErrorResponse
+
+    /**
+ * @summary Підтвердження розрахунку та завершення підетапу
+ */
+export const useConfirmCalculation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmCalculation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof confirmCalculation>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getConfirmCalculationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Розрахунок ціни
+ */
+export const calculatePrice = (
+    priceDiscountDTO: PriceDiscountDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceCalculationResponseDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/calculate-price`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: priceDiscountDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getCalculatePriceMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: PriceDiscountDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: PriceDiscountDTO}, TContext> => {
+
+const mutationKey = ['calculatePrice'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof calculatePrice>>, {data: PriceDiscountDTO}> = (props) => {
+          const {data} = props ?? {};
+
+          return  calculatePrice(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CalculatePriceMutationResult = NonNullable<Awaited<ReturnType<typeof calculatePrice>>>
+    export type CalculatePriceMutationBody = PriceDiscountDTO
+    export type CalculatePriceMutationError = ErrorResponse
+
+    /**
+ * @summary Розрахунок ціни
+ */
+export const useCalculatePrice = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: PriceDiscountDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof calculatePrice>>,
+        TError,
+        {data: PriceDiscountDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getCalculatePriceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Розрахунок фінальної ціни з усіма модифікаторами
+ */
+export const calculateFinalPrice = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/calculate-final-price/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCalculateFinalPriceMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculateFinalPrice>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof calculateFinalPrice>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['calculateFinalPrice'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof calculateFinalPrice>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  calculateFinalPrice(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CalculateFinalPriceMutationResult = NonNullable<Awaited<ReturnType<typeof calculateFinalPrice>>>
+    
+    export type CalculateFinalPriceMutationError = ErrorResponse
+
+    /**
+ * @summary Розрахунок фінальної ціни з усіма модифікаторами
+ */
+export const useCalculateFinalPrice = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculateFinalPrice>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof calculateFinalPrice>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCalculateFinalPriceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Розрахунок базової ціни предмета
+ */
+export const calculateBasePrice = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/calculate-base-price/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCalculateBasePriceMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculateBasePrice>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof calculateBasePrice>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['calculateBasePrice'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof calculateBasePrice>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  calculateBasePrice(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CalculateBasePriceMutationResult = NonNullable<Awaited<ReturnType<typeof calculateBasePrice>>>
+    
+    export type CalculateBasePriceMutationError = ErrorResponse
+
+    /**
+ * @summary Розрахунок базової ціни предмета
+ */
+export const useCalculateBasePrice = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculateBasePrice>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof calculateBasePrice>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCalculateBasePriceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Обробка вибору плям
+ */
+export const processStainSelection = (
+    sessionId: string,
+    params?: ProcessStainSelectionParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<StainsDefectsContext>(
+      {url: `/v1/order-wizard/stage2/substep3/stains/${sessionId}`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getProcessStainSelectionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof processStainSelection>>, TError,{sessionId: string;params?: ProcessStainSelectionParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof processStainSelection>>, TError,{sessionId: string;params?: ProcessStainSelectionParams}, TContext> => {
+
+const mutationKey = ['processStainSelection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof processStainSelection>>, {sessionId: string;params?: ProcessStainSelectionParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  processStainSelection(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ProcessStainSelectionMutationResult = NonNullable<Awaited<ReturnType<typeof processStainSelection>>>
+    
+    export type ProcessStainSelectionMutationError = ErrorResponse
+
+    /**
+ * @summary Обробка вибору плям
+ */
+export const useProcessStainSelection = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof processStainSelection>>, TError,{sessionId: string;params?: ProcessStainSelectionParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof processStainSelection>>,
+        TError,
+        {sessionId: string;params?: ProcessStainSelectionParams},
+        TContext
+      > => {
+
+      const mutationOptions = getProcessStainSelectionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Обробка додавання приміток про дефекти
+ */
+export const processDefectNotes = (
+    sessionId: string,
+    params?: ProcessDefectNotesParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<StainsDefectsContext>(
+      {url: `/v1/order-wizard/stage2/substep3/notes/${sessionId}`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getProcessDefectNotesMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof processDefectNotes>>, TError,{sessionId: string;params?: ProcessDefectNotesParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof processDefectNotes>>, TError,{sessionId: string;params?: ProcessDefectNotesParams}, TContext> => {
+
+const mutationKey = ['processDefectNotes'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof processDefectNotes>>, {sessionId: string;params?: ProcessDefectNotesParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  processDefectNotes(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ProcessDefectNotesMutationResult = NonNullable<Awaited<ReturnType<typeof processDefectNotes>>>
+    
+    export type ProcessDefectNotesMutationError = ErrorResponse
+
+    /**
+ * @summary Обробка додавання приміток про дефекти
+ */
+export const useProcessDefectNotes = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof processDefectNotes>>, TError,{sessionId: string;params?: ProcessDefectNotesParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof processDefectNotes>>,
+        TError,
+        {sessionId: string;params?: ProcessDefectNotesParams},
+        TContext
+      > => {
+
+      const mutationOptions = getProcessDefectNotesMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізація підетапу 3
+ */
+export const initializeSubstep3 = (
+    sessionId: string,
+    orderItemAddRequest: OrderItemAddRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<StainsDefectsContext>(
+      {url: `/v1/order-wizard/stage2/substep3/initialize/${sessionId}`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: orderItemAddRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeSubstep3MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep3>>, TError,{sessionId: string;data: OrderItemAddRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep3>>, TError,{sessionId: string;data: OrderItemAddRequest}, TContext> => {
+
+const mutationKey = ['initializeSubstep3'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeSubstep3>>, {sessionId: string;data: OrderItemAddRequest}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  initializeSubstep3(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeSubstep3MutationResult = NonNullable<Awaited<ReturnType<typeof initializeSubstep3>>>
+    export type InitializeSubstep3MutationBody = OrderItemAddRequest
+    export type InitializeSubstep3MutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізація підетапу 3
+ */
+export const useInitializeSubstep3 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep3>>, TError,{sessionId: string;data: OrderItemAddRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeSubstep3>>,
+        TError,
+        {sessionId: string;data: OrderItemAddRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeSubstep3MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Повернення до попереднього стану
+ */
+export const goBack = (
+    sessionId: string,
+    params: GoBackParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<StainsDefectsContext>(
+      {url: `/v1/order-wizard/stage2/substep3/go-back/${sessionId}`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getGoBackMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof goBack>>, TError,{sessionId: string;params: GoBackParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof goBack>>, TError,{sessionId: string;params: GoBackParams}, TContext> => {
+
+const mutationKey = ['goBack'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof goBack>>, {sessionId: string;params: GoBackParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  goBack(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GoBackMutationResult = NonNullable<Awaited<ReturnType<typeof goBack>>>
+    
+    export type GoBackMutationError = ErrorResponse
+
+    /**
+ * @summary Повернення до попереднього стану
+ */
+export const useGoBack = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof goBack>>, TError,{sessionId: string;params: GoBackParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof goBack>>,
+        TError,
+        {sessionId: string;params: GoBackParams},
+        TContext
+      > => {
+
+      const mutationOptions = getGoBackMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Обробка вибору дефектів та ризиків
+ */
+export const processDefectSelection = (
+    sessionId: string,
+    params?: ProcessDefectSelectionParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<StainsDefectsContext>(
+      {url: `/v1/order-wizard/stage2/substep3/defects/${sessionId}`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getProcessDefectSelectionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof processDefectSelection>>, TError,{sessionId: string;params?: ProcessDefectSelectionParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof processDefectSelection>>, TError,{sessionId: string;params?: ProcessDefectSelectionParams}, TContext> => {
+
+const mutationKey = ['processDefectSelection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof processDefectSelection>>, {sessionId: string;params?: ProcessDefectSelectionParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  processDefectSelection(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ProcessDefectSelectionMutationResult = NonNullable<Awaited<ReturnType<typeof processDefectSelection>>>
+    
+    export type ProcessDefectSelectionMutationError = ErrorResponse
+
+    /**
+ * @summary Обробка вибору дефектів та ризиків
+ */
+export const useProcessDefectSelection = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof processDefectSelection>>, TError,{sessionId: string;params?: ProcessDefectSelectionParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof processDefectSelection>>,
+        TError,
+        {sessionId: string;params?: ProcessDefectSelectionParams},
+        TContext
+      > => {
+
+      const mutationOptions = getProcessDefectSelectionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Завершення підетапу 3
+ */
+export const completeSubstep3 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<StainsDefectsContext>(
+      {url: `/v1/order-wizard/stage2/substep3/complete/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCompleteSubstep3MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeSubstep3>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeSubstep3>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['completeSubstep3'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeSubstep3>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  completeSubstep3(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteSubstep3MutationResult = NonNullable<Awaited<ReturnType<typeof completeSubstep3>>>
+    
+    export type CompleteSubstep3MutationError = ErrorResponse
+
+    /**
+ * @summary Завершення підетапу 3
+ */
+export const useCompleteSubstep3 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeSubstep3>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof completeSubstep3>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCompleteSubstep3MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Валідує всі вибрані характеристики
+ */
+export const validateCharacteristics = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage2/substep2/validate/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getValidateCharacteristicsMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateCharacteristics>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof validateCharacteristics>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['validateCharacteristics'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof validateCharacteristics>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  validateCharacteristics(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ValidateCharacteristicsMutationResult = NonNullable<Awaited<ReturnType<typeof validateCharacteristics>>>
+    
+    export type ValidateCharacteristicsMutationError = ErrorResponse
+
+    /**
+ * @summary Валідує всі вибрані характеристики
+ */
+export const useValidateCharacteristics = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateCharacteristics>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof validateCharacteristics>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getValidateCharacteristicsMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Вибирає ступінь зносу
+ */
+export const selectWearLevel = (
+    sessionId: string,
+    params: SelectWearLevelParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage2/substep2/select-wear-level/${sessionId}`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSelectWearLevelMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectWearLevel>>, TError,{sessionId: string;params: SelectWearLevelParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof selectWearLevel>>, TError,{sessionId: string;params: SelectWearLevelParams}, TContext> => {
+
+const mutationKey = ['selectWearLevel'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof selectWearLevel>>, {sessionId: string;params: SelectWearLevelParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  selectWearLevel(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SelectWearLevelMutationResult = NonNullable<Awaited<ReturnType<typeof selectWearLevel>>>
+    
+    export type SelectWearLevelMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає ступінь зносу
+ */
+export const useSelectWearLevel = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectWearLevel>>, TError,{sessionId: string;params: SelectWearLevelParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof selectWearLevel>>,
+        TError,
+        {sessionId: string;params: SelectWearLevelParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSelectWearLevelMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Вибирає матеріал предмета
+ */
+export const selectMaterial = (
+    sessionId: string,
+    params: SelectMaterialParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage2/substep2/select-material/${sessionId}`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSelectMaterialMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectMaterial>>, TError,{sessionId: string;params: SelectMaterialParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof selectMaterial>>, TError,{sessionId: string;params: SelectMaterialParams}, TContext> => {
+
+const mutationKey = ['selectMaterial'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof selectMaterial>>, {sessionId: string;params: SelectMaterialParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  selectMaterial(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SelectMaterialMutationResult = NonNullable<Awaited<ReturnType<typeof selectMaterial>>>
+    
+    export type SelectMaterialMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає матеріал предмета
+ */
+export const useSelectMaterial = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectMaterial>>, TError,{sessionId: string;params: SelectMaterialParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof selectMaterial>>,
+        TError,
+        {sessionId: string;params: SelectMaterialParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSelectMaterialMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Вибирає наповнювач
+ */
+export const selectFiller = (
+    sessionId: string,
+    params?: SelectFillerParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage2/substep2/select-filler/${sessionId}`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSelectFillerMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectFiller>>, TError,{sessionId: string;params?: SelectFillerParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof selectFiller>>, TError,{sessionId: string;params?: SelectFillerParams}, TContext> => {
+
+const mutationKey = ['selectFiller'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof selectFiller>>, {sessionId: string;params?: SelectFillerParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  selectFiller(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SelectFillerMutationResult = NonNullable<Awaited<ReturnType<typeof selectFiller>>>
+    
+    export type SelectFillerMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає наповнювач
+ */
+export const useSelectFiller = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectFiller>>, TError,{sessionId: string;params?: SelectFillerParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof selectFiller>>,
+        TError,
+        {sessionId: string;params?: SelectFillerParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSelectFillerMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Вибирає колір предмета
+ */
+export const selectColor = (
+    sessionId: string,
+    params: SelectColorParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage2/substep2/select-color/${sessionId}`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSelectColorMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectColor>>, TError,{sessionId: string;params: SelectColorParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof selectColor>>, TError,{sessionId: string;params: SelectColorParams}, TContext> => {
+
+const mutationKey = ['selectColor'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof selectColor>>, {sessionId: string;params: SelectColorParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  selectColor(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SelectColorMutationResult = NonNullable<Awaited<ReturnType<typeof selectColor>>>
+    
+    export type SelectColorMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає колір предмета
+ */
+export const useSelectColor = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectColor>>, TError,{sessionId: string;params: SelectColorParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof selectColor>>,
+        TError,
+        {sessionId: string;params: SelectColorParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSelectColorMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізує підетап 2 - Характеристики
+ */
+export const initializeSubstep2 = (
+    sessionId: string,
+    params: InitializeSubstep2Params,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemCharacteristicsDTO>(
+      {url: `/v1/order-wizard/stage2/substep2/initialize/${sessionId}`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeSubstep2MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep2>>, TError,{sessionId: string;params: InitializeSubstep2Params}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep2>>, TError,{sessionId: string;params: InitializeSubstep2Params}, TContext> => {
+
+const mutationKey = ['initializeSubstep2'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeSubstep2>>, {sessionId: string;params: InitializeSubstep2Params}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  initializeSubstep2(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeSubstep2MutationResult = NonNullable<Awaited<ReturnType<typeof initializeSubstep2>>>
+    
+    export type InitializeSubstep2MutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізує підетап 2 - Характеристики
+ */
+export const useInitializeSubstep2 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeSubstep2>>, TError,{sessionId: string;params: InitializeSubstep2Params}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeSubstep2>>,
+        TError,
+        {sessionId: string;params: InitializeSubstep2Params},
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeSubstep2MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Завершує підетап 2
+ */
+export const completeSubstep2 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<CompleteSubstep2200>(
+      {url: `/v1/order-wizard/stage2/substep2/complete/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCompleteSubstep2MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeSubstep2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeSubstep2>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['completeSubstep2'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeSubstep2>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  completeSubstep2(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteSubstep2MutationResult = NonNullable<Awaited<ReturnType<typeof completeSubstep2>>>
+    
+    export type CompleteSubstep2MutationError = ErrorResponse
+
+    /**
+ * @summary Завершує підетап 2
+ */
+export const useCompleteSubstep2 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeSubstep2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof completeSubstep2>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCompleteSubstep2MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Скасовує підетап 2
+ */
+export const cancelSubstep2 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage2/substep2/cancel/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCancelSubstep2MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelSubstep2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelSubstep2>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['cancelSubstep2'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelSubstep2>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  cancelSubstep2(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelSubstep2MutationResult = NonNullable<Awaited<ReturnType<typeof cancelSubstep2>>>
+    
+    export type CancelSubstep2MutationError = ErrorResponse
+
+    /**
+ * @summary Скасовує підетап 2
+ */
+export const useCancelSubstep2 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelSubstep2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof cancelSubstep2>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCancelSubstep2MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Валідує та завершує підетап 1
+ */
+export const validateAndCompleteSubstep1 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemBasicInfoDTO>(
+      {url: `/v1/order-wizard/stage2/substep1/${sessionId}/validate-and-complete`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getValidateAndCompleteSubstep1MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateAndCompleteSubstep1>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof validateAndCompleteSubstep1>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['validateAndCompleteSubstep1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof validateAndCompleteSubstep1>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  validateAndCompleteSubstep1(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ValidateAndCompleteSubstep1MutationResult = NonNullable<Awaited<ReturnType<typeof validateAndCompleteSubstep1>>>
+    
+    export type ValidateAndCompleteSubstep1MutationError = ErrorResponse
+
+    /**
+ * @summary Валідує та завершує підетап 1
+ */
+export const useValidateAndCompleteSubstep1 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateAndCompleteSubstep1>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof validateAndCompleteSubstep1>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getValidateAndCompleteSubstep1MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Вибирає предмет з прайс-листа
+ */
+export const selectPriceListItem = (
+    sessionId: string,
+    params: SelectPriceListItemParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemBasicInfoDTO>(
+      {url: `/v1/order-wizard/stage2/substep1/${sessionId}/select-item`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSelectPriceListItemMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectPriceListItem>>, TError,{sessionId: string;params: SelectPriceListItemParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof selectPriceListItem>>, TError,{sessionId: string;params: SelectPriceListItemParams}, TContext> => {
+
+const mutationKey = ['selectPriceListItem'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof selectPriceListItem>>, {sessionId: string;params: SelectPriceListItemParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  selectPriceListItem(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SelectPriceListItemMutationResult = NonNullable<Awaited<ReturnType<typeof selectPriceListItem>>>
+    
+    export type SelectPriceListItemMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає предмет з прайс-листа
+ */
+export const useSelectPriceListItem = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectPriceListItem>>, TError,{sessionId: string;params: SelectPriceListItemParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof selectPriceListItem>>,
+        TError,
+        {sessionId: string;params: SelectPriceListItemParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSelectPriceListItemMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Вибирає категорію послуги
+ */
+export const selectServiceCategory = (
+    sessionId: string,
+    params: SelectServiceCategoryParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemBasicInfoDTO>(
+      {url: `/v1/order-wizard/stage2/substep1/${sessionId}/select-category`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSelectServiceCategoryMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectServiceCategory>>, TError,{sessionId: string;params: SelectServiceCategoryParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof selectServiceCategory>>, TError,{sessionId: string;params: SelectServiceCategoryParams}, TContext> => {
+
+const mutationKey = ['selectServiceCategory'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof selectServiceCategory>>, {sessionId: string;params: SelectServiceCategoryParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  selectServiceCategory(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SelectServiceCategoryMutationResult = NonNullable<Awaited<ReturnType<typeof selectServiceCategory>>>
+    
+    export type SelectServiceCategoryMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає категорію послуги
+ */
+export const useSelectServiceCategory = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectServiceCategory>>, TError,{sessionId: string;params: SelectServiceCategoryParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof selectServiceCategory>>,
+        TError,
+        {sessionId: string;params: SelectServiceCategoryParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSelectServiceCategoryMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Скидає підетап 1 до початкового стану
+ */
+export const resetSubstep1 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemBasicInfoDTO>(
+      {url: `/v1/order-wizard/stage2/substep1/${sessionId}/reset`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getResetSubstep1MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetSubstep1>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof resetSubstep1>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['resetSubstep1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resetSubstep1>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  resetSubstep1(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResetSubstep1MutationResult = NonNullable<Awaited<ReturnType<typeof resetSubstep1>>>
+    
+    export type ResetSubstep1MutationError = ErrorResponse
+
+    /**
+ * @summary Скидає підетап 1 до початкового стану
+ */
+export const useResetSubstep1 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetSubstep1>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof resetSubstep1>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getResetSubstep1MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Вводить кількість
+ */
+export const enterQuantity = (
+    sessionId: string,
+    params: EnterQuantityParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemBasicInfoDTO>(
+      {url: `/v1/order-wizard/stage2/substep1/${sessionId}/enter-quantity`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getEnterQuantityMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof enterQuantity>>, TError,{sessionId: string;params: EnterQuantityParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof enterQuantity>>, TError,{sessionId: string;params: EnterQuantityParams}, TContext> => {
+
+const mutationKey = ['enterQuantity'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof enterQuantity>>, {sessionId: string;params: EnterQuantityParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  enterQuantity(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EnterQuantityMutationResult = NonNullable<Awaited<ReturnType<typeof enterQuantity>>>
+    
+    export type EnterQuantityMutationError = ErrorResponse
+
+    /**
+ * @summary Вводить кількість
+ */
+export const useEnterQuantity = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof enterQuantity>>, TError,{sessionId: string;params: EnterQuantityParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof enterQuantity>>,
+        TError,
+        {sessionId: string;params: EnterQuantityParams},
+        TContext
+      > => {
+
+      const mutationOptions = getEnterQuantityMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Починає новий підетап 1 - Основна інформація
+ */
+export const startSubstep1 = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemBasicInfoDTO>(
+      {url: `/v1/order-wizard/stage2/substep1/start`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getStartSubstep1MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startSubstep1>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof startSubstep1>>, TError,void, TContext> => {
+
+const mutationKey = ['startSubstep1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startSubstep1>>, void> = () => {
+          
+
+          return  startSubstep1(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartSubstep1MutationResult = NonNullable<Awaited<ReturnType<typeof startSubstep1>>>
+    
+    export type StartSubstep1MutationError = ErrorResponse
+
+    /**
+ * @summary Починає новий підетап 1 - Основна інформація
+ */
+export const useStartSubstep1 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startSubstep1>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof startSubstep1>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getStartSubstep1MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Скидає сесію до початкового стану
+ */
+export const resetSession = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage2/reset/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getResetSessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof resetSession>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['resetSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resetSession>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  resetSession(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResetSessionMutationResult = NonNullable<Awaited<ReturnType<typeof resetSession>>>
+    
+    export type ResetSessionMutationError = ErrorResponse
+
+    /**
+ * @summary Скидає сесію до початкового стану
+ */
+export const useResetSession = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof resetSession>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getResetSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Додає новий предмет до замовлення (з підвізарда)
+ */
+export const addItemToOrder = (
+    sessionId: string,
+    orderItemDTO: OrderItemDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/items/${sessionId}`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: orderItemDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getAddItemToOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addItemToOrder>>, TError,{sessionId: string;data: OrderItemDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof addItemToOrder>>, TError,{sessionId: string;data: OrderItemDTO}, TContext> => {
+
+const mutationKey = ['addItemToOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addItemToOrder>>, {sessionId: string;data: OrderItemDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  addItemToOrder(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddItemToOrderMutationResult = NonNullable<Awaited<ReturnType<typeof addItemToOrder>>>
+    export type AddItemToOrderMutationBody = OrderItemDTO
+    export type AddItemToOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Додає новий предмет до замовлення (з підвізарда)
+ */
+export const useAddItemToOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addItemToOrder>>, TError,{sessionId: string;data: OrderItemDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof addItemToOrder>>,
+        TError,
+        {sessionId: string;data: OrderItemDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getAddItemToOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізує новий сеанс менеджера предметів для замовлення
+ */
+export const initializeItemManager = (
+    orderId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/initialize/${orderId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeItemManagerMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeItemManager>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeItemManager>>, TError,{orderId: string}, TContext> => {
+
+const mutationKey = ['initializeItemManager'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeItemManager>>, {orderId: string}> = (props) => {
+          const {orderId} = props ?? {};
+
+          return  initializeItemManager(orderId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeItemManagerMutationResult = NonNullable<Awaited<ReturnType<typeof initializeItemManager>>>
+    
+    export type InitializeItemManagerMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізує новий сеанс менеджера предметів для замовлення
+ */
+export const useInitializeItemManager = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeItemManager>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeItemManager>>,
+        TError,
+        {orderId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeItemManagerMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Завершує етап 2 та переходить до наступного етапу
+ */
+export const completeStage2 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/complete/${sessionId}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCompleteStage2MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeStage2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeStage2>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['completeStage2'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeStage2>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  completeStage2(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteStage2MutationResult = NonNullable<Awaited<ReturnType<typeof completeStage2>>>
+    
+    export type CompleteStage2MutationError = ErrorResponse
+
+    /**
+ * @summary Завершує етап 2 та переходить до наступного етапу
+ */
+export const useCompleteStage2 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeStage2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof completeStage2>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCompleteStage2MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Валідує форму клієнта
+ */
+export const validateNewClientForm = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidateNewClientForm200>(
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/validate`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getValidateNewClientFormMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateNewClientForm>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof validateNewClientForm>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['validateNewClientForm'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof validateNewClientForm>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  validateNewClientForm(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ValidateNewClientFormMutationResult = NonNullable<Awaited<ReturnType<typeof validateNewClientForm>>>
+    
+    export type ValidateNewClientFormMutationError = ErrorResponse
+
+    /**
+ * @summary Валідує форму клієнта
+ */
+export const useValidateNewClientForm = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateNewClientForm>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof validateNewClientForm>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getValidateNewClientFormMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Створює нового клієнта
+ */
+export const createNewClient = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ClientResponse>(
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/create`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCreateNewClientMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createNewClient>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof createNewClient>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['createNewClient'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createNewClient>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  createNewClient(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateNewClientMutationResult = NonNullable<Awaited<ReturnType<typeof createNewClient>>>
+    
+    export type CreateNewClientMutationError = ErrorResponse
+
+    /**
+ * @summary Створює нового клієнта
+ */
+export const useCreateNewClient = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createNewClient>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createNewClient>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateNewClientMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Завершує створення клієнта
+ */
+export const completeNewClientCreation = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/complete`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCompleteNewClientCreationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeNewClientCreation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeNewClientCreation>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['completeNewClientCreation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeNewClientCreation>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  completeNewClientCreation(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteNewClientCreationMutationResult = NonNullable<Awaited<ReturnType<typeof completeNewClientCreation>>>
+    
+    export type CompleteNewClientCreationMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує створення клієнта
+ */
+export const useCompleteNewClientCreation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeNewClientCreation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof completeNewClientCreation>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCompleteNewClientCreationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізує форму створення нового клієнта
+ */
+export const initializeNewClientForm = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<string>(
+      {url: `/v1/order-wizard/stage1/new-client/initialize`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeNewClientFormMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeNewClientForm>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeNewClientForm>>, TError,void, TContext> => {
+
+const mutationKey = ['initializeNewClientForm'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeNewClientForm>>, void> = () => {
+          
+
+          return  initializeNewClientForm(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeNewClientFormMutationResult = NonNullable<Awaited<ReturnType<typeof initializeNewClientForm>>>
+    
+    export type InitializeNewClientFormMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізує форму створення нового клієнта
+ */
+export const useInitializeNewClientForm = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeNewClientForm>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeNewClientForm>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeNewClientFormMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Вибирає клієнта зі списку результатів
+ */
+export const selectClient = (
+    sessionId: string,
+    params: SelectClientParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/select-client`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSelectClientMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectClient>>, TError,{sessionId: string;params: SelectClientParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof selectClient>>, TError,{sessionId: string;params: SelectClientParams}, TContext> => {
+
+const mutationKey = ['selectClient'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof selectClient>>, {sessionId: string;params: SelectClientParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  selectClient(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SelectClientMutationResult = NonNullable<Awaited<ReturnType<typeof selectClient>>>
+    
+    export type SelectClientMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає клієнта зі списку результатів
+ */
+export const useSelectClient = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectClient>>, TError,{sessionId: string;params: SelectClientParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof selectClient>>,
+        TError,
+        {sessionId: string;params: SelectClientParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSelectClientMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Виконує пошук клієнтів з критеріями
+ */
+export const searchClients = (
+    sessionId: string,
+    clientSearchCriteriaDTO: ClientSearchCriteriaDTO,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ClientSearchResultDTO>(
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/search`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: clientSearchCriteriaDTO, signal
+    },
+      options);
+    }
+  
+
+
+export const getSearchClientsMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchClients>>, TError,{sessionId: string;data: ClientSearchCriteriaDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof searchClients>>, TError,{sessionId: string;data: ClientSearchCriteriaDTO}, TContext> => {
+
+const mutationKey = ['searchClients'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof searchClients>>, {sessionId: string;data: ClientSearchCriteriaDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  searchClients(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SearchClientsMutationResult = NonNullable<Awaited<ReturnType<typeof searchClients>>>
+    export type SearchClientsMutationBody = ClientSearchCriteriaDTO
+    export type SearchClientsMutationError = ErrorResponse
+
+    /**
+ * @summary Виконує пошук клієнтів з критеріями
+ */
+export const useSearchClients = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchClients>>, TError,{sessionId: string;data: ClientSearchCriteriaDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof searchClients>>,
+        TError,
+        {sessionId: string;data: ClientSearchCriteriaDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getSearchClientsMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Пошук клієнтів за телефоном
+ */
+export const searchClientsByPhone = (
+    sessionId: string,
+    params: SearchClientsByPhoneParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ClientSearchResultDTO>(
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/search-by-phone`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSearchClientsByPhoneMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchClientsByPhone>>, TError,{sessionId: string;params: SearchClientsByPhoneParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof searchClientsByPhone>>, TError,{sessionId: string;params: SearchClientsByPhoneParams}, TContext> => {
+
+const mutationKey = ['searchClientsByPhone'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof searchClientsByPhone>>, {sessionId: string;params: SearchClientsByPhoneParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  searchClientsByPhone(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SearchClientsByPhoneMutationResult = NonNullable<Awaited<ReturnType<typeof searchClientsByPhone>>>
+    
+    export type SearchClientsByPhoneMutationError = ErrorResponse
+
+    /**
+ * @summary Пошук клієнтів за телефоном
+ */
+export const useSearchClientsByPhone = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchClientsByPhone>>, TError,{sessionId: string;params: SearchClientsByPhoneParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof searchClientsByPhone>>,
+        TError,
+        {sessionId: string;params: SearchClientsByPhoneParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSearchClientsByPhoneMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Завершує пошук клієнта
+ */
+export const completeClientSearch = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/complete`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCompleteClientSearchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeClientSearch>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['completeClientSearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeClientSearch>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  completeClientSearch(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteClientSearchMutationResult = NonNullable<Awaited<ReturnType<typeof completeClientSearch>>>
+    
+    export type CompleteClientSearchMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує пошук клієнта
+ */
+export const useCompleteClientSearch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof completeClientSearch>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCompleteClientSearchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Очищує результати пошуку
+ */
+export const clearClientSearch = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/clear`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getClearClientSearchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof clearClientSearch>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['clearClientSearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof clearClientSearch>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  clearClientSearch(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ClearClientSearchMutationResult = NonNullable<Awaited<ReturnType<typeof clearClientSearch>>>
+    
+    export type ClearClientSearchMutationError = ErrorResponse
+
+    /**
+ * @summary Очищує результати пошуку
+ */
+export const useClearClientSearch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof clearClientSearch>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getClearClientSearchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізує новий контекст пошуку клієнтів
+ */
+export const initializeClientSearch = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<string>(
+      {url: `/v1/order-wizard/stage1/client-search/initialize`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeClientSearchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeClientSearch>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeClientSearch>>, TError,void, TContext> => {
+
+const mutationKey = ['initializeClientSearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeClientSearch>>, void> = () => {
+          
+
+          return  initializeClientSearch(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeClientSearchMutationResult = NonNullable<Awaited<ReturnType<typeof initializeClientSearch>>>
+    
+    export type InitializeClientSearchMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізує новий контекст пошуку клієнтів
+ */
+export const useInitializeClientSearch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeClientSearch>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeClientSearch>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeClientSearchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Починає workflow базової інформації
+ */
+export const startBasicOrderWorkflow = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<string>(
+      {url: `/v1/order-wizard/stage1/basic-order/workflow/start`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getStartBasicOrderWorkflowMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startBasicOrderWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof startBasicOrderWorkflow>>, TError,void, TContext> => {
+
+const mutationKey = ['startBasicOrderWorkflow'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startBasicOrderWorkflow>>, void> = () => {
+          
+
+          return  startBasicOrderWorkflow(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartBasicOrderWorkflowMutationResult = NonNullable<Awaited<ReturnType<typeof startBasicOrderWorkflow>>>
+    
+    export type StartBasicOrderWorkflowMutationError = ErrorResponse
+
+    /**
+ * @summary Починає workflow базової інформації
+ */
+export const useStartBasicOrderWorkflow = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startBasicOrderWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof startBasicOrderWorkflow>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getStartBasicOrderWorkflowMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Валідує базову інформацію
+ */
+export const validateBasicOrderInfo = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidateBasicOrderInfo200>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/validate`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getValidateBasicOrderInfoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateBasicOrderInfo>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof validateBasicOrderInfo>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['validateBasicOrderInfo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof validateBasicOrderInfo>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  validateBasicOrderInfo(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ValidateBasicOrderInfoMutationResult = NonNullable<Awaited<ReturnType<typeof validateBasicOrderInfo>>>
+    
+    export type ValidateBasicOrderInfoMutationError = ErrorResponse
+
+    /**
+ * @summary Валідує базову інформацію
+ */
+export const useValidateBasicOrderInfo = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateBasicOrderInfo>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof validateBasicOrderInfo>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getValidateBasicOrderInfoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Встановлює унікальну мітку
+ */
+export const setUniqueTag = (
+    sessionId: string,
+    params: SetUniqueTagParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/set-unique-tag`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSetUniqueTagMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setUniqueTag>>, TError,{sessionId: string;params: SetUniqueTagParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof setUniqueTag>>, TError,{sessionId: string;params: SetUniqueTagParams}, TContext> => {
+
+const mutationKey = ['setUniqueTag'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof setUniqueTag>>, {sessionId: string;params: SetUniqueTagParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  setUniqueTag(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SetUniqueTagMutationResult = NonNullable<Awaited<ReturnType<typeof setUniqueTag>>>
+    
+    export type SetUniqueTagMutationError = ErrorResponse
+
+    /**
+ * @summary Встановлює унікальну мітку
+ */
+export const useSetUniqueTag = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setUniqueTag>>, TError,{sessionId: string;params: SetUniqueTagParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof setUniqueTag>>,
+        TError,
+        {sessionId: string;params: SetUniqueTagParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSetUniqueTagMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Вибирає філію для замовлення
+ */
+export const selectBranch = (
+    sessionId: string,
+    params: SelectBranchParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/select-branch`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getSelectBranchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectBranch>>, TError,{sessionId: string;params: SelectBranchParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof selectBranch>>, TError,{sessionId: string;params: SelectBranchParams}, TContext> => {
+
+const mutationKey = ['selectBranch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof selectBranch>>, {sessionId: string;params: SelectBranchParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  selectBranch(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SelectBranchMutationResult = NonNullable<Awaited<ReturnType<typeof selectBranch>>>
+    
+    export type SelectBranchMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає філію для замовлення
+ */
+export const useSelectBranch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof selectBranch>>, TError,{sessionId: string;params: SelectBranchParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof selectBranch>>,
+        TError,
+        {sessionId: string;params: SelectBranchParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSelectBranchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Скидає базову інформацію до початкового стану
+ */
+export const resetBasicOrderInfo = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/reset`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getResetBasicOrderInfoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetBasicOrderInfo>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof resetBasicOrderInfo>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['resetBasicOrderInfo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resetBasicOrderInfo>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  resetBasicOrderInfo(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResetBasicOrderInfoMutationResult = NonNullable<Awaited<ReturnType<typeof resetBasicOrderInfo>>>
+    
+    export type ResetBasicOrderInfoMutationError = ErrorResponse
+
+    /**
+ * @summary Скидає базову інформацію до початкового стану
+ */
+export const useResetBasicOrderInfo = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetBasicOrderInfo>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof resetBasicOrderInfo>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getResetBasicOrderInfoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Генерує номер квитанції
+ */
+export const generateReceiptNumber = (
+    sessionId: string,
+    params: GenerateReceiptNumberParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<string>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/generate-receipt-number`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+  
+
+
+export const getGenerateReceiptNumberMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError,{sessionId: string;params: GenerateReceiptNumberParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError,{sessionId: string;params: GenerateReceiptNumberParams}, TContext> => {
+
+const mutationKey = ['generateReceiptNumber'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateReceiptNumber>>, {sessionId: string;params: GenerateReceiptNumberParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  generateReceiptNumber(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateReceiptNumberMutationResult = NonNullable<Awaited<ReturnType<typeof generateReceiptNumber>>>
+    
+    export type GenerateReceiptNumberMutationError = ErrorResponse
+
+    /**
+ * @summary Генерує номер квитанції
+ */
+export const useGenerateReceiptNumber = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError,{sessionId: string;params: GenerateReceiptNumberParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof generateReceiptNumber>>,
+        TError,
+        {sessionId: string;params: GenerateReceiptNumberParams},
+        TContext
+      > => {
+
+      const mutationOptions = getGenerateReceiptNumberMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Завершує збір базової інформації
+ */
+export const completeBasicOrderInfo = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/complete`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getCompleteBasicOrderInfoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeBasicOrderInfo>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeBasicOrderInfo>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['completeBasicOrderInfo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeBasicOrderInfo>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  completeBasicOrderInfo(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteBasicOrderInfoMutationResult = NonNullable<Awaited<ReturnType<typeof completeBasicOrderInfo>>>
+    
+    export type CompleteBasicOrderInfoMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує збір базової інформації
+ */
+export const useCompleteBasicOrderInfo = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeBasicOrderInfo>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof completeBasicOrderInfo>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCompleteBasicOrderInfoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Ініціалізує збір базової інформації замовлення
+ */
+export const initializeBasicOrderInfo = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<string>(
+      {url: `/v1/order-wizard/stage1/basic-order/initialize`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getInitializeBasicOrderInfoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeBasicOrderInfo>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof initializeBasicOrderInfo>>, TError,void, TContext> => {
+
+const mutationKey = ['initializeBasicOrderInfo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof initializeBasicOrderInfo>>, void> = () => {
+          
+
+          return  initializeBasicOrderInfo(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type InitializeBasicOrderInfoMutationResult = NonNullable<Awaited<ReturnType<typeof initializeBasicOrderInfo>>>
+    
+    export type InitializeBasicOrderInfoMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізує збір базової інформації замовлення
+ */
+export const useInitializeBasicOrderInfo = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initializeBasicOrderInfo>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof initializeBasicOrderInfo>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getInitializeBasicOrderInfoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
  * Повертає список всіх або тільки активних типів плям з можливістю фільтрації за рівнем ризику
  * @summary Отримати типи плям
  */
@@ -2910,7 +8493,7 @@ export const useCreateStainType = <TError = ErrorResponse,
  * Зберігає новий або оновлює існуючий підпис клієнта
  * @summary Зберегти підпис клієнта
  */
-export const saveSignature = (
+export const saveSignature1 = (
     customerSignatureRequest: CustomerSignatureRequest,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
@@ -2926,11 +8509,11 @@ export const saveSignature = (
   
 
 
-export const getSaveSignatureMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSignature>>, TError,{data: CustomerSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof saveSignature>>, TError,{data: CustomerSignatureRequest}, TContext> => {
+export const getSaveSignature1MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSignature1>>, TError,{data: CustomerSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveSignature1>>, TError,{data: CustomerSignatureRequest}, TContext> => {
 
-const mutationKey = ['saveSignature'];
+const mutationKey = ['saveSignature1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -2940,10 +8523,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveSignature>>, {data: CustomerSignatureRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveSignature1>>, {data: CustomerSignatureRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  saveSignature(data,requestOptions)
+          return  saveSignature1(data,requestOptions)
         }
 
         
@@ -2951,23 +8534,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type SaveSignatureMutationResult = NonNullable<Awaited<ReturnType<typeof saveSignature>>>
-    export type SaveSignatureMutationBody = CustomerSignatureRequest
-    export type SaveSignatureMutationError = ErrorResponse
+    export type SaveSignature1MutationResult = NonNullable<Awaited<ReturnType<typeof saveSignature1>>>
+    export type SaveSignature1MutationBody = CustomerSignatureRequest
+    export type SaveSignature1MutationError = ErrorResponse
 
     /**
  * @summary Зберегти підпис клієнта
  */
-export const useSaveSignature = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSignature>>, TError,{data: CustomerSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+export const useSaveSignature1 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSignature1>>, TError,{data: CustomerSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof saveSignature>>,
+        Awaited<ReturnType<typeof saveSignature1>>,
         TError,
         {data: CustomerSignatureRequest},
         TContext
       > => {
 
-      const mutationOptions = getSaveSignatureMutationOptions(options);
+      const mutationOptions = getSaveSignature1MutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
@@ -2976,7 +8559,7 @@ export const useSaveSignature = <TError = ErrorResponse,
  * Генерує PDF-квитанцію для замовлення з вказаними параметрами
  * @summary Згенерувати PDF-квитанцію
  */
-export const generatePdfReceipt = (
+export const generatePdfReceipt1 = (
     receiptGenerationRequest: ReceiptGenerationRequest,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
@@ -2992,11 +8575,11 @@ export const generatePdfReceipt = (
   
 
 
-export const getGeneratePdfReceiptMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generatePdfReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof generatePdfReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext> => {
+export const getGeneratePdfReceipt1MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generatePdfReceipt1>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof generatePdfReceipt1>>, TError,{data: ReceiptGenerationRequest}, TContext> => {
 
-const mutationKey = ['generatePdfReceipt'];
+const mutationKey = ['generatePdfReceipt1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -3006,10 +8589,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generatePdfReceipt>>, {data: ReceiptGenerationRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generatePdfReceipt1>>, {data: ReceiptGenerationRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  generatePdfReceipt(data,requestOptions)
+          return  generatePdfReceipt1(data,requestOptions)
         }
 
         
@@ -3017,23 +8600,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type GeneratePdfReceiptMutationResult = NonNullable<Awaited<ReturnType<typeof generatePdfReceipt>>>
-    export type GeneratePdfReceiptMutationBody = ReceiptGenerationRequest
-    export type GeneratePdfReceiptMutationError = ErrorResponse
+    export type GeneratePdfReceipt1MutationResult = NonNullable<Awaited<ReturnType<typeof generatePdfReceipt1>>>
+    export type GeneratePdfReceipt1MutationBody = ReceiptGenerationRequest
+    export type GeneratePdfReceipt1MutationError = ErrorResponse
 
     /**
  * @summary Згенерувати PDF-квитанцію
  */
-export const useGeneratePdfReceipt = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generatePdfReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+export const useGeneratePdfReceipt1 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generatePdfReceipt1>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof generatePdfReceipt>>,
+        Awaited<ReturnType<typeof generatePdfReceipt1>>,
         TError,
         {data: ReceiptGenerationRequest},
         TContext
       > => {
 
-      const mutationOptions = getGeneratePdfReceiptMutationOptions(options);
+      const mutationOptions = getGeneratePdfReceipt1MutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
@@ -3524,7 +9107,7 @@ export const useGetModifiersByCodes = <TError = ErrorResponse,
  * Детальний розрахунок ціни з урахуванням базової ціни, модифікаторів, знижок та терміновості
  * @summary Розрахувати ціну з урахуванням вибраних модифікаторів
  */
-export const calculatePrice = (
+export const calculatePrice1 = (
     priceCalculationRequestDTO: PriceCalculationRequestDTO,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
@@ -3540,11 +9123,11 @@ export const calculatePrice = (
   
 
 
-export const getCalculatePriceMutationOptions = <TError = void | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: PriceCalculationRequestDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: PriceCalculationRequestDTO}, TContext> => {
+export const getCalculatePrice1MutationOptions = <TError = void | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice1>>, TError,{data: PriceCalculationRequestDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof calculatePrice1>>, TError,{data: PriceCalculationRequestDTO}, TContext> => {
 
-const mutationKey = ['calculatePrice'];
+const mutationKey = ['calculatePrice1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -3554,10 +9137,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof calculatePrice>>, {data: PriceCalculationRequestDTO}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof calculatePrice1>>, {data: PriceCalculationRequestDTO}> = (props) => {
           const {data} = props ?? {};
 
-          return  calculatePrice(data,requestOptions)
+          return  calculatePrice1(data,requestOptions)
         }
 
         
@@ -3565,23 +9148,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type CalculatePriceMutationResult = NonNullable<Awaited<ReturnType<typeof calculatePrice>>>
-    export type CalculatePriceMutationBody = PriceCalculationRequestDTO
-    export type CalculatePriceMutationError = void | ErrorResponse
+    export type CalculatePrice1MutationResult = NonNullable<Awaited<ReturnType<typeof calculatePrice1>>>
+    export type CalculatePrice1MutationBody = PriceCalculationRequestDTO
+    export type CalculatePrice1MutationError = void | ErrorResponse
 
     /**
  * @summary Розрахувати ціну з урахуванням вибраних модифікаторів
  */
-export const useCalculatePrice = <TError = void | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: PriceCalculationRequestDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+export const useCalculatePrice1 = <TError = void | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice1>>, TError,{data: PriceCalculationRequestDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof calculatePrice>>,
+        Awaited<ReturnType<typeof calculatePrice1>>,
         TError,
         {data: PriceCalculationRequestDTO},
         TContext
       > => {
 
-      const mutationOptions = getCalculatePriceMutationOptions(options);
+      const mutationOptions = getCalculatePrice1MutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
@@ -4611,7 +10194,7 @@ export const useEmailReceipt = <TError = ErrorResponse,
  * Фіналізує замовлення, зберігає підпис клієнта та змінює статус замовлення
  * @summary Завершити оформлення замовлення
  */
-export const finalizeOrder = (
+export const finalizeOrder1 = (
     orderFinalizationRequest: OrderFinalizationRequest,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
@@ -4627,11 +10210,11 @@ export const finalizeOrder = (
   
 
 
-export const getFinalizeOrderMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeOrder>>, TError,{data: OrderFinalizationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof finalizeOrder>>, TError,{data: OrderFinalizationRequest}, TContext> => {
+export const getFinalizeOrder1MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeOrder1>>, TError,{data: OrderFinalizationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof finalizeOrder1>>, TError,{data: OrderFinalizationRequest}, TContext> => {
 
-const mutationKey = ['finalizeOrder'];
+const mutationKey = ['finalizeOrder1'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -4641,10 +10224,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof finalizeOrder>>, {data: OrderFinalizationRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof finalizeOrder1>>, {data: OrderFinalizationRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  finalizeOrder(data,requestOptions)
+          return  finalizeOrder1(data,requestOptions)
         }
 
         
@@ -4652,23 +10235,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type FinalizeOrderMutationResult = NonNullable<Awaited<ReturnType<typeof finalizeOrder>>>
-    export type FinalizeOrderMutationBody = OrderFinalizationRequest
-    export type FinalizeOrderMutationError = ErrorResponse
+    export type FinalizeOrder1MutationResult = NonNullable<Awaited<ReturnType<typeof finalizeOrder1>>>
+    export type FinalizeOrder1MutationBody = OrderFinalizationRequest
+    export type FinalizeOrder1MutationError = ErrorResponse
 
     /**
  * @summary Завершити оформлення замовлення
  */
-export const useFinalizeOrder = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeOrder>>, TError,{data: OrderFinalizationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+export const useFinalizeOrder1 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeOrder1>>, TError,{data: OrderFinalizationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof finalizeOrder>>,
+        Awaited<ReturnType<typeof finalizeOrder1>>,
         TError,
         {data: OrderFinalizationRequest},
         TContext
       > => {
 
-      const mutationOptions = getFinalizeOrderMutationOptions(options);
+      const mutationOptions = getFinalizeOrder1MutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
@@ -6027,6 +11610,6322 @@ export const useLogin = <TError = ErrorResponse,
       return useMutation(mutationOptions , queryClient);
     }
     
+/**
+ * @summary Повна валідація Stage4
+ */
+export const validateComplete = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidateComplete200>(
+      {url: `/v1/order-wizard/stage4/validate/complete/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getValidateCompleteQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage4/validate/complete/${sessionId}`] as const;
+    }
+
+    
+export const getValidateCompleteInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof validateComplete>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateCompleteQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateComplete>>> = ({ signal }) => validateComplete(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateCompleteInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof validateComplete>>>
+export type ValidateCompleteInfiniteQueryError = ErrorResponse
+
+
+export function useValidateCompleteInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateComplete>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateComplete>>,
+          TError,
+          Awaited<ReturnType<typeof validateComplete>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCompleteInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateComplete>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateComplete>>,
+          TError,
+          Awaited<ReturnType<typeof validateComplete>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCompleteInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateComplete>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Повна валідація Stage4
+ */
+
+export function useValidateCompleteInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateComplete>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateCompleteInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getValidateCompleteQueryOptions = <TData = Awaited<ReturnType<typeof validateComplete>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateCompleteQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateComplete>>> = ({ signal }) => validateComplete(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateCompleteQueryResult = NonNullable<Awaited<ReturnType<typeof validateComplete>>>
+export type ValidateCompleteQueryError = ErrorResponse
+
+
+export function useValidateComplete<TData = Awaited<ReturnType<typeof validateComplete>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateComplete>>,
+          TError,
+          Awaited<ReturnType<typeof validateComplete>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateComplete<TData = Awaited<ReturnType<typeof validateComplete>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateComplete>>,
+          TError,
+          Awaited<ReturnType<typeof validateComplete>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateComplete<TData = Awaited<ReturnType<typeof validateComplete>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Повна валідація Stage4
+ */
+
+export function useValidateComplete<TData = Awaited<ReturnType<typeof validateComplete>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateComplete>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateCompleteQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання поточного контексту сесії
+ */
+export const getSessionContext = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetSessionContext200>(
+      {url: `/v1/order-wizard/stage4/session/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetSessionContextQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage4/session/${sessionId}`] as const;
+    }
+
+    
+export const getGetSessionContextInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionContextQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSessionContext>>> = ({ signal }) => getSessionContext(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionContextInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getSessionContext>>>
+export type GetSessionContextInfiniteQueryError = ErrorResponse
+
+
+export function useGetSessionContextInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionContext>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionContextInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionContext>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionContextInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного контексту сесії
+ */
+
+export function useGetSessionContextInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionContextInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetSessionContextQueryOptions = <TData = Awaited<ReturnType<typeof getSessionContext>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionContextQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSessionContext>>> = ({ signal }) => getSessionContext(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionContextQueryResult = NonNullable<Awaited<ReturnType<typeof getSessionContext>>>
+export type GetSessionContextQueryError = ErrorResponse
+
+
+export function useGetSessionContext<TData = Awaited<ReturnType<typeof getSessionContext>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionContext>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionContext<TData = Awaited<ReturnType<typeof getSessionContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionContext>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionContext<TData = Awaited<ReturnType<typeof getSessionContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного контексту сесії
+ */
+
+export function useGetSessionContext<TData = Awaited<ReturnType<typeof getSessionContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionContextQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання поточного стану Stage4
+ */
+export const getCurrentState = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetCurrentState200>(
+      {url: `/v1/order-wizard/stage4/session/${sessionId}/state`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetCurrentStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage4/session/${sessionId}/state`] as const;
+    }
+
+    
+export const getGetCurrentStateInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentState>>> = ({ signal }) => getCurrentState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentStateInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentState>>>
+export type GetCurrentStateInfiniteQueryError = ErrorResponse
+
+
+export function useGetCurrentStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного стану Stage4
+ */
+
+export function useGetCurrentStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentStateInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetCurrentStateQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentState>>> = ({ signal }) => getCurrentState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentStateQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentState>>>
+export type GetCurrentStateQueryError = ErrorResponse
+
+
+export function useGetCurrentState<TData = Awaited<ReturnType<typeof getCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState<TData = Awaited<ReturnType<typeof getCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState<TData = Awaited<ReturnType<typeof getCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного стану Stage4
+ */
+
+export function useGetCurrentState<TData = Awaited<ReturnType<typeof getCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання детального підсумку замовлення
+ */
+export const getOrderSummary = (
+    orderId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetOrderSummary200>(
+      {url: `/v1/order-wizard/stage4/order/${orderId}/summary`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetOrderSummaryQueryKey = (orderId: string,) => {
+    return [`/v1/order-wizard/stage4/order/${orderId}/summary`] as const;
+    }
+
+    
+export const getGetOrderSummaryInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getOrderSummary>>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderSummaryQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderSummary>>> = ({ signal }) => getOrderSummary(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrderSummaryInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderSummary>>>
+export type GetOrderSummaryInfiniteQueryError = ErrorResponse
+
+
+export function useGetOrderSummaryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderSummary>>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderSummary>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderSummaryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderSummary>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderSummary>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderSummaryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderSummary>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання детального підсумку замовлення
+ */
+
+export function useGetOrderSummaryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOrderSummary>>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrderSummaryInfiniteQueryOptions(orderId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetOrderSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getOrderSummary>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderSummaryQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderSummary>>> = ({ signal }) => getOrderSummary(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrderSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderSummary>>>
+export type GetOrderSummaryQueryError = ErrorResponse
+
+
+export function useGetOrderSummary<TData = Awaited<ReturnType<typeof getOrderSummary>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderSummary>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderSummary<TData = Awaited<ReturnType<typeof getOrderSummary>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrderSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getOrderSummary>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrderSummary<TData = Awaited<ReturnType<typeof getOrderSummary>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання детального підсумку замовлення
+ */
+
+export function useGetOrderSummary<TData = Awaited<ReturnType<typeof getOrderSummary>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrderSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrderSummaryQueryOptions(orderId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Валідувати всі підетапи
+ */
+export const validateAllSubsteps = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/validate-all`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getValidateAllSubstepsQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/validate-all`] as const;
+    }
+
+    
+export const getValidateAllSubstepsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof validateAllSubsteps>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateAllSubstepsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateAllSubsteps>>> = ({ signal }) => validateAllSubsteps(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateAllSubstepsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof validateAllSubsteps>>>
+export type ValidateAllSubstepsInfiniteQueryError = ErrorResponse
+
+
+export function useValidateAllSubstepsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateAllSubsteps>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateAllSubsteps>>,
+          TError,
+          Awaited<ReturnType<typeof validateAllSubsteps>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateAllSubstepsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateAllSubsteps>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateAllSubsteps>>,
+          TError,
+          Awaited<ReturnType<typeof validateAllSubsteps>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateAllSubstepsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateAllSubsteps>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Валідувати всі підетапи
+ */
+
+export function useValidateAllSubstepsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateAllSubsteps>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateAllSubstepsInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getValidateAllSubstepsQueryOptions = <TData = Awaited<ReturnType<typeof validateAllSubsteps>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateAllSubstepsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateAllSubsteps>>> = ({ signal }) => validateAllSubsteps(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateAllSubstepsQueryResult = NonNullable<Awaited<ReturnType<typeof validateAllSubsteps>>>
+export type ValidateAllSubstepsQueryError = ErrorResponse
+
+
+export function useValidateAllSubsteps<TData = Awaited<ReturnType<typeof validateAllSubsteps>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateAllSubsteps>>,
+          TError,
+          Awaited<ReturnType<typeof validateAllSubsteps>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateAllSubsteps<TData = Awaited<ReturnType<typeof validateAllSubsteps>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateAllSubsteps>>,
+          TError,
+          Awaited<ReturnType<typeof validateAllSubsteps>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateAllSubsteps<TData = Awaited<ReturnType<typeof validateAllSubsteps>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Валідувати всі підетапи
+ */
+
+export function useValidateAllSubsteps<TData = Awaited<ReturnType<typeof validateAllSubsteps>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateAllSubsteps>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateAllSubstepsQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримати стан сесії
+ */
+export const getSessionState = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetSessionState200>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/state`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetSessionStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/state`] as const;
+    }
+
+    
+export const getGetSessionStateInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getSessionState>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSessionState>>> = ({ signal }) => getSessionState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionStateInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getSessionState>>>
+export type GetSessionStateInfiniteQueryError = ErrorResponse
+
+
+export function useGetSessionStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionState>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionState>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionState>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати стан сесії
+ */
+
+export function useGetSessionStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionStateInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetSessionStateQueryOptions = <TData = Awaited<ReturnType<typeof getSessionState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSessionState>>> = ({ signal }) => getSessionState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionStateQueryResult = NonNullable<Awaited<ReturnType<typeof getSessionState>>>
+export type GetSessionStateQueryError = ErrorResponse
+
+
+export function useGetSessionState<TData = Awaited<ReturnType<typeof getSessionState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionState>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionState<TData = Awaited<ReturnType<typeof getSessionState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionState>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionState<TData = Awaited<ReturnType<typeof getSessionState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати стан сесії
+ */
+
+export function useGetSessionState<TData = Awaited<ReturnType<typeof getSessionState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Перевірити готовність Stage3
+ */
+export const isStage3Ready = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<boolean>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/ready`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getIsStage3ReadyQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/ready`] as const;
+    }
+
+    
+export const getIsStage3ReadyInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof isStage3Ready>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsStage3ReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isStage3Ready>>> = ({ signal }) => isStage3Ready(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsStage3ReadyInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof isStage3Ready>>>
+export type IsStage3ReadyInfiniteQueryError = ErrorResponse
+
+
+export function useIsStage3ReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isStage3Ready>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isStage3Ready>>,
+          TError,
+          Awaited<ReturnType<typeof isStage3Ready>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsStage3ReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isStage3Ready>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isStage3Ready>>,
+          TError,
+          Awaited<ReturnType<typeof isStage3Ready>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsStage3ReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isStage3Ready>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність Stage3
+ */
+
+export function useIsStage3ReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isStage3Ready>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsStage3ReadyInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getIsStage3ReadyQueryOptions = <TData = Awaited<ReturnType<typeof isStage3Ready>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsStage3ReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isStage3Ready>>> = ({ signal }) => isStage3Ready(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsStage3ReadyQueryResult = NonNullable<Awaited<ReturnType<typeof isStage3Ready>>>
+export type IsStage3ReadyQueryError = ErrorResponse
+
+
+export function useIsStage3Ready<TData = Awaited<ReturnType<typeof isStage3Ready>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isStage3Ready>>,
+          TError,
+          Awaited<ReturnType<typeof isStage3Ready>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsStage3Ready<TData = Awaited<ReturnType<typeof isStage3Ready>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isStage3Ready>>,
+          TError,
+          Awaited<ReturnType<typeof isStage3Ready>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsStage3Ready<TData = Awaited<ReturnType<typeof isStage3Ready>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність Stage3
+ */
+
+export function useIsStage3Ready<TData = Awaited<ReturnType<typeof isStage3Ready>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isStage3Ready>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsStage3ReadyQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримати прогрес сесії
+ */
+export const getSessionProgress = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<number>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/progress`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetSessionProgressQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/progress`] as const;
+    }
+
+    
+export const getGetSessionProgressInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getSessionProgress>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionProgressQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSessionProgress>>> = ({ signal }) => getSessionProgress(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionProgressInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getSessionProgress>>>
+export type GetSessionProgressInfiniteQueryError = ErrorResponse
+
+
+export function useGetSessionProgressInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionProgress>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionProgress>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionProgress>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionProgressInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionProgress>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionProgress>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionProgress>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionProgressInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionProgress>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати прогрес сесії
+ */
+
+export function useGetSessionProgressInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionProgress>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionProgressInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetSessionProgressQueryOptions = <TData = Awaited<ReturnType<typeof getSessionProgress>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionProgressQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSessionProgress>>> = ({ signal }) => getSessionProgress(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionProgressQueryResult = NonNullable<Awaited<ReturnType<typeof getSessionProgress>>>
+export type GetSessionProgressQueryError = ErrorResponse
+
+
+export function useGetSessionProgress<TData = Awaited<ReturnType<typeof getSessionProgress>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionProgress>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionProgress>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionProgress<TData = Awaited<ReturnType<typeof getSessionProgress>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionProgress>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionProgress>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionProgress<TData = Awaited<ReturnType<typeof getSessionProgress>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати прогрес сесії
+ */
+
+export function useGetSessionProgress<TData = Awaited<ReturnType<typeof getSessionProgress>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionProgress>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionProgressQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Перевірити готовність конфігурації оплати
+ */
+export const isPaymentConfigReady = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<boolean>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/payment-config/ready`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getIsPaymentConfigReadyQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/payment-config/ready`] as const;
+    }
+
+    
+export const getIsPaymentConfigReadyInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof isPaymentConfigReady>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsPaymentConfigReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isPaymentConfigReady>>> = ({ signal }) => isPaymentConfigReady(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsPaymentConfigReadyInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof isPaymentConfigReady>>>
+export type IsPaymentConfigReadyInfiniteQueryError = ErrorResponse
+
+
+export function useIsPaymentConfigReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isPaymentConfigReady>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isPaymentConfigReady>>,
+          TError,
+          Awaited<ReturnType<typeof isPaymentConfigReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsPaymentConfigReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isPaymentConfigReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isPaymentConfigReady>>,
+          TError,
+          Awaited<ReturnType<typeof isPaymentConfigReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsPaymentConfigReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isPaymentConfigReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність конфігурації оплати
+ */
+
+export function useIsPaymentConfigReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isPaymentConfigReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsPaymentConfigReadyInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getIsPaymentConfigReadyQueryOptions = <TData = Awaited<ReturnType<typeof isPaymentConfigReady>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsPaymentConfigReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isPaymentConfigReady>>> = ({ signal }) => isPaymentConfigReady(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsPaymentConfigReadyQueryResult = NonNullable<Awaited<ReturnType<typeof isPaymentConfigReady>>>
+export type IsPaymentConfigReadyQueryError = ErrorResponse
+
+
+export function useIsPaymentConfigReady<TData = Awaited<ReturnType<typeof isPaymentConfigReady>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isPaymentConfigReady>>,
+          TError,
+          Awaited<ReturnType<typeof isPaymentConfigReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsPaymentConfigReady<TData = Awaited<ReturnType<typeof isPaymentConfigReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isPaymentConfigReady>>,
+          TError,
+          Awaited<ReturnType<typeof isPaymentConfigReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsPaymentConfigReady<TData = Awaited<ReturnType<typeof isPaymentConfigReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність конфігурації оплати
+ */
+
+export function useIsPaymentConfigReady<TData = Awaited<ReturnType<typeof isPaymentConfigReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isPaymentConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsPaymentConfigReadyQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримати наступний підетап
+ */
+export const getNextSubstep = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetNextSubstep200>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/next-substep`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetNextSubstepQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/next-substep`] as const;
+    }
+
+    
+export const getGetNextSubstepInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getNextSubstep>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNextSubstepQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNextSubstep>>> = ({ signal }) => getNextSubstep(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNextSubstepInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getNextSubstep>>>
+export type GetNextSubstepInfiniteQueryError = ErrorResponse
+
+
+export function useGetNextSubstepInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNextSubstep>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNextSubstep>>,
+          TError,
+          Awaited<ReturnType<typeof getNextSubstep>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNextSubstepInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNextSubstep>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNextSubstep>>,
+          TError,
+          Awaited<ReturnType<typeof getNextSubstep>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNextSubstepInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNextSubstep>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати наступний підетап
+ */
+
+export function useGetNextSubstepInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNextSubstep>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNextSubstepInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetNextSubstepQueryOptions = <TData = Awaited<ReturnType<typeof getNextSubstep>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNextSubstepQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNextSubstep>>> = ({ signal }) => getNextSubstep(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNextSubstepQueryResult = NonNullable<Awaited<ReturnType<typeof getNextSubstep>>>
+export type GetNextSubstepQueryError = ErrorResponse
+
+
+export function useGetNextSubstep<TData = Awaited<ReturnType<typeof getNextSubstep>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNextSubstep>>,
+          TError,
+          Awaited<ReturnType<typeof getNextSubstep>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNextSubstep<TData = Awaited<ReturnType<typeof getNextSubstep>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNextSubstep>>,
+          TError,
+          Awaited<ReturnType<typeof getNextSubstep>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNextSubstep<TData = Awaited<ReturnType<typeof getNextSubstep>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати наступний підетап
+ */
+
+export function useGetNextSubstep<TData = Awaited<ReturnType<typeof getNextSubstep>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNextSubstep>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNextSubstepQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Перевірити готовність параметрів виконання
+ */
+export const isExecutionParamsReady = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<boolean>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/execution-params/ready`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getIsExecutionParamsReadyQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/execution-params/ready`] as const;
+    }
+
+    
+export const getIsExecutionParamsReadyInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof isExecutionParamsReady>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsExecutionParamsReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isExecutionParamsReady>>> = ({ signal }) => isExecutionParamsReady(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsExecutionParamsReadyInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof isExecutionParamsReady>>>
+export type IsExecutionParamsReadyInfiniteQueryError = ErrorResponse
+
+
+export function useIsExecutionParamsReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isExecutionParamsReady>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isExecutionParamsReady>>,
+          TError,
+          Awaited<ReturnType<typeof isExecutionParamsReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsExecutionParamsReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isExecutionParamsReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isExecutionParamsReady>>,
+          TError,
+          Awaited<ReturnType<typeof isExecutionParamsReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsExecutionParamsReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isExecutionParamsReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність параметрів виконання
+ */
+
+export function useIsExecutionParamsReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isExecutionParamsReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsExecutionParamsReadyInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getIsExecutionParamsReadyQueryOptions = <TData = Awaited<ReturnType<typeof isExecutionParamsReady>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsExecutionParamsReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isExecutionParamsReady>>> = ({ signal }) => isExecutionParamsReady(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsExecutionParamsReadyQueryResult = NonNullable<Awaited<ReturnType<typeof isExecutionParamsReady>>>
+export type IsExecutionParamsReadyQueryError = ErrorResponse
+
+
+export function useIsExecutionParamsReady<TData = Awaited<ReturnType<typeof isExecutionParamsReady>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isExecutionParamsReady>>,
+          TError,
+          Awaited<ReturnType<typeof isExecutionParamsReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsExecutionParamsReady<TData = Awaited<ReturnType<typeof isExecutionParamsReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isExecutionParamsReady>>,
+          TError,
+          Awaited<ReturnType<typeof isExecutionParamsReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsExecutionParamsReady<TData = Awaited<ReturnType<typeof isExecutionParamsReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність параметрів виконання
+ */
+
+export function useIsExecutionParamsReady<TData = Awaited<ReturnType<typeof isExecutionParamsReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isExecutionParamsReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsExecutionParamsReadyQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Перевірити готовність конфігурації знижок
+ */
+export const isDiscountConfigReady = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<boolean>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/discount-config/ready`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getIsDiscountConfigReadyQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/discount-config/ready`] as const;
+    }
+
+    
+export const getIsDiscountConfigReadyInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof isDiscountConfigReady>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsDiscountConfigReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isDiscountConfigReady>>> = ({ signal }) => isDiscountConfigReady(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsDiscountConfigReadyInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof isDiscountConfigReady>>>
+export type IsDiscountConfigReadyInfiniteQueryError = ErrorResponse
+
+
+export function useIsDiscountConfigReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isDiscountConfigReady>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isDiscountConfigReady>>,
+          TError,
+          Awaited<ReturnType<typeof isDiscountConfigReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsDiscountConfigReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isDiscountConfigReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isDiscountConfigReady>>,
+          TError,
+          Awaited<ReturnType<typeof isDiscountConfigReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsDiscountConfigReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isDiscountConfigReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність конфігурації знижок
+ */
+
+export function useIsDiscountConfigReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isDiscountConfigReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsDiscountConfigReadyInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getIsDiscountConfigReadyQueryOptions = <TData = Awaited<ReturnType<typeof isDiscountConfigReady>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsDiscountConfigReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isDiscountConfigReady>>> = ({ signal }) => isDiscountConfigReady(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsDiscountConfigReadyQueryResult = NonNullable<Awaited<ReturnType<typeof isDiscountConfigReady>>>
+export type IsDiscountConfigReadyQueryError = ErrorResponse
+
+
+export function useIsDiscountConfigReady<TData = Awaited<ReturnType<typeof isDiscountConfigReady>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isDiscountConfigReady>>,
+          TError,
+          Awaited<ReturnType<typeof isDiscountConfigReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsDiscountConfigReady<TData = Awaited<ReturnType<typeof isDiscountConfigReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isDiscountConfigReady>>,
+          TError,
+          Awaited<ReturnType<typeof isDiscountConfigReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsDiscountConfigReady<TData = Awaited<ReturnType<typeof isDiscountConfigReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність конфігурації знижок
+ */
+
+export function useIsDiscountConfigReady<TData = Awaited<ReturnType<typeof isDiscountConfigReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isDiscountConfigReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsDiscountConfigReadyQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримати контекст сесії
+ */
+export const getSessionContext1 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<Stage3Context>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/context`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetSessionContext1QueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/context`] as const;
+    }
+
+    
+export const getGetSessionContext1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext1>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionContext1QueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSessionContext1>>> = ({ signal }) => getSessionContext1(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionContext1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getSessionContext1>>>
+export type GetSessionContext1InfiniteQueryError = ErrorResponse
+
+
+export function useGetSessionContext1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext1>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionContext1>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionContext1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionContext1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext1>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionContext1>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionContext1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionContext1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext1>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати контекст сесії
+ */
+
+export function useGetSessionContext1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getSessionContext1>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionContext1InfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetSessionContext1QueryOptions = <TData = Awaited<ReturnType<typeof getSessionContext1>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionContext1QueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSessionContext1>>> = ({ signal }) => getSessionContext1(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionContext1QueryResult = NonNullable<Awaited<ReturnType<typeof getSessionContext1>>>
+export type GetSessionContext1QueryError = ErrorResponse
+
+
+export function useGetSessionContext1<TData = Awaited<ReturnType<typeof getSessionContext1>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionContext1>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionContext1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionContext1<TData = Awaited<ReturnType<typeof getSessionContext1>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSessionContext1>>,
+          TError,
+          Awaited<ReturnType<typeof getSessionContext1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionContext1<TData = Awaited<ReturnType<typeof getSessionContext1>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримати контекст сесії
+ */
+
+export function useGetSessionContext1<TData = Awaited<ReturnType<typeof getSessionContext1>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSessionContext1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionContext1QueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Перевірити готовність додаткової інформації
+ */
+export const isAdditionalInfoReady = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<boolean>(
+      {url: `/v1/order-wizard/stage3/sessions/${sessionId}/additional-info/ready`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getIsAdditionalInfoReadyQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage3/sessions/${sessionId}/additional-info/ready`] as const;
+    }
+
+    
+export const getIsAdditionalInfoReadyInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof isAdditionalInfoReady>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsAdditionalInfoReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isAdditionalInfoReady>>> = ({ signal }) => isAdditionalInfoReady(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsAdditionalInfoReadyInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof isAdditionalInfoReady>>>
+export type IsAdditionalInfoReadyInfiniteQueryError = ErrorResponse
+
+
+export function useIsAdditionalInfoReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isAdditionalInfoReady>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isAdditionalInfoReady>>,
+          TError,
+          Awaited<ReturnType<typeof isAdditionalInfoReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsAdditionalInfoReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isAdditionalInfoReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isAdditionalInfoReady>>,
+          TError,
+          Awaited<ReturnType<typeof isAdditionalInfoReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsAdditionalInfoReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isAdditionalInfoReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність додаткової інформації
+ */
+
+export function useIsAdditionalInfoReadyInfinite<TData = InfiniteData<Awaited<ReturnType<typeof isAdditionalInfoReady>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsAdditionalInfoReadyInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getIsAdditionalInfoReadyQueryOptions = <TData = Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIsAdditionalInfoReadyQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof isAdditionalInfoReady>>> = ({ signal }) => isAdditionalInfoReady(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type IsAdditionalInfoReadyQueryResult = NonNullable<Awaited<ReturnType<typeof isAdditionalInfoReady>>>
+export type IsAdditionalInfoReadyQueryError = ErrorResponse
+
+
+export function useIsAdditionalInfoReady<TData = Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isAdditionalInfoReady>>,
+          TError,
+          Awaited<ReturnType<typeof isAdditionalInfoReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsAdditionalInfoReady<TData = Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof isAdditionalInfoReady>>,
+          TError,
+          Awaited<ReturnType<typeof isAdditionalInfoReady>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIsAdditionalInfoReady<TData = Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірити готовність додаткової інформації
+ */
+
+export function useIsAdditionalInfoReady<TData = Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof isAdditionalInfoReady>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIsAdditionalInfoReadyQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Валідує поточний стан менеджера
+ */
+export const validateCurrentState = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ValidationResult>(
+      {url: `/v1/order-wizard/stage2/validate/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getValidateCurrentStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/validate/${sessionId}`] as const;
+    }
+
+    
+export const getValidateCurrentStateInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateCurrentStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateCurrentState>>> = ({ signal }) => validateCurrentState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateCurrentStateInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof validateCurrentState>>>
+export type ValidateCurrentStateInfiniteQueryError = ErrorResponse
+
+
+export function useValidateCurrentStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof validateCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCurrentStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof validateCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCurrentStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Валідує поточний стан менеджера
+ */
+
+export function useValidateCurrentStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateCurrentStateInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getValidateCurrentStateQueryOptions = <TData = Awaited<ReturnType<typeof validateCurrentState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateCurrentStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateCurrentState>>> = ({ signal }) => validateCurrentState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateCurrentStateQueryResult = NonNullable<Awaited<ReturnType<typeof validateCurrentState>>>
+export type ValidateCurrentStateQueryError = ErrorResponse
+
+
+export function useValidateCurrentState<TData = Awaited<ReturnType<typeof validateCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof validateCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCurrentState<TData = Awaited<ReturnType<typeof validateCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof validateCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCurrentState<TData = Awaited<ReturnType<typeof validateCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Валідує поточний стан менеджера
+ */
+
+export function useValidateCurrentState<TData = Awaited<ReturnType<typeof validateCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateCurrentStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання статусу фотодокументації
+ */
+export const getDocumentationStatus = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/status`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetDocumentationStatusQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep5/${sessionId}/status`] as const;
+    }
+
+    
+export const getGetDocumentationStatusInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationStatus>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDocumentationStatusQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDocumentationStatus>>> = ({ signal }) => getDocumentationStatus(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDocumentationStatusInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getDocumentationStatus>>>
+export type GetDocumentationStatusInfiniteQueryError = ErrorResponse
+
+
+export function useGetDocumentationStatusInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationStatus>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDocumentationStatus>>,
+          TError,
+          Awaited<ReturnType<typeof getDocumentationStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDocumentationStatusInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationStatus>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDocumentationStatus>>,
+          TError,
+          Awaited<ReturnType<typeof getDocumentationStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDocumentationStatusInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationStatus>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання статусу фотодокументації
+ */
+
+export function useGetDocumentationStatusInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationStatus>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDocumentationStatusInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetDocumentationStatusQueryOptions = <TData = Awaited<ReturnType<typeof getDocumentationStatus>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDocumentationStatusQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDocumentationStatus>>> = ({ signal }) => getDocumentationStatus(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDocumentationStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getDocumentationStatus>>>
+export type GetDocumentationStatusQueryError = ErrorResponse
+
+
+export function useGetDocumentationStatus<TData = Awaited<ReturnType<typeof getDocumentationStatus>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDocumentationStatus>>,
+          TError,
+          Awaited<ReturnType<typeof getDocumentationStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDocumentationStatus<TData = Awaited<ReturnType<typeof getDocumentationStatus>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDocumentationStatus>>,
+          TError,
+          Awaited<ReturnType<typeof getDocumentationStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDocumentationStatus<TData = Awaited<ReturnType<typeof getDocumentationStatus>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання статусу фотодокументації
+ */
+
+export function useGetDocumentationStatus<TData = Awaited<ReturnType<typeof getDocumentationStatus>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDocumentationStatusQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання даних фотодокументації
+ */
+export const getDocumentationData = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PhotoDocumentationDTO>(
+      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/data`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetDocumentationDataQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep5/${sessionId}/data`] as const;
+    }
+
+    
+export const getGetDocumentationDataInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationData>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDocumentationDataQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDocumentationData>>> = ({ signal }) => getDocumentationData(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDocumentationDataInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getDocumentationData>>>
+export type GetDocumentationDataInfiniteQueryError = ErrorResponse
+
+
+export function useGetDocumentationDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationData>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDocumentationData>>,
+          TError,
+          Awaited<ReturnType<typeof getDocumentationData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDocumentationDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationData>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDocumentationData>>,
+          TError,
+          Awaited<ReturnType<typeof getDocumentationData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDocumentationDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationData>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання даних фотодокументації
+ */
+
+export function useGetDocumentationDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDocumentationData>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDocumentationDataInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetDocumentationDataQueryOptions = <TData = Awaited<ReturnType<typeof getDocumentationData>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDocumentationDataQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDocumentationData>>> = ({ signal }) => getDocumentationData(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDocumentationDataQueryResult = NonNullable<Awaited<ReturnType<typeof getDocumentationData>>>
+export type GetDocumentationDataQueryError = ErrorResponse
+
+
+export function useGetDocumentationData<TData = Awaited<ReturnType<typeof getDocumentationData>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDocumentationData>>,
+          TError,
+          Awaited<ReturnType<typeof getDocumentationData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDocumentationData<TData = Awaited<ReturnType<typeof getDocumentationData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDocumentationData>>,
+          TError,
+          Awaited<ReturnType<typeof getDocumentationData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDocumentationData<TData = Awaited<ReturnType<typeof getDocumentationData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання даних фотодокументації
+ */
+
+export function useGetDocumentationData<TData = Awaited<ReturnType<typeof getDocumentationData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentationData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDocumentationDataQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Валідація поточного стану
+ */
+export const validateCurrentState1 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<boolean>(
+      {url: `/v1/order-wizard/stage2/substep4/validate/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getValidateCurrentState1QueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep4/validate/${sessionId}`] as const;
+    }
+
+    
+export const getValidateCurrentState1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState1>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateCurrentState1QueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateCurrentState1>>> = ({ signal }) => validateCurrentState1(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateCurrentState1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof validateCurrentState1>>>
+export type ValidateCurrentState1InfiniteQueryError = ErrorResponse
+
+
+export function useValidateCurrentState1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState1>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateCurrentState1>>,
+          TError,
+          Awaited<ReturnType<typeof validateCurrentState1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCurrentState1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState1>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateCurrentState1>>,
+          TError,
+          Awaited<ReturnType<typeof validateCurrentState1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCurrentState1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState1>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Валідація поточного стану
+ */
+
+export function useValidateCurrentState1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof validateCurrentState1>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateCurrentState1InfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getValidateCurrentState1QueryOptions = <TData = Awaited<ReturnType<typeof validateCurrentState1>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateCurrentState1QueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateCurrentState1>>> = ({ signal }) => validateCurrentState1(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateCurrentState1QueryResult = NonNullable<Awaited<ReturnType<typeof validateCurrentState1>>>
+export type ValidateCurrentState1QueryError = ErrorResponse
+
+
+export function useValidateCurrentState1<TData = Awaited<ReturnType<typeof validateCurrentState1>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateCurrentState1>>,
+          TError,
+          Awaited<ReturnType<typeof validateCurrentState1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCurrentState1<TData = Awaited<ReturnType<typeof validateCurrentState1>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateCurrentState1>>,
+          TError,
+          Awaited<ReturnType<typeof validateCurrentState1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateCurrentState1<TData = Awaited<ReturnType<typeof validateCurrentState1>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Валідація поточного стану
+ */
+
+export function useValidateCurrentState1<TData = Awaited<ReturnType<typeof validateCurrentState1>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateCurrentState1QueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Детальна валідація з результатом
+ */
+export const validateDetailed = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/validate-detailed/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getValidateDetailedQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep4/validate-detailed/${sessionId}`] as const;
+    }
+
+    
+export const getValidateDetailedInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof validateDetailed>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateDetailedQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateDetailed>>> = ({ signal }) => validateDetailed(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateDetailedInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof validateDetailed>>>
+export type ValidateDetailedInfiniteQueryError = ErrorResponse
+
+
+export function useValidateDetailedInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateDetailed>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateDetailed>>,
+          TError,
+          Awaited<ReturnType<typeof validateDetailed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateDetailedInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateDetailed>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateDetailed>>,
+          TError,
+          Awaited<ReturnType<typeof validateDetailed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateDetailedInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateDetailed>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Детальна валідація з результатом
+ */
+
+export function useValidateDetailedInfinite<TData = InfiniteData<Awaited<ReturnType<typeof validateDetailed>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateDetailedInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getValidateDetailedQueryOptions = <TData = Awaited<ReturnType<typeof validateDetailed>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidateDetailedQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validateDetailed>>> = ({ signal }) => validateDetailed(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ValidateDetailedQueryResult = NonNullable<Awaited<ReturnType<typeof validateDetailed>>>
+export type ValidateDetailedQueryError = ErrorResponse
+
+
+export function useValidateDetailed<TData = Awaited<ReturnType<typeof validateDetailed>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateDetailed>>,
+          TError,
+          Awaited<ReturnType<typeof validateDetailed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateDetailed<TData = Awaited<ReturnType<typeof validateDetailed>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof validateDetailed>>,
+          TError,
+          Awaited<ReturnType<typeof validateDetailed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useValidateDetailed<TData = Awaited<ReturnType<typeof validateDetailed>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Детальна валідація з результатом
+ */
+
+export function useValidateDetailed<TData = Awaited<ReturnType<typeof validateDetailed>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof validateDetailed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getValidateDetailedQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання поточного стану підетапу
+ */
+export const getCurrentState1 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/state/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetCurrentState1QueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep4/state/${sessionId}`] as const;
+    }
+
+    
+export const getGetCurrentState1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState1>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentState1QueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentState1>>> = ({ signal }) => getCurrentState1(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentState1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentState1>>>
+export type GetCurrentState1InfiniteQueryError = ErrorResponse
+
+
+export function useGetCurrentState1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState1>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState1>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState1>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState1>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState1>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного стану підетапу
+ */
+
+export function useGetCurrentState1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState1>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentState1InfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetCurrentState1QueryOptions = <TData = Awaited<ReturnType<typeof getCurrentState1>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentState1QueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentState1>>> = ({ signal }) => getCurrentState1(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentState1QueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentState1>>>
+export type GetCurrentState1QueryError = ErrorResponse
+
+
+export function useGetCurrentState1<TData = Awaited<ReturnType<typeof getCurrentState1>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState1>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState1<TData = Awaited<ReturnType<typeof getCurrentState1>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState1>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState1>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState1<TData = Awaited<ReturnType<typeof getCurrentState1>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного стану підетапу
+ */
+
+export function useGetCurrentState1<TData = Awaited<ReturnType<typeof getCurrentState1>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentState1QueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Перевірка існування сесії
+ */
+export const sessionExists = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<boolean>(
+      {url: `/v1/order-wizard/stage2/substep4/session/${sessionId}/exists`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getSessionExistsQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep4/session/${sessionId}/exists`] as const;
+    }
+
+    
+export const getSessionExistsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof sessionExists>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSessionExistsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof sessionExists>>> = ({ signal }) => sessionExists(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SessionExistsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof sessionExists>>>
+export type SessionExistsInfiniteQueryError = ErrorResponse
+
+
+export function useSessionExistsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof sessionExists>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof sessionExists>>,
+          TError,
+          Awaited<ReturnType<typeof sessionExists>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSessionExistsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof sessionExists>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof sessionExists>>,
+          TError,
+          Awaited<ReturnType<typeof sessionExists>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSessionExistsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof sessionExists>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірка існування сесії
+ */
+
+export function useSessionExistsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof sessionExists>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSessionExistsInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getSessionExistsQueryOptions = <TData = Awaited<ReturnType<typeof sessionExists>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSessionExistsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof sessionExists>>> = ({ signal }) => sessionExists(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SessionExistsQueryResult = NonNullable<Awaited<ReturnType<typeof sessionExists>>>
+export type SessionExistsQueryError = ErrorResponse
+
+
+export function useSessionExists<TData = Awaited<ReturnType<typeof sessionExists>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof sessionExists>>,
+          TError,
+          Awaited<ReturnType<typeof sessionExists>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSessionExists<TData = Awaited<ReturnType<typeof sessionExists>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof sessionExists>>,
+          TError,
+          Awaited<ReturnType<typeof sessionExists>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSessionExists<TData = Awaited<ReturnType<typeof sessionExists>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірка існування сесії
+ */
+
+export function useSessionExists<TData = Awaited<ReturnType<typeof sessionExists>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sessionExists>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSessionExistsQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання доступних модифікаторів для категорії
+ */
+export const getAvailableModifiers = (
+    params: GetAvailableModifiersParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceModifierDTO[]>(
+      {url: `/v1/order-wizard/stage2/substep4/modifiers`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getGetAvailableModifiersQueryKey = (params: GetAvailableModifiersParams,) => {
+    return [`/v1/order-wizard/stage2/substep4/modifiers`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetAvailableModifiersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getAvailableModifiers>>>, TError = ErrorResponse>(params: GetAvailableModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableModifiersQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableModifiers>>> = ({ signal }) => getAvailableModifiers(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableModifiersInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableModifiers>>>
+export type GetAvailableModifiersInfiniteQueryError = ErrorResponse
+
+
+export function useGetAvailableModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableModifiers>>>, TError = ErrorResponse>(
+ params: GetAvailableModifiersParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableModifiers>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableModifiers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableModifiers>>>, TError = ErrorResponse>(
+ params: GetAvailableModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableModifiers>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableModifiers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableModifiers>>>, TError = ErrorResponse>(
+ params: GetAvailableModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних модифікаторів для категорії
+ */
+
+export function useGetAvailableModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableModifiers>>>, TError = ErrorResponse>(
+ params: GetAvailableModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableModifiersInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetAvailableModifiersQueryOptions = <TData = Awaited<ReturnType<typeof getAvailableModifiers>>, TError = ErrorResponse>(params: GetAvailableModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableModifiersQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableModifiers>>> = ({ signal }) => getAvailableModifiers(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableModifiersQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableModifiers>>>
+export type GetAvailableModifiersQueryError = ErrorResponse
+
+
+export function useGetAvailableModifiers<TData = Awaited<ReturnType<typeof getAvailableModifiers>>, TError = ErrorResponse>(
+ params: GetAvailableModifiersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableModifiers>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableModifiers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableModifiers<TData = Awaited<ReturnType<typeof getAvailableModifiers>>, TError = ErrorResponse>(
+ params: GetAvailableModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableModifiers>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableModifiers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableModifiers<TData = Awaited<ReturnType<typeof getAvailableModifiers>>, TError = ErrorResponse>(
+ params: GetAvailableModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних модифікаторів для категорії
+ */
+
+export function useGetAvailableModifiers<TData = Awaited<ReturnType<typeof getAvailableModifiers>>, TError = ErrorResponse>(
+ params: GetAvailableModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableModifiersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання рекомендованих модифікаторів
+ */
+export const getRecommendedModifiers = (
+    params: GetRecommendedModifiersParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceModifierDTO[]>(
+      {url: `/v1/order-wizard/stage2/substep4/modifiers/recommended`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getGetRecommendedModifiersQueryKey = (params: GetRecommendedModifiersParams,) => {
+    return [`/v1/order-wizard/stage2/substep4/modifiers/recommended`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetRecommendedModifiersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(params: GetRecommendedModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRecommendedModifiersQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRecommendedModifiers>>> = ({ signal }) => getRecommendedModifiers(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRecommendedModifiersInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getRecommendedModifiers>>>
+export type GetRecommendedModifiersInfiniteQueryError = ErrorResponse
+
+
+export function useGetRecommendedModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(
+ params: GetRecommendedModifiersParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRecommendedModifiers>>,
+          TError,
+          Awaited<ReturnType<typeof getRecommendedModifiers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRecommendedModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(
+ params: GetRecommendedModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRecommendedModifiers>>,
+          TError,
+          Awaited<ReturnType<typeof getRecommendedModifiers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRecommendedModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(
+ params: GetRecommendedModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання рекомендованих модифікаторів
+ */
+
+export function useGetRecommendedModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(
+ params: GetRecommendedModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetRecommendedModifiersInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetRecommendedModifiersQueryOptions = <TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(params: GetRecommendedModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRecommendedModifiersQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRecommendedModifiers>>> = ({ signal }) => getRecommendedModifiers(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRecommendedModifiersQueryResult = NonNullable<Awaited<ReturnType<typeof getRecommendedModifiers>>>
+export type GetRecommendedModifiersQueryError = ErrorResponse
+
+
+export function useGetRecommendedModifiers<TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(
+ params: GetRecommendedModifiersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRecommendedModifiers>>,
+          TError,
+          Awaited<ReturnType<typeof getRecommendedModifiers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRecommendedModifiers<TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(
+ params: GetRecommendedModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRecommendedModifiers>>,
+          TError,
+          Awaited<ReturnType<typeof getRecommendedModifiers>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRecommendedModifiers<TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(
+ params: GetRecommendedModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання рекомендованих модифікаторів
+ */
+
+export function useGetRecommendedModifiers<TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(
+ params: GetRecommendedModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetRecommendedModifiersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання доступних подій для поточного стану
+ */
+export const getAvailableEvents = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetAvailableEvents200Item[]>(
+      {url: `/v1/order-wizard/stage2/substep4/events/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetAvailableEventsQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep4/events/${sessionId}`] as const;
+    }
+
+    
+export const getGetAvailableEventsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getAvailableEvents>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableEventsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableEvents>>> = ({ signal }) => getAvailableEvents(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableEventsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableEvents>>>
+export type GetAvailableEventsInfiniteQueryError = ErrorResponse
+
+
+export function useGetAvailableEventsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableEvents>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableEvents>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableEvents>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableEventsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableEvents>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableEvents>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableEvents>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableEventsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableEvents>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних подій для поточного стану
+ */
+
+export function useGetAvailableEventsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableEvents>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableEventsInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetAvailableEventsQueryOptions = <TData = Awaited<ReturnType<typeof getAvailableEvents>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableEventsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableEvents>>> = ({ signal }) => getAvailableEvents(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableEventsQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableEvents>>>
+export type GetAvailableEventsQueryError = ErrorResponse
+
+
+export function useGetAvailableEvents<TData = Awaited<ReturnType<typeof getAvailableEvents>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableEvents>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableEvents>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableEvents<TData = Awaited<ReturnType<typeof getAvailableEvents>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableEvents>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableEvents>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableEvents<TData = Awaited<ReturnType<typeof getAvailableEvents>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних подій для поточного стану
+ */
+
+export function useGetAvailableEvents<TData = Awaited<ReturnType<typeof getAvailableEvents>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableEvents>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableEventsQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання поточних даних сесії
+ */
+export const getCurrentData = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceDiscountDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/data/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetCurrentDataQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep4/data/${sessionId}`] as const;
+    }
+
+    
+export const getGetCurrentDataInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getCurrentData>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentDataQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentData>>> = ({ signal }) => getCurrentData(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentDataInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentData>>>
+export type GetCurrentDataInfiniteQueryError = ErrorResponse
+
+
+export function useGetCurrentDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentData>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentData>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentData>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentData>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentData>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточних даних сесії
+ */
+
+export function useGetCurrentDataInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentData>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentDataInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetCurrentDataQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentData>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentDataQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentData>>> = ({ signal }) => getCurrentData(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentDataQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentData>>>
+export type GetCurrentDataQueryError = ErrorResponse
+
+
+export function useGetCurrentData<TData = Awaited<ReturnType<typeof getCurrentData>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentData>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentData<TData = Awaited<ReturnType<typeof getCurrentData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentData>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentData<TData = Awaited<ReturnType<typeof getCurrentData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточних даних сесії
+ */
+
+export function useGetCurrentData<TData = Awaited<ReturnType<typeof getCurrentData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentDataQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання доступних типів плям
+ */
+export const getAvailableStainTypes = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<string[]>(
+      {url: `/v1/order-wizard/stage2/substep3/stain-types`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetAvailableStainTypesQueryKey = () => {
+    return [`/v1/order-wizard/stage2/substep3/stain-types`] as const;
+    }
+
+    
+export const getGetAvailableStainTypesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getAvailableStainTypes>>>, TError = ErrorResponse>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableStainTypesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableStainTypes>>> = ({ signal }) => getAvailableStainTypes(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableStainTypesInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableStainTypes>>>
+export type GetAvailableStainTypesInfiniteQueryError = ErrorResponse
+
+
+export function useGetAvailableStainTypesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableStainTypes>>>, TError = ErrorResponse>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableStainTypes>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableStainTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableStainTypesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableStainTypes>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableStainTypes>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableStainTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableStainTypesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableStainTypes>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних типів плям
+ */
+
+export function useGetAvailableStainTypesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableStainTypes>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableStainTypesInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetAvailableStainTypesQueryOptions = <TData = Awaited<ReturnType<typeof getAvailableStainTypes>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableStainTypesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableStainTypes>>> = ({ signal }) => getAvailableStainTypes(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableStainTypesQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableStainTypes>>>
+export type GetAvailableStainTypesQueryError = ErrorResponse
+
+
+export function useGetAvailableStainTypes<TData = Awaited<ReturnType<typeof getAvailableStainTypes>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableStainTypes>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableStainTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableStainTypes<TData = Awaited<ReturnType<typeof getAvailableStainTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableStainTypes>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableStainTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableStainTypes<TData = Awaited<ReturnType<typeof getAvailableStainTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних типів плям
+ */
+
+export function useGetAvailableStainTypes<TData = Awaited<ReturnType<typeof getAvailableStainTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableStainTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableStainTypesQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання доступних типів дефектів
+ */
+export const getAvailableDefectTypes = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<string[]>(
+      {url: `/v1/order-wizard/stage2/substep3/defect-types`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetAvailableDefectTypesQueryKey = () => {
+    return [`/v1/order-wizard/stage2/substep3/defect-types`] as const;
+    }
+
+    
+export const getGetAvailableDefectTypesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getAvailableDefectTypes>>>, TError = ErrorResponse>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableDefectTypesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableDefectTypes>>> = ({ signal }) => getAvailableDefectTypes(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableDefectTypesInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableDefectTypes>>>
+export type GetAvailableDefectTypesInfiniteQueryError = ErrorResponse
+
+
+export function useGetAvailableDefectTypesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableDefectTypes>>>, TError = ErrorResponse>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableDefectTypes>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableDefectTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableDefectTypesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableDefectTypes>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableDefectTypes>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableDefectTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableDefectTypesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableDefectTypes>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних типів дефектів
+ */
+
+export function useGetAvailableDefectTypesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableDefectTypes>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableDefectTypesInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetAvailableDefectTypesQueryOptions = <TData = Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableDefectTypesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableDefectTypes>>> = ({ signal }) => getAvailableDefectTypes(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableDefectTypesQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableDefectTypes>>>
+export type GetAvailableDefectTypesQueryError = ErrorResponse
+
+
+export function useGetAvailableDefectTypes<TData = Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableDefectTypes>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableDefectTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableDefectTypes<TData = Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableDefectTypes>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableDefectTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableDefectTypes<TData = Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних типів дефектів
+ */
+
+export function useGetAvailableDefectTypes<TData = Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableDefectTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableDefectTypesQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримання поточного контексту
+ */
+export const getContext = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<StainsDefectsContext>(
+      {url: `/v1/order-wizard/stage2/substep3/context/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetContextQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep3/context/${sessionId}`] as const;
+    }
+
+    
+export const getGetContextInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getContext>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetContextQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getContext>>> = ({ signal }) => getContext(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetContextInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getContext>>>
+export type GetContextInfiniteQueryError = ErrorResponse
+
+
+export function useGetContextInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getContext>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getContext>>,
+          TError,
+          Awaited<ReturnType<typeof getContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetContextInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getContext>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getContext>>,
+          TError,
+          Awaited<ReturnType<typeof getContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetContextInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getContext>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного контексту
+ */
+
+export function useGetContextInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getContext>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetContextInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetContextQueryOptions = <TData = Awaited<ReturnType<typeof getContext>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetContextQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getContext>>> = ({ signal }) => getContext(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetContextQueryResult = NonNullable<Awaited<ReturnType<typeof getContext>>>
+export type GetContextQueryError = ErrorResponse
+
+
+export function useGetContext<TData = Awaited<ReturnType<typeof getContext>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getContext>>,
+          TError,
+          Awaited<ReturnType<typeof getContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetContext<TData = Awaited<ReturnType<typeof getContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getContext>>,
+          TError,
+          Awaited<ReturnType<typeof getContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetContext<TData = Awaited<ReturnType<typeof getContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного контексту
+ */
+
+export function useGetContext<TData = Awaited<ReturnType<typeof getContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetContextQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує список доступних матеріалів
+ */
+export const getAvailableMaterials = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<string[]>(
+      {url: `/v1/order-wizard/stage2/substep2/materials/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetAvailableMaterialsQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep2/materials/${sessionId}`] as const;
+    }
+
+    
+export const getGetAvailableMaterialsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getAvailableMaterials>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableMaterialsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableMaterials>>> = ({ signal }) => getAvailableMaterials(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableMaterialsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableMaterials>>>
+export type GetAvailableMaterialsInfiniteQueryError = ErrorResponse
+
+
+export function useGetAvailableMaterialsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableMaterials>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableMaterials>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableMaterials>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableMaterialsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableMaterials>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableMaterials>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableMaterials>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableMaterialsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableMaterials>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує список доступних матеріалів
+ */
+
+export function useGetAvailableMaterialsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getAvailableMaterials>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableMaterialsInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetAvailableMaterialsQueryOptions = <TData = Awaited<ReturnType<typeof getAvailableMaterials>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAvailableMaterialsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableMaterials>>> = ({ signal }) => getAvailableMaterials(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAvailableMaterialsQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableMaterials>>>
+export type GetAvailableMaterialsQueryError = ErrorResponse
+
+
+export function useGetAvailableMaterials<TData = Awaited<ReturnType<typeof getAvailableMaterials>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableMaterials>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableMaterials>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableMaterials<TData = Awaited<ReturnType<typeof getAvailableMaterials>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAvailableMaterials>>,
+          TError,
+          Awaited<ReturnType<typeof getAvailableMaterials>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAvailableMaterials<TData = Awaited<ReturnType<typeof getAvailableMaterials>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує список доступних матеріалів
+ */
+
+export function useGetAvailableMaterials<TData = Awaited<ReturnType<typeof getAvailableMaterials>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableMaterials>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAvailableMaterialsQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує поточний стан підетапу 2
+ */
+export const getCurrentCharacteristics = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemCharacteristicsDTO>(
+      {url: `/v1/order-wizard/stage2/substep2/current-state/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetCurrentCharacteristicsQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep2/current-state/${sessionId}`] as const;
+    }
+
+    
+export const getGetCurrentCharacteristicsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getCurrentCharacteristics>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentCharacteristicsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentCharacteristics>>> = ({ signal }) => getCurrentCharacteristics(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentCharacteristicsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentCharacteristics>>>
+export type GetCurrentCharacteristicsInfiniteQueryError = ErrorResponse
+
+
+export function useGetCurrentCharacteristicsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentCharacteristics>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentCharacteristics>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentCharacteristics>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentCharacteristicsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentCharacteristics>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentCharacteristics>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentCharacteristics>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentCharacteristicsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentCharacteristics>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан підетапу 2
+ */
+
+export function useGetCurrentCharacteristicsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentCharacteristics>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentCharacteristicsInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetCurrentCharacteristicsQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentCharacteristicsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentCharacteristics>>> = ({ signal }) => getCurrentCharacteristics(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentCharacteristicsQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentCharacteristics>>>
+export type GetCurrentCharacteristicsQueryError = ErrorResponse
+
+
+export function useGetCurrentCharacteristics<TData = Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentCharacteristics>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentCharacteristics>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentCharacteristics<TData = Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentCharacteristics>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentCharacteristics>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentCharacteristics<TData = Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан підетапу 2
+ */
+
+export function useGetCurrentCharacteristics<TData = Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentCharacteristics>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentCharacteristicsQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує поточний стан підетапу 1
+ */
+export const getSubstep1Status = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep1/${sessionId}/status`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetSubstep1StatusQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep1/${sessionId}/status`] as const;
+    }
+
+    
+export const getGetSubstep1StatusInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getSubstep1Status>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSubstep1StatusQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSubstep1Status>>> = ({ signal }) => getSubstep1Status(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSubstep1StatusInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getSubstep1Status>>>
+export type GetSubstep1StatusInfiniteQueryError = ErrorResponse
+
+
+export function useGetSubstep1StatusInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSubstep1Status>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSubstep1Status>>,
+          TError,
+          Awaited<ReturnType<typeof getSubstep1Status>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSubstep1StatusInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSubstep1Status>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSubstep1Status>>,
+          TError,
+          Awaited<ReturnType<typeof getSubstep1Status>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSubstep1StatusInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSubstep1Status>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан підетапу 1
+ */
+
+export function useGetSubstep1StatusInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSubstep1Status>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSubstep1StatusInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetSubstep1StatusQueryOptions = <TData = Awaited<ReturnType<typeof getSubstep1Status>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSubstep1StatusQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSubstep1Status>>> = ({ signal }) => getSubstep1Status(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSubstep1StatusQueryResult = NonNullable<Awaited<ReturnType<typeof getSubstep1Status>>>
+export type GetSubstep1StatusQueryError = ErrorResponse
+
+
+export function useGetSubstep1Status<TData = Awaited<ReturnType<typeof getSubstep1Status>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSubstep1Status>>,
+          TError,
+          Awaited<ReturnType<typeof getSubstep1Status>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSubstep1Status<TData = Awaited<ReturnType<typeof getSubstep1Status>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSubstep1Status>>,
+          TError,
+          Awaited<ReturnType<typeof getSubstep1Status>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSubstep1Status<TData = Awaited<ReturnType<typeof getSubstep1Status>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан підетапу 1
+ */
+
+export function useGetSubstep1Status<TData = Awaited<ReturnType<typeof getSubstep1Status>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubstep1Status>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSubstep1StatusQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує список доступних категорій послуг
+ */
+export const getServiceCategories = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ServiceCategoryDTO[]>(
+      {url: `/v1/order-wizard/stage2/substep1/service-categories`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetServiceCategoriesQueryKey = () => {
+    return [`/v1/order-wizard/stage2/substep1/service-categories`] as const;
+    }
+
+    
+export const getGetServiceCategoriesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getServiceCategories>>>, TError = ErrorResponse>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetServiceCategoriesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceCategories>>> = ({ signal }) => getServiceCategories(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetServiceCategoriesInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceCategories>>>
+export type GetServiceCategoriesInfiniteQueryError = ErrorResponse
+
+
+export function useGetServiceCategoriesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getServiceCategories>>>, TError = ErrorResponse>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getServiceCategories>>,
+          TError,
+          Awaited<ReturnType<typeof getServiceCategories>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetServiceCategoriesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getServiceCategories>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getServiceCategories>>,
+          TError,
+          Awaited<ReturnType<typeof getServiceCategories>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetServiceCategoriesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getServiceCategories>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує список доступних категорій послуг
+ */
+
+export function useGetServiceCategoriesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getServiceCategories>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetServiceCategoriesInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetServiceCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof getServiceCategories>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetServiceCategoriesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceCategories>>> = ({ signal }) => getServiceCategories(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetServiceCategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceCategories>>>
+export type GetServiceCategoriesQueryError = ErrorResponse
+
+
+export function useGetServiceCategories<TData = Awaited<ReturnType<typeof getServiceCategories>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getServiceCategories>>,
+          TError,
+          Awaited<ReturnType<typeof getServiceCategories>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetServiceCategories<TData = Awaited<ReturnType<typeof getServiceCategories>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getServiceCategories>>,
+          TError,
+          Awaited<ReturnType<typeof getServiceCategories>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetServiceCategories<TData = Awaited<ReturnType<typeof getServiceCategories>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує список доступних категорій послуг
+ */
+
+export function useGetServiceCategories<TData = Awaited<ReturnType<typeof getServiceCategories>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceCategories>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetServiceCategoriesQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує список предметів для категорії
+ */
+export const getItemsForCategory = (
+    categoryId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceListItemDTO[]>(
+      {url: `/v1/order-wizard/stage2/substep1/categories/${categoryId}/items`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetItemsForCategoryQueryKey = (categoryId: string,) => {
+    return [`/v1/order-wizard/stage2/substep1/categories/${categoryId}/items`] as const;
+    }
+
+    
+export const getGetItemsForCategoryInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getItemsForCategory>>>, TError = ErrorResponse>(categoryId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetItemsForCategoryQueryKey(categoryId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getItemsForCategory>>> = ({ signal }) => getItemsForCategory(categoryId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(categoryId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetItemsForCategoryInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getItemsForCategory>>>
+export type GetItemsForCategoryInfiniteQueryError = ErrorResponse
+
+
+export function useGetItemsForCategoryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getItemsForCategory>>>, TError = ErrorResponse>(
+ categoryId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getItemsForCategory>>,
+          TError,
+          Awaited<ReturnType<typeof getItemsForCategory>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetItemsForCategoryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getItemsForCategory>>>, TError = ErrorResponse>(
+ categoryId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getItemsForCategory>>,
+          TError,
+          Awaited<ReturnType<typeof getItemsForCategory>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetItemsForCategoryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getItemsForCategory>>>, TError = ErrorResponse>(
+ categoryId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує список предметів для категорії
+ */
+
+export function useGetItemsForCategoryInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getItemsForCategory>>>, TError = ErrorResponse>(
+ categoryId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetItemsForCategoryInfiniteQueryOptions(categoryId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetItemsForCategoryQueryOptions = <TData = Awaited<ReturnType<typeof getItemsForCategory>>, TError = ErrorResponse>(categoryId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetItemsForCategoryQueryKey(categoryId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getItemsForCategory>>> = ({ signal }) => getItemsForCategory(categoryId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(categoryId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetItemsForCategoryQueryResult = NonNullable<Awaited<ReturnType<typeof getItemsForCategory>>>
+export type GetItemsForCategoryQueryError = ErrorResponse
+
+
+export function useGetItemsForCategory<TData = Awaited<ReturnType<typeof getItemsForCategory>>, TError = ErrorResponse>(
+ categoryId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getItemsForCategory>>,
+          TError,
+          Awaited<ReturnType<typeof getItemsForCategory>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetItemsForCategory<TData = Awaited<ReturnType<typeof getItemsForCategory>>, TError = ErrorResponse>(
+ categoryId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getItemsForCategory>>,
+          TError,
+          Awaited<ReturnType<typeof getItemsForCategory>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetItemsForCategory<TData = Awaited<ReturnType<typeof getItemsForCategory>>, TError = ErrorResponse>(
+ categoryId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує список предметів для категорії
+ */
+
+export function useGetItemsForCategory<TData = Awaited<ReturnType<typeof getItemsForCategory>>, TError = ErrorResponse>(
+ categoryId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsForCategory>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetItemsForCategoryQueryOptions(categoryId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує поточний стан сесії
+ */
+export const getCurrentState2 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetCurrentState2200>(
+      {url: `/v1/order-wizard/stage2/state/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetCurrentState2QueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/state/${sessionId}`] as const;
+    }
+
+    
+export const getGetCurrentState2InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState2>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentState2QueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentState2>>> = ({ signal }) => getCurrentState2(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentState2InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentState2>>>
+export type GetCurrentState2InfiniteQueryError = ErrorResponse
+
+
+export function useGetCurrentState2Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState2>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState2>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState2>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState2Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState2>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState2>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState2>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState2Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState2>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан сесії
+ */
+
+export function useGetCurrentState2Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentState2>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentState2InfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetCurrentState2QueryOptions = <TData = Awaited<ReturnType<typeof getCurrentState2>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentState2QueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentState2>>> = ({ signal }) => getCurrentState2(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentState2QueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentState2>>>
+export type GetCurrentState2QueryError = ErrorResponse
+
+
+export function useGetCurrentState2<TData = Awaited<ReturnType<typeof getCurrentState2>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState2>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState2>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState2<TData = Awaited<ReturnType<typeof getCurrentState2>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentState2>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentState2>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentState2<TData = Awaited<ReturnType<typeof getCurrentState2>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан сесії
+ */
+
+export function useGetCurrentState2<TData = Awaited<ReturnType<typeof getCurrentState2>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentState2>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentState2QueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує кількість активних сесій
+ */
+export const getActiveSessionCount = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<number>(
+      {url: `/v1/order-wizard/stage2/sessions/count`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetActiveSessionCountQueryKey = () => {
+    return [`/v1/order-wizard/stage2/sessions/count`] as const;
+    }
+
+    
+export const getGetActiveSessionCountInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getActiveSessionCount>>>, TError = ErrorResponse>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetActiveSessionCountQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getActiveSessionCount>>> = ({ signal }) => getActiveSessionCount(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetActiveSessionCountInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getActiveSessionCount>>>
+export type GetActiveSessionCountInfiniteQueryError = ErrorResponse
+
+
+export function useGetActiveSessionCountInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getActiveSessionCount>>>, TError = ErrorResponse>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getActiveSessionCount>>,
+          TError,
+          Awaited<ReturnType<typeof getActiveSessionCount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetActiveSessionCountInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getActiveSessionCount>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getActiveSessionCount>>,
+          TError,
+          Awaited<ReturnType<typeof getActiveSessionCount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetActiveSessionCountInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getActiveSessionCount>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує кількість активних сесій
+ */
+
+export function useGetActiveSessionCountInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getActiveSessionCount>>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetActiveSessionCountInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetActiveSessionCountQueryOptions = <TData = Awaited<ReturnType<typeof getActiveSessionCount>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetActiveSessionCountQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getActiveSessionCount>>> = ({ signal }) => getActiveSessionCount(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetActiveSessionCountQueryResult = NonNullable<Awaited<ReturnType<typeof getActiveSessionCount>>>
+export type GetActiveSessionCountQueryError = ErrorResponse
+
+
+export function useGetActiveSessionCount<TData = Awaited<ReturnType<typeof getActiveSessionCount>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getActiveSessionCount>>,
+          TError,
+          Awaited<ReturnType<typeof getActiveSessionCount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetActiveSessionCount<TData = Awaited<ReturnType<typeof getActiveSessionCount>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getActiveSessionCount>>,
+          TError,
+          Awaited<ReturnType<typeof getActiveSessionCount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetActiveSessionCount<TData = Awaited<ReturnType<typeof getActiveSessionCount>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує кількість активних сесій
+ */
+
+export function useGetActiveSessionCount<TData = Awaited<ReturnType<typeof getActiveSessionCount>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getActiveSessionCount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetActiveSessionCountQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Перевіряє готовність до переходу на наступний етап
+ */
+export const checkReadinessToProceed = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<boolean>(
+      {url: `/v1/order-wizard/stage2/ready/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getCheckReadinessToProceedQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/ready/${sessionId}`] as const;
+    }
+
+    
+export const getCheckReadinessToProceedInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof checkReadinessToProceed>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCheckReadinessToProceedQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof checkReadinessToProceed>>> = ({ signal }) => checkReadinessToProceed(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CheckReadinessToProceedInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof checkReadinessToProceed>>>
+export type CheckReadinessToProceedInfiniteQueryError = ErrorResponse
+
+
+export function useCheckReadinessToProceedInfinite<TData = InfiniteData<Awaited<ReturnType<typeof checkReadinessToProceed>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof checkReadinessToProceed>>,
+          TError,
+          Awaited<ReturnType<typeof checkReadinessToProceed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCheckReadinessToProceedInfinite<TData = InfiniteData<Awaited<ReturnType<typeof checkReadinessToProceed>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof checkReadinessToProceed>>,
+          TError,
+          Awaited<ReturnType<typeof checkReadinessToProceed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCheckReadinessToProceedInfinite<TData = InfiniteData<Awaited<ReturnType<typeof checkReadinessToProceed>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевіряє готовність до переходу на наступний етап
+ */
+
+export function useCheckReadinessToProceedInfinite<TData = InfiniteData<Awaited<ReturnType<typeof checkReadinessToProceed>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCheckReadinessToProceedInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getCheckReadinessToProceedQueryOptions = <TData = Awaited<ReturnType<typeof checkReadinessToProceed>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCheckReadinessToProceedQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof checkReadinessToProceed>>> = ({ signal }) => checkReadinessToProceed(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CheckReadinessToProceedQueryResult = NonNullable<Awaited<ReturnType<typeof checkReadinessToProceed>>>
+export type CheckReadinessToProceedQueryError = ErrorResponse
+
+
+export function useCheckReadinessToProceed<TData = Awaited<ReturnType<typeof checkReadinessToProceed>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof checkReadinessToProceed>>,
+          TError,
+          Awaited<ReturnType<typeof checkReadinessToProceed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCheckReadinessToProceed<TData = Awaited<ReturnType<typeof checkReadinessToProceed>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof checkReadinessToProceed>>,
+          TError,
+          Awaited<ReturnType<typeof checkReadinessToProceed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCheckReadinessToProceed<TData = Awaited<ReturnType<typeof checkReadinessToProceed>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевіряє готовність до переходу на наступний етап
+ */
+
+export function useCheckReadinessToProceed<TData = Awaited<ReturnType<typeof checkReadinessToProceed>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkReadinessToProceed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCheckReadinessToProceedQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує поточний стан менеджера предметів
+ */
+export const getCurrentManager = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ItemManagerDTO>(
+      {url: `/v1/order-wizard/stage2/manager/${sessionId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetCurrentManagerQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/manager/${sessionId}`] as const;
+    }
+
+    
+export const getGetCurrentManagerInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getCurrentManager>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentManagerQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentManager>>> = ({ signal }) => getCurrentManager(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentManagerInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentManager>>>
+export type GetCurrentManagerInfiniteQueryError = ErrorResponse
+
+
+export function useGetCurrentManagerInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentManager>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentManager>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentManager>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentManagerInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentManager>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentManager>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentManager>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentManagerInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentManager>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан менеджера предметів
+ */
+
+export function useGetCurrentManagerInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getCurrentManager>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentManagerInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetCurrentManagerQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentManager>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentManagerQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentManager>>> = ({ signal }) => getCurrentManager(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentManagerQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentManager>>>
+export type GetCurrentManagerQueryError = ErrorResponse
+
+
+export function useGetCurrentManager<TData = Awaited<ReturnType<typeof getCurrentManager>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentManager>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentManager>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentManager<TData = Awaited<ReturnType<typeof getCurrentManager>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentManager>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentManager>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentManager<TData = Awaited<ReturnType<typeof getCurrentManager>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан менеджера предметів
+ */
+
+export function useGetCurrentManager<TData = Awaited<ReturnType<typeof getCurrentManager>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentManager>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentManagerQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує поточний стан форми
+ */
+export const getNewClientFormState = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetNewClientFormState200>(
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/state`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetNewClientFormStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/new-client/session/${sessionId}/state`] as const;
+    }
+
+    
+export const getGetNewClientFormStateInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getNewClientFormState>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNewClientFormStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNewClientFormState>>> = ({ signal }) => getNewClientFormState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNewClientFormStateInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getNewClientFormState>>>
+export type GetNewClientFormStateInfiniteQueryError = ErrorResponse
+
+
+export function useGetNewClientFormStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNewClientFormState>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNewClientFormState>>,
+          TError,
+          Awaited<ReturnType<typeof getNewClientFormState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNewClientFormStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNewClientFormState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNewClientFormState>>,
+          TError,
+          Awaited<ReturnType<typeof getNewClientFormState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNewClientFormStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNewClientFormState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан форми
+ */
+
+export function useGetNewClientFormStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getNewClientFormState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNewClientFormStateInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetNewClientFormStateQueryOptions = <TData = Awaited<ReturnType<typeof getNewClientFormState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNewClientFormStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNewClientFormState>>> = ({ signal }) => getNewClientFormState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNewClientFormStateQueryResult = NonNullable<Awaited<ReturnType<typeof getNewClientFormState>>>
+export type GetNewClientFormStateQueryError = ErrorResponse
+
+
+export function useGetNewClientFormState<TData = Awaited<ReturnType<typeof getNewClientFormState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNewClientFormState>>,
+          TError,
+          Awaited<ReturnType<typeof getNewClientFormState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNewClientFormState<TData = Awaited<ReturnType<typeof getNewClientFormState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNewClientFormState>>,
+          TError,
+          Awaited<ReturnType<typeof getNewClientFormState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNewClientFormState<TData = Awaited<ReturnType<typeof getNewClientFormState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан форми
+ */
+
+export function useGetNewClientFormState<TData = Awaited<ReturnType<typeof getNewClientFormState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNewClientFormState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNewClientFormStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує поточний стан пошуку
+ */
+export const getClientSearchState = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetClientSearchState200>(
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/state`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetClientSearchStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/client-search/session/${sessionId}/state`] as const;
+    }
+
+    
+export const getGetClientSearchStateInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getClientSearchState>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetClientSearchStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getClientSearchState>>> = ({ signal }) => getClientSearchState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetClientSearchStateInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getClientSearchState>>>
+export type GetClientSearchStateInfiniteQueryError = ErrorResponse
+
+
+export function useGetClientSearchStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getClientSearchState>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getClientSearchState>>,
+          TError,
+          Awaited<ReturnType<typeof getClientSearchState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetClientSearchStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getClientSearchState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getClientSearchState>>,
+          TError,
+          Awaited<ReturnType<typeof getClientSearchState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetClientSearchStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getClientSearchState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан пошуку
+ */
+
+export function useGetClientSearchStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getClientSearchState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetClientSearchStateInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetClientSearchStateQueryOptions = <TData = Awaited<ReturnType<typeof getClientSearchState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetClientSearchStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getClientSearchState>>> = ({ signal }) => getClientSearchState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetClientSearchStateQueryResult = NonNullable<Awaited<ReturnType<typeof getClientSearchState>>>
+export type GetClientSearchStateQueryError = ErrorResponse
+
+
+export function useGetClientSearchState<TData = Awaited<ReturnType<typeof getClientSearchState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getClientSearchState>>,
+          TError,
+          Awaited<ReturnType<typeof getClientSearchState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetClientSearchState<TData = Awaited<ReturnType<typeof getClientSearchState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getClientSearchState>>,
+          TError,
+          Awaited<ReturnType<typeof getClientSearchState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetClientSearchState<TData = Awaited<ReturnType<typeof getClientSearchState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан пошуку
+ */
+
+export function useGetClientSearchState<TData = Awaited<ReturnType<typeof getClientSearchState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getClientSearchState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetClientSearchStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує обраного клієнта
+ */
+export const getSelectedClient = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ClientResponse>(
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/selected-client`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetSelectedClientQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/client-search/session/${sessionId}/selected-client`] as const;
+    }
+
+    
+export const getGetSelectedClientInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getSelectedClient>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSelectedClientQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSelectedClient>>> = ({ signal }) => getSelectedClient(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSelectedClientInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getSelectedClient>>>
+export type GetSelectedClientInfiniteQueryError = ErrorResponse
+
+
+export function useGetSelectedClientInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSelectedClient>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSelectedClient>>,
+          TError,
+          Awaited<ReturnType<typeof getSelectedClient>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSelectedClientInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSelectedClient>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSelectedClient>>,
+          TError,
+          Awaited<ReturnType<typeof getSelectedClient>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSelectedClientInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSelectedClient>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує обраного клієнта
+ */
+
+export function useGetSelectedClientInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getSelectedClient>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSelectedClientInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetSelectedClientQueryOptions = <TData = Awaited<ReturnType<typeof getSelectedClient>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSelectedClientQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSelectedClient>>> = ({ signal }) => getSelectedClient(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSelectedClientQueryResult = NonNullable<Awaited<ReturnType<typeof getSelectedClient>>>
+export type GetSelectedClientQueryError = ErrorResponse
+
+
+export function useGetSelectedClient<TData = Awaited<ReturnType<typeof getSelectedClient>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSelectedClient>>,
+          TError,
+          Awaited<ReturnType<typeof getSelectedClient>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSelectedClient<TData = Awaited<ReturnType<typeof getSelectedClient>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSelectedClient>>,
+          TError,
+          Awaited<ReturnType<typeof getSelectedClient>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSelectedClient<TData = Awaited<ReturnType<typeof getSelectedClient>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує обраного клієнта
+ */
+
+export function useGetSelectedClient<TData = Awaited<ReturnType<typeof getSelectedClient>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSelectedClient>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSelectedClientQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Отримує поточний стан базової інформації
+ */
+export const getBasicOrderInfoState = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GetBasicOrderInfoState200>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/state`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetBasicOrderInfoStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/basic-order/session/${sessionId}/state`] as const;
+    }
+
+    
+export const getGetBasicOrderInfoStateInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getBasicOrderInfoState>>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBasicOrderInfoStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBasicOrderInfoState>>> = ({ signal }) => getBasicOrderInfoState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetBasicOrderInfoStateInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getBasicOrderInfoState>>>
+export type GetBasicOrderInfoStateInfiniteQueryError = ErrorResponse
+
+
+export function useGetBasicOrderInfoStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBasicOrderInfoState>>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBasicOrderInfoState>>,
+          TError,
+          Awaited<ReturnType<typeof getBasicOrderInfoState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBasicOrderInfoStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBasicOrderInfoState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBasicOrderInfoState>>,
+          TError,
+          Awaited<ReturnType<typeof getBasicOrderInfoState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBasicOrderInfoStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBasicOrderInfoState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан базової інформації
+ */
+
+export function useGetBasicOrderInfoStateInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getBasicOrderInfoState>>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetBasicOrderInfoStateInfiniteQueryOptions(sessionId,options)
+
+  const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetBasicOrderInfoStateQueryOptions = <TData = Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBasicOrderInfoStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBasicOrderInfoState>>> = ({ signal }) => getBasicOrderInfoState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId),  staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetBasicOrderInfoStateQueryResult = NonNullable<Awaited<ReturnType<typeof getBasicOrderInfoState>>>
+export type GetBasicOrderInfoStateQueryError = ErrorResponse
+
+
+export function useGetBasicOrderInfoState<TData = Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBasicOrderInfoState>>,
+          TError,
+          Awaited<ReturnType<typeof getBasicOrderInfoState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBasicOrderInfoState<TData = Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBasicOrderInfoState>>,
+          TError,
+          Awaited<ReturnType<typeof getBasicOrderInfoState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBasicOrderInfoState<TData = Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан базової інформації
+ */
+
+export function useGetBasicOrderInfoState<TData = Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBasicOrderInfoState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetBasicOrderInfoStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримати рекомендовану одиницю виміру для предмета
  */
@@ -8054,13 +19953,13 @@ export function useDownloadPdfReceipt<TData = Awaited<ReturnType<typeof download
  * Генерує унікальний номер квитанції для нового замовлення
  * @summary Генерувати номер квитанції
  */
-export const generateReceiptNumber = (
-    params?: GenerateReceiptNumberParams,
+export const generateReceiptNumber1 = (
+    params?: GenerateReceiptNumber1Params,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
       
       
-      return orvalFetcher<GenerateReceiptNumber200>(
+      return orvalFetcher<GenerateReceiptNumber1200>(
       {url: `/receipts/generate-number`, method: 'GET',
         params, signal
     },
@@ -8068,67 +19967,67 @@ export const generateReceiptNumber = (
     }
   
 
-export const getGenerateReceiptNumberQueryKey = (params?: GenerateReceiptNumberParams,) => {
+export const getGenerateReceiptNumber1QueryKey = (params?: GenerateReceiptNumber1Params,) => {
     return [`/receipts/generate-number`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGenerateReceiptNumberInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber>>>, TError = ErrorResponse | GenerateReceiptNumber500>(params?: GenerateReceiptNumberParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGenerateReceiptNumber1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber1>>>, TError = ErrorResponse | GenerateReceiptNumber1500>(params?: GenerateReceiptNumber1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGenerateReceiptNumberQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGenerateReceiptNumber1QueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof generateReceiptNumber>>> = ({ signal }) => generateReceiptNumber(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof generateReceiptNumber1>>> = ({ signal }) => generateReceiptNumber1(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GenerateReceiptNumberInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof generateReceiptNumber>>>
-export type GenerateReceiptNumberInfiniteQueryError = ErrorResponse | GenerateReceiptNumber500
+export type GenerateReceiptNumber1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof generateReceiptNumber1>>>
+export type GenerateReceiptNumber1InfiniteQueryError = ErrorResponse | GenerateReceiptNumber1500
 
 
-export function useGenerateReceiptNumberInfinite<TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber>>>, TError = ErrorResponse | GenerateReceiptNumber500>(
- params: undefined |  GenerateReceiptNumberParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>> & Pick<
+export function useGenerateReceiptNumber1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber1>>>, TError = ErrorResponse | GenerateReceiptNumber1500>(
+ params: undefined |  GenerateReceiptNumber1Params, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof generateReceiptNumber>>,
+          Awaited<ReturnType<typeof generateReceiptNumber1>>,
           TError,
-          Awaited<ReturnType<typeof generateReceiptNumber>>
+          Awaited<ReturnType<typeof generateReceiptNumber1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGenerateReceiptNumberInfinite<TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber>>>, TError = ErrorResponse | GenerateReceiptNumber500>(
- params?: GenerateReceiptNumberParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>> & Pick<
+export function useGenerateReceiptNumber1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber1>>>, TError = ErrorResponse | GenerateReceiptNumber1500>(
+ params?: GenerateReceiptNumber1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof generateReceiptNumber>>,
+          Awaited<ReturnType<typeof generateReceiptNumber1>>,
           TError,
-          Awaited<ReturnType<typeof generateReceiptNumber>>
+          Awaited<ReturnType<typeof generateReceiptNumber1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGenerateReceiptNumberInfinite<TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber>>>, TError = ErrorResponse | GenerateReceiptNumber500>(
- params?: GenerateReceiptNumberParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGenerateReceiptNumber1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber1>>>, TError = ErrorResponse | GenerateReceiptNumber1500>(
+ params?: GenerateReceiptNumber1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Генерувати номер квитанції
  */
 
-export function useGenerateReceiptNumberInfinite<TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber>>>, TError = ErrorResponse | GenerateReceiptNumber500>(
- params?: GenerateReceiptNumberParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGenerateReceiptNumber1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof generateReceiptNumber1>>>, TError = ErrorResponse | GenerateReceiptNumber1500>(
+ params?: GenerateReceiptNumber1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGenerateReceiptNumberInfiniteQueryOptions(params,options)
+  const queryOptions = getGenerateReceiptNumber1InfiniteQueryOptions(params,options)
 
   const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -8139,62 +20038,62 @@ export function useGenerateReceiptNumberInfinite<TData = InfiniteData<Awaited<Re
 
 
 
-export const getGenerateReceiptNumberQueryOptions = <TData = Awaited<ReturnType<typeof generateReceiptNumber>>, TError = ErrorResponse | GenerateReceiptNumber500>(params?: GenerateReceiptNumberParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGenerateReceiptNumber1QueryOptions = <TData = Awaited<ReturnType<typeof generateReceiptNumber1>>, TError = ErrorResponse | GenerateReceiptNumber1500>(params?: GenerateReceiptNumber1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGenerateReceiptNumberQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGenerateReceiptNumber1QueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof generateReceiptNumber>>> = ({ signal }) => generateReceiptNumber(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof generateReceiptNumber1>>> = ({ signal }) => generateReceiptNumber1(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GenerateReceiptNumberQueryResult = NonNullable<Awaited<ReturnType<typeof generateReceiptNumber>>>
-export type GenerateReceiptNumberQueryError = ErrorResponse | GenerateReceiptNumber500
+export type GenerateReceiptNumber1QueryResult = NonNullable<Awaited<ReturnType<typeof generateReceiptNumber1>>>
+export type GenerateReceiptNumber1QueryError = ErrorResponse | GenerateReceiptNumber1500
 
 
-export function useGenerateReceiptNumber<TData = Awaited<ReturnType<typeof generateReceiptNumber>>, TError = ErrorResponse | GenerateReceiptNumber500>(
- params: undefined |  GenerateReceiptNumberParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>> & Pick<
+export function useGenerateReceiptNumber1<TData = Awaited<ReturnType<typeof generateReceiptNumber1>>, TError = ErrorResponse | GenerateReceiptNumber1500>(
+ params: undefined |  GenerateReceiptNumber1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof generateReceiptNumber>>,
+          Awaited<ReturnType<typeof generateReceiptNumber1>>,
           TError,
-          Awaited<ReturnType<typeof generateReceiptNumber>>
+          Awaited<ReturnType<typeof generateReceiptNumber1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGenerateReceiptNumber<TData = Awaited<ReturnType<typeof generateReceiptNumber>>, TError = ErrorResponse | GenerateReceiptNumber500>(
- params?: GenerateReceiptNumberParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>> & Pick<
+export function useGenerateReceiptNumber1<TData = Awaited<ReturnType<typeof generateReceiptNumber1>>, TError = ErrorResponse | GenerateReceiptNumber1500>(
+ params?: GenerateReceiptNumber1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof generateReceiptNumber>>,
+          Awaited<ReturnType<typeof generateReceiptNumber1>>,
           TError,
-          Awaited<ReturnType<typeof generateReceiptNumber>>
+          Awaited<ReturnType<typeof generateReceiptNumber1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGenerateReceiptNumber<TData = Awaited<ReturnType<typeof generateReceiptNumber>>, TError = ErrorResponse | GenerateReceiptNumber500>(
- params?: GenerateReceiptNumberParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGenerateReceiptNumber1<TData = Awaited<ReturnType<typeof generateReceiptNumber1>>, TError = ErrorResponse | GenerateReceiptNumber1500>(
+ params?: GenerateReceiptNumber1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Генерувати номер квитанції
  */
 
-export function useGenerateReceiptNumber<TData = Awaited<ReturnType<typeof generateReceiptNumber>>, TError = ErrorResponse | GenerateReceiptNumber500>(
- params?: GenerateReceiptNumberParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGenerateReceiptNumber1<TData = Awaited<ReturnType<typeof generateReceiptNumber1>>, TError = ErrorResponse | GenerateReceiptNumber1500>(
+ params?: GenerateReceiptNumber1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateReceiptNumber1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGenerateReceiptNumberQueryOptions(params,options)
+  const queryOptions = getGenerateReceiptNumber1QueryOptions(params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -9907,13 +21806,13 @@ export function useGetRiskWarnings<TData = Awaited<ReturnType<typeof getRiskWarn
  * Повертає список рекомендованих модифікаторів для предмета на основі його плям, дефектів, категорії та матеріалу
  * @summary Отримати рекомендовані модифікатори на основі плям та дефектів
  */
-export const getRecommendedModifiers = (
-    params?: GetRecommendedModifiersParams,
+export const getRecommendedModifiers1 = (
+    params?: GetRecommendedModifiers1Params,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
       
       
-      return orvalFetcher<GetRecommendedModifiers200>(
+      return orvalFetcher<GetRecommendedModifiers1200>(
       {url: `/price-calculation/recommended-modifiers`, method: 'GET',
         params, signal
     },
@@ -9921,67 +21820,67 @@ export const getRecommendedModifiers = (
     }
   
 
-export const getGetRecommendedModifiersQueryKey = (params?: GetRecommendedModifiersParams,) => {
+export const getGetRecommendedModifiers1QueryKey = (params?: GetRecommendedModifiers1Params,) => {
     return [`/price-calculation/recommended-modifiers`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetRecommendedModifiersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(params?: GetRecommendedModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetRecommendedModifiers1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers1>>>, TError = ErrorResponse>(params?: GetRecommendedModifiers1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetRecommendedModifiersQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetRecommendedModifiers1QueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRecommendedModifiers>>> = ({ signal }) => getRecommendedModifiers(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRecommendedModifiers1>>> = ({ signal }) => getRecommendedModifiers1(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetRecommendedModifiersInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getRecommendedModifiers>>>
-export type GetRecommendedModifiersInfiniteQueryError = ErrorResponse
+export type GetRecommendedModifiers1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getRecommendedModifiers1>>>
+export type GetRecommendedModifiers1InfiniteQueryError = ErrorResponse
 
 
-export function useGetRecommendedModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(
- params: undefined |  GetRecommendedModifiersParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>> & Pick<
+export function useGetRecommendedModifiers1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers1>>>, TError = ErrorResponse>(
+ params: undefined |  GetRecommendedModifiers1Params, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRecommendedModifiers>>,
+          Awaited<ReturnType<typeof getRecommendedModifiers1>>,
           TError,
-          Awaited<ReturnType<typeof getRecommendedModifiers>>
+          Awaited<ReturnType<typeof getRecommendedModifiers1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetRecommendedModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(
- params?: GetRecommendedModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>> & Pick<
+export function useGetRecommendedModifiers1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers1>>>, TError = ErrorResponse>(
+ params?: GetRecommendedModifiers1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRecommendedModifiers>>,
+          Awaited<ReturnType<typeof getRecommendedModifiers1>>,
           TError,
-          Awaited<ReturnType<typeof getRecommendedModifiers>>
+          Awaited<ReturnType<typeof getRecommendedModifiers1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetRecommendedModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(
- params?: GetRecommendedModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGetRecommendedModifiers1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers1>>>, TError = ErrorResponse>(
+ params?: GetRecommendedModifiers1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Отримати рекомендовані модифікатори на основі плям та дефектів
  */
 
-export function useGetRecommendedModifiersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers>>>, TError = ErrorResponse>(
- params?: GetRecommendedModifiersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGetRecommendedModifiers1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getRecommendedModifiers1>>>, TError = ErrorResponse>(
+ params?: GetRecommendedModifiers1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetRecommendedModifiersInfiniteQueryOptions(params,options)
+  const queryOptions = getGetRecommendedModifiers1InfiniteQueryOptions(params,options)
 
   const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -9992,62 +21891,62 @@ export function useGetRecommendedModifiersInfinite<TData = InfiniteData<Awaited<
 
 
 
-export const getGetRecommendedModifiersQueryOptions = <TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(params?: GetRecommendedModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetRecommendedModifiers1QueryOptions = <TData = Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError = ErrorResponse>(params?: GetRecommendedModifiers1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetRecommendedModifiersQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetRecommendedModifiers1QueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRecommendedModifiers>>> = ({ signal }) => getRecommendedModifiers(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRecommendedModifiers1>>> = ({ signal }) => getRecommendedModifiers1(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetRecommendedModifiersQueryResult = NonNullable<Awaited<ReturnType<typeof getRecommendedModifiers>>>
-export type GetRecommendedModifiersQueryError = ErrorResponse
+export type GetRecommendedModifiers1QueryResult = NonNullable<Awaited<ReturnType<typeof getRecommendedModifiers1>>>
+export type GetRecommendedModifiers1QueryError = ErrorResponse
 
 
-export function useGetRecommendedModifiers<TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(
- params: undefined |  GetRecommendedModifiersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>> & Pick<
+export function useGetRecommendedModifiers1<TData = Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError = ErrorResponse>(
+ params: undefined |  GetRecommendedModifiers1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRecommendedModifiers>>,
+          Awaited<ReturnType<typeof getRecommendedModifiers1>>,
           TError,
-          Awaited<ReturnType<typeof getRecommendedModifiers>>
+          Awaited<ReturnType<typeof getRecommendedModifiers1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetRecommendedModifiers<TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(
- params?: GetRecommendedModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>> & Pick<
+export function useGetRecommendedModifiers1<TData = Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError = ErrorResponse>(
+ params?: GetRecommendedModifiers1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getRecommendedModifiers>>,
+          Awaited<ReturnType<typeof getRecommendedModifiers1>>,
           TError,
-          Awaited<ReturnType<typeof getRecommendedModifiers>>
+          Awaited<ReturnType<typeof getRecommendedModifiers1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetRecommendedModifiers<TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(
- params?: GetRecommendedModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGetRecommendedModifiers1<TData = Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError = ErrorResponse>(
+ params?: GetRecommendedModifiers1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Отримати рекомендовані модифікатори на основі плям та дефектів
  */
 
-export function useGetRecommendedModifiers<TData = Awaited<ReturnType<typeof getRecommendedModifiers>>, TError = ErrorResponse>(
- params?: GetRecommendedModifiersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGetRecommendedModifiers1<TData = Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError = ErrorResponse>(
+ params?: GetRecommendedModifiers1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRecommendedModifiers1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetRecommendedModifiersQueryOptions(params,options)
+  const queryOptions = getGetRecommendedModifiers1QueryOptions(params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -15473,8 +27372,8 @@ export function useGetDefectTypeByCode<TData = Awaited<ReturnType<typeof getDefe
  * @deprecated
  * @summary Пошук клієнтів
  */
-export const searchClients = (
-    params: SearchClientsParams,
+export const searchClients1 = (
+    params: SearchClients1Params,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
       
@@ -15487,55 +27386,55 @@ export const searchClients = (
     }
   
 
-export const getSearchClientsQueryKey = (params: SearchClientsParams,) => {
+export const getSearchClients1QueryKey = (params: SearchClients1Params,) => {
     return [`/clients/search`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getSearchClientsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(params: SearchClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getSearchClients1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof searchClients1>>>, TError = ErrorResponse>(params: SearchClients1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getSearchClientsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getSearchClients1QueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchClients>>> = ({ signal }) => searchClients(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchClients1>>> = ({ signal }) => searchClients1(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type SearchClientsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof searchClients>>>
-export type SearchClientsInfiniteQueryError = ErrorResponse
+export type SearchClients1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof searchClients1>>>
+export type SearchClients1InfiniteQueryError = ErrorResponse
 
 
-export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(
- params: SearchClientsParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>> & Pick<
+export function useSearchClients1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients1>>>, TError = ErrorResponse>(
+ params: SearchClients1Params, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof searchClients>>,
+          Awaited<ReturnType<typeof searchClients1>>,
           TError,
-          Awaited<ReturnType<typeof searchClients>>
+          Awaited<ReturnType<typeof searchClients1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(
- params: SearchClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>> & Pick<
+export function useSearchClients1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients1>>>, TError = ErrorResponse>(
+ params: SearchClients1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof searchClients>>,
+          Awaited<ReturnType<typeof searchClients1>>,
           TError,
-          Awaited<ReturnType<typeof searchClients>>
+          Awaited<ReturnType<typeof searchClients1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(
- params: SearchClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useSearchClients1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients1>>>, TError = ErrorResponse>(
+ params: SearchClients1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -15543,12 +27442,12 @@ export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType
  * @summary Пошук клієнтів
  */
 
-export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients>>>, TError = ErrorResponse>(
- params: SearchClientsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useSearchClients1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof searchClients1>>>, TError = ErrorResponse>(
+ params: SearchClients1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getSearchClientsInfiniteQueryOptions(params,options)
+  const queryOptions = getSearchClients1InfiniteQueryOptions(params,options)
 
   const query = useInfiniteQuery(queryOptions , queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -15559,50 +27458,50 @@ export function useSearchClientsInfinite<TData = InfiniteData<Awaited<ReturnType
 
 
 
-export const getSearchClientsQueryOptions = <TData = Awaited<ReturnType<typeof searchClients>>, TError = ErrorResponse>(params: SearchClientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getSearchClients1QueryOptions = <TData = Awaited<ReturnType<typeof searchClients1>>, TError = ErrorResponse>(params: SearchClients1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getSearchClientsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getSearchClients1QueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchClients>>> = ({ signal }) => searchClients(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchClients1>>> = ({ signal }) => searchClients1(params, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn,   staleTime: 300000, gcTime: 600000, refetchOnWindowFocus: false, refetchOnReconnect: true,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type SearchClientsQueryResult = NonNullable<Awaited<ReturnType<typeof searchClients>>>
-export type SearchClientsQueryError = ErrorResponse
+export type SearchClients1QueryResult = NonNullable<Awaited<ReturnType<typeof searchClients1>>>
+export type SearchClients1QueryError = ErrorResponse
 
 
-export function useSearchClients<TData = Awaited<ReturnType<typeof searchClients>>, TError = ErrorResponse>(
- params: SearchClientsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>> & Pick<
+export function useSearchClients1<TData = Awaited<ReturnType<typeof searchClients1>>, TError = ErrorResponse>(
+ params: SearchClients1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof searchClients>>,
+          Awaited<ReturnType<typeof searchClients1>>,
           TError,
-          Awaited<ReturnType<typeof searchClients>>
+          Awaited<ReturnType<typeof searchClients1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSearchClients<TData = Awaited<ReturnType<typeof searchClients>>, TError = ErrorResponse>(
- params: SearchClientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>> & Pick<
+export function useSearchClients1<TData = Awaited<ReturnType<typeof searchClients1>>, TError = ErrorResponse>(
+ params: SearchClients1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof searchClients>>,
+          Awaited<ReturnType<typeof searchClients1>>,
           TError,
-          Awaited<ReturnType<typeof searchClients>>
+          Awaited<ReturnType<typeof searchClients1>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useSearchClients<TData = Awaited<ReturnType<typeof searchClients>>, TError = ErrorResponse>(
- params: SearchClientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useSearchClients1<TData = Awaited<ReturnType<typeof searchClients1>>, TError = ErrorResponse>(
+ params: SearchClients1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -15610,12 +27509,12 @@ export function useSearchClients<TData = Awaited<ReturnType<typeof searchClients
  * @summary Пошук клієнтів
  */
 
-export function useSearchClients<TData = Awaited<ReturnType<typeof searchClients>>, TError = ErrorResponse>(
- params: SearchClientsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useSearchClients1<TData = Awaited<ReturnType<typeof searchClients1>>, TError = ErrorResponse>(
+ params: SearchClients1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof searchClients1>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getSearchClientsQueryOptions(params,options)
+  const queryOptions = getSearchClients1QueryOptions(params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -16227,6 +28126,566 @@ export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = Error
 
 
 
+/**
+ * @summary Закриття сесії фотодокументації
+ */
+export const closeSession2 = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage2/substep5/${sessionId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getCloseSession2MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof closeSession2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof closeSession2>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['closeSession2'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof closeSession2>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  closeSession2(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CloseSession2MutationResult = NonNullable<Awaited<ReturnType<typeof closeSession2>>>
+    
+    export type CloseSession2MutationError = ErrorResponse
+
+    /**
+ * @summary Закриття сесії фотодокументації
+ */
+export const useCloseSession2 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof closeSession2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof closeSession2>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCloseSession2MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Видалення фотографії
+ */
+export const removePhoto = (
+    sessionId: string,
+    photoId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/photos/${photoId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getRemovePhotoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removePhoto>>, TError,{sessionId: string;photoId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof removePhoto>>, TError,{sessionId: string;photoId: string}, TContext> => {
+
+const mutationKey = ['removePhoto'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removePhoto>>, {sessionId: string;photoId: string}> = (props) => {
+          const {sessionId,photoId} = props ?? {};
+
+          return  removePhoto(sessionId,photoId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RemovePhotoMutationResult = NonNullable<Awaited<ReturnType<typeof removePhoto>>>
+    
+    export type RemovePhotoMutationError = ErrorResponse
+
+    /**
+ * @summary Видалення фотографії
+ */
+export const useRemovePhoto = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removePhoto>>, TError,{sessionId: string;photoId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof removePhoto>>,
+        TError,
+        {sessionId: string;photoId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getRemovePhotoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Видалення сесії
+ */
+export const removeSession = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage2/substep4/session/${sessionId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getRemoveSessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof removeSession>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['removeSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeSession>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  removeSession(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RemoveSessionMutationResult = NonNullable<Awaited<ReturnType<typeof removeSession>>>
+    
+    export type RemoveSessionMutationError = ErrorResponse
+
+    /**
+ * @summary Видалення сесії
+ */
+export const useRemoveSession = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof removeSession>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getRemoveSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Видалення модифікатора з розрахунку
+ */
+export const removeModifier = (
+    sessionId: string,
+    modifierId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<SubstepResultDTO>(
+      {url: `/v1/order-wizard/stage2/substep4/modifiers/${sessionId}/${modifierId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getRemoveModifierMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeModifier>>, TError,{sessionId: string;modifierId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof removeModifier>>, TError,{sessionId: string;modifierId: string}, TContext> => {
+
+const mutationKey = ['removeModifier'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeModifier>>, {sessionId: string;modifierId: string}> = (props) => {
+          const {sessionId,modifierId} = props ?? {};
+
+          return  removeModifier(sessionId,modifierId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RemoveModifierMutationResult = NonNullable<Awaited<ReturnType<typeof removeModifier>>>
+    
+    export type RemoveModifierMutationError = ErrorResponse
+
+    /**
+ * @summary Видалення модифікатора з розрахунку
+ */
+export const useRemoveModifier = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeModifier>>, TError,{sessionId: string;modifierId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof removeModifier>>,
+        TError,
+        {sessionId: string;modifierId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getRemoveModifierMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Завершує сесію підетапу 1
+ */
+export const finalizeSubstep1Session = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage2/substep1/${sessionId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getFinalizeSubstep1SessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeSubstep1Session>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof finalizeSubstep1Session>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['finalizeSubstep1Session'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof finalizeSubstep1Session>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  finalizeSubstep1Session(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type FinalizeSubstep1SessionMutationResult = NonNullable<Awaited<ReturnType<typeof finalizeSubstep1Session>>>
+    
+    export type FinalizeSubstep1SessionMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує сесію підетапу 1
+ */
+export const useFinalizeSubstep1Session = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeSubstep1Session>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof finalizeSubstep1Session>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getFinalizeSubstep1SessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Завершує сесію та звільняє ресурси
+ */
+export const terminateSession = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage2/session/${sessionId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getTerminateSessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof terminateSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof terminateSession>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['terminateSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof terminateSession>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  terminateSession(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TerminateSessionMutationResult = NonNullable<Awaited<ReturnType<typeof terminateSession>>>
+    
+    export type TerminateSessionMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує сесію та звільняє ресурси
+ */
+export const useTerminateSession = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof terminateSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof terminateSession>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getTerminateSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Скасовує створення клієнта
+ */
+export const cancelNewClientCreation = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getCancelNewClientCreationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelNewClientCreation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelNewClientCreation>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['cancelNewClientCreation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelNewClientCreation>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  cancelNewClientCreation(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelNewClientCreationMutationResult = NonNullable<Awaited<ReturnType<typeof cancelNewClientCreation>>>
+    
+    export type CancelNewClientCreationMutationError = ErrorResponse
+
+    /**
+ * @summary Скасовує створення клієнта
+ */
+export const useCancelNewClientCreation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelNewClientCreation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof cancelNewClientCreation>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCancelNewClientCreationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Скасовує пошук клієнта
+ */
+export const cancelClientSearch = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getCancelClientSearchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelClientSearch>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['cancelClientSearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelClientSearch>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  cancelClientSearch(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelClientSearchMutationResult = NonNullable<Awaited<ReturnType<typeof cancelClientSearch>>>
+    
+    export type CancelClientSearchMutationError = ErrorResponse
+
+    /**
+ * @summary Скасовує пошук клієнта
+ */
+export const useCancelClientSearch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof cancelClientSearch>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCancelClientSearchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Скасовує збір базової інформації
+ */
+export const cancelBasicOrderInfo = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<void>(
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getCancelBasicOrderInfoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelBasicOrderInfo>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelBasicOrderInfo>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['cancelBasicOrderInfo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelBasicOrderInfo>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  cancelBasicOrderInfo(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelBasicOrderInfoMutationResult = NonNullable<Awaited<ReturnType<typeof cancelBasicOrderInfo>>>
+    
+    export type CancelBasicOrderInfoMutationError = ErrorResponse
+
+    /**
+ * @summary Скасовує збір базової інформації
+ */
+export const useCancelBasicOrderInfo = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelBasicOrderInfo>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof cancelBasicOrderInfo>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getCancelBasicOrderInfoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * Скасовує замовлення
  * @summary Скасувати замовлення

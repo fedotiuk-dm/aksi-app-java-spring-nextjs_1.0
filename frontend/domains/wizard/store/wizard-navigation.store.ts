@@ -9,12 +9,14 @@ export interface WizardNavigationState {
   currentStage: number;
   completedStages: Set<number>;
   sessionId: string | null;
+  orderId: string | null;
 }
 
 export interface WizardNavigationActions {
   setCurrentStage: (stage: number) => void;
   markStageCompleted: (stage: number) => void;
   setSessionId: (sessionId: string | null) => void;
+  setOrderId: (orderId: string | null) => void;
   resetNavigation: () => void;
   canNavigateToStage: (stage: number) => boolean;
 }
@@ -25,6 +27,7 @@ const initialState: WizardNavigationState = {
   currentStage: 1,
   completedStages: new Set(),
   sessionId: null,
+  orderId: null,
 };
 
 export const useWizardNavigationStore = create<WizardNavigationStore>()(
@@ -44,6 +47,10 @@ export const useWizardNavigationStore = create<WizardNavigationStore>()(
 
       setSessionId: (sessionId: string | null) => {
         set({ sessionId });
+      },
+
+      setOrderId: (orderId: string | null) => {
+        set({ orderId });
       },
 
       resetNavigation: () => {

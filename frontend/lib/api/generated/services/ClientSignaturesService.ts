@@ -14,7 +14,7 @@ export class ClientSignaturesService {
      * @returns CustomerSignatureResponse Підпис успішно збережено
      * @throws ApiError
      */
-    public static saveSignature({
+    public static saveSignature1({
         requestBody,
     }: {
         requestBody: CustomerSignatureRequest,

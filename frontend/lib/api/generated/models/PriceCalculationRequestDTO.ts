@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { FixedModifierQuantity } from './FixedModifierQuantity';
-import type { RangeModifierValue } from './RangeModifierValue';
+import type { FixedModifierQuantityDTO } from './FixedModifierQuantityDTO';
+import type { RangeModifierValueDTO } from './RangeModifierValueDTO';
 /**
- * Запит на розрахунок ціни для предмета
+ * Запит на розрахунок ціни предмету з модифікаторами
  */
 export type PriceCalculationRequestDTO = {
     /**
@@ -25,17 +25,21 @@ export type PriceCalculationRequestDTO = {
      */
     quantity: number;
     /**
-     * Список кодів модифікаторів
+     * Список кодів модифікаторів для застосування
      */
     modifierCodes?: Array<string>;
     /**
-     * Значення для модифікаторів з діапазоном
+     * Список ID модифікаторів для застосування
      */
-    rangeModifierValues?: Array<RangeModifierValue>;
+    modifierIds?: Array<string>;
     /**
-     * Кількості для фіксованих модифікаторів
+     * Значення відсотків для модифікаторів діапазону
      */
-    fixedModifierQuantities?: Array<FixedModifierQuantity>;
+    rangeModifierValues?: Array<RangeModifierValueDTO>;
+    /**
+     * Кількості для модифікаторів з фіксованою ціною
+     */
+    fixedModifierQuantities?: Array<FixedModifierQuantityDTO>;
     /**
      * Чи термінове замовлення
      */
