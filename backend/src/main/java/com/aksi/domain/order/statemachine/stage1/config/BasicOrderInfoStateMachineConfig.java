@@ -92,6 +92,13 @@ public class BasicOrderInfoStateMachineConfig
                 .event(BasicOrderInfoEvent.ENTER_UNIQUE_TAG)
             .and()
 
+            // ДОДАЄМО: перехід з BRANCH_SELECTED до ENTERING_UNIQUE_TAG
+            .withExternal()
+                .source(BasicOrderInfoState.BRANCH_SELECTED)
+                .target(BasicOrderInfoState.ENTERING_UNIQUE_TAG)
+                .event(BasicOrderInfoEvent.ENTER_UNIQUE_TAG)
+            .and()
+
             .withExternal()
                 .source(BasicOrderInfoState.ENTERING_UNIQUE_TAG)
                 .target(BasicOrderInfoState.UNIQUE_TAG_ENTERED)

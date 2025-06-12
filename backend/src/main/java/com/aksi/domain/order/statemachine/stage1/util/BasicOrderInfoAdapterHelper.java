@@ -69,16 +69,39 @@ public class BasicOrderInfoAdapterHelper {
      * Валідує унікальну мітку на коректність.
      */
     public boolean isValidUniqueTag(String uniqueTag) {
+        logger.info("🔍 [BASIC-ORDER-HELPER] Валідація унікальної мітки: '{}'", uniqueTag);
+
         if (uniqueTag == null || uniqueTag.trim().isEmpty()) {
             logger.warn("⚠️ [BASIC-ORDER-HELPER] Унікальна мітка є null або порожньою");
             return false;
         }
 
-        if (uniqueTag.length() > 50) {
-            logger.warn("⚠️ [BASIC-ORDER-HELPER] Унікальна мітка занадто довга: {} символів", uniqueTag.length());
+        String trimmedTag = uniqueTag.trim();
+        logger.info("📏 [BASIC-ORDER-HELPER] Довжина мітки після trim: {}", trimmedTag.length());
+
+        // Перевірка довжини (як у BasicOrderInfoValidator)
+        if (trimmedTag.length() < 3) {
+            logger.warn("⚠️ [BASIC-ORDER-HELPER] Унікальна мітка занадто коротка: {} символів (мінімум 3)", trimmedTag.length());
             return false;
         }
 
+        if (trimmedTag.length() > 20) {
+            logger.warn("⚠️ [BASIC-ORDER-HELPER] Унікальна мітка занадто довга: {} символів (максимум 20)", trimmedTag.length());
+            return false;
+        }
+
+        // Перевірка формату (як у BasicOrderInfoValidator)
+        String pattern = "^[A-Za-z0-9-_]{3,20}$";
+        boolean matchesPattern = trimmedTag.matches(pattern);
+        logger.info("🔤 [BASIC-ORDER-HELPER] Перевірка формату '{}' проти патерну '{}': {}",
+                   trimmedTag, pattern, matchesPattern);
+
+        if (!matchesPattern) {
+            logger.warn("⚠️ [BASIC-ORDER-HELPER] Унікальна мітка містить недозволені символи. Дозволені: латинські літери, цифри, тире, підкреслення");
+            return false;
+        }
+
+        logger.info("✅ [BASIC-ORDER-HELPER] Унікальна мітка '{}' пройшла валідацію", trimmedTag);
         return true;
     }
 

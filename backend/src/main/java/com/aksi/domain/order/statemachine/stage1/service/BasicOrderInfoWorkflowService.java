@@ -101,38 +101,83 @@ public class BasicOrderInfoWorkflowService {
      * Переводить процес до введення унікальної мітки.
      */
     public boolean transitionToUniqueTagEntry(String sessionId) {
+        logger.info("🔄 [WORKFLOW] Перехід до введення унікальної мітки для sessionId: {}", sessionId);
+
         BasicOrderInfoContext context = stateService.getContext(sessionId);
         if (context == null || context.isLocked()) {
+            logger.error("❌ [WORKFLOW] Контекст недоступний для sessionId: {}", sessionId);
             return false;
         }
 
         BasicOrderInfoState currentState = context.getCurrentState();
+        logger.info("🔍 [WORKFLOW] Поточний стан: {} для sessionId: {}", currentState, sessionId);
+
+        // Дозволяємо перехід з RECEIPT_NUMBER_GENERATED, BRANCH_SELECTED або UNIQUE_TAG_ENTERED
         if (currentState != BasicOrderInfoState.RECEIPT_NUMBER_GENERATED &&
+            currentState != BasicOrderInfoState.BRANCH_SELECTED &&
             currentState != BasicOrderInfoState.UNIQUE_TAG_ENTERED) {
+            logger.warn("⚠️ [WORKFLOW] Неможливо перейти до введення унікальної мітки з поточного стану: {} для sessionId: {}", currentState, sessionId);
             return false;
         }
 
-        return stateService.updateState(sessionId, BasicOrderInfoState.ENTERING_UNIQUE_TAG);
+        boolean success = stateService.updateState(sessionId, BasicOrderInfoState.ENTERING_UNIQUE_TAG);
+        if (success) {
+            logger.info("✅ [WORKFLOW] Успішно перейшли до стану ENTERING_UNIQUE_TAG для sessionId: {}", sessionId);
+        } else {
+            logger.error("❌ [WORKFLOW] Не вдалося перейти до стану ENTERING_UNIQUE_TAG для sessionId: {}", sessionId);
+        }
+
+        return success;
     }
 
     /**
      * Підтверджує введення унікальної мітки.
      */
     public boolean confirmUniqueTag(String sessionId, String uniqueTag) {
+        logger.info("🏷️ [WORKFLOW] Підтвердження унікальної мітки '{}' для sessionId: {}", uniqueTag, sessionId);
+
         BasicOrderInfoContext context = stateService.getContext(sessionId);
-        if (context == null || context.isLocked()) {
+        if (context == null) {
+            logger.error("❌ [WORKFLOW] Контекст не знайдено для sessionId: {}", sessionId);
             return false;
         }
 
-        if (context.getCurrentState() != BasicOrderInfoState.ENTERING_UNIQUE_TAG) {
+        if (context.isLocked()) {
+            logger.warn("🔒 [WORKFLOW] Контекст заблокований для sessionId: {}", sessionId);
             return false;
         }
 
+        BasicOrderInfoState currentState = context.getCurrentState();
+        logger.info("🔍 [WORKFLOW] Поточний стан: {} для sessionId: {}", currentState, sessionId);
+
+        // Якщо ми не в стані ENTERING_UNIQUE_TAG, спробуємо перейти туди
+        if (currentState != BasicOrderInfoState.ENTERING_UNIQUE_TAG) {
+            logger.info("🔄 [WORKFLOW] Перехід до стану ENTERING_UNIQUE_TAG з поточного стану: {} для sessionId: {}", currentState, sessionId);
+
+            // Відправляємо подію ENTER_UNIQUE_TAG для правильного переходу через State Machine
+            boolean transitioned = transitionToUniqueTagEntry(sessionId);
+            if (!transitioned) {
+                logger.error("❌ [WORKFLOW] Не вдалося перейти до стану ENTERING_UNIQUE_TAG з стану {} для sessionId: {}", currentState, sessionId);
+                return false;
+            }
+            logger.info("✅ [WORKFLOW] Успішно перейшли до стану ENTERING_UNIQUE_TAG для sessionId: {}", sessionId);
+        }
+
+        logger.info("📝 [WORKFLOW] Створення оновленого DTO з унікальною міткою для sessionId: {}", sessionId);
         BasicOrderInfoDTO updatedInfo = BasicOrderInfoMapper.copyWithUniqueTag(
                 context.getBasicOrderInfo(), uniqueTag);
 
-        return stateService.updateStateAndData(sessionId,
+        logger.info("💾 [WORKFLOW] Оновлення стану та даних для sessionId: {}", sessionId);
+        boolean success = stateService.updateStateAndData(sessionId,
                 BasicOrderInfoState.UNIQUE_TAG_ENTERED, updatedInfo);
+
+        if (success) {
+            logger.info("✅ [WORKFLOW] Унікальну мітку '{}' успішно підтверджено для sessionId: {}", uniqueTag, sessionId);
+        } else {
+            logger.error("❌ [WORKFLOW] Не вдалося підтвердити унікальну мітку '{}' для sessionId: {}", uniqueTag, sessionId);
+        }
+
+        return success;
     }
 
     /**
@@ -406,3 +451,4 @@ public class BasicOrderInfoWorkflowService {
         return java.util.Collections.emptyList();
     }
 }
+
