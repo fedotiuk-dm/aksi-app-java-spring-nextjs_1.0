@@ -101,8 +101,8 @@ export const stage2UpdateItemInOrder200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2UpdateItemInOrder400Response = zod.object({
@@ -200,8 +200,8 @@ export const stage2DeleteItemFromOrder200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2DeleteItemFromOrder400Response = zod.object({
@@ -298,8 +298,8 @@ export const stage2StartNewItemWizard200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2StartNewItemWizard400Response = zod.object({
@@ -397,8 +397,8 @@ export const stage2StartEditItemWizard200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2StartEditItemWizard400Response = zod.object({
@@ -495,8 +495,8 @@ export const stage2CloseWizard200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2CloseWizard400Response = zod.object({
@@ -593,8 +593,8 @@ export const stage2SynchronizeManager200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2SynchronizeManager400Response = zod.object({
@@ -777,8 +777,8 @@ export const stage2AddItemToOrder200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2AddItemToOrder400Response = zod.object({
@@ -875,8 +875,8 @@ export const stage2InitializeItemManager200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2InitializeItemManager400Response = zod.object({
@@ -973,8 +973,8 @@ export const stage2CompleteStage200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2CompleteStage400Response = zod.object({
@@ -1277,8 +1277,8 @@ export const stage2GetCurrentManager200Response = zod.object({
   "activeWizardId": zod.coerce.string().uuid().optional(),
   "editingItemId": zod.coerce.string().uuid().optional(),
   "currentStatus": zod.coerce.string().optional(),
-  "wizardActive": zod.coerce.boolean().optional(),
-  "editMode": zod.coerce.boolean().optional()
+  "editMode": zod.coerce.boolean().optional(),
+  "wizardActive": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage2GetCurrentManager400Response = zod.object({

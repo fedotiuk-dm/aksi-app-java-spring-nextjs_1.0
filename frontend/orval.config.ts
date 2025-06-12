@@ -1,27 +1,37 @@
 /**
- * @fileoverview МОДУЛЬНА конфігурація Orval: Генерація по папках з простими назвами
+ * @fileoverview МОДУЛЬНА конфігурація Orval з підготовкою для BARREL EXPORTS
  *
- * 🎯 Філософія: "Мінімум файлів, максимум логіки"
+ * 🎯 Філософія: "Мінімум файлів, максимум логіки + чисті імпорти"
  *
  * ✅ Що генерується:
- * - api.ts - всі Axios функції модуля
- * - schemas.ts - всі TypeScript типи модуля
- * - schemas.zod.ts - всі Zod схеми модуля
- * - index.ts - автоматичний експорт
+ * - aksiApi.ts - всі Axios функції та React Query хуки
+ * - aksiApi.schemas.ts - всі TypeScript типи
+ * - schemas.zod.ts - всі Zod схеми для валідації
+ * - index.ts - BARREL EXPORT (створюється окремим скриптом)
  *
  * 📁 Результат:
  * shared/api/generated/
  *   ├── auth/
- *   │   ├── api.ts               - Всі Axios функції auth
- *   │   ├── schemas.ts           - Всі TypeScript типи auth
- *   │   ├── schemas.zod.ts       - Всі Zod схеми auth
- *   │   └── index.ts             - Автоматичний експорт
+ *   │   ├── aksiApi.ts              - API функції + React Query хуки
+ *   │   ├── aksiApi.schemas.ts      - TypeScript типи
+ *   │   ├── schemas.zod.ts          - Zod схеми
+ *   │   └── index.ts                - 🔥 BARREL: export * from './aksiApi'
  *   ├── stage1/
- *   │   ├── api.ts               - Всі Axios функції stage1
- *   │   ├── schemas.ts           - Всі TypeScript типи stage1
- *   │   ├── schemas.zod.ts       - Всі Zod схеми stage1
- *   │   └── index.ts             - Автоматичний експорт
+ *   │   ├── aksiApi.ts              - API функції + React Query хуки
+ *   │   ├── aksiApi.schemas.ts      - TypeScript типи
+ *   │   ├── schemas.zod.ts          - Zod схеми
+ *   │   └── index.ts                - 🔥 BARREL: всі експорти в одному місці
  *   └── ...
+ *
+ * 🚀 ПЕРЕВАГИ BARREL EXPORTS:
+ * ✅ Замість: import { useStage1SearchClients } from '@/shared/api/generated/stage1/aksiApi'
+ * ✅ Стає:    import { useStage1SearchClients } from '@/shared/api/generated/stage1'
+ *
+ * ✅ Замість: import { ClientResponse } from '@/shared/api/generated/stage1/aksiApi.schemas'
+ * ✅ Стає:    import { ClientResponse } from '@/shared/api/generated/stage1'
+ *
+ * ✅ Замість: import { clientSearchCriteriaSchema } from '@/shared/api/generated/stage1/schemas.zod'
+ * ✅ Стає:    import { clientSearchCriteriaSchema } from '@/shared/api/generated/stage1'
  */
 
 import type { Config } from '@orval/core';

@@ -174,6 +174,8 @@ export const stage1GetBasicOrderData200Response = zod.object({
   "uniqueTagEntered": zod.coerce.boolean().optional(),
   "branchSelected": zod.coerce.boolean().optional(),
   "creationDateSet": zod.coerce.boolean().optional(),
+  "receiptNumberValid": zod.coerce.boolean().optional(),
+  "uniqueTagValid": zod.coerce.boolean().optional(),
   "allBranches": zod.array(zod.object({
   "id": zod.coerce.string().uuid().optional(),
   "name": zod.coerce.string().min(1),
@@ -185,8 +187,6 @@ export const stage1GetBasicOrderData200Response = zod.object({
   "updatedAt": zod.coerce.string().datetime({}).optional()
 }).strict()).optional(),
   "complete": zod.coerce.boolean().optional(),
-  "receiptNumberValid": zod.coerce.boolean().optional(),
-  "uniqueTagValid": zod.coerce.boolean().optional(),
   "branchesCount": zod.coerce.number().optional()
 }).strict()
 
@@ -272,6 +272,8 @@ export const stage1UpdateBasicOrderBody = zod.object({
   "uniqueTagEntered": zod.coerce.boolean().optional(),
   "branchSelected": zod.coerce.boolean().optional(),
   "creationDateSet": zod.coerce.boolean().optional(),
+  "receiptNumberValid": zod.coerce.boolean().optional(),
+  "uniqueTagValid": zod.coerce.boolean().optional(),
   "allBranches": zod.array(zod.object({
   "id": zod.coerce.string().uuid().optional(),
   "name": zod.coerce.string().min(1),
@@ -283,8 +285,6 @@ export const stage1UpdateBasicOrderBody = zod.object({
   "updatedAt": zod.coerce.string().datetime({}).optional()
 }).strict()).optional(),
   "complete": zod.coerce.boolean().optional(),
-  "receiptNumberValid": zod.coerce.boolean().optional(),
-  "uniqueTagValid": zod.coerce.boolean().optional(),
   "branchesCount": zod.coerce.number().optional()
 }).strict()
 

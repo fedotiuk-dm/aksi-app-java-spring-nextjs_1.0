@@ -42,10 +42,10 @@ export const stage3UpdatePaymentConfigBody = zod.object({
   "isValid": zod.coerce.boolean().optional(),
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
-  "fullyPaid": zod.coerce.boolean().optional(),
   "prepaymentAmount": zod.coerce.number().optional(),
   "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional(),
   "readyForCompletion": zod.coerce.boolean().optional(),
+  "fullyPaid": zod.coerce.boolean().optional(),
   "paymentConfigComplete": zod.coerce.boolean().optional()
 }).strict()
 
@@ -227,8 +227,8 @@ export const stage3UpdateDiscountConfigBody = zod.object({
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']).optional(),
-  "discountPercentage": zod.coerce.number().optional(),
   "discountDescription": zod.coerce.string().optional(),
+  "discountPercentage": zod.coerce.number().optional(),
   "readyForCompletion": zod.coerce.boolean().optional(),
   "discountConfigComplete": zod.coerce.boolean().optional()
 }).strict()
@@ -320,8 +320,8 @@ export const stage3UpdateAdditionalInfoBody = zod.object({
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "customerNotes": zod.coerce.string().optional(),
-  "additionalRequirements": zod.coerce.string().optional(),
   "readyForCompletion": zod.coerce.boolean().optional(),
+  "additionalRequirements": zod.coerce.string().optional(),
   "additionalInfoComplete": zod.coerce.boolean().optional()
 }).strict()
 
@@ -1007,8 +1007,8 @@ export const stage3GetSessionContext200Response = zod.object({
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']).optional(),
-  "discountPercentage": zod.coerce.number().optional(),
   "discountDescription": zod.coerce.string().optional(),
+  "discountPercentage": zod.coerce.number().optional(),
   "readyForCompletion": zod.coerce.boolean().optional(),
   "discountConfigComplete": zod.coerce.boolean().optional()
 }).strict().optional(),
@@ -1035,10 +1035,10 @@ export const stage3GetSessionContext200Response = zod.object({
   "isValid": zod.coerce.boolean().optional(),
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
-  "fullyPaid": zod.coerce.boolean().optional(),
   "prepaymentAmount": zod.coerce.number().optional(),
   "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional(),
   "readyForCompletion": zod.coerce.boolean().optional(),
+  "fullyPaid": zod.coerce.boolean().optional(),
   "paymentConfigComplete": zod.coerce.boolean().optional()
 }).strict().optional(),
   "additionalInfo": zod.object({
@@ -1060,8 +1060,8 @@ export const stage3GetSessionContext200Response = zod.object({
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "customerNotes": zod.coerce.string().optional(),
-  "additionalRequirements": zod.coerce.string().optional(),
   "readyForCompletion": zod.coerce.boolean().optional(),
+  "additionalRequirements": zod.coerce.string().optional(),
   "additionalInfoComplete": zod.coerce.boolean().optional()
 }).strict().optional(),
   "lastAction": zod.coerce.string().optional(),

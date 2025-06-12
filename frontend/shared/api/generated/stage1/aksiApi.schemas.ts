@@ -74,10 +74,10 @@ export interface PaymentConfigurationDTO {
   isValid?: boolean;
   validationMessage?: string;
   lastUpdated?: string;
-  fullyPaid?: boolean;
   prepaymentAmount?: number;
   paymentMethod?: PaymentConfigurationDTOPaymentMethod;
   readyForCompletion?: boolean;
+  fullyPaid?: boolean;
   paymentConfigComplete?: boolean;
 }
 
@@ -165,8 +165,8 @@ export interface DiscountConfigurationDTO {
   validationMessage?: string;
   lastUpdated?: string;
   discountType?: DiscountConfigurationDTODiscountType;
-  discountPercentage?: number;
   discountDescription?: string;
+  discountPercentage?: number;
   readyForCompletion?: boolean;
   discountConfigComplete?: boolean;
 }
@@ -233,8 +233,8 @@ export interface AdditionalInfoDTO {
   validationMessage?: string;
   lastUpdated?: string;
   customerNotes?: string;
-  additionalRequirements?: string;
   readyForCompletion?: boolean;
+  additionalRequirements?: string;
   additionalInfoComplete?: boolean;
 }
 
@@ -309,8 +309,8 @@ export interface ItemManagerDTO {
   activeWizardId?: string;
   editingItemId?: string;
   currentStatus?: string;
-  wizardActive?: boolean;
   editMode?: boolean;
+  wizardActive?: boolean;
 }
 
 export type NewClientFormDTOCommunicationChannelsItem = typeof NewClientFormDTOCommunicationChannelsItem[keyof typeof NewClientFormDTOCommunicationChannelsItem];
@@ -374,10 +374,10 @@ export interface BasicOrderInfoDTO {
   uniqueTagEntered?: boolean;
   branchSelected?: boolean;
   creationDateSet?: boolean;
-  allBranches?: BranchLocationDTO[];
-  complete?: boolean;
   receiptNumberValid?: boolean;
   uniqueTagValid?: boolean;
+  allBranches?: BranchLocationDTO[];
+  complete?: boolean;
   branchesCount?: number;
 }
 
@@ -1334,9 +1334,9 @@ export interface PriceDiscountDTO {
   calculationCompleted?: boolean;
   hasCalculationErrors?: boolean;
   errorMessage?: string;
+  calculationDetails?: CalculationDetailsDTO[];
   basePrice?: number;
   finalPrice?: number;
-  calculationDetails?: CalculationDetailsDTO[];
   modifiersCount?: number;
 }
 
