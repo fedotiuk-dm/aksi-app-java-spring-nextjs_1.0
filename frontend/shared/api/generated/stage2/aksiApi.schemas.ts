@@ -1923,9 +1923,17 @@ export interface ModifierRecommendationDTO {
   riskWarning?: string;
 }
 
-export type AuthRegister200 = { [key: string]: unknown };
+export type Stage2GetCurrentState200 = typeof Stage2GetCurrentState200[keyof typeof Stage2GetCurrentState200];
 
-export type AuthRefreshToken200 = { [key: string]: unknown };
 
-export type AuthLogin200 = { [key: string]: unknown };
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Stage2GetCurrentState200 = {
+  NOT_STARTED: 'NOT_STARTED',
+  INITIALIZING: 'INITIALIZING',
+  ITEMS_MANAGER_SCREEN: 'ITEMS_MANAGER_SCREEN',
+  ITEM_WIZARD_ACTIVE: 'ITEM_WIZARD_ACTIVE',
+  READY_TO_PROCEED: 'READY_TO_PROCEED',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+} as const;
 

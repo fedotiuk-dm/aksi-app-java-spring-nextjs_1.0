@@ -1923,9 +1923,39 @@ export interface ModifierRecommendationDTO {
   riskWarning?: string;
 }
 
-export type AuthRegister200 = { [key: string]: unknown };
+export type Stage4ValidateReceiptConfiguration200 = { [key: string]: unknown };
 
-export type AuthRefreshToken200 = { [key: string]: unknown };
+export type Stage4ValidateOrderConfirmation200 = { [key: string]: unknown };
 
-export type AuthLogin200 = { [key: string]: unknown };
+export type Stage4ValidateOrderCompletion200 = { [key: string]: unknown };
+
+export type Stage4ValidateLegalAcceptance200 = { [key: string]: unknown };
+
+export type Stage4SaveSignature200 = { [key: string]: unknown };
+
+export type Stage4UpdateReceiptConfiguration200 = { [key: string]: unknown };
+
+export type Stage4UpdateOrderConfirmation200 = { [key: string]: unknown };
+
+export type Stage4UpdateOrderCompletion200 = { [key: string]: unknown };
+
+export type Stage4UpdateLegalAcceptance200 = { [key: string]: unknown };
+
+export type Stage4CloseSession200 = { [key: string]: unknown };
+
+export type Stage4GenerateReceipt200 = { [key: string]: unknown };
+
+export type Stage4GeneratePdfReceipt200 = { [key: string]: unknown };
+
+export type Stage4InitializeStage200 = { [key: string]: unknown };
+
+export type Stage4FinalizeOrder200 = { [key: string]: unknown };
+
+export type Stage4ValidateComplete200 = { [key: string]: unknown };
+
+export type Stage4GetSessionContext200 = { [key: string]: unknown };
+
+export type Stage4GetCurrentState200 = { [key: string]: unknown };
+
+export type Stage4GetOrderSummary200 = { [key: string]: unknown };
 

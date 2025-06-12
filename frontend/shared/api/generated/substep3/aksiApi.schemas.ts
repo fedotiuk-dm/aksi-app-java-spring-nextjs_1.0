@@ -1923,9 +1923,35 @@ export interface ModifierRecommendationDTO {
   riskWarning?: string;
 }
 
-export type AuthRegister200 = { [key: string]: unknown };
+export type Substep3ProcessStainSelectionParams = {
+selectedStains?: string;
+otherStains?: string;
+};
 
-export type AuthRefreshToken200 = { [key: string]: unknown };
+export type Substep3ProcessDefectNotesParams = {
+defectNotes?: string;
+};
 
-export type AuthLogin200 = { [key: string]: unknown };
+export type Substep3GoBackParams = {
+targetState: Substep3GoBackTargetState;
+};
+
+export type Substep3GoBackTargetState = typeof Substep3GoBackTargetState[keyof typeof Substep3GoBackTargetState];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Substep3GoBackTargetState = {
+  NOT_STARTED: 'NOT_STARTED',
+  SELECTING_STAINS: 'SELECTING_STAINS',
+  SELECTING_DEFECTS: 'SELECTING_DEFECTS',
+  ENTERING_NOTES: 'ENTERING_NOTES',
+  VALIDATING_DATA: 'VALIDATING_DATA',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+} as const;
+
+export type Substep3ProcessDefectSelectionParams = {
+selectedDefects?: string;
+noGuaranteeReason?: string;
+};
 

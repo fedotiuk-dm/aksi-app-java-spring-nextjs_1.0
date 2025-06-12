@@ -1923,9 +1923,26 @@ export interface ModifierRecommendationDTO {
   riskWarning?: string;
 }
 
-export type AuthRegister200 = { [key: string]: unknown };
+export type Substep2SelectWearLevelParams = {
+wearPercentage: number;
+};
 
-export type AuthRefreshToken200 = { [key: string]: unknown };
+export type Substep2SelectMaterialParams = {
+materialId: string;
+};
 
-export type AuthLogin200 = { [key: string]: unknown };
+export type Substep2SelectFillerParams = {
+fillerType?: string;
+isFillerDamaged?: boolean;
+};
+
+export type Substep2SelectColorParams = {
+color: string;
+};
+
+export type Substep2InitializeSubstepParams = {
+itemId: string;
+};
+
+export type Substep2CompleteSubstep200 = {[key: string]: unknown};
 

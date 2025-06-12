@@ -1,22 +1,27 @@
 /**
- * @fileoverview СПРОЩЕНА конфігурація Orval: Дозволяємо Orval робити свою роботу
+ * @fileoverview МОДУЛЬНА конфігурація Orval: Генерація по папках з простими назвами
  *
- * 🎯 Філософія: "Orval знає як створювати файли - не заважаємо йому"
+ * 🎯 Філософія: "Мінімум файлів, максимум логіки"
  *
- * ✅ Що генерується АВТОМАТИЧНО:
- * - Тонкі Axios клієнти (БЕЗ React Query)
- * - Індекси для експорту
- * - Zod схеми для валідації
- * - TypeScript типи
+ * ✅ Що генерується:
+ * - api.ts - всі Axios функції модуля
+ * - schemas.ts - всі TypeScript типи модуля
+ * - schemas.zod.ts - всі Zod схеми модуля
+ * - index.ts - автоматичний експорт
  *
- * 📁 Результат (автоматично):
- * shared/api/generated/wizard/
- *   ├── aksiApi.ts           - Тонкі Axios функції
- *   ├── aksiApi.schemas.ts   - TypeScript типи
- *   ├── index.ts             - Автоматичний індекс
- *   └── zod/
- *       ├── aksiApi.ts       - Zod схеми
- *       └── index.ts         - Автоматичний індекс
+ * 📁 Результат:
+ * shared/api/generated/
+ *   ├── auth/
+ *   │   ├── api.ts               - Всі Axios функції auth
+ *   │   ├── schemas.ts           - Всі TypeScript типи auth
+ *   │   ├── schemas.zod.ts       - Всі Zod схеми auth
+ *   │   └── index.ts             - Автоматичний експорт
+ *   ├── stage1/
+ *   │   ├── api.ts               - Всі Axios функції stage1
+ *   │   ├── schemas.ts           - Всі TypeScript типи stage1
+ *   │   ├── schemas.zod.ts       - Всі Zod схеми stage1
+ *   │   └── index.ts             - Автоматичний експорт
+ *   └── ...
  */
 
 import type { Config } from '@orval/core';
@@ -26,57 +31,63 @@ const API_BASE_URL = 'http://localhost:8080/api/v3/api-docs';
 const MUTATOR_PATH = './lib/api/orval-fetcher.ts';
 const MUTATOR_NAME = 'orvalFetcher';
 
-// 🎯 Теги для фільтрації
-const ORDER_WIZARD_TAGS = [
-  'Order Wizard - Stage 1',
-  'Order Wizard - Stage 2',
-  'Order Wizard - Stage 3',
-  'Order Wizard - Stage 4',
-  'Order Wizard - Stage 2 Substep 1',
-  'Order Wizard - Stage 2 Substep 2',
-  'Order Wizard - Stage 2 Substep 3',
-  'Order Wizard - Stage 2 Substep 4',
-  'Order Wizard - Stage 2 Substep 5',
-  'Order Wizard - Main API',
-];
+// 🎯 Теги для модулів
+const TAGS = {
+  auth: ['Authentication'],
+  stage1: ['Order Wizard - Stage 1'],
+  stage2: ['Order Wizard - Stage 2'],
+  substep1: ['Order Wizard - Stage 2 Substep 1'],
+  substep2: ['Order Wizard - Stage 2 Substep 2'],
+  substep3: ['Order Wizard - Stage 2 Substep 3'],
+  substep4: ['Order Wizard - Stage 2 Substep 4'],
+  substep5: ['Order Wizard - Stage 2 Substep 5'],
+  stage3: ['Order Wizard - Stage 3'],
+  stage4: ['Order Wizard - Stage 4'],
+  main: ['Order Wizard - Main API'],
+};
 
-const AUTH_TAGS = ['Authentication'];
-
-const config: Config = {
-  // 🔐 Authentication API - Тонкі Axios клієнти
-  'auth-api': {
+// 🏭 Фабрика для створення модульних конфігурацій
+const createModuleConfig = (name: string, tags: string[]) => ({
+  // Axios API клієнт + типи для модуля
+  [`${name}-api`]: {
     input: {
       target: API_BASE_URL,
       filters: {
-        tags: AUTH_TAGS,
+        tags,
       },
     },
     output: {
-      target: './shared/api/generated/auth',
-      client: 'axios', // 🎯 Тільки axios - БЕЗ react-query
-      mode: 'split', // Orval САМ створить індекси
+      target: `./shared/api/generated/${name}`,
+      client: 'axios' as const,
+      mode: 'split' as const,
       override: {
         mutator: {
           path: MUTATOR_PATH,
           name: MUTATOR_NAME,
           default: true,
         },
+        requestOptions: true,
+        query: {
+          useQuery: true,
+          useInfiniteQuery: true,
+          useMutation: true,
+        },
       },
     },
   },
 
-  // 🔐 Authentication Zod схеми
-  'auth-zod': {
+  // Zod схеми для модуля
+  [`${name}-zod`]: {
     input: {
       target: API_BASE_URL,
       filters: {
-        tags: AUTH_TAGS,
+        tags,
       },
     },
     output: {
-      target: './shared/api/generated/auth/zod',
-      client: 'zod',
-      mode: 'split', // Orval САМ створить індекси
+      target: `./shared/api/generated/${name}/schemas.zod.ts`,
+      client: 'zod' as const,
+      mode: 'single' as const,
       override: {
         zod: {
           generate: {
@@ -106,70 +117,33 @@ const config: Config = {
       },
     },
   },
+});
 
-  // 🔥 Order Wizard - Тонкі Axios клієнти
-  'wizard-api': {
-    input: {
-      target: API_BASE_URL,
-      filters: {
-        tags: ORDER_WIZARD_TAGS,
-      },
-    },
-    output: {
-      target: './shared/api/generated/wizard',
-      client: 'axios', // 🎯 Тільки axios - БЕЗ react-query
-      mode: 'split', // Orval САМ створить індекси
-      override: {
-        mutator: {
-          path: MUTATOR_PATH,
-          name: MUTATOR_NAME,
-          default: true,
-        },
-      },
-    },
-  },
+const config: Config = {
+  // 🔐 Authentication
+  ...createModuleConfig('auth', TAGS.auth),
 
-  // 🔥 Zod схеми
-  'wizard-zod': {
-    input: {
-      target: API_BASE_URL,
-      filters: {
-        tags: ORDER_WIZARD_TAGS,
-      },
-    },
-    output: {
-      target: './shared/api/generated/wizard/zod',
-      client: 'zod',
-      mode: 'split', // Orval САМ створить індекси
-      override: {
-        zod: {
-          generate: {
-            body: true,
-            param: true,
-            query: true,
-            header: true,
-            response: true,
-          },
-          // 🛡️ Zod strict режим для "zero trust" API
-          strict: {
-            param: true, // Строга валідація параметрів
-            query: true, // Строга валідація query
-            header: true, // Строга валідація заголовків
-            body: true, // Строга валідація body
-            response: true, // Строга валідація відповіді
-          },
-          // 🔧 Автоматичне перетворення типів (базова підтримка)
-          coerce: {
-            param: true, // Перетворює параметри
-            query: true, // Перетворює query
-            body: true, // Перетворює body поля
-            response: true, // Перетворює response поля
-          },
-          generateEachHttpStatus: true,
-        },
-      },
-    },
-  },
+  // 🔥 Order Wizard - Stage 1
+  ...createModuleConfig('stage1', TAGS.stage1),
+
+  // 🔥 Order Wizard - Stage 2
+  ...createModuleConfig('stage2', TAGS.stage2),
+
+  // 🔥 Order Wizard - Substeps
+  ...createModuleConfig('substep1', TAGS.substep1),
+  ...createModuleConfig('substep2', TAGS.substep2),
+  ...createModuleConfig('substep3', TAGS.substep3),
+  ...createModuleConfig('substep4', TAGS.substep4),
+  ...createModuleConfig('substep5', TAGS.substep5),
+
+  // 🔥 Order Wizard - Stage 3
+  ...createModuleConfig('stage3', TAGS.stage3),
+
+  // 🔥 Order Wizard - Stage 4
+  ...createModuleConfig('stage4', TAGS.stage4),
+
+  // 🔥 Order Wizard - Main API
+  ...createModuleConfig('main', TAGS.main),
 };
 
 export default config;

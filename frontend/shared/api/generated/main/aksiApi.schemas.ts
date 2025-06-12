@@ -1923,9 +1923,7 @@ export interface ModifierRecommendationDTO {
   riskWarning?: string;
 }
 
-export type AuthRegister200 = { [key: string]: unknown };
+export type OrderWizardGetSessionInfo200 = {[key: string]: unknown};
 
-export type AuthRefreshToken200 = { [key: string]: unknown };
-
-export type AuthLogin200 = { [key: string]: unknown };
+export type OrderWizardGetAvailableTransitions200 = {[key: string]: unknown};
 

@@ -1923,9 +1923,28 @@ export interface ModifierRecommendationDTO {
   riskWarning?: string;
 }
 
-export type AuthRegister200 = { [key: string]: unknown };
+export type Substep4GetAvailableModifiersParams = {
+categoryCode: string;
+};
 
-export type AuthRefreshToken200 = { [key: string]: unknown };
+export type Substep4GetRecommendedModifiersParams = {
+categoryCode: string;
+itemName: string;
+};
 
-export type AuthLogin200 = { [key: string]: unknown };
+export type Substep4GetAvailableEvents200Item = typeof Substep4GetAvailableEvents200Item[keyof typeof Substep4GetAvailableEvents200Item];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Substep4GetAvailableEvents200Item = {
+  INITIALIZE: 'INITIALIZE',
+  CALCULATE_BASE_PRICE: 'CALCULATE_BASE_PRICE',
+  SELECT_MODIFIERS: 'SELECT_MODIFIERS',
+  ADD_MODIFIER: 'ADD_MODIFIER',
+  REMOVE_MODIFIER: 'REMOVE_MODIFIER',
+  CALCULATE_FINAL_PRICE: 'CALCULATE_FINAL_PRICE',
+  CONFIRM_CALCULATION: 'CONFIRM_CALCULATION',
+  RESET_CALCULATION: 'RESET_CALCULATION',
+  HANDLE_ERROR: 'HANDLE_ERROR',
+} as const;
 

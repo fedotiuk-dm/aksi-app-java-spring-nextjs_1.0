@@ -9,7 +9,6 @@ import {
   z as zod
 } from 'zod';
 
-
 /**
  * Створює нового користувача і повертає JWT токен
  * @summary Реєстрація нового користувача
@@ -231,5 +230,3 @@ export const authTestEndpoint409Response = zod.object({
   "message": zod.coerce.string().optional(),
   "path": zod.coerce.string().optional()
 }).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
-
-

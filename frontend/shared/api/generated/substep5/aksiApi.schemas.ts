@@ -1923,9 +1923,7 @@ export interface ModifierRecommendationDTO {
   riskWarning?: string;
 }
 
-export type AuthRegister200 = { [key: string]: unknown };
-
-export type AuthRefreshToken200 = { [key: string]: unknown };
-
-export type AuthLogin200 = { [key: string]: unknown };
+export type Substep5AddPhotoBody = {
+  file: Blob;
+};
 

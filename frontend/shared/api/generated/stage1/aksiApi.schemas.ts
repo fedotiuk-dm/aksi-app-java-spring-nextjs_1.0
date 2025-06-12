@@ -1923,9 +1923,80 @@ export interface ModifierRecommendationDTO {
   riskWarning?: string;
 }
 
-export type AuthRegister200 = { [key: string]: unknown };
+export type Stage1ValidateClientForm200 = { [key: string]: unknown };
 
-export type AuthRefreshToken200 = { [key: string]: unknown };
+export type Stage1SelectClientParams = {
+clientId: string;
+};
 
-export type AuthLogin200 = { [key: string]: unknown };
+export type Stage1SearchClientsByPhoneParams = {
+phone: string;
+};
+
+export type Stage1ValidateBasicOrder200 = { [key: string]: unknown };
+
+export type Stage1SetUniqueTagParams = {
+uniqueTag: string;
+};
+
+export type Stage1SelectBranchParams = {
+branchId: string;
+};
+
+export type Stage1GenerateReceiptNumberParams = {
+branchCode: string;
+};
+
+export type Stage1GetClientFormState200 = typeof Stage1GetClientFormState200[keyof typeof Stage1GetClientFormState200];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Stage1GetClientFormState200 = {
+  INIT: 'INIT',
+  FILLING_BASIC_INFO: 'FILLING_BASIC_INFO',
+  FILLING_CONTACT_INFO: 'FILLING_CONTACT_INFO',
+  VALIDATING: 'VALIDATING',
+  CHECKING_DUPLICATES: 'CHECKING_DUPLICATES',
+  DUPLICATES_FOUND: 'DUPLICATES_FOUND',
+  SAVING: 'SAVING',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type Stage1GetClientSearchState200 = typeof Stage1GetClientSearchState200[keyof typeof Stage1GetClientSearchState200];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Stage1GetClientSearchState200 = {
+  INIT: 'INIT',
+  READY_TO_SEARCH: 'READY_TO_SEARCH',
+  SEARCHING: 'SEARCHING',
+  RESULTS_FOUND: 'RESULTS_FOUND',
+  RESULTS_DISPLAYED: 'RESULTS_DISPLAYED',
+  NO_RESULTS: 'NO_RESULTS',
+  CLIENT_SELECTED: 'CLIENT_SELECTED',
+  CREATE_NEW_CLIENT_MODE: 'CREATE_NEW_CLIENT_MODE',
+  COMPLETED: 'COMPLETED',
+  SEARCH_ERROR: 'SEARCH_ERROR',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type Stage1GetBasicOrderState200 = typeof Stage1GetBasicOrderState200[keyof typeof Stage1GetBasicOrderState200];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Stage1GetBasicOrderState200 = {
+  INIT: 'INIT',
+  GENERATING_RECEIPT_NUMBER: 'GENERATING_RECEIPT_NUMBER',
+  RECEIPT_NUMBER_GENERATED: 'RECEIPT_NUMBER_GENERATED',
+  ENTERING_UNIQUE_TAG: 'ENTERING_UNIQUE_TAG',
+  UNIQUE_TAG_ENTERED: 'UNIQUE_TAG_ENTERED',
+  SELECTING_BRANCH: 'SELECTING_BRANCH',
+  BRANCH_SELECTED: 'BRANCH_SELECTED',
+  SETTING_CREATION_DATE: 'SETTING_CREATION_DATE',
+  CREATION_DATE_SET: 'CREATION_DATE_SET',
+  COMPLETED: 'COMPLETED',
+  ERROR: 'ERROR',
+} as const;
 
