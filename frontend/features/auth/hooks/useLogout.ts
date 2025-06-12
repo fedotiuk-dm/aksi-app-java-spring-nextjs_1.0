@@ -8,6 +8,7 @@ import { useAuthStore } from '../store';
 
 /**
  * Хук для виходу користувача із системи
+ * Використовує оновлені Orval згенеровані API клієнти
  */
 export const useLogout = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +17,7 @@ export const useLogout = () => {
 
   const logoutStore = useAuthStore((state) => state.logout);
 
-  // Отримуємо хук для API-запиту
+  // Отримуємо хук для API-запиту (тепер з Orval)
   const apiLogout = useApiLogout();
 
   /**
@@ -28,16 +29,18 @@ export const useLogout = () => {
       setIsLoading(true);
       setError(null);
 
-      // Викликаємо API для виходу
+      // Викликаємо API для виходу (поки що локальна логіка)
       await apiLogout.mutateAsync(undefined);
 
       // Очищаємо стан авторизації
       logoutStore();
 
+      console.log('✅ Успішний вихід з системи');
+
       // Перенаправляємо на цільову сторінку
       router.push(redirectTo);
     } catch (error) {
-      console.error('Помилка при виході:', error);
+      console.error('❌ Помилка при виході:', error);
 
       // Навіть якщо виникла помилка, все одно очищаємо стан авторизації
       logoutStore();
@@ -57,6 +60,9 @@ export const useLogout = () => {
     logout,
     isLoading,
     error,
+    // Додаткові властивості з React Query
+    isApiLoading: apiLogout.isPending,
+    apiError: apiLogout.error,
     logoutMutation: apiLogout,
   };
 };

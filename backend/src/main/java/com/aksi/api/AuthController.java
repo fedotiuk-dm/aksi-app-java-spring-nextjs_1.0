@@ -37,8 +37,12 @@ public class AuthController {
      * @return відповідь з JWT токеном
      */
     @PostMapping("/register")
-    @Operation(summary = "Реєстрація нового користувача",
-               description = "Створює нового користувача і повертає JWT токен")
+    @Operation(
+        summary = "Реєстрація нового користувача",
+        description = "Створює нового користувача і повертає JWT токен",
+        operationId = "authRegister",
+        tags = {"Authentication", "User Registration"}
+    )
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
             AuthResponse response = authService.register(request);
@@ -55,8 +59,12 @@ public class AuthController {
      * @return відповідь з JWT токеном
      */
     @PostMapping("/login")
-    @Operation(summary = "Вхід користувача",
-               description = "Автентифікує користувача і повертає JWT токен")
+    @Operation(
+        summary = "Вхід користувача",
+        description = "Автентифікує користувача і повертає JWT токен",
+        operationId = "authLogin",
+        tags = {"Authentication", "User Login"}
+    )
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
             AuthResponse response = authService.login(request);
@@ -73,8 +81,12 @@ public class AuthController {
      * @return відповідь з новим JWT токеном
      */
     @PostMapping("/refresh-token")
-    @Operation(summary = "Оновлення токена",
-               description = "Оновлює JWT токен за допомогою refresh токена")
+    @Operation(
+        summary = "Оновлення токена",
+        description = "Оновлює JWT токен за допомогою refresh токена",
+        operationId = "authRefreshToken",
+        tags = {"Authentication", "Token Management"}
+    )
     public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) {
         try {
             AuthResponse response = authService.refreshToken(refreshToken);
@@ -90,8 +102,12 @@ public class AuthController {
      * @return відповідь про успішне з'єднання
      */
     @GetMapping("/test")
-    @Operation(summary = "Перевірка доступності",
-               description = "Тестовий ендпоінт для перевірки доступності API аутентифікації")
+    @Operation(
+        summary = "Перевірка доступності",
+        description = "Тестовий ендпоінт для перевірки доступності API аутентифікації",
+        operationId = "authTestEndpoint",
+        tags = {"Authentication", "Health Check"}
+    )
     public ResponseEntity<String> testAuthEndpoint() {
         return ApiResponseUtils.ok("Auth endpoint is working!", "Тестовий запит до API аутентифікації");
     }

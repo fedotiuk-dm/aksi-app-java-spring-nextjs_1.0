@@ -27,6 +27,25 @@
       "@/lib/api": ["./lib/api"],
       "@/lib/api/*": ["./lib/api/*"],
       "@features/order-wizard/*": ["./features/order-wizard/*"],
+
+      // 🚀 API та Zod схеми alias'и для зручності
+      "@api/wizard": ["./shared/api/generated/wizard"],
+      "@api/wizard/*": ["./shared/api/generated/wizard/*"],
+      "@api/wizard/zod": ["./shared/api/generated/wizard/zod"],
+      "@api/wizard/types": ["./shared/api/generated/wizard/aksiApi.schemas"],
+      "@api/auth": ["./shared/api/generated/auth"],
+      "@api/auth/*": ["./shared/api/generated/auth/*"],
+      "@api/auth/zod": ["./shared/api/generated/auth/zod"],
+      "@api/auth/types": ["./shared/api/generated/auth/authApi.schemas"],
+
+      // 🎯 Доменні alias'и
+      "@domains/*": ["./domains/*"],
+      "@domains/wizard/*": ["./domains/wizard/*"],
+
+      // 🔧 Спільні компоненти
+      "@shared/*": ["./shared/*"],
+      "@shared/ui": ["./shared/ui"],
+      "@shared/lib": ["./shared/lib"]
     }
   },
   "include": [

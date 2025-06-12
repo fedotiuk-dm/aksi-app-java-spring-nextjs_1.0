@@ -4,12 +4,14 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { useLogin as useApiLogin } from '../api';
+import { adaptOrvalLoginResponse } from '../model/types';
 import { useAuthStore } from '../store';
 
-import type { LoginRequest } from '@/lib/api';
+import type { LoginRequest } from '@/shared/api/generated/auth/aksiApi.schemas';
 
 /**
  * Клієнтський хук для входу користувача у систему
+ * Використовує оновлені Orval згенеровані API клієнти
  */
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +22,7 @@ export const useLogin = () => {
   const setStoreError = useAuthStore((state) => state.setError);
   const setStoreLoading = useAuthStore((state) => state.setLoading);
 
-  // Отримуємо хук для API-запиту
+  // Отримуємо хук для API-запиту (тепер з Orval)
   const apiLoginMutation = useApiLogin();
 
   /**
@@ -35,8 +37,11 @@ export const useLogin = () => {
       setError(null);
       setStoreError(null);
 
-      // Використовуємо оновлений API хук для логіну
-      const user = await apiLoginMutation.mutateAsync(credentials);
+      // Використовуємо оновлений Orval API хук для логіну
+      const response = await apiLoginMutation.mutateAsync(credentials);
+
+      // Адаптуємо Orval response до AuthUser формату
+      const user = adaptOrvalLoginResponse(response);
 
       // Зберігаємо дані користувача в глобальному стані
       setUser(user);
@@ -47,7 +52,7 @@ export const useLogin = () => {
       return user;
     } catch (error: unknown) {
       const errorMessage = (error as Error).message || 'Помилка при вході в систему';
-      console.error('Помилка при вході в систему:', error);
+      console.error('❌ Помилка при вході в систему:', error);
       setError(errorMessage);
       setStoreError({ message: errorMessage, status: 401 });
       throw error;
@@ -61,5 +66,8 @@ export const useLogin = () => {
     login,
     isLoading,
     error,
+    // Додаткові властивості з React Query
+    isApiLoading: apiLoginMutation.isPending,
+    apiError: apiLoginMutation.error,
   };
 };

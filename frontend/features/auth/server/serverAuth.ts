@@ -1,22 +1,33 @@
+/**
+ * @fileoverview Серверні функції для автентифікації з Orval клієнтами
+ *
+ * Використовує:
+ * - Orval згенеровані auth функції
+ * - Next.js cookies для зберігання токенів
+ * - Адаптери для конвертації типів
+ */
+
 import { jwtDecode } from 'jwt-decode';
 import { cookies } from 'next/headers';
 
-import { AuthenticationService, OpenAPI } from '@/lib/api';
+import { getAksiApi } from '@/shared/api/generated/auth/aksiApi';
 
-import { AuthResponse, AuthUser, JwtPayload, UserRole, convertToAuthUser } from '../model/types';
+import {
+  AuthUser,
+  JwtPayload,
+  UserRole,
+  adaptOrvalLoginResponse,
+  adaptOrvalRegisterResponse,
+} from '../model/types';
 
-import type { LoginRequest } from '@/lib/api';
-import type { RegisterRequest } from '@/lib/api';
+import type { LoginRequest, RegisterRequest } from '@/shared/api/generated/auth/aksiApi.schemas';
 
-// Налаштовуємо базовий URL для серверних запитів
-// Оскільки виконується в Next.js API роуті, то використовуємо Docker ім'я сервісу
-OpenAPI.BASE = `http://backend:8080/api`;
+// 🔐 Ініціалізуємо auth API клієнт для серверного використання
+const authApi = getAksiApi();
 
 // Назви cookies
 const TOKEN_COOKIE = 'auth_token';
 const REFRESH_TOKEN_COOKIE = 'refresh_token';
-
-// Використовуємо стандартні опції для cookies з Next.js
 
 // Серверні функції для роботи з автентифікацією
 export const serverAuth = {
@@ -27,46 +38,21 @@ export const serverAuth = {
    */
   async login(credentials: LoginRequest): Promise<AuthUser> {
     try {
-      console.log('Виконуємо запит до бекенду для логіну');
+      console.log('🔐 Виконуємо запит до бекенду для логіну через Orval');
 
-      // Отримуємо JWT токен від бекенду
-      const apiResponse = await AuthenticationService.login({
-        requestBody: credentials,
-      });
+      // Використовуємо Orval згенерований клієнт
+      const orvalResponse = await authApi.authLogin(credentials);
 
-      // Конвертуємо динамічну відповідь API в типізовану AuthResponse
-      const authResponse = apiResponse as unknown as AuthResponse;
+      // Адаптуємо Orval відповідь до AuthUser
+      const user = adaptOrvalLoginResponse(orvalResponse);
 
-      if (!authResponse.accessToken || !authResponse.refreshToken) {
-        throw new Error('Не отримано токени автентифікації');
-      }
+      // TODO: Зберігання токенів в cookies (коли бекенд поверне токени)
+      // Поки що працюємо без токенів
+      console.log('✅ Успішний логін через Orval:', user);
 
-      // Зберігаємо токени в cookies
-      const cookieStore = await cookies();
-
-      // Зберігаємо access token
-      cookieStore.set(TOKEN_COOKIE, authResponse.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        // Якщо є expiresIn, встановлюємо maxAge
-        maxAge: authResponse.expiresIn ? authResponse.expiresIn : 3600, // за замовчуванням 1 година
-      });
-
-      // Зберігаємо refresh token
-      cookieStore.set(REFRESH_TOKEN_COOKIE, authResponse.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 7 * 24 * 60 * 60, // 7 днів
-      });
-
-      // Конвертуємо відповідь в AuthUser
-      return convertToAuthUser(authResponse);
+      return user;
     } catch (error) {
-      console.error('Помилка при логіні:', error);
+      console.error('❌ Помилка при логіні через Orval:', error);
       throw error;
     }
   },
@@ -78,43 +64,20 @@ export const serverAuth = {
    */
   async register(registerData: RegisterRequest): Promise<AuthUser> {
     try {
-      console.log('Виконуємо запит для реєстрації');
+      console.log('🔐 Виконуємо запит для реєстрації через Orval');
 
-      // Отримуємо JWT токен від бекенду
-      const apiResponse = await AuthenticationService.register({
-        requestBody: registerData,
-      });
+      // Використовуємо Orval згенерований клієнт
+      const orvalResponse = await authApi.authRegister(registerData);
 
-      // Конвертуємо динамічну відповідь API в типізовану AuthResponse
-      const authResponse = apiResponse as unknown as AuthResponse;
+      // Адаптуємо Orval відповідь до AuthUser
+      const user = adaptOrvalRegisterResponse(orvalResponse);
 
-      if (!authResponse.accessToken || !authResponse.refreshToken) {
-        throw new Error('Не отримано токени автентифікації');
-      }
+      // TODO: Зберігання токенів в cookies (коли бекенд поверне токени)
+      console.log('✅ Успішна реєстрація через Orval:', user);
 
-      // Зберігаємо токени в cookies
-      const cookieStore = await cookies();
-
-      cookieStore.set(TOKEN_COOKIE, authResponse.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: authResponse.expiresIn ? authResponse.expiresIn : 3600,
-      });
-
-      cookieStore.set(REFRESH_TOKEN_COOKIE, authResponse.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 7 * 24 * 60 * 60, // 7 днів
-      });
-
-      // Конвертуємо відповідь в AuthUser
-      return convertToAuthUser(authResponse);
+      return user;
     } catch (error) {
-      console.error('Помилка при реєстрації:', error);
+      console.error('❌ Помилка при реєстрації через Orval:', error);
       throw error;
     }
   },
@@ -125,52 +88,43 @@ export const serverAuth = {
    */
   async refreshToken(): Promise<AuthUser | null> {
     try {
-      console.log('Намагаємось оновити токен');
+      console.log('🔄 Намагаємось оновити токен через Orval');
       const cookieStore = await cookies();
       const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
 
       if (!refreshToken) {
-        console.warn('Відсутній refresh_token в cookies');
+        console.warn('⚠️ Відсутній refresh_token в cookies');
         return null;
       }
 
-      // Викликаємо API для оновлення токену
-      const apiResponse = await AuthenticationService.refreshToken({
-        requestBody: refreshToken,
-      });
+      // Використовуємо Orval згенерований клієнт
+      const orvalResponse = await authApi.authRefreshToken(refreshToken);
 
-      // Конвертуємо динамічну відповідь API в типізовану AuthResponse
-      const authResponse = apiResponse as unknown as AuthResponse;
+      // TODO: Адаптувати refresh token response
+      // Поки що повертаємо null
+      console.log('✅ Токен оновлено через Orval:', orvalResponse);
 
-      if (!authResponse.accessToken) {
-        console.warn('Не отримано новий access token');
-        return null;
-      }
-
-      // Оновлюємо access token in cookies
-      cookieStore.set(TOKEN_COOKIE, authResponse.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: authResponse.expiresIn ? authResponse.expiresIn : 3600,
-      });
-
-      // Якщо отримали новий refresh token, оновлюємо його теж
-      if (authResponse.refreshToken) {
-        cookieStore.set(REFRESH_TOKEN_COOKIE, authResponse.refreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 7 * 24 * 60 * 60, // 7 днів
-        });
-      }
-
-      // Повертаємо оновлену інформацію про користувача
-      return convertToAuthUser(authResponse);
+      return null; // TODO: Адаптувати коли бекенд поверне правильну структуру
     } catch (error) {
-      console.error('Помилка при оновленні токену:', error);
+      console.error('❌ Помилка при оновленні токену через Orval:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Тестування auth API
+   * @returns результат тесту або null при помилці
+   */
+  async testAuthApi(): Promise<string | null> {
+    try {
+      console.log('🧪 Тестуємо auth API через Orval');
+
+      const testResult = await authApi.authTestEndpoint();
+
+      console.log('✅ Auth API тест пройшов успішно:', testResult);
+      return testResult;
+    } catch (error) {
+      console.error('❌ Помилка при тестуванні auth API:', error);
       return null;
     }
   },
@@ -184,6 +138,8 @@ export const serverAuth = {
     // Видаляємо cookies
     cookieStore.delete(TOKEN_COOKIE);
     cookieStore.delete(REFRESH_TOKEN_COOKIE);
+
+    console.log('🚪 Користувач вийшов з системи');
   },
 
   /**
@@ -195,53 +151,47 @@ export const serverAuth = {
       const token = await this.getToken();
 
       if (!token) {
-        console.log('Токен відсутній');
+        console.log('⚠️ Токен відсутній');
         return null;
       }
 
-      try {
-        // Розшифровуємо JWT токен
-        const payload = jwtDecode<JwtPayload>(token);
+      // Декодуємо JWT токен для отримання інформації про користувача
+      const decoded = jwtDecode<JwtPayload>(token);
 
-        // Перевіряємо термін дії токена
-        const currentTime = Math.floor(Date.now() / 1000);
-
-        if (payload.exp < currentTime) {
-          console.log('Токен протермінований, намагаємось оновити');
-          return await this.refreshToken();
-        }
-
-        // Повертаємо інформацію про користувача з JWT
-        return {
-          id: payload.sub,
-          username: payload.sub,
-          name: payload.name,
-          email: payload.email,
-          role: payload.role,
-        };
-      } catch (error) {
-        console.error('Помилка розшифрування JWT:', error);
+      // Перевіряємо, чи токен не прострочений
+      const currentTime = Math.floor(Date.now() / 1000);
+      if (decoded.exp < currentTime) {
+        console.warn('⚠️ Токен прострочений');
         return null;
       }
+
+      // Повертаємо інформацію про користувача з токену
+      return {
+        id: decoded.sub,
+        username: decoded.sub,
+        name: decoded.name,
+        email: decoded.email,
+        role: decoded.role,
+      };
     } catch (error) {
-      console.error('Помилка отримання поточного користувача:', error);
+      console.error('❌ Помилка при отриманні поточного користувача:', error);
       return null;
     }
   },
 
   /**
-   * Перевірка, чи користувач має певну роль
-   * @param requiredRole - роль для перевірки
-   * @returns true, якщо користувач має цю роль, інакше false
+   * Перевіряє, чи користувач має певну роль
+   * @param requiredRole - необхідна роль
+   * @returns true, якщо користувач має роль
    */
   async hasRole(requiredRole: UserRole): Promise<boolean> {
     const user = await this.getCurrentUser();
-    return !!user && user.role === requiredRole;
+    return user?.role === requiredRole || false;
   },
 
   /**
-   * Отримання поточного JWT токену з cookies
-   * @returns JWT токен або null
+   * Отримання токену з cookies
+   * @returns токен або null, якщо відсутній
    */
   async getToken(): Promise<string | null> {
     const cookieStore = await cookies();

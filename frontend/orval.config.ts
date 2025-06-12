@@ -1,34 +1,32 @@
 /**
- * @fileoverview Конфігурація Orval з фільтрацією тільки для Order Wizard контролерів
+ * @fileoverview СПРОЩЕНА конфігурація Orval: Дозволяємо Orval робити свою роботу
  *
- * Генерує тільки вибрані контролери:
- * - Stage 1, 2, 3, 4 Controllers
- * - Substep 1, 2, 3, 4, 5 Controllers
- * - OrderWizardMainController
+ * 🎯 Філософія: "Orval знає як створювати файли - не заважаємо йому"
  *
- * Структура:
+ * ✅ Що генерується АВТОМАТИЧНО:
+ * - Тонкі Axios клієнти (БЕЗ React Query)
+ * - Індекси для експорту
+ * - Zod схеми для валідації
+ * - TypeScript типи
+ *
+ * 📁 Результат (автоматично):
  * shared/api/generated/wizard/
- *   ├── aksiApi.ts              - React Query хуки для Order Wizard API
- *   ├── aksiApi.schemas.ts      - TypeScript типи
+ *   ├── aksiApi.ts           - Тонкі Axios функції
+ *   ├── aksiApi.schemas.ts   - TypeScript типи
+ *   ├── index.ts             - Автоматичний індекс
  *   └── zod/
- *       └── aksiApi.ts          - Zod схеми для валідації
- *
- * 🔥 Features:
- * - Тільки Order Wizard домени
- * - React Query хуки з advanced налаштуваннями
- * - Zod схеми з повною валідацією
- * - Типізовані API клієнти
- * - Автоматичне оновлення індексних файлів
+ *       ├── aksiApi.ts       - Zod схеми
+ *       └── index.ts         - Автоматичний індекс
  */
 
 import type { Config } from '@orval/core';
 
-// 🔧 Константи конфігурації
+// 🔧 Константи
 const API_BASE_URL = 'http://localhost:8080/api/v3/api-docs';
 const MUTATOR_PATH = './lib/api/orval-fetcher.ts';
 const MUTATOR_NAME = 'orvalFetcher';
 
-// 🎯 Теги Order Wizard контролерів для фільтрації (оновлено після стандартизації бекенду)
+// 🎯 Теги для фільтрації
 const ORDER_WIZARD_TAGS = [
   'Order Wizard - Stage 1',
   'Order Wizard - Stage 2',
@@ -42,84 +40,134 @@ const ORDER_WIZARD_TAGS = [
   'Order Wizard - Main API',
 ];
 
+const AUTH_TAGS = ['Authentication'];
+
 const config: Config = {
-  // 🌟 Order Wizard API клієнт (React Query + TypeScript типи)
+  // 🔐 Authentication API - Тонкі Axios клієнти
+  'auth-api': {
+    input: {
+      target: API_BASE_URL,
+      filters: {
+        tags: AUTH_TAGS,
+      },
+    },
+    output: {
+      target: './shared/api/generated/auth',
+      client: 'axios', // 🎯 Тільки axios - БЕЗ react-query
+      mode: 'split', // Orval САМ створить індекси
+      override: {
+        mutator: {
+          path: MUTATOR_PATH,
+          name: MUTATOR_NAME,
+          default: true,
+        },
+      },
+    },
+  },
+
+  // 🔐 Authentication Zod схеми
+  'auth-zod': {
+    input: {
+      target: API_BASE_URL,
+      filters: {
+        tags: AUTH_TAGS,
+      },
+    },
+    output: {
+      target: './shared/api/generated/auth/zod',
+      client: 'zod',
+      mode: 'split', // Orval САМ створить індекси
+      override: {
+        zod: {
+          generate: {
+            body: true,
+            param: true,
+            query: true,
+            header: true,
+            response: true,
+          },
+          // 🛡️ Zod strict режим для "zero trust" API
+          strict: {
+            param: true,
+            query: true,
+            header: true,
+            body: true,
+            response: true,
+          },
+          // 🔧 Автоматичне перетворення типів
+          coerce: {
+            param: true,
+            query: true,
+            body: true,
+            response: true,
+          },
+          generateEachHttpStatus: true,
+        },
+      },
+    },
+  },
+
+  // 🔥 Order Wizard - Тонкі Axios клієнти
   'wizard-api': {
-  input: {
-    target: API_BASE_URL,
-      // 🔍 Фільтрація тільки по Order Wizard тегах
-    filters: {
+    input: {
+      target: API_BASE_URL,
+      filters: {
         tags: ORDER_WIZARD_TAGS,
+      },
     },
-  },
-  output: {
+    output: {
       target: './shared/api/generated/wizard',
-    client: 'react-query' as const,
-    mode: 'split' as const,
-    override: {
-      // 🔧 Кастомний mutator з error handling
-      mutator: {
-        path: MUTATOR_PATH,
-        name: MUTATOR_NAME,
-        default: true,
-      },
-
-        // 🎣 React Query конфігурація (без застарілих options)
-      query: {
-        useQuery: true,
-        useMutation: true,
-        useInfinite: true, // Додаємо infinite queries
-        signal: true, // Підтримка AbortController
+      client: 'axios', // 🎯 Тільки axios - БЕЗ react-query
+      mode: 'split', // Orval САМ створить індекси
+      override: {
+        mutator: {
+          path: MUTATOR_PATH,
+          name: MUTATOR_NAME,
+          default: true,
         },
       },
     },
-  hooks: {
-    afterAllFilesWrite: [
-      'node ./scripts/create-api-index.js',
-        'echo "✅ Generated Order Wizard API"',
-    ],
-    },
   },
 
-  // 🔥 Order Wizard Zod схеми
+  // 🔥 Zod схеми
   'wizard-zod': {
-  input: {
-    target: API_BASE_URL,
-      // 🔍 Фільтрація тільки по Order Wizard тегах
-    filters: {
+    input: {
+      target: API_BASE_URL,
+      filters: {
         tags: ORDER_WIZARD_TAGS,
-    },
-  },
-  output: {
-      target: './shared/api/generated/wizard/zod',
-    client: 'zod' as const,
-    mode: 'split' as const,
-    override: {
-      // 🔧 Zod-специфічні налаштування
-      zod: {
-        generate: {
-          body: true,
-          param: true,
-          query: true,
-          header: true,
-          response: true,
-        },
-        strict: {
-          param: true,
-          query: true,
-          header: true,
-          body: true,
-          response: true,
-        },
-        generateEachHttpStatus: true,
       },
     },
-  },
-  hooks: {
-      afterAllFilesWrite: [
-        'node ./scripts/create-zod-index.js wizard',
-        'echo "✅ Generated Order Wizard Zod schemas"',
-    ],
+    output: {
+      target: './shared/api/generated/wizard/zod',
+      client: 'zod',
+      mode: 'split', // Orval САМ створить індекси
+      override: {
+        zod: {
+          generate: {
+            body: true,
+            param: true,
+            query: true,
+            header: true,
+            response: true,
+          },
+          // 🛡️ Zod strict режим для "zero trust" API
+          strict: {
+            param: true, // Строга валідація параметрів
+            query: true, // Строга валідація query
+            header: true, // Строга валідація заголовків
+            body: true, // Строга валідація body
+            response: true, // Строга валідація відповіді
+          },
+          // 🔧 Автоматичне перетворення типів (базова підтримка)
+          coerce: {
+            param: true, // Перетворює параметри
+            query: true, // Перетворює query
+            body: true, // Перетворює body поля
+            response: true, // Перетворює response поля
+          },
+          generateEachHttpStatus: true,
+        },
+      },
     },
   },
 };
