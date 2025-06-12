@@ -197,6 +197,13 @@ public class StainsDefectsCoordinationService {
     // ===== ДЕЛЕГАЦІЯ ДО STATE SERVICE =====
 
     /**
+     * Створює контекст сесії.
+     */
+    public StainsDefectsContext createContext(final UUID sessionId) {
+        return stateService.createContext(sessionId);
+    }
+
+    /**
      * Отримує контекст сесії.
      */
     public StainsDefectsContext getContext(final UUID sessionId) {

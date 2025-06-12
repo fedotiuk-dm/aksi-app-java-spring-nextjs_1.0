@@ -3,12 +3,15 @@ package com.aksi.domain.order.statemachine.adapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.util.ObjectUtils;
 
 import com.aksi.domain.order.statemachine.OrderEvent;
 import com.aksi.domain.order.statemachine.OrderState;
+
+import reactor.core.publisher.Mono;
 
 /**
  * Базовий адаптер для роботи з StateMachineService.
@@ -81,7 +84,13 @@ public abstract class BaseStateMachineAdapter {
 
         try {
             StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
-            boolean result = stateMachine.sendEvent(event);
+
+            // Використовуємо новий реактивний API замість застарілого sendEvent
+            var eventResult = stateMachine.sendEvent(Mono.just(MessageBuilder.withPayload(event).build()))
+                .blockFirst();
+
+            boolean result = eventResult != null &&
+                eventResult.getResultType().equals(org.springframework.statemachine.StateMachineEventResult.ResultType.ACCEPTED);
 
             if (result) {
                 logger.info("✅ [BASE-ADAPTER] Подія {} успішно оброблена для sessionId: {}", event, sessionId);
