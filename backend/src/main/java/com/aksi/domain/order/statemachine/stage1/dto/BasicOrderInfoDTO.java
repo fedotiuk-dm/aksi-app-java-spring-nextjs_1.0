@@ -1,6 +1,7 @@
 package com.aksi.domain.order.statemachine.stage1.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import com.aksi.domain.branch.dto.BranchLocationDTO;
@@ -25,6 +26,11 @@ public class BasicOrderInfoDTO {
      * Обрана філія для прийому замовлення.
      */
     private BranchLocationDTO selectedBranch;
+
+    /**
+     * Список доступних філій для вибору (завантажується через State Machine).
+     */
+    private List<BranchLocationDTO> availableBranches;
 
     /**
      * ID обраної філії (для простішого маппінгу).
@@ -175,6 +181,70 @@ public class BasicOrderInfoDTO {
 
     public boolean isCreationDateSet() {
         return creationDateSet;
+    }
+
+    public List<BranchLocationDTO> getAvailableBranches() {
+        return availableBranches;
+    }
+
+    public void setAvailableBranches(List<BranchLocationDTO> availableBranches) {
+        this.availableBranches = availableBranches;
+    }
+
+    // ========== МЕТОДИ ДЛЯ РОБОТИ З ФІЛІЯМИ ==========
+
+    /**
+     * Повертає всі доступні філії (завантажуються автоматично при ініціалізації).
+     */
+    public List<BranchLocationDTO> getAllBranches() {
+        return availableBranches != null ? availableBranches : java.util.Collections.emptyList();
+    }
+
+    /**
+     * Знаходить філію за ID серед доступних філій.
+     */
+    public BranchLocationDTO getBranchById(UUID branchId) {
+        if (branchId == null || availableBranches == null) {
+            return null;
+        }
+
+        return availableBranches.stream()
+                .filter(branch -> branchId.equals(branch.getId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Перевіряє чи філія доступна для вибору.
+     */
+    public boolean isBranchAvailable(UUID branchId) {
+        return getBranchById(branchId) != null;
+    }
+
+    /**
+     * Вибирає філію за ID якщо вона доступна.
+     */
+    public boolean selectBranchById(UUID branchId) {
+        BranchLocationDTO branch = getBranchById(branchId);
+        if (branch != null) {
+            setSelectedBranch(branch);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Перевіряє чи філії завантажені.
+     */
+    public boolean hasBranchesLoaded() {
+        return availableBranches != null && !availableBranches.isEmpty();
+    }
+
+    /**
+     * Отримує кількість доступних філій.
+     */
+    public int getBranchesCount() {
+        return availableBranches != null ? availableBranches.size() : 0;
     }
 
     @Override

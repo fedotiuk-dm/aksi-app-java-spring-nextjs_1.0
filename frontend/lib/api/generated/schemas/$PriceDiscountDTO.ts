@@ -40,17 +40,17 @@ export const $PriceDiscountDTO = {
         errorMessage: {
             type: 'string',
         },
-        basePrice: {
-            type: 'number',
-        },
-        finalPrice: {
-            type: 'number',
-        },
         calculationDetails: {
             type: 'array',
             contains: {
                 type: 'CalculationDetailsDTO',
             },
+        },
+        basePrice: {
+            type: 'number',
+        },
+        finalPrice: {
+            type: 'number',
         },
         modifiersCount: {
             type: 'number',

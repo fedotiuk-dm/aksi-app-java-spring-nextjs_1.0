@@ -82,6 +82,13 @@ public class ItemCharacteristicsStateService {
     }
 
     /**
+     * Отримує контекст або створює новий, якщо не існує.
+     */
+    public ItemCharacteristicsContext getOrCreateContext(final UUID sessionId) {
+        return contexts.computeIfAbsent(sessionId, id -> new ItemCharacteristicsContext());
+    }
+
+    /**
      * Оновлює стан контексту.
      */
     public void updateState(final UUID sessionId, final ItemCharacteristicsState newState) {

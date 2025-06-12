@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 
 const GENERATED_API_PATH = path.join(__dirname, '../shared/api/generated');
-const DOMAINS = ['auth', 'branch', 'client', 'order', 'order-wizard', 'pricing', 'receipt', 'test'];
+const WIZARD_DOMAIN = 'wizard'; // Тільки Order Wizard контролери
 
 /**
  * Створює index.ts файл для конкретного домену
@@ -82,7 +82,7 @@ function createMainIndex() {
 
   let exports = [
     `/**`,
-    ` * @fileoverview Головний index для всіх згенерованих API`,
+    ` * @fileoverview Головний index для Order Wizard API`,
     ` * `,
     ` * Цей файл автоматично генерується скриптом create-api-index.js`,
     ` * НЕ РЕДАГУЙТЕ ВРУЧНУ!`,
@@ -90,55 +90,45 @@ function createMainIndex() {
     '',
   ];
 
-  DOMAINS.forEach((domain) => {
-    const domainPath = path.join(GENERATED_API_PATH, domain);
-    const domainIndexPath = path.join(domainPath, 'index.ts');
+  // Експортуємо тільки wizard API
+  const wizardApiPath = path.join(GENERATED_API_PATH, WIZARD_DOMAIN);
+  const wizardIndexPath = path.join(wizardApiPath, 'index.ts');
 
-    if (fs.existsSync(domainIndexPath)) {
-      // Конвертуємо назву домену для валідного експорту (видаляємо дефіси)
-      const exportName = domain.replace(/-/g, '');
-      const displayName = domain.charAt(0).toUpperCase() + domain.slice(1).replace(/-/g, ' ');
-
-      exports.push(`// ${displayName} домен`);
-      exports.push(`export * as ${exportName}Api from './${domain}';`);
-      exports.push('');
-    }
-  });
-
-  // Додаємо експорт full API якщо є
-  const fullApiPath = path.join(GENERATED_API_PATH, 'full');
-  if (fs.existsSync(fullApiPath)) {
-    exports.push(`// Повний API без розбивки по доменах`);
-    exports.push(`export * as fullApi from './full';`);
+  if (fs.existsSync(wizardIndexPath)) {
+    exports.push(`// Order Wizard API (всі Stage та Substep контролери)`);
+    exports.push(`export * as wizardApi from './wizard';`);
+    exports.push('');
+    exports.push(`// Для сумісності з попередніми версіями`);
+    exports.push(`export * from './wizard';`);
+    exports.push('');
+  } else {
+    exports.push(`// ⚠️  Wizard API не знайдено - перевірте генерацію`);
     exports.push('');
   }
 
   const content = exports.join('\n');
   fs.writeFileSync(mainIndexPath, content, 'utf8');
-  console.log(`✅ Створено головний index файл`);
+  console.log(`✅ Створено головний index файл для Order Wizard API`);
 }
 
 /**
  * Основна функція
  */
 function main() {
-  console.log('🚀 Створення index файлів для API...');
+  console.log('🚀 Створення index файлів для Order Wizard API...');
 
   // Створюємо папку якщо не існує
   if (!fs.existsSync(GENERATED_API_PATH)) {
     fs.mkdirSync(GENERATED_API_PATH, { recursive: true });
   }
 
-  // Створюємо index для кожного домену
-  DOMAINS.forEach(createDomainIndex);
-
-  // Створюємо index для full API окремо
-  createDomainIndex('full');
+  // Створюємо index тільки для wizard домену
+  createDomainIndex(WIZARD_DOMAIN);
 
   // Створюємо головний index
   createMainIndex();
 
-  console.log('🎉 Завершено створення index файлів!');
+  console.log('🎉 Завершено створення index файлів для Order Wizard!');
 }
 
 // Запускаємо якщо це головний модуль

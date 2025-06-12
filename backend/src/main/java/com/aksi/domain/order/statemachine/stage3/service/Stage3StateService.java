@@ -242,6 +242,21 @@ public class Stage3StateService {
     }
 
     /**
+     * Отримує контекст або створює новий, якщо не існує (перевантажений метод для String)
+     */
+    public Stage3Context getOrCreateContext(String sessionId) {
+        if (sessionId == null) {
+            throw new IllegalArgumentException("SessionId cannot be null");
+        }
+        try {
+            UUID uuid = UUID.fromString(sessionId);
+            return getOrCreateContext(uuid);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid sessionId format: " + sessionId, e);
+        }
+    }
+
+    /**
      * Оновлює стан контексту
      */
     public void updateState(UUID sessionId, Stage3State newState) {

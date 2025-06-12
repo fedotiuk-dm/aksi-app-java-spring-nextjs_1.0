@@ -23,11 +23,19 @@ public class ClientSearchInitializeAction implements Action<ClientSearchState, C
 
     @Override
     public void execute(StateContext<ClientSearchState, ClientSearchEvent> context) {
-        // Створюємо новий контекст пошуку через координаційний сервіс
-        String sessionId = coordinationService.startClientSearch();
+        // Перевіряємо чи є sessionId від головного Order Wizard
+        String sessionId = context.getExtendedState().get("sessionId", String.class);
 
-        // Зберігаємо sessionId в ExtendedState для подальшого використання
+        if (sessionId != null) {
+            // Використовуємо існуючий sessionId від головного wizard
+            coordinationService.initializeClientSearch(sessionId);
+            System.out.println("ClientSearch initialized with existing sessionId: " + sessionId);
+        } else {
+            // Створюємо новий контекст пошуку (для зворотної сумісності)
+            sessionId = coordinationService.startClientSearch();
         context.getExtendedState().getVariables().put("sessionId", sessionId);
+            System.out.println("ClientSearch initialized with new sessionId: " + sessionId);
+        }
 
         // Очищаємо попередні результати та змінні
         context.getExtendedState().getVariables().remove("searchResults");

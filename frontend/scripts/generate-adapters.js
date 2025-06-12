@@ -1,703 +1,507 @@
 #!/usr/bin/env node
 
 /**
- * Скрипт для автоматичної генерації адаптерів на основі OpenAPI специфікації
- * Аналогічно до openapi-generator-cli, але створює доменні адаптери
+ * @fileoverview Генератор адаптерів для Order Wizard доменів
+ *
+ * Спрощений скрипт для створення доменних адаптерів на основі Orval згенерованих типів.
+ * Фокус на Order Wizard контролерах та "DDD inside, FSD outside" архітектурі.
  *
  * Процес:
- * 1. Читає OpenAPI специфікацію (JSON)
- * 2. Аналізує теги та операції
- * 3. Генерує адаптери для кожного домену
- * 4. Створює зручні функції з трансформацією даних
+ * 1. Аналізує згенеровані Orval типи
+ * 2. Створює адаптери для трансформації API -> Domain типів
+ * 3. Генерує утиліти для роботи з Order Wizard доменами
  *
  * Використання:
  * npm run generate-adapters
- * npm run generate-adapters:test  # використовує тестові дані
  */
 
 const fs = require('fs');
 const path = require('path');
-const https = require('https');
-const http = require('http');
 
-// Конфігурація
+// 🔧 Конфігурація для Order Wizard
 const CONFIG = {
-  // URL до OpenAPI специфікації
-  openApiUrl: process.env.OPENAPI_URL || 'http://localhost:8080/api/v3/api-docs',
-
   // Шляхи
-  outputDir: path.join(__dirname, '../domain/wizard/adapters'),
-  generatedServicesDir: path.join(__dirname, '../lib/api/generated/services'),
-  testDataFile: path.join(__dirname, 'test-openapi.json'),
+  outputDir: path.join(__dirname, '../domains/wizard/shared/adapters'),
+  generatedTypesFile: path.join(__dirname, '../shared/api/generated/wizard/aksiApi.schemas.ts'),
 
-  // Режим тестування
-  testMode: process.env.TEST_MODE === 'true' || process.argv.includes('--test'),
+  // Order Wizard домени відповідно до контролерів та архітектури
+  domains: {
+    // Основні етапи (Stage Controllers)
+    stage1: {
+      name: 'stage1',
+      tag: 'Stage 1 API',
+      description: 'Етап 1: Клієнт та базова інформація замовлення',
+      types: ['Client', 'Branch', 'Order', 'ClientSearch', 'ContactMethod'],
+      features: ['client-search', 'client-creation', 'basic-order-info'],
+    },
+    stage2: {
+      name: 'stage2',
+      tag: 'Stage 2 Main API',
+      description: 'Етап 2: Головний менеджер предметів',
+      types: ['Item', 'ItemManager', 'ItemList'],
+      features: ['item-manager'],
+    },
+    stage3: {
+      name: 'stage3',
+      tag: 'Stage 3 API',
+      description: 'Етап 3: Загальні параметри замовлення',
+      types: ['Discount', 'Payment', 'Execution', 'OrderParams'],
+      features: ['execution-params', 'discounts', 'payment'],
+    },
+    stage4: {
+      name: 'stage4',
+      tag: 'Stage 4 API',
+      description: 'Етап 4: Підтвердження та формування квитанції',
+      types: ['Receipt', 'Legal', 'Review', 'OrderSummary'],
+      features: ['order-review', 'legal-aspects', 'receipt-generation'],
+    },
 
-  // Мапування тегів до доменів Order Wizard
-  tagToDomainMapping: {
-    Clients: 'client',
-    'Order Management - Basic Operations': 'order',
-    'Order Management - Items': 'order-item',
-    'Order Management - Item Photos': 'order-item',
-    'Branch Locations API': 'branch',
-    'Pricing API': 'pricing',
-    'Pricing - Categories': 'pricing',
-    'Pricing - Modifiers': 'pricing',
-    'Pricing - Calculation': 'pricing',
-    'Reference Data': 'shared',
-    Authentication: 'auth',
-  },
+    // Підетапи Stage 2 (Substep Controllers)
+    substep1: {
+      name: 'substep1',
+      tag: 'Substep 1 API',
+      parent: 'stage2',
+      description: 'Підетап 2.1: Основна інформація про предмет',
+      types: ['ItemBasicInfo', 'Category', 'ServiceType'],
+      features: ['item-basic-info'],
+    },
+    substep2: {
+      name: 'substep2',
+      tag: 'Substep 2 API',
+      parent: 'stage2',
+      description: 'Підетап 2.2: Характеристики предмета',
+      types: ['Material', 'Color', 'Filling', 'WearLevel'],
+      features: ['item-characteristics'],
+    },
+    substep3: {
+      name: 'substep3',
+      tag: 'Substep 3 API',
+      parent: 'stage2',
+      description: 'Підетап 2.3: Забруднення, дефекти та ризики',
+      types: ['Stain', 'Defect', 'Risk', 'Damage'],
+      features: ['defects-stains'],
+    },
+    substep4: {
+      name: 'substep4',
+      tag: 'Substep 4 API',
+      parent: 'stage2',
+      description: 'Підетап 2.4: Розрахунок ціни та модифікатори',
+      types: ['Price', 'Modifier', 'Coefficient', 'PriceCalculation'],
+      features: ['price-calculation'],
+    },
+    substep5: {
+      name: 'substep5',
+      tag: 'Substep 5 API',
+      parent: 'stage2',
+      description: 'Підетап 2.5: Фотодокументація предметів',
+      types: ['Photo', 'Image', 'Upload', 'Documentation'],
+      features: ['photo-upload'],
+    },
 
-  // Шаблони для генерації
-  templates: {
-    adapterFile: 'adapter-file.template',
-    adapterFunction: 'adapter-function.template',
-    indexFile: 'index.template',
+    // Головний контролер
+    wizardMain: {
+      name: 'wizard-main',
+      tag: 'Order Wizard Main API',
+      description: 'Головний контролер Order Wizard (навігація, стан)',
+      types: ['WizardState', 'Navigation', 'Progress', 'OrderWizard'],
+      features: ['workflow', 'navigation', 'state-management'],
+    },
   },
 };
 
 /**
- * Створює тестові OpenAPI дані якщо файл не існує
+ * Читає згенеровані типи та витягує доступні моделі
  */
-function createTestOpenApiData() {
-  const testData = {
-    openapi: '3.0.1',
-    info: {
-      title: 'Test API',
-      version: '1.0.0',
-    },
-    tags: [
-      { name: 'Clients', description: 'Client management operations' },
-      { name: 'Order Management - Basic Operations', description: 'Basic order operations' },
-      { name: 'Pricing API', description: 'Pricing operations' },
-    ],
-    paths: {
-      '/clients': {
-        get: {
-          tags: ['Clients'],
-          operationId: 'getAllClients',
-          summary: 'Отримати всіх клієнтів',
-          parameters: [
-            {
-              name: 'page',
-              in: 'query',
-              schema: { type: 'integer' },
-            },
-            {
-              name: 'size',
-              in: 'query',
-              schema: { type: 'integer' },
-            },
-          ],
-          responses: {
-            200: {
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/ClientResponse' },
-                },
-              },
-            },
-          },
-        },
-        post: {
-          tags: ['Clients'],
-          operationId: 'createClient',
-          summary: 'Створити нового клієнта',
-          requestBody: {
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/CreateClientRequest' },
-              },
-            },
-          },
-          responses: {
-            200: {
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/ClientResponse' },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/clients/{id}': {
-        get: {
-          tags: ['Clients'],
-          operationId: 'getClientById',
-          summary: 'Отримати клієнта за ID',
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            200: {
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/ClientResponse' },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/orders': {
-        get: {
-          tags: ['Order Management - Basic Operations'],
-          operationId: 'getAllOrders',
-          summary: 'Отримати всі замовлення',
-          responses: {
-            200: {
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/OrderResponse' },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/pricing/calculate': {
-        post: {
-          tags: ['Pricing API'],
-          operationId: 'calculatePrice',
-          summary: 'Розрахувати ціну',
-          requestBody: {
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/PriceCalculationRequest' },
-              },
-            },
-          },
-          responses: {
-            200: {
-              content: {
-                'application/json': {
-                  schema: { $ref: '#/components/schemas/PriceCalculationResponse' },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    components: {
-      schemas: {
-        ClientResponse: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            firstName: { type: 'string' },
-            lastName: { type: 'string' },
-          },
-        },
-        CreateClientRequest: {
-          type: 'object',
-          properties: {
-            firstName: { type: 'string' },
-            lastName: { type: 'string' },
-          },
-        },
-        OrderResponse: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            clientId: { type: 'string' },
-          },
-        },
-        PriceCalculationRequest: {
-          type: 'object',
-          properties: {
-            itemId: { type: 'string' },
-            quantity: { type: 'number' },
-          },
-        },
-        PriceCalculationResponse: {
-          type: 'object',
-          properties: {
-            totalPrice: { type: 'number' },
-            currency: { type: 'string' },
-          },
-        },
-      },
-    },
-  };
-
-  fs.writeFileSync(CONFIG.testDataFile, JSON.stringify(testData, null, 2), 'utf8');
-  return testData;
-}
-
-/**
- * Завантажує OpenAPI специфікацію
- */
-async function fetchOpenApiSpec(url) {
-  // Якщо тестовий режим, використовуємо локальні дані
-  if (CONFIG.testMode) {
-    console.log('🧪 Тестовий режим: використання локальних даних');
-
-    if (!fs.existsSync(CONFIG.testDataFile)) {
-      console.log('📝 Створення тестових OpenAPI даних...');
-      return createTestOpenApiData();
-    }
-
-    const testData = fs.readFileSync(CONFIG.testDataFile, 'utf8');
-    return JSON.parse(testData);
+function extractAvailableTypes() {
+  if (!fs.existsSync(CONFIG.generatedTypesFile)) {
+    console.log('❌ Не знайдено згенеровані типи:', CONFIG.generatedTypesFile);
+    return [];
   }
 
-  return new Promise((resolve, reject) => {
-    const client = url.startsWith('https') ? https : http;
+  const content = fs.readFileSync(CONFIG.generatedTypesFile, 'utf8');
 
-    client
-      .get(url, (res) => {
-        let data = '';
+  // Витягуємо всі експортовані інтерфейси та типи
+  const interfaceMatches = content.match(/export\s+interface\s+(\w+)/g) || [];
+  const typeMatches = content.match(/export\s+type\s+(\w+)/g) || [];
 
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
+  const interfaces = interfaceMatches.map((match) => match.replace(/export\s+interface\s+/, ''));
+  const types = typeMatches.map((match) => match.replace(/export\s+type\s+/, ''));
 
-        res.on('end', () => {
-          try {
-            const spec = JSON.parse(data);
-            resolve(spec);
-          } catch (error) {
-            reject(new Error(`Помилка парсингу JSON: ${error.message}`));
-          }
-        });
-      })
-      .on('error', (error) => {
-        reject(new Error(`Помилка завантаження: ${error.message}`));
-      });
-  });
+  const allTypes = [...interfaces, ...types];
+
+  console.log(`📋 Знайдено ${allTypes.length} типів:`, allTypes.slice(0, 10).join(', '), '...');
+
+  return allTypes;
 }
 
 /**
- * Аналізує OpenAPI специфікацію та групує операції за доменами
+ * Генерує детальний адаптер для домену
  */
-function analyzeOpenApiSpec(spec) {
-  const domains = {};
+function generateDomainAdapter(domainName, domainInfo, availableTypes) {
+  const parentInfo = domainInfo.parent ? ` (підетап ${domainInfo.parent})` : '';
+  const featuresComment = domainInfo.features
+    ? `\n * Features: ${domainInfo.features.join(', ')}`
+    : '';
 
-  // Ініціалізуємо домени
-  Object.values(CONFIG.tagToDomainMapping).forEach((domain) => {
-    if (!domains[domain]) {
-      domains[domain] = {
-        name: domain,
-        operations: [],
-        tags: [],
-        models: new Set(),
-      };
+  const adapterContent = `/**
+ * @fileoverview Адаптер для ${domainInfo.description}${parentInfo}
+ *
+ * Цей файл автоматично генерується скриптом generate-adapters.js
+ * НЕ РЕДАГУЙТЕ ВРУЧНУ!
+ *
+ * Controller Tag: "${domainInfo.tag}"${featuresComment}
+ *
+ * Трансформує API типи в доменні моделі для Order Wizard
+ */
+
+import type {
+  // Загальні типи з Orval API генерації
+  ClientResponse,
+  OrderResponse,
+  BranchResponse,
+  ErrorResponse,
+  // Специфічні типи для ${domainName}
+  // Додаткові типи будуть додані автоматично при розширенні API
+} from '@/shared/api/generated/wizard/aksiApi.schemas';
+
+// 🔄 Адаптери для ${domainInfo.description}
+
+/**
+ * Головний адаптер для ${domainName}
+ * Трансформує API відповіді в доменні моделі
+ */
+export class ${capitalize(domainName)}Adapter {
+  static readonly DOMAIN_NAME = '${domainName}';
+  static readonly DOMAIN_TAG = '${domainInfo.tag}';
+  static readonly DESCRIPTION = '${domainInfo.description}';
+  ${domainInfo.parent ? `static readonly PARENT_STAGE = '${domainInfo.parent}';` : ''}
+
+  /**
+   * Загальний метод для безпечної трансформації з логуванням
+   */
+  static safeTransform<TInput, TOutput>(
+    input: TInput | null | undefined,
+    transformer: (input: TInput) => TOutput,
+    fallback: TOutput,
+    context = 'unknown'
+  ): TOutput {
+    if (!input) {
+      console.debug(\`[${capitalize(domainName)}Adapter] Порожні дані для \${context}\`);
+      return fallback;
     }
-  });
 
-  // Аналізуємо шляхи та операції
-  Object.entries(spec.paths || {}).forEach(([path, pathItem]) => {
-    Object.entries(pathItem).forEach(([method, operation]) => {
-      if (!operation.tags || operation.tags.length === 0) return;
+    try {
+      return transformer(input);
+    } catch (error) {
+      console.warn(\`[${capitalize(domainName)}Adapter] Помилка трансформації у \${context}:\`, error);
+      return fallback;
+    }
+  }
 
-      const tag = operation.tags[0]; // Беремо перший тег
-      const domain = CONFIG.tagToDomainMapping[tag];
+  /**
+   * Перевіряє чи є об'єкт валідним API response
+   */
+  static isValidApiResponse<T extends Record<string, unknown>>(
+    response: unknown
+  ): response is T {
+    return response !== null &&
+           response !== undefined &&
+           typeof response === 'object' &&
+           !Array.isArray(response);
+  }
 
-      if (domain && domains[domain]) {
-        // Додаємо операцію до домену
-        domains[domain].operations.push({
-          path,
-          method: method.toUpperCase(),
-          operationId: operation.operationId,
-          summary: operation.summary,
-          description: operation.description,
-          parameters: operation.parameters || [],
-          requestBody: operation.requestBody,
-          responses: operation.responses,
-          tags: operation.tags,
-          deprecated: operation.deprecated || false,
-        });
+  /**
+   * Трансформує масив API об'єктів з фільтрацією невалідних
+   */
+  static transformArray<TInput, TOutput>(
+    input: TInput[] | null | undefined,
+    transformer: (item: TInput) => TOutput,
+    filterInvalid = true
+  ): TOutput[] {
+    if (!Array.isArray(input)) return [];
 
-        // Додаємо тег до домену
-        if (!domains[domain].tags.includes(tag)) {
-          domains[domain].tags.push(tag);
+    const results: TOutput[] = [];
+
+    for (const item of input) {
+      try {
+        const transformed = transformer(item);
+        if (!filterInvalid || transformed !== null) {
+          results.push(transformed);
         }
-
-        // Збираємо моделі
-        extractModelsFromOperation(operation, domains[domain].models);
-      }
-    });
-  });
-
-  return domains;
-}
-
-/**
- * Витягує моделі з операції
- */
-function extractModelsFromOperation(operation, modelsSet) {
-  // Аналізуємо параметри
-  (operation.parameters || []).forEach((param) => {
-    if (param.schema && param.schema.$ref) {
-      const modelName = extractModelName(param.schema.$ref);
-      if (modelName) modelsSet.add(modelName);
-    }
-  });
-
-  // Аналізуємо request body
-  if (operation.requestBody && operation.requestBody.content) {
-    Object.values(operation.requestBody.content).forEach((content) => {
-      if (content.schema && content.schema.$ref) {
-        const modelName = extractModelName(content.schema.$ref);
-        if (modelName) modelsSet.add(modelName);
-      }
-    });
-  }
-
-  // Аналізуємо responses
-  Object.values(operation.responses || {}).forEach((response) => {
-    if (response.content) {
-      Object.values(response.content).forEach((content) => {
-        if (content.schema && content.schema.$ref) {
-          const modelName = extractModelName(content.schema.$ref);
-          if (modelName) modelsSet.add(modelName);
+      } catch (error) {
+        if (!filterInvalid) {
+          console.warn(\`[${capitalize(domainName)}Adapter] Помилка трансформації елемента:\`, error);
         }
-      });
+      }
     }
-  });
+
+    return results;
+  }
+}
+
+// 🛠️ Утиліти для роботи з ${domainName} даними
+
+/**
+ * Утиліти для валідації даних ${domainName}
+ */
+export const ${domainName}ValidationUtils = {
+  /**
+   * Перевіряє чи є ID валідним
+   */
+  isValidId(id: unknown): id is string {
+    return typeof id === 'string' && id.trim().length > 0;
+  },
+
+  /**
+   * Перевіряє чи є дата валідною ISO строкою
+   */
+  isValidDate(date: unknown): date is string {
+    if (typeof date !== 'string') return false;
+    const parsed = Date.parse(date);
+    return !isNaN(parsed) && parsed > 0;
+  },
+
+  /**
+   * Безпечно парсить дату з fallback
+   */
+  parseDate(dateString: unknown, fallback: Date | null = null): Date | null {
+    if (!this.isValidDate(dateString)) return fallback;
+
+    try {
+      const date = new Date(dateString);
+      return isNaN(date.getTime()) ? fallback : date;
+    } catch {
+      return fallback;
+    }
+  },
+
+  /**
+   * Перевіряє чи є об'єкт не порожнім
+   */
+  isNotEmpty(obj: unknown): boolean {
+    if (!obj || typeof obj !== 'object') return false;
+    return Object.keys(obj).length > 0;
+  },
+
+  /**
+   * Безпечно отримує строкове значення
+   */
+  getString(value: unknown, fallback = ''): string {
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number') return value.toString();
+    return fallback;
+  },
+
+  /**
+   * Безпечно отримує числове значення
+   */
+  getNumber(value: unknown, fallback = 0): number {
+    if (typeof value === 'number' && !isNaN(value)) return value;
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? fallback : parsed;
+    }
+    return fallback;
+  },
+} as const;
+
+// 🎯 Специфічні утиліти для ${domainInfo.description}
+
+/**
+ * Утиліти специфічні для функціональності ${domainName}
+ */
+export const ${domainName}SpecificUtils = {
+  /**
+   * Доменна назва для логування та відладки
+   */
+  domainName: '${domainName}' as const,
+
+  /**
+   * Функції для роботи з даними домену
+   * Тут будуть додані специфічні утиліти при розширенні
+   */
+  ${
+    domainInfo.features
+      ? domainInfo.features.map((feature) => `// TODO: Додати утиліти для ${feature}`).join('\n  ')
+      : '// TODO: Додати специфічні утиліти'
+  }
+} as const;
+
+// 📤 Експорт для використання в доменній архітектурі
+
+/**
+ * Головний експорт адаптерів ${domainName}
+ */
+export const ${domainName}Adapters = {
+  // Класи адаптерів
+  ${capitalize(domainName)}Adapter,
+
+  // Утиліти
+  validationUtils: ${domainName}ValidationUtils,
+  specificUtils: ${domainName}SpecificUtils,
+
+  // Константи
+  DOMAIN_INFO: {
+    name: '${domainName}',
+    tag: '${domainInfo.tag}',
+    description: '${domainInfo.description}',
+    ${domainInfo.parent ? `parent: '${domainInfo.parent}',` : ''}
+    ${domainInfo.features ? `features: ${JSON.stringify(domainInfo.features)},` : ''}
+  },
+} as const;
+
+// 🏷️ Типи для TypeScript
+
+/**
+ * Тип адаптера ${domainName}
+ */
+export type ${capitalize(domainName)}AdapterType = typeof ${capitalize(domainName)}Adapter;
+
+/**
+ * Тип утиліт валідації ${domainName}
+ */
+export type ${capitalize(domainName)}ValidationUtilsType = typeof ${domainName}ValidationUtils;
+
+/**
+ * Загальний тип експорту адаптерів ${domainName}
+ */
+export type ${capitalize(domainName)}AdaptersType = typeof ${domainName}Adapters;
+`;
+
+  return adapterContent;
 }
 
 /**
- * Витягує назву моделі з $ref
+ * Генерує індекс файл для всіх адаптерів
  */
-function extractModelName(ref) {
-  const match = ref.match(/#\/components\/schemas\/(.+)$/);
-  return match ? match[1] : null;
-}
+function generateAdaptersIndex(domains) {
+  const indexContent = `/**
+ * @fileoverview Головний індекс для всіх Order Wizard адаптерів
+ *
+ * Цей файл автоматично генерується скриптом generate-adapters.js
+ * НЕ РЕДАГУЙТЕ ВРУЧНУ!
+ */
+
+// 🔄 Експорт всіх доменних адаптерів
+${Object.keys(domains)
+  .map((domain) => `export * from './${domain}.adapter';`)
+  .join('\n')}
+
+// 🛠️ Загальні утиліти для всіх адаптерів
+export const wizardAdapters = {
+${Object.keys(domains)
+  .map((domain) => `  ${domain}: () => import('./${domain}.adapter'),`)
+  .join('\n')}
+} as const;
 
 /**
- * Генерує назву сервісу на основі тегу
+ * Типи всіх доступних адаптерів
  */
-function generateServiceName(tag) {
-  // Мапування тегів до назв сервісів
-  const serviceMapping = {
-    Clients: 'ClientsService',
-    'Order Management - Basic Operations': 'OrderManagementBasicOperationsService',
-    'Order Management - Items': 'OrderManagementItemsService',
-    'Order Management - Item Photos': 'OrderManagementItemPhotosService',
-    'Branch Locations API': 'BranchLocationsApiService',
-    'Pricing API': 'PricingApiService',
-    'Pricing - Categories': 'PricingCategoriesService',
-    'Pricing - Modifiers': 'PricingModifiersService',
-    'Pricing - Calculation': 'PricingCalculationService',
-    'Reference Data': 'ReferenceDataService',
-    Authentication: 'AuthenticationService',
-  };
-
-  return serviceMapping[tag] || `${tag.replace(/[^a-zA-Z0-9]/g, '')}Service`;
-}
+export type WizardAdapterType = keyof typeof wizardAdapters;
 
 /**
- * Генерує назву функції адаптера
+ * Загальний тип для всіх адаптерів
  */
-function generateAdapterFunctionName(operation) {
-  if (operation.operationId) {
-    // Конвертуємо camelCase в більш читабельний формат
-    return operation.operationId;
+export type AdapterFunction<TInput, TOutput> = (input: TInput) => TOutput;
+
+/**
+ * Базовий клас для всіх адаптерів
+ */
+export abstract class BaseAdapter {
+  abstract readonly domainName: string;
+
+  /**
+   * Логує помилку трансформації
+   */
+  protected logTransformError(error: unknown, context: string): void {
+    console.warn(\`[\${this.domainName}Adapter] \${context}:\`, error);
   }
 
-  // Генеруємо назву на основі методу та шляху
-  const pathParts = operation.path.split('/').filter((part) => part && !part.startsWith('{'));
-  const methodName = operation.method.toLowerCase();
-
-  if (pathParts.length > 0) {
-    const resourceName = pathParts[pathParts.length - 1];
-    return `${methodName}${capitalize(resourceName)}`;
+  /**
+   * Безпечна трансформація з логуванням
+   */
+  protected safeTransform<TInput, TOutput>(
+    input: TInput,
+    transformer: (input: TInput) => TOutput,
+    fallback: TOutput,
+    context: string
+  ): TOutput {
+    try {
+      return transformer(input);
+    } catch (error) {
+      this.logTransformError(error, context);
+      return fallback;
+    }
   }
+}
+`;
 
-  return `${methodName}Resource`;
+  return indexContent;
 }
 
 /**
- * Капіталізує першу літеру
+ * Створює папку якщо не існує
+ */
+function ensureDirectoryExists(dirPath) {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+    console.log(`📁 Створено папку: ${dirPath}`);
+  }
+}
+
+/**
+ * Капіталізує перший символ рядка
  */
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 /**
- * Генерує адаптер для домену
- */
-function generateDomainAdapter(domain, domainData) {
-  const timestamp = new Date().toISOString();
-
-  // Групуємо операції за сервісами
-  const serviceGroups = {};
-  domainData.operations.forEach((operation) => {
-    const tag = operation.tags[0];
-    const serviceName = generateServiceName(tag);
-
-    if (!serviceGroups[serviceName]) {
-      serviceGroups[serviceName] = {
-        serviceName,
-        tag,
-        operations: [],
-      };
-    }
-
-    serviceGroups[serviceName].operations.push(operation);
-  });
-
-  // Генеруємо імпорти
-  const imports = [];
-  const serviceNames = Object.keys(serviceGroups);
-
-  // Імпорти сервісів
-  serviceNames.forEach((serviceName) => {
-    imports.push(`import { ${serviceName} } from '@/lib/api/generated/services/${serviceName}';`);
-  });
-
-  // Імпорти моделей
-  const models = Array.from(domainData.models);
-  if (models.length > 0) {
-    imports.push(`import type {`);
-    models.forEach((model, index) => {
-      imports.push(`  ${model}${index < models.length - 1 ? ',' : ''}`);
-    });
-    imports.push(`} from '@/lib/api/generated/models';`);
-  }
-
-  // Генеруємо функції адаптера
-  const adapterFunctions = [];
-
-  Object.values(serviceGroups).forEach((group) => {
-    group.operations.forEach((operation) => {
-      const functionName = generateAdapterFunctionName(operation);
-      const serviceName = group.serviceName;
-      const originalMethodName = operation.operationId;
-
-      // Генеруємо JSDoc коментар
-      const jsdoc = [
-        `/**`,
-        ` * ${operation.summary || operation.description || 'API операція'}`,
-        operation.description && operation.summary !== operation.description
-          ? ` * ${operation.description}`
-          : '',
-        ` * `,
-        ` * @generated Згенеровано з OpenAPI операції: ${originalMethodName}`,
-        ` * @service ${serviceName}`,
-        operation.deprecated ? ` * @deprecated` : '',
-        ` */`,
-      ].filter(Boolean);
-
-      // Генеруємо параметри функції
-      const hasParams = operation.parameters.length > 0 || operation.requestBody;
-      const paramType = hasParams
-        ? 'Parameters<typeof ' + serviceName + '.' + originalMethodName + '>[0]'
-        : 'void';
-
-      const functionCode = [
-        ...jsdoc,
-        `export const ${functionName} = async (${hasParams ? 'params: ' + paramType : ''}) => {`,
-        `  try {`,
-        `    // TODO: Додайте трансформацію вхідних даних якщо потрібно`,
-        `    const result = await ${serviceName}.${originalMethodName}(${hasParams ? 'params' : ''});`,
-        `    `,
-        `    // TODO: Додайте трансформацію вихідних даних якщо потрібно`,
-        `    return result;`,
-        `  } catch (error) {`,
-        `    // TODO: Додайте обробку помилок`,
-        `    console.error('Помилка в ${functionName}:', error);`,
-        `    throw error;`,
-        `  }`,
-        `};`,
-      ];
-
-      adapterFunctions.push(functionCode.join('\n'));
-    });
-  });
-
-  // Генеруємо фінальний файл адаптера
-  const adapterContent = [
-    `/**`,
-    ` * @fileoverview Адаптер для домену "${domain}"`,
-    ` * @module domain/wizard/adapters/${domain}`,
-    ` * `,
-    ` * Автоматично згенеровано з OpenAPI специфікації`,
-    ` * `,
-    ` * @generated ${timestamp}`,
-    ` * @generator scripts/generate-adapters.js`,
-    ` */`,
-    ``,
-    ...imports,
-    ``,
-    `// ===== АДАПТЕРИ ДЛЯ ДОМЕНУ "${domain.toUpperCase()}" =====`,
-    ``,
-    ...adapterFunctions,
-    ``,
-    `// ===== КОНФІГУРАЦІЯ ДОМЕНУ =====`,
-    ``,
-    `export const ${domain.toUpperCase().replace(/-/g, '_')}_ADAPTER_CONFIG = {`,
-    `  domain: '${domain}',`,
-    `  tags: ${JSON.stringify(domainData.tags, null, 2)},`,
-    `  operationsCount: ${domainData.operations.length},`,
-    `  modelsCount: ${domainData.models.size},`,
-    `  services: [${serviceNames.map((name) => `'${name}'`).join(', ')}],`,
-    `  generated: '${timestamp}'`,
-    `} as const;`,
-  ].join('\n');
-
-  return adapterContent;
-}
-
-/**
- * Генерує індексний файл для адаптерів
- */
-function generateAdaptersIndex(domains) {
-  const timestamp = new Date().toISOString();
-
-  const content = [
-    `/**`,
-    ` * @fileoverview Головний індекс адаптерів Order Wizard`,
-    ` * @module domain/wizard/adapters`,
-    ` * `,
-    ` * Автоматично згенеровано з OpenAPI специфікації`,
-    ` * `,
-    ` * @generated ${timestamp}`,
-    ` * @generator scripts/generate-adapters.js`,
-    ` */`,
-    ``,
-    `// ===== ЕКСПОРТИ АДАПТЕРІВ ПО ДОМЕНАХ =====`,
-    ``,
-  ];
-
-  Object.keys(domains).forEach((domain) => {
-    content.push(`// ${domain.toUpperCase()} DOMAIN`);
-    content.push(`export * from './${domain}';`);
-    content.push(``);
-  });
-
-  content.push(`// ===== КОНФІГУРАЦІЯ ВСІХ АДАПТЕРІВ =====`);
-  content.push(``);
-  content.push(`export const ADAPTERS_CONFIG = {`);
-  content.push(`  version: '1.0.0',`);
-  content.push(`  generated: '${timestamp}',`);
-  content.push(
-    `  domains: [${Object.keys(domains)
-      .map((d) => `'${d}'`)
-      .join(', ')}],`
-  );
-  content.push(
-    `  totalOperations: ${Object.values(domains).reduce((sum, d) => sum + d.operations.length, 0)},`
-  );
-  content.push(`} as const;`);
-
-  return content.join('\n');
-}
-
-/**
- * Створює папку якщо вона не існує
- */
-function ensureDirectoryExists(dirPath) {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
-}
-
-/**
  * Основна функція
  */
 async function main() {
-  console.log('🔄 Генерація адаптерів з OpenAPI специфікації...');
+  console.log('🚀 Генерація адаптерів для Order Wizard доменів...');
 
-  if (CONFIG.testMode) {
-    console.log('🧪 Режим тестування активовано');
-  }
+  // Перевіряємо доступність згенерованих типів
+  const availableTypes = extractAvailableTypes();
 
-  try {
-    // Завантажуємо OpenAPI специфікацію
-    console.log(
-      `📡 Завантаження OpenAPI з: ${CONFIG.testMode ? 'локальних тестових даних' : CONFIG.openApiUrl}`
-    );
-    const openApiSpec = await fetchOpenApiSpec(CONFIG.openApiUrl);
-
-    console.log(`✅ OpenAPI специфікація завантажена`);
-    console.log(`📊 Знайдено шляхів: ${Object.keys(openApiSpec.paths || {}).length}`);
-    console.log(`📊 Знайдено тегів: ${(openApiSpec.tags || []).length}`);
-
-    // Аналізуємо специфікацію
-    console.log(`🔍 Аналіз операцій та групування по доменах...`);
-    const domains = analyzeOpenApiSpec(openApiSpec);
-
-    // Виводимо статистику
-    Object.entries(domains).forEach(([domain, data]) => {
-      if (data.operations.length > 0) {
-        console.log(
-          `  📁 ${domain}: ${data.operations.length} операцій, ${data.models.size} моделей`
-        );
-      }
-    });
-
-    // Створюємо папку для адаптерів
-    ensureDirectoryExists(CONFIG.outputDir);
-
-    // Генеруємо адаптери для кожного домену
-    let generatedCount = 0;
-
-    Object.entries(domains).forEach(([domain, domainData]) => {
-      if (domainData.operations.length === 0) {
-        console.log(`⚠️  Пропускаю домен ${domain} - немає операцій`);
-        return;
-      }
-
-      console.log(`📝 Генерація адаптера для домену: ${domain}`);
-
-      const adapterContent = generateDomainAdapter(domain, domainData);
-      const outputPath = path.join(CONFIG.outputDir, `${domain}.ts`);
-
-      fs.writeFileSync(outputPath, adapterContent, 'utf8');
-
-      console.log(`  ✅ Згенеровано: ${outputPath}`);
-      console.log(`  📊 Розмір: ${(adapterContent.length / 1024).toFixed(2)} KB`);
-
-      generatedCount++;
-    });
-
-    // Генеруємо головний індексний файл
-    console.log(`📝 Генерація головного індексу адаптерів...`);
-    const indexContent = generateAdaptersIndex(domains);
-    const indexPath = path.join(CONFIG.outputDir, 'index.ts');
-
-    fs.writeFileSync(indexPath, indexContent, 'utf8');
-
-    console.log(`✅ Головний індекс згенеровано: ${indexPath}`);
-
-    // Фінальна статистика
-    console.log(`\n🎉 Генерація завершена!`);
-    console.log(`📊 Згенеровано адаптерів: ${generatedCount}`);
-    console.log(
-      `📊 Загальний розмір: ${((indexContent.length + Object.values(domains).reduce((sum, d) => sum + d.operations.length * 500, 0)) / 1024).toFixed(2)} KB`
-    );
-
-    if (CONFIG.testMode) {
-      console.log(`\n🧪 Тестовий режим: для реальної генерації запустіть без --test флагу`);
-    }
-  } catch (error) {
-    console.error('❌ Помилка при генерації адаптерів:', error.message);
-
-    if (!CONFIG.testMode) {
-      console.log('\n💡 Спробуйте тестовий режим: npm run generate-adapters:test');
-    }
-
+  if (availableTypes.length === 0) {
+    console.log('❌ Не знайдено згенерованих типів. Запустіть спочатку orval генерацію.');
     process.exit(1);
   }
+
+  // Створюємо вихідну папку
+  ensureDirectoryExists(CONFIG.outputDir);
+
+  // Генеруємо адаптери для кожного домену
+  Object.entries(CONFIG.domains).forEach(([domainName, domainInfo]) => {
+    console.log(`📝 Створення адаптера для ${domainName}...`);
+
+    const adapterContent = generateDomainAdapter(domainName, domainInfo, availableTypes);
+    const adapterPath = path.join(CONFIG.outputDir, `${domainName}.adapter.ts`);
+
+    fs.writeFileSync(adapterPath, adapterContent, 'utf8');
+    console.log(`✅ Створено адаптер: ${domainName}.adapter.ts`);
+  });
+
+  // Генеруємо індекс файл
+  console.log('📝 Створення індекс файлу...');
+  const indexContent = generateAdaptersIndex(CONFIG.domains);
+  const indexPath = path.join(CONFIG.outputDir, 'index.ts');
+
+  fs.writeFileSync(indexPath, indexContent, 'utf8');
+  console.log('✅ Створено індекс файл: index.ts');
+
+  console.log('🎉 Генерація адаптерів завершена успішно!');
+  console.log(`📂 Результат в: ${CONFIG.outputDir}`);
 }
 
-// Запускаємо скрипт
+// Запускаємо якщо це головний модуль
 if (require.main === module) {
-  main();
+  main().catch((error) => {
+    console.error('❌ Помилка при генерації адаптерів:', error);
+    process.exit(1);
+  });
 }
 
-module.exports = {
-  fetchOpenApiSpec,
-  analyzeOpenApiSpec,
-  generateDomainAdapter,
-  CONFIG,
-};
+module.exports = { main, generateDomainAdapter, generateAdaptersIndex };

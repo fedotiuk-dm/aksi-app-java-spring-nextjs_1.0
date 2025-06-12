@@ -78,6 +78,24 @@ public class Stage2StateService {
     }
 
     /**
+     * Отримує контекст за ідентифікатором сесії або створює новий
+     */
+    public Stage2Context getOrCreateContext(final UUID sessionId) {
+        if (sessionId == null) {
+            throw new IllegalArgumentException("SessionId cannot be null");
+        }
+
+        Stage2Context context = activeContexts.get(sessionId);
+        if (context == null) {
+            // Створюємо контекст з sessionId як orderId (можна змінити логіку при потребі)
+            context = new Stage2Context(sessionId, sessionId);
+            activeContexts.put(sessionId, context);
+        }
+
+        return context;
+    }
+
+    /**
      * Оновлює стан контексту
      */
     public void updateState(final UUID sessionId, final Stage2State newState) {

@@ -32,12 +32,12 @@ export const $ValidationResult = {
         firstWarning: {
             type: 'string',
         },
+        fullMessage: {
+            type: 'string',
+        },
         warningCount: {
             type: 'number',
             format: 'int32',
-        },
-        fullMessage: {
-            type: 'string',
         },
     },
 } as const;

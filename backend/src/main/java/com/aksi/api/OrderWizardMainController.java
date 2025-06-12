@@ -1,8 +1,13 @@
 package com.aksi.api;
 
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,8 +52,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @RestController
 @RequestMapping("/order-wizard")
-@Tag(name = "Order Wizard Main API", description = "Головний фасад з повною мапою API для всіх етапів Order Wizard")
+@Tag(name = "Order Wizard - Main API", description = "Головний фасад з повною мапою API для всіх етапів Order Wizard")
 public class OrderWizardMainController {
+
+    // Додаємо логер
+    private static final Logger logger = LoggerFactory.getLogger(OrderWizardMainController.class);
 
     // =================== ІНЖЕКЦІЯ ЗАЛЕЖНОСТЕЙ ===================
 
@@ -99,54 +107,89 @@ public class OrderWizardMainController {
         this.photoDocumentationAdapter = photoDocumentationAdapter;
         this.stage3Adapter = stage3Adapter;
         this.stage4Adapter = stage4Adapter;
+
+        logger.info("OrderWizardMainController initialized with all adapters");
     }
 
     // =================== ІНФОРМАЦІЙНІ ENDPOINTS ===================
 
-    @Operation(summary = "Перевірка готовності Order Wizard API")
+    @Operation(
+        summary = "Перевірка готовності Order Wizard API",
+        operationId = "orderWizardHealth",
+        tags = {"Order Wizard - Main API", "System Health"}
+    )
     @GetMapping("/health")
     public ResponseEntity<HealthStatus> health() {
+        logger.debug("Health check requested");
         return ResponseEntity.ok(new HealthStatus());
     }
 
-    @Operation(summary = "Повна мапа всіх доступних API endpoints")
+    @Operation(
+        summary = "Повна мапа всіх доступних API endpoints",
+        operationId = "orderWizardGetCompleteApiMap",
+        tags = {"Order Wizard - Main API", "API Documentation"}
+    )
     @GetMapping("/api-map")
     public ResponseEntity<CompleteApiMap> getCompleteApiMap() {
         return ResponseEntity.ok(new CompleteApiMap());
     }
 
-    @Operation(summary = "Детальна інформація про конкретний етап")
+    @Operation(
+        summary = "Детальна інформація про конкретний етап",
+        operationId = "orderWizardGetStageInfo",
+        tags = {"Order Wizard - Main API", "Stage Information"}
+    )
     @GetMapping("/stages/{stageNumber}/info")
     public ResponseEntity<StageInfo> getStageInfo(@PathVariable int stageNumber) {
         return ResponseEntity.ok(new StageInfo(stageNumber));
     }
 
-    @Operation(summary = "Статуси готовності всіх етапів")
+    @Operation(
+        summary = "Статуси готовності всіх етапів",
+        operationId = "orderWizardGetStagesStatus",
+        tags = {"Order Wizard - Main API", "System Status"}
+    )
     @GetMapping("/stages/status")
     public ResponseEntity<StagesStatus> getStagesStatus() {
         return ResponseEntity.ok(new StagesStatus());
     }
 
-    @Operation(summary = "Документація по методах конкретного етапу")
+    @Operation(
+        summary = "Документація по методах конкретного етапу",
+        operationId = "orderWizardGetStageMethods",
+        tags = {"Order Wizard - Main API", "API Documentation"}
+    )
     @GetMapping("/stages/{stageNumber}/methods")
     public ResponseEntity<StageMethods> getStageMethods(@PathVariable int stageNumber) {
         var methods = stageMethodsProvider.getMethodsForStage(stageNumber);
         return ResponseEntity.ok(new StageMethods(stageNumber, methods));
     }
 
-    @Operation(summary = "Флоу-карта Order Wizard для фронтенду")
+    @Operation(
+        summary = "Флоу-карта Order Wizard для фронтенду",
+        operationId = "orderWizardGetWorkflow",
+        tags = {"Order Wizard - Main API", "Workflow"}
+    )
     @GetMapping("/workflow")
     public ResponseEntity<WorkflowMap> getWorkflow() {
         return ResponseEntity.ok(new WorkflowMap());
     }
 
-    @Operation(summary = "Повна інформація про всі адаптери")
+    @Operation(
+        summary = "Повна інформація про всі адаптери",
+        operationId = "orderWizardGetAdaptersInfo",
+        tags = {"Order Wizard - Main API", "System Information"}
+    )
     @GetMapping("/adapters")
     public ResponseEntity<AdaptersInfo> getAdaptersInfo() {
         return ResponseEntity.ok(new AdaptersInfo());
     }
 
-    @Operation(summary = "Детальний статус конкретного етапу")
+    @Operation(
+        summary = "Детальний статус конкретного етапу",
+        operationId = "orderWizardGetStageStatus",
+        tags = {"Order Wizard - Main API", "Stage Status"}
+    )
     @GetMapping("/stages/{stageNumber}/status")
     public ResponseEntity<AdapterStatusUtil.StageStatus> getStageStatus(@PathVariable int stageNumber) {
         Object[] adapters = getAllAdaptersArray();
@@ -154,13 +197,154 @@ public class OrderWizardMainController {
         return ResponseEntity.ok(stageStatus);
     }
 
-    @Operation(summary = "Загальна статистика системи")
+    @Operation(
+        summary = "Загальна статистика системи",
+        operationId = "orderWizardGetSystemStats",
+        tags = {"Order Wizard - Main API", "System Statistics"}
+    )
     @GetMapping("/stats")
     public ResponseEntity<SystemStats> getSystemStats() {
         boolean allReady = areAllAdaptersReady();
         int readyCount = countReadyAdapters();
 
         return ResponseEntity.ok(new SystemStats(allReady, readyCount, AdapterStatusUtil.TOTAL_ADAPTERS));
+    }
+
+    // =================== РОБОЧІ ENDPOINTS (ДЕЛЕГАЦІЯ ДО OrderWizardAdapter) ===================
+
+    @Operation(
+        summary = "Запускає новий Order Wizard",
+        operationId = "orderWizardStart",
+        tags = {"Order Wizard - Main API", "Workflow Operations"}
+    )
+    @PostMapping("/start")
+    public ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> startOrderWizard() {
+        logger.info("🚀 Starting new Order Wizard session...");
+
+        try {
+            // Перевіряємо готовність адаптера
+            if (orderWizardAdapter == null) {
+                logger.error("❌ OrderWizardAdapter is null!");
+                throw new IllegalStateException("OrderWizardAdapter not initialized");
+            }
+
+            logger.info("✅ OrderWizardAdapter is ready, calling startOrderWizard()...");
+
+            ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> response =
+                orderWizardAdapter.startOrderWizard();
+
+            if (response != null) {
+                logger.info("✅ Response received: status={}, body={}",
+                    response.getStatusCode(), response.getBody());
+
+                var responseBody = response.getBody();
+                if (responseBody != null) {
+                    logger.info("📋 Response details: sessionId={}, state={}, success={}, message={}",
+                        responseBody.getSessionId(),
+                        responseBody.getCurrentState(),
+                        responseBody.isSuccess(),
+                        responseBody.getMessage());
+                }
+            } else {
+                logger.error("❌ Response is null from OrderWizardAdapter!");
+            }
+
+            return response;
+
+        } catch (RuntimeException e) {
+            logger.error("💥 Exception in startOrderWizard: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Operation(
+        summary = "Отримує поточний стан Order Wizard",
+        operationId = "orderWizardGetCurrentState",
+        tags = {"Order Wizard - Main API", "Session Management"}
+    )
+    @GetMapping("/session/{sessionId}/state")
+    public ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> getCurrentState(@PathVariable String sessionId) {
+        return orderWizardAdapter.getCurrentState(sessionId);
+    }
+
+    @Operation(
+        summary = "Отримує всі можливі переходи з поточного стану",
+        operationId = "orderWizardGetAvailableTransitions",
+        tags = {"Order Wizard - Main API", "Session Management"}
+    )
+    @GetMapping("/session/{sessionId}/available-transitions")
+    public ResponseEntity<Map<String, Object>> getAvailableTransitions(@PathVariable String sessionId) {
+        return orderWizardAdapter.getAvailableTransitions(sessionId);
+    }
+
+    @Operation(
+        summary = "Перехід до наступного етапу з Stage1 до Stage2",
+        operationId = "orderWizardCompleteStage1",
+        tags = {"Order Wizard - Main API", "Stage Transitions"}
+    )
+    @PostMapping("/session/{sessionId}/complete-stage1")
+    public ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> completeStage1(@PathVariable String sessionId) {
+        return orderWizardAdapter.completeStage1(sessionId);
+    }
+
+    @Operation(
+        summary = "Перехід до Stage3 з Stage2",
+        operationId = "orderWizardCompleteStage2",
+        tags = {"Order Wizard - Main API", "Stage Transitions"}
+    )
+    @PostMapping("/session/{sessionId}/complete-stage2")
+    public ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> completeStage2(@PathVariable String sessionId) {
+        return orderWizardAdapter.completeStage2(sessionId);
+    }
+
+    @Operation(
+        summary = "Перехід до Stage4 з Stage3",
+        operationId = "orderWizardCompleteStage3",
+        tags = {"Order Wizard - Main API", "Stage Transitions"}
+    )
+    @PostMapping("/session/{sessionId}/complete-stage3")
+    public ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> completeStage3(@PathVariable String sessionId) {
+        return orderWizardAdapter.completeStage3(sessionId);
+    }
+
+    @Operation(
+        summary = "Завершення Order Wizard",
+        operationId = "orderWizardCompleteOrder",
+        tags = {"Order Wizard - Main API", "Order Completion"}
+    )
+    @PostMapping("/session/{sessionId}/complete-order")
+    public ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> completeOrder(@PathVariable String sessionId) {
+        return orderWizardAdapter.completeOrder(sessionId);
+    }
+
+    @Operation(
+        summary = "Скасування Order Wizard",
+        operationId = "orderWizardCancelOrder",
+        tags = {"Order Wizard - Main API", "Order Cancellation"}
+    )
+    @PostMapping("/session/{sessionId}/cancel")
+    public ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> cancelOrder(@PathVariable String sessionId) {
+        return orderWizardAdapter.cancelOrder(sessionId);
+    }
+
+    @Operation(
+        summary = "Повернення на попередній етап",
+        operationId = "orderWizardGoBack",
+        tags = {"Order Wizard - Main API", "Navigation"}
+    )
+    @PostMapping("/session/{sessionId}/go-back")
+    public ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> goBack(@PathVariable String sessionId) {
+        return orderWizardAdapter.goBack(sessionId);
+    }
+
+    @Operation(
+        summary = "Отримання детальної інформації про поточну сесію",
+        operationId = "orderWizardGetSessionInfo",
+        tags = {"Order Wizard - Main API", "Session Management"}
+    )
+    @GetMapping("/session/{sessionId}/info")
+    public ResponseEntity<Map<String, Object>> getSessionInfo(@PathVariable String sessionId) {
+        return orderWizardAdapter.getSessionInfo(sessionId);
     }
 
     // =================== ПРИВАТНІ МЕТОДИ ===================

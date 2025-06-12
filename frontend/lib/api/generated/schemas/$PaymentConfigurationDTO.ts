@@ -37,11 +37,11 @@ export const $PaymentConfigurationDTO = {
             type: 'string',
             format: 'date-time',
         },
-        fullyPaid: {
-            type: 'boolean',
-        },
         prepaymentAmount: {
             type: 'number',
+        },
+        fullyPaid: {
+            type: 'boolean',
         },
         paymentMethod: {
             type: 'Enum',

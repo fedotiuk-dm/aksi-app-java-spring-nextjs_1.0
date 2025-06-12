@@ -1,5 +1,5 @@
 /**
- * @fileoverview Загальний index для всіх Zod схем
+ * @fileoverview Загальний index для Order Wizard Zod схем
  * 
  * Цей файл автоматично генерується скриптом create-zod-index.js
  * НЕ РЕДАГУЙТЕ ВРУЧНУ!
@@ -8,29 +8,11 @@
 // Re-export zod
 export { z, type ZodType, type ZodSchema } from 'zod';
 
-// Auth домен схеми
-export * as authSchemas from './auth/zod';
+// Order Wizard схеми валідації
+export * as wizardSchemas from './wizard/zod';
 
-// Branch домен схеми
-export * as branchSchemas from './branch/zod';
-
-// Client домен схеми
-export * as clientSchemas from './client/zod';
-
-// Order домен схеми
-export * as orderSchemas from './order/zod';
-
-// Pricing домен схеми
-export * as pricingSchemas from './pricing/zod';
-
-// Receipt домен схеми
-export * as receiptSchemas from './receipt/zod';
-
-// Test домен схеми
-export * as testSchemas from './test/zod';
-
-// Повні схеми
-export * as fullSchemas from './full/zod/aksiApi';
+// Для сумісності з попередніми версіями
+export * from './wizard/zod';
 
 /**
  * Загальні утиліти для роботи з усіма схемами
@@ -58,9 +40,9 @@ export const zodUtils = {
   },
 
   /**
-   * Створює union схему з кількох схем
+   * Створює union схему з кількох схем (мінімум 2 схеми)
    */
-  createUnion<T extends readonly [z.ZodTypeAny, ...z.ZodTypeAny[]]>(
+  createUnion<T extends readonly [z.ZodTypeAny, z.ZodTypeAny, ...z.ZodTypeAny[]]>(
     schemas: T
   ): z.ZodUnion<T> {
     return z.union(schemas);
@@ -69,7 +51,20 @@ export const zodUtils = {
   /**
    * Створює схему з default значенням
    */
-  withDefault<T>(schema: z.ZodType<T>, defaultValue: T): z.ZodDefault<z.ZodType<T>> {
+  withDefault<T>(
+    schema: z.ZodType<T>, 
+    defaultValue: z.util.noUndefined<T>
+  ): z.ZodDefault<z.ZodType<T>> {
     return schema.default(defaultValue);
+  },
+
+  /**
+   * Створює опціональну схему з fallback значенням
+   */
+  withFallback<T>(
+    schema: z.ZodType<T>, 
+    fallbackValue: T
+  ): z.ZodCatch<z.ZodType<T>> {
+    return schema.catch(fallbackValue);
   },
 } as const;

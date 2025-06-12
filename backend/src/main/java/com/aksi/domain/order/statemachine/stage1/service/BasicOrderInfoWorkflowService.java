@@ -3,6 +3,8 @@ package com.aksi.domain.order.statemachine.stage1.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.order.statemachine.stage1.dto.BasicOrderInfoDTO;
@@ -17,6 +19,7 @@ import com.aksi.domain.order.statemachine.stage1.service.BasicOrderInfoStateServ
 @Service
 public class BasicOrderInfoWorkflowService {
 
+    private static final Logger logger = LoggerFactory.getLogger(BasicOrderInfoWorkflowService.class);
     private final BasicOrderInfoStateService stateService;
 
     public BasicOrderInfoWorkflowService(BasicOrderInfoStateService stateService) {
@@ -149,13 +152,26 @@ public class BasicOrderInfoWorkflowService {
      * Підтверджує вибір філії.
      */
     public boolean confirmBranchSelection(String sessionId, UUID branchId) {
+        logger.info("🏢 [WORKFLOW] Підтвердження вибору філії {} для sessionId: {}", branchId, sessionId);
+
         BasicOrderInfoContext context = stateService.getContext(sessionId);
         if (context == null || context.isLocked()) {
+            logger.warn("⚠️ [WORKFLOW] Контекст недоступний або заблокований для sessionId: {}", sessionId);
             return false;
         }
 
-        if (context.getCurrentState() != BasicOrderInfoState.SELECTING_BRANCH) {
-            return false;
+        BasicOrderInfoState currentState = context.getCurrentState();
+        logger.info("🔍 [WORKFLOW] Поточний стан: {} для sessionId: {}", currentState, sessionId);
+
+        // Автоматично переходимо до стану вибору філії якщо потрібно
+        if (currentState != BasicOrderInfoState.SELECTING_BRANCH) {
+            logger.info("🔄 [WORKFLOW] Автоматичний перехід до стану SELECTING_BRANCH для sessionId: {}", sessionId);
+            boolean transitioned = stateService.updateState(sessionId, BasicOrderInfoState.SELECTING_BRANCH);
+            if (!transitioned) {
+                logger.error("❌ [WORKFLOW] Не вдалося перейти до стану SELECTING_BRANCH для sessionId: {}", sessionId);
+                return false;
+            }
+            logger.info("✅ [WORKFLOW] Успішно перейшли до стану SELECTING_BRANCH для sessionId: {}", sessionId);
         }
 
         BasicOrderInfoDTO updatedInfo = BasicOrderInfoMapper.fromBranchId(branchId, null);
@@ -163,8 +179,16 @@ public class BasicOrderInfoWorkflowService {
             updatedInfo = BasicOrderInfoMapper.merge(context.getBasicOrderInfo(), updatedInfo);
         }
 
-        return stateService.updateStateAndData(sessionId,
+        boolean success = stateService.updateStateAndData(sessionId,
                 BasicOrderInfoState.BRANCH_SELECTED, updatedInfo);
+
+        if (success) {
+            logger.info("✅ [WORKFLOW] Успішно підтверджено вибір філії {} для sessionId: {}", branchId, sessionId);
+        } else {
+            logger.error("❌ [WORKFLOW] Не вдалося підтвердити вибір філії {} для sessionId: {}", branchId, sessionId);
+        }
+
+        return success;
     }
 
     /**
@@ -368,5 +392,17 @@ public class BasicOrderInfoWorkflowService {
             case CREATION_DATE_SET -> BasicOrderInfoState.COMPLETED;
             default -> null;
         };
+    }
+
+    /**
+     * Отримує філії з контексту (завантажуються автоматично при ініціалізації).
+     * Цей метод припускає що філії були завантажені в availableBranches поле DTO.
+     */
+    public java.util.List<com.aksi.domain.branch.dto.BranchLocationDTO> getAvailableBranches(String sessionId) {
+        BasicOrderInfoDTO currentData = getCurrentData(sessionId);
+        if (currentData != null && currentData.getAvailableBranches() != null) {
+            return currentData.getAvailableBranches();
+        }
+        return java.util.Collections.emptyList();
     }
 }

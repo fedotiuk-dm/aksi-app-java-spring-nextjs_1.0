@@ -111,7 +111,7 @@ function createZodIndex(domainName) {
 }
 
 /**
- * Створює загальний index для всіх Zod схем
+ * Створює загальний index для Order Wizard Zod схем
  */
 function createMainZodIndex() {
   const generatedPath = path.join(__dirname, '../shared/api/generated');
@@ -122,10 +122,9 @@ function createMainZodIndex() {
     return;
   }
 
-  const domains = ['auth', 'branch', 'client', 'order', 'pricing', 'receipt', 'test'];
   let exports = [
     `/**`,
-    ` * @fileoverview Загальний index для всіх Zod схем`,
+    ` * @fileoverview Загальний index для Order Wizard Zod схем`,
     ` * `,
     ` * Цей файл автоматично генерується скриптом create-zod-index.js`,
     ` * НЕ РЕДАГУЙТЕ ВРУЧНУ!`,
@@ -136,21 +135,17 @@ function createMainZodIndex() {
     '',
   ];
 
-  // Експортуємо схеми по доменах
-  domains.forEach((domain) => {
-    const zodPath = path.join(generatedPath, domain, 'zod', 'index.ts');
-    if (fs.existsSync(zodPath)) {
-      exports.push(`// ${domain.charAt(0).toUpperCase() + domain.slice(1)} домен схеми`);
-      exports.push(`export * as ${domain}Schemas from './${domain}/zod';`);
-      exports.push('');
-    }
-  });
-
-  // Додаємо full схеми якщо є
-  const fullZodPath = path.join(generatedPath, 'full', 'zod', 'aksiApi.ts');
-  if (fs.existsSync(fullZodPath)) {
-    exports.push(`// Повні схеми`);
-    exports.push(`export * as fullSchemas from './full/zod/aksiApi';`);
+  // Експортуємо тільки wizard схеми
+  const wizardZodPath = path.join(generatedPath, 'wizard', 'zod', 'index.ts');
+  if (fs.existsSync(wizardZodPath)) {
+    exports.push(`// Order Wizard схеми валідації`);
+    exports.push(`export * as wizardSchemas from './wizard/zod';`);
+    exports.push('');
+    exports.push(`// Для сумісності з попередніми версіями`);
+    exports.push(`export * from './wizard/zod';`);
+    exports.push('');
+  } else {
+    exports.push(`// ⚠️  Wizard Zod схеми не знайдено - перевірте генерацію`);
     exports.push('');
   }
 
@@ -183,9 +178,9 @@ function createMainZodIndex() {
       `  },`,
       '',
       `  /**`,
-      `   * Створює union схему з кількох схем`,
+      `   * Створює union схему з кількох схем (мінімум 2 схеми)`,
       `   */`,
-      `  createUnion<T extends readonly [z.ZodTypeAny, ...z.ZodTypeAny[]]>(`,
+      `  createUnion<T extends readonly [z.ZodTypeAny, z.ZodTypeAny, ...z.ZodTypeAny[]]>(`,
       `    schemas: T`,
       `  ): z.ZodUnion<T> {`,
       `    return z.union(schemas);`,
@@ -194,8 +189,21 @@ function createMainZodIndex() {
       `  /**`,
       `   * Створює схему з default значенням`,
       `   */`,
-      `  withDefault<T>(schema: z.ZodType<T>, defaultValue: T): z.ZodDefault<z.ZodType<T>> {`,
+      `  withDefault<T>(`,
+      `    schema: z.ZodType<T>, `,
+      `    defaultValue: z.util.noUndefined<T>`,
+      `  ): z.ZodDefault<z.ZodType<T>> {`,
       `    return schema.default(defaultValue);`,
+      `  },`,
+      '',
+      `  /**`,
+      `   * Створює опціональну схему з fallback значенням`,
+      `   */`,
+      `  withFallback<T>(`,
+      `    schema: z.ZodType<T>, `,
+      `    fallbackValue: T`,
+      `  ): z.ZodCatch<z.ZodType<T>> {`,
+      `    return schema.catch(fallbackValue);`,
       `  },`,
       `} as const;`,
     ].join('\n')
@@ -210,32 +218,19 @@ function createMainZodIndex() {
  * Основна функція
  */
 function main() {
-  const domainName = process.argv[2];
+  const domainName = process.argv[2] || 'wizard';
 
-  if (domainName && domainName !== 'full') {
-    console.log(`🚀 Створення Zod index для домену: ${domainName}`);
-    createZodIndex(domainName);
-  } else if (domainName === 'full') {
-    console.log('🚀 Створення Zod index для full API');
-    createZodIndex('full');
-    createMainZodIndex();
-  } else {
-    console.log('🚀 Створення всіх Zod index файлів');
-    const domains = [
-      'auth',
-      'branch',
-      'client',
-      'order',
-      'order-wizard',
-      'pricing',
-      'receipt',
-      'test',
-    ];
-    domains.forEach(createZodIndex);
-    createMainZodIndex();
+  console.log(`🚀 Створення Zod index для Order Wizard домену...`);
+
+  if (domainName !== 'wizard') {
+    console.log(`⚠️  Підтримується тільки wizard домен. Отримано: ${domainName}`);
+    console.log('Автоматично використовую wizard...');
   }
 
-  console.log('🎉 Завершено створення Zod index файлів!');
+  createZodIndex('wizard');
+  createMainZodIndex();
+
+  console.log('🎉 Завершено створення Zod index для Order Wizard!');
 }
 
 // Запускаємо якщо це головний модуль

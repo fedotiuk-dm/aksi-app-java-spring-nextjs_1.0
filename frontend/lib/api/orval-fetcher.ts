@@ -198,16 +198,32 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // Логування помилок
+    // Логування помилок (з фільтрацією для нормальних 404 та скасованих запитів)
     if (process.env.NODE_ENV === 'development') {
-      console.error(
-        `❌ API Error: ${originalRequest?.method?.toUpperCase()} ${originalRequest?.url}`,
-        {
-          status: error.response?.status,
-          data: error.response?.data,
-          message: error.message,
-        }
-      );
+      const isSelectedClientNotFound =
+        error.response?.status === 404 && originalRequest?.url?.includes('/selected-client');
+
+      const isCanceledRequest = error.message === 'canceled' || error.code === 'ERR_CANCELED';
+
+      if (isCanceledRequest) {
+        // Скасовані запити - це нормально, не логуємо як помилки
+        console.log(
+          `🚫 Request canceled: ${originalRequest?.method?.toUpperCase()} ${originalRequest?.url}`
+        );
+      } else if (!isSelectedClientNotFound) {
+        console.error(
+          `❌ API Error: ${originalRequest?.method?.toUpperCase()} ${originalRequest?.url}`,
+          {
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message,
+          }
+        );
+      } else {
+        console.log(
+          `ℹ️ No client selected yet: ${originalRequest?.method?.toUpperCase()} ${originalRequest?.url} (404)`
+        );
+      }
     }
 
     // Обробка 401 (Unauthorized)

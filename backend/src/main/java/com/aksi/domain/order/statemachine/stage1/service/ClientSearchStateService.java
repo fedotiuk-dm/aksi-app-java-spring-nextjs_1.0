@@ -109,6 +109,23 @@ public class ClientSearchStateService {
     }
 
     /**
+     * Отримує контекст пошуку для сесії або створює новий.
+     */
+    public ClientSearchContext getOrCreateContext(String sessionId) {
+        if (sessionId == null) {
+            sessionId = createSearchContext();
+        }
+
+        ClientSearchContext context = searchContexts.get(sessionId);
+        if (context == null) {
+            context = new ClientSearchContext();
+            searchContexts.put(sessionId, context);
+        }
+
+        return context;
+    }
+
+    /**
      * Видаляє контекст пошуку для сесії.
      */
     public void removeSearchContext(String sessionId) {

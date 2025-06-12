@@ -2,6 +2,8 @@ package com.aksi.domain.order.statemachine.stage1.service;
 
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.client.dto.ClientResponse;
@@ -20,6 +22,8 @@ import com.aksi.domain.order.statemachine.stage1.validator.ValidationResult;
 @Service
 public class ClientSearchCoordinationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ClientSearchCoordinationService.class);
+
     private final ClientSearchValidationService validationService;
     private final ClientSearchStateService stateService;
     private final ClientSearchOperationsService operationsService;
@@ -34,6 +38,8 @@ public class ClientSearchCoordinationService {
         this.stateService = stateService;
         this.operationsService = operationsService;
         this.workflowService = workflowService;
+        logger.info("🚀 ClientSearchCoordinationService ініціалізовано з stateService: {}, validationService: {}, operationsService: {}, workflowService: {}",
+                   stateService != null, validationService != null, operationsService != null, workflowService != null);
     }
 
     // ========== Делегування до ValidationService ==========
@@ -64,8 +70,22 @@ public class ClientSearchCoordinationService {
         return stateService.getSearchContext(sessionId);
     }
 
+    /**
+     * Перевіряє чи існує контекст пошуку для даної сесії.
+     */
     public boolean searchContextExists(String sessionId) {
-        return stateService.getSearchContext(sessionId) != null;
+        logger.info("🔍 [CLIENT-SEARCH-COORDINATION] Перевірка існування контексту для sessionId: {}", sessionId);
+
+        try {
+            boolean exists = stateService.getSearchContext(sessionId) != null;
+            logger.info("📋 [CLIENT-SEARCH-COORDINATION] Результат перевірки контексту для sessionId: {} -> exists: {}",
+                       sessionId, exists);
+            return exists;
+        } catch (Exception e) {
+            logger.error("❌ [CLIENT-SEARCH-COORDINATION] Помилка при перевірці контексту для sessionId: {}, error: {}",
+                        sessionId, e.getMessage(), e);
+            return false;
+        }
     }
 
     public void saveSearchCriteria(String sessionId, ClientSearchCriteriaDTO criteria) {
@@ -100,9 +120,22 @@ public class ClientSearchCoordinationService {
         return stateService.isReadyToComplete(sessionId);
     }
 
+    /**
+     * Отримує поточний стан пошуку.
+     */
     public ClientSearchState getCurrentState(String sessionId) {
-        ClientSearchContext context = getSearchContext(sessionId);
-        return context != null ? context.getCurrentState() : null;
+        logger.info("🔍 [CLIENT-SEARCH-COORDINATION] Запит на отримання стану для sessionId: {}", sessionId);
+
+        try {
+            ClientSearchStateService.ClientSearchContext context = stateService.getSearchContext(sessionId);
+            ClientSearchState state = context != null ? context.getCurrentState() : null;
+            logger.info("✅ [CLIENT-SEARCH-COORDINATION] Успішно отримано стан: {} для sessionId: {}", state, sessionId);
+            return state;
+        } catch (Exception e) {
+            logger.error("❌ [CLIENT-SEARCH-COORDINATION] Помилка при отриманні стану для sessionId: {}, error: {}",
+                        sessionId, e.getMessage(), e);
+            throw e;
+        }
     }
 
     // ========== Делегування до OperationsService ==========
@@ -158,6 +191,33 @@ public class ClientSearchCoordinationService {
      */
     public String startClientSearch() {
         return createSearchContext();
+    }
+
+    /**
+     * Ініціалізує пошук клієнта з існуючим sessionId від головного wizard.
+     */
+    public void initializeClientSearch(String sessionId) {
+        logger.info("🔥🔥🔥 CLIENT_SEARCH: initializeClientSearch() ВИКЛИКАНО з sessionId: {} 🔥🔥🔥", sessionId);
+
+        try {
+            if (sessionId == null || sessionId.trim().isEmpty()) {
+                logger.error("❌ CLIENT_SEARCH: sessionId є null або порожнім!");
+                return;
+            }
+
+            logger.info("🔧 CLIENT_SEARCH: Створення або отримання контексту для sessionId: {}", sessionId);
+            stateService.getOrCreateContext(sessionId);
+
+            logger.info("✅ CLIENT_SEARCH: Контекст успішно створено/отримано для sessionId: {}", sessionId);
+
+            // Перевіряємо що контекст справді існує
+            boolean exists = stateService.getSearchContext(sessionId) != null;
+            logger.info("🔍 CLIENT_SEARCH: Перевірка існування контексту після створення: exists={}", exists);
+
+        } catch (Exception e) {
+            logger.error("💥 CLIENT_SEARCH: Помилка при ініціалізації для sessionId: {}, error: {}", sessionId, e.getMessage(), e);
+            throw e;
+        }
     }
 
     /**

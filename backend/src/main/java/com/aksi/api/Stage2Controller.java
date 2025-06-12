@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @RestController
 @RequestMapping("/v1/order-wizard/stage2")
-@Tag(name = "Stage 2 Main API", description = "API для головного менеджера предметів Stage 2")
+@Tag(name = "Order Wizard - Stage 2", description = "Етап 2: Головний менеджер предметів")
 public class Stage2Controller {
 
     private final Stage2StateMachineAdapter stage2Adapter;
@@ -47,25 +47,41 @@ public class Stage2Controller {
 
     // =================== ГОЛОВНИЙ ЕКРАН МЕНЕДЖЕРА ПРЕДМЕТІВ ===================
 
-    @Operation(summary = "Ініціалізує новий сеанс менеджера предметів для замовлення")
+    @Operation(
+        summary = "Ініціалізує новий сеанс менеджера предметів для замовлення",
+        operationId = "stage2InitializeItemManager",
+        tags = {"Order Wizard - Stage 2", "Item Manager"}
+    )
     @PostMapping("/initialize/{orderId}")
     public ResponseEntity<ItemManagerDTO> initializeItemManager(@PathVariable UUID orderId) {
         return stage2Adapter.initializeItemManager(orderId);
     }
 
-    @Operation(summary = "Отримує поточний стан менеджера предметів")
+    @Operation(
+        summary = "Отримує поточний стан менеджера предметів",
+        operationId = "stage2GetCurrentManager",
+        tags = {"Order Wizard - Stage 2", "Item Manager"}
+    )
     @GetMapping("/manager/{sessionId}")
     public ResponseEntity<ItemManagerDTO> getCurrentManager(@PathVariable UUID sessionId) {
         return stage2Adapter.getCurrentManager(sessionId);
     }
 
-    @Operation(summary = "Запускає новий підвізард додавання предмета")
+    @Operation(
+        summary = "Запускає новий підвізард додавання предмета",
+        operationId = "stage2StartNewItemWizard",
+        tags = {"Order Wizard - Stage 2", "Item Wizard"}
+    )
     @PostMapping("/wizard/new/{sessionId}")
     public ResponseEntity<ItemManagerDTO> startNewItemWizard(@PathVariable UUID sessionId) {
         return stage2Adapter.startNewItemWizard(sessionId);
     }
 
-    @Operation(summary = "Запускає підвізард редагування існуючого предмета")
+    @Operation(
+        summary = "Запускає підвізард редагування існуючого предмета",
+        operationId = "stage2StartEditItemWizard",
+        tags = {"Order Wizard - Stage 2", "Item Wizard"}
+    )
     @PostMapping("/wizard/edit/{sessionId}/{itemId}")
     public ResponseEntity<ItemManagerDTO> startEditItemWizard(
             @PathVariable UUID sessionId,
@@ -73,7 +89,11 @@ public class Stage2Controller {
         return stage2Adapter.startEditItemWizard(sessionId, itemId);
     }
 
-    @Operation(summary = "Додає новий предмет до замовлення (з підвізарда)")
+    @Operation(
+        summary = "Додає новий предмет до замовлення (з підвізарда)",
+        operationId = "stage2AddItemToOrder",
+        tags = {"Order Wizard - Stage 2", "Item Operations"}
+    )
     @PostMapping("/items/{sessionId}")
     public ResponseEntity<ItemManagerDTO> addItemToOrder(
             @PathVariable UUID sessionId,
@@ -81,7 +101,11 @@ public class Stage2Controller {
         return stage2Adapter.addItemToOrder(sessionId, itemDTO);
     }
 
-    @Operation(summary = "Оновлює існуючий предмет замовлення (з підвізарда)")
+    @Operation(
+        summary = "Оновлює існуючий предмет замовлення (з підвізарда)",
+        operationId = "stage2UpdateItemInOrder",
+        tags = {"Order Wizard - Stage 2", "Item Operations"}
+    )
     @PutMapping("/items/{sessionId}/{itemId}")
     public ResponseEntity<ItemManagerDTO> updateItemInOrder(
             @PathVariable UUID sessionId,
@@ -90,7 +114,11 @@ public class Stage2Controller {
         return stage2Adapter.updateItemInOrder(sessionId, itemId, itemDTO);
     }
 
-    @Operation(summary = "Видаляє предмет з замовлення")
+    @Operation(
+        summary = "Видаляє предмет з замовлення",
+        operationId = "stage2DeleteItemFromOrder",
+        tags = {"Order Wizard - Stage 2", "Item Operations"}
+    )
     @DeleteMapping("/items/{sessionId}/{itemId}")
     public ResponseEntity<ItemManagerDTO> deleteItemFromOrder(
             @PathVariable UUID sessionId,
@@ -98,55 +126,91 @@ public class Stage2Controller {
         return stage2Adapter.deleteItemFromOrder(sessionId, itemId);
     }
 
-    @Operation(summary = "Закриває активний підвізард без збереження")
+    @Operation(
+        summary = "Закриває активний підвізард без збереження",
+        operationId = "stage2CloseWizard",
+        tags = {"Order Wizard - Stage 2", "Item Wizard"}
+    )
     @PostMapping("/wizard/close/{sessionId}")
     public ResponseEntity<ItemManagerDTO> closeWizard(@PathVariable UUID sessionId) {
         return stage2Adapter.closeWizard(sessionId);
     }
 
-    @Operation(summary = "Перевіряє готовність до переходу на наступний етап")
+    @Operation(
+        summary = "Перевіряє готовність до переходу на наступний етап",
+        operationId = "stage2CheckReadinessToProceed",
+        tags = {"Order Wizard - Stage 2", "Stage Operations"}
+    )
     @GetMapping("/ready/{sessionId}")
     public ResponseEntity<Boolean> checkReadinessToProceed(@PathVariable UUID sessionId) {
         return stage2Adapter.checkReadinessToProceed(sessionId);
     }
 
-    @Operation(summary = "Завершує етап 2 та переходить до наступного етапу")
+    @Operation(
+        summary = "Завершує етап 2 та переходить до наступного етапу",
+        operationId = "stage2CompleteStage",
+        tags = {"Order Wizard - Stage 2", "Stage Operations"}
+    )
     @PostMapping("/complete/{sessionId}")
     public ResponseEntity<ItemManagerDTO> completeStage2(@PathVariable UUID sessionId) {
         return stage2Adapter.completeStage2(sessionId);
     }
 
-    @Operation(summary = "Отримує поточний стан сесії")
+    @Operation(
+        summary = "Отримує поточний стан сесії",
+        operationId = "stage2GetCurrentState",
+        tags = {"Order Wizard - Stage 2", "Session Management"}
+    )
     @GetMapping("/state/{sessionId}")
     public ResponseEntity<Stage2State> getCurrentState(@PathVariable UUID sessionId) {
         return stage2Adapter.getCurrentState(sessionId);
     }
 
-    @Operation(summary = "Валідує поточний стан менеджера")
+    @Operation(
+        summary = "Валідує поточний стан менеджера",
+        operationId = "stage2ValidateCurrentState",
+        tags = {"Order Wizard - Stage 2", "Session Management"}
+    )
     @GetMapping("/validate/{sessionId}")
     public ResponseEntity<ValidationResult> validateCurrentState(@PathVariable UUID sessionId) {
         return stage2Adapter.validateCurrentState(sessionId);
     }
 
-    @Operation(summary = "Синхронізує стан менеджера")
+    @Operation(
+        summary = "Синхронізує стан менеджера",
+        operationId = "stage2SynchronizeManager",
+        tags = {"Order Wizard - Stage 2", "Session Management"}
+    )
     @PostMapping("/synchronize/{sessionId}")
     public ResponseEntity<ItemManagerDTO> synchronizeManager(@PathVariable UUID sessionId) {
         return stage2Adapter.synchronizeManager(sessionId);
     }
 
-    @Operation(summary = "Скидає сесію до початкового стану")
+    @Operation(
+        summary = "Скидає сесію до початкового стану",
+        operationId = "stage2ResetSession",
+        tags = {"Order Wizard - Stage 2", "Session Management"}
+    )
     @PostMapping("/reset/{sessionId}")
     public ResponseEntity<Void> resetSession(@PathVariable UUID sessionId) {
         return stage2Adapter.resetSession(sessionId);
     }
 
-    @Operation(summary = "Завершує сесію та звільняє ресурси")
+    @Operation(
+        summary = "Завершує сесію та звільняє ресурси",
+        operationId = "stage2TerminateSession",
+        tags = {"Order Wizard - Stage 2", "Session Management"}
+    )
     @DeleteMapping("/session/{sessionId}")
     public ResponseEntity<Void> terminateSession(@PathVariable UUID sessionId) {
         return stage2Adapter.terminateSession(sessionId);
     }
 
-    @Operation(summary = "Отримує кількість активних сесій")
+    @Operation(
+        summary = "Отримує кількість активних сесій",
+        operationId = "stage2GetActiveSessionCount",
+        tags = {"Order Wizard - Stage 2", "Session Management"}
+    )
     @GetMapping("/sessions/count")
     public ResponseEntity<Integer> getActiveSessionCount() {
         return stage2Adapter.getActiveSessionCount();

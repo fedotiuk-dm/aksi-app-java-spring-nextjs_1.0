@@ -1,7 +1,10 @@
 package com.aksi.domain.order.statemachine.stage1.service;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.order.statemachine.stage1.dto.BasicOrderInfoDTO;
@@ -17,6 +20,8 @@ import com.aksi.domain.order.statemachine.stage1.validator.BasicOrderInfoValidat
 @Service
 public class BasicOrderInfoCoordinationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(BasicOrderInfoCoordinationService.class);
+
     private final BasicOrderInfoValidationService validationService;
     private final BasicOrderInfoWorkflowService workflowService;
     private final BasicOrderInfoOperationsService operationsService;
@@ -31,6 +36,8 @@ public class BasicOrderInfoCoordinationService {
         this.workflowService = workflowService;
         this.operationsService = operationsService;
         this.stateService = stateService;
+        logger.info("🚀 BasicOrderInfoCoordinationService ініціалізовано з validationService: {}, workflowService: {}, operationsService: {}, stateService: {}",
+                   validationService != null, workflowService != null, operationsService != null, stateService != null);
     }
 
     // ========== Делегування до ValidationService ==========
@@ -126,7 +133,17 @@ public class BasicOrderInfoCoordinationService {
     }
 
     public BasicOrderInfoState getCurrentState(String sessionId) {
-        return workflowService.getCurrentState(sessionId);
+        logger.info("🔍 [BASIC-ORDER-COORDINATION] Запит на отримання стану для sessionId: {}", sessionId);
+
+        try {
+            BasicOrderInfoState state = workflowService.getCurrentState(sessionId);
+            logger.info("✅ [BASIC-ORDER-COORDINATION] Успішно отримано стан: {} для sessionId: {}", state, sessionId);
+            return state;
+        } catch (Exception e) {
+            logger.error("❌ [BASIC-ORDER-COORDINATION] Помилка при отриманні стану для sessionId: {}, error: {}",
+                        sessionId, e.getMessage(), e);
+            throw e;
+        }
     }
 
     public BasicOrderInfoDTO getCurrentData(String sessionId) {
@@ -173,6 +190,33 @@ public class BasicOrderInfoCoordinationService {
         return stateService.initializeContext();
     }
 
+    /**
+     * Ініціалізує базову інформацію замовлення з існуючим sessionId від головного wizard.
+     */
+    public void initializeBasicOrderInfo(String sessionId) {
+        logger.info("🔥🔥🔥 BASIC_ORDER: initializeBasicOrderInfo() ВИКЛИКАНО з sessionId: {} 🔥🔥🔥", sessionId);
+
+        try {
+            if (sessionId == null || sessionId.trim().isEmpty()) {
+                logger.error("❌ BASIC_ORDER: sessionId є null або порожнім!");
+                return;
+            }
+
+            logger.info("🔧 BASIC_ORDER: Створення або отримання контексту для sessionId: {}", sessionId);
+            stateService.getOrCreateContext(sessionId);
+
+            logger.info("✅ BASIC_ORDER: Контекст успішно створено/отримано для sessionId: {}", sessionId);
+
+            // Перевіряємо що контекст справді існує
+            boolean exists = stateService.getContext(sessionId) != null;
+            logger.info("🔍 BASIC_ORDER: Перевірка існування контексту після створення: exists={}", exists);
+
+        } catch (Exception e) {
+            logger.error("💥 BASIC_ORDER: Помилка при ініціалізації для sessionId: {}, error: {}", sessionId, e.getMessage(), e);
+            throw e;
+        }
+    }
+
     public BasicOrderInfoContext getContext(String sessionId) {
         return stateService.getContext(sessionId);
     }
@@ -182,7 +226,18 @@ public class BasicOrderInfoCoordinationService {
     }
 
     public boolean sessionExists(String sessionId) {
-        return stateService.sessionExists(sessionId);
+        logger.info("🔍 [BASIC-ORDER-COORDINATION] Перевірка існування сесії для sessionId: {}", sessionId);
+
+        try {
+            boolean exists = stateService.sessionExists(sessionId);
+            logger.info("📋 [BASIC-ORDER-COORDINATION] Результат перевірки сесії для sessionId: {} -> exists: {}",
+                       sessionId, exists);
+            return exists;
+        } catch (Exception e) {
+            logger.error("❌ [BASIC-ORDER-COORDINATION] Помилка при перевірці сесії для sessionId: {}, error: {}",
+                        sessionId, e.getMessage(), e);
+            return false;
+        }
     }
 
     public void removeContext(String sessionId) {
@@ -227,5 +282,32 @@ public class BasicOrderInfoCoordinationService {
     public boolean isBasicOrderInfoReady(String sessionId) {
         BasicOrderInfoDTO data = getCurrentData(sessionId);
         return validationService.isBasicOrderInfoReady(data);
+    }
+
+    // ========== Делегування до OperationsService для роботи з філіями ==========
+
+    public List<com.aksi.domain.branch.dto.BranchLocationDTO> getAllBranches() {
+        logger.info("🔍 [COORDINATION] Запит на отримання всіх філій через operationsService");
+
+        try {
+            List<com.aksi.domain.branch.dto.BranchLocationDTO> branches = operationsService.getAllBranches();
+            logger.info("✅ [COORDINATION] Отримано {} філій від operationsService",
+                       branches != null ? branches.size() : 0);
+            return branches;
+        } catch (Exception e) {
+            logger.error("❌ [COORDINATION] Помилка при отриманні філій: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public com.aksi.domain.branch.dto.BranchLocationDTO getBranchById(UUID branchId) {
+        return operationsService.getBranchById(branchId);
+    }
+
+    /**
+     * Отримує філії для sessionId (завантажуються автоматично при ініціалізації).
+     */
+    public java.util.List<com.aksi.domain.branch.dto.BranchLocationDTO> getAvailableBranchesForSession(String sessionId) {
+        return workflowService.getAvailableBranches(sessionId);
     }
 }

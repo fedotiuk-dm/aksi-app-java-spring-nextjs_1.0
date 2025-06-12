@@ -15,8 +15,8 @@ export type PaymentConfigurationDTO = {
     isValid?: boolean;
     validationMessage?: string;
     lastUpdated?: string;
-    fullyPaid?: boolean;
     prepaymentAmount?: number;
+    fullyPaid?: boolean;
     paymentMethod?: PaymentConfigurationDTO.paymentMethod;
     readyForCompletion?: boolean;
     paymentConfigComplete?: boolean;

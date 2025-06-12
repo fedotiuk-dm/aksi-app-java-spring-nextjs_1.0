@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
@@ -26,6 +28,8 @@ import reactor.core.publisher.Mono;
  */
 public final class StateMachineUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(StateMachineUtils.class);
+
     private StateMachineUtils() {
         // Private constructor для utility класу
     }
@@ -39,11 +43,18 @@ public final class StateMachineUtils {
      */
     public static boolean validateSession(StateMachine<OrderState, OrderEvent> stateMachine, String sessionId) {
         if (sessionId == null || stateMachine == null) {
+            logger.warn("⚠️  Validation failed: sessionId={}, stateMachine={}", sessionId, stateMachine != null);
             return false;
         }
 
         String currentSessionId = stateMachine.getExtendedState().get("sessionId", String.class);
-        return sessionId.equals(currentSessionId);
+        boolean isValid = sessionId.equals(currentSessionId);
+
+        if (!isValid) {
+            logger.warn("⚠️  Session validation failed: expected={}, actual={}", sessionId, currentSessionId);
+        }
+
+        return isValid;
     }
 
     /**
@@ -54,24 +65,58 @@ public final class StateMachineUtils {
      * @return true якщо подія була успішно оброблена
      */
     public static boolean sendEventSafely(StateMachine<OrderState, OrderEvent> stateMachine, OrderEvent event) {
+        logger.info("🔄 sendEventSafely called with event: {}", event);
+
         if (stateMachine == null || event == null) {
+            logger.error("❌ Invalid parameters: stateMachine={}, event={}", stateMachine != null, event);
             return false;
         }
 
         try {
+            // Логируем текущее состояние
+            OrderState currentState = stateMachine.getState() != null ? stateMachine.getState().getId() : null;
+            logger.info("📊 Current state before event: {}", currentState);
+
+            // Логуємо детальну інформацію про StateMachine
+            logger.info("🔍 StateMachine details: id={}, hasState={}",
+                stateMachine.getId(), stateMachine.getState() != null);
+
             // Використовуємо новий reactive API замість deprecated sendEvent()
             Message<OrderEvent> message = org.springframework.messaging.support.MessageBuilder
                 .withPayload(event)
                 .build();
 
+            logger.info("📬 Sending message with payload: {}", message.getPayload());
+
             // Відправляємо event через reactive API та блокуємо для отримання результату
             StateMachineEventResult<OrderState, OrderEvent> result = stateMachine.sendEvent(Mono.just(message))
                 .blockFirst();  // Отримуємо перший результат
 
-            // Перевіряємо на null перед викликом getResultType()
-            return result != null && result.getResultType() == StateMachineEventResult.ResultType.ACCEPTED;
+            // Детальне логування результату
+            if (result != null) {
+                logger.info("📨 Event result received: resultType={}, region={}",
+                    result.getResultType(), result.getRegion());
+
+                boolean isAccepted = result.getResultType() == StateMachineEventResult.ResultType.ACCEPTED;
+                logger.info("✅ Event processing: {}", isAccepted ? "ACCEPTED" : "REJECTED/DENIED");
+
+                // Логируем новое состояние
+                OrderState newState = stateMachine.getState() != null ? stateMachine.getState().getId() : null;
+                logger.info("📊 State after event: {} -> {}", currentState, newState);
+
+                // Якщо event REJECTED/DENIED, логуємо додаткову інформацію
+                if (!isAccepted) {
+                    logger.warn("⚠️ Event {} was rejected/denied! Current state: {}",
+                        event, newState);
+                }
+
+                return isAccepted;
+            } else {
+                logger.error("❌ Event result is NULL! This should not happen.");
+                return false;
+            }
         } catch (Exception e) {
-            // Логування помилки можна додати тут
+            logger.error("💥 Exception in sendEventSafely: {}", e.getMessage(), e);
             return false;
         }
     }
@@ -105,8 +150,26 @@ public final class StateMachineUtils {
      * @param sessionId ID сесії
      */
     public static void initializeSession(StateMachine<OrderState, OrderEvent> stateMachine, String sessionId) {
+        logger.info("🔧 Initializing session: sessionId={}", sessionId);
+
         if (stateMachine != null && sessionId != null) {
-            stateMachine.getExtendedState().getVariables().put("sessionId", sessionId);
+            try {
+                // Зберігаємо sessionId як String та як UUID для сумісності
+                stateMachine.getExtendedState().getVariables().put("sessionId", sessionId);
+                stateMachine.getExtendedState().getVariables().put("sessionIdUUID", java.util.UUID.fromString(sessionId));
+
+                logger.info("✅ Session initialized successfully with both String and UUID formats");
+
+                // Перевіряємо що сесія справді збережена
+                String storedSessionId = stateMachine.getExtendedState().get("sessionId", String.class);
+                java.util.UUID storedSessionUUID = stateMachine.getExtendedState().get("sessionIdUUID", java.util.UUID.class);
+                logger.info("🔍 Stored sessionId verification: String={}, UUID={}", storedSessionId, storedSessionUUID);
+            } catch (Exception e) {
+                logger.error("💥 Exception during session initialization: {}", e.getMessage(), e);
+            }
+        } else {
+            logger.error("❌ Cannot initialize session: stateMachine={}, sessionId={}",
+                stateMachine != null, sessionId);
         }
     }
 
@@ -245,20 +308,43 @@ public final class StateMachineUtils {
             String sessionId,
             OrderEvent initialEvent) {
 
+        logger.info("🚀 startStateMachine called with sessionId={}, initialEvent={}", sessionId, initialEvent);
+
         if (stateMachine == null || sessionId == null || initialEvent == null) {
+            logger.error("❌ Invalid parameters: stateMachine={}, sessionId={}, initialEvent={}",
+                stateMachine != null, sessionId, initialEvent);
             return false;
         }
 
         try {
+            // Скидаємо StateMachine до початкового стану
+            logger.info("🔄 Resetting StateMachine to initial state...");
+            stateMachine.stopReactively().block();
+
             // Ініціалізуємо сесію
+            logger.info("🔧 Initializing session: {}", sessionId);
             initializeSession(stateMachine, sessionId);
 
+            // Перевіряємо стан перед запуском
+            OrderState stateBefore = stateMachine.getState() != null ? stateMachine.getState().getId() : null;
+            logger.info("📊 State before starting: {}", stateBefore);
+
             // Запускаємо state machine з новим reactive API
+            logger.info("▶️  Starting StateMachine reactively...");
             stateMachine.startReactively().block();
 
+            // Перевіряємо стан після запуску
+            OrderState stateAfterStart = stateMachine.getState() != null ? stateMachine.getState().getId() : null;
+            logger.info("📊 State after starting: {}", stateAfterStart);
+
             // Відправляємо початкову подію
-            return sendEventSafely(stateMachine, initialEvent);
+            logger.info("📤 Sending initial event: {}", initialEvent);
+            boolean eventResult = sendEventSafely(stateMachine, initialEvent);
+
+            logger.info("✅ startStateMachine result: {}", eventResult);
+            return eventResult;
         } catch (Exception e) {
+            logger.error("💥 Exception in startStateMachine: {}", e.getMessage(), e);
             return false;
         }
     }
@@ -382,24 +468,57 @@ public final class StateMachineUtils {
     public static ResponseEntity<OrderWizardResponseDTO> startOrderWizard(
             StateMachine<OrderState, OrderEvent> stateMachine) {
 
-        // Генеруємо унікальний ID сесії
-        String sessionId = generateSessionId();
+        logger.info("🏁 startOrderWizard called");
 
-        // Запускаємо state machine з початковою подією
-        boolean success = startStateMachine(
-            stateMachine,
-            sessionId,
-            OrderEvent.START_ORDER
-        );
-
-        if (success) {
-            OrderState currentState = getCurrentState(stateMachine);
-            return ResponseEntity.ok(new OrderWizardResponseDTO(
-                sessionId, currentState, true, "Order wizard started successfully"
-            ));
-        } else {
+        if (stateMachine == null) {
+            logger.error("❌ StateMachine is null in startOrderWizard!");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new OrderWizardResponseDTO(sessionId, null, false, "Failed to start order wizard"));
+                .body(new OrderWizardResponseDTO(null, null, false, "StateMachine not available"));
+        }
+
+        try {
+            // Генеруємо унікальний ID сесії
+            String sessionId = generateSessionId();
+            logger.info("🆔 Generated sessionId: {}", sessionId);
+
+            // Перевіряємо початковий стан StateMachine
+            OrderState initialState = stateMachine.getState() != null ? stateMachine.getState().getId() : null;
+            logger.info("📊 StateMachine initial state: {}", initialState);
+
+            // Запускаємо state machine з початковою подією
+            logger.info("🚀 Starting StateMachine with START_ORDER event...");
+            logger.info("🔔 Calling startStateMachine(stateMachine, {}, {})", sessionId, OrderEvent.START_ORDER);
+
+            boolean success = startStateMachine(
+                stateMachine,
+                sessionId,
+                OrderEvent.START_ORDER
+            );
+
+            logger.info("📊 StateMachine start result: {}", success);
+
+            // Перевіряємо фінальний стан
+            OrderState finalState = stateMachine.getState() != null ? stateMachine.getState().getId() : null;
+            logger.info("📊 StateMachine final state: {}", finalState);
+
+            if (success) {
+                logger.info("✅ Order Wizard started successfully. Final state: {}", finalState);
+
+                OrderWizardResponseDTO responseBody = new OrderWizardResponseDTO(
+                    sessionId, finalState, true, "Order wizard started successfully"
+                );
+
+                return ResponseEntity.ok(responseBody);
+            } else {
+                logger.error("❌ Failed to start StateMachine");
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new OrderWizardResponseDTO(sessionId, finalState, false, "Failed to start order wizard"));
+            }
+        } catch (Exception e) {
+            logger.error("💥 Exception in startOrderWizard: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new OrderWizardResponseDTO(null, null, false, "Exception: " + e.getMessage()));
         }
     }
 }

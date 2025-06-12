@@ -13,7 +13,7 @@ export type ItemManagerDTO = {
     activeWizardId?: string;
     editingItemId?: string;
     currentStatus?: string;
-    wizardActive?: boolean;
     editMode?: boolean;
+    wizardActive?: boolean;
 };
 

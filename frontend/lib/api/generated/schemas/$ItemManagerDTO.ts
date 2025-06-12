@@ -39,10 +39,10 @@ export const $ItemManagerDTO = {
         currentStatus: {
             type: 'string',
         },
-        wizardActive: {
+        editMode: {
             type: 'boolean',
         },
-        editMode: {
+        wizardActive: {
             type: 'boolean',
         },
     },

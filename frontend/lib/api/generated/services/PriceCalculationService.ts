@@ -2,12 +2,118 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { InitializeSubstepRequest } from '../models/InitializeSubstepRequest';
 import type { PriceCalculationRequestDTO } from '../models/PriceCalculationRequestDTO';
 import type { PriceCalculationResponseDTO } from '../models/PriceCalculationResponseDTO';
+import type { PriceDiscountDTO } from '../models/PriceDiscountDTO';
+import type { SubstepResultDTO } from '../models/SubstepResultDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class PriceCalculationService {
+    /**
+     * Ініціалізація підетапу 4
+     * @returns SubstepResultDTO OK
+     * @throws ApiError
+     */
+    public static substep4InitializeSubstep({
+        sessionId,
+        requestBody,
+    }: {
+        sessionId: string,
+        requestBody: InitializeSubstepRequest,
+    }): CancelablePromise<SubstepResultDTO> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/order-wizard/stage2/substep4/initialize/{sessionId}',
+            path: {
+                'sessionId': sessionId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Розрахунок ціни
+     * @returns PriceCalculationResponseDTO OK
+     * @throws ApiError
+     */
+    public static substep4CalculatePrice({
+        requestBody,
+    }: {
+        requestBody: PriceDiscountDTO,
+    }): CancelablePromise<PriceCalculationResponseDTO> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/order-wizard/stage2/substep4/calculate-price',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Розрахунок фінальної ціни з усіма модифікаторами
+     * @returns SubstepResultDTO OK
+     * @throws ApiError
+     */
+    public static substep4CalculateFinalPrice({
+        sessionId,
+    }: {
+        sessionId: string,
+    }): CancelablePromise<SubstepResultDTO> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/order-wizard/stage2/substep4/calculate-final-price/{sessionId}',
+            path: {
+                'sessionId': sessionId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Розрахунок базової ціни предмета
+     * @returns SubstepResultDTO OK
+     * @throws ApiError
+     */
+    public static substep4CalculateBasePrice({
+        sessionId,
+    }: {
+        sessionId: string,
+    }): CancelablePromise<SubstepResultDTO> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/order-wizard/stage2/substep4/calculate-base-price/{sessionId}',
+            path: {
+                'sessionId': sessionId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
     /**
      * Отримати інформацію про кілька модифікаторів
      * Повертає інформацію про модифікатори за списком їх кодів
@@ -39,7 +145,7 @@ export class PriceCalculationService {
      * @returns PriceCalculationResponseDTO Успішний розрахунок ціни
      * @throws ApiError
      */
-    public static calculatePrice1({
+    public static calculatePrice({
         requestBody,
     }: {
         requestBody: PriceCalculationRequestDTO,
@@ -99,7 +205,7 @@ export class PriceCalculationService {
      * @returns any OK
      * @throws ApiError
      */
-    public static getRecommendedModifiers1({
+    public static getRecommendedModifiers({
         stains,
         defects,
         categoryCode,

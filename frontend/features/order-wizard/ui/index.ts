@@ -1,9 +1,8 @@
 export { OrderWizardContainer } from './OrderWizardContainer';
 
 // Stage 1 компоненти
-export { Stage1ClientSelection } from './stages/Stage1ClientSelection';
-export { NewClientForm } from './stages/NewClientForm';
+export { Stage1ClientSelection } from './stage1/Stage1ClientSelection';
 
-// Stage 2 компоненти
-export { Stage2ItemManager } from './stages/Stage2ItemManager';
-export * from './components/stage2';
+// // Stage 2 компоненти (тимчасово відключено)
+// export { Stage2ItemManager } from './stage2/Stage2ItemManager';
+// export * from './stage2/components/stage2';

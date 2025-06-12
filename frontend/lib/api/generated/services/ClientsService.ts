@@ -194,7 +194,7 @@ export class ClientsService {
      * @returns ClientResponse Успішно отримано результати пошуку
      * @throws ApiError
      */
-    public static searchClients1({
+    public static searchClients({
         keyword,
     }: {
         /**

@@ -10,7 +10,7 @@ export type ValidationResult = {
     firstError?: string;
     errorCount?: number;
     firstWarning?: string;
-    warningCount?: number;
     fullMessage?: string;
+    warningCount?: number;
 };
 

@@ -87,6 +87,26 @@ public class StainsDefectsStateService {
     }
 
     /**
+     * Отримує контекст за ідентифікатором сесії або створює новий.
+     *
+     * @param sessionId ідентифікатор сесії
+     * @return контекст
+     */
+    public StainsDefectsContext getOrCreateContext(final UUID sessionId) {
+        if (sessionId == null) {
+            throw new IllegalArgumentException("SessionId cannot be null");
+        }
+
+        StainsDefectsContext context = contexts.get(sessionId);
+        if (context == null) {
+            context = new StainsDefectsContext();
+            contexts.put(sessionId, context);
+        }
+
+        return context;
+    }
+
+    /**
      * Оновлює стан контексту.
      *
      * @param sessionId ідентифікатор сесії

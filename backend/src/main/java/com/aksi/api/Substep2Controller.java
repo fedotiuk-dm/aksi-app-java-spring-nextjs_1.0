@@ -33,7 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @RestController
 @RequestMapping("/v1/order-wizard/stage2/substep2")
-@Tag(name = "Substep 2 API", description = "API для підетапу 2 - Характеристики предмета")
+@Tag(name = "Order Wizard - Stage 2 Substep 2", description = "Підетап 2: Характеристики предмета")
 public class Substep2Controller {
 
     private final ItemCharacteristicsStateMachineAdapter itemCharacteristicsAdapter;
@@ -44,7 +44,11 @@ public class Substep2Controller {
 
     // =================== ХАРАКТЕРИСТИКИ ПРЕДМЕТА ===================
 
-    @Operation(summary = "Ініціалізує підетап 2 - Характеристики")
+    @Operation(
+        summary = "Ініціалізує підетап 2 - Характеристики",
+        operationId = "substep2InitializeSubstep",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Item Characteristics"}
+    )
     @PostMapping("/initialize/{sessionId}")
     public ResponseEntity<ItemCharacteristicsDTO> initializeSubstep2(
             @PathVariable UUID sessionId,
@@ -52,13 +56,21 @@ public class Substep2Controller {
         return itemCharacteristicsAdapter.initializeSubstep(sessionId, itemId);
     }
 
-    @Operation(summary = "Отримує список доступних матеріалів")
+    @Operation(
+        summary = "Отримує список доступних матеріалів",
+        operationId = "substep2GetAvailableMaterials",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Materials"}
+    )
     @GetMapping("/materials/{sessionId}")
     public ResponseEntity<List<String>> getAvailableMaterials(@PathVariable UUID sessionId) {
         return itemCharacteristicsAdapter.getAvailableMaterials(sessionId);
     }
 
-    @Operation(summary = "Вибирає матеріал предмета")
+    @Operation(
+        summary = "Вибирає матеріал предмета",
+        operationId = "substep2SelectMaterial",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Materials"}
+    )
     @PostMapping("/select-material/{sessionId}")
     public ResponseEntity<ValidationResult> selectMaterial(
             @PathVariable UUID sessionId,
@@ -66,7 +78,11 @@ public class Substep2Controller {
         return itemCharacteristicsAdapter.selectMaterial(sessionId, materialId);
     }
 
-    @Operation(summary = "Вибирає колір предмета")
+    @Operation(
+        summary = "Вибирає колір предмета",
+        operationId = "substep2SelectColor",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Colors"}
+    )
     @PostMapping("/select-color/{sessionId}")
     public ResponseEntity<ValidationResult> selectColor(
             @PathVariable UUID sessionId,
@@ -74,7 +90,11 @@ public class Substep2Controller {
         return itemCharacteristicsAdapter.selectColor(sessionId, color);
     }
 
-    @Operation(summary = "Вибирає наповнювач")
+    @Operation(
+        summary = "Вибирає наповнювач",
+        operationId = "substep2SelectFiller",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Fillers"}
+    )
     @PostMapping("/select-filler/{sessionId}")
     public ResponseEntity<ValidationResult> selectFiller(
             @PathVariable UUID sessionId,
@@ -83,7 +103,11 @@ public class Substep2Controller {
         return itemCharacteristicsAdapter.selectFiller(sessionId, fillerType, isFillerDamaged);
     }
 
-    @Operation(summary = "Вибирає ступінь зносу")
+    @Operation(
+        summary = "Вибирає ступінь зносу",
+        operationId = "substep2SelectWearLevel",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Wear Level"}
+    )
     @PostMapping("/select-wear-level/{sessionId}")
     public ResponseEntity<ValidationResult> selectWearLevel(
             @PathVariable UUID sessionId,
@@ -91,25 +115,41 @@ public class Substep2Controller {
         return itemCharacteristicsAdapter.selectWearLevel(sessionId, wearPercentage);
     }
 
-    @Operation(summary = "Валідує всі вибрані характеристики")
+    @Operation(
+        summary = "Валідує всі вибрані характеристики",
+        operationId = "substep2ValidateCharacteristics",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Validation"}
+    )
     @PostMapping("/validate/{sessionId}")
     public ResponseEntity<ValidationResult> validateCharacteristics(@PathVariable UUID sessionId) {
         return itemCharacteristicsAdapter.validateCharacteristics(sessionId);
     }
 
-    @Operation(summary = "Завершує підетап 2")
+    @Operation(
+        summary = "Завершує підетап 2",
+        operationId = "substep2CompleteSubstep",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Completion"}
+    )
     @PostMapping("/complete/{sessionId}")
     public ResponseEntity<Map<String, Object>> completeSubstep2(@PathVariable UUID sessionId) {
         return itemCharacteristicsAdapter.completeSubstep(sessionId);
     }
 
-    @Operation(summary = "Отримує поточний стан підетапу 2")
+    @Operation(
+        summary = "Отримує поточний стан підетапу 2",
+        operationId = "substep2GetCurrentCharacteristics",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Status"}
+    )
     @GetMapping("/current-state/{sessionId}")
     public ResponseEntity<ItemCharacteristicsDTO> getCurrentCharacteristics(@PathVariable UUID sessionId) {
         return itemCharacteristicsAdapter.getCurrentCharacteristics(sessionId);
     }
 
-    @Operation(summary = "Скасовує підетап 2")
+    @Operation(
+        summary = "Скасовує підетап 2",
+        operationId = "substep2CancelSubstep",
+        tags = {"Order Wizard - Stage 2 Substep 2", "Session Management"}
+    )
     @PostMapping("/cancel/{sessionId}")
     public ResponseEntity<Void> cancelSubstep2(@PathVariable UUID sessionId) {
         return itemCharacteristicsAdapter.cancelSubstep(sessionId);

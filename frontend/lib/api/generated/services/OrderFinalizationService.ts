@@ -10,6 +10,30 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class OrderFinalizationService {
     /**
+     * Фіналізація замовлення
+     * @returns any OK
+     * @throws ApiError
+     */
+    public static stage4FinalizeOrder({
+        requestBody,
+    }: {
+        requestBody: OrderFinalizationRequest,
+    }): CancelablePromise<Record<string, any>> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/order-wizard/stage4/finalize',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
      * Відправити чек на email
      * Відправляє PDF-чек замовлення на email клієнта
      * @returns any Чек успішно відправлено
@@ -48,7 +72,7 @@ export class OrderFinalizationService {
      * @returns OrderDTO Замовлення успішно завершено
      * @throws ApiError
      */
-    public static finalizeOrder1({
+    public static finalizeOrder({
         requestBody,
     }: {
         requestBody: OrderFinalizationRequest,

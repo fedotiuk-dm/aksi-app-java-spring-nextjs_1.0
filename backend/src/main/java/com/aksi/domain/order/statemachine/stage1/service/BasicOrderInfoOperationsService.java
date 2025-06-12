@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.branch.dto.BranchLocationDTO;
@@ -19,6 +21,8 @@ import com.aksi.domain.order.service.ReceiptNumberGenerator;
 @Service
 public class BasicOrderInfoOperationsService {
 
+    private static final Logger logger = LoggerFactory.getLogger(BasicOrderInfoOperationsService.class);
+
     private final BranchLocationService branchLocationService;
     private final ReceiptNumberGenerator receiptNumberGenerator;
     private final OrderRepository orderRepository;
@@ -29,6 +33,11 @@ public class BasicOrderInfoOperationsService {
         this.branchLocationService = branchLocationService;
         this.receiptNumberGenerator = receiptNumberGenerator;
         this.orderRepository = orderRepository;
+
+        logger.info("✅ BasicOrderInfoOperationsService initialized with services: BranchLocationService={}, ReceiptNumberGenerator={}, OrderRepository={}",
+            branchLocationService != null ? "OK" : "NULL",
+            receiptNumberGenerator != null ? "OK" : "NULL",
+            orderRepository != null ? "OK" : "NULL");
     }
 
     /**
@@ -119,7 +128,39 @@ public class BasicOrderInfoOperationsService {
      * Отримує всі доступні філії.
      */
     public List<BranchLocationDTO> getAllBranches() {
-        return branchLocationService.getAllBranchLocations();
+        logger.info("🔍 [OPERATIONS] Запит на отримання всіх філій через branchLocationService");
+
+        try {
+            if (branchLocationService == null) {
+                logger.error("❌ [OPERATIONS] BranchLocationService is NULL!");
+                throw new IllegalStateException("BranchLocationService is not initialized");
+            }
+
+            List<BranchLocationDTO> branches = branchLocationService.getAllBranchLocations();
+            logger.info("✅ [OPERATIONS] Отримано {} філій від branchLocationService",
+                branches != null ? branches.size() : 0);
+
+            if (branches != null && !branches.isEmpty()) {
+                logger.info("📋 [OPERATIONS] Перші 2 філії:");
+                for (int i = 0; i < Math.min(2, branches.size()); i++) {
+                    BranchLocationDTO branch = branches.get(i);
+                    logger.info("  - {} (ID: {}, Active: {})",
+                        branch.getName(), branch.getId(), branch.getActive());
+                }
+            } else {
+                logger.warn("⚠️ [OPERATIONS] Список філій порожній або null!");
+            }
+
+            return branches;
+        } catch (RuntimeException e) {
+            logger.error("❌ [OPERATIONS] Помилка при отриманні філій: {}", e.getMessage());
+            logger.error("❌ [OPERATIONS] Exception type: {}", e.getClass().getSimpleName());
+            logger.error("❌ [OPERATIONS] BranchLocationService: {}",
+                branchLocationService != null ? "NOT NULL" : "NULL");
+            logger.error("❌ [OPERATIONS] Full stack trace:", e);
+
+            throw new RuntimeException("Failed to get branches from BranchLocationService: " + e.getMessage(), e);
+        }
     }
 
     /**

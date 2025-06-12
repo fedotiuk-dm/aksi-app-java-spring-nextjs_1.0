@@ -38,7 +38,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @RestController
 @RequestMapping("/v1/order-wizard/stage3")
-@Tag(name = "Stage 3 API", description = "API для Stage 3 - Загальні параметри замовлення")
+@Tag(name = "Order Wizard - Stage 3", description = "Етап 3: Загальні параметри замовлення")
 public class Stage3Controller {
 
     private final Stage3StateMachineAdapter stage3Adapter;
@@ -49,37 +49,61 @@ public class Stage3Controller {
 
     // ========== УПРАВЛІННЯ СЕСІЯМИ ==========
 
-    @Operation(summary = "Створити нову сесію Stage3")
+    @Operation(
+        summary = "Створити нову сесію Stage3",
+        operationId = "stage3CreateSession",
+        tags = {"Order Wizard - Stage 3", "Session Management"}
+    )
     @PostMapping("/sessions")
     public ResponseEntity<UUID> createSession(@RequestBody UUID orderId) {
         return stage3Adapter.createSession(orderId);
     }
 
-    @Operation(summary = "Ініціалізувати Stage3 для сесії")
+    @Operation(
+        summary = "Ініціалізувати Stage3 для сесії",
+        operationId = "stage3InitializeStage",
+        tags = {"Order Wizard - Stage 3", "Session Management"}
+    )
     @PostMapping("/sessions/{sessionId}/initialize")
     public ResponseEntity<Void> initializeStage3(@PathVariable UUID sessionId) {
         return stage3Adapter.initializeStage3(sessionId);
     }
 
-    @Operation(summary = "Отримати контекст сесії")
+    @Operation(
+        summary = "Отримати контекст сесії",
+        operationId = "stage3GetSessionContext",
+        tags = {"Order Wizard - Stage 3", "Session Management"}
+    )
     @GetMapping("/sessions/{sessionId}/context")
     public ResponseEntity<Stage3Context> getSessionContext(@PathVariable UUID sessionId) {
         return stage3Adapter.getSessionContext(sessionId);
     }
 
-    @Operation(summary = "Отримати стан сесії")
+    @Operation(
+        summary = "Отримати стан сесії",
+        operationId = "stage3GetSessionState",
+        tags = {"Order Wizard - Stage 3", "Session Management"}
+    )
     @GetMapping("/sessions/{sessionId}/state")
     public ResponseEntity<Stage3State> getSessionState(@PathVariable UUID sessionId) {
         return stage3Adapter.getSessionState(sessionId);
     }
 
-    @Operation(summary = "Отримати прогрес сесії")
+    @Operation(
+        summary = "Отримати прогрес сесії",
+        operationId = "stage3GetSessionProgress",
+        tags = {"Order Wizard - Stage 3", "Session Management"}
+    )
     @GetMapping("/sessions/{sessionId}/progress")
     public ResponseEntity<Integer> getSessionProgress(@PathVariable UUID sessionId) {
         return stage3Adapter.getSessionProgress(sessionId);
     }
 
-    @Operation(summary = "Закрити сесію")
+    @Operation(
+        summary = "Закрити сесію",
+        operationId = "stage3CloseSession",
+        tags = {"Order Wizard - Stage 3", "Session Management"}
+    )
     @PostMapping("/sessions/{sessionId}/close")
     public ResponseEntity<Void> closeSession(@PathVariable UUID sessionId) {
         return stage3Adapter.closeSession(sessionId);
@@ -87,7 +111,11 @@ public class Stage3Controller {
 
     // ========== ПІДЕТАП 3.1: ПАРАМЕТРИ ВИКОНАННЯ ==========
 
-    @Operation(summary = "Оновити параметри виконання")
+    @Operation(
+        summary = "Оновити параметри виконання",
+        operationId = "stage3UpdateExecutionParams",
+        tags = {"Order Wizard - Stage 3", "Execution Parameters"}
+    )
     @PutMapping("/sessions/{sessionId}/execution-params")
     public ResponseEntity<ValidationResult> updateExecutionParams(
             @PathVariable UUID sessionId,
@@ -95,7 +123,11 @@ public class Stage3Controller {
         return stage3Adapter.updateExecutionParams(sessionId, executionParams);
     }
 
-    @Operation(summary = "Перевірити готовність параметрів виконання")
+    @Operation(
+        summary = "Перевірити готовність параметрів виконання",
+        operationId = "stage3IsExecutionParamsReady",
+        tags = {"Order Wizard - Stage 3", "Execution Parameters"}
+    )
     @GetMapping("/sessions/{sessionId}/execution-params/ready")
     public ResponseEntity<Boolean> isExecutionParamsReady(@PathVariable UUID sessionId) {
         return stage3Adapter.isExecutionParamsReady(sessionId);
@@ -103,7 +135,11 @@ public class Stage3Controller {
 
     // ========== ПІДЕТАП 3.2: КОНФІГУРАЦІЯ ЗНИЖОК ==========
 
-    @Operation(summary = "Оновити конфігурацію знижок")
+    @Operation(
+        summary = "Оновити конфігурацію знижок",
+        operationId = "stage3UpdateDiscountConfig",
+        tags = {"Order Wizard - Stage 3", "Discount Configuration"}
+    )
     @PutMapping("/sessions/{sessionId}/discount-config")
     public ResponseEntity<ValidationResult> updateDiscountConfig(
             @PathVariable UUID sessionId,
@@ -111,7 +147,11 @@ public class Stage3Controller {
         return stage3Adapter.updateDiscountConfig(sessionId, discountConfig);
     }
 
-    @Operation(summary = "Перевірити готовність конфігурації знижок")
+    @Operation(
+        summary = "Перевірити готовність конфігурації знижок",
+        operationId = "stage3IsDiscountConfigReady",
+        tags = {"Order Wizard - Stage 3", "Discount Configuration"}
+    )
     @GetMapping("/sessions/{sessionId}/discount-config/ready")
     public ResponseEntity<Boolean> isDiscountConfigReady(@PathVariable UUID sessionId) {
         return stage3Adapter.isDiscountConfigReady(sessionId);
@@ -119,7 +159,11 @@ public class Stage3Controller {
 
     // ========== ПІДЕТАП 3.3: КОНФІГУРАЦІЯ ОПЛАТИ ==========
 
-    @Operation(summary = "Оновити конфігурацію оплати")
+    @Operation(
+        summary = "Оновити конфігурацію оплати",
+        operationId = "stage3UpdatePaymentConfig",
+        tags = {"Order Wizard - Stage 3", "Payment Configuration"}
+    )
     @PutMapping("/sessions/{sessionId}/payment-config")
     public ResponseEntity<ValidationResult> updatePaymentConfig(
             @PathVariable UUID sessionId,
@@ -127,7 +171,11 @@ public class Stage3Controller {
         return stage3Adapter.updatePaymentConfig(sessionId, paymentConfig);
     }
 
-    @Operation(summary = "Перевірити готовність конфігурації оплати")
+    @Operation(
+        summary = "Перевірити готовність конфігурації оплати",
+        operationId = "stage3IsPaymentConfigReady",
+        tags = {"Order Wizard - Stage 3", "Payment Configuration"}
+    )
     @GetMapping("/sessions/{sessionId}/payment-config/ready")
     public ResponseEntity<Boolean> isPaymentConfigReady(@PathVariable UUID sessionId) {
         return stage3Adapter.isPaymentConfigReady(sessionId);
@@ -135,7 +183,11 @@ public class Stage3Controller {
 
     // ========== ПІДЕТАП 3.4: ДОДАТКОВА ІНФОРМАЦІЯ ==========
 
-    @Operation(summary = "Оновити додаткову інформацію")
+    @Operation(
+        summary = "Оновити додаткову інформацію",
+        operationId = "stage3UpdateAdditionalInfo",
+        tags = {"Order Wizard - Stage 3", "Additional Information"}
+    )
     @PutMapping("/sessions/{sessionId}/additional-info")
     public ResponseEntity<ValidationResult> updateAdditionalInfo(
             @PathVariable UUID sessionId,
@@ -143,7 +195,11 @@ public class Stage3Controller {
         return stage3Adapter.updateAdditionalInfo(sessionId, additionalInfo);
     }
 
-    @Operation(summary = "Перевірити готовність додаткової інформації")
+    @Operation(
+        summary = "Перевірити готовність додаткової інформації",
+        operationId = "stage3IsAdditionalInfoReady",
+        tags = {"Order Wizard - Stage 3", "Additional Information"}
+    )
     @GetMapping("/sessions/{sessionId}/additional-info/ready")
     public ResponseEntity<Boolean> isAdditionalInfoReady(@PathVariable UUID sessionId) {
         return stage3Adapter.isAdditionalInfoReady(sessionId);
@@ -151,19 +207,31 @@ public class Stage3Controller {
 
     // ========== ЗАГАЛЬНА ВАЛІДАЦІЯ ТА ЗАВЕРШЕННЯ ==========
 
-    @Operation(summary = "Перевірити готовність Stage3")
+    @Operation(
+        summary = "Перевірити готовність Stage3",
+        operationId = "stage3IsStageReady",
+        tags = {"Order Wizard - Stage 3", "Stage Operations"}
+    )
     @GetMapping("/sessions/{sessionId}/ready")
     public ResponseEntity<Boolean> isStage3Ready(@PathVariable UUID sessionId) {
         return stage3Adapter.isStage3Ready(sessionId);
     }
 
-    @Operation(summary = "Валідувати всі підетапи")
+    @Operation(
+        summary = "Валідувати всі підетапи",
+        operationId = "stage3ValidateAllSubsteps",
+        tags = {"Order Wizard - Stage 3", "Validation"}
+    )
     @GetMapping("/sessions/{sessionId}/validate-all")
     public ResponseEntity<ValidationResult> validateAllSubsteps(@PathVariable UUID sessionId) {
         return stage3Adapter.validateAllSubsteps(sessionId);
     }
 
-    @Operation(summary = "Отримати наступний підетап")
+    @Operation(
+        summary = "Отримати наступний підетап",
+        operationId = "stage3GetNextSubstep",
+        tags = {"Order Wizard - Stage 3", "Navigation"}
+    )
     @GetMapping("/sessions/{sessionId}/next-substep")
     public ResponseEntity<Stage3State> getNextSubstep(@PathVariable UUID sessionId) {
         return stage3Adapter.getNextSubstep(sessionId);

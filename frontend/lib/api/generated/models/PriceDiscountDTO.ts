@@ -17,9 +17,9 @@ export type PriceDiscountDTO = {
     calculationCompleted?: boolean;
     hasCalculationErrors?: boolean;
     errorMessage?: string;
+    calculationDetails?: Array<CalculationDetailsDTO>;
     basePrice?: number;
     finalPrice?: number;
-    calculationDetails?: Array<CalculationDetailsDTO>;
     modifiersCount?: number;
 };
 

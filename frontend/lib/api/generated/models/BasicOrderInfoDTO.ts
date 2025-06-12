@@ -7,14 +7,17 @@ export type BasicOrderInfoDTO = {
     receiptNumber?: string;
     uniqueTag?: string;
     selectedBranch?: BranchLocationDTO;
+    availableBranches?: Array<BranchLocationDTO>;
     selectedBranchId?: string;
     creationDate?: string;
     receiptNumberGenerated?: boolean;
     uniqueTagEntered?: boolean;
     branchSelected?: boolean;
     creationDateSet?: boolean;
+    allBranches?: Array<BranchLocationDTO>;
     complete?: boolean;
-    receiptNumberValid?: boolean;
     uniqueTagValid?: boolean;
+    receiptNumberValid?: boolean;
+    branchesCount?: number;
 };
 

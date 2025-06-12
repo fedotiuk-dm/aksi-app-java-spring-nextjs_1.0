@@ -3,7 +3,7 @@ package com.aksi.domain.order.statemachine.config;
 import java.util.EnumSet;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.statemachine.config.EnableStateMachine;
+import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
@@ -11,14 +11,22 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 
 import com.aksi.domain.order.statemachine.OrderEvent;
 import com.aksi.domain.order.statemachine.OrderState;
+import com.aksi.domain.order.statemachine.actions.InitializeStage1ContextAction;
 
 /**
- * Головна конфігурація Spring State Machine для Order Wizard.
+ * Головна конфігурація Spring State Machine Factory для Order Wizard.
  * Управляє переходами між основними етапами (Stage1 → Stage2 → Stage3 → Stage4).
+ * Використовує @EnableStateMachineFactory для роботи з StateMachineService.
  */
 @Configuration
-@EnableStateMachine(name = "orderWizardMainStateMachine")
+@EnableStateMachineFactory
 public class OrderWizardMainStateMachineConfig extends EnumStateMachineConfigurerAdapter<OrderState, OrderEvent> {
+
+    private final InitializeStage1ContextAction initializeStage1ContextAction;
+
+    public OrderWizardMainStateMachineConfig(InitializeStage1ContextAction initializeStage1ContextAction) {
+        this.initializeStage1ContextAction = initializeStage1ContextAction;
+    }
 
     @Override
     public void configure(StateMachineConfigurationConfigurer<OrderState, OrderEvent> config)
@@ -49,6 +57,7 @@ public class OrderWizardMainStateMachineConfig extends EnumStateMachineConfigure
                 .source(OrderState.INITIAL)
                 .target(OrderState.CLIENT_SELECTION)
                 .event(OrderEvent.START_ORDER)
+                .action(initializeStage1ContextAction)
                 .and()
 
             // ========== ЕТАП 1: CLIENT_SELECTION → ORDER_INITIALIZATION ==========

@@ -2,10 +2,41 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ItemCharacteristicsDTO } from '../models/ItemCharacteristicsDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class ItemCharacteristicsService {
+    /**
+     * Ініціалізує підетап 2 - Характеристики
+     * @returns ItemCharacteristicsDTO OK
+     * @throws ApiError
+     */
+    public static substep2InitializeSubstep({
+        sessionId,
+        itemId,
+    }: {
+        sessionId: string,
+        itemId: string,
+    }): CancelablePromise<ItemCharacteristicsDTO> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/order-wizard/stage2/substep2/initialize/{sessionId}',
+            path: {
+                'sessionId': sessionId,
+            },
+            query: {
+                'itemId': itemId,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
     /**
      * Отримати ступені зносу для предметів
      * @returns string OK

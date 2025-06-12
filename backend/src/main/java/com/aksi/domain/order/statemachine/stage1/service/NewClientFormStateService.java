@@ -32,6 +32,23 @@ public class NewClientFormStateService {
     }
 
     /**
+     * Отримує контекст форми або створює новий.
+     */
+    public NewClientFormContext getOrCreateContext(String sessionId) {
+        if (sessionId == null) {
+            throw new IllegalArgumentException("SessionId cannot be null");
+        }
+
+        NewClientFormContext context = formContexts.get(sessionId);
+        if (context == null) {
+            context = new NewClientFormContext();
+            formContexts.put(sessionId, context);
+        }
+
+        return context;
+    }
+
+    /**
      * Перевіряє, чи існує контекст форми.
      */
     public boolean hasFormContext(String sessionId) {

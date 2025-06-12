@@ -69,6 +69,20 @@ public class PriceDiscountStateService {
     }
 
     /**
+     * Отримує контекст або створює новий, якщо не існує.
+     */
+    public PriceDiscountContext getOrCreateContext(UUID sessionId) {
+        return contexts.computeIfAbsent(sessionId, id ->
+            PriceDiscountContext.builder()
+                .sessionId(id)
+                .currentState(PriceDiscountState.INITIAL)
+                .priceDiscountData(new PriceDiscountDTO())
+                .lastUpdated(System.currentTimeMillis())
+                .build()
+        );
+    }
+
+    /**
      * Оновлює стан підетапу.
      */
     public void updateState(UUID sessionId, PriceDiscountState newState) {

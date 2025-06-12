@@ -2,7 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddModifierRequest } from '../models/AddModifierRequest';
 import type { PriceModifierDTO } from '../models/PriceModifierDTO';
+import type { SubstepResultDTO } from '../models/SubstepResultDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -87,6 +89,35 @@ export class PriceModifiersService {
         });
     }
     /**
+     * Додавання модифікатора до розрахунку
+     * @returns SubstepResultDTO OK
+     * @throws ApiError
+     */
+    public static substep4AddModifier({
+        sessionId,
+        requestBody,
+    }: {
+        sessionId: string,
+        requestBody: AddModifierRequest,
+    }): CancelablePromise<SubstepResultDTO> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/v1/order-wizard/stage2/substep4/modifiers/{sessionId}/add',
+            path: {
+                'sessionId': sessionId,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
      * Отримати всі активні модифікатори
      * @returns any OK
      * @throws ApiError
@@ -119,6 +150,59 @@ export class PriceModifiersService {
             url: '/price-modifiers',
             body: requestBody,
             mediaType: 'application/json',
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримання доступних модифікаторів для категорії
+     * @returns PriceModifierDTO OK
+     * @throws ApiError
+     */
+    public static substep4GetAvailableModifiers({
+        categoryCode,
+    }: {
+        categoryCode: string,
+    }): CancelablePromise<Array<PriceModifierDTO>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/v1/order-wizard/stage2/substep4/modifiers',
+            query: {
+                'categoryCode': categoryCode,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Отримання рекомендованих модифікаторів
+     * @returns PriceModifierDTO OK
+     * @throws ApiError
+     */
+    public static substep4GetRecommendedModifiers({
+        categoryCode,
+        itemName,
+    }: {
+        categoryCode: string,
+        itemName: string,
+    }): CancelablePromise<Array<PriceModifierDTO>> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/v1/order-wizard/stage2/substep4/modifiers/recommended',
+            query: {
+                'categoryCode': categoryCode,
+                'itemName': itemName,
+            },
             errors: {
                 400: `Bad Request`,
                 401: `Unauthorized`,
@@ -193,6 +277,34 @@ export class PriceModifiersService {
             url: '/price-modifiers/category',
             query: {
                 'category': category,
+            },
+            errors: {
+                400: `Bad Request`,
+                401: `Unauthorized`,
+                403: `Forbidden`,
+                404: `Not Found`,
+                409: `Conflict`,
+            },
+        });
+    }
+    /**
+     * Видалення модифікатора з розрахунку
+     * @returns SubstepResultDTO OK
+     * @throws ApiError
+     */
+    public static substep4RemoveModifier({
+        sessionId,
+        modifierId,
+    }: {
+        sessionId: string,
+        modifierId: string,
+    }): CancelablePromise<SubstepResultDTO> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/v1/order-wizard/stage2/substep4/modifiers/{sessionId}/{modifierId}',
+            path: {
+                'sessionId': sessionId,
+                'modifierId': modifierId,
             },
             errors: {
                 400: `Bad Request`,

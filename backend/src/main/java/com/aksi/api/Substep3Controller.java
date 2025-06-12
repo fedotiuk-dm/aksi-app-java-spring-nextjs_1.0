@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @RestController
 @RequestMapping("/v1/order-wizard/stage2/substep3")
-@Tag(name = "Substep 3 API", description = "API для підетапу 3 - Забруднення та дефекти")
+@Tag(name = "Order Wizard - Stage 2 Substep 3", description = "Підетап 3: Забруднення та дефекти")
 public class Substep3Controller {
 
     private final StainsDefectsAdapter stainsDefectsAdapter;
@@ -45,7 +45,11 @@ public class Substep3Controller {
 
     // =================== ЗАБРУДНЕННЯ ТА ДЕФЕКТИ ===================
 
-    @Operation(summary = "Ініціалізація підетапу 3")
+    @Operation(
+        summary = "Ініціалізація підетапу 3",
+        operationId = "substep3InitializeSubstep",
+        tags = {"Order Wizard - Stage 2 Substep 3", "Stains and Defects"}
+    )
     @PostMapping("/initialize/{sessionId}")
     public ResponseEntity<StainsDefectsContext> initializeSubstep3(
             @PathVariable UUID sessionId,
@@ -53,19 +57,31 @@ public class Substep3Controller {
         return stainsDefectsAdapter.initializeSubstep(sessionId, currentItem);
     }
 
-    @Operation(summary = "Отримання доступних типів плям")
+    @Operation(
+        summary = "Отримання доступних типів плям",
+        operationId = "substep3GetAvailableStainTypes",
+        tags = {"Order Wizard - Stage 2 Substep 3", "Stain Types"}
+    )
     @GetMapping("/stain-types")
     public ResponseEntity<List<String>> getAvailableStainTypes() {
         return stainsDefectsAdapter.getAvailableStainTypes();
     }
 
-    @Operation(summary = "Отримання доступних типів дефектів")
+    @Operation(
+        summary = "Отримання доступних типів дефектів",
+        operationId = "substep3GetAvailableDefectTypes",
+        tags = {"Order Wizard - Stage 2 Substep 3", "Defect Types"}
+    )
     @GetMapping("/defect-types")
     public ResponseEntity<List<String>> getAvailableDefectTypes() {
         return stainsDefectsAdapter.getAvailableDefectTypes();
     }
 
-    @Operation(summary = "Обробка вибору плям")
+    @Operation(
+        summary = "Обробка вибору плям",
+        operationId = "substep3ProcessStainSelection",
+        tags = {"Order Wizard - Stage 2 Substep 3", "Stain Selection"}
+    )
     @PostMapping("/stains/{sessionId}")
     public ResponseEntity<StainsDefectsContext> processStainSelection(
             @PathVariable UUID sessionId,
@@ -74,7 +90,11 @@ public class Substep3Controller {
         return stainsDefectsAdapter.processStainSelection(sessionId, selectedStains, otherStains);
     }
 
-    @Operation(summary = "Обробка вибору дефектів та ризиків")
+    @Operation(
+        summary = "Обробка вибору дефектів та ризиків",
+        operationId = "substep3ProcessDefectSelection",
+        tags = {"Order Wizard - Stage 2 Substep 3", "Defect Selection"}
+    )
     @PostMapping("/defects/{sessionId}")
     public ResponseEntity<StainsDefectsContext> processDefectSelection(
             @PathVariable UUID sessionId,
@@ -83,7 +103,11 @@ public class Substep3Controller {
         return stainsDefectsAdapter.processDefectSelection(sessionId, selectedDefects, noGuaranteeReason);
     }
 
-    @Operation(summary = "Обробка додавання приміток про дефекти")
+    @Operation(
+        summary = "Обробка додавання приміток про дефекти",
+        operationId = "substep3ProcessDefectNotes",
+        tags = {"Order Wizard - Stage 2 Substep 3", "Defect Notes"}
+    )
     @PostMapping("/notes/{sessionId}")
     public ResponseEntity<StainsDefectsContext> processDefectNotes(
             @PathVariable UUID sessionId,
@@ -91,13 +115,21 @@ public class Substep3Controller {
         return stainsDefectsAdapter.processDefectNotes(sessionId, defectNotes);
     }
 
-    @Operation(summary = "Завершення підетапу 3")
+    @Operation(
+        summary = "Завершення підетапу 3",
+        operationId = "substep3CompleteSubstep",
+        tags = {"Order Wizard - Stage 2 Substep 3", "Completion"}
+    )
     @PostMapping("/complete/{sessionId}")
     public ResponseEntity<StainsDefectsContext> completeSubstep3(@PathVariable UUID sessionId) {
         return stainsDefectsAdapter.completeSubstep(sessionId);
     }
 
-    @Operation(summary = "Повернення до попереднього стану")
+    @Operation(
+        summary = "Повернення до попереднього стану",
+        operationId = "substep3GoBack",
+        tags = {"Order Wizard - Stage 2 Substep 3", "Navigation"}
+    )
     @PostMapping("/go-back/{sessionId}")
     public ResponseEntity<StainsDefectsContext> goBack(
             @PathVariable UUID sessionId,
@@ -105,7 +137,11 @@ public class Substep3Controller {
         return stainsDefectsAdapter.goBack(sessionId, targetState);
     }
 
-    @Operation(summary = "Отримання поточного контексту")
+    @Operation(
+        summary = "Отримання поточного контексту",
+        operationId = "substep3GetContext",
+        tags = {"Order Wizard - Stage 2 Substep 3", "Status"}
+    )
     @GetMapping("/context/{sessionId}")
     public ResponseEntity<StainsDefectsContext> getContext(@PathVariable UUID sessionId) {
         return stainsDefectsAdapter.getContext(sessionId);

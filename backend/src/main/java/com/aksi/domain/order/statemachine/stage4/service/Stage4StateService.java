@@ -197,6 +197,26 @@ public class Stage4StateService {
     }
 
     /**
+     * Отримує контекст сесії або створює новий.
+     *
+     * @param sessionId ID сесії
+     * @return контекст Stage4
+     */
+    public Stage4Context getOrCreateContext(UUID sessionId) {
+        if (sessionId == null) {
+            throw new IllegalArgumentException("SessionId cannot be null");
+        }
+
+        Stage4Context context = sessionContexts.get(sessionId);
+        if (context == null) {
+            context = new Stage4Context(sessionId);
+            sessionContexts.put(sessionId, context);
+        }
+
+        return context;
+    }
+
+    /**
      * Зберігає контекст сесії.
      *
      * @param sessionId ID сесії

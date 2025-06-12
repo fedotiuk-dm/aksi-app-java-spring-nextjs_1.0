@@ -2,10 +2,12 @@ package com.aksi.domain.order.statemachine.adapter;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.service.StateMachineService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,17 +22,33 @@ import com.aksi.domain.order.statemachine.util.StateMachineUtils;
 /**
  * Головний REST адаптер для Order Wizard.
  * Управляє переходами між основними етапами.
+ * Використовує StateMachineService для управління життєвим циклом StateMachine.
  */
 @RestController
 @RequestMapping("/api/order-wizard")
 public class OrderWizardAdapter {
 
-    private final StateMachine<OrderState, OrderEvent> orderWizardStateMachine;
+    private static final Logger logger = LoggerFactory.getLogger(OrderWizardAdapter.class);
+
+    private final StateMachineService<OrderState, OrderEvent> stateMachineService;
 
     @Autowired
-    public OrderWizardAdapter(
-            @Qualifier("orderWizardMainStateMachine") StateMachine<OrderState, OrderEvent> orderWizardStateMachine) {
-        this.orderWizardStateMachine = orderWizardStateMachine;
+    public OrderWizardAdapter(StateMachineService<OrderState, OrderEvent> stateMachineService) {
+        this.stateMachineService = stateMachineService;
+
+        if (stateMachineService != null) {
+            logger.info("✅ OrderWizardAdapter initialized with StateMachineService: {}",
+                stateMachineService.getClass().getSimpleName());
+        } else {
+            logger.error("❌ OrderWizardAdapter initialized with NULL StateMachineService!");
+        }
+    }
+
+    /**
+     * Отримує або створює StateMachine для заданого sessionId.
+     */
+    private StateMachine<OrderState, OrderEvent> getStateMachine(String sessionId) {
+        return stateMachineService.acquireStateMachine(sessionId);
     }
 
     /**
@@ -38,7 +56,62 @@ public class OrderWizardAdapter {
      */
     @PostMapping("/start")
     public ResponseEntity<OrderWizardResponseDTO> startOrderWizard() {
-        return StateMachineUtils.startOrderWizard(orderWizardStateMachine);
+        logger.info("🚀 OrderWizardAdapter.startOrderWizard() called");
+
+        try {
+            // Генеруємо новий sessionId
+            String sessionId = java.util.UUID.randomUUID().toString();
+
+            // Отримуємо StateMachine для цієї сесії
+            StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
+
+            if (stateMachine == null) {
+                logger.error("❌ StateMachine is null for sessionId: {}", sessionId);
+                throw new IllegalStateException("StateMachine not created for sessionId: " + sessionId);
+            }
+
+            logger.info("📊 StateMachine created for sessionId: {}, currentState={}",
+                sessionId, stateMachine.getState() != null ? stateMachine.getState().getId() : "NULL");
+
+            logger.info("🔧 Calling StateMachineUtils.startOrderWizard()...");
+
+            ResponseEntity<OrderWizardResponseDTO> result = StateMachineUtils.startOrderWizard(stateMachine);
+
+                        if (result != null && result.getBody() != null) {
+                // Встановлюємо sessionId у відповіді
+                OrderWizardResponseDTO responseBody = result.getBody();
+                                if (responseBody != null) {
+                    OrderWizardResponseDTO updatedResponse = new OrderWizardResponseDTO(
+                        sessionId,
+                        responseBody.getCurrentState(),
+                        responseBody.isSuccess(),
+                        responseBody.getMessage()
+                    );
+
+                    logger.info("✅ StateMachineUtils returned: status={}, sessionId={}, state={}",
+                        result.getStatusCode(), sessionId, responseBody.getCurrentState());
+
+                    return ResponseEntity.ok(updatedResponse);
+                } else {
+                    logger.error("❌ StateMachineUtils returned null responseBody!");
+                    return ResponseEntity.status(500)
+                        .body(new OrderWizardResponseDTO(sessionId, null, false,
+                            "Failed to start Order Wizard - null response"));
+                }
+            } else {
+                logger.error("❌ StateMachineUtils returned null!");
+                return ResponseEntity.status(500)
+                    .body(new OrderWizardResponseDTO(sessionId, null, false,
+                        "Failed to start Order Wizard"));
+            }
+
+        } catch (RuntimeException e) {
+            logger.error("💥 Exception in OrderWizardAdapter.startOrderWizard(): {}", e.getMessage(), e);
+
+            return ResponseEntity.status(500)
+                .body(new OrderWizardResponseDTO(null, null, false,
+                    "Internal error: " + e.getMessage()));
+        }
     }
 
     /**
@@ -46,7 +119,8 @@ public class OrderWizardAdapter {
      */
     @GetMapping("/session/{sessionId}/state")
     public ResponseEntity<OrderWizardResponseDTO> getCurrentState(@PathVariable String sessionId) {
-        return StateMachineUtils.getCurrentStateResponse(orderWizardStateMachine, sessionId);
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
+        return StateMachineUtils.getCurrentStateResponse(stateMachine, sessionId);
     }
 
     /**
@@ -54,7 +128,8 @@ public class OrderWizardAdapter {
      */
     @GetMapping("/session/{sessionId}/available-transitions")
     public ResponseEntity<Map<String, Object>> getAvailableTransitions(@PathVariable String sessionId) {
-        return StateMachineUtils.getAvailableTransitions(orderWizardStateMachine, sessionId);
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
+        return StateMachineUtils.getAvailableTransitions(stateMachine, sessionId);
     }
 
     /**
@@ -62,8 +137,9 @@ public class OrderWizardAdapter {
      */
     @PostMapping("/session/{sessionId}/complete-stage1")
     public ResponseEntity<OrderWizardResponseDTO> completeStage1(@PathVariable String sessionId) {
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
         return StateMachineUtils.processStateTransition(
-            orderWizardStateMachine,
+            stateMachine,
             sessionId,
             OrderEvent.ORDER_INFO_COMPLETED,
             "Stage 1 completed successfully"
@@ -75,8 +151,9 @@ public class OrderWizardAdapter {
      */
     @PostMapping("/session/{sessionId}/complete-stage2")
     public ResponseEntity<OrderWizardResponseDTO> completeStage2(@PathVariable String sessionId) {
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
         return StateMachineUtils.processStateTransition(
-            orderWizardStateMachine,
+            stateMachine,
             sessionId,
             OrderEvent.ITEMS_COMPLETED,
             "Stage 2 completed successfully"
@@ -88,8 +165,9 @@ public class OrderWizardAdapter {
      */
     @PostMapping("/session/{sessionId}/complete-stage3")
     public ResponseEntity<OrderWizardResponseDTO> completeStage3(@PathVariable String sessionId) {
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
         return StateMachineUtils.processStateTransition(
-            orderWizardStateMachine,
+            stateMachine,
             sessionId,
             OrderEvent.ADDITIONAL_INFO_COMPLETED,
             "Stage 3 completed successfully"
@@ -101,8 +179,9 @@ public class OrderWizardAdapter {
      */
     @PostMapping("/session/{sessionId}/complete-order")
     public ResponseEntity<OrderWizardResponseDTO> completeOrder(@PathVariable String sessionId) {
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
         return StateMachineUtils.processStateTransition(
-            orderWizardStateMachine,
+            stateMachine,
             sessionId,
             OrderEvent.RECEIPT_GENERATED,
             "Order completed successfully"
@@ -114,8 +193,9 @@ public class OrderWizardAdapter {
      */
     @PostMapping("/session/{sessionId}/cancel")
     public ResponseEntity<OrderWizardResponseDTO> cancelOrder(@PathVariable String sessionId) {
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
         return StateMachineUtils.processStateTransition(
-            orderWizardStateMachine,
+            stateMachine,
             sessionId,
             OrderEvent.CANCEL_ORDER,
             "Order cancelled successfully"
@@ -127,8 +207,9 @@ public class OrderWizardAdapter {
      */
     @PostMapping("/session/{sessionId}/go-back")
     public ResponseEntity<OrderWizardResponseDTO> goBack(@PathVariable String sessionId) {
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
         return StateMachineUtils.processStateTransition(
-            orderWizardStateMachine,
+            stateMachine,
             sessionId,
             OrderEvent.GO_BACK,
             "Moved back to previous stage"
@@ -140,6 +221,7 @@ public class OrderWizardAdapter {
      */
     @GetMapping("/session/{sessionId}/info")
     public ResponseEntity<Map<String, Object>> getSessionInfo(@PathVariable String sessionId) {
-        return StateMachineUtils.getDetailedSessionInfo(orderWizardStateMachine, sessionId);
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
+        return StateMachineUtils.getDetailedSessionInfo(stateMachine, sessionId);
     }
 }

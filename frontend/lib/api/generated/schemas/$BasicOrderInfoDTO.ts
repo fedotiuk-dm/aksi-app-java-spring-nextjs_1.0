@@ -13,6 +13,12 @@ export const $BasicOrderInfoDTO = {
         selectedBranch: {
             type: 'BranchLocationDTO',
         },
+        availableBranches: {
+            type: 'array',
+            contains: {
+                type: 'BranchLocationDTO',
+            },
+        },
         selectedBranchId: {
             type: 'string',
             format: 'uuid',
@@ -33,14 +39,24 @@ export const $BasicOrderInfoDTO = {
         creationDateSet: {
             type: 'boolean',
         },
+        allBranches: {
+            type: 'array',
+            contains: {
+                type: 'BranchLocationDTO',
+            },
+        },
         complete: {
+            type: 'boolean',
+        },
+        uniqueTagValid: {
             type: 'boolean',
         },
         receiptNumberValid: {
             type: 'boolean',
         },
-        uniqueTagValid: {
-            type: 'boolean',
+        branchesCount: {
+            type: 'number',
+            format: 'int32',
         },
     },
 } as const;

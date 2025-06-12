@@ -43,6 +43,15 @@ public class PhotoDocumentationStateService {
     }
 
     /**
+     * Отримання контексту або створення нового, якщо не існує.
+     */
+    public PhotoDocumentationContext getOrCreateContext(UUID sessionId) {
+        return sessionContexts.computeIfAbsent(sessionId, id ->
+            new PhotoDocumentationContext(id, null, PhotoDocumentationState.INITIAL)
+        );
+    }
+
+    /**
      * Оновлення стану контексту.
      */
     public PhotoDocumentationContext updateState(UUID sessionId, PhotoDocumentationState newState) {
