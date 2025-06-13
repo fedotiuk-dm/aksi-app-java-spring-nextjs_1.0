@@ -73,36 +73,27 @@ public class OrderWizardAdapter {
             logger.info("📊 StateMachine created for sessionId: {}, currentState={}",
                 sessionId, stateMachine.getState() != null ? stateMachine.getState().getId() : "NULL");
 
-            logger.info("🔧 Calling StateMachineUtils.startOrderWizard()...");
+            logger.info("🔧 Calling StateMachineUtils.startStateMachine()...");
 
-            ResponseEntity<OrderWizardResponseDTO> result = StateMachineUtils.startOrderWizard(stateMachine);
+            // Ініціалізуємо сесію з нашим sessionId
+            StateMachineUtils.initializeSession(stateMachine, sessionId);
 
-                        if (result != null && result.getBody() != null) {
-                // Встановлюємо sessionId у відповіді
-                OrderWizardResponseDTO responseBody = result.getBody();
-                                if (responseBody != null) {
-                    OrderWizardResponseDTO updatedResponse = new OrderWizardResponseDTO(
-                        sessionId,
-                        responseBody.getCurrentState(),
-                        responseBody.isSuccess(),
-                        responseBody.getMessage()
-                    );
+            // Запускаємо state machine з початковою подією
+            boolean success = StateMachineUtils.startStateMachine(stateMachine, sessionId, OrderEvent.START_ORDER);
 
-                    logger.info("✅ StateMachineUtils returned: status={}, sessionId={}, state={}",
-                        result.getStatusCode(), sessionId, responseBody.getCurrentState());
+            if (success) {
+                OrderState currentState = StateMachineUtils.getCurrentState(stateMachine);
+                logger.info("✅ StateMachine started successfully: sessionId={}, state={}", sessionId, currentState);
 
-                    return ResponseEntity.ok(updatedResponse);
-                } else {
-                    logger.error("❌ StateMachineUtils returned null responseBody!");
-                    return ResponseEntity.status(500)
-                        .body(new OrderWizardResponseDTO(sessionId, null, false,
-                            "Failed to start Order Wizard - null response"));
-                }
+                OrderWizardResponseDTO responseBody = new OrderWizardResponseDTO(
+                    sessionId, currentState, true, "Order wizard started successfully"
+                );
+
+                return ResponseEntity.ok(responseBody);
             } else {
-                logger.error("❌ StateMachineUtils returned null!");
+                logger.error("❌ Failed to start StateMachine for sessionId: {}", sessionId);
                 return ResponseEntity.status(500)
-                    .body(new OrderWizardResponseDTO(sessionId, null, false,
-                        "Failed to start Order Wizard"));
+                    .body(new OrderWizardResponseDTO(sessionId, null, false, "Failed to start order wizard"));
             }
 
         } catch (RuntimeException e) {
@@ -223,5 +214,91 @@ public class OrderWizardAdapter {
     public ResponseEntity<Map<String, Object>> getSessionInfo(@PathVariable String sessionId) {
         StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
         return StateMachineUtils.getDetailedSessionInfo(stateMachine, sessionId);
+    }
+
+    /**
+     * Очищення всіх активних сесій Order Wizard.
+     * Використовується для вирішення проблем з валідацією sessionId.
+     */
+    @SuppressWarnings("unchecked")
+    public void clearAllSessions() {
+        logger.info("🧹 Clearing all StateMachine sessions...");
+        try {
+            if (stateMachineService != null) {
+                // Отримуємо всі активні StateMachine IDs та звільняємо їх
+                // Використовуємо рефлексію для доступу до внутрішніх структур DefaultStateMachineService
+                try {
+                    java.lang.reflect.Field machinesField = stateMachineService.getClass().getDeclaredField("machines");
+                    machinesField.setAccessible(true);
+                    java.util.Map<String, ?> machines = (java.util.Map<String, ?>) machinesField.get(stateMachineService);
+
+                    if (machines != null && !machines.isEmpty()) {
+                        logger.info("🔍 Found {} active sessions to clear", machines.size());
+
+                        // Логуємо всі sessionId перед очищенням
+                        for (String sessionId : machines.keySet()) {
+                            logger.info("📋 Active session found: {}", sessionId);
+                        }
+
+                        // Створюємо копію ключів щоб уникнути ConcurrentModificationException
+                        java.util.Set<String> sessionIds = new java.util.HashSet<>(machines.keySet());
+
+                        for (String sessionId : sessionIds) {
+                            try {
+                                logger.info("🗑️ Releasing session: {}", sessionId);
+                                stateMachineService.releaseStateMachine(sessionId);
+                                logger.info("✅ Session {} released successfully", sessionId);
+                            } catch (RuntimeException e) {
+                                logger.warn("⚠️ Failed to release session {}: {}", sessionId, e.getMessage());
+                            }
+                        }
+
+                        // Перевіряємо чи дійсно очистилися всі сесії
+                        java.util.Map<String, ?> machinesAfter = (java.util.Map<String, ?>) machinesField.get(stateMachineService);
+                        if (machinesAfter != null && !machinesAfter.isEmpty()) {
+                            logger.warn("⚠️ {} sessions still remain after clearing:", machinesAfter.size());
+                            for (String remainingId : machinesAfter.keySet()) {
+                                logger.warn("🔍 Remaining session: {}", remainingId);
+                            }
+
+                            // Спробуємо очистити мапу напряму
+                            try {
+                                machinesAfter.clear();
+                                logger.info("✅ Forced clear of remaining sessions");
+                            } catch (RuntimeException clearError) {
+                                logger.warn("⚠️ Could not force clear remaining sessions: {}", clearError.getMessage());
+                            }
+                        }
+
+                        logger.info("✅ All {} sessions cleared successfully", sessionIds.size());
+                    } else {
+                        logger.info("ℹ️ No active sessions found to clear");
+                    }
+
+                    // Додатково спробуємо очистити кеш якщо він існує
+                    try {
+                        java.lang.reflect.Field cacheField = stateMachineService.getClass().getDeclaredField("cache");
+                        cacheField.setAccessible(true);
+                        Object cache = cacheField.get(stateMachineService);
+                        if (cache != null && cache instanceof java.util.Map) {
+                            java.util.Map<?, ?> cacheMap = (java.util.Map<?, ?>) cache;
+                            cacheMap.clear();
+                            logger.info("✅ StateMachine cache cleared");
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException cacheError) {
+                        logger.debug("ℹ️ No cache field found or accessible: {}", cacheError.getMessage());
+                    }
+
+                } catch (NoSuchFieldException | IllegalAccessException | SecurityException reflectionError) {
+                    logger.warn("⚠️ Could not access internal StateMachineService structure: {}", reflectionError.getMessage());
+                    logger.info("✅ StateMachine service reset attempted (fallback)");
+                }
+            } else {
+                logger.warn("⚠️ StateMachineService is null, cannot clear sessions");
+            }
+        } catch (RuntimeException e) {
+            logger.error("❌ Error clearing StateMachine sessions: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to clear sessions", e);
+        }
     }
 }

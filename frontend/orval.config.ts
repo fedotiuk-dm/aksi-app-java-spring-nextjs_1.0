@@ -4,7 +4,7 @@
  * 🎯 Філософія: "Мінімум файлів, максимум логіки + чисті імпорти"
  *
  * ✅ Що генерується:
- * - aksiApi.ts - всі Axios функції та React Query хуки
+ * - aksiApi.ts - всі React Query хуки (useQuery, useMutation)
  * - aksiApi.schemas.ts - всі TypeScript типи
  * - schemas.zod.ts - всі Zod схеми для валідації
  * - index.ts - BARREL EXPORT (створюється окремим скриптом)
@@ -12,12 +12,12 @@
  * 📁 Результат:
  * shared/api/generated/
  *   ├── auth/
- *   │   ├── aksiApi.ts              - API функції + React Query хуки
+ *   │   ├── aksiApi.ts              - React Query хуки (useLogin, useLogout тощо)
  *   │   ├── aksiApi.schemas.ts      - TypeScript типи
  *   │   ├── schemas.zod.ts          - Zod схеми
  *   │   └── index.ts                - 🔥 BARREL: export * from './aksiApi'
  *   ├── stage1/
- *   │   ├── aksiApi.ts              - API функції + React Query хуки
+ *   │   ├── aksiApi.ts              - React Query хуки (useStage1SearchClients тощо)
  *   │   ├── aksiApi.schemas.ts      - TypeScript типи
  *   │   ├── schemas.zod.ts          - Zod схеми
  *   │   └── index.ts                - 🔥 BARREL: всі експорти в одному місці
@@ -58,7 +58,7 @@ const TAGS = {
 
 // 🏭 Фабрика для створення модульних конфігурацій
 const createModuleConfig = (name: string, tags: string[]) => ({
-  // Axios API клієнт + типи для модуля
+  // React Query хуки + типи для модуля
   [`${name}-api`]: {
     input: {
       target: API_BASE_URL,
@@ -68,7 +68,7 @@ const createModuleConfig = (name: string, tags: string[]) => ({
     },
     output: {
       target: `./shared/api/generated/${name}`,
-      client: 'axios' as const,
+      client: 'react-query' as const,
       mode: 'split' as const,
       override: {
         mutator: {
@@ -81,6 +81,7 @@ const createModuleConfig = (name: string, tags: string[]) => ({
           useQuery: true,
           useInfiniteQuery: true,
           useMutation: true,
+          version: 5 as const,
         },
       },
     },

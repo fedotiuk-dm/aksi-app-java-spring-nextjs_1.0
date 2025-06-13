@@ -3,22 +3,23 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { JwtPayload, UserRole } from '@/features/auth/model/types';
 
-// Публічні шляхи, які не потребують автентифікації
-const publicPaths = [
-  '/login',
-  '/register',
-  '/api/auth/login',
-  '/api/auth/register',
-  '/api/auth/refresh-token',
-  '/api/typedoc',
-  '/typedoc',
-  '/docs',
+// Маршрути, які потребують авторизації
+const protectedRoutes = [
+  '/dashboard',
+  '/clients',
+  '/orders',
+  '/order-wizard',
+  '/price-list',
+  '/settings',
 ];
+
+// Публічні маршрути (не потребують авторизації)
+const publicRoutes = ['/login', '/register'];
 
 // Перевірка, чи шлях є публічним
 const isPublic = (path: string) => {
   // Перевіряємо точний збіг або чи починається з публічного шляху
-  if (publicPaths.some((publicPath) => path === publicPath || path.startsWith(`${publicPath}/`))) {
+  if (publicRoutes.some((publicPath) => path === publicPath || path.startsWith(`${publicPath}/`))) {
     return true;
   }
 
@@ -42,88 +43,41 @@ const isTokenValid = (token: string): boolean => {
   }
 };
 
-export async function middleware(request: NextRequest) {
-  // Отримуємо шлях
-  const path = request.nextUrl.pathname;
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  // Спеціальна обробка для TypeDoc документації
-  if (path === '/typedoc' || path === '/typedoc/') {
-    const url = new URL('/docs/index.html', request.url);
-    return NextResponse.redirect(url);
-  }
+  // Перевіряємо наявність токена в cookies (якщо використовуємо cookies)
+  // або пропускаємо перевірку для localStorage (клієнтська перевірка)
 
-  if (path.startsWith('/typedoc/')) {
-    const docPath = path.replace('/typedoc/', '/docs/');
-    const url = new URL(docPath, request.url);
-    return NextResponse.redirect(url);
-  }
-
-  // Якщо шлях публічний, пропускаємо без перевірки
-  if (isPublic(path)) {
+  // Якщо це публічний маршрут, дозволяємо доступ
+  if (publicRoutes.includes(pathname)) {
     return NextResponse.next();
   }
 
-  // Статичні файли пропускаємо без перевірки
-  if (
-    path.startsWith('/_next') ||
-    path.includes('/static/') ||
-    path.match(/\.(ico|png|jpg|jpeg|svg|css|js)$/)
-  ) {
+  // Якщо це захищений маршрут, перевіряємо авторизацію
+  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
+    // Тут можна додати перевірку токена в cookies
+    // Наразі пропускаємо, оскільки використовуємо localStorage
     return NextResponse.next();
   }
 
-  // Отримуємо токен з cookies
-  const authToken = request.cookies.get('auth_token')?.value;
-
-  // Якщо токен відсутній або невалідний, перенаправляємо на сторінку логіну
-  if (!authToken || !isTokenValid(authToken)) {
-    // Якщо це API запит, повертаємо помилку "Unauthorized"
-    if (path.startsWith('/api/')) {
-      return NextResponse.json({ message: 'Необхідно авторизуватися' }, { status: 401 });
-    }
-
-    // Інакше, перенаправляємо на сторінку логіну з вказанням callback URL
-    const url = new URL('/login', request.url);
-    url.searchParams.set('callbackUrl', path);
-    return NextResponse.redirect(url);
+  // Для кореневого маршруту перенаправляємо на dashboard
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // Отримуємо інформацію про користувача з токена
-  try {
-    const payload = jwtDecode<JwtPayload>(authToken);
-    const userRole = payload.role || UserRole.STAFF; // За замовчуванням надаємо базову роль STAFF
-
-    // Перевірки доступу на основі ролі користувача
-
-    // Адміністративні розділи - тільки для ADMIN
-    if (path.startsWith('/admin') && userRole !== UserRole.ADMIN) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-
-    // Розділи менеджера - для ADMIN та MANAGER
-    if (path.startsWith('/manager') && ![UserRole.ADMIN, UserRole.MANAGER].includes(userRole)) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-
-    // Маршрут order-wizard доступний для всіх ролей (ADMIN, MANAGER, STAFF)
-    if (path.startsWith('/order-wizard')) {
-      // Додаткове логування для налагодження проблеми доступу
-      console.log(`Доступ до order-wizard: користувач з роллю ${userRole}`);
-      return NextResponse.next();
-    }
-
-    // Захищені розділи для персоналу - для всіх авторизованих користувачів
-    // Тут не потрібна додаткова перевірка, оскільки ми вже перевірили, що користувач авторизований
-
-    // Додаткова перевірка для спеціальних розділів (можна додати за потреби)
-    // if (path.startsWith('/special-area') && ...) { ... }
-  } catch (error) {
-    console.error(
-      'Error processing token in middleware:',
-      error instanceof Error ? error.message : 'Unknown error'
-    );
-  }
-
-  // Якщо користувач автентифікований, продовжуємо
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+};

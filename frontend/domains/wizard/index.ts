@@ -8,26 +8,17 @@
  * - Приховування внутрішньої структури етапів
  */
 
-// 🎪 Stage1 - Клієнт та базова інформація
+// 🎯 Main - Головне управління Order Wizard
+export * from './main';
+
+// 🔍 Stage1 - Клієнт та базова інформація замовлення
 export * from './stage1';
 
-// 🎭 Stage2 - Менеджер предметів
-// TODO: Implement when ready
-// export { useStage2Operations } from './stage2';
+// 🎭 Stage2 - Менеджер предметів (TODO)
+// export * from './stage2';
 
-// 🎨 Stage3 - Загальні параметри
-// TODO: Implement when ready
-// export { useStage3Operations } from './stage3';
+// 🎨 Stage3 - Загальні параметри (TODO)
+// export * from './stage3';
 
-// 🎯 Stage4 - Підтвердження та квитанція
-// TODO: Implement when ready
-// export { useStage4Operations } from './stage4';
-
-// 🔧 Shared - Спільна функціональність (READY!)
-export { useWizardManagement } from './shared';
-export type { UseWizardManagementReturn } from './shared';
-
-// ❌ НЕ ЕКСПОРТУЄМО:
-// - Окремі етапи (internal structure)
-// - Workflow хуки (internal coordination)
-// - Stores та API (internal implementation)
+// 🎯 Stage4 - Підтвердження та квитанція (TODO)
+// export * from './stage4';

@@ -398,6 +398,52 @@ export const orderWizardCancelOrder409Response = zod.object({
 
 
 /**
+ * @summary Очищення всіх активних сесій Order Wizard
+ */
+export const orderWizardClearAllSessions200Response = zod.record(zod.string(), zod.any())
+
+export const orderWizardClearAllSessions400Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const orderWizardClearAllSessions401Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const orderWizardClearAllSessions403Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const orderWizardClearAllSessions404Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const orderWizardClearAllSessions409Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
  * @summary Флоу-карта Order Wizard для фронтенду
  */
 export const orderWizardGetWorkflow200Response = zod.object({

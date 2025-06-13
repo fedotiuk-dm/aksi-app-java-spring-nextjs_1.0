@@ -16,27 +16,29 @@ import {
 } from '@mui/material';
 import { FC, useEffect } from 'react';
 
-import { useBasicOrderInfo } from '@/domains/wizard/stage1/basic-order-info';
+import { useBasicOrderInfo } from '@/domains/wizard/stage1';
 
 interface BranchSelectionPanelProps {
   onBranchSelected?: (branchId: string) => void;
 }
 
 export const BranchSelectionPanel: FC<BranchSelectionPanelProps> = ({ onBranchSelected }) => {
-  const { ui, loading, actions } = useBasicOrderInfo();
+  const basicOrderInfo = useBasicOrderInfo();
 
-  // Автоматично завантажуємо філії при встановленні sessionId
+  // Автоматично завантажуємо філії
   useEffect(() => {
-    if (ui.sessionId && (!ui.availableBranches || ui.availableBranches.length === 0)) {
-      console.log('🔄 Завантажуємо філії для sessionId:', ui.sessionId);
-      actions.refreshBranchesData();
-    }
-  }, [ui.sessionId, ui.availableBranches, actions]);
+    const branches = basicOrderInfo.computed.branches;
 
-  const handleBranchChange = async (branchId: string) => {
+    if (branches.length === 0 && !basicOrderInfo.loading.isLoadingBranches) {
+      console.log('🔄 Завантажуємо філії');
+      // Філії завантажуються автоматично через API хук
+    }
+  }, [basicOrderInfo.computed.branches, basicOrderInfo.loading.isLoadingBranches]);
+
+  const handleBranchChange = (branchId: string) => {
     try {
       console.log('🏢 Вибираємо філію:', branchId);
-      await actions.selectBranchForOrder(branchId);
+      basicOrderInfo.actions.selectBranch(branchId);
       console.log('✅ Філія вибрана успішно');
       onBranchSelected?.(branchId);
     } catch (error) {
@@ -44,8 +46,10 @@ export const BranchSelectionPanel: FC<BranchSelectionPanelProps> = ({ onBranchSe
     }
   };
 
-  const selectedBranch = ui.selectedBranch;
-  const availableBranches = ui.availableBranches || [];
+  const selectedBranch = basicOrderInfo.computed.selectedBranch;
+  const availableBranches = basicOrderInfo.computed.branches;
+  // Перевіряємо чи є активна сесія через наявність даних
+  const hasSession = availableBranches.length > 0 || basicOrderInfo.loading.isLoadingBranches;
 
   return (
     <Card>
@@ -67,7 +71,7 @@ export const BranchSelectionPanel: FC<BranchSelectionPanelProps> = ({ onBranchSe
         </Alert>
 
         {/* Завантаження філій */}
-        {loading.isLoadingBranches && (
+        {basicOrderInfo.loading.isLoadingBranches && (
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
             <CircularProgress />
             <Typography variant="body2" sx={{ ml: 2 }}>
@@ -77,7 +81,7 @@ export const BranchSelectionPanel: FC<BranchSelectionPanelProps> = ({ onBranchSe
         )}
 
         {/* Селектор філій */}
-        <FormControl fullWidth sx={{ mb: 2 }} disabled={!ui.sessionId || loading.isLoadingBranches}>
+        <FormControl fullWidth sx={{ mb: 2 }} disabled={basicOrderInfo.loading.isLoadingBranches}>
           <InputLabel id="branch-select-label">Філія</InputLabel>
           <Select
             labelId="branch-select-label"
@@ -118,7 +122,7 @@ export const BranchSelectionPanel: FC<BranchSelectionPanelProps> = ({ onBranchSe
 
               <Box sx={{ mb: 2 }}>
                 <Chip
-                  label={selectedBranch.name}
+                  label={selectedBranch?.name || 'Невідома філія'}
                   color="primary"
                   variant="outlined"
                   sx={{ mb: 1 }}
@@ -126,18 +130,12 @@ export const BranchSelectionPanel: FC<BranchSelectionPanelProps> = ({ onBranchSe
               </Box>
 
               <Typography variant="body2" color="textSecondary" gutterBottom>
-                <strong>Адреса:</strong> {selectedBranch.address}
+                <strong>Адреса:</strong> {selectedBranch?.address || 'Адреса не вказана'}
               </Typography>
 
-              {selectedBranch.phone && (
+              {selectedBranch?.phone && (
                 <Typography variant="body2" color="textSecondary" gutterBottom>
                   <strong>Телефон:</strong> {selectedBranch.phone}
-                </Typography>
-              )}
-
-              {selectedBranch.workingHours && (
-                <Typography variant="body2" color="textSecondary">
-                  <strong>Режим роботи:</strong> {selectedBranch.workingHours}
                 </Typography>
               )}
             </CardContent>
@@ -152,18 +150,26 @@ export const BranchSelectionPanel: FC<BranchSelectionPanelProps> = ({ onBranchSe
         )}
 
         {/* Повідомлення про відсутність філій */}
-        {availableBranches.length === 0 && !loading.isLoadingBranches && ui.sessionId && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            Немає доступних філій. Зверніться до адміністратора.
+        {!hasSession && (
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            Сесія не ініціалізована. Спочатку оберіть клієнта.
           </Alert>
         )}
+
+        {hasSession &&
+          availableBranches.length === 0 &&
+          !basicOrderInfo.loading.isLoadingBranches && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              Немає доступних філій. Зверніться до адміністратора.
+            </Alert>
+          )}
 
         {/* Debug інформація */}
         {process.env.NODE_ENV === 'development' && (
           <Box sx={{ mt: 2, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
             <Typography variant="caption" component="div">
-              Debug: SessionId: {ui.sessionId || 'null'}, Branches: {availableBranches.length},
-              Loading: {loading.isLoadingBranches ? 'true' : 'false'}, Selected:{' '}
+              Debug: Branches: {availableBranches.length}, Loading:{' '}
+              {basicOrderInfo.loading.isLoadingBranches ? 'true' : 'false'}, Selected:{' '}
               {selectedBranch?.id || 'null'} ({selectedBranch?.name || 'none'})
             </Typography>
           </Box>

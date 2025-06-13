@@ -347,6 +347,34 @@ public class OrderWizardMainController {
         return orderWizardAdapter.getSessionInfo(sessionId);
     }
 
+    @Operation(
+        summary = "Очищення всіх активних сесій Order Wizard",
+        operationId = "orderWizardClearAllSessions",
+        tags = {"Order Wizard - Main API", "Session Management"}
+    )
+    @PostMapping("/clear-all-sessions")
+    public ResponseEntity<Map<String, Object>> clearAllSessions() {
+        logger.info("🧹 Clearing all Order Wizard sessions...");
+        try {
+            orderWizardAdapter.clearAllSessions();
+            Map<String, Object> response = Map.of(
+                "status", "success",
+                "message", "All sessions cleared successfully",
+                "timestamp", Long.valueOf(System.currentTimeMillis())
+            );
+            logger.info("✅ All sessions cleared successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("❌ Error clearing sessions: {}", e.getMessage(), e);
+            Map<String, Object> response = Map.of(
+                "status", "error",
+                "message", "Failed to clear sessions: " + e.getMessage(),
+                "timestamp", Long.valueOf(System.currentTimeMillis())
+            );
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
     // =================== ПРИВАТНІ МЕТОДИ ===================
 
     /**

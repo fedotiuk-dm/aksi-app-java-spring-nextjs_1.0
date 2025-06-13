@@ -24,8 +24,8 @@ export const substep2ValidateCharacteristics200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const substep2ValidateCharacteristics400Response = zod.object({
@@ -88,8 +88,8 @@ export const substep2SelectWearLevel200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const substep2SelectWearLevel400Response = zod.object({
@@ -152,8 +152,8 @@ export const substep2SelectMaterial200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const substep2SelectMaterial400Response = zod.object({
@@ -219,8 +219,8 @@ export const substep2SelectFiller200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const substep2SelectFiller400Response = zod.object({
@@ -283,8 +283,8 @@ export const substep2SelectColor200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const substep2SelectColor400Response = zod.object({

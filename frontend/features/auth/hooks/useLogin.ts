@@ -7,7 +7,7 @@ import { useLogin as useApiLogin } from '../api';
 import { adaptOrvalLoginResponse } from '../model/types';
 import { useAuthStore } from '../store';
 
-import type { LoginRequest } from '@/shared/api/generated/auth/aksiApi.schemas';
+import type { LoginRequest } from '@/shared/api/generated/auth';
 
 /**
  * Клієнтський хук для входу користувача у систему
@@ -38,7 +38,7 @@ export const useLogin = () => {
       setStoreError(null);
 
       // Використовуємо оновлений Orval API хук для логіну
-      const response = await apiLoginMutation.mutateAsync(credentials);
+      const response = await apiLoginMutation.mutateAsync({ data: credentials });
 
       // Адаптуємо Orval response до AuthUser формату
       const user = adaptOrvalLoginResponse(response);
@@ -46,8 +46,14 @@ export const useLogin = () => {
       // Зберігаємо дані користувача в глобальному стані
       setUser(user);
 
-      // Перенаправляємо користувача на вказаний маршрут
-      router.push(redirectTo);
+      console.log('🔄 Перенаправляємо користувача на:', redirectTo);
+      console.log('👤 Користувач збережений:', user);
+
+      // Додаємо невелику затримку перед перенаправленням
+      setTimeout(() => {
+        router.push(redirectTo);
+        console.log('✅ Логін завершено успішно, перенаправлення виконано');
+      }, 50);
 
       return user;
     } catch (error: unknown) {

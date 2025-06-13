@@ -4,7 +4,7 @@
  * @fileoverview Головний компонент Stage1 з об'єднаним екраном вибору клієнта та філії
  *
  * Архітектура: "DDD inside, FSD outside"
- * Компонент композиція з окремих панелей
+ * Компонент використовує композиційний хук useStage1Workflow
  */
 
 import {
@@ -27,12 +27,11 @@ import {
   CircularProgress,
   Grid,
 } from '@mui/material';
-import { FC, useState, useEffect } from 'react';
+import { FC, useState } from 'react';
 
-import { useOrderWizardMain } from '@/domains/wizard/main';
-import { useBasicOrderInfo } from '@/domains/wizard/stage1/basic-order-info';
-import { useClientCreation } from '@/domains/wizard/stage1/client-creation';
-import { useClientSearch } from '@/domains/wizard/stage1/client-search';
+import { useStage1Workflow } from '@/domains/wizard/stage1';
+import { useMain } from '@/domains/wizard/main';
+import { useMainStore } from '@/domains/wizard/main/store/main.store';
 
 import { BasicOrderInfoForm } from './BasicOrderInfoForm';
 import { BranchSelectionPanel } from './BranchSelectionPanel';
@@ -40,86 +39,53 @@ import { ClientSelectionPanel } from './ClientSelectionPanel';
 import { CreateClientModal } from './CreateClientModal';
 
 export const Stage1ClientSelection: FC = () => {
-  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
-  const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
   const [showCreateClientModal, setShowCreateClientModal] = useState(false);
 
-  // Головний Order Wizard хук
-  const orderWizard = useOrderWizardMain();
+  // Композиційний хук для всього Stage1
+  const stage1 = useStage1Workflow();
 
-  // Хуки для кожного підетапу
-  const clientSearch = useClientSearch();
-  const clientCreation = useClientCreation();
-  const basicOrderInfo = useBasicOrderInfo();
+  // Головний хук для завершення етапу
+  const main = useMain();
 
-  // Синхронізація sessionId між головним Order Wizard і доменами
-  useEffect(() => {
-    if (orderWizard.ui.sessionId) {
-      console.log('🔄 Синхронізація sessionId:', {
-        orderWizardSessionId: orderWizard.ui.sessionId,
-        clientSearchSessionId: clientSearch.ui.sessionId,
-        basicOrderInfoSessionId: basicOrderInfo.ui.sessionId,
-      });
+  // Отримуємо sessionId з головного стору
+  const sessionId = useMainStore((state) => state.sessionId);
 
-      // Синхронізуємо sessionId з усіма доменами
-      if (orderWizard.ui.sessionId !== clientSearch.ui.sessionId) {
-        console.log('🔄 Оновлюємо sessionId для client-search');
-        clientSearch.actions.setSessionId(orderWizard.ui.sessionId);
-      }
-
-      if (orderWizard.ui.sessionId !== basicOrderInfo.ui.sessionId) {
-        console.log('🔄 Оновлюємо sessionId для basic-order-info');
-        basicOrderInfo.actions.setSessionId(orderWizard.ui.sessionId);
-      }
-    }
-  }, [
-    orderWizard.ui.sessionId,
-    clientSearch.ui.sessionId,
-    basicOrderInfo.ui.sessionId,
-    clientSearch.actions,
-    basicOrderInfo.actions,
-  ]);
+  // Режим пошуку клієнтів має бути завжди активний
 
   // Обробники подій
   const handleClientSelected = (clientId: string) => {
-    setSelectedClientId(clientId);
     console.log('Клієнт обраний:', clientId);
+    // Логіка вибору клієнта вже обробляється в доменному хуку
   };
 
   const handleClientCreated = (clientId: string) => {
-    setSelectedClientId(clientId);
     console.log('Клієнт створений:', clientId);
+    setShowCreateClientModal(false);
+    // Логіка створення клієнта вже обробляється в доменному хуку
   };
 
   const handleBranchSelected = (branchId: string) => {
-    setSelectedBranchId(branchId);
     console.log('Філія обрана:', branchId);
+    // Логіка вибору філії вже обробляється в доменному хуку
   };
-
-  // Синхронізація з доменним станом
-  useEffect(() => {
-    if (basicOrderInfo.ui.selectedBranch?.id && !selectedBranchId) {
-      setSelectedBranchId(basicOrderInfo.ui.selectedBranch.id);
-    }
-  }, [basicOrderInfo.ui.selectedBranch, selectedBranchId]);
 
   const handleCompleteStage1 = () => {
-    if (selectedClientId && selectedBranchId && orderWizard.ui.sessionId) {
-      orderWizard.actions.completeCurrentStage();
+    if (stage1.readiness.isStage1Ready) {
+      console.log('Завершення Stage1');
+      // Викликаємо завершення етапу через головний хук
+      main.actions.completeStage1();
     }
   };
 
-  // Перевірка готовності до завершення етапу
-  const canCompleteStage = Boolean(
-    selectedClientId &&
-      selectedBranchId &&
-      orderWizard.ui.sessionId &&
-      !orderWizard.loading.isAnyLoading
-  );
+  // Кроки для Stepper на основі підетапів
+  const steps = ['Пошук/створення клієнта', 'Базова інформація замовлення', 'Завершення етапу'];
 
-  // Кроки для Stepper
-  const steps = ['Вибір клієнта', 'Вибір філії', 'Завершення етапу'];
-  const activeStep = selectedClientId ? (selectedBranchId ? 2 : 1) : 0;
+  // Визначаємо активний крок на основі прогресу
+  const getActiveStep = () => {
+    if (!stage1.readiness.isClientSearchCompleted) return 0;
+    if (!stage1.readiness.isBasicOrderInfoCompleted) return 1;
+    return 2;
+  };
 
   return (
     <Container maxWidth="lg">
@@ -130,18 +96,21 @@ export const Stage1ClientSelection: FC = () => {
         </Typography>
 
         {/* Стан сесії */}
-        {!orderWizard.ui.sessionId && (
+        {!sessionId && (
           <Alert severity="warning" sx={{ mb: 3 }}>
             <Typography variant="body1">
               Для початку роботи потрібно ініціалізувати Order Wizard
             </Typography>
             <Button
               variant="contained"
-              onClick={orderWizard.actions.startNewOrder}
-              disabled={orderWizard.loading.isStarting}
+              onClick={() => {
+                // TODO: Додати ініціалізацію сесії
+                console.log('Ініціалізація сесії');
+              }}
+              disabled={stage1.loading.isAnyLoading}
               sx={{ mt: 1 }}
             >
-              {orderWizard.loading.isStarting ? 'Запуск...' : 'Запустити Order Wizard'}
+              {stage1.loading.isAnyLoading ? 'Запуск...' : 'Запустити Order Wizard'}
             </Button>
           </Alert>
         )}
@@ -149,7 +118,7 @@ export const Stage1ClientSelection: FC = () => {
         {/* Прогрес */}
         <Card sx={{ mb: 3 }}>
           <CardContent>
-            <Stepper activeStep={activeStep} alternativeLabel>
+            <Stepper activeStep={getActiveStep()} alternativeLabel>
               {steps.map((label, index) => (
                 <Step key={label}>
                   <StepLabel
@@ -173,7 +142,7 @@ export const Stage1ClientSelection: FC = () => {
         </Card>
 
         {/* Основний контент */}
-        {orderWizard.ui.sessionId && (
+        {sessionId && (
           <Grid container spacing={3}>
             {/* Панель вибору клієнта */}
             <Grid size={{ xs: 12, md: 6 }}>
@@ -188,35 +157,49 @@ export const Stage1ClientSelection: FC = () => {
               <BranchSelectionPanel onBranchSelected={handleBranchSelected} />
             </Grid>
 
-            {/* Форма основної інформації замовлення (показується після вибору філії) */}
-            {selectedBranchId && (
-              <Grid size={{ xs: 12 }}>
-                <BasicOrderInfoForm onDataUpdated={() => console.log('Дані оновлено')} />
-              </Grid>
-            )}
+            {/* Етап 1.3: Базова інформація замовлення */}
+            <Grid size={{ xs: 12 }}>
+              <BasicOrderInfoForm />
+            </Grid>
           </Grid>
         )}
 
         {/* Статус вибору */}
-        {(selectedClientId || selectedBranchId) && (
+        {(stage1.readiness.isClientSearchCompleted ||
+          stage1.readiness.isBasicOrderInfoCompleted) && (
           <Card sx={{ mt: 3 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Поточний стан
               </Typography>
 
-              {selectedClientId && (
+              {stage1.readiness.isClientSearchCompleted && (
                 <Alert severity="success" sx={{ mb: 1 }}>
-                  ✅ Клієнт обраний (ID: {selectedClientId})
+                  ✅ Клієнт обраний
+                  {stage1.substeps.clientSearch.computed.selectedClient && (
+                    <Typography variant="body2" sx={{ mt: 0.5 }}>
+                      {stage1.substeps.clientSearch.computed.selectedClient.firstName}{' '}
+                      {stage1.substeps.clientSearch.computed.selectedClient.lastName}
+                      {stage1.substeps.clientSearch.computed.selectedClient.phone &&
+                        ` • ${stage1.substeps.clientSearch.computed.selectedClient.phone}`}
+                    </Typography>
+                  )}
                 </Alert>
               )}
 
-              {selectedBranchId && (
+              {stage1.readiness.isBasicOrderInfoCompleted && (
                 <Alert severity="success" sx={{ mb: 1 }}>
-                  ✅ Філія обрана: {basicOrderInfo.ui.selectedBranch?.name || selectedBranchId}
-                  {basicOrderInfo.ui.selectedBranch?.address && (
+                  ✅ Базова інформація заповнена
+                  {stage1.substeps.basicOrderInfo.computed.selectedBranch && (
                     <Typography variant="body2" sx={{ mt: 0.5 }}>
-                      📍 {basicOrderInfo.ui.selectedBranch.address}
+                      📍 {stage1.substeps.basicOrderInfo.computed.selectedBranch.name}
+                      {stage1.substeps.basicOrderInfo.computed.selectedBranch.address &&
+                        ` • ${stage1.substeps.basicOrderInfo.computed.selectedBranch.address}`}
+                    </Typography>
+                  )}
+                  {stage1.substeps.basicOrderInfo.computed.hasReceiptNumber && (
+                    <Typography variant="body2" sx={{ mt: 0.5 }}>
+                      🧾 Квитанція згенерована
                     </Typography>
                   )}
                 </Alert>
@@ -228,18 +211,16 @@ export const Stage1ClientSelection: FC = () => {
                   variant="contained"
                   size="large"
                   onClick={handleCompleteStage1}
-                  disabled={!canCompleteStage}
+                  disabled={!stage1.readiness.isStage1Ready}
                   startIcon={
-                    orderWizard.loading.isCompletingStage1 ? (
+                    stage1.loading.isAnyLoading ? (
                       <CircularProgress size={20} />
                     ) : (
                       <ArrowForwardIcon />
                     )
                   }
                 >
-                  {orderWizard.loading.isCompletingStage1
-                    ? 'Завершення етапу...'
-                    : 'Перейти до Етапу 2'}
+                  {stage1.loading.isAnyLoading ? 'Завершення етапу...' : 'Перейти до Етапу 2'}
                 </Button>
               </Box>
             </CardContent>
@@ -247,11 +228,9 @@ export const Stage1ClientSelection: FC = () => {
         )}
 
         {/* Помилки */}
-        {orderWizard.errors.hasAnyError && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            <Typography variant="body2">
-              Виникла помилка: {orderWizard.errors.stage1Error?.message || 'Невідома помилка'}
-            </Typography>
+        {stage1.loading.isAnyLoading && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            <Typography variant="body2">Обробка даних...</Typography>
           </Alert>
         )}
 
@@ -261,43 +240,6 @@ export const Stage1ClientSelection: FC = () => {
           onClose={() => setShowCreateClientModal(false)}
           onClientCreated={handleClientCreated}
         />
-
-        {/* Debug інформація (тільки в розробці) */}
-        {orderWizard.debug && (
-          <Card sx={{ mt: 3, bgcolor: 'grey.100' }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Debug інформація
-              </Typography>
-              <pre style={{ fontSize: '12px', overflow: 'auto' }}>
-                {JSON.stringify(
-                  {
-                    sessionId: orderWizard.ui.sessionId,
-                    currentStage: orderWizard.ui.currentStage,
-                    selectedClientId,
-                    selectedBranchId,
-                    canCompleteStage,
-                    loading: orderWizard.loading,
-                    clientSearch: {
-                      sessionId: clientSearch.ui.sessionId,
-                      searchResults: clientSearch.data.searchResults?.length || 0,
-                    },
-                    clientCreation: {
-                      isFormVisible: clientCreation.ui.isFormVisible,
-                      currentStep: clientCreation.ui.currentStep,
-                    },
-                    basicOrderInfo: {
-                      selectedBranch: basicOrderInfo.ui.selectedBranch,
-                      branches: (basicOrderInfo.ui.availableBranches || []).length,
-                    },
-                  },
-                  null,
-                  2
-                )}
-              </pre>
-            </CardContent>
-          </Card>
-        )}
       </Box>
     </Container>
   );

@@ -5,7 +5,27 @@
  * API для системи керування клінінговою компанією AKSI
  * OpenAPI spec version: 1.0.0
  */
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
+  MutationFunction,
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
+} from '@tanstack/react-query';
+
+import type {
+  ErrorResponse,
   OrderItemAddRequest,
   StainsDefectsContext,
   Substep3GoBackParams,
@@ -20,133 +40,657 @@ import orvalFetcher from '../../../../lib/api/orval-fetcher';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getAksiApi = () => {
+
 /**
  * @summary Обробка вибору плям
  */
-const substep3ProcessStainSelection = (
+export const substep3ProcessStainSelection = (
     sessionId: string,
     params?: Substep3ProcessStainSelectionParams,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StainsDefectsContext>(
       {url: `/v1/order-wizard/stage2/substep3/stains/${sessionId}`, method: 'POST',
-        params
+        params, signal
     },
       options);
     }
   
+
+
+export const getSubstep3ProcessStainSelectionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3ProcessStainSelection>>, TError,{sessionId: string;params?: Substep3ProcessStainSelectionParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep3ProcessStainSelection>>, TError,{sessionId: string;params?: Substep3ProcessStainSelectionParams}, TContext> => {
+
+const mutationKey = ['substep3ProcessStainSelection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep3ProcessStainSelection>>, {sessionId: string;params?: Substep3ProcessStainSelectionParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  substep3ProcessStainSelection(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep3ProcessStainSelectionMutationResult = NonNullable<Awaited<ReturnType<typeof substep3ProcessStainSelection>>>
+    
+    export type Substep3ProcessStainSelectionMutationError = ErrorResponse
+
+    /**
+ * @summary Обробка вибору плям
+ */
+export const useSubstep3ProcessStainSelection = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3ProcessStainSelection>>, TError,{sessionId: string;params?: Substep3ProcessStainSelectionParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep3ProcessStainSelection>>,
+        TError,
+        {sessionId: string;params?: Substep3ProcessStainSelectionParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep3ProcessStainSelectionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Обробка додавання приміток про дефекти
  */
-const substep3ProcessDefectNotes = (
+export const substep3ProcessDefectNotes = (
     sessionId: string,
     params?: Substep3ProcessDefectNotesParams,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StainsDefectsContext>(
       {url: `/v1/order-wizard/stage2/substep3/notes/${sessionId}`, method: 'POST',
-        params
+        params, signal
     },
       options);
     }
   
+
+
+export const getSubstep3ProcessDefectNotesMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3ProcessDefectNotes>>, TError,{sessionId: string;params?: Substep3ProcessDefectNotesParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep3ProcessDefectNotes>>, TError,{sessionId: string;params?: Substep3ProcessDefectNotesParams}, TContext> => {
+
+const mutationKey = ['substep3ProcessDefectNotes'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep3ProcessDefectNotes>>, {sessionId: string;params?: Substep3ProcessDefectNotesParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  substep3ProcessDefectNotes(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep3ProcessDefectNotesMutationResult = NonNullable<Awaited<ReturnType<typeof substep3ProcessDefectNotes>>>
+    
+    export type Substep3ProcessDefectNotesMutationError = ErrorResponse
+
+    /**
+ * @summary Обробка додавання приміток про дефекти
+ */
+export const useSubstep3ProcessDefectNotes = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3ProcessDefectNotes>>, TError,{sessionId: string;params?: Substep3ProcessDefectNotesParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep3ProcessDefectNotes>>,
+        TError,
+        {sessionId: string;params?: Substep3ProcessDefectNotesParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep3ProcessDefectNotesMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Ініціалізація підетапу 3
  */
-const substep3InitializeSubstep = (
+export const substep3InitializeSubstep = (
     sessionId: string,
     orderItemAddRequest: OrderItemAddRequest,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StainsDefectsContext>(
       {url: `/v1/order-wizard/stage2/substep3/initialize/${sessionId}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: orderItemAddRequest
+      data: orderItemAddRequest, signal
     },
       options);
     }
   
+
+
+export const getSubstep3InitializeSubstepMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3InitializeSubstep>>, TError,{sessionId: string;data: OrderItemAddRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep3InitializeSubstep>>, TError,{sessionId: string;data: OrderItemAddRequest}, TContext> => {
+
+const mutationKey = ['substep3InitializeSubstep'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep3InitializeSubstep>>, {sessionId: string;data: OrderItemAddRequest}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  substep3InitializeSubstep(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep3InitializeSubstepMutationResult = NonNullable<Awaited<ReturnType<typeof substep3InitializeSubstep>>>
+    export type Substep3InitializeSubstepMutationBody = OrderItemAddRequest
+    export type Substep3InitializeSubstepMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізація підетапу 3
+ */
+export const useSubstep3InitializeSubstep = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3InitializeSubstep>>, TError,{sessionId: string;data: OrderItemAddRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep3InitializeSubstep>>,
+        TError,
+        {sessionId: string;data: OrderItemAddRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep3InitializeSubstepMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Повернення до попереднього стану
  */
-const substep3GoBack = (
+export const substep3GoBack = (
     sessionId: string,
     params: Substep3GoBackParams,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StainsDefectsContext>(
       {url: `/v1/order-wizard/stage2/substep3/go-back/${sessionId}`, method: 'POST',
-        params
+        params, signal
     },
       options);
     }
   
+
+
+export const getSubstep3GoBackMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3GoBack>>, TError,{sessionId: string;params: Substep3GoBackParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep3GoBack>>, TError,{sessionId: string;params: Substep3GoBackParams}, TContext> => {
+
+const mutationKey = ['substep3GoBack'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep3GoBack>>, {sessionId: string;params: Substep3GoBackParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  substep3GoBack(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep3GoBackMutationResult = NonNullable<Awaited<ReturnType<typeof substep3GoBack>>>
+    
+    export type Substep3GoBackMutationError = ErrorResponse
+
+    /**
+ * @summary Повернення до попереднього стану
+ */
+export const useSubstep3GoBack = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3GoBack>>, TError,{sessionId: string;params: Substep3GoBackParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep3GoBack>>,
+        TError,
+        {sessionId: string;params: Substep3GoBackParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep3GoBackMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Обробка вибору дефектів та ризиків
  */
-const substep3ProcessDefectSelection = (
+export const substep3ProcessDefectSelection = (
     sessionId: string,
     params?: Substep3ProcessDefectSelectionParams,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StainsDefectsContext>(
       {url: `/v1/order-wizard/stage2/substep3/defects/${sessionId}`, method: 'POST',
-        params
+        params, signal
     },
       options);
     }
   
+
+
+export const getSubstep3ProcessDefectSelectionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3ProcessDefectSelection>>, TError,{sessionId: string;params?: Substep3ProcessDefectSelectionParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep3ProcessDefectSelection>>, TError,{sessionId: string;params?: Substep3ProcessDefectSelectionParams}, TContext> => {
+
+const mutationKey = ['substep3ProcessDefectSelection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep3ProcessDefectSelection>>, {sessionId: string;params?: Substep3ProcessDefectSelectionParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  substep3ProcessDefectSelection(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep3ProcessDefectSelectionMutationResult = NonNullable<Awaited<ReturnType<typeof substep3ProcessDefectSelection>>>
+    
+    export type Substep3ProcessDefectSelectionMutationError = ErrorResponse
+
+    /**
+ * @summary Обробка вибору дефектів та ризиків
+ */
+export const useSubstep3ProcessDefectSelection = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3ProcessDefectSelection>>, TError,{sessionId: string;params?: Substep3ProcessDefectSelectionParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep3ProcessDefectSelection>>,
+        TError,
+        {sessionId: string;params?: Substep3ProcessDefectSelectionParams},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep3ProcessDefectSelectionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Завершення підетапу 3
  */
-const substep3CompleteSubstep = (
+export const substep3CompleteSubstep = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StainsDefectsContext>(
-      {url: `/v1/order-wizard/stage2/substep3/complete/${sessionId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/substep3/complete/${sessionId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getSubstep3CompleteSubstepMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3CompleteSubstep>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep3CompleteSubstep>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['substep3CompleteSubstep'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep3CompleteSubstep>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  substep3CompleteSubstep(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep3CompleteSubstepMutationResult = NonNullable<Awaited<ReturnType<typeof substep3CompleteSubstep>>>
+    
+    export type Substep3CompleteSubstepMutationError = ErrorResponse
+
+    /**
+ * @summary Завершення підетапу 3
+ */
+export const useSubstep3CompleteSubstep = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep3CompleteSubstep>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep3CompleteSubstep>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep3CompleteSubstepMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Отримання доступних типів плям
  */
-const substep3GetAvailableStainTypes = (
+export const substep3GetAvailableStainTypes = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<string[]>(
-      {url: `/v1/order-wizard/stage2/substep3/stain-types`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/substep3/stain-types`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getSubstep3GetAvailableStainTypesQueryKey = () => {
+    return [`/v1/order-wizard/stage2/substep3/stain-types`] as const;
+    }
+
+    
+export const getSubstep3GetAvailableStainTypesQueryOptions = <TData = Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSubstep3GetAvailableStainTypesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>> = ({ signal }) => substep3GetAvailableStainTypes(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Substep3GetAvailableStainTypesQueryResult = NonNullable<Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>>
+export type Substep3GetAvailableStainTypesQueryError = ErrorResponse
+
+
+export function useSubstep3GetAvailableStainTypes<TData = Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>,
+          TError,
+          Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep3GetAvailableStainTypes<TData = Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>,
+          TError,
+          Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep3GetAvailableStainTypes<TData = Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних типів плям
+ */
+
+export function useSubstep3GetAvailableStainTypes<TData = Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableStainTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSubstep3GetAvailableStainTypesQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримання доступних типів дефектів
  */
-const substep3GetAvailableDefectTypes = (
+export const substep3GetAvailableDefectTypes = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<string[]>(
-      {url: `/v1/order-wizard/stage2/substep3/defect-types`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/substep3/defect-types`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getSubstep3GetAvailableDefectTypesQueryKey = () => {
+    return [`/v1/order-wizard/stage2/substep3/defect-types`] as const;
+    }
+
+    
+export const getSubstep3GetAvailableDefectTypesQueryOptions = <TData = Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSubstep3GetAvailableDefectTypesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>> = ({ signal }) => substep3GetAvailableDefectTypes(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Substep3GetAvailableDefectTypesQueryResult = NonNullable<Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>>
+export type Substep3GetAvailableDefectTypesQueryError = ErrorResponse
+
+
+export function useSubstep3GetAvailableDefectTypes<TData = Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>,
+          TError,
+          Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep3GetAvailableDefectTypes<TData = Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>,
+          TError,
+          Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep3GetAvailableDefectTypes<TData = Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання доступних типів дефектів
+ */
+
+export function useSubstep3GetAvailableDefectTypes<TData = Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetAvailableDefectTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSubstep3GetAvailableDefectTypesQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримання поточного контексту
  */
-const substep3GetContext = (
+export const substep3GetContext = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StainsDefectsContext>(
-      {url: `/v1/order-wizard/stage2/substep3/context/${sessionId}`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/substep3/context/${sessionId}`, method: 'GET', signal
     },
       options);
     }
   
-return {substep3ProcessStainSelection,substep3ProcessDefectNotes,substep3InitializeSubstep,substep3GoBack,substep3ProcessDefectSelection,substep3CompleteSubstep,substep3GetAvailableStainTypes,substep3GetAvailableDefectTypes,substep3GetContext}};
-export type Substep3ProcessStainSelectionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep3ProcessStainSelection']>>>
-export type Substep3ProcessDefectNotesResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep3ProcessDefectNotes']>>>
-export type Substep3InitializeSubstepResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep3InitializeSubstep']>>>
-export type Substep3GoBackResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep3GoBack']>>>
-export type Substep3ProcessDefectSelectionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep3ProcessDefectSelection']>>>
-export type Substep3CompleteSubstepResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep3CompleteSubstep']>>>
-export type Substep3GetAvailableStainTypesResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep3GetAvailableStainTypes']>>>
-export type Substep3GetAvailableDefectTypesResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep3GetAvailableDefectTypes']>>>
-export type Substep3GetContextResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep3GetContext']>>>
+
+export const getSubstep3GetContextQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep3/context/${sessionId}`] as const;
+    }
+
+    
+export const getSubstep3GetContextQueryOptions = <TData = Awaited<ReturnType<typeof substep3GetContext>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSubstep3GetContextQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof substep3GetContext>>> = ({ signal }) => substep3GetContext(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof substep3GetContext>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Substep3GetContextQueryResult = NonNullable<Awaited<ReturnType<typeof substep3GetContext>>>
+export type Substep3GetContextQueryError = ErrorResponse
+
+
+export function useSubstep3GetContext<TData = Awaited<ReturnType<typeof substep3GetContext>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetContext>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep3GetContext>>,
+          TError,
+          Awaited<ReturnType<typeof substep3GetContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep3GetContext<TData = Awaited<ReturnType<typeof substep3GetContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetContext>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep3GetContext>>,
+          TError,
+          Awaited<ReturnType<typeof substep3GetContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep3GetContext<TData = Awaited<ReturnType<typeof substep3GetContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного контексту
+ */
+
+export function useSubstep3GetContext<TData = Awaited<ReturnType<typeof substep3GetContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep3GetContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSubstep3GetContextQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

@@ -5,10 +5,31 @@
  * API для системи керування клінінговою компанією AKSI
  * OpenAPI spec version: 1.0.0
  */
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
+import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
+  MutationFunction,
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
+} from '@tanstack/react-query';
+
 import type {
   AdaptersInfo,
   CompleteApiMap,
+  ErrorResponse,
   HealthStatus,
+  OrderWizardClearAllSessions200,
   OrderWizardGetAvailableTransitions200,
   OrderWizardGetSessionInfo200,
   OrderWizardResponseDTO,
@@ -26,252 +47,1564 @@ import orvalFetcher from '../../../../lib/api/orval-fetcher';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getAksiApi = () => {
+
 /**
  * @summary Запускає новий Order Wizard
  */
-const orderWizardStart = (
+export const orderWizardStart = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardResponseDTO>(
-      {url: `/order-wizard/start`, method: 'POST'
+      {url: `/order-wizard/start`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getOrderWizardStartMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardStart>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof orderWizardStart>>, TError,void, TContext> => {
+
+const mutationKey = ['orderWizardStart'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof orderWizardStart>>, void> = () => {
+          
+
+          return  orderWizardStart(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OrderWizardStartMutationResult = NonNullable<Awaited<ReturnType<typeof orderWizardStart>>>
+    
+    export type OrderWizardStartMutationError = ErrorResponse
+
+    /**
+ * @summary Запускає новий Order Wizard
+ */
+export const useOrderWizardStart = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardStart>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof orderWizardStart>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getOrderWizardStartMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Повернення на попередній етап
  */
-const orderWizardGoBack = (
+export const orderWizardGoBack = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardResponseDTO>(
-      {url: `/order-wizard/session/${sessionId}/go-back`, method: 'POST'
+      {url: `/order-wizard/session/${sessionId}/go-back`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getOrderWizardGoBackMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardGoBack>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof orderWizardGoBack>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['orderWizardGoBack'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof orderWizardGoBack>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  orderWizardGoBack(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OrderWizardGoBackMutationResult = NonNullable<Awaited<ReturnType<typeof orderWizardGoBack>>>
+    
+    export type OrderWizardGoBackMutationError = ErrorResponse
+
+    /**
+ * @summary Повернення на попередній етап
+ */
+export const useOrderWizardGoBack = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardGoBack>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof orderWizardGoBack>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getOrderWizardGoBackMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Перехід до Stage4 з Stage3
  */
-const orderWizardCompleteStage3 = (
+export const orderWizardCompleteStage3 = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardResponseDTO>(
-      {url: `/order-wizard/session/${sessionId}/complete-stage3`, method: 'POST'
+      {url: `/order-wizard/session/${sessionId}/complete-stage3`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getOrderWizardCompleteStage3MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteStage3>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteStage3>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['orderWizardCompleteStage3'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof orderWizardCompleteStage3>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  orderWizardCompleteStage3(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OrderWizardCompleteStage3MutationResult = NonNullable<Awaited<ReturnType<typeof orderWizardCompleteStage3>>>
+    
+    export type OrderWizardCompleteStage3MutationError = ErrorResponse
+
+    /**
+ * @summary Перехід до Stage4 з Stage3
+ */
+export const useOrderWizardCompleteStage3 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteStage3>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof orderWizardCompleteStage3>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getOrderWizardCompleteStage3MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Перехід до Stage3 з Stage2
  */
-const orderWizardCompleteStage2 = (
+export const orderWizardCompleteStage2 = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardResponseDTO>(
-      {url: `/order-wizard/session/${sessionId}/complete-stage2`, method: 'POST'
+      {url: `/order-wizard/session/${sessionId}/complete-stage2`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getOrderWizardCompleteStage2MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteStage2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteStage2>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['orderWizardCompleteStage2'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof orderWizardCompleteStage2>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  orderWizardCompleteStage2(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OrderWizardCompleteStage2MutationResult = NonNullable<Awaited<ReturnType<typeof orderWizardCompleteStage2>>>
+    
+    export type OrderWizardCompleteStage2MutationError = ErrorResponse
+
+    /**
+ * @summary Перехід до Stage3 з Stage2
+ */
+export const useOrderWizardCompleteStage2 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteStage2>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof orderWizardCompleteStage2>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getOrderWizardCompleteStage2MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Перехід до наступного етапу з Stage1 до Stage2
  */
-const orderWizardCompleteStage1 = (
+export const orderWizardCompleteStage1 = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardResponseDTO>(
-      {url: `/order-wizard/session/${sessionId}/complete-stage1`, method: 'POST'
+      {url: `/order-wizard/session/${sessionId}/complete-stage1`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getOrderWizardCompleteStage1MutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteStage1>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteStage1>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['orderWizardCompleteStage1'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof orderWizardCompleteStage1>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  orderWizardCompleteStage1(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OrderWizardCompleteStage1MutationResult = NonNullable<Awaited<ReturnType<typeof orderWizardCompleteStage1>>>
+    
+    export type OrderWizardCompleteStage1MutationError = ErrorResponse
+
+    /**
+ * @summary Перехід до наступного етапу з Stage1 до Stage2
+ */
+export const useOrderWizardCompleteStage1 = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteStage1>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof orderWizardCompleteStage1>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getOrderWizardCompleteStage1MutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Завершення Order Wizard
  */
-const orderWizardCompleteOrder = (
+export const orderWizardCompleteOrder = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardResponseDTO>(
-      {url: `/order-wizard/session/${sessionId}/complete-order`, method: 'POST'
+      {url: `/order-wizard/session/${sessionId}/complete-order`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getOrderWizardCompleteOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteOrder>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['orderWizardCompleteOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof orderWizardCompleteOrder>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  orderWizardCompleteOrder(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OrderWizardCompleteOrderMutationResult = NonNullable<Awaited<ReturnType<typeof orderWizardCompleteOrder>>>
+    
+    export type OrderWizardCompleteOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Завершення Order Wizard
+ */
+export const useOrderWizardCompleteOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCompleteOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof orderWizardCompleteOrder>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getOrderWizardCompleteOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Скасування Order Wizard
  */
-const orderWizardCancelOrder = (
+export const orderWizardCancelOrder = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardResponseDTO>(
-      {url: `/order-wizard/session/${sessionId}/cancel`, method: 'POST'
+      {url: `/order-wizard/session/${sessionId}/cancel`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getOrderWizardCancelOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCancelOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof orderWizardCancelOrder>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['orderWizardCancelOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof orderWizardCancelOrder>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  orderWizardCancelOrder(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OrderWizardCancelOrderMutationResult = NonNullable<Awaited<ReturnType<typeof orderWizardCancelOrder>>>
+    
+    export type OrderWizardCancelOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Скасування Order Wizard
+ */
+export const useOrderWizardCancelOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardCancelOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof orderWizardCancelOrder>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getOrderWizardCancelOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Очищення всіх активних сесій Order Wizard
+ */
+export const orderWizardClearAllSessions = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<OrderWizardClearAllSessions200>(
+      {url: `/order-wizard/clear-all-sessions`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getOrderWizardClearAllSessionsMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardClearAllSessions>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof orderWizardClearAllSessions>>, TError,void, TContext> => {
+
+const mutationKey = ['orderWizardClearAllSessions'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof orderWizardClearAllSessions>>, void> = () => {
+          
+
+          return  orderWizardClearAllSessions(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OrderWizardClearAllSessionsMutationResult = NonNullable<Awaited<ReturnType<typeof orderWizardClearAllSessions>>>
+    
+    export type OrderWizardClearAllSessionsMutationError = ErrorResponse
+
+    /**
+ * @summary Очищення всіх активних сесій Order Wizard
+ */
+export const useOrderWizardClearAllSessions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardClearAllSessions>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof orderWizardClearAllSessions>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getOrderWizardClearAllSessionsMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Флоу-карта Order Wizard для фронтенду
  */
-const orderWizardGetWorkflow = (
+export const orderWizardGetWorkflow = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<WorkflowMap>(
-      {url: `/order-wizard/workflow`, method: 'GET'
+      {url: `/order-wizard/workflow`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetWorkflowQueryKey = () => {
+    return [`/order-wizard/workflow`] as const;
+    }
+
+    
+export const getOrderWizardGetWorkflowQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetWorkflowQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetWorkflow>>> = ({ signal }) => orderWizardGetWorkflow(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetWorkflowQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetWorkflow>>>
+export type OrderWizardGetWorkflowQueryError = ErrorResponse
+
+
+export function useOrderWizardGetWorkflow<TData = Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetWorkflow>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetWorkflow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetWorkflow<TData = Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetWorkflow>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetWorkflow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetWorkflow<TData = Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Флоу-карта Order Wizard для фронтенду
+ */
+
+export function useOrderWizardGetWorkflow<TData = Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetWorkflow>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetWorkflowQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Загальна статистика системи
  */
-const orderWizardGetSystemStats = (
+export const orderWizardGetSystemStats = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<SystemStats>(
-      {url: `/order-wizard/stats`, method: 'GET'
+      {url: `/order-wizard/stats`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetSystemStatsQueryKey = () => {
+    return [`/order-wizard/stats`] as const;
+    }
+
+    
+export const getOrderWizardGetSystemStatsQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetSystemStatsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetSystemStats>>> = ({ signal }) => orderWizardGetSystemStats(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetSystemStatsQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetSystemStats>>>
+export type OrderWizardGetSystemStatsQueryError = ErrorResponse
+
+
+export function useOrderWizardGetSystemStats<TData = Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetSystemStats>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetSystemStats>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetSystemStats<TData = Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetSystemStats>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetSystemStats>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetSystemStats<TData = Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Загальна статистика системи
+ */
+
+export function useOrderWizardGetSystemStats<TData = Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSystemStats>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetSystemStatsQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Детальний статус конкретного етапу
  */
-const orderWizardGetStageStatus = (
+export const orderWizardGetStageStatus = (
     stageNumber: number,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StageStatus>(
-      {url: `/order-wizard/stages/${stageNumber}/status`, method: 'GET'
+      {url: `/order-wizard/stages/${stageNumber}/status`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetStageStatusQueryKey = (stageNumber: number,) => {
+    return [`/order-wizard/stages/${stageNumber}/status`] as const;
+    }
+
+    
+export const getOrderWizardGetStageStatusQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError = ErrorResponse>(stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetStageStatusQueryKey(stageNumber);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetStageStatus>>> = ({ signal }) => orderWizardGetStageStatus(stageNumber, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(stageNumber), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetStageStatusQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetStageStatus>>>
+export type OrderWizardGetStageStatusQueryError = ErrorResponse
+
+
+export function useOrderWizardGetStageStatus<TData = Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError = ErrorResponse>(
+ stageNumber: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetStageStatus>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetStageStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetStageStatus<TData = Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError = ErrorResponse>(
+ stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetStageStatus>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetStageStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetStageStatus<TData = Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError = ErrorResponse>(
+ stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Детальний статус конкретного етапу
+ */
+
+export function useOrderWizardGetStageStatus<TData = Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError = ErrorResponse>(
+ stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetStageStatusQueryOptions(stageNumber,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Документація по методах конкретного етапу
  */
-const orderWizardGetStageMethods = (
+export const orderWizardGetStageMethods = (
     stageNumber: number,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StageMethods>(
-      {url: `/order-wizard/stages/${stageNumber}/methods`, method: 'GET'
+      {url: `/order-wizard/stages/${stageNumber}/methods`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetStageMethodsQueryKey = (stageNumber: number,) => {
+    return [`/order-wizard/stages/${stageNumber}/methods`] as const;
+    }
+
+    
+export const getOrderWizardGetStageMethodsQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError = ErrorResponse>(stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetStageMethodsQueryKey(stageNumber);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetStageMethods>>> = ({ signal }) => orderWizardGetStageMethods(stageNumber, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(stageNumber), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetStageMethodsQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetStageMethods>>>
+export type OrderWizardGetStageMethodsQueryError = ErrorResponse
+
+
+export function useOrderWizardGetStageMethods<TData = Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError = ErrorResponse>(
+ stageNumber: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetStageMethods>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetStageMethods>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetStageMethods<TData = Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError = ErrorResponse>(
+ stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetStageMethods>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetStageMethods>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetStageMethods<TData = Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError = ErrorResponse>(
+ stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Документація по методах конкретного етапу
+ */
+
+export function useOrderWizardGetStageMethods<TData = Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError = ErrorResponse>(
+ stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageMethods>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetStageMethodsQueryOptions(stageNumber,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Детальна інформація про конкретний етап
  */
-const orderWizardGetStageInfo = (
+export const orderWizardGetStageInfo = (
     stageNumber: number,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StageInfo>(
-      {url: `/order-wizard/stages/${stageNumber}/info`, method: 'GET'
+      {url: `/order-wizard/stages/${stageNumber}/info`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetStageInfoQueryKey = (stageNumber: number,) => {
+    return [`/order-wizard/stages/${stageNumber}/info`] as const;
+    }
+
+    
+export const getOrderWizardGetStageInfoQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError = ErrorResponse>(stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetStageInfoQueryKey(stageNumber);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetStageInfo>>> = ({ signal }) => orderWizardGetStageInfo(stageNumber, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(stageNumber), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetStageInfoQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetStageInfo>>>
+export type OrderWizardGetStageInfoQueryError = ErrorResponse
+
+
+export function useOrderWizardGetStageInfo<TData = Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError = ErrorResponse>(
+ stageNumber: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetStageInfo>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetStageInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetStageInfo<TData = Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError = ErrorResponse>(
+ stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetStageInfo>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetStageInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetStageInfo<TData = Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError = ErrorResponse>(
+ stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Детальна інформація про конкретний етап
+ */
+
+export function useOrderWizardGetStageInfo<TData = Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError = ErrorResponse>(
+ stageNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStageInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetStageInfoQueryOptions(stageNumber,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Статуси готовності всіх етапів
  */
-const orderWizardGetStagesStatus = (
+export const orderWizardGetStagesStatus = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<StagesStatus>(
-      {url: `/order-wizard/stages/status`, method: 'GET'
+      {url: `/order-wizard/stages/status`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetStagesStatusQueryKey = () => {
+    return [`/order-wizard/stages/status`] as const;
+    }
+
+    
+export const getOrderWizardGetStagesStatusQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetStagesStatusQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetStagesStatus>>> = ({ signal }) => orderWizardGetStagesStatus(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetStagesStatusQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetStagesStatus>>>
+export type OrderWizardGetStagesStatusQueryError = ErrorResponse
+
+
+export function useOrderWizardGetStagesStatus<TData = Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetStagesStatus>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetStagesStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetStagesStatus<TData = Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetStagesStatus>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetStagesStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetStagesStatus<TData = Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Статуси готовності всіх етапів
+ */
+
+export function useOrderWizardGetStagesStatus<TData = Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetStagesStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetStagesStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримує поточний стан Order Wizard
  */
-const orderWizardGetCurrentState = (
+export const orderWizardGetCurrentState = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardResponseDTO>(
-      {url: `/order-wizard/session/${sessionId}/state`, method: 'GET'
+      {url: `/order-wizard/session/${sessionId}/state`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetCurrentStateQueryKey = (sessionId: string,) => {
+    return [`/order-wizard/session/${sessionId}/state`] as const;
+    }
+
+    
+export const getOrderWizardGetCurrentStateQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetCurrentStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetCurrentState>>> = ({ signal }) => orderWizardGetCurrentState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetCurrentStateQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetCurrentState>>>
+export type OrderWizardGetCurrentStateQueryError = ErrorResponse
+
+
+export function useOrderWizardGetCurrentState<TData = Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetCurrentState<TData = Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetCurrentState<TData = Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан Order Wizard
+ */
+
+export function useOrderWizardGetCurrentState<TData = Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetCurrentStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримання детальної інформації про поточну сесію
  */
-const orderWizardGetSessionInfo = (
+export const orderWizardGetSessionInfo = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardGetSessionInfo200>(
-      {url: `/order-wizard/session/${sessionId}/info`, method: 'GET'
+      {url: `/order-wizard/session/${sessionId}/info`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetSessionInfoQueryKey = (sessionId: string,) => {
+    return [`/order-wizard/session/${sessionId}/info`] as const;
+    }
+
+    
+export const getOrderWizardGetSessionInfoQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetSessionInfoQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetSessionInfo>>> = ({ signal }) => orderWizardGetSessionInfo(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetSessionInfoQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetSessionInfo>>>
+export type OrderWizardGetSessionInfoQueryError = ErrorResponse
+
+
+export function useOrderWizardGetSessionInfo<TData = Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetSessionInfo>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetSessionInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetSessionInfo<TData = Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetSessionInfo>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetSessionInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetSessionInfo<TData = Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання детальної інформації про поточну сесію
+ */
+
+export function useOrderWizardGetSessionInfo<TData = Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetSessionInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetSessionInfoQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримує всі можливі переходи з поточного стану
  */
-const orderWizardGetAvailableTransitions = (
+export const orderWizardGetAvailableTransitions = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<OrderWizardGetAvailableTransitions200>(
-      {url: `/order-wizard/session/${sessionId}/available-transitions`, method: 'GET'
+      {url: `/order-wizard/session/${sessionId}/available-transitions`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetAvailableTransitionsQueryKey = (sessionId: string,) => {
+    return [`/order-wizard/session/${sessionId}/available-transitions`] as const;
+    }
+
+    
+export const getOrderWizardGetAvailableTransitionsQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetAvailableTransitionsQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>> = ({ signal }) => orderWizardGetAvailableTransitions(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetAvailableTransitionsQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>>
+export type OrderWizardGetAvailableTransitionsQueryError = ErrorResponse
+
+
+export function useOrderWizardGetAvailableTransitions<TData = Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetAvailableTransitions<TData = Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetAvailableTransitions<TData = Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує всі можливі переходи з поточного стану
+ */
+
+export function useOrderWizardGetAvailableTransitions<TData = Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAvailableTransitions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetAvailableTransitionsQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Перевірка готовності Order Wizard API
  */
-const orderWizardHealth = (
+export const orderWizardHealth = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<HealthStatus>(
-      {url: `/order-wizard/health`, method: 'GET'
+      {url: `/order-wizard/health`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardHealthQueryKey = () => {
+    return [`/order-wizard/health`] as const;
+    }
+
+    
+export const getOrderWizardHealthQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardHealth>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardHealth>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardHealthQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardHealth>>> = ({ signal }) => orderWizardHealth(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardHealth>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardHealthQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardHealth>>>
+export type OrderWizardHealthQueryError = ErrorResponse
+
+
+export function useOrderWizardHealth<TData = Awaited<ReturnType<typeof orderWizardHealth>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardHealth>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardHealth>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardHealth>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardHealth<TData = Awaited<ReturnType<typeof orderWizardHealth>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardHealth>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardHealth>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardHealth>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardHealth<TData = Awaited<ReturnType<typeof orderWizardHealth>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardHealth>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірка готовності Order Wizard API
+ */
+
+export function useOrderWizardHealth<TData = Awaited<ReturnType<typeof orderWizardHealth>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardHealth>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardHealthQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Повна мапа всіх доступних API endpoints
  */
-const orderWizardGetCompleteApiMap = (
+export const orderWizardGetCompleteApiMap = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<CompleteApiMap>(
-      {url: `/order-wizard/api-map`, method: 'GET'
+      {url: `/order-wizard/api-map`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getOrderWizardGetCompleteApiMapQueryKey = () => {
+    return [`/order-wizard/api-map`] as const;
+    }
+
+    
+export const getOrderWizardGetCompleteApiMapQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetCompleteApiMapQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>> = ({ signal }) => orderWizardGetCompleteApiMap(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetCompleteApiMapQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>>
+export type OrderWizardGetCompleteApiMapQueryError = ErrorResponse
+
+
+export function useOrderWizardGetCompleteApiMap<TData = Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetCompleteApiMap<TData = Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetCompleteApiMap<TData = Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Повна мапа всіх доступних API endpoints
+ */
+
+export function useOrderWizardGetCompleteApiMap<TData = Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetCompleteApiMap>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetCompleteApiMapQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Повна інформація про всі адаптери
  */
-const orderWizardGetAdaptersInfo = (
+export const orderWizardGetAdaptersInfo = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<AdaptersInfo>(
-      {url: `/order-wizard/adapters`, method: 'GET'
+      {url: `/order-wizard/adapters`, method: 'GET', signal
     },
       options);
     }
   
-return {orderWizardStart,orderWizardGoBack,orderWizardCompleteStage3,orderWizardCompleteStage2,orderWizardCompleteStage1,orderWizardCompleteOrder,orderWizardCancelOrder,orderWizardGetWorkflow,orderWizardGetSystemStats,orderWizardGetStageStatus,orderWizardGetStageMethods,orderWizardGetStageInfo,orderWizardGetStagesStatus,orderWizardGetCurrentState,orderWizardGetSessionInfo,orderWizardGetAvailableTransitions,orderWizardHealth,orderWizardGetCompleteApiMap,orderWizardGetAdaptersInfo}};
-export type OrderWizardStartResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardStart']>>>
-export type OrderWizardGoBackResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGoBack']>>>
-export type OrderWizardCompleteStage3Result = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardCompleteStage3']>>>
-export type OrderWizardCompleteStage2Result = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardCompleteStage2']>>>
-export type OrderWizardCompleteStage1Result = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardCompleteStage1']>>>
-export type OrderWizardCompleteOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardCompleteOrder']>>>
-export type OrderWizardCancelOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardCancelOrder']>>>
-export type OrderWizardGetWorkflowResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetWorkflow']>>>
-export type OrderWizardGetSystemStatsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetSystemStats']>>>
-export type OrderWizardGetStageStatusResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetStageStatus']>>>
-export type OrderWizardGetStageMethodsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetStageMethods']>>>
-export type OrderWizardGetStageInfoResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetStageInfo']>>>
-export type OrderWizardGetStagesStatusResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetStagesStatus']>>>
-export type OrderWizardGetCurrentStateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetCurrentState']>>>
-export type OrderWizardGetSessionInfoResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetSessionInfo']>>>
-export type OrderWizardGetAvailableTransitionsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetAvailableTransitions']>>>
-export type OrderWizardHealthResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardHealth']>>>
-export type OrderWizardGetCompleteApiMapResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetCompleteApiMap']>>>
-export type OrderWizardGetAdaptersInfoResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['orderWizardGetAdaptersInfo']>>>
+
+export const getOrderWizardGetAdaptersInfoQueryKey = () => {
+    return [`/order-wizard/adapters`] as const;
+    }
+
+    
+export const getOrderWizardGetAdaptersInfoQueryOptions = <TData = Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrderWizardGetAdaptersInfoQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>> = ({ signal }) => orderWizardGetAdaptersInfo(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrderWizardGetAdaptersInfoQueryResult = NonNullable<Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>>
+export type OrderWizardGetAdaptersInfoQueryError = ErrorResponse
+
+
+export function useOrderWizardGetAdaptersInfo<TData = Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetAdaptersInfo<TData = Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>,
+          TError,
+          Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrderWizardGetAdaptersInfo<TData = Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Повна інформація про всі адаптери
+ */
+
+export function useOrderWizardGetAdaptersInfo<TData = Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof orderWizardGetAdaptersInfo>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrderWizardGetAdaptersInfoQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

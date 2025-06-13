@@ -55,7 +55,6 @@ interface ApiErrorResponse {
 // 🔐 Утиліти для роботи з токенами
 // Кеш для токена
 let cachedToken: string | null = null;
-let tokenPromise: Promise<string | null> | null = null;
 
 const getAuthToken = async (): Promise<string | null> => {
   if (typeof window === 'undefined') return null;
@@ -63,47 +62,22 @@ const getAuthToken = async (): Promise<string | null> => {
   // Якщо є кешований токен, повертаємо його
   if (cachedToken) return cachedToken;
 
-  // Якщо вже виконується запит за токеном, чекаємо його
-  if (tokenPromise) return tokenPromise;
-
-  // Створюємо новий запит за токеном
-  tokenPromise = (async () => {
-    try {
-      const response = await fetch('/api/auth/token', {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        cachedToken = data.token || null;
-
-        // Debug logging
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🔐 Auth token from API:', {
-            status: response.status,
-            hasToken: !!cachedToken,
-          });
-        }
-
-        return cachedToken;
-      } else {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🔐 Auth token API failed:', response.status);
-        }
-        return null;
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('🔐 Auth token fetch error:', error);
-      }
-      return null;
-    } finally {
-      tokenPromise = null;
+  // Перевіряємо чи є токен в localStorage
+  const storedToken = localStorage.getItem('auth-token');
+  if (storedToken) {
+    // Якщо є збережений токен, використовуємо його
+    cachedToken = storedToken;
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔐 Використовуємо токен з localStorage');
     }
-  })();
+    return cachedToken;
+  }
 
-  return tokenPromise;
+  // Якщо немає збереженого токена, повертаємо null
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔐 Немає токена в localStorage');
+  }
+  return null;
 };
 
 const clearAuthToken = (): void => {
@@ -111,7 +85,13 @@ const clearAuthToken = (): void => {
 
   // Очищуємо кеш токена
   cachedToken = null;
-  tokenPromise = null;
+
+  // Очищуємо токен з localStorage
+  localStorage.removeItem('auth-token');
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🗑️ Токен очищено з кешу та localStorage');
+  }
 };
 
 // 🚀 Створюємо axios instance з базовою конфігурацією

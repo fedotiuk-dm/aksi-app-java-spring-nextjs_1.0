@@ -29,11 +29,17 @@ export const useLogout = () => {
       setIsLoading(true);
       setError(null);
 
-      // Викликаємо API для виходу (поки що локальна логіка)
-      await apiLogout.mutateAsync(undefined);
+      // Викликаємо API для виходу (поки що тільки локальна логіка)
+      apiLogout.mutate();
 
       // Очищаємо стан авторизації
       logoutStore();
+
+      // Очищаємо токен з localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth-token');
+        console.log('🗑️ Токен видалено з localStorage');
+      }
 
       console.log('✅ Успішний вихід з системи');
 
@@ -44,6 +50,11 @@ export const useLogout = () => {
 
       // Навіть якщо виникла помилка, все одно очищаємо стан авторизації
       logoutStore();
+
+      // Очищаємо токен з localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth-token');
+      }
 
       // Перенаправляємо на сторінку входу
       router.push(redirectTo);

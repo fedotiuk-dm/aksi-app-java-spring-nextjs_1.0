@@ -1,24 +1,22 @@
-// ЕТАП 4: Публічне API для головного управління Order Wizard
-// Експорт тільки через цей файл згідно з архітектурними принципами
+// 🔥 ЕТАП 4: ПУБЛІЧНЕ API - wizard/main domain
+// Експорт тільки публічного API для використання в UI
 
-// ========== ГОЛОВНИЙ ХУК ==========
-export { useOrderWizardMain } from './use-order-wizard-main.hook';
-export type { UseOrderWizardMainReturn } from './use-order-wizard-main.hook';
+// 🎯 Головний композиційний хук
+export { useMain } from './hooks/use-main.hook';
+export type { UseMainReturn } from './hooks/use-main.hook';
 
-// ========== СХЕМИ ДЛЯ UI (ЯКЩО ПОТРІБНІ) ==========
-export { stageStateSchema, wizardNavigationSchema } from './main.schemas';
-export type { StageState, WizardNavigation } from './main.schemas';
-
-// ========== СТОР (ЯКЩО ПОТРІБЕН ПРЯМИЙ ДОСТУП) ==========
+// 🎨 Константи та утиліти для UI
 export {
-  useOrderWizardMainStore,
-  selectSessionInfo,
-  selectNavigationState,
-  selectDebugInfo,
-} from './main.store';
+  WIZARD_STAGES,
+  WIZARD_STAGE_NAMES,
+  mapApiStateToStage,
+  getStageProgress,
+  isStageCompleted,
+  isStageActive,
+  canNavigateToStage,
+} from './utils/wizard-stage-mapping';
+export type { WizardStage } from './utils/wizard-stage-mapping';
 
-// ========== ВСЕ ІНШЕ ПРИХОВАНО ==========
-// НЕ експортуємо:
-// - Внутрішні утиліти
-// - Конфігураційні константи
-// - Приватні методи стору
+// 🚫 НЕ ЕКСПОРТУЄМО:
+// - Внутрішні деталі store (useMainStore, mainSelectors)
+// - Внутрішні типи (MainUIState, MainUIActions)

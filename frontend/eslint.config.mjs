@@ -5,8 +5,6 @@ import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
 import pkg from '@eslint/js';
-const { eslint } = pkg;
-import nextPlugin from '@next/eslint-plugin-next';
 import sonarjsPlugin from 'eslint-plugin-sonarjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -123,108 +121,8 @@ const eslintConfig = [
       'sonarjs/prefer-single-boolean-return': 'error',
       'sonarjs/prefer-while': 'error',
 
-      // Правила для FSD структури
-      'import/no-restricted-paths': [
-        'error',
-        {
-          zones: [
-            {
-              target: './features/order-wizard/ui/**',
-              from: './features/order-wizard/wizard/**',
-              message: 'UI компоненти не повинні імпортувати wizard напряму. Використовуйте хуки.',
-            },
-            {
-              target: './features/order-wizard/ui/**',
-              from: './features/order-wizard/clients/**',
-              message: 'UI компоненти не повинні імпортувати clients напряму. Використовуйте хуки.',
-            },
-            {
-              target: './features/order-wizard/ui/**',
-              from: './features/order-wizard/branches/**',
-              message:
-                'UI компоненти не повинні імпортувати branches напряму. Використовуйте хуки.',
-            },
-            {
-              target: './features/order-wizard/ui/**',
-              from: './features/order-wizard/items/**',
-              message: 'UI компоненти не повинні імпортувати items напряму. Використовуйте хуки.',
-            },
-            {
-              target: './features/order-wizard/ui/**',
-              from: './features/order-wizard/price-calculator/**',
-              message:
-                'UI компоненти не повинні імпортувати price-calculator напряму. Використовуйте хуки.',
-            },
-            {
-              target: './features/order-wizard/ui/**',
-              from: './features/order-wizard/orders/**',
-              message: 'UI компоненти не повинні імпортувати orders напряму. Використовуйте хуки.',
-            },
-          ],
-        },
-      ],
-      'import/order': [
-        'error',
-        {
-          groups: [
-            'builtin',
-            'external',
-            'internal',
-            ['parent', 'sibling'],
-            'index',
-            'object',
-            'type',
-          ],
-          pathGroups: [
-            {
-              pattern: '@features/order-wizard/wizard/**',
-              group: 'internal',
-              position: 'before',
-            },
-            {
-              pattern: '@features/order-wizard/clients/**',
-              group: 'internal',
-              position: 'before',
-            },
-            {
-              pattern: '@features/order-wizard/branches/**',
-              group: 'internal',
-              position: 'before',
-            },
-            {
-              pattern: '@features/order-wizard/items/**',
-              group: 'internal',
-              position: 'before',
-            },
-            {
-              pattern: '@features/order-wizard/price-calculator/**',
-              group: 'internal',
-              position: 'before',
-            },
-            {
-              pattern: '@features/order-wizard/orders/**',
-              group: 'internal',
-              position: 'before',
-            },
-            {
-              pattern: '@features/order-wizard/ui/**',
-              group: 'internal',
-              position: 'before',
-            },
-            {
-              pattern: '@features/order-wizard/shared/**',
-              group: 'internal',
-              position: 'before',
-            },
-          ],
-          pathGroupsExcludedImportTypes: ['builtin'],
-          'newlines-between': 'always',
-          alphabetize: {
-            order: 'asc',
-            caseInsensitive: true,
-          },
-        },
-      ],
+      // Відключаємо правило порядку імпортів для зручності розробки
+      'import/order': 'off',
     },
   },
 

@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 
 import { useLogin } from '../hooks/useLogin';
 
-import type { LoginRequest } from '@/shared/api/generated/auth/aksiApi.schemas';
+import type { LoginRequest } from '@/shared/api/generated/auth';
 
 interface LoginFormProps {
   onSuccess?: () => void;

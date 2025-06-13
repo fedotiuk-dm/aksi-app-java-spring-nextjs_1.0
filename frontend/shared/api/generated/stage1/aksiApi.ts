@@ -5,12 +5,32 @@
  * API для системи керування клінінговою компанією AKSI
  * OpenAPI spec version: 1.0.0
  */
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
+import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
+  MutationFunction,
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
+} from '@tanstack/react-query';
+
 import type {
   BasicOrderInfoDTO,
   BranchLocationDTO,
   ClientResponse,
   ClientSearchCriteriaDTO,
   ClientSearchResultDTO,
+  ErrorResponse,
   NewClientFormDTO,
   Stage1GenerateReceiptNumberParams,
   Stage1GetBasicOrderState200,
@@ -30,26 +50,104 @@ import orvalFetcher from '../../../../lib/api/orval-fetcher';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getAksiApi = () => {
+
 /**
  * @summary Отримує поточні дані форми
  */
-const stage1GetClientFormData = (
+export const stage1GetClientFormData = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<NewClientFormDTO>(
-      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/data`, method: 'GET'
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/data`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage1GetClientFormDataQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/new-client/session/${sessionId}/data`] as const;
+    }
+
+    
+export const getStage1GetClientFormDataQueryOptions = <TData = Awaited<ReturnType<typeof stage1GetClientFormData>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage1GetClientFormDataQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage1GetClientFormData>>> = ({ signal }) => stage1GetClientFormData(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormData>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage1GetClientFormDataQueryResult = NonNullable<Awaited<ReturnType<typeof stage1GetClientFormData>>>
+export type Stage1GetClientFormDataQueryError = ErrorResponse
+
+
+export function useStage1GetClientFormData<TData = Awaited<ReturnType<typeof stage1GetClientFormData>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormData>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetClientFormData>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetClientFormData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetClientFormData<TData = Awaited<ReturnType<typeof stage1GetClientFormData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormData>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetClientFormData>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetClientFormData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetClientFormData<TData = Awaited<ReturnType<typeof stage1GetClientFormData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточні дані форми
+ */
+
+export function useStage1GetClientFormData<TData = Awaited<ReturnType<typeof stage1GetClientFormData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage1GetClientFormDataQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Оновлює дані форми клієнта
  */
-const stage1UpdateClientData = (
+export const stage1UpdateClientData = (
     sessionId: string,
     newClientFormDTO: NewClientFormDTO,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/data`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
@@ -58,25 +156,151 @@ const stage1UpdateClientData = (
       options);
     }
   
+
+
+export const getStage1UpdateClientDataMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1UpdateClientData>>, TError,{sessionId: string;data: NewClientFormDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1UpdateClientData>>, TError,{sessionId: string;data: NewClientFormDTO}, TContext> => {
+
+const mutationKey = ['stage1UpdateClientData'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1UpdateClientData>>, {sessionId: string;data: NewClientFormDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  stage1UpdateClientData(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1UpdateClientDataMutationResult = NonNullable<Awaited<ReturnType<typeof stage1UpdateClientData>>>
+    export type Stage1UpdateClientDataMutationBody = NewClientFormDTO
+    export type Stage1UpdateClientDataMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлює дані форми клієнта
+ */
+export const useStage1UpdateClientData = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1UpdateClientData>>, TError,{sessionId: string;data: NewClientFormDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1UpdateClientData>>,
+        TError,
+        {sessionId: string;data: NewClientFormDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1UpdateClientDataMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Отримує поточну базову інформацію
  */
-const stage1GetBasicOrderData = (
+export const stage1GetBasicOrderData = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<BasicOrderInfoDTO>(
-      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/data`, method: 'GET'
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/data`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage1GetBasicOrderDataQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/basic-order/session/${sessionId}/data`] as const;
+    }
+
+    
+export const getStage1GetBasicOrderDataQueryOptions = <TData = Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage1GetBasicOrderDataQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage1GetBasicOrderData>>> = ({ signal }) => stage1GetBasicOrderData(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage1GetBasicOrderDataQueryResult = NonNullable<Awaited<ReturnType<typeof stage1GetBasicOrderData>>>
+export type Stage1GetBasicOrderDataQueryError = ErrorResponse
+
+
+export function useStage1GetBasicOrderData<TData = Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetBasicOrderData>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetBasicOrderData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetBasicOrderData<TData = Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetBasicOrderData>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetBasicOrderData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetBasicOrderData<TData = Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточну базову інформацію
+ */
+
+export function useStage1GetBasicOrderData<TData = Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage1GetBasicOrderDataQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Оновлює базову інформацію
  */
-const stage1UpdateBasicOrder = (
+export const stage1UpdateBasicOrder = (
     sessionId: string,
     basicOrderInfoDTO: BasicOrderInfoDTO,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/data`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
@@ -85,385 +309,1975 @@ const stage1UpdateBasicOrder = (
       options);
     }
   
+
+
+export const getStage1UpdateBasicOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1UpdateBasicOrder>>, TError,{sessionId: string;data: BasicOrderInfoDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1UpdateBasicOrder>>, TError,{sessionId: string;data: BasicOrderInfoDTO}, TContext> => {
+
+const mutationKey = ['stage1UpdateBasicOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1UpdateBasicOrder>>, {sessionId: string;data: BasicOrderInfoDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  stage1UpdateBasicOrder(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1UpdateBasicOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage1UpdateBasicOrder>>>
+    export type Stage1UpdateBasicOrderMutationBody = BasicOrderInfoDTO
+    export type Stage1UpdateBasicOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлює базову інформацію
+ */
+export const useStage1UpdateBasicOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1UpdateBasicOrder>>, TError,{sessionId: string;data: BasicOrderInfoDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1UpdateBasicOrder>>,
+        TError,
+        {sessionId: string;data: BasicOrderInfoDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1UpdateBasicOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Валідує форму клієнта
  */
-const stage1ValidateClientForm = (
+export const stage1ValidateClientForm = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage1ValidateClientForm200>(
-      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/validate`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/validate`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1ValidateClientFormMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ValidateClientForm>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1ValidateClientForm>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1ValidateClientForm'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1ValidateClientForm>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1ValidateClientForm(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1ValidateClientFormMutationResult = NonNullable<Awaited<ReturnType<typeof stage1ValidateClientForm>>>
+    
+    export type Stage1ValidateClientFormMutationError = ErrorResponse
+
+    /**
+ * @summary Валідує форму клієнта
+ */
+export const useStage1ValidateClientForm = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ValidateClientForm>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1ValidateClientForm>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1ValidateClientFormMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Створює нового клієнта
  */
-const stage1CreateClient = (
+export const stage1CreateClient = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ClientResponse>(
-      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/create`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/create`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1CreateClientMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CreateClient>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1CreateClient>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1CreateClient'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1CreateClient>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1CreateClient(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1CreateClientMutationResult = NonNullable<Awaited<ReturnType<typeof stage1CreateClient>>>
+    
+    export type Stage1CreateClientMutationError = ErrorResponse
+
+    /**
+ * @summary Створює нового клієнта
+ */
+export const useStage1CreateClient = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CreateClient>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1CreateClient>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1CreateClientMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Завершує створення клієнта
  */
-const stage1CompleteClientCreation = (
+export const stage1CompleteClientCreation = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
-      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/complete`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/complete`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1CompleteClientCreationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CompleteClientCreation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1CompleteClientCreation>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1CompleteClientCreation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1CompleteClientCreation>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1CompleteClientCreation(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1CompleteClientCreationMutationResult = NonNullable<Awaited<ReturnType<typeof stage1CompleteClientCreation>>>
+    
+    export type Stage1CompleteClientCreationMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує створення клієнта
+ */
+export const useStage1CompleteClientCreation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CompleteClientCreation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1CompleteClientCreation>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1CompleteClientCreationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Ініціалізує форму створення нового клієнта
  */
-const stage1InitializeNewClient = (
+export const stage1InitializeNewClient = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<string>(
-      {url: `/v1/order-wizard/stage1/new-client/initialize`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/new-client/initialize`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1InitializeNewClientMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1InitializeNewClient>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1InitializeNewClient>>, TError,void, TContext> => {
+
+const mutationKey = ['stage1InitializeNewClient'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1InitializeNewClient>>, void> = () => {
+          
+
+          return  stage1InitializeNewClient(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1InitializeNewClientMutationResult = NonNullable<Awaited<ReturnType<typeof stage1InitializeNewClient>>>
+    
+    export type Stage1InitializeNewClientMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізує форму створення нового клієнта
+ */
+export const useStage1InitializeNewClient = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1InitializeNewClient>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1InitializeNewClient>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getStage1InitializeNewClientMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Вибирає клієнта зі списку результатів
  */
-const stage1SelectClient = (
+export const stage1SelectClient = (
     sessionId: string,
     params: Stage1SelectClientParams,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/select-client`, method: 'POST',
-        params
+        params, signal
     },
       options);
     }
   
+
+
+export const getStage1SelectClientMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SelectClient>>, TError,{sessionId: string;params: Stage1SelectClientParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1SelectClient>>, TError,{sessionId: string;params: Stage1SelectClientParams}, TContext> => {
+
+const mutationKey = ['stage1SelectClient'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1SelectClient>>, {sessionId: string;params: Stage1SelectClientParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  stage1SelectClient(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1SelectClientMutationResult = NonNullable<Awaited<ReturnType<typeof stage1SelectClient>>>
+    
+    export type Stage1SelectClientMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає клієнта зі списку результатів
+ */
+export const useStage1SelectClient = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SelectClient>>, TError,{sessionId: string;params: Stage1SelectClientParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1SelectClient>>,
+        TError,
+        {sessionId: string;params: Stage1SelectClientParams},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1SelectClientMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Виконує пошук клієнтів з критеріями
  */
-const stage1SearchClients = (
+export const stage1SearchClients = (
     sessionId: string,
     clientSearchCriteriaDTO: ClientSearchCriteriaDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ClientSearchResultDTO>(
       {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/search`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: clientSearchCriteriaDTO
+      data: clientSearchCriteriaDTO, signal
     },
       options);
     }
   
+
+
+export const getStage1SearchClientsMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SearchClients>>, TError,{sessionId: string;data: ClientSearchCriteriaDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1SearchClients>>, TError,{sessionId: string;data: ClientSearchCriteriaDTO}, TContext> => {
+
+const mutationKey = ['stage1SearchClients'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1SearchClients>>, {sessionId: string;data: ClientSearchCriteriaDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  stage1SearchClients(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1SearchClientsMutationResult = NonNullable<Awaited<ReturnType<typeof stage1SearchClients>>>
+    export type Stage1SearchClientsMutationBody = ClientSearchCriteriaDTO
+    export type Stage1SearchClientsMutationError = ErrorResponse
+
+    /**
+ * @summary Виконує пошук клієнтів з критеріями
+ */
+export const useStage1SearchClients = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SearchClients>>, TError,{sessionId: string;data: ClientSearchCriteriaDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1SearchClients>>,
+        TError,
+        {sessionId: string;data: ClientSearchCriteriaDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1SearchClientsMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Пошук клієнтів за телефоном
  */
-const stage1SearchClientsByPhone = (
+export const stage1SearchClientsByPhone = (
     sessionId: string,
     params: Stage1SearchClientsByPhoneParams,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ClientSearchResultDTO>(
       {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/search-by-phone`, method: 'POST',
-        params
+        params, signal
     },
       options);
     }
   
+
+
+export const getStage1SearchClientsByPhoneMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SearchClientsByPhone>>, TError,{sessionId: string;params: Stage1SearchClientsByPhoneParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1SearchClientsByPhone>>, TError,{sessionId: string;params: Stage1SearchClientsByPhoneParams}, TContext> => {
+
+const mutationKey = ['stage1SearchClientsByPhone'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1SearchClientsByPhone>>, {sessionId: string;params: Stage1SearchClientsByPhoneParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  stage1SearchClientsByPhone(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1SearchClientsByPhoneMutationResult = NonNullable<Awaited<ReturnType<typeof stage1SearchClientsByPhone>>>
+    
+    export type Stage1SearchClientsByPhoneMutationError = ErrorResponse
+
+    /**
+ * @summary Пошук клієнтів за телефоном
+ */
+export const useStage1SearchClientsByPhone = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SearchClientsByPhone>>, TError,{sessionId: string;params: Stage1SearchClientsByPhoneParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1SearchClientsByPhone>>,
+        TError,
+        {sessionId: string;params: Stage1SearchClientsByPhoneParams},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1SearchClientsByPhoneMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Завершує пошук клієнта
  */
-const stage1CompleteClientSearch = (
+export const stage1CompleteClientSearch = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
-      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/complete`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/complete`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1CompleteClientSearchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CompleteClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1CompleteClientSearch>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1CompleteClientSearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1CompleteClientSearch>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1CompleteClientSearch(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1CompleteClientSearchMutationResult = NonNullable<Awaited<ReturnType<typeof stage1CompleteClientSearch>>>
+    
+    export type Stage1CompleteClientSearchMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує пошук клієнта
+ */
+export const useStage1CompleteClientSearch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CompleteClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1CompleteClientSearch>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1CompleteClientSearchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Очищує результати пошуку
  */
-const stage1ClearClientSearch = (
+export const stage1ClearClientSearch = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
-      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/clear`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/clear`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1ClearClientSearchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ClearClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1ClearClientSearch>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1ClearClientSearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1ClearClientSearch>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1ClearClientSearch(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1ClearClientSearchMutationResult = NonNullable<Awaited<ReturnType<typeof stage1ClearClientSearch>>>
+    
+    export type Stage1ClearClientSearchMutationError = ErrorResponse
+
+    /**
+ * @summary Очищує результати пошуку
+ */
+export const useStage1ClearClientSearch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ClearClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1ClearClientSearch>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1ClearClientSearchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Ініціалізує новий контекст пошуку клієнтів
  */
-const stage1InitializeClientSearch = (
+export const stage1InitializeClientSearch = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<string>(
-      {url: `/v1/order-wizard/stage1/client-search/initialize`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/client-search/initialize`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1InitializeClientSearchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1InitializeClientSearch>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1InitializeClientSearch>>, TError,void, TContext> => {
+
+const mutationKey = ['stage1InitializeClientSearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1InitializeClientSearch>>, void> = () => {
+          
+
+          return  stage1InitializeClientSearch(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1InitializeClientSearchMutationResult = NonNullable<Awaited<ReturnType<typeof stage1InitializeClientSearch>>>
+    
+    export type Stage1InitializeClientSearchMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізує новий контекст пошуку клієнтів
+ */
+export const useStage1InitializeClientSearch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1InitializeClientSearch>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1InitializeClientSearch>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getStage1InitializeClientSearchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Починає workflow базової інформації
  */
-const stage1StartBasicOrderWorkflow = (
+export const stage1StartBasicOrderWorkflow = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<string>(
-      {url: `/v1/order-wizard/stage1/basic-order/workflow/start`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/basic-order/workflow/start`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1StartBasicOrderWorkflowMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1StartBasicOrderWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1StartBasicOrderWorkflow>>, TError,void, TContext> => {
+
+const mutationKey = ['stage1StartBasicOrderWorkflow'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1StartBasicOrderWorkflow>>, void> = () => {
+          
+
+          return  stage1StartBasicOrderWorkflow(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1StartBasicOrderWorkflowMutationResult = NonNullable<Awaited<ReturnType<typeof stage1StartBasicOrderWorkflow>>>
+    
+    export type Stage1StartBasicOrderWorkflowMutationError = ErrorResponse
+
+    /**
+ * @summary Починає workflow базової інформації
+ */
+export const useStage1StartBasicOrderWorkflow = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1StartBasicOrderWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1StartBasicOrderWorkflow>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getStage1StartBasicOrderWorkflowMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Валідує базову інформацію
  */
-const stage1ValidateBasicOrder = (
+export const stage1ValidateBasicOrder = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage1ValidateBasicOrder200>(
-      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/validate`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/validate`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1ValidateBasicOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ValidateBasicOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1ValidateBasicOrder>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1ValidateBasicOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1ValidateBasicOrder>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1ValidateBasicOrder(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1ValidateBasicOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage1ValidateBasicOrder>>>
+    
+    export type Stage1ValidateBasicOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Валідує базову інформацію
+ */
+export const useStage1ValidateBasicOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ValidateBasicOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1ValidateBasicOrder>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1ValidateBasicOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Встановлює унікальну мітку
  */
-const stage1SetUniqueTag = (
+export const stage1SetUniqueTag = (
     sessionId: string,
     params: Stage1SetUniqueTagParams,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/set-unique-tag`, method: 'POST',
-        params
+        params, signal
     },
       options);
     }
   
+
+
+export const getStage1SetUniqueTagMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SetUniqueTag>>, TError,{sessionId: string;params: Stage1SetUniqueTagParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1SetUniqueTag>>, TError,{sessionId: string;params: Stage1SetUniqueTagParams}, TContext> => {
+
+const mutationKey = ['stage1SetUniqueTag'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1SetUniqueTag>>, {sessionId: string;params: Stage1SetUniqueTagParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  stage1SetUniqueTag(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1SetUniqueTagMutationResult = NonNullable<Awaited<ReturnType<typeof stage1SetUniqueTag>>>
+    
+    export type Stage1SetUniqueTagMutationError = ErrorResponse
+
+    /**
+ * @summary Встановлює унікальну мітку
+ */
+export const useStage1SetUniqueTag = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SetUniqueTag>>, TError,{sessionId: string;params: Stage1SetUniqueTagParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1SetUniqueTag>>,
+        TError,
+        {sessionId: string;params: Stage1SetUniqueTagParams},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1SetUniqueTagMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Вибирає філію для замовлення
  */
-const stage1SelectBranch = (
+export const stage1SelectBranch = (
     sessionId: string,
     params: Stage1SelectBranchParams,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/select-branch`, method: 'POST',
-        params
+        params, signal
     },
       options);
     }
   
+
+
+export const getStage1SelectBranchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SelectBranch>>, TError,{sessionId: string;params: Stage1SelectBranchParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1SelectBranch>>, TError,{sessionId: string;params: Stage1SelectBranchParams}, TContext> => {
+
+const mutationKey = ['stage1SelectBranch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1SelectBranch>>, {sessionId: string;params: Stage1SelectBranchParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  stage1SelectBranch(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1SelectBranchMutationResult = NonNullable<Awaited<ReturnType<typeof stage1SelectBranch>>>
+    
+    export type Stage1SelectBranchMutationError = ErrorResponse
+
+    /**
+ * @summary Вибирає філію для замовлення
+ */
+export const useStage1SelectBranch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1SelectBranch>>, TError,{sessionId: string;params: Stage1SelectBranchParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1SelectBranch>>,
+        TError,
+        {sessionId: string;params: Stage1SelectBranchParams},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1SelectBranchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Скидає базову інформацію до початкового стану
  */
-const stage1ResetBasicOrder = (
+export const stage1ResetBasicOrder = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
-      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/reset`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/reset`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1ResetBasicOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ResetBasicOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1ResetBasicOrder>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1ResetBasicOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1ResetBasicOrder>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1ResetBasicOrder(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1ResetBasicOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage1ResetBasicOrder>>>
+    
+    export type Stage1ResetBasicOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Скидає базову інформацію до початкового стану
+ */
+export const useStage1ResetBasicOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ResetBasicOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1ResetBasicOrder>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1ResetBasicOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Генерує номер квитанції
  */
-const stage1GenerateReceiptNumber = (
+export const stage1GenerateReceiptNumber = (
     sessionId: string,
     params: Stage1GenerateReceiptNumberParams,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<string>(
       {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/generate-receipt-number`, method: 'POST',
-        params
+        params, signal
     },
       options);
     }
   
+
+
+export const getStage1GenerateReceiptNumberMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1GenerateReceiptNumber>>, TError,{sessionId: string;params: Stage1GenerateReceiptNumberParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1GenerateReceiptNumber>>, TError,{sessionId: string;params: Stage1GenerateReceiptNumberParams}, TContext> => {
+
+const mutationKey = ['stage1GenerateReceiptNumber'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1GenerateReceiptNumber>>, {sessionId: string;params: Stage1GenerateReceiptNumberParams}> = (props) => {
+          const {sessionId,params} = props ?? {};
+
+          return  stage1GenerateReceiptNumber(sessionId,params,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1GenerateReceiptNumberMutationResult = NonNullable<Awaited<ReturnType<typeof stage1GenerateReceiptNumber>>>
+    
+    export type Stage1GenerateReceiptNumberMutationError = ErrorResponse
+
+    /**
+ * @summary Генерує номер квитанції
+ */
+export const useStage1GenerateReceiptNumber = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1GenerateReceiptNumber>>, TError,{sessionId: string;params: Stage1GenerateReceiptNumberParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1GenerateReceiptNumber>>,
+        TError,
+        {sessionId: string;params: Stage1GenerateReceiptNumberParams},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1GenerateReceiptNumberMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Завершує збір базової інформації
  */
-const stage1CompleteBasicOrder = (
+export const stage1CompleteBasicOrder = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
-      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/complete`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/complete`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1CompleteBasicOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CompleteBasicOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1CompleteBasicOrder>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1CompleteBasicOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1CompleteBasicOrder>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1CompleteBasicOrder(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1CompleteBasicOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage1CompleteBasicOrder>>>
+    
+    export type Stage1CompleteBasicOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує збір базової інформації
+ */
+export const useStage1CompleteBasicOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CompleteBasicOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1CompleteBasicOrder>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1CompleteBasicOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Очищує помилки для сесії
  */
-const stage1ClearBasicOrderErrors = (
+export const stage1ClearBasicOrderErrors = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
-      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/clear-errors`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/clear-errors`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1ClearBasicOrderErrorsMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ClearBasicOrderErrors>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1ClearBasicOrderErrors>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1ClearBasicOrderErrors'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1ClearBasicOrderErrors>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1ClearBasicOrderErrors(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1ClearBasicOrderErrorsMutationResult = NonNullable<Awaited<ReturnType<typeof stage1ClearBasicOrderErrors>>>
+    
+    export type Stage1ClearBasicOrderErrorsMutationError = ErrorResponse
+
+    /**
+ * @summary Очищує помилки для сесії
+ */
+export const useStage1ClearBasicOrderErrors = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1ClearBasicOrderErrors>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1ClearBasicOrderErrors>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1ClearBasicOrderErrorsMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Ініціалізує збір базової інформації замовлення
  */
-const stage1InitializeBasicOrder = (
+export const stage1InitializeBasicOrder = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<string>(
-      {url: `/v1/order-wizard/stage1/basic-order/initialize`, method: 'POST'
+      {url: `/v1/order-wizard/stage1/basic-order/initialize`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage1InitializeBasicOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1InitializeBasicOrder>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1InitializeBasicOrder>>, TError,void, TContext> => {
+
+const mutationKey = ['stage1InitializeBasicOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1InitializeBasicOrder>>, void> = () => {
+          
+
+          return  stage1InitializeBasicOrder(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1InitializeBasicOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage1InitializeBasicOrder>>>
+    
+    export type Stage1InitializeBasicOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізує збір базової інформації замовлення
+ */
+export const useStage1InitializeBasicOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1InitializeBasicOrder>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1InitializeBasicOrder>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getStage1InitializeBasicOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Отримує поточний стан форми
  */
-const stage1GetClientFormState = (
+export const stage1GetClientFormState = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage1GetClientFormState200>(
-      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/state`, method: 'GET'
+      {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}/state`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage1GetClientFormStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/new-client/session/${sessionId}/state`] as const;
+    }
+
+    
+export const getStage1GetClientFormStateQueryOptions = <TData = Awaited<ReturnType<typeof stage1GetClientFormState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage1GetClientFormStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage1GetClientFormState>>> = ({ signal }) => stage1GetClientFormState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage1GetClientFormStateQueryResult = NonNullable<Awaited<ReturnType<typeof stage1GetClientFormState>>>
+export type Stage1GetClientFormStateQueryError = ErrorResponse
+
+
+export function useStage1GetClientFormState<TData = Awaited<ReturnType<typeof stage1GetClientFormState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetClientFormState>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetClientFormState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetClientFormState<TData = Awaited<ReturnType<typeof stage1GetClientFormState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetClientFormState>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetClientFormState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetClientFormState<TData = Awaited<ReturnType<typeof stage1GetClientFormState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан форми
+ */
+
+export function useStage1GetClientFormState<TData = Awaited<ReturnType<typeof stage1GetClientFormState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientFormState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage1GetClientFormStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримує поточний стан пошуку
  */
-const stage1GetClientSearchState = (
+export const stage1GetClientSearchState = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage1GetClientSearchState200>(
-      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/state`, method: 'GET'
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/state`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage1GetClientSearchStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/client-search/session/${sessionId}/state`] as const;
+    }
+
+    
+export const getStage1GetClientSearchStateQueryOptions = <TData = Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage1GetClientSearchStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage1GetClientSearchState>>> = ({ signal }) => stage1GetClientSearchState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage1GetClientSearchStateQueryResult = NonNullable<Awaited<ReturnType<typeof stage1GetClientSearchState>>>
+export type Stage1GetClientSearchStateQueryError = ErrorResponse
+
+
+export function useStage1GetClientSearchState<TData = Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetClientSearchState>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetClientSearchState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetClientSearchState<TData = Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetClientSearchState>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetClientSearchState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetClientSearchState<TData = Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан пошуку
+ */
+
+export function useStage1GetClientSearchState<TData = Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetClientSearchState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage1GetClientSearchStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримує обраного клієнта
  */
-const stage1GetSelectedClient = (
+export const stage1GetSelectedClient = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ClientResponse>(
-      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/selected-client`, method: 'GET'
+      {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}/selected-client`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage1GetSelectedClientQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/client-search/session/${sessionId}/selected-client`] as const;
+    }
+
+    
+export const getStage1GetSelectedClientQueryOptions = <TData = Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage1GetSelectedClientQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage1GetSelectedClient>>> = ({ signal }) => stage1GetSelectedClient(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage1GetSelectedClientQueryResult = NonNullable<Awaited<ReturnType<typeof stage1GetSelectedClient>>>
+export type Stage1GetSelectedClientQueryError = ErrorResponse
+
+
+export function useStage1GetSelectedClient<TData = Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetSelectedClient>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetSelectedClient>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetSelectedClient<TData = Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetSelectedClient>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetSelectedClient>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetSelectedClient<TData = Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує обраного клієнта
+ */
+
+export function useStage1GetSelectedClient<TData = Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetSelectedClient>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage1GetSelectedClientQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримує поточний стан базової інформації
  */
-const stage1GetBasicOrderState = (
+export const stage1GetBasicOrderState = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage1GetBasicOrderState200>(
-      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/state`, method: 'GET'
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/state`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage1GetBasicOrderStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/basic-order/session/${sessionId}/state`] as const;
+    }
+
+    
+export const getStage1GetBasicOrderStateQueryOptions = <TData = Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage1GetBasicOrderStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage1GetBasicOrderState>>> = ({ signal }) => stage1GetBasicOrderState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage1GetBasicOrderStateQueryResult = NonNullable<Awaited<ReturnType<typeof stage1GetBasicOrderState>>>
+export type Stage1GetBasicOrderStateQueryError = ErrorResponse
+
+
+export function useStage1GetBasicOrderState<TData = Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetBasicOrderState>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetBasicOrderState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetBasicOrderState<TData = Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetBasicOrderState>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetBasicOrderState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetBasicOrderState<TData = Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан базової інформації
+ */
+
+export function useStage1GetBasicOrderState<TData = Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBasicOrderState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage1GetBasicOrderStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримує філії для конкретної сесії
  */
-const stage1GetBranchesForSession = (
+export const stage1GetBranchesForSession = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<BranchLocationDTO[]>(
-      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/branches`, method: 'GET'
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/branches`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage1GetBranchesForSessionQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/basic-order/session/${sessionId}/branches`] as const;
+    }
+
+    
+export const getStage1GetBranchesForSessionQueryOptions = <TData = Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage1GetBranchesForSessionQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage1GetBranchesForSession>>> = ({ signal }) => stage1GetBranchesForSession(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage1GetBranchesForSessionQueryResult = NonNullable<Awaited<ReturnType<typeof stage1GetBranchesForSession>>>
+export type Stage1GetBranchesForSessionQueryError = ErrorResponse
+
+
+export function useStage1GetBranchesForSession<TData = Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetBranchesForSession>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetBranchesForSession>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetBranchesForSession<TData = Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1GetBranchesForSession>>,
+          TError,
+          Awaited<ReturnType<typeof stage1GetBranchesForSession>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1GetBranchesForSession<TData = Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує філії для конкретної сесії
+ */
+
+export function useStage1GetBranchesForSession<TData = Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1GetBranchesForSession>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage1GetBranchesForSessionQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Перевіряє чи філії завантажені для сесії
  */
-const stage1AreBranchesLoaded = (
+export const stage1AreBranchesLoaded = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<boolean>(
-      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/branches/loaded`, method: 'GET'
+      {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}/branches/loaded`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage1AreBranchesLoadedQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage1/basic-order/session/${sessionId}/branches/loaded`] as const;
+    }
+
+    
+export const getStage1AreBranchesLoadedQueryOptions = <TData = Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage1AreBranchesLoadedQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage1AreBranchesLoaded>>> = ({ signal }) => stage1AreBranchesLoaded(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage1AreBranchesLoadedQueryResult = NonNullable<Awaited<ReturnType<typeof stage1AreBranchesLoaded>>>
+export type Stage1AreBranchesLoadedQueryError = ErrorResponse
+
+
+export function useStage1AreBranchesLoaded<TData = Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1AreBranchesLoaded>>,
+          TError,
+          Awaited<ReturnType<typeof stage1AreBranchesLoaded>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1AreBranchesLoaded<TData = Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage1AreBranchesLoaded>>,
+          TError,
+          Awaited<ReturnType<typeof stage1AreBranchesLoaded>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage1AreBranchesLoaded<TData = Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевіряє чи філії завантажені для сесії
+ */
+
+export function useStage1AreBranchesLoaded<TData = Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage1AreBranchesLoaded>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage1AreBranchesLoadedQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Скасовує створення клієнта
  */
-const stage1CancelClientCreation = (
+export const stage1CancelClientCreation = (
     sessionId: string,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage1/new-client/session/${sessionId}`, method: 'DELETE'
     },
       options);
     }
   
+
+
+export const getStage1CancelClientCreationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CancelClientCreation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1CancelClientCreation>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1CancelClientCreation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1CancelClientCreation>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1CancelClientCreation(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1CancelClientCreationMutationResult = NonNullable<Awaited<ReturnType<typeof stage1CancelClientCreation>>>
+    
+    export type Stage1CancelClientCreationMutationError = ErrorResponse
+
+    /**
+ * @summary Скасовує створення клієнта
+ */
+export const useStage1CancelClientCreation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CancelClientCreation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1CancelClientCreation>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1CancelClientCreationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Скасовує пошук клієнта
  */
-const stage1CancelClientSearch = (
+export const stage1CancelClientSearch = (
     sessionId: string,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage1/client-search/session/${sessionId}`, method: 'DELETE'
     },
       options);
     }
   
+
+
+export const getStage1CancelClientSearchMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CancelClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1CancelClientSearch>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1CancelClientSearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1CancelClientSearch>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1CancelClientSearch(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1CancelClientSearchMutationResult = NonNullable<Awaited<ReturnType<typeof stage1CancelClientSearch>>>
+    
+    export type Stage1CancelClientSearchMutationError = ErrorResponse
+
+    /**
+ * @summary Скасовує пошук клієнта
+ */
+export const useStage1CancelClientSearch = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CancelClientSearch>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1CancelClientSearch>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1CancelClientSearchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Скасовує збір базової інформації
  */
-const stage1CancelBasicOrder = (
+export const stage1CancelBasicOrder = (
     sessionId: string,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage1/basic-order/session/${sessionId}`, method: 'DELETE'
     },
       options);
     }
   
-return {stage1GetClientFormData,stage1UpdateClientData,stage1GetBasicOrderData,stage1UpdateBasicOrder,stage1ValidateClientForm,stage1CreateClient,stage1CompleteClientCreation,stage1InitializeNewClient,stage1SelectClient,stage1SearchClients,stage1SearchClientsByPhone,stage1CompleteClientSearch,stage1ClearClientSearch,stage1InitializeClientSearch,stage1StartBasicOrderWorkflow,stage1ValidateBasicOrder,stage1SetUniqueTag,stage1SelectBranch,stage1ResetBasicOrder,stage1GenerateReceiptNumber,stage1CompleteBasicOrder,stage1ClearBasicOrderErrors,stage1InitializeBasicOrder,stage1GetClientFormState,stage1GetClientSearchState,stage1GetSelectedClient,stage1GetBasicOrderState,stage1GetBranchesForSession,stage1AreBranchesLoaded,stage1CancelClientCreation,stage1CancelClientSearch,stage1CancelBasicOrder}};
-export type Stage1GetClientFormDataResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1GetClientFormData']>>>
-export type Stage1UpdateClientDataResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1UpdateClientData']>>>
-export type Stage1GetBasicOrderDataResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1GetBasicOrderData']>>>
-export type Stage1UpdateBasicOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1UpdateBasicOrder']>>>
-export type Stage1ValidateClientFormResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1ValidateClientForm']>>>
-export type Stage1CreateClientResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1CreateClient']>>>
-export type Stage1CompleteClientCreationResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1CompleteClientCreation']>>>
-export type Stage1InitializeNewClientResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1InitializeNewClient']>>>
-export type Stage1SelectClientResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1SelectClient']>>>
-export type Stage1SearchClientsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1SearchClients']>>>
-export type Stage1SearchClientsByPhoneResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1SearchClientsByPhone']>>>
-export type Stage1CompleteClientSearchResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1CompleteClientSearch']>>>
-export type Stage1ClearClientSearchResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1ClearClientSearch']>>>
-export type Stage1InitializeClientSearchResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1InitializeClientSearch']>>>
-export type Stage1StartBasicOrderWorkflowResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1StartBasicOrderWorkflow']>>>
-export type Stage1ValidateBasicOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1ValidateBasicOrder']>>>
-export type Stage1SetUniqueTagResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1SetUniqueTag']>>>
-export type Stage1SelectBranchResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1SelectBranch']>>>
-export type Stage1ResetBasicOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1ResetBasicOrder']>>>
-export type Stage1GenerateReceiptNumberResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1GenerateReceiptNumber']>>>
-export type Stage1CompleteBasicOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1CompleteBasicOrder']>>>
-export type Stage1ClearBasicOrderErrorsResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1ClearBasicOrderErrors']>>>
-export type Stage1InitializeBasicOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1InitializeBasicOrder']>>>
-export type Stage1GetClientFormStateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1GetClientFormState']>>>
-export type Stage1GetClientSearchStateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1GetClientSearchState']>>>
-export type Stage1GetSelectedClientResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1GetSelectedClient']>>>
-export type Stage1GetBasicOrderStateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1GetBasicOrderState']>>>
-export type Stage1GetBranchesForSessionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1GetBranchesForSession']>>>
-export type Stage1AreBranchesLoadedResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1AreBranchesLoaded']>>>
-export type Stage1CancelClientCreationResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1CancelClientCreation']>>>
-export type Stage1CancelClientSearchResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1CancelClientSearch']>>>
-export type Stage1CancelBasicOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage1CancelBasicOrder']>>>
+
+
+export const getStage1CancelBasicOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CancelBasicOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage1CancelBasicOrder>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage1CancelBasicOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage1CancelBasicOrder>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage1CancelBasicOrder(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage1CancelBasicOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage1CancelBasicOrder>>>
+    
+    export type Stage1CancelBasicOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Скасовує збір базової інформації
+ */
+export const useStage1CancelBasicOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage1CancelBasicOrder>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage1CancelBasicOrder>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage1CancelBasicOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    

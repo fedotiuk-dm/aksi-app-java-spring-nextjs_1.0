@@ -5,8 +5,28 @@
  * API для системи керування клінінговою компанією AKSI
  * OpenAPI spec version: 1.0.0
  */
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
+import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
+  MutationFunction,
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
+} from '@tanstack/react-query';
+
 import type {
   CustomerSignatureRequest,
+  ErrorResponse,
   LegalAcceptanceDTO,
   OrderCompletionDTO,
   OrderConfirmationDTO,
@@ -39,267 +59,1266 @@ import orvalFetcher from '../../../../lib/api/orval-fetcher';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getAksiApi = () => {
+
 /**
  * @summary Валідація конфігурації квитанції
  */
-const stage4ValidateReceiptConfiguration = (
+export const stage4ValidateReceiptConfiguration = (
     receiptConfigurationDTO: ReceiptConfigurationDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4ValidateReceiptConfiguration200>(
       {url: `/v1/order-wizard/stage4/validate/receipt-configuration`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: receiptConfigurationDTO
+      data: receiptConfigurationDTO, signal
     },
       options);
     }
   
+
+
+export const getStage4ValidateReceiptConfigurationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateReceiptConfiguration>>, TError,{data: ReceiptConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateReceiptConfiguration>>, TError,{data: ReceiptConfigurationDTO}, TContext> => {
+
+const mutationKey = ['stage4ValidateReceiptConfiguration'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4ValidateReceiptConfiguration>>, {data: ReceiptConfigurationDTO}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stage4ValidateReceiptConfiguration(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4ValidateReceiptConfigurationMutationResult = NonNullable<Awaited<ReturnType<typeof stage4ValidateReceiptConfiguration>>>
+    export type Stage4ValidateReceiptConfigurationMutationBody = ReceiptConfigurationDTO
+    export type Stage4ValidateReceiptConfigurationMutationError = ErrorResponse
+
+    /**
+ * @summary Валідація конфігурації квитанції
+ */
+export const useStage4ValidateReceiptConfiguration = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateReceiptConfiguration>>, TError,{data: ReceiptConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4ValidateReceiptConfiguration>>,
+        TError,
+        {data: ReceiptConfigurationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4ValidateReceiptConfigurationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Валідація підтвердження замовлення
  */
-const stage4ValidateOrderConfirmation = (
+export const stage4ValidateOrderConfirmation = (
     orderConfirmationDTO: OrderConfirmationDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4ValidateOrderConfirmation200>(
       {url: `/v1/order-wizard/stage4/validate/order-confirmation`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: orderConfirmationDTO
+      data: orderConfirmationDTO, signal
     },
       options);
     }
   
+
+
+export const getStage4ValidateOrderConfirmationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateOrderConfirmation>>, TError,{data: OrderConfirmationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateOrderConfirmation>>, TError,{data: OrderConfirmationDTO}, TContext> => {
+
+const mutationKey = ['stage4ValidateOrderConfirmation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4ValidateOrderConfirmation>>, {data: OrderConfirmationDTO}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stage4ValidateOrderConfirmation(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4ValidateOrderConfirmationMutationResult = NonNullable<Awaited<ReturnType<typeof stage4ValidateOrderConfirmation>>>
+    export type Stage4ValidateOrderConfirmationMutationBody = OrderConfirmationDTO
+    export type Stage4ValidateOrderConfirmationMutationError = ErrorResponse
+
+    /**
+ * @summary Валідація підтвердження замовлення
+ */
+export const useStage4ValidateOrderConfirmation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateOrderConfirmation>>, TError,{data: OrderConfirmationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4ValidateOrderConfirmation>>,
+        TError,
+        {data: OrderConfirmationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4ValidateOrderConfirmationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Валідація завершення замовлення
  */
-const stage4ValidateOrderCompletion = (
+export const stage4ValidateOrderCompletion = (
     orderCompletionDTO: OrderCompletionDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4ValidateOrderCompletion200>(
       {url: `/v1/order-wizard/stage4/validate/order-completion`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: orderCompletionDTO
+      data: orderCompletionDTO, signal
     },
       options);
     }
   
+
+
+export const getStage4ValidateOrderCompletionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateOrderCompletion>>, TError,{data: OrderCompletionDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateOrderCompletion>>, TError,{data: OrderCompletionDTO}, TContext> => {
+
+const mutationKey = ['stage4ValidateOrderCompletion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4ValidateOrderCompletion>>, {data: OrderCompletionDTO}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stage4ValidateOrderCompletion(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4ValidateOrderCompletionMutationResult = NonNullable<Awaited<ReturnType<typeof stage4ValidateOrderCompletion>>>
+    export type Stage4ValidateOrderCompletionMutationBody = OrderCompletionDTO
+    export type Stage4ValidateOrderCompletionMutationError = ErrorResponse
+
+    /**
+ * @summary Валідація завершення замовлення
+ */
+export const useStage4ValidateOrderCompletion = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateOrderCompletion>>, TError,{data: OrderCompletionDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4ValidateOrderCompletion>>,
+        TError,
+        {data: OrderCompletionDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4ValidateOrderCompletionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Валідація юридичного прийняття
  */
-const stage4ValidateLegalAcceptance = (
+export const stage4ValidateLegalAcceptance = (
     legalAcceptanceDTO: LegalAcceptanceDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4ValidateLegalAcceptance200>(
       {url: `/v1/order-wizard/stage4/validate/legal-acceptance`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: legalAcceptanceDTO
+      data: legalAcceptanceDTO, signal
     },
       options);
     }
   
+
+
+export const getStage4ValidateLegalAcceptanceMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateLegalAcceptance>>, TError,{data: LegalAcceptanceDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateLegalAcceptance>>, TError,{data: LegalAcceptanceDTO}, TContext> => {
+
+const mutationKey = ['stage4ValidateLegalAcceptance'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4ValidateLegalAcceptance>>, {data: LegalAcceptanceDTO}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stage4ValidateLegalAcceptance(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4ValidateLegalAcceptanceMutationResult = NonNullable<Awaited<ReturnType<typeof stage4ValidateLegalAcceptance>>>
+    export type Stage4ValidateLegalAcceptanceMutationBody = LegalAcceptanceDTO
+    export type Stage4ValidateLegalAcceptanceMutationError = ErrorResponse
+
+    /**
+ * @summary Валідація юридичного прийняття
+ */
+export const useStage4ValidateLegalAcceptance = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4ValidateLegalAcceptance>>, TError,{data: LegalAcceptanceDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4ValidateLegalAcceptance>>,
+        TError,
+        {data: LegalAcceptanceDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4ValidateLegalAcceptanceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Збереження підпису клієнта
  */
-const stage4SaveSignature = (
+export const stage4SaveSignature = (
     customerSignatureRequest: CustomerSignatureRequest,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4SaveSignature200>(
       {url: `/v1/order-wizard/stage4/signature/save`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: customerSignatureRequest
+      data: customerSignatureRequest, signal
     },
       options);
     }
   
+
+
+export const getStage4SaveSignatureMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4SaveSignature>>, TError,{data: CustomerSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4SaveSignature>>, TError,{data: CustomerSignatureRequest}, TContext> => {
+
+const mutationKey = ['stage4SaveSignature'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4SaveSignature>>, {data: CustomerSignatureRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stage4SaveSignature(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4SaveSignatureMutationResult = NonNullable<Awaited<ReturnType<typeof stage4SaveSignature>>>
+    export type Stage4SaveSignatureMutationBody = CustomerSignatureRequest
+    export type Stage4SaveSignatureMutationError = ErrorResponse
+
+    /**
+ * @summary Збереження підпису клієнта
+ */
+export const useStage4SaveSignature = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4SaveSignature>>, TError,{data: CustomerSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4SaveSignature>>,
+        TError,
+        {data: CustomerSignatureRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4SaveSignatureMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Оновлення конфігурації квитанції
  */
-const stage4UpdateReceiptConfiguration = (
+export const stage4UpdateReceiptConfiguration = (
     sessionId: string,
     receiptConfigurationDTO: ReceiptConfigurationDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4UpdateReceiptConfiguration200>(
       {url: `/v1/order-wizard/stage4/session/${sessionId}/receipt-configuration`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: receiptConfigurationDTO
+      data: receiptConfigurationDTO, signal
     },
       options);
     }
   
+
+
+export const getStage4UpdateReceiptConfigurationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateReceiptConfiguration>>, TError,{sessionId: string;data: ReceiptConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateReceiptConfiguration>>, TError,{sessionId: string;data: ReceiptConfigurationDTO}, TContext> => {
+
+const mutationKey = ['stage4UpdateReceiptConfiguration'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4UpdateReceiptConfiguration>>, {sessionId: string;data: ReceiptConfigurationDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  stage4UpdateReceiptConfiguration(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4UpdateReceiptConfigurationMutationResult = NonNullable<Awaited<ReturnType<typeof stage4UpdateReceiptConfiguration>>>
+    export type Stage4UpdateReceiptConfigurationMutationBody = ReceiptConfigurationDTO
+    export type Stage4UpdateReceiptConfigurationMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлення конфігурації квитанції
+ */
+export const useStage4UpdateReceiptConfiguration = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateReceiptConfiguration>>, TError,{sessionId: string;data: ReceiptConfigurationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4UpdateReceiptConfiguration>>,
+        TError,
+        {sessionId: string;data: ReceiptConfigurationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4UpdateReceiptConfigurationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Оновлення підтвердження замовлення
  */
-const stage4UpdateOrderConfirmation = (
+export const stage4UpdateOrderConfirmation = (
     sessionId: string,
     orderConfirmationDTO: OrderConfirmationDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4UpdateOrderConfirmation200>(
       {url: `/v1/order-wizard/stage4/session/${sessionId}/order-confirmation`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: orderConfirmationDTO
+      data: orderConfirmationDTO, signal
     },
       options);
     }
   
+
+
+export const getStage4UpdateOrderConfirmationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateOrderConfirmation>>, TError,{sessionId: string;data: OrderConfirmationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateOrderConfirmation>>, TError,{sessionId: string;data: OrderConfirmationDTO}, TContext> => {
+
+const mutationKey = ['stage4UpdateOrderConfirmation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4UpdateOrderConfirmation>>, {sessionId: string;data: OrderConfirmationDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  stage4UpdateOrderConfirmation(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4UpdateOrderConfirmationMutationResult = NonNullable<Awaited<ReturnType<typeof stage4UpdateOrderConfirmation>>>
+    export type Stage4UpdateOrderConfirmationMutationBody = OrderConfirmationDTO
+    export type Stage4UpdateOrderConfirmationMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлення підтвердження замовлення
+ */
+export const useStage4UpdateOrderConfirmation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateOrderConfirmation>>, TError,{sessionId: string;data: OrderConfirmationDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4UpdateOrderConfirmation>>,
+        TError,
+        {sessionId: string;data: OrderConfirmationDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4UpdateOrderConfirmationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Оновлення завершення замовлення
  */
-const stage4UpdateOrderCompletion = (
+export const stage4UpdateOrderCompletion = (
     sessionId: string,
     orderCompletionDTO: OrderCompletionDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4UpdateOrderCompletion200>(
       {url: `/v1/order-wizard/stage4/session/${sessionId}/order-completion`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: orderCompletionDTO
+      data: orderCompletionDTO, signal
     },
       options);
     }
   
+
+
+export const getStage4UpdateOrderCompletionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateOrderCompletion>>, TError,{sessionId: string;data: OrderCompletionDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateOrderCompletion>>, TError,{sessionId: string;data: OrderCompletionDTO}, TContext> => {
+
+const mutationKey = ['stage4UpdateOrderCompletion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4UpdateOrderCompletion>>, {sessionId: string;data: OrderCompletionDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  stage4UpdateOrderCompletion(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4UpdateOrderCompletionMutationResult = NonNullable<Awaited<ReturnType<typeof stage4UpdateOrderCompletion>>>
+    export type Stage4UpdateOrderCompletionMutationBody = OrderCompletionDTO
+    export type Stage4UpdateOrderCompletionMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлення завершення замовлення
+ */
+export const useStage4UpdateOrderCompletion = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateOrderCompletion>>, TError,{sessionId: string;data: OrderCompletionDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4UpdateOrderCompletion>>,
+        TError,
+        {sessionId: string;data: OrderCompletionDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4UpdateOrderCompletionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Оновлення юридичного прийняття
  */
-const stage4UpdateLegalAcceptance = (
+export const stage4UpdateLegalAcceptance = (
     sessionId: string,
     legalAcceptanceDTO: LegalAcceptanceDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4UpdateLegalAcceptance200>(
       {url: `/v1/order-wizard/stage4/session/${sessionId}/legal-acceptance`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: legalAcceptanceDTO
+      data: legalAcceptanceDTO, signal
     },
       options);
     }
   
+
+
+export const getStage4UpdateLegalAcceptanceMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateLegalAcceptance>>, TError,{sessionId: string;data: LegalAcceptanceDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateLegalAcceptance>>, TError,{sessionId: string;data: LegalAcceptanceDTO}, TContext> => {
+
+const mutationKey = ['stage4UpdateLegalAcceptance'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4UpdateLegalAcceptance>>, {sessionId: string;data: LegalAcceptanceDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  stage4UpdateLegalAcceptance(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4UpdateLegalAcceptanceMutationResult = NonNullable<Awaited<ReturnType<typeof stage4UpdateLegalAcceptance>>>
+    export type Stage4UpdateLegalAcceptanceMutationBody = LegalAcceptanceDTO
+    export type Stage4UpdateLegalAcceptanceMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлення юридичного прийняття
+ */
+export const useStage4UpdateLegalAcceptance = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4UpdateLegalAcceptance>>, TError,{sessionId: string;data: LegalAcceptanceDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4UpdateLegalAcceptance>>,
+        TError,
+        {sessionId: string;data: LegalAcceptanceDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4UpdateLegalAcceptanceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Закриття сесії
  */
-const stage4CloseSession = (
+export const stage4CloseSession = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4CloseSession200>(
-      {url: `/v1/order-wizard/stage4/session/${sessionId}/close`, method: 'POST'
+      {url: `/v1/order-wizard/stage4/session/${sessionId}/close`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage4CloseSessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4CloseSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4CloseSession>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage4CloseSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4CloseSession>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage4CloseSession(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4CloseSessionMutationResult = NonNullable<Awaited<ReturnType<typeof stage4CloseSession>>>
+    
+    export type Stage4CloseSessionMutationError = ErrorResponse
+
+    /**
+ * @summary Закриття сесії
+ */
+export const useStage4CloseSession = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4CloseSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4CloseSession>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4CloseSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Генерація квитанції
  */
-const stage4GenerateReceipt = (
+export const stage4GenerateReceipt = (
     receiptGenerationRequest: ReceiptGenerationRequest,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4GenerateReceipt200>(
       {url: `/v1/order-wizard/stage4/receipt/generate`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: receiptGenerationRequest
+      data: receiptGenerationRequest, signal
     },
       options);
     }
   
+
+
+export const getStage4GenerateReceiptMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4GenerateReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4GenerateReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext> => {
+
+const mutationKey = ['stage4GenerateReceipt'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4GenerateReceipt>>, {data: ReceiptGenerationRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stage4GenerateReceipt(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4GenerateReceiptMutationResult = NonNullable<Awaited<ReturnType<typeof stage4GenerateReceipt>>>
+    export type Stage4GenerateReceiptMutationBody = ReceiptGenerationRequest
+    export type Stage4GenerateReceiptMutationError = ErrorResponse
+
+    /**
+ * @summary Генерація квитанції
+ */
+export const useStage4GenerateReceipt = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4GenerateReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4GenerateReceipt>>,
+        TError,
+        {data: ReceiptGenerationRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4GenerateReceiptMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Генерація PDF квитанції
  */
-const stage4GeneratePdfReceipt = (
+export const stage4GeneratePdfReceipt = (
     receiptGenerationRequest: ReceiptGenerationRequest,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4GeneratePdfReceipt200>(
       {url: `/v1/order-wizard/stage4/receipt/generate-pdf`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: receiptGenerationRequest
+      data: receiptGenerationRequest, signal
     },
       options);
     }
   
+
+
+export const getStage4GeneratePdfReceiptMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4GeneratePdfReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4GeneratePdfReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext> => {
+
+const mutationKey = ['stage4GeneratePdfReceipt'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4GeneratePdfReceipt>>, {data: ReceiptGenerationRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stage4GeneratePdfReceipt(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4GeneratePdfReceiptMutationResult = NonNullable<Awaited<ReturnType<typeof stage4GeneratePdfReceipt>>>
+    export type Stage4GeneratePdfReceiptMutationBody = ReceiptGenerationRequest
+    export type Stage4GeneratePdfReceiptMutationError = ErrorResponse
+
+    /**
+ * @summary Генерація PDF квитанції
+ */
+export const useStage4GeneratePdfReceipt = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4GeneratePdfReceipt>>, TError,{data: ReceiptGenerationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4GeneratePdfReceipt>>,
+        TError,
+        {data: ReceiptGenerationRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4GeneratePdfReceiptMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Ініціалізація Stage4 для замовлення
  */
-const stage4InitializeStage = (
+export const stage4InitializeStage = (
     orderId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4InitializeStage200>(
-      {url: `/v1/order-wizard/stage4/initialize/${orderId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage4/initialize/${orderId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage4InitializeStageMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4InitializeStage>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4InitializeStage>>, TError,{orderId: string}, TContext> => {
+
+const mutationKey = ['stage4InitializeStage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4InitializeStage>>, {orderId: string}> = (props) => {
+          const {orderId} = props ?? {};
+
+          return  stage4InitializeStage(orderId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4InitializeStageMutationResult = NonNullable<Awaited<ReturnType<typeof stage4InitializeStage>>>
+    
+    export type Stage4InitializeStageMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізація Stage4 для замовлення
+ */
+export const useStage4InitializeStage = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4InitializeStage>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4InitializeStage>>,
+        TError,
+        {orderId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4InitializeStageMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Фіналізація замовлення
  */
-const stage4FinalizeOrder = (
+export const stage4FinalizeOrder = (
     orderFinalizationRequest: OrderFinalizationRequest,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4FinalizeOrder200>(
       {url: `/v1/order-wizard/stage4/finalize`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: orderFinalizationRequest
+      data: orderFinalizationRequest, signal
     },
       options);
     }
   
+
+
+export const getStage4FinalizeOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4FinalizeOrder>>, TError,{data: OrderFinalizationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage4FinalizeOrder>>, TError,{data: OrderFinalizationRequest}, TContext> => {
+
+const mutationKey = ['stage4FinalizeOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage4FinalizeOrder>>, {data: OrderFinalizationRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stage4FinalizeOrder(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage4FinalizeOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage4FinalizeOrder>>>
+    export type Stage4FinalizeOrderMutationBody = OrderFinalizationRequest
+    export type Stage4FinalizeOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Фіналізація замовлення
+ */
+export const useStage4FinalizeOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage4FinalizeOrder>>, TError,{data: OrderFinalizationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage4FinalizeOrder>>,
+        TError,
+        {data: OrderFinalizationRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getStage4FinalizeOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Повна валідація Stage4
  */
-const stage4ValidateComplete = (
+export const stage4ValidateComplete = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4ValidateComplete200>(
-      {url: `/v1/order-wizard/stage4/validate/complete/${sessionId}`, method: 'GET'
+      {url: `/v1/order-wizard/stage4/validate/complete/${sessionId}`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage4ValidateCompleteQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage4/validate/complete/${sessionId}`] as const;
+    }
+
+    
+export const getStage4ValidateCompleteQueryOptions = <TData = Awaited<ReturnType<typeof stage4ValidateComplete>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4ValidateComplete>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage4ValidateCompleteQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage4ValidateComplete>>> = ({ signal }) => stage4ValidateComplete(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage4ValidateComplete>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage4ValidateCompleteQueryResult = NonNullable<Awaited<ReturnType<typeof stage4ValidateComplete>>>
+export type Stage4ValidateCompleteQueryError = ErrorResponse
+
+
+export function useStage4ValidateComplete<TData = Awaited<ReturnType<typeof stage4ValidateComplete>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4ValidateComplete>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage4ValidateComplete>>,
+          TError,
+          Awaited<ReturnType<typeof stage4ValidateComplete>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage4ValidateComplete<TData = Awaited<ReturnType<typeof stage4ValidateComplete>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4ValidateComplete>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage4ValidateComplete>>,
+          TError,
+          Awaited<ReturnType<typeof stage4ValidateComplete>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage4ValidateComplete<TData = Awaited<ReturnType<typeof stage4ValidateComplete>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4ValidateComplete>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Повна валідація Stage4
+ */
+
+export function useStage4ValidateComplete<TData = Awaited<ReturnType<typeof stage4ValidateComplete>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4ValidateComplete>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage4ValidateCompleteQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримання поточного контексту сесії
  */
-const stage4GetSessionContext = (
+export const stage4GetSessionContext = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4GetSessionContext200>(
-      {url: `/v1/order-wizard/stage4/session/${sessionId}`, method: 'GET'
+      {url: `/v1/order-wizard/stage4/session/${sessionId}`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage4GetSessionContextQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage4/session/${sessionId}`] as const;
+    }
+
+    
+export const getStage4GetSessionContextQueryOptions = <TData = Awaited<ReturnType<typeof stage4GetSessionContext>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetSessionContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage4GetSessionContextQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage4GetSessionContext>>> = ({ signal }) => stage4GetSessionContext(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage4GetSessionContext>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage4GetSessionContextQueryResult = NonNullable<Awaited<ReturnType<typeof stage4GetSessionContext>>>
+export type Stage4GetSessionContextQueryError = ErrorResponse
+
+
+export function useStage4GetSessionContext<TData = Awaited<ReturnType<typeof stage4GetSessionContext>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetSessionContext>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage4GetSessionContext>>,
+          TError,
+          Awaited<ReturnType<typeof stage4GetSessionContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage4GetSessionContext<TData = Awaited<ReturnType<typeof stage4GetSessionContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetSessionContext>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage4GetSessionContext>>,
+          TError,
+          Awaited<ReturnType<typeof stage4GetSessionContext>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage4GetSessionContext<TData = Awaited<ReturnType<typeof stage4GetSessionContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetSessionContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного контексту сесії
+ */
+
+export function useStage4GetSessionContext<TData = Awaited<ReturnType<typeof stage4GetSessionContext>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetSessionContext>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage4GetSessionContextQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримання поточного стану Stage4
  */
-const stage4GetCurrentState = (
+export const stage4GetCurrentState = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4GetCurrentState200>(
-      {url: `/v1/order-wizard/stage4/session/${sessionId}/state`, method: 'GET'
+      {url: `/v1/order-wizard/stage4/session/${sessionId}/state`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage4GetCurrentStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage4/session/${sessionId}/state`] as const;
+    }
+
+    
+export const getStage4GetCurrentStateQueryOptions = <TData = Awaited<ReturnType<typeof stage4GetCurrentState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage4GetCurrentStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage4GetCurrentState>>> = ({ signal }) => stage4GetCurrentState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage4GetCurrentState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage4GetCurrentStateQueryResult = NonNullable<Awaited<ReturnType<typeof stage4GetCurrentState>>>
+export type Stage4GetCurrentStateQueryError = ErrorResponse
+
+
+export function useStage4GetCurrentState<TData = Awaited<ReturnType<typeof stage4GetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetCurrentState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage4GetCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof stage4GetCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage4GetCurrentState<TData = Awaited<ReturnType<typeof stage4GetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetCurrentState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage4GetCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof stage4GetCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage4GetCurrentState<TData = Awaited<ReturnType<typeof stage4GetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання поточного стану Stage4
+ */
+
+export function useStage4GetCurrentState<TData = Awaited<ReturnType<typeof stage4GetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage4GetCurrentStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримання детального підсумку замовлення
  */
-const stage4GetOrderSummary = (
+export const stage4GetOrderSummary = (
     orderId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage4GetOrderSummary200>(
-      {url: `/v1/order-wizard/stage4/order/${orderId}/summary`, method: 'GET'
+      {url: `/v1/order-wizard/stage4/order/${orderId}/summary`, method: 'GET', signal
     },
       options);
     }
   
-return {stage4ValidateReceiptConfiguration,stage4ValidateOrderConfirmation,stage4ValidateOrderCompletion,stage4ValidateLegalAcceptance,stage4SaveSignature,stage4UpdateReceiptConfiguration,stage4UpdateOrderConfirmation,stage4UpdateOrderCompletion,stage4UpdateLegalAcceptance,stage4CloseSession,stage4GenerateReceipt,stage4GeneratePdfReceipt,stage4InitializeStage,stage4FinalizeOrder,stage4ValidateComplete,stage4GetSessionContext,stage4GetCurrentState,stage4GetOrderSummary}};
-export type Stage4ValidateReceiptConfigurationResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4ValidateReceiptConfiguration']>>>
-export type Stage4ValidateOrderConfirmationResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4ValidateOrderConfirmation']>>>
-export type Stage4ValidateOrderCompletionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4ValidateOrderCompletion']>>>
-export type Stage4ValidateLegalAcceptanceResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4ValidateLegalAcceptance']>>>
-export type Stage4SaveSignatureResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4SaveSignature']>>>
-export type Stage4UpdateReceiptConfigurationResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4UpdateReceiptConfiguration']>>>
-export type Stage4UpdateOrderConfirmationResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4UpdateOrderConfirmation']>>>
-export type Stage4UpdateOrderCompletionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4UpdateOrderCompletion']>>>
-export type Stage4UpdateLegalAcceptanceResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4UpdateLegalAcceptance']>>>
-export type Stage4CloseSessionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4CloseSession']>>>
-export type Stage4GenerateReceiptResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4GenerateReceipt']>>>
-export type Stage4GeneratePdfReceiptResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4GeneratePdfReceipt']>>>
-export type Stage4InitializeStageResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4InitializeStage']>>>
-export type Stage4FinalizeOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4FinalizeOrder']>>>
-export type Stage4ValidateCompleteResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4ValidateComplete']>>>
-export type Stage4GetSessionContextResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4GetSessionContext']>>>
-export type Stage4GetCurrentStateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4GetCurrentState']>>>
-export type Stage4GetOrderSummaryResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage4GetOrderSummary']>>>
+
+export const getStage4GetOrderSummaryQueryKey = (orderId: string,) => {
+    return [`/v1/order-wizard/stage4/order/${orderId}/summary`] as const;
+    }
+
+    
+export const getStage4GetOrderSummaryQueryOptions = <TData = Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError = ErrorResponse>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage4GetOrderSummaryQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage4GetOrderSummary>>> = ({ signal }) => stage4GetOrderSummary(orderId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage4GetOrderSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof stage4GetOrderSummary>>>
+export type Stage4GetOrderSummaryQueryError = ErrorResponse
+
+
+export function useStage4GetOrderSummary<TData = Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError = ErrorResponse>(
+ orderId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage4GetOrderSummary>>,
+          TError,
+          Awaited<ReturnType<typeof stage4GetOrderSummary>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage4GetOrderSummary<TData = Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage4GetOrderSummary>>,
+          TError,
+          Awaited<ReturnType<typeof stage4GetOrderSummary>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage4GetOrderSummary<TData = Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання детального підсумку замовлення
+ */
+
+export function useStage4GetOrderSummary<TData = Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError = ErrorResponse>(
+ orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage4GetOrderSummary>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage4GetOrderSummaryQueryOptions(orderId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

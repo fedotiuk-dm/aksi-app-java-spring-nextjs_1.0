@@ -545,6 +545,8 @@ export const substep4CalculatePriceBody = zod.object({
   "calculationCompleted": zod.coerce.boolean().optional(),
   "hasCalculationErrors": zod.coerce.boolean().optional(),
   "errorMessage": zod.coerce.string().optional(),
+  "basePrice": zod.coerce.number().optional(),
+  "finalPrice": zod.coerce.number().optional(),
   "calculationDetails": zod.array(zod.object({
   "step": zod.coerce.number().optional(),
   "stepName": zod.coerce.string().optional(),
@@ -556,8 +558,6 @@ export const substep4CalculatePriceBody = zod.object({
   "priceAfter": zod.coerce.number().optional(),
   "priceDifference": zod.coerce.number().optional()
 }).strict()).optional(),
-  "basePrice": zod.coerce.number().optional(),
-  "finalPrice": zod.coerce.number().optional(),
   "modifiersCount": zod.coerce.number().optional()
 }).strict()
 
@@ -1308,6 +1308,8 @@ export const substep4GetCurrentData200Response = zod.object({
   "calculationCompleted": zod.coerce.boolean().optional(),
   "hasCalculationErrors": zod.coerce.boolean().optional(),
   "errorMessage": zod.coerce.string().optional(),
+  "basePrice": zod.coerce.number().optional(),
+  "finalPrice": zod.coerce.number().optional(),
   "calculationDetails": zod.array(zod.object({
   "step": zod.coerce.number().optional(),
   "stepName": zod.coerce.string().optional(),
@@ -1319,8 +1321,6 @@ export const substep4GetCurrentData200Response = zod.object({
   "priceAfter": zod.coerce.number().optional(),
   "priceDifference": zod.coerce.number().optional()
 }).strict()).optional(),
-  "basePrice": zod.coerce.number().optional(),
-  "finalPrice": zod.coerce.number().optional(),
   "modifiersCount": zod.coerce.number().optional()
 }).strict()
 

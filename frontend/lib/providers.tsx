@@ -4,6 +4,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 
 import { ClientOnlyToaster } from '@/components/ui/ClientOnlyToaster';
+import { AuthInitializer } from '@/features/auth/components/AuthInitializer';
+import { AuthGuard } from '@/features/auth/components/AuthGuard';
 
 import { queryClient } from './reactQuery';
 import { ThemeRegistry } from './theme-registry';
@@ -18,10 +20,14 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeRegistry>
-        {/* Клієнтський компонент для сповіщень */}
-        <ClientOnlyToaster position="top-right" toastOptions={{ duration: 4000 }} />
+        <AuthInitializer>
+          <AuthGuard>
+            {/* Клієнтський компонент для сповіщень */}
+            <ClientOnlyToaster position="top-right" toastOptions={{ duration: 4000 }} />
 
-        {children}
+            {children}
+          </AuthGuard>
+        </AuthInitializer>
       </ThemeRegistry>
     </QueryClientProvider>
   );

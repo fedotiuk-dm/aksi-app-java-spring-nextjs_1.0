@@ -5,7 +5,27 @@
  * API для системи керування клінінговою компанією AKSI
  * OpenAPI spec version: 1.0.0
  */
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
+  MutationFunction,
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
+} from '@tanstack/react-query';
+
+import type {
+  ErrorResponse,
   PhotoDocumentationDTO,
   Substep5AddPhotoBody,
   SubstepResultDTO
@@ -17,100 +37,497 @@ import orvalFetcher from '../../../../lib/api/orval-fetcher';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getAksiApi = () => {
+
 /**
  * @summary Додавання фотографії
  */
-const substep5AddPhoto = (
+export const substep5AddPhoto = (
     sessionId: string,
     substep5AddPhotoBody: Substep5AddPhotoBody,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<SubstepResultDTO>(
       {url: `/v1/order-wizard/stage2/substep5/${sessionId}/photos`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: substep5AddPhotoBody
+      data: substep5AddPhotoBody, signal
     },
       options);
     }
   
+
+
+export const getSubstep5AddPhotoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5AddPhoto>>, TError,{sessionId: string;data: Substep5AddPhotoBody}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep5AddPhoto>>, TError,{sessionId: string;data: Substep5AddPhotoBody}, TContext> => {
+
+const mutationKey = ['substep5AddPhoto'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep5AddPhoto>>, {sessionId: string;data: Substep5AddPhotoBody}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  substep5AddPhoto(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep5AddPhotoMutationResult = NonNullable<Awaited<ReturnType<typeof substep5AddPhoto>>>
+    export type Substep5AddPhotoMutationBody = Substep5AddPhotoBody
+    export type Substep5AddPhotoMutationError = ErrorResponse
+
+    /**
+ * @summary Додавання фотографії
+ */
+export const useSubstep5AddPhoto = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5AddPhoto>>, TError,{sessionId: string;data: Substep5AddPhotoBody}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep5AddPhoto>>,
+        TError,
+        {sessionId: string;data: Substep5AddPhotoBody},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep5AddPhotoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Завершення фотодокументації
  */
-const substep5CompletePhotoDocumentation = (
+export const substep5CompletePhotoDocumentation = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<SubstepResultDTO>(
-      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/complete`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/complete`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getSubstep5CompletePhotoDocumentationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5CompletePhotoDocumentation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep5CompletePhotoDocumentation>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['substep5CompletePhotoDocumentation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep5CompletePhotoDocumentation>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  substep5CompletePhotoDocumentation(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep5CompletePhotoDocumentationMutationResult = NonNullable<Awaited<ReturnType<typeof substep5CompletePhotoDocumentation>>>
+    
+    export type Substep5CompletePhotoDocumentationMutationError = ErrorResponse
+
+    /**
+ * @summary Завершення фотодокументації
+ */
+export const useSubstep5CompletePhotoDocumentation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5CompletePhotoDocumentation>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep5CompletePhotoDocumentation>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep5CompletePhotoDocumentationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Ініціалізація підетапу 5 - Фотодокументація
  */
-const substep5InitializePhotoDocumentation = (
+export const substep5InitializePhotoDocumentation = (
     itemId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<SubstepResultDTO>(
-      {url: `/v1/order-wizard/stage2/substep5/initialize/${itemId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/substep5/initialize/${itemId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getSubstep5InitializePhotoDocumentationMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5InitializePhotoDocumentation>>, TError,{itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep5InitializePhotoDocumentation>>, TError,{itemId: string}, TContext> => {
+
+const mutationKey = ['substep5InitializePhotoDocumentation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep5InitializePhotoDocumentation>>, {itemId: string}> = (props) => {
+          const {itemId} = props ?? {};
+
+          return  substep5InitializePhotoDocumentation(itemId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep5InitializePhotoDocumentationMutationResult = NonNullable<Awaited<ReturnType<typeof substep5InitializePhotoDocumentation>>>
+    
+    export type Substep5InitializePhotoDocumentationMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізація підетапу 5 - Фотодокументація
+ */
+export const useSubstep5InitializePhotoDocumentation = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5InitializePhotoDocumentation>>, TError,{itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep5InitializePhotoDocumentation>>,
+        TError,
+        {itemId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep5InitializePhotoDocumentationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Отримання статусу фотодокументації
  */
-const substep5GetDocumentationStatus = (
+export const substep5GetDocumentationStatus = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<SubstepResultDTO>(
-      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/status`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/status`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getSubstep5GetDocumentationStatusQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep5/${sessionId}/status`] as const;
+    }
+
+    
+export const getSubstep5GetDocumentationStatusQueryOptions = <TData = Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSubstep5GetDocumentationStatusQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof substep5GetDocumentationStatus>>> = ({ signal }) => substep5GetDocumentationStatus(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Substep5GetDocumentationStatusQueryResult = NonNullable<Awaited<ReturnType<typeof substep5GetDocumentationStatus>>>
+export type Substep5GetDocumentationStatusQueryError = ErrorResponse
+
+
+export function useSubstep5GetDocumentationStatus<TData = Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep5GetDocumentationStatus>>,
+          TError,
+          Awaited<ReturnType<typeof substep5GetDocumentationStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep5GetDocumentationStatus<TData = Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep5GetDocumentationStatus>>,
+          TError,
+          Awaited<ReturnType<typeof substep5GetDocumentationStatus>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep5GetDocumentationStatus<TData = Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання статусу фотодокументації
+ */
+
+export function useSubstep5GetDocumentationStatus<TData = Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationStatus>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSubstep5GetDocumentationStatusQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримання даних фотодокументації
  */
-const substep5GetDocumentationData = (
+export const substep5GetDocumentationData = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<PhotoDocumentationDTO>(
-      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/data`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/substep5/${sessionId}/data`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getSubstep5GetDocumentationDataQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/substep5/${sessionId}/data`] as const;
+    }
+
+    
+export const getSubstep5GetDocumentationDataQueryOptions = <TData = Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSubstep5GetDocumentationDataQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof substep5GetDocumentationData>>> = ({ signal }) => substep5GetDocumentationData(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Substep5GetDocumentationDataQueryResult = NonNullable<Awaited<ReturnType<typeof substep5GetDocumentationData>>>
+export type Substep5GetDocumentationDataQueryError = ErrorResponse
+
+
+export function useSubstep5GetDocumentationData<TData = Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep5GetDocumentationData>>,
+          TError,
+          Awaited<ReturnType<typeof substep5GetDocumentationData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep5GetDocumentationData<TData = Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof substep5GetDocumentationData>>,
+          TError,
+          Awaited<ReturnType<typeof substep5GetDocumentationData>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubstep5GetDocumentationData<TData = Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримання даних фотодокументації
+ */
+
+export function useSubstep5GetDocumentationData<TData = Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof substep5GetDocumentationData>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSubstep5GetDocumentationDataQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Закриття сесії фотодокументації
  */
-const substep5CloseSession = (
+export const substep5CloseSession = (
     sessionId: string,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage2/substep5/${sessionId}`, method: 'DELETE'
     },
       options);
     }
   
+
+
+export const getSubstep5CloseSessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5CloseSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep5CloseSession>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['substep5CloseSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep5CloseSession>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  substep5CloseSession(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep5CloseSessionMutationResult = NonNullable<Awaited<ReturnType<typeof substep5CloseSession>>>
+    
+    export type Substep5CloseSessionMutationError = ErrorResponse
+
+    /**
+ * @summary Закриття сесії фотодокументації
+ */
+export const useSubstep5CloseSession = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5CloseSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep5CloseSession>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep5CloseSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Видалення фотографії
  */
-const substep5RemovePhoto = (
+export const substep5RemovePhoto = (
     sessionId: string,
     photoId: string,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<SubstepResultDTO>(
       {url: `/v1/order-wizard/stage2/substep5/${sessionId}/photos/${photoId}`, method: 'DELETE'
     },
       options);
     }
   
-return {substep5AddPhoto,substep5CompletePhotoDocumentation,substep5InitializePhotoDocumentation,substep5GetDocumentationStatus,substep5GetDocumentationData,substep5CloseSession,substep5RemovePhoto}};
-export type Substep5AddPhotoResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep5AddPhoto']>>>
-export type Substep5CompletePhotoDocumentationResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep5CompletePhotoDocumentation']>>>
-export type Substep5InitializePhotoDocumentationResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep5InitializePhotoDocumentation']>>>
-export type Substep5GetDocumentationStatusResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep5GetDocumentationStatus']>>>
-export type Substep5GetDocumentationDataResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep5GetDocumentationData']>>>
-export type Substep5CloseSessionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep5CloseSession']>>>
-export type Substep5RemovePhotoResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['substep5RemovePhoto']>>>
+
+
+export const getSubstep5RemovePhotoMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5RemovePhoto>>, TError,{sessionId: string;photoId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof substep5RemovePhoto>>, TError,{sessionId: string;photoId: string}, TContext> => {
+
+const mutationKey = ['substep5RemovePhoto'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof substep5RemovePhoto>>, {sessionId: string;photoId: string}> = (props) => {
+          const {sessionId,photoId} = props ?? {};
+
+          return  substep5RemovePhoto(sessionId,photoId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Substep5RemovePhotoMutationResult = NonNullable<Awaited<ReturnType<typeof substep5RemovePhoto>>>
+    
+    export type Substep5RemovePhotoMutationError = ErrorResponse
+
+    /**
+ * @summary Видалення фотографії
+ */
+export const useSubstep5RemovePhoto = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof substep5RemovePhoto>>, TError,{sessionId: string;photoId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof substep5RemovePhoto>>,
+        TError,
+        {sessionId: string;photoId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getSubstep5RemovePhotoMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    

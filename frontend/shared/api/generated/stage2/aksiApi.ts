@@ -5,7 +5,27 @@
  * API для системи керування клінінговою компанією AKSI
  * OpenAPI spec version: 1.0.0
  */
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
+  MutationFunction,
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
+} from '@tanstack/react-query';
+
+import type {
+  ErrorResponse,
   ItemManagerDTO,
   OrderItemDTO,
   Stage2GetCurrentState200,
@@ -18,15 +38,17 @@ import orvalFetcher from '../../../../lib/api/orval-fetcher';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getAksiApi = () => {
+
 /**
  * @summary Оновлює існуючий предмет замовлення (з підвізарда)
  */
-const stage2UpdateItemInOrder = (
+export const stage2UpdateItemInOrder = (
     sessionId: string,
     itemId: string,
     orderItemDTO: OrderItemDTO,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
       {url: `/v1/order-wizard/stage2/items/${sessionId}/${itemId}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
@@ -35,205 +57,1124 @@ const stage2UpdateItemInOrder = (
       options);
     }
   
+
+
+export const getStage2UpdateItemInOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2UpdateItemInOrder>>, TError,{sessionId: string;itemId: string;data: OrderItemDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2UpdateItemInOrder>>, TError,{sessionId: string;itemId: string;data: OrderItemDTO}, TContext> => {
+
+const mutationKey = ['stage2UpdateItemInOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2UpdateItemInOrder>>, {sessionId: string;itemId: string;data: OrderItemDTO}> = (props) => {
+          const {sessionId,itemId,data} = props ?? {};
+
+          return  stage2UpdateItemInOrder(sessionId,itemId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2UpdateItemInOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage2UpdateItemInOrder>>>
+    export type Stage2UpdateItemInOrderMutationBody = OrderItemDTO
+    export type Stage2UpdateItemInOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлює існуючий предмет замовлення (з підвізарда)
+ */
+export const useStage2UpdateItemInOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2UpdateItemInOrder>>, TError,{sessionId: string;itemId: string;data: OrderItemDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2UpdateItemInOrder>>,
+        TError,
+        {sessionId: string;itemId: string;data: OrderItemDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2UpdateItemInOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Видаляє предмет з замовлення
  */
-const stage2DeleteItemFromOrder = (
+export const stage2DeleteItemFromOrder = (
     sessionId: string,
     itemId: string,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
       {url: `/v1/order-wizard/stage2/items/${sessionId}/${itemId}`, method: 'DELETE'
     },
       options);
     }
   
+
+
+export const getStage2DeleteItemFromOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2DeleteItemFromOrder>>, TError,{sessionId: string;itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2DeleteItemFromOrder>>, TError,{sessionId: string;itemId: string}, TContext> => {
+
+const mutationKey = ['stage2DeleteItemFromOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2DeleteItemFromOrder>>, {sessionId: string;itemId: string}> = (props) => {
+          const {sessionId,itemId} = props ?? {};
+
+          return  stage2DeleteItemFromOrder(sessionId,itemId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2DeleteItemFromOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage2DeleteItemFromOrder>>>
+    
+    export type Stage2DeleteItemFromOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Видаляє предмет з замовлення
+ */
+export const useStage2DeleteItemFromOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2DeleteItemFromOrder>>, TError,{sessionId: string;itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2DeleteItemFromOrder>>,
+        TError,
+        {sessionId: string;itemId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2DeleteItemFromOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Запускає новий підвізард додавання предмета
  */
-const stage2StartNewItemWizard = (
+export const stage2StartNewItemWizard = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
-      {url: `/v1/order-wizard/stage2/wizard/new/${sessionId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/wizard/new/${sessionId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage2StartNewItemWizardMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2StartNewItemWizard>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2StartNewItemWizard>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage2StartNewItemWizard'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2StartNewItemWizard>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage2StartNewItemWizard(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2StartNewItemWizardMutationResult = NonNullable<Awaited<ReturnType<typeof stage2StartNewItemWizard>>>
+    
+    export type Stage2StartNewItemWizardMutationError = ErrorResponse
+
+    /**
+ * @summary Запускає новий підвізард додавання предмета
+ */
+export const useStage2StartNewItemWizard = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2StartNewItemWizard>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2StartNewItemWizard>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2StartNewItemWizardMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Запускає підвізард редагування існуючого предмета
  */
-const stage2StartEditItemWizard = (
+export const stage2StartEditItemWizard = (
     sessionId: string,
     itemId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
-      {url: `/v1/order-wizard/stage2/wizard/edit/${sessionId}/${itemId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/wizard/edit/${sessionId}/${itemId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage2StartEditItemWizardMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2StartEditItemWizard>>, TError,{sessionId: string;itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2StartEditItemWizard>>, TError,{sessionId: string;itemId: string}, TContext> => {
+
+const mutationKey = ['stage2StartEditItemWizard'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2StartEditItemWizard>>, {sessionId: string;itemId: string}> = (props) => {
+          const {sessionId,itemId} = props ?? {};
+
+          return  stage2StartEditItemWizard(sessionId,itemId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2StartEditItemWizardMutationResult = NonNullable<Awaited<ReturnType<typeof stage2StartEditItemWizard>>>
+    
+    export type Stage2StartEditItemWizardMutationError = ErrorResponse
+
+    /**
+ * @summary Запускає підвізард редагування існуючого предмета
+ */
+export const useStage2StartEditItemWizard = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2StartEditItemWizard>>, TError,{sessionId: string;itemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2StartEditItemWizard>>,
+        TError,
+        {sessionId: string;itemId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2StartEditItemWizardMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Закриває активний підвізард без збереження
  */
-const stage2CloseWizard = (
+export const stage2CloseWizard = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
-      {url: `/v1/order-wizard/stage2/wizard/close/${sessionId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/wizard/close/${sessionId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage2CloseWizardMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2CloseWizard>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2CloseWizard>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage2CloseWizard'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2CloseWizard>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage2CloseWizard(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2CloseWizardMutationResult = NonNullable<Awaited<ReturnType<typeof stage2CloseWizard>>>
+    
+    export type Stage2CloseWizardMutationError = ErrorResponse
+
+    /**
+ * @summary Закриває активний підвізард без збереження
+ */
+export const useStage2CloseWizard = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2CloseWizard>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2CloseWizard>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2CloseWizardMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Синхронізує стан менеджера
  */
-const stage2SynchronizeManager = (
+export const stage2SynchronizeManager = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
-      {url: `/v1/order-wizard/stage2/synchronize/${sessionId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/synchronize/${sessionId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage2SynchronizeManagerMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2SynchronizeManager>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2SynchronizeManager>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage2SynchronizeManager'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2SynchronizeManager>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage2SynchronizeManager(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2SynchronizeManagerMutationResult = NonNullable<Awaited<ReturnType<typeof stage2SynchronizeManager>>>
+    
+    export type Stage2SynchronizeManagerMutationError = ErrorResponse
+
+    /**
+ * @summary Синхронізує стан менеджера
+ */
+export const useStage2SynchronizeManager = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2SynchronizeManager>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2SynchronizeManager>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2SynchronizeManagerMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Скидає сесію до початкового стану
  */
-const stage2ResetSession = (
+export const stage2ResetSession = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<void>(
-      {url: `/v1/order-wizard/stage2/reset/${sessionId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/reset/${sessionId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage2ResetSessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2ResetSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2ResetSession>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage2ResetSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2ResetSession>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage2ResetSession(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2ResetSessionMutationResult = NonNullable<Awaited<ReturnType<typeof stage2ResetSession>>>
+    
+    export type Stage2ResetSessionMutationError = ErrorResponse
+
+    /**
+ * @summary Скидає сесію до початкового стану
+ */
+export const useStage2ResetSession = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2ResetSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2ResetSession>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2ResetSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Додає новий предмет до замовлення (з підвізарда)
  */
-const stage2AddItemToOrder = (
+export const stage2AddItemToOrder = (
     sessionId: string,
     orderItemDTO: OrderItemDTO,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
       {url: `/v1/order-wizard/stage2/items/${sessionId}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: orderItemDTO
+      data: orderItemDTO, signal
     },
       options);
     }
   
+
+
+export const getStage2AddItemToOrderMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2AddItemToOrder>>, TError,{sessionId: string;data: OrderItemDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2AddItemToOrder>>, TError,{sessionId: string;data: OrderItemDTO}, TContext> => {
+
+const mutationKey = ['stage2AddItemToOrder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2AddItemToOrder>>, {sessionId: string;data: OrderItemDTO}> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  stage2AddItemToOrder(sessionId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2AddItemToOrderMutationResult = NonNullable<Awaited<ReturnType<typeof stage2AddItemToOrder>>>
+    export type Stage2AddItemToOrderMutationBody = OrderItemDTO
+    export type Stage2AddItemToOrderMutationError = ErrorResponse
+
+    /**
+ * @summary Додає новий предмет до замовлення (з підвізарда)
+ */
+export const useStage2AddItemToOrder = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2AddItemToOrder>>, TError,{sessionId: string;data: OrderItemDTO}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2AddItemToOrder>>,
+        TError,
+        {sessionId: string;data: OrderItemDTO},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2AddItemToOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Ініціалізує новий сеанс менеджера предметів для замовлення
  */
-const stage2InitializeItemManager = (
+export const stage2InitializeItemManager = (
     orderId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
-      {url: `/v1/order-wizard/stage2/initialize/${orderId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/initialize/${orderId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage2InitializeItemManagerMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2InitializeItemManager>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2InitializeItemManager>>, TError,{orderId: string}, TContext> => {
+
+const mutationKey = ['stage2InitializeItemManager'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2InitializeItemManager>>, {orderId: string}> = (props) => {
+          const {orderId} = props ?? {};
+
+          return  stage2InitializeItemManager(orderId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2InitializeItemManagerMutationResult = NonNullable<Awaited<ReturnType<typeof stage2InitializeItemManager>>>
+    
+    export type Stage2InitializeItemManagerMutationError = ErrorResponse
+
+    /**
+ * @summary Ініціалізує новий сеанс менеджера предметів для замовлення
+ */
+export const useStage2InitializeItemManager = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2InitializeItemManager>>, TError,{orderId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2InitializeItemManager>>,
+        TError,
+        {orderId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2InitializeItemManagerMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Завершує етап 2 та переходить до наступного етапу
  */
-const stage2CompleteStage = (
+export const stage2CompleteStage = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
-      {url: `/v1/order-wizard/stage2/complete/${sessionId}`, method: 'POST'
+      {url: `/v1/order-wizard/stage2/complete/${sessionId}`, method: 'POST', signal
     },
       options);
     }
   
+
+
+export const getStage2CompleteStageMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2CompleteStage>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2CompleteStage>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage2CompleteStage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2CompleteStage>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage2CompleteStage(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2CompleteStageMutationResult = NonNullable<Awaited<ReturnType<typeof stage2CompleteStage>>>
+    
+    export type Stage2CompleteStageMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує етап 2 та переходить до наступного етапу
+ */
+export const useStage2CompleteStage = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2CompleteStage>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2CompleteStage>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2CompleteStageMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * @summary Валідує поточний стан менеджера
  */
-const stage2ValidateCurrentState = (
+export const stage2ValidateCurrentState = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ValidationResult>(
-      {url: `/v1/order-wizard/stage2/validate/${sessionId}`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/validate/${sessionId}`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage2ValidateCurrentStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/validate/${sessionId}`] as const;
+    }
+
+    
+export const getStage2ValidateCurrentStateQueryOptions = <TData = Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage2ValidateCurrentStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage2ValidateCurrentState>>> = ({ signal }) => stage2ValidateCurrentState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage2ValidateCurrentStateQueryResult = NonNullable<Awaited<ReturnType<typeof stage2ValidateCurrentState>>>
+export type Stage2ValidateCurrentStateQueryError = ErrorResponse
+
+
+export function useStage2ValidateCurrentState<TData = Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2ValidateCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof stage2ValidateCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2ValidateCurrentState<TData = Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2ValidateCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof stage2ValidateCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2ValidateCurrentState<TData = Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Валідує поточний стан менеджера
+ */
+
+export function useStage2ValidateCurrentState<TData = Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2ValidateCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage2ValidateCurrentStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримує поточний стан сесії
  */
-const stage2GetCurrentState = (
+export const stage2GetCurrentState = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<Stage2GetCurrentState200>(
-      {url: `/v1/order-wizard/stage2/state/${sessionId}`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/state/${sessionId}`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage2GetCurrentStateQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/state/${sessionId}`] as const;
+    }
+
+    
+export const getStage2GetCurrentStateQueryOptions = <TData = Awaited<ReturnType<typeof stage2GetCurrentState>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage2GetCurrentStateQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage2GetCurrentState>>> = ({ signal }) => stage2GetCurrentState(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentState>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage2GetCurrentStateQueryResult = NonNullable<Awaited<ReturnType<typeof stage2GetCurrentState>>>
+export type Stage2GetCurrentStateQueryError = ErrorResponse
+
+
+export function useStage2GetCurrentState<TData = Awaited<ReturnType<typeof stage2GetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentState>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2GetCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof stage2GetCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2GetCurrentState<TData = Awaited<ReturnType<typeof stage2GetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentState>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2GetCurrentState>>,
+          TError,
+          Awaited<ReturnType<typeof stage2GetCurrentState>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2GetCurrentState<TData = Awaited<ReturnType<typeof stage2GetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан сесії
+ */
+
+export function useStage2GetCurrentState<TData = Awaited<ReturnType<typeof stage2GetCurrentState>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentState>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage2GetCurrentStateQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримує кількість активних сесій
  */
-const stage2GetActiveSessionCount = (
+export const stage2GetActiveSessionCount = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<number>(
-      {url: `/v1/order-wizard/stage2/sessions/count`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/sessions/count`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage2GetActiveSessionCountQueryKey = () => {
+    return [`/v1/order-wizard/stage2/sessions/count`] as const;
+    }
+
+    
+export const getStage2GetActiveSessionCountQueryOptions = <TData = Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage2GetActiveSessionCountQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage2GetActiveSessionCount>>> = ({ signal }) => stage2GetActiveSessionCount(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage2GetActiveSessionCountQueryResult = NonNullable<Awaited<ReturnType<typeof stage2GetActiveSessionCount>>>
+export type Stage2GetActiveSessionCountQueryError = ErrorResponse
+
+
+export function useStage2GetActiveSessionCount<TData = Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2GetActiveSessionCount>>,
+          TError,
+          Awaited<ReturnType<typeof stage2GetActiveSessionCount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2GetActiveSessionCount<TData = Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2GetActiveSessionCount>>,
+          TError,
+          Awaited<ReturnType<typeof stage2GetActiveSessionCount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2GetActiveSessionCount<TData = Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує кількість активних сесій
+ */
+
+export function useStage2GetActiveSessionCount<TData = Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetActiveSessionCount>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage2GetActiveSessionCountQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Перевіряє готовність до переходу на наступний етап
  */
-const stage2CheckReadinessToProceed = (
+export const stage2CheckReadinessToProceed = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<boolean>(
-      {url: `/v1/order-wizard/stage2/ready/${sessionId}`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/ready/${sessionId}`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage2CheckReadinessToProceedQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/ready/${sessionId}`] as const;
+    }
+
+    
+export const getStage2CheckReadinessToProceedQueryOptions = <TData = Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage2CheckReadinessToProceedQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>> = ({ signal }) => stage2CheckReadinessToProceed(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage2CheckReadinessToProceedQueryResult = NonNullable<Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>>
+export type Stage2CheckReadinessToProceedQueryError = ErrorResponse
+
+
+export function useStage2CheckReadinessToProceed<TData = Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>,
+          TError,
+          Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2CheckReadinessToProceed<TData = Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>,
+          TError,
+          Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2CheckReadinessToProceed<TData = Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевіряє готовність до переходу на наступний етап
+ */
+
+export function useStage2CheckReadinessToProceed<TData = Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2CheckReadinessToProceed>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage2CheckReadinessToProceedQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Отримує поточний стан менеджера предметів
  */
-const stage2GetCurrentManager = (
+export const stage2GetCurrentManager = (
     sessionId: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<ItemManagerDTO>(
-      {url: `/v1/order-wizard/stage2/manager/${sessionId}`, method: 'GET'
+      {url: `/v1/order-wizard/stage2/manager/${sessionId}`, method: 'GET', signal
     },
       options);
     }
   
+
+export const getStage2GetCurrentManagerQueryKey = (sessionId: string,) => {
+    return [`/v1/order-wizard/stage2/manager/${sessionId}`] as const;
+    }
+
+    
+export const getStage2GetCurrentManagerQueryOptions = <TData = Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError = ErrorResponse>(sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStage2GetCurrentManagerQueryKey(sessionId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof stage2GetCurrentManager>>> = ({ signal }) => stage2GetCurrentManager(sessionId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Stage2GetCurrentManagerQueryResult = NonNullable<Awaited<ReturnType<typeof stage2GetCurrentManager>>>
+export type Stage2GetCurrentManagerQueryError = ErrorResponse
+
+
+export function useStage2GetCurrentManager<TData = Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError = ErrorResponse>(
+ sessionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2GetCurrentManager>>,
+          TError,
+          Awaited<ReturnType<typeof stage2GetCurrentManager>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2GetCurrentManager<TData = Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof stage2GetCurrentManager>>,
+          TError,
+          Awaited<ReturnType<typeof stage2GetCurrentManager>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStage2GetCurrentManager<TData = Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Отримує поточний стан менеджера предметів
+ */
+
+export function useStage2GetCurrentManager<TData = Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError = ErrorResponse>(
+ sessionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof stage2GetCurrentManager>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStage2GetCurrentManagerQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * @summary Завершує сесію та звільняє ресурси
  */
-const stage2TerminateSession = (
+export const stage2TerminateSession = (
     sessionId: string,
  options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
       return orvalFetcher<void>(
       {url: `/v1/order-wizard/stage2/session/${sessionId}`, method: 'DELETE'
     },
       options);
     }
   
-return {stage2UpdateItemInOrder,stage2DeleteItemFromOrder,stage2StartNewItemWizard,stage2StartEditItemWizard,stage2CloseWizard,stage2SynchronizeManager,stage2ResetSession,stage2AddItemToOrder,stage2InitializeItemManager,stage2CompleteStage,stage2ValidateCurrentState,stage2GetCurrentState,stage2GetActiveSessionCount,stage2CheckReadinessToProceed,stage2GetCurrentManager,stage2TerminateSession}};
-export type Stage2UpdateItemInOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2UpdateItemInOrder']>>>
-export type Stage2DeleteItemFromOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2DeleteItemFromOrder']>>>
-export type Stage2StartNewItemWizardResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2StartNewItemWizard']>>>
-export type Stage2StartEditItemWizardResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2StartEditItemWizard']>>>
-export type Stage2CloseWizardResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2CloseWizard']>>>
-export type Stage2SynchronizeManagerResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2SynchronizeManager']>>>
-export type Stage2ResetSessionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2ResetSession']>>>
-export type Stage2AddItemToOrderResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2AddItemToOrder']>>>
-export type Stage2InitializeItemManagerResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2InitializeItemManager']>>>
-export type Stage2CompleteStageResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2CompleteStage']>>>
-export type Stage2ValidateCurrentStateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2ValidateCurrentState']>>>
-export type Stage2GetCurrentStateResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2GetCurrentState']>>>
-export type Stage2GetActiveSessionCountResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2GetActiveSessionCount']>>>
-export type Stage2CheckReadinessToProceedResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2CheckReadinessToProceed']>>>
-export type Stage2GetCurrentManagerResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2GetCurrentManager']>>>
-export type Stage2TerminateSessionResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['stage2TerminateSession']>>>
+
+
+export const getStage2TerminateSessionMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2TerminateSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof stage2TerminateSession>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['stage2TerminateSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stage2TerminateSession>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  stage2TerminateSession(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type Stage2TerminateSessionMutationResult = NonNullable<Awaited<ReturnType<typeof stage2TerminateSession>>>
+    
+    export type Stage2TerminateSessionMutationError = ErrorResponse
+
+    /**
+ * @summary Завершує сесію та звільняє ресурси
+ */
+export const useStage2TerminateSession = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stage2TerminateSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stage2TerminateSession>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getStage2TerminateSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    

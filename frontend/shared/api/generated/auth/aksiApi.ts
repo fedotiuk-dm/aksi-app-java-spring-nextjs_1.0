@@ -5,10 +5,30 @@
  * API для системи керування клінінговою компанією AKSI
  * OpenAPI spec version: 1.0.0
  */
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
+import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
+  MutationFunction,
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
+} from '@tanstack/react-query';
+
 import type {
   AuthLogin200,
   AuthRefreshToken200,
   AuthRegister200,
+  ErrorResponse,
   LoginRequest,
   RegisterRequest
 } from './aksiApi.schemas';
@@ -19,67 +39,291 @@ import orvalFetcher from '../../../../lib/api/orval-fetcher';
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getAksiApi = () => {
+
 /**
  * Створює нового користувача і повертає JWT токен
  * @summary Реєстрація нового користувача
  */
-const authRegister = (
+export const authRegister = (
     registerRequest: RegisterRequest,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<AuthRegister200>(
       {url: `/auth/register`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: registerRequest
+      data: registerRequest, signal
     },
       options);
     }
   
+
+
+export const getAuthRegisterMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRegister>>, TError,{data: RegisterRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof authRegister>>, TError,{data: RegisterRequest}, TContext> => {
+
+const mutationKey = ['authRegister'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authRegister>>, {data: RegisterRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authRegister(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof authRegister>>>
+    export type AuthRegisterMutationBody = RegisterRequest
+    export type AuthRegisterMutationError = ErrorResponse
+
+    /**
+ * @summary Реєстрація нового користувача
+ */
+export const useAuthRegister = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRegister>>, TError,{data: RegisterRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authRegister>>,
+        TError,
+        {data: RegisterRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getAuthRegisterMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * Оновлює JWT токен за допомогою refresh токена
  * @summary Оновлення токена
  */
-const authRefreshToken = (
+export const authRefreshToken = (
     authRefreshTokenBody: string,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<AuthRefreshToken200>(
       {url: `/auth/refresh-token`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: authRefreshTokenBody
+      data: authRefreshTokenBody, signal
     },
       options);
     }
   
+
+
+export const getAuthRefreshTokenMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRefreshToken>>, TError,{data: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof authRefreshToken>>, TError,{data: string}, TContext> => {
+
+const mutationKey = ['authRefreshToken'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authRefreshToken>>, {data: string}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authRefreshToken(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthRefreshTokenMutationResult = NonNullable<Awaited<ReturnType<typeof authRefreshToken>>>
+    export type AuthRefreshTokenMutationBody = string
+    export type AuthRefreshTokenMutationError = ErrorResponse
+
+    /**
+ * @summary Оновлення токена
+ */
+export const useAuthRefreshToken = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRefreshToken>>, TError,{data: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authRefreshToken>>,
+        TError,
+        {data: string},
+        TContext
+      > => {
+
+      const mutationOptions = getAuthRefreshTokenMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * Автентифікує користувача і повертає JWT токен
  * @summary Вхід користувача
  */
-const authLogin = (
+export const authLogin = (
     loginRequest: LoginRequest,
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<AuthLogin200>(
       {url: `/auth/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: loginRequest
+      data: loginRequest, signal
     },
       options);
     }
   
+
+
+export const getAuthLoginMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: LoginRequest}, TContext> => {
+
+const mutationKey = ['authLogin'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authLogin>>, {data: LoginRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  authLogin(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authLogin>>>
+    export type AuthLoginMutationBody = LoginRequest
+    export type AuthLoginMutationError = ErrorResponse
+
+    /**
+ * @summary Вхід користувача
+ */
+export const useAuthLogin = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authLogin>>,
+        TError,
+        {data: LoginRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getAuthLoginMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * Тестовий ендпоінт для перевірки доступності API аутентифікації
  * @summary Перевірка доступності
  */
-const authTestEndpoint = (
+export const authTestEndpoint = (
     
- options?: SecondParameter<typeof orvalFetcher>,) => {
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
       return orvalFetcher<string>(
-      {url: `/auth/test`, method: 'GET'
+      {url: `/auth/test`, method: 'GET', signal
     },
       options);
     }
   
-return {authRegister,authRefreshToken,authLogin,authTestEndpoint}};
-export type AuthRegisterResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['authRegister']>>>
-export type AuthRefreshTokenResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['authRefreshToken']>>>
-export type AuthLoginResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['authLogin']>>>
-export type AuthTestEndpointResult = NonNullable<Awaited<ReturnType<ReturnType<typeof getAksiApi>['authTestEndpoint']>>>
+
+export const getAuthTestEndpointQueryKey = () => {
+    return [`/auth/test`] as const;
+    }
+
+    
+export const getAuthTestEndpointQueryOptions = <TData = Awaited<ReturnType<typeof authTestEndpoint>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authTestEndpoint>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthTestEndpointQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authTestEndpoint>>> = ({ signal }) => authTestEndpoint(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authTestEndpoint>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthTestEndpointQueryResult = NonNullable<Awaited<ReturnType<typeof authTestEndpoint>>>
+export type AuthTestEndpointQueryError = ErrorResponse
+
+
+export function useAuthTestEndpoint<TData = Awaited<ReturnType<typeof authTestEndpoint>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authTestEndpoint>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authTestEndpoint>>,
+          TError,
+          Awaited<ReturnType<typeof authTestEndpoint>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthTestEndpoint<TData = Awaited<ReturnType<typeof authTestEndpoint>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authTestEndpoint>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authTestEndpoint>>,
+          TError,
+          Awaited<ReturnType<typeof authTestEndpoint>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthTestEndpoint<TData = Awaited<ReturnType<typeof authTestEndpoint>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authTestEndpoint>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Перевірка доступності
+ */
+
+export function useAuthTestEndpoint<TData = Awaited<ReturnType<typeof authTestEndpoint>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authTestEndpoint>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthTestEndpointQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

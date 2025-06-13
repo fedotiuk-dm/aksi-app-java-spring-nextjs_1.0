@@ -40,6 +40,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
    */
   setUser: (user: AuthUser | null) => {
     if (user) {
+      console.log('🔐 Зберігаємо користувача в store:', user);
       set({
         isLoggedIn: true,
         username: user.username,
@@ -50,8 +51,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         position: user.position || null,
         error: null,
       });
+      console.log('✅ Користувач збережений в store, isLoggedIn:', true);
     } else {
       // Якщо user = null, виконуємо logout
+      console.log('🚪 Очищуємо користувача з store');
       get().logout();
     }
   },

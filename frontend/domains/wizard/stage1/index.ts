@@ -1,112 +1,37 @@
-/**
- * @fileoverview Публічне API для Stage1 домену Order Wizard
- *
- * Архітектурний принцип: "DDD inside, FSD outside"
- * Експортує тільки головні хуки та необхідні типи для UI компонентів
- * Приховує внутрішню структуру та деталі реалізації
- *
- * Stage1 включає:
- * - Пошук/створення клієнта
- * - Основну інформацію про замовлення
- * - Вибір філії
- * - Управління workflow
- */
+// 🔥 ЕТАП 4: ПУБЛІЧНЕ API - wizard/stage1 domain
+// Експорт композиційних хуків та типів для UI компонентів
 
-// ===== ГОЛОВНІ КОМПОЗИЦІЙНІ ХУКИ =====
+// 🎯 ГОЛОВНИЙ WORKFLOW ХУК (рекомендований для UI)
+export { useStage1Workflow } from './hooks/use-stage1-workflow.hook';
+export type { UseStage1WorkflowReturn } from './hooks/use-stage1-workflow.hook';
 
-// Пошук клієнта
-export { useClientSearch } from './client-search';
-export type { UseClientSearchReturn } from './client-search';
+// Композиційні хуки для окремих підетапів (якщо потрібні)
+export { useClientSearch } from './hooks/use-client-search.hook';
+export type { UseClientSearchReturn } from './hooks/use-client-search.hook';
 
-// Створення клієнта
-export { useClientCreation } from './client-creation';
-export type { UseClientCreationReturn } from './client-creation';
+export { useClientCreate } from './hooks/use-client-create.hook';
+export type { UseClientCreateReturn } from './hooks/use-client-create.hook';
 
-// Основна інформація про замовлення
-export { useBasicOrderInfo } from './basic-order-info';
-export type { UseBasicOrderInfoReturn } from './basic-order-info';
+export { useBasicOrderInfo } from './hooks/use-basic-order-info.hook';
+export type { UseBasicOrderInfoReturn } from './hooks/use-basic-order-info.hook';
 
-// Workflow управління Stage1
-export { useStage1Workflow } from './workflow';
-export type { UseStage1WorkflowReturn } from './workflow';
-
-// Інтегровані хуки
-export { useStage1Simple } from './use-stage1-simple.hook';
-export type { UseStage1SimpleReturn } from './use-stage1-simple.hook';
-
-// ===== СХЕМИ ДЛЯ ВАЛІДАЦІЇ (для UI компонентів) =====
-
-// Client Search схеми
-export { searchFormSchema, phoneFormSchema } from './client-search';
-export type { SearchFormData, PhoneFormData } from './client-search';
-
-// Client Creation схеми
-export { clientCreationUIFormSchema } from './client-creation';
-export type { ClientCreationUIFormData } from './client-creation';
-
-// Basic Order Info схеми
-export { basicOrderUIFormSchema, branchSelectionUIFormSchema } from './basic-order-info';
-export type {
-  BasicOrderUIFormData,
-  BranchSelectionUIFormData,
-  BranchDisplayData,
-} from './basic-order-info';
-
-// ===== РОЗДІЛЕНІ ХУКИ (для продвинутого використання) =====
-
-// Basic Order Info - розділені хуки
+// Константи та утиліти (якщо потрібні в UI)
 export {
-  useBasicOrderInfoAPI,
-  useBasicOrderInfoBusiness,
-  useBasicOrderInfoForms,
-} from './basic-order-info';
-export type {
-  UseBasicOrderInfoAPIReturn,
-  UseBasicOrderInfoBusinessReturn,
-  UseBasicOrderInfoFormsReturn,
-} from './basic-order-info';
+  STAGE1_SUBSTEPS,
+  STAGE1_SUBSTEP_NAMES,
+  CLIENT_SEARCH_CRITERIA,
+  CLIENT_SEARCH_CRITERIA_NAMES,
+  CONTACT_METHODS,
+  CONTACT_METHOD_NAMES,
+  INFO_SOURCES,
+  INFO_SOURCE_NAMES,
+  getSearchCriteriaName,
+  getContactMethodName,
+  getInfoSourceName,
+  isValidSearchTerm,
+  isValidContactMethod,
+  isValidInfoSource,
+} from './utils/stage1-mapping';
 
-// Client Creation - розділені хуки
-export {
-  useClientCreationAPI,
-  useClientCreationBusiness,
-  useClientCreationForms,
-  useClientCreationNavigation,
-} from './client-creation';
-export type {
-  UseClientCreationAPIReturn,
-  UseClientCreationBusinessReturn,
-  UseClientCreationFormsReturn,
-  UseClientCreationNavigationReturn,
-} from './client-creation';
-
-// ===== ZUSTAND СТОРИ (рідко потрібні напряму) =====
-
-// Експортуємо тільки якщо дійсно потрібно в UI
-export { useClientSearchStore } from './client-search';
-export { useClientCreationStore } from './client-creation';
-export { useBasicOrderInfoStore } from './basic-order-info';
-
-// ===== ТИПИ ДОМЕНІВ =====
-
-export type DomainClient = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email?: string;
-  address?: string;
-  isActive: boolean;
-};
-
-export type DomainSearchCriteria = {
-  searchTerm: string;
-  searchBy: 'all' | 'phone' | 'name' | 'email';
-  isActive?: boolean;
-};
-
-export type ValidationResult = {
-  isValid: boolean;
-  errors: string[];
-  warnings?: string[];
-};
+// Типи (якщо потрібні в UI)
+export type { Stage1Substep } from './utils/stage1-mapping';

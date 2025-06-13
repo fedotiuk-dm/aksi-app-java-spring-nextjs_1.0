@@ -7,7 +7,7 @@
  * - Утиліти для конвертації даних
  */
 
-import type { AuthLogin200, AuthRegister200 } from '@/shared/api/generated/auth/aksiApi.schemas';
+import type { AuthLogin200, AuthRegister200 } from '@/shared/api/generated/auth';
 
 /**
  * Інтерфейс для відповіді автентифікації з API
@@ -108,6 +108,16 @@ export const convertToAuthUser = (response: AuthResponse): AuthUser => {
  */
 export const adaptOrvalLoginResponse = (response: AuthLogin200): AuthUser => {
   console.log('🔄 Адаптуємо Orval login response:', response);
+
+  // Зберігаємо токен в localStorage якщо він є
+  const apiData = response as Record<string, unknown>;
+  if (apiData.accessToken && typeof window !== 'undefined') {
+    localStorage.setItem('auth-token', apiData.accessToken as string);
+    console.log('💾 Токен збережено в localStorage:', apiData.accessToken);
+  } else {
+    console.warn('⚠️ Токен не знайдено в response:', apiData);
+  }
+
   return createAuthUserFromApiResponse(response);
 };
 

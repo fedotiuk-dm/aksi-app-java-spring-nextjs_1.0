@@ -10,7 +10,12 @@
 import { jwtDecode } from 'jwt-decode';
 import { cookies } from 'next/headers';
 
-import { getAksiApi } from '@/shared/api/generated/auth/aksiApi';
+import {
+  authLogin,
+  authRegister,
+  authRefreshToken,
+  authTestEndpoint,
+} from '@/shared/api/generated/auth';
 
 import {
   AuthUser,
@@ -20,10 +25,7 @@ import {
   adaptOrvalRegisterResponse,
 } from '../model/types';
 
-import type { LoginRequest, RegisterRequest } from '@/shared/api/generated/auth/aksiApi.schemas';
-
-// 🔐 Ініціалізуємо auth API клієнт для серверного використання
-const authApi = getAksiApi();
+import type { LoginRequest, RegisterRequest } from '@/shared/api/generated/auth';
 
 // Назви cookies
 const TOKEN_COOKIE = 'auth_token';
@@ -41,7 +43,7 @@ export const serverAuth = {
       console.log('🔐 Виконуємо запит до бекенду для логіну через Orval');
 
       // Використовуємо Orval згенерований клієнт
-      const orvalResponse = await authApi.authLogin(credentials);
+      const orvalResponse = await authLogin(credentials);
 
       // Адаптуємо Orval відповідь до AuthUser
       const user = adaptOrvalLoginResponse(orvalResponse);
@@ -67,7 +69,7 @@ export const serverAuth = {
       console.log('🔐 Виконуємо запит для реєстрації через Orval');
 
       // Використовуємо Orval згенерований клієнт
-      const orvalResponse = await authApi.authRegister(registerData);
+      const orvalResponse = await authRegister(registerData);
 
       // Адаптуємо Orval відповідь до AuthUser
       const user = adaptOrvalRegisterResponse(orvalResponse);
@@ -98,7 +100,7 @@ export const serverAuth = {
       }
 
       // Використовуємо Orval згенерований клієнт
-      const orvalResponse = await authApi.authRefreshToken(refreshToken);
+      const orvalResponse = await authRefreshToken(refreshToken);
 
       // TODO: Адаптувати refresh token response
       // Поки що повертаємо null
@@ -119,7 +121,7 @@ export const serverAuth = {
     try {
       console.log('🧪 Тестуємо auth API через Orval');
 
-      const testResult = await authApi.authTestEndpoint();
+      const testResult = await authTestEndpoint();
 
       console.log('✅ Auth API тест пройшов успішно:', testResult);
       return testResult;
