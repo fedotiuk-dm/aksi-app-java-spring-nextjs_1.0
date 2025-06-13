@@ -1,32 +1,22 @@
-// 🎯 ПУБЛІЧНЕ API для Stage1 Order Wizard домену
-// Експорт тільки необхідних хуків та типів для UI компонентів
+// Публічне API для Stage1 домену - Клієнт та базова інформація замовлення
+// Експортуємо всі підетапи через їх публічні API
 
-// ✅ СПРОЩЕНІ КОМПОЗИЦІЙНІ ХУКИ (НОВА ЛОГІКА)
-export { useStage1SimplifiedWorkflow } from './hooks/use-stage1-simplified-workflow.hook';
-export { useClientSelection } from './hooks/use-client-selection.hook';
-export { useBranchSelection } from './hooks/use-branch-selection.hook';
+// =================== ПІДЕТАПИ STAGE1 ===================
 
-// ✅ БАЗОВІ ХУКИ (для внутрішнього використання)
-export { useClientSearch } from './hooks/use-client-search.hook';
-export { useClientCreate } from './hooks/use-client-create.hook';
-export { useBasicOrderInfo } from './hooks/use-basic-order-info.hook';
+// 1. Client Search - Пошук та вибір клієнтів
+export * from './client-search';
 
-// ⚠️ СТАРИЙ WORKFLOW ХУК (для сумісності, буде видалений)
-export { useStage1Workflow } from './hooks/use-stage1-workflow.hook';
+// 2. Client Creation - Створення нових клієнтів
+export * from './client-creation';
 
-// 📋 ТИПИ
-export type { UseStage1SimplifiedWorkflowReturn } from './hooks/use-stage1-simplified-workflow.hook';
-export type { UseClientSelectionReturn } from './hooks/use-client-selection.hook';
-export type { UseBranchSelectionReturn } from './hooks/use-branch-selection.hook';
-export type { UseClientSearchReturn } from './hooks/use-client-search.hook';
-export type { UseClientCreateReturn } from './hooks/use-client-create.hook';
-export type { UseBasicOrderInfoReturn } from './hooks/use-basic-order-info.hook';
+// 3. Basic Order Info - Базова інформація замовлення
+export * from './basic-order-info';
 
-// 📋 КОНСТАНТИ та УТИЛІТИ
-export {
-  STAGE1_SUBSTEPS,
-  STAGE1_SUBSTEP_NAMES,
-  CLIENT_MODES,
-  type Stage1Substep,
-  type ClientMode,
-} from './utils/stage1-mapping';
+// =================== ТИПИ STAGE1 ===================
+
+// Реекспорт основних типів для зручності
+export type { UseClientSearchReturn } from './client-search';
+
+export type { UseClientCreationReturn } from './client-creation';
+
+export type { UseBasicOrderInfoReturn } from './basic-order-info';

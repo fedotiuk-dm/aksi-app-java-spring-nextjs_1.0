@@ -1,85 +1,85 @@
 'use client';
 
-import { FC, useState } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemButton,
-  CircularProgress,
-  Alert,
-  Grid,
-  Chip,
-  Divider,
-  Paper,
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  PersonAdd as PersonAddIcon,
-  Phone as PhoneIcon,
-  Email as EmailIcon,
-  LocationOn as LocationIcon,
-} from '@mui/icons-material';
+import React from 'react';
+import { Box, Card, CardContent, Typography, Button, Alert, Stack } from '@mui/material';
+import { Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
 
-import { useClientSearch } from '@/domains/wizard/stage1';
+// Доменна логіка
+import { useClientSearch } from '@/domains/wizard/stage1/client-search';
 
-const TEXT_STYLES = {
-  fontSize: '0.875rem',
-  color: 'text.secondary',
-  lineHeight: 1.43,
-} as const;
+// Загальні компоненти
+import { ClientSearchForm, ClientResultsList } from '../components';
 
 interface ClientSearchStepProps {
-  onClientSelected?: () => void;
-  onCreateNewClient?: () => void;
+  onClientSelected: (clientId: string) => void;
+  onCreateNewClient: () => void;
 }
 
-export const ClientSearchStep: FC<ClientSearchStepProps> = ({
+export const ClientSearchStep: React.FC<ClientSearchStepProps> = ({
   onClientSelected,
   onCreateNewClient,
 }) => {
-  const { ui, data, loading, actions, computed } = useClientSearch();
-  const [searchTerm, setSearchTerm] = useState('');
+  // ========== ДОМЕННА ЛОГІКА ==========
+  const { ui, data, loading, mutations } = useClientSearch();
 
-  const handleSearch = () => {
-    if (searchTerm.trim()) {
-      actions.searchClients('GENERAL', searchTerm.trim());
+  // ========== ЛОКАЛЬНИЙ UI СТАН ==========
+  const [showAdvancedSearch, setShowAdvancedSearch] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [firstName, setFirstName] = React.useState('');
+  const [lastName, setLastName] = React.useState('');
+  const [phone, setPhone] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [address, setAddress] = React.useState('');
+
+  // ========== EVENT HANDLERS ==========
+  const handleQuickSearch = async () => {
+    if (searchTerm && ui.sessionId) {
+      await mutations.searchClients.mutateAsync({
+        sessionId: ui.sessionId,
+        data: { generalSearchTerm: searchTerm },
+      });
     }
   };
 
-  const handleSearchByPhone = () => {
-    if (searchTerm.trim()) {
-      actions.searchClients('PHONE', searchTerm.trim());
+  const handleAdvancedSearch = async () => {
+    if (ui.sessionId) {
+      await mutations.searchClients.mutateAsync({
+        sessionId: ui.sessionId,
+        data: { firstName, lastName, phone, email, address },
+      });
     }
   };
 
-  const handleSelectClient = (clientId: string) => {
-    actions.selectClient(clientId);
-    onClientSelected?.();
+  const handleClientSelect = async (clientId: string) => {
+    try {
+      if (ui.sessionId) {
+        await mutations.selectClient.mutateAsync({
+          sessionId: ui.sessionId,
+          params: { clientId },
+        });
+        onClientSelected(clientId);
+      }
+    } catch (error) {
+      console.error('Помилка вибору клієнта:', error);
+    }
   };
 
-  const handleCreateNew = () => {
-    actions.clearSearch();
-    onCreateNewClient?.();
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setFirstName('');
+    setLastName('');
+    setPhone('');
+    setEmail('');
+    setAddress('');
+    ui.clearSearch();
   };
 
-  const handleInputChange = (value: string) => {
-    setSearchTerm(value);
-    actions.setSearchTerm(value);
-  };
-
-  const isPhoneFormat = /^\+?[0-9\s\-\(\)]{10,}$/.test(searchTerm.trim());
-
+  // ========== RENDER ==========
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto', p: 2 }}>
+    <Box sx={{ maxWidth: 800, mx: 'auto' }}>
       {/* Заголовок */}
-      <Typography variant="h5" component="h2" gutterBottom>
+      <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <SearchIcon color="primary" />
         Пошук клієнта
       </Typography>
 
@@ -88,195 +88,80 @@ export const ClientSearchStep: FC<ClientSearchStepProps> = ({
       </Typography>
 
       {/* Форма пошуку */}
-      <Card sx={{ mb: 3 }}>
+      <Card sx={{ mb: 2 }}>
         <CardContent>
-          <Grid container spacing={2}>
-            {/* Поле пошуку */}
-            <Grid size={{ xs: 12, md: 8 }}>
-              <TextField
-                value={searchTerm}
-                onChange={(e) => handleInputChange(e.target.value)}
-                fullWidth
-                label={
-                  isPhoneFormat ? 'Номер телефону' : "Пошук за прізвищем, ім'ям, email, адресою"
-                }
-                placeholder={isPhoneFormat ? '+380xxxxxxxxx' : 'Введіть текст для пошуку...'}
-                InputProps={{
-                  startAdornment: isPhoneFormat ? (
-                    <PhoneIcon sx={{ mr: 1, color: 'action.active' }} />
-                  ) : (
-                    <SearchIcon sx={{ mr: 1, color: 'action.active' }} />
-                  ),
-                }}
-              />
-
-              {/* Індикатор типу пошуку */}
-              <Box sx={{ mt: 1 }}>
-                <Chip
-                  label={isPhoneFormat ? 'Пошук за телефоном' : 'Загальний пошук'}
-                  size="small"
-                  color={isPhoneFormat ? 'secondary' : 'primary'}
-                  variant="outlined"
-                />
-                {loading.isTyping && (
-                  <Chip label="Набираєте..." size="small" color="info" sx={{ ml: 1 }} />
-                )}
-              </Box>
-            </Grid>
-
-            {/* Кнопки дій */}
-            <Grid size={{ xs: 12, md: 4 }}>
-              <Box sx={{ display: 'flex', gap: 1, height: '100%', alignItems: 'flex-start' }}>
-                <Button
-                  variant="contained"
-                  onClick={isPhoneFormat ? handleSearchByPhone : handleSearch}
-                  disabled={loading.isSearching || !searchTerm.trim()}
-                  startIcon={loading.isSearching ? <CircularProgress size={20} /> : <SearchIcon />}
-                  fullWidth
-                >
-                  {loading.isSearching ? 'Шукаю...' : 'Знайти'}
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
+          <ClientSearchForm
+            // Швидкий пошук
+            searchTerm={searchTerm}
+            onSearchTermChange={setSearchTerm}
+            onQuickSearch={handleQuickSearch}
+            // Розширений пошук
+            showAdvancedSearch={showAdvancedSearch}
+            onToggleAdvancedSearch={() => setShowAdvancedSearch(!showAdvancedSearch)}
+            firstName={firstName}
+            onFirstNameChange={setFirstName}
+            lastName={lastName}
+            onLastNameChange={setLastName}
+            phone={phone}
+            onPhoneChange={setPhone}
+            email={email}
+            onEmailChange={setEmail}
+            address={address}
+            onAddressChange={setAddress}
+            onAdvancedSearch={handleAdvancedSearch}
+            // Стан
+            isSearching={loading.isSearching}
+            onClearSearch={handleClearSearch}
+          />
         </CardContent>
       </Card>
 
       {/* Результати пошуку */}
-      {computed.hasSearchResults && (
-        <Card sx={{ mb: 3 }}>
+      {data.searchResults?.clients && data.searchResults.clients.length > 0 && (
+        <Card sx={{ mb: 2 }}>
           <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Знайдені клієнти ({data.searchResults.length})
-            </Typography>
-
-            <List>
-              {data.searchResults.map((client, index) => (
-                <div key={client.id || index}>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={() => client.id && handleSelectClient(client.id)}
-                      selected={ui.selectedClientId === client.id}
-                      sx={{ borderRadius: 1 }}
-                    >
-                      <Box sx={{ width: '100%' }}>
-                        {/* Primary content */}
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <Typography variant="subtitle1" fontWeight="medium">
-                            {client.firstName} {client.lastName}
-                          </Typography>
-                          {ui.selectedClientId === client.id && (
-                            <Chip label="Вибрано" size="small" color="primary" />
-                          )}
-                        </Box>
-
-                        {/* Secondary content */}
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                          {client.phone && (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <PhoneIcon fontSize="small" color="action" />
-                              <Box
-                                component="span"
-                                sx={{
-                                  ...TEXT_STYLES,
-                                }}
-                              >
-                                {client.phone}
-                              </Box>
-                            </Box>
-                          )}
-                          {client.email && (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <EmailIcon fontSize="small" color="action" />
-                              <Box
-                                component="span"
-                                sx={{
-                                  ...TEXT_STYLES,
-                                }}
-                              >
-                                {client.email}
-                              </Box>
-                            </Box>
-                          )}
-                          {client.address && (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <LocationIcon fontSize="small" color="action" />
-                              <Box
-                                component="span"
-                                sx={{
-                                  ...TEXT_STYLES,
-                                }}
-                              >
-                                {client.address}
-                              </Box>
-                            </Box>
-                          )}
-                        </Box>
-                      </Box>
-                    </ListItemButton>
-                  </ListItem>
-                  {index < data.searchResults.length - 1 && <Divider />}
-                </div>
-              ))}
-            </List>
+            <ClientResultsList
+              clients={data.searchResults.clients}
+              onClientSelect={handleClientSelect}
+              isSelecting={loading.isSelecting}
+            />
           </CardContent>
         </Card>
       )}
 
-      {/* Відсутні результати */}
-      {searchTerm && !loading.isSearching && !loading.isTyping && !computed.hasSearchResults && (
-        <Alert severity="info" sx={{ mb: 3 }}>
-          За запитом &ldquo;{searchTerm}&rdquo; клієнтів не знайдено. Створіть нового клієнта.
-        </Alert>
-      )}
-
-      {/* Вибраний клієнт */}
-      {computed.hasSelectedClient && data.selectedClient && (
-        <Paper
-          sx={{
-            p: 2,
-            mb: 3,
-            bgcolor: 'success.50',
-            border: '1px solid',
-            borderColor: 'success.200',
-          }}
-        >
-          <Typography variant="h6" color="success.main" gutterBottom>
-            ✅ Клієнт обраний
-          </Typography>
-          <Typography variant="body1">
-            {data.selectedClient.firstName} {data.selectedClient.lastName}
-          </Typography>
-          {data.selectedClient.phone && (
-            <Typography variant="body2" color="text.secondary">
-              Телефон: {data.selectedClient.phone}
+      {/* Повідомлення про відсутність результатів */}
+      {data.searchResults?.clients &&
+        data.searchResults.clients.length === 0 &&
+        ui.isSearchActive && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            <Typography variant="body2">
+              За вашим запитом клієнтів не знайдено. Ви можете створити нового клієнта.
             </Typography>
-          )}
-        </Paper>
-      )}
+          </Alert>
+        )}
 
-      {/* Дії */}
-      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 3 }}>
+      {/* Кнопка створення нового клієнта */}
+      <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
         <Button
           variant="outlined"
-          startIcon={<PersonAddIcon />}
-          onClick={handleCreateNew}
           size="large"
+          startIcon={<AddIcon />}
+          onClick={onCreateNewClient}
+          sx={{ minWidth: 200 }}
         >
           Створити нового клієнта
         </Button>
+      </Stack>
 
-        {computed.hasSelectedClient && (
-          <Button
-            variant="contained"
-            onClick={() => actions.completeSearch()}
-            disabled={loading.isCompleting}
-            size="large"
-          >
-            {loading.isCompleting ? 'Завершення...' : 'Підтвердити вибір'}
-          </Button>
-        )}
-      </Box>
+      {/* Помилки */}
+      {(mutations.searchClients.error || mutations.selectClient.error) && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          <Typography variant="body2">
+            Помилка:{' '}
+            {mutations.searchClients.error?.message || mutations.selectClient.error?.message}
+          </Typography>
+        </Alert>
+      )}
     </Box>
   );
 };

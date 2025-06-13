@@ -1,22 +1,50 @@
-// 🔥 ЕТАП 4: ПУБЛІЧНЕ API - wizard/main domain
-// Експорт тільки публічного API для використання в UI
+// Публічне API для Main Wizard домену
 
-// 🎯 Головний композиційний хук
-export { useMain } from './hooks/use-main.hook';
-export type { UseMainReturn } from './hooks/use-main.hook';
+// Основні компоненти
+export { useMainWizardStore, useMainWizardSelectors } from './wizard.store';
+export { useMainWizard } from './use-main-wizard.hook';
+export type { UseMainWizardReturn } from './use-main-wizard.hook';
 
-// 🎨 Константи та утиліти для UI
+// Константи та типи
 export {
-  WIZARD_STAGES,
-  WIZARD_STAGE_NAMES,
-  mapApiStateToStage,
-  getStageProgress,
-  isStageCompleted,
-  isStageActive,
-  canNavigateToStage,
-} from './utils/wizard-stage-mapping';
-export type { WizardStage } from './utils/wizard-stage-mapping';
+  MAIN_WIZARD_STATES,
+  MAIN_WIZARD_EVENTS,
+  MAIN_WIZARD_TRANSITIONS,
+  MAIN_WIZARD_VALIDATION_RULES,
+  type MainWizardState,
+  type MainWizardEvent,
+} from './wizard.constants';
 
-// 🚫 НЕ ЕКСПОРТУЄМО:
-// - Внутрішні деталі store (useMainStore, mainSelectors)
-// - Внутрішні типи (MainUIState, MainUIActions)
+// Схеми (Orval схеми)
+export {
+  // TypeScript типи
+  type WizardState,
+  type WizardResponse,
+
+  // Zod схеми
+  WizardStartResponseSchema,
+  WizardGoBackParamsSchema,
+  WizardGoBackResponseSchema,
+  WizardCompleteStage1ParamsSchema,
+  WizardCompleteStage1ResponseSchema,
+  WizardCompleteStage2ParamsSchema,
+  WizardCompleteStage2ResponseSchema,
+  WizardCompleteStage3ParamsSchema,
+  WizardCompleteStage3ResponseSchema,
+  WizardCompleteOrderParamsSchema,
+  WizardCompleteOrderResponseSchema,
+  WizardCancelOrderParamsSchema,
+  WizardCancelOrderResponseSchema,
+  WizardClearAllSessionsResponseSchema,
+  WizardGetWorkflowResponseSchema,
+  WizardGetSystemStatsResponseSchema,
+  WizardGetStageStatusParamsSchema,
+  WizardGetStageStatusResponseSchema,
+  WizardGetStageMethodsParamsSchema,
+  WizardGetStageMethodsResponseSchema,
+  WizardGetStageInfoParamsSchema,
+  WizardGetStageInfoResponseSchema,
+  WizardGetStagesStatusResponseSchema,
+  WizardGetCurrentStateParamsSchema,
+  WizardGetCurrentStateResponseSchema,
+} from './schemas';

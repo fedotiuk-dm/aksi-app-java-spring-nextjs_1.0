@@ -1,69 +1,102 @@
 'use client';
 
-import { FC } from 'react';
+import React from 'react';
 import {
   Box,
-  Card,
-  CardContent,
-  Typography,
   Stepper,
   Step,
   StepLabel,
+  Typography,
   Alert,
   LinearProgress,
-  Paper,
-  Chip,
-  Button,
+  Card,
+  CardContent,
 } from '@mui/material';
-import {
-  ArrowForward as ArrowForwardIcon,
-  ArrowBack as ArrowBackIcon,
-  CheckCircle as CheckCircleIcon,
-} from '@mui/icons-material';
 
-import { useStage1Workflow } from '@/domains/wizard/stage1';
-import { STAGE1_SUBSTEPS } from '@/domains/wizard/stage1/utils/stage1-mapping';
-
+// UI компоненти кроків
 import { ClientSearchStep } from './ClientSearchStep';
-import { ClientCreateStep } from './ClientCreateStep';
+import { ClientCreationStep } from './ClientCreationStep';
 import { BasicOrderInfoStep } from './BasicOrderInfoStep';
 
 interface Stage1ContainerProps {
-  onStageCompleted?: () => void;
+  onStageCompleted: () => void;
 }
 
-const STEP_LABELS = ['Пошук клієнта', 'Створення клієнта', 'Інформація замовлення'];
-const TEXT_SECONDARY_COLOR = 'text.secondary';
-const BODY2_VARIANT = 'body2';
+// Кроки Stage1
+enum Stage1Steps {
+  CLIENT_SEARCH = 'CLIENT_SEARCH',
+  CLIENT_CREATION = 'CLIENT_CREATION',
+  BASIC_ORDER_INFO = 'BASIC_ORDER_INFO',
+}
 
-export const Stage1Container: FC<Stage1ContainerProps> = ({ onStageCompleted }) => {
-  const { substeps, workflow, navigation, readiness, loading } = useStage1Workflow();
+const stepLabels = {
+  [Stage1Steps.CLIENT_SEARCH]: 'Пошук клієнта',
+  [Stage1Steps.CLIENT_CREATION]: 'Створення клієнта',
+  [Stage1Steps.BASIC_ORDER_INFO]: 'Базова інформація',
+};
 
-  const handleClientSelected = () => {
-    navigation.navigateToSubstep(STAGE1_SUBSTEPS.BASIC_ORDER_INFO);
-  };
+export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageCompleted }) => {
+  // ========== ЛОКАЛЬНИЙ UI СТАН ==========
+  const [currentStep, setCurrentStep] = React.useState<Stage1Steps>(Stage1Steps.CLIENT_SEARCH);
+  const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const handleClientCreated = () => {
-    navigation.navigateToSubstep(STAGE1_SUBSTEPS.BASIC_ORDER_INFO);
+  // ========== EVENT HANDLERS ==========
+  const handleClientSelected = (clientId: string) => {
+    setSelectedClientId(clientId);
+    setCurrentStep(Stage1Steps.BASIC_ORDER_INFO);
   };
 
   const handleCreateNewClient = () => {
-    navigation.navigateToSubstep(STAGE1_SUBSTEPS.CLIENT_CREATION);
+    setCurrentStep(Stage1Steps.CLIENT_CREATION);
   };
 
-  const handleCancelCreateClient = () => {
-    navigation.navigateToSubstep(STAGE1_SUBSTEPS.CLIENT_SEARCH);
+  const handleClientCreated = (clientId: string) => {
+    setSelectedClientId(clientId);
+    setCurrentStep(Stage1Steps.BASIC_ORDER_INFO);
   };
 
-  const handleBasicOrderInfoCompleted = () => {
-    if (readiness.isStage1Ready) {
-      onStageCompleted?.();
+  const handleGoBackToSearch = () => {
+    setCurrentStep(Stage1Steps.CLIENT_SEARCH);
+    setSelectedClientId(null);
+  };
+
+  const handleGoBackToClient = () => {
+    if (selectedClientId) {
+      // Якщо клієнт вже обраний, повертаємося до пошуку
+      setCurrentStep(Stage1Steps.CLIENT_SEARCH);
+    } else {
+      // Якщо клієнт був створений, повертаємося до створення
+      setCurrentStep(Stage1Steps.CLIENT_CREATION);
     }
   };
 
-  const renderCurrentStep = () => {
-    switch (workflow.currentSubstep) {
-      case 'client-search':
+  const handleOrderInfoCompleted = () => {
+    setIsLoading(true);
+    // Симуляція завершення етапу
+    setTimeout(() => {
+      setIsLoading(false);
+      onStageCompleted();
+    }, 1000);
+  };
+
+  // ========== RENDER HELPERS ==========
+  const getCurrentStepIndex = (): number => {
+    switch (currentStep) {
+      case Stage1Steps.CLIENT_SEARCH:
+        return 0;
+      case Stage1Steps.CLIENT_CREATION:
+        return 1;
+      case Stage1Steps.BASIC_ORDER_INFO:
+        return 2;
+      default:
+        return 0;
+    }
+  };
+
+  const renderCurrentStep = (): React.ReactNode => {
+    switch (currentStep) {
+      case Stage1Steps.CLIENT_SEARCH:
         return (
           <ClientSearchStep
             onClientSelected={handleClientSelected}
@@ -71,223 +104,89 @@ export const Stage1Container: FC<Stage1ContainerProps> = ({ onStageCompleted }) 
           />
         );
 
-      case 'client-creation':
+      case Stage1Steps.CLIENT_CREATION:
         return (
-          <ClientCreateStep
+          <ClientCreationStep
             onClientCreated={handleClientCreated}
-            onCancel={handleCancelCreateClient}
+            onGoBack={handleGoBackToSearch}
           />
         );
 
-      case 'basic-order-info':
-        return <BasicOrderInfoStep onCompleted={handleBasicOrderInfoCompleted} />;
+      case Stage1Steps.BASIC_ORDER_INFO:
+        if (!selectedClientId) {
+          return <Alert severity="error">Клієнт не обраний</Alert>;
+        }
+        return (
+          <BasicOrderInfoStep
+            selectedClientId={selectedClientId}
+            onOrderInfoCompleted={handleOrderInfoCompleted}
+            onGoBack={handleGoBackToClient}
+          />
+        );
 
       default:
-        return null;
+        return <Alert severity="error">Невідомий крок: {currentStep}</Alert>;
     }
   };
 
+  // ========== RENDER ==========
   return (
-    <Box sx={{ maxWidth: 1000, mx: 'auto', p: 2 }}>
-      {/* Заголовок Stage1 */}
-      <Typography variant="h4" component="h1" gutterBottom align="center">
-        Етап 1: Клієнт та базова інформація
+    <Box sx={{ width: '100%' }}>
+      {/* Заголовок етапу */}
+      <Typography variant="h4" component="h2" gutterBottom align="center">
+        Етап 1: Клієнт та базова інформація замовлення
       </Typography>
 
-      <Typography variant="body1" color={TEXT_SECONDARY_COLOR} align="center" sx={{ mb: 4 }}>
-        Знайдіть або створіть клієнта та вкажіть основну інформацію для замовлення
+      <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 4 }}>
+        Оберіть або створіть клієнта та заповніть базову інформацію замовлення
       </Typography>
 
-      {/* Індикатор прогресу */}
+      {/* Степпер */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Box
-            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
-          >
-            <Typography variant="h6">Прогрес виконання</Typography>
-            <Typography variant={BODY2_VARIANT} color={TEXT_SECONDARY_COLOR}>
-              {workflow.currentIndex + 1} з {workflow.totalSubsteps}
-            </Typography>
-          </Box>
-
-          <Stepper activeStep={workflow.currentIndex} alternativeLabel>
-            {STEP_LABELS.map((label, index) => {
-              const isCompleted =
-                index === 0
-                  ? readiness.isClientSearchCompleted
-                  : index === 1
-                    ? readiness.isClientCreateCompleted
-                    : index === 2
-                      ? readiness.isBasicOrderInfoCompleted
-                      : false;
-
-              return (
-                <Step key={index} completed={isCompleted}>
-                  <StepLabel
-                    StepIconComponent={({ active, completed }) => {
-                      if (completed) {
-                        return <CheckCircleIcon color="success" />;
-                      }
-                      return (
-                        <Box
-                          sx={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: '50%',
-                            bgcolor: active ? 'primary.main' : 'grey.300',
-                            color: active ? 'primary.contrastText' : TEXT_SECONDARY_COLOR,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '0.75rem',
-                            fontWeight: 'bold',
-                          }}
-                        >
-                          {index + 1}
-                        </Box>
-                      );
-                    }}
-                  >
-                    {label}
-                  </StepLabel>
-                </Step>
-              );
-            })}
+          <Stepper activeStep={getCurrentStepIndex()} alternativeLabel>
+            <Step>
+              <StepLabel>Пошук клієнта</StepLabel>
+            </Step>
+            <Step>
+              <StepLabel optional={<Typography variant="caption">Опціонально</Typography>}>
+                Створення клієнта
+              </StepLabel>
+            </Step>
+            <Step>
+              <StepLabel>Базова інформація</StepLabel>
+            </Step>
           </Stepper>
-
-          {/* Прогрес-бар */}
-          <Box sx={{ mt: 2 }}>
-            <LinearProgress
-              variant="determinate"
-              value={workflow.progress}
-              sx={{ height: 8, borderRadius: 4 }}
-            />
-            <Typography
-              variant="caption"
-              color={TEXT_SECONDARY_COLOR}
-              sx={{ mt: 0.5, display: 'block' }}
-            >
-              {Math.round(workflow.progress)}% завершено
-            </Typography>
-          </Box>
         </CardContent>
       </Card>
 
-      {/* Стан завантаження */}
-      {loading.isAnyLoading && (
-        <Alert severity="info" sx={{ mb: 3 }}>
-          Виконання операції...
-        </Alert>
-      )}
-
-      {/* Стан готовності підетапів */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Стан підетапів
-          </Typography>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Chip
-                label="Клієнт"
-                color={readiness.isClientSearchCompleted ? 'success' : 'default'}
-                variant={readiness.isClientSearchCompleted ? 'filled' : 'outlined'}
-                size="small"
-              />
-              {readiness.isClientSearchCompleted ? (
-                <Typography variant={BODY2_VARIANT}>
-                  ✅ Клієнт обраний: {substeps.clientSearch.computed.selectedClient?.firstName}{' '}
-                  {substeps.clientSearch.computed.selectedClient?.lastName}
-                </Typography>
-              ) : (
-                <Typography variant={BODY2_VARIANT} color={TEXT_SECONDARY_COLOR}>
-                  ⏳ Потрібно обрати або створити клієнта
-                </Typography>
-              )}
-            </Box>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Chip
-                label="Замовлення"
-                color={readiness.isBasicOrderInfoCompleted ? 'success' : 'default'}
-                variant={readiness.isBasicOrderInfoCompleted ? 'filled' : 'outlined'}
-                size="small"
-              />
-              {readiness.isBasicOrderInfoCompleted ? (
-                <Typography variant={BODY2_VARIANT}>✅ Основна інформація заповнена</Typography>
-              ) : (
-                <Typography variant={BODY2_VARIANT} color={TEXT_SECONDARY_COLOR}>
-                  ⏳ Потрібно заповнити основну інформацію
-                </Typography>
-              )}
-            </Box>
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* Поточний крок */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent sx={{ p: 0 }}>{renderCurrentStep()}</CardContent>
-      </Card>
-
-      {/* Навігація між підетапами */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          onClick={navigation.previousSubstep}
-          disabled={!navigation.canGoPrevious}
-        >
-          Попередній підетап
-        </Button>
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant={BODY2_VARIANT} color={TEXT_SECONDARY_COLOR}>
-            {STEP_LABELS[workflow.currentIndex]}
+      {/* Індикатор завантаження */}
+      {isLoading && (
+        <Box sx={{ mb: 2 }}>
+          <LinearProgress />
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: 'center' }}>
+            Завершення етапу 1...
           </Typography>
         </Box>
-
-        <Button
-          variant="contained"
-          endIcon={<ArrowForwardIcon />}
-          onClick={navigation.nextSubstep}
-          disabled={!navigation.canGoNext}
-        >
-          Наступний підетап
-        </Button>
-      </Box>
-
-      {/* Готовність до переходу на Stage2 */}
-      {readiness.isStage1Ready && (
-        <Paper
-          sx={{
-            p: 3,
-            mt: 3,
-            bgcolor: 'success.50',
-            border: '1px solid',
-            borderColor: 'success.200',
-            textAlign: 'center',
-          }}
-        >
-          <CheckCircleIcon color="success" sx={{ fontSize: 48, mb: 2 }} />
-          <Typography variant="h5" color="success.main" gutterBottom>
-            Етап 1 завершено!
-          </Typography>
-          <Typography variant="body1" color={TEXT_SECONDARY_COLOR} sx={{ mb: 2 }}>
-            Всі необхідні дані заповнені. Можна переходити до наступного етапу.
-          </Typography>
-
-          <Button
-            variant="contained"
-            size="large"
-            onClick={onStageCompleted}
-            endIcon={<ArrowForwardIcon />}
-          >
-            Перейти до Етапу 2
-          </Button>
-        </Paper>
       )}
+
+      {/* Поточний крок */}
+      <Box sx={{ minHeight: 600 }}>{renderCurrentStep()}</Box>
+
+      {/* Інформація про прогрес */}
+      <Card sx={{ mt: 3, bgcolor: 'grey.50' }}>
+        <CardContent>
+          <Typography variant="body2" color="text.secondary" align="center">
+            <strong>Поточний крок:</strong> {stepLabels[currentStep]}
+            {selectedClientId && (
+              <>
+                {' • '}
+                <strong>Клієнт обраний:</strong> ✓
+              </>
+            )}
+          </Typography>
+        </CardContent>
+      </Card>
     </Box>
   );
 };
