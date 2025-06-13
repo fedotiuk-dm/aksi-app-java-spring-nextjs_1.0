@@ -17,7 +17,7 @@ import { PersonAdd as PersonAddIcon, ArrowBack as ArrowBackIcon } from '@mui/ico
 import { useClientCreation } from '@/domains/wizard/stage1/client-creation';
 
 // Загальні компоненти
-import { ClientCreationForm } from '../components';
+import { ClientCreationForm } from './components';
 
 interface ClientCreationStepProps {
   onClientCreated: (clientId: string) => void;

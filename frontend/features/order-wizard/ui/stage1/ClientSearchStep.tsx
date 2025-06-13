@@ -8,7 +8,7 @@ import { Search as SearcIcon, Add as AddIcon } from '@mui/icons-material';
 import { useClientSearchDebounce } from '@/domains/wizard/stage1/client-search';
 
 // Загальні компоненти
-import { ClientSearchForm, ClientResultsList } from '../components';
+import { ClientSearchForm, ClientResultsList } from './components';
 
 interface ClientSearchStepProps {
   onClientSelected: (clientId: string) => void;

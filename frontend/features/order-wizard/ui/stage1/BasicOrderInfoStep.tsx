@@ -21,7 +21,7 @@ import {
 import { useBasicOrderInfo } from '@/domains/wizard/stage1/basic-order-info';
 
 // Компоненти
-import { BasicOrderInfoForm } from '../components';
+import { BasicOrderInfoForm } from './components';
 
 interface BasicOrderInfoStepProps {
   selectedClientId: string;
