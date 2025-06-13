@@ -1,20 +1,25 @@
 // 🎯 Константи та маппінг для Stage1 Order Wizard
 // Винесено з UI компонентів для повторного використання
 
-// 📋 Константи підетапів Stage1
+// 📋 Константи підетапів Stage1 - СПРОЩЕНА ЛОГІКА
 export const STAGE1_SUBSTEPS = {
-  CLIENT_SEARCH: 'client-search',
-  CLIENT_CREATION: 'client-creation',
-  BASIC_ORDER_INFO: 'basic-order-info',
+  CLIENT_SELECTION: 'client-selection', // Пошук або створення клієнта
+  BRANCH_SELECTION: 'branch-selection', // Вибір філії та створення ордера
 } as const;
 
 export const STAGE1_SUBSTEP_NAMES = {
-  'client-search': 'Пошук або вибір клієнта',
-  'client-creation': 'Створення нового клієнта',
-  'basic-order-info': 'Базова інформація замовлення',
+  'client-selection': 'Вибір або створення клієнта',
+  'branch-selection': 'Вибір філії та створення замовлення',
+} as const;
+
+// 📋 Режими роботи з клієнтом
+export const CLIENT_MODES = {
+  SEARCH: 'search',
+  CREATE: 'create',
 } as const;
 
 export type Stage1Substep = (typeof STAGE1_SUBSTEPS)[keyof typeof STAGE1_SUBSTEPS];
+export type ClientMode = (typeof CLIENT_MODES)[keyof typeof CLIENT_MODES];
 
 // 📋 Константи для клієнтського пошуку
 export const CLIENT_SEARCH_CRITERIA = {
@@ -61,9 +66,14 @@ export const INFO_SOURCE_NAMES = {
 
 // 🎨 Допоміжні функції для UI
 export const getSubstepProgress = (currentSubstep: Stage1Substep): number => {
-  const substeps = Object.values(STAGE1_SUBSTEPS);
-  const currentIndex = substeps.indexOf(currentSubstep);
-  return ((currentIndex + 1) / substeps.length) * 100;
+  switch (currentSubstep) {
+    case STAGE1_SUBSTEPS.CLIENT_SELECTION:
+      return 50; // 50% - клієнт обраний/створений
+    case STAGE1_SUBSTEPS.BRANCH_SELECTION:
+      return 100; // 100% - філія обрана, ордер створений
+    default:
+      return 0;
+  }
 };
 
 export const isSubstepCompleted = (
@@ -84,22 +94,26 @@ export const canNavigateToSubstep = (
   targetSubstep: Stage1Substep,
   currentSubstep: Stage1Substep
 ): boolean => {
-  const substeps = Object.values(STAGE1_SUBSTEPS);
-  const targetIndex = substeps.indexOf(targetSubstep);
-  const currentIndex = substeps.indexOf(currentSubstep);
-  // Можна переходити тільки на попередні підетапи або поточний
-  return targetIndex <= currentIndex;
+  // Завжди можна повернутися до вибору клієнта
+  if (targetSubstep === STAGE1_SUBSTEPS.CLIENT_SELECTION) {
+    return true;
+  }
+
+  // До вибору філії можна перейти тільки після вибору клієнта
+  if (targetSubstep === STAGE1_SUBSTEPS.BRANCH_SELECTION) {
+    return currentSubstep === STAGE1_SUBSTEPS.CLIENT_SELECTION;
+  }
+
+  return false;
 };
 
 // 🔄 Маппінг для валідації форм
 export const getRequiredFieldsForSubstep = (substep: Stage1Substep): string[] => {
   switch (substep) {
-    case STAGE1_SUBSTEPS.CLIENT_SEARCH:
-      return ['clientSearchTerm'];
-    case STAGE1_SUBSTEPS.CLIENT_CREATION:
-      return ['firstName', 'lastName', 'phone'];
-    case STAGE1_SUBSTEPS.BASIC_ORDER_INFO:
-      return ['selectedBranchId', 'uniqueTag', 'receiptNumber'];
+    case STAGE1_SUBSTEPS.CLIENT_SELECTION:
+      return ['selectedClientId']; // Потрібен обраний клієнт
+    case STAGE1_SUBSTEPS.BRANCH_SELECTION:
+      return ['selectedBranchId']; // Потрібна обрана філія
     default:
       return [];
   }

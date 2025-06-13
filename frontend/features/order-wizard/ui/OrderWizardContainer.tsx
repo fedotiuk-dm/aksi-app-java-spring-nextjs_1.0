@@ -28,7 +28,7 @@ import React from 'react';
 import { useMain, WIZARD_STAGES, WIZARD_STAGE_NAMES } from '@/domains/wizard';
 
 // Імпорт компонентів етапів
-import { Stage1ClientSelection } from './stage1/Stage1ClientSelection';
+import { Stage1SimplifiedContainer } from './stage1/Stage1SimplifiedContainer';
 // import { Stage2ItemManager } from './stage2/Stage2ItemManager';
 // import { Stage3OrderParameters } from './stages/Stage3OrderParameters';
 // import { Stage4Finalization } from './stages/Stage4Finalization';
@@ -102,7 +102,7 @@ export const OrderWizardContainer: React.FC = () => {
     // Рендер етапів на основі currentStage
     switch (currentStage) {
       case WIZARD_STAGES.CLIENT_SELECTION:
-        return <Stage1ClientSelection />;
+        return <Stage1SimplifiedContainer onStageCompleted={() => actions.completeStage1()} />;
 
       case WIZARD_STAGES.ITEMS_MANAGEMENT:
         return (

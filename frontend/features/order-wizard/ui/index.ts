@@ -9,16 +9,9 @@
 export { OrderWizardContainer } from './OrderWizardContainer';
 
 // 🔍 Stage 1: Клієнт та базова інформація замовлення
-export {
-  Stage1ClientSelection,
-  ClientSelectionPanel,
-  ClientSearchSection,
-  NewClientForm,
-  CreateClientModal,
-  BranchSelectionPanel,
-  BranchSelectionSection,
-  BasicOrderInfoForm,
-} from './stage1';
+// ✅ НОВІ СПРОЩЕНІ КОМПОНЕНТИ (РЕКОМЕНДОВАНІ)
+export { Stage1SimplifiedContainer, ClientSelectionStep, BranchSelectionStep } from './stage1';
+
 
 // 🛍️ Stage 2: Менеджер предметів (буде додано пізніше)
 // export {

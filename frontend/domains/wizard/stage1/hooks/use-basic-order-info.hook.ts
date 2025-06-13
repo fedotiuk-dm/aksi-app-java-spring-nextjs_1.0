@@ -79,11 +79,20 @@ export const useBasicOrderInfo = () => {
     mutation: {
       onSuccess: (receiptNumber) => {
         console.log('✅ Номер квитанції згенеровано:', receiptNumber);
+        // Оновлюємо форму з новим номером
         form.setValue('receiptNumber', receiptNumber);
-        // Інвалідуємо кеш для оновлення даних
-        queryClient.invalidateQueries({
-          queryKey: ['stage1GetBasicOrderData', sessionId],
-        });
+
+        // Автоматично зберігаємо оновлену інформацію в API
+        if (sessionId) {
+          const currentFormData = form.getValues();
+          updateBasicOrderMutation.mutate({
+            sessionId,
+            data: {
+              ...currentFormData,
+              receiptNumber, // Використовуємо свіжо згенерований номер
+            },
+          });
+        }
       },
       onError: (error: ErrorResponse) => {
         console.error('❌ Помилка генерування номера квитанції:', error);
@@ -213,11 +222,15 @@ export const useBasicOrderInfo = () => {
         return;
       }
 
+      console.log('🏢 Вибір філії:', { sessionId, branchId });
+
       selectBranchMutation.mutate({
         sessionId,
         params: { branchId },
       });
       form.setValue('selectedBranchId', branchId);
+
+      console.log('📝 Форма оновлена з selectedBranchId:', branchId);
     },
     [sessionId, selectBranchMutation, form]
   );
@@ -264,6 +277,32 @@ export const useBasicOrderInfo = () => {
     const apiSelectedBranchId = basicOrderDataQuery.data?.selectedBranchId;
     const effectiveSelectedBranchId = apiSelectedBranchId || selectedBranchId;
 
+    const foundBranch = branchesQuery.data?.find(
+      (branch) => branch.id === effectiveSelectedBranchId
+    );
+
+    // Номер квитанції може бути з API або з форми
+    const apiReceiptNumber = basicOrderDataQuery.data?.receiptNumber;
+    const effectiveReceiptNumber = apiReceiptNumber || receiptNumber;
+
+    // Унікальна мітка може бути з API або з форми
+    const apiUniqueTag = basicOrderDataQuery.data?.uniqueTag;
+    const effectiveUniqueTag = apiUniqueTag || uniqueTag;
+
+    // Діагностика для розробки
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 Debug computed values:', {
+        apiReceiptNumber,
+        formReceiptNumber: receiptNumber,
+        effectiveReceiptNumber,
+        hasReceiptNumber: !!effectiveReceiptNumber,
+        apiSelectedBranchId,
+        formSelectedBranchId: selectedBranchId,
+        effectiveSelectedBranchId,
+        foundBranch: foundBranch?.name,
+      });
+    }
+
     return {
       // Стан форми
       isFormValid: form.formState.isValid,
@@ -271,7 +310,12 @@ export const useBasicOrderInfo = () => {
       hasErrors: Object.keys(form.formState.errors).length > 0,
 
       // Дані з API
-      basicOrderData: basicOrderDataQuery.data,
+      basicOrderData: {
+        ...basicOrderDataQuery.data,
+        receiptNumber: effectiveReceiptNumber,
+        uniqueTag: effectiveUniqueTag,
+        selectedBranchId: effectiveSelectedBranchId,
+      },
       branches: branchesQuery.data || [],
 
       // Можливість завершити
@@ -279,10 +323,10 @@ export const useBasicOrderInfo = () => {
       canSubmit: !!sessionId && form.formState.isValid && !updateBasicOrderMutation.isPending,
 
       // Стан полів
-      hasReceiptNumber: !!receiptNumber,
-      hasUniqueTag: !!uniqueTag,
+      hasReceiptNumber: !!effectiveReceiptNumber,
+      hasUniqueTag: !!effectiveUniqueTag,
       selectedBranchId: effectiveSelectedBranchId,
-      selectedBranch: branchesQuery.data?.find((branch) => branch.id === effectiveSelectedBranchId),
+      selectedBranch: foundBranch,
     };
   }, [
     form.formState.isValid,

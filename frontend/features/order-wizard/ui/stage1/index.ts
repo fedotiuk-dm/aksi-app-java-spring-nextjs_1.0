@@ -1,24 +1,12 @@
-/**
- * @fileoverview Індексний файл для UI компонентів Stage1
- *
- * Експортує всі компоненти першого етапу Order Wizard
- * Архітектура: "DDD inside, FSD outside" - тонкі UI компоненти
- */
+// 🎯 ЕКСПОРТ UI компонентів для Stage1 Order Wizard
 
-// 🎯 Головний контейнер Stage1
-export { Stage1ClientSelection } from './Stage1ClientSelection';
+// ✅ НОВІ СПРОЩЕНІ КОМПОНЕНТИ (РЕКОМЕНДОВАНІ)
+export { Stage1SimplifiedContainer } from './Stage1SimplifiedContainer';
+export { ClientSelectionStep } from './ClientSelectionStep';
+export { BranchSelectionStep } from './BranchSelectionStep';
 
-// 🔍 Панелі для вибору та пошуку клієнтів
-export { ClientSelectionPanel } from './ClientSelectionPanel';
-export { ClientSearchSection } from './ClientSearchSection';
-
-// 👤 Компоненти для створення клієнтів
-export { NewClientForm } from './NewClientForm';
-export { CreateClientModal } from './CreateClientModal';
-
-// 🏢 Компоненти для вибору філії та базової інформації
-export { BranchSelectionPanel } from './BranchSelectionPanel';
-export { BranchSelectionSection } from './BranchSelectionSection';
-export { BasicOrderInfoForm } from './BasicOrderInfoForm';
-
-// 📝 Типи для експорту будуть додані пізніше при необхідності
+// ⚠️ СТАРІ КОМПОНЕНТИ (для сумісності, будуть видалені)
+export { Stage1Container } from './Stage1Container';
+export { ClientSearchStep } from './ClientSearchStep';
+export { ClientCreateStep } from './ClientCreateStep';
+export { BasicOrderInfoStep } from './BasicOrderInfoStep';
