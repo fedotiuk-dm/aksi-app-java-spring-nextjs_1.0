@@ -5,6 +5,9 @@
 export { useBasicOrderInfo } from './use-basic-order-info.hook';
 export type { UseBasicOrderInfoReturn } from './use-basic-order-info.hook';
 
+// Константи для кроків
+export { STEPS } from './basic-order-info.store';
+
 // Схеми тільки якщо потрібні в UI компонентах
 export { branchSelectionFormSchema, uniqueTagFormSchema, orderSettingsFormSchema } from './schemas';
 

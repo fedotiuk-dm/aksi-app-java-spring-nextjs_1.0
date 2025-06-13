@@ -7,15 +7,12 @@ import { subscribeWithSelector } from 'zustand/middleware';
 // =================== ТИПИ ===================
 
 interface ClientSearchUIState {
-  // Session та workflow
-  sessionId: string | null;
-
   // Пошук
   searchTerm: string;
   searchType: 'name' | 'phone' | 'email';
   isSearchActive: boolean;
 
-  // Фільтри
+  // Фільтри та сортування
   showActiveOnly: boolean;
   sortBy: 'name' | 'phone' | 'createdAt';
   sortOrder: 'asc' | 'desc';
@@ -24,14 +21,13 @@ interface ClientSearchUIState {
   selectedClientId: string | null;
   confirmSelection: boolean;
 
-  // Відображення
+  // Пагінація та відображення
   showDetails: boolean;
   itemsPerPage: number;
   currentPage: number;
 
   // UI стани
   showFilters: boolean;
-  showSearchHistory: boolean;
 
   // Модалки та діалоги
   showSelectionConfirmDialog: boolean;
@@ -39,9 +35,6 @@ interface ClientSearchUIState {
 }
 
 interface ClientSearchUIActions {
-  // Session management
-  setSessionId: (sessionId: string | null) => void;
-
   // Search actions
   setSearchTerm: (term: string) => void;
   setSearchType: (type: 'name' | 'phone' | 'email') => void;
@@ -66,7 +59,6 @@ interface ClientSearchUIActions {
 
   // UI actions
   setShowFilters: (show: boolean) => void;
-  setShowSearchHistory: (show: boolean) => void;
 
   // Modal actions
   setShowSelectionConfirmDialog: (show: boolean) => void;
@@ -81,15 +73,12 @@ interface ClientSearchUIActions {
 // =================== INITIAL STATE ===================
 
 const initialState: ClientSearchUIState = {
-  // Session та workflow
-  sessionId: null,
-
   // Пошук
   searchTerm: '',
   searchType: 'name',
   isSearchActive: false,
 
-  // Фільтри
+  // Фільтри та сортування
   showActiveOnly: true,
   sortBy: 'name',
   sortOrder: 'asc',
@@ -98,14 +87,13 @@ const initialState: ClientSearchUIState = {
   selectedClientId: null,
   confirmSelection: false,
 
-  // Відображення
+  // Пагінація та відображення
   showDetails: true,
   itemsPerPage: 10,
   currentPage: 1,
 
   // UI стани
   showFilters: false,
-  showSearchHistory: false,
 
   // Модалки та діалоги
   showSelectionConfirmDialog: false,
@@ -115,11 +103,8 @@ const initialState: ClientSearchUIState = {
 // =================== STORE ===================
 
 export const useClientSearchStore = create<ClientSearchUIState & ClientSearchUIActions>()(
-  subscribeWithSelector((set, get) => ({
+  subscribeWithSelector((set) => ({
     ...initialState,
-
-    // Session management
-    setSessionId: (sessionId) => set({ sessionId }),
 
     // Search actions
     setSearchTerm: (searchTerm) => set({ searchTerm }),
@@ -161,7 +146,6 @@ export const useClientSearchStore = create<ClientSearchUIState & ClientSearchUIA
 
     // UI actions
     setShowFilters: (showFilters) => set({ showFilters }),
-    setShowSearchHistory: (showSearchHistory) => set({ showSearchHistory }),
 
     // Modal actions
     setShowSelectionConfirmDialog: (showSelectionConfirmDialog) =>
@@ -205,12 +189,15 @@ export const useSearchParams = () =>
     showActiveOnly: state.showActiveOnly,
     sortBy: state.sortBy,
     sortOrder: state.sortOrder,
+    currentPage: state.currentPage,
+    itemsPerPage: state.itemsPerPage,
   }));
 
-// Селектор для отримання параметрів відображення
+// Селектор для параметрів відображення
 export const useDisplayParams = () =>
   useClientSearchStore((state) => ({
     showDetails: state.showDetails,
+    showFilters: state.showFilters,
     itemsPerPage: state.itemsPerPage,
     currentPage: state.currentPage,
   }));

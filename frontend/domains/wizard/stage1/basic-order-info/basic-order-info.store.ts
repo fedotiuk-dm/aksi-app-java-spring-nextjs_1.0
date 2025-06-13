@@ -6,16 +6,24 @@ import { subscribeWithSelector } from 'zustand/middleware';
 
 // =================== ТИПИ ===================
 
-interface BasicOrderInfoUIState {
-  // Session та workflow
-  sessionId: string | null;
+// Константи для кроків
+const STEPS = {
+  BRANCH_SELECTION: 'branch-selection',
+  RECEIPT_GENERATION: 'receipt-generation',
+  UNIQUE_TAG_ENTRY: 'unique-tag-entry',
+  COMPLETED: 'completed',
+} as const;
 
+type StepType = (typeof STEPS)[keyof typeof STEPS];
+
+interface BasicOrderInfoUIState {
   // Базова інформація замовлення
   receiptNumber: string;
   uniqueTag: string;
   selectedBranchId: string | null;
 
-  // UI стани
+  // UI стани - послідовність кроків
+  currentStep: StepType;
   isReceiptNumberGenerated: boolean;
   isUniqueTagScanned: boolean;
   isBranchSelected: boolean;
@@ -37,13 +45,15 @@ interface BasicOrderInfoUIState {
 }
 
 interface BasicOrderInfoUIActions {
-  // Session management
-  setSessionId: (sessionId: string | null) => void;
-
   // Basic order data actions
   setReceiptNumber: (receiptNumber: string) => void;
   setUniqueTag: (uniqueTag: string) => void;
   setSelectedBranchId: (branchId: string | null) => void;
+
+  // Step management actions
+  setCurrentStep: (step: StepType) => void;
+  goToNextStep: () => void;
+  goToPreviousStep: () => void;
 
   // UI state actions
   setIsReceiptNumberGenerated: (generated: boolean) => void;
@@ -65,7 +75,10 @@ interface BasicOrderInfoUIActions {
   setIsFormDirty: (dirty: boolean) => void;
   setHasValidationErrors: (hasErrors: boolean) => void;
 
-  // Complex actions
+  // Complex actions with step logic
+  selectBranchAndProceed: (branchId: string) => void;
+  generateReceiptNumberAndProceed: (receiptNumber: string) => void;
+  enterUniqueTagAndComplete: (uniqueTag: string) => void;
   clearBasicOrderInfo: () => void;
   markFormDirty: () => void;
   resetToInitialState: () => void;
@@ -74,15 +87,13 @@ interface BasicOrderInfoUIActions {
 // =================== INITIAL STATE ===================
 
 const initialState: BasicOrderInfoUIState = {
-  // Session та workflow
-  sessionId: null,
-
   // Базова інформація замовлення
   receiptNumber: '',
   uniqueTag: '',
   selectedBranchId: null,
 
-  // UI стани
+  // UI стани - послідовність кроків
+  currentStep: STEPS.BRANCH_SELECTION,
   isReceiptNumberGenerated: false,
   isUniqueTagScanned: false,
   isBranchSelected: false,
@@ -106,16 +117,40 @@ const initialState: BasicOrderInfoUIState = {
 // =================== STORE ===================
 
 export const useBasicOrderInfoStore = create<BasicOrderInfoUIState & BasicOrderInfoUIActions>()(
-  subscribeWithSelector((set, get) => ({
+  subscribeWithSelector((set) => ({
     ...initialState,
-
-    // Session management
-    setSessionId: (sessionId) => set({ sessionId }),
 
     // Basic order data actions
     setReceiptNumber: (receiptNumber) => set({ receiptNumber, isFormDirty: true }),
     setUniqueTag: (uniqueTag) => set({ uniqueTag, isFormDirty: true }),
     setSelectedBranchId: (selectedBranchId) => set({ selectedBranchId, isFormDirty: true }),
+
+    // Step management actions
+    setCurrentStep: (step) => set({ currentStep: step }),
+    goToNextStep: () =>
+      set((state) => {
+        const stepOrder = [
+          STEPS.BRANCH_SELECTION,
+          STEPS.RECEIPT_GENERATION,
+          STEPS.UNIQUE_TAG_ENTRY,
+          STEPS.COMPLETED,
+        ];
+        const currentIndex = stepOrder.indexOf(state.currentStep);
+        const nextIndex = Math.min(currentIndex + 1, stepOrder.length - 1);
+        return { currentStep: stepOrder[nextIndex] };
+      }),
+    goToPreviousStep: () =>
+      set((state) => {
+        const stepOrder = [
+          STEPS.BRANCH_SELECTION,
+          STEPS.RECEIPT_GENERATION,
+          STEPS.UNIQUE_TAG_ENTRY,
+          STEPS.COMPLETED,
+        ];
+        const currentIndex = stepOrder.indexOf(state.currentStep);
+        const prevIndex = Math.max(currentIndex - 1, 0);
+        return { currentStep: stepOrder[prevIndex] };
+      }),
 
     // UI state actions
     setIsReceiptNumberGenerated: (isReceiptNumberGenerated) => set({ isReceiptNumberGenerated }),
@@ -137,24 +172,48 @@ export const useBasicOrderInfoStore = create<BasicOrderInfoUIState & BasicOrderI
     setIsFormDirty: (isFormDirty) => set({ isFormDirty }),
     setHasValidationErrors: (hasValidationErrors) => set({ hasValidationErrors }),
 
-    // Complex actions
+    // Complex actions with step logic
+    selectBranchAndProceed: (branchId) =>
+      set({
+        selectedBranchId: branchId,
+        isBranchSelected: true,
+        currentStep: STEPS.RECEIPT_GENERATION,
+        isFormDirty: true,
+      }),
+    generateReceiptNumberAndProceed: (receiptNumber) =>
+      set({
+        receiptNumber,
+        isReceiptNumberGenerated: true,
+        currentStep: STEPS.UNIQUE_TAG_ENTRY,
+        isFormDirty: true,
+      }),
+    enterUniqueTagAndComplete: (uniqueTag) =>
+      set({
+        uniqueTag,
+        isUniqueTagScanned: true,
+        currentStep: STEPS.COMPLETED,
+        isFormDirty: true,
+      }),
     clearBasicOrderInfo: () =>
       set({
         receiptNumber: '',
         uniqueTag: '',
         selectedBranchId: null,
+        currentStep: STEPS.BRANCH_SELECTION,
         isReceiptNumberGenerated: false,
         isUniqueTagScanned: false,
         isBranchSelected: false,
         isFormDirty: false,
         hasValidationErrors: false,
       }),
-
     markFormDirty: () => set({ isFormDirty: true }),
-
     resetToInitialState: () => set(initialState),
   }))
 );
+
+// =================== ЕКСПОРТИ ===================
+
+export { STEPS };
 
 // =================== СЕЛЕКТОРИ ===================
 

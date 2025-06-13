@@ -4,7 +4,6 @@ import React from 'react';
 import {
   List,
   ListItemButton,
-  ListItemText,
   Typography,
   Stack,
   Divider,
@@ -64,38 +63,43 @@ export const ClientResultsList: React.FC<ClientResultsListProps> = ({
                 },
               }}
             >
-              <ListItemText
-                primary={
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <PersonIcon color="primary" />
-                    <Typography variant="subtitle1">
-                      {client.firstName} {client.lastName}
-                    </Typography>
-                  </Stack>
-                }
-                secondary={
-                  <Stack spacing={0.5} sx={{ mt: 1 }}>
-                    {client.phone && (
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <PhoneIcon fontSize="small" color="action" />
-                        <Typography variant="body2">{client.phone}</Typography>
-                      </Stack>
-                    )}
-                    {client.email && (
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <EmailIcon fontSize="small" color="action" />
-                        <Typography variant="body2">{client.email}</Typography>
-                      </Stack>
-                    )}
-                    {client.address && (
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <LocationIcon fontSize="small" color="action" />
-                        <Typography variant="body2">{client.address}</Typography>
-                      </Stack>
-                    )}
-                  </Stack>
-                }
-              />
+              <Box sx={{ width: '100%' }}>
+                {/* Основна інформація */}
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                  <PersonIcon color="primary" />
+                  <Typography variant="subtitle1">
+                    {client.firstName} {client.lastName}
+                  </Typography>
+                </Stack>
+
+                {/* Додаткова інформація */}
+                <Stack spacing={0.5}>
+                  {client.phone && (
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <PhoneIcon fontSize="small" color="action" />
+                      <Typography variant="body2" color="text.secondary">
+                        {client.phone}
+                      </Typography>
+                    </Stack>
+                  )}
+                  {client.email && (
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <EmailIcon fontSize="small" color="action" />
+                      <Typography variant="body2" color="text.secondary">
+                        {client.email}
+                      </Typography>
+                    </Stack>
+                  )}
+                  {client.address && (
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <LocationIcon fontSize="small" color="action" />
+                      <Typography variant="body2" color="text.secondary">
+                        {client.address}
+                      </Typography>
+                    </Stack>
+                  )}
+                </Stack>
+              </Box>
             </ListItemButton>
             {index < clients.length - 1 && <Divider sx={{ my: 1 }} />}
           </React.Fragment>

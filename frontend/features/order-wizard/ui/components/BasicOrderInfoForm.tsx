@@ -78,29 +78,11 @@ export const BasicOrderInfoForm: React.FC<BasicOrderInfoFormProps> = ({
 }) => {
   return (
     <Stack spacing={3}>
-      {/* Номер квитанції */}
-      <Stack spacing={2}>
-        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <ReceiptIcon color="primary" />
-          Номер квитанції
-        </Typography>
-
-        <Paper sx={{ p: 2, bgcolor: 'grey.50', textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            Автоматично згенерований номер квитанції:
-          </Typography>
-          <Typography variant="h4" color="primary.main" sx={{ fontFamily: 'monospace' }}>
-            {receiptNumber || 'Генерується...'}
-          </Typography>
-          {isGeneratingReceipt && <CircularProgress size={20} sx={{ mt: 1 }} />}
-        </Paper>
-      </Stack>
-
-      {/* Вибір філії */}
+      {/* КРОК 1: Вибір філії */}
       <Stack spacing={2}>
         <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <BusinessIcon color="primary" />
-          Пункт прийому замовлення
+          Крок 1: Пункт прийому замовлення
         </Typography>
 
         <FormControl fullWidth error={!!errors.branchId}>
@@ -157,67 +139,89 @@ export const BasicOrderInfoForm: React.FC<BasicOrderInfoFormProps> = ({
         )}
       </Stack>
 
-      {/* Унікальна мітка */}
-      <Stack spacing={2}>
-        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <QrCodeIcon color="primary" />
-          Унікальна мітка
-        </Typography>
+      {/* КРОК 2: Номер квитанції (тільки після вибору філії) */}
+      {isBranchConfirmed && (
+        <Stack spacing={2}>
+          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <ReceiptIcon color="primary" />
+            Крок 2: Номер квитанції
+          </Typography>
 
-        <Typography variant="body2" color="text.secondary">
-          Введіть унікальну мітку вручну або скануйте QR-код
-        </Typography>
-
-        <TextField
-          value={uniqueTag}
-          onChange={(e) => onUniqueTagChange(e.target.value)}
-          label="Унікальна мітка *"
-          placeholder="Введіть або скануйте мітку"
-          fullWidth
-          disabled={isTagConfirmed}
-          error={!!errors.uniqueTag}
-          helperText={errors.uniqueTag}
-          InputProps={{
-            startAdornment: <QrCodeIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-          }}
-        />
-
-        {!isTagConfirmed && (
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="outlined"
-              onClick={onUniqueTagConfirm}
-              disabled={isUpdating || !uniqueTag}
-            >
-              {isUpdating ? (
-                <>
-                  <CircularProgress size={20} sx={{ mr: 1 }} />
-                  Встановлення...
-                </>
-              ) : (
-                'Підтвердити мітку'
-              )}
-            </Button>
-
-            <Button
-              variant="outlined"
-              color="secondary"
-              disabled={isUpdating}
-              onClick={onScanQrCode}
-            >
-              Сканувати QR-код
-            </Button>
-          </Stack>
-        )}
-
-        {isTagConfirmed && (
-          <Alert severity="success">
-            <Typography variant="body2">
-              <strong>Унікальна мітка:</strong> {uniqueTag}
+          <Paper sx={{ p: 2, bgcolor: 'grey.50', textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Автоматично згенерований номер квитанції:
             </Typography>
-          </Alert>
-        )}
-      </Stack>
+            <Typography variant="h4" color="primary.main" sx={{ fontFamily: 'monospace' }}>
+              {receiptNumber || 'Генерується...'}
+            </Typography>
+            {isGeneratingReceipt && <CircularProgress size={20} sx={{ mt: 1 }} />}
+          </Paper>
+        </Stack>
+      )}
+
+      {/* КРОК 3: Унікальна мітка (тільки після генерації номера) */}
+      {isBranchConfirmed && receiptNumber && (
+        <Stack spacing={2}>
+          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <QrCodeIcon color="primary" />
+            Крок 3: Унікальна мітка
+          </Typography>
+
+          <Typography variant="body2" color="text.secondary">
+            Введіть унікальну мітку вручну або скануйте QR-код
+          </Typography>
+
+          <TextField
+            value={uniqueTag}
+            onChange={(e) => onUniqueTagChange(e.target.value)}
+            label="Унікальна мітка *"
+            placeholder="Введіть або скануйте мітку"
+            fullWidth
+            disabled={isTagConfirmed}
+            error={!!errors.uniqueTag}
+            helperText={errors.uniqueTag}
+            InputProps={{
+              startAdornment: <QrCodeIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+            }}
+          />
+
+          {!isTagConfirmed && (
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="outlined"
+                onClick={onUniqueTagConfirm}
+                disabled={isUpdating || !uniqueTag}
+              >
+                {isUpdating ? (
+                  <>
+                    <CircularProgress size={20} sx={{ mr: 1 }} />
+                    Встановлення...
+                  </>
+                ) : (
+                  'Підтвердити мітку'
+                )}
+              </Button>
+
+              <Button
+                variant="outlined"
+                color="secondary"
+                disabled={isUpdating}
+                onClick={onScanQrCode}
+              >
+                Сканувати QR-код
+              </Button>
+            </Stack>
+          )}
+
+          {isTagConfirmed && (
+            <Alert severity="success">
+              <Typography variant="body2">
+                <strong>Унікальна мітка:</strong> {uniqueTag}
+              </Typography>
+            </Alert>
+          )}
+        </Stack>
+      )}
 
       {/* Дата створення замовлення */}
       <Stack spacing={2}>

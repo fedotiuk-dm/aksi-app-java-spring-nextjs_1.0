@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Stepper,
@@ -13,6 +13,9 @@ import {
   CardContent,
 } from '@mui/material';
 
+// Workflow хук
+import { useStage1Workflow } from '@/domains/wizard/stage1/workflow';
+
 // UI компоненти кроків
 import { ClientSearchStep } from './ClientSearchStep';
 import { ClientCreationStep } from './ClientCreationStep';
@@ -22,72 +25,108 @@ interface Stage1ContainerProps {
   onStageCompleted: () => void;
 }
 
-// Кроки Stage1
-enum Stage1Steps {
-  CLIENT_SEARCH = 'CLIENT_SEARCH',
-  CLIENT_CREATION = 'CLIENT_CREATION',
-  BASIC_ORDER_INFO = 'BASIC_ORDER_INFO',
-}
+// Константи для кроків
+const SUBSTEPS = {
+  CLIENT_SEARCH: 'client-search' as const,
+  CLIENT_CREATION: 'client-creation' as const,
+  BASIC_ORDER_INFO: 'basic-order-info' as const,
+};
 
 const stepLabels = {
-  [Stage1Steps.CLIENT_SEARCH]: 'Пошук клієнта',
-  [Stage1Steps.CLIENT_CREATION]: 'Створення клієнта',
-  [Stage1Steps.BASIC_ORDER_INFO]: 'Базова інформація',
+  [SUBSTEPS.CLIENT_SEARCH]: 'Пошук клієнта',
+  [SUBSTEPS.CLIENT_CREATION]: 'Створення клієнта',
+  [SUBSTEPS.BASIC_ORDER_INFO]: 'Базова інформація',
 };
 
 export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageCompleted }) => {
-  // ========== ЛОКАЛЬНИЙ UI СТАН ==========
-  const [currentStep, setCurrentStep] = React.useState<Stage1Steps>(Stage1Steps.CLIENT_SEARCH);
-  const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
+  // ========== WORKFLOW ХУКИ ==========
+  const { ui, loading, mutations } = useStage1Workflow();
+
+  // ========== ІНІЦІАЛІЗАЦІЯ ==========
+  useEffect(() => {
+    const initializeWizard = async () => {
+      if (!ui.isInitialized) {
+        try {
+          // Стартуємо wizard через backend API
+          const response = await mutations.startWizard.mutateAsync();
+
+          if (response?.sessionId) {
+            // Ініціалізуємо workflow з sessionId від backend
+            ui.initializeWorkflow(response.sessionId);
+          }
+        } catch (error) {
+          console.error('Помилка ініціалізації wizard:', error);
+          ui.setValidationError('Помилка ініціалізації. Спробуйте перезавантажити сторінку.');
+        }
+      }
+    };
+
+    initializeWizard();
+  }, [ui.isInitialized, mutations.startWizard, ui]);
 
   // ========== EVENT HANDLERS ==========
   const handleClientSelected = (clientId: string) => {
-    setSelectedClientId(clientId);
-    setCurrentStep(Stage1Steps.BASIC_ORDER_INFO);
+    // Зберігаємо selectedClientId в workflow
+    ui.setSelectedClientId(clientId);
+    // Переходимо до basic-order-info
+    ui.goToSubstep(SUBSTEPS.BASIC_ORDER_INFO);
+    ui.markSubstepCompleted(SUBSTEPS.CLIENT_SEARCH);
+    ui.setCanProceedToNext(true);
   };
 
   const handleCreateNewClient = () => {
-    setCurrentStep(Stage1Steps.CLIENT_CREATION);
+    // Переходимо до client-creation
+    ui.goToSubstep(SUBSTEPS.CLIENT_CREATION);
   };
 
   const handleClientCreated = (clientId: string) => {
-    setSelectedClientId(clientId);
-    setCurrentStep(Stage1Steps.BASIC_ORDER_INFO);
+    // Зберігаємо selectedClientId в workflow
+    ui.setSelectedClientId(clientId);
+    // Переходимо до basic-order-info після створення клієнта
+    ui.goToSubstep(SUBSTEPS.BASIC_ORDER_INFO);
+    ui.markSubstepCompleted(SUBSTEPS.CLIENT_CREATION);
+    ui.setCanProceedToNext(true);
   };
 
   const handleGoBackToSearch = () => {
-    setCurrentStep(Stage1Steps.CLIENT_SEARCH);
-    setSelectedClientId(null);
+    ui.goToSubstep(SUBSTEPS.CLIENT_SEARCH);
   };
 
   const handleGoBackToClient = () => {
-    if (selectedClientId) {
-      // Якщо клієнт вже обраний, повертаємося до пошуку
-      setCurrentStep(Stage1Steps.CLIENT_SEARCH);
+    // Якщо client-creation завершений, повертаємося туди
+    if (ui.completedSubsteps.has(SUBSTEPS.CLIENT_CREATION)) {
+      ui.goToSubstep(SUBSTEPS.CLIENT_CREATION);
     } else {
-      // Якщо клієнт був створений, повертаємося до створення
-      setCurrentStep(Stage1Steps.CLIENT_CREATION);
+      // Інакше повертаємося до пошуку
+      ui.goToSubstep(SUBSTEPS.CLIENT_SEARCH);
     }
   };
 
-  const handleOrderInfoCompleted = () => {
-    setIsLoading(true);
-    // Симуляція завершення етапу
-    setTimeout(() => {
-      setIsLoading(false);
-      onStageCompleted();
-    }, 1000);
+  const handleOrderInfoCompleted = async () => {
+    try {
+      // Завершуємо basic-order-info
+      ui.markSubstepCompleted(SUBSTEPS.BASIC_ORDER_INFO);
+
+      // Завершуємо весь Stage1 через API
+      if (ui.sessionId) {
+        await mutations.completeStage1.mutateAsync({ sessionId: ui.sessionId });
+        ui.completeWorkflow();
+        onStageCompleted();
+      }
+    } catch (error) {
+      console.error('Помилка завершення Stage1:', error);
+      ui.setValidationError('Помилка завершення етапу. Спробуйте ще раз.');
+    }
   };
 
   // ========== RENDER HELPERS ==========
   const getCurrentStepIndex = (): number => {
-    switch (currentStep) {
-      case Stage1Steps.CLIENT_SEARCH:
+    switch (ui.currentSubstep) {
+      case SUBSTEPS.CLIENT_SEARCH:
         return 0;
-      case Stage1Steps.CLIENT_CREATION:
+      case SUBSTEPS.CLIENT_CREATION:
         return 1;
-      case Stage1Steps.BASIC_ORDER_INFO:
+      case SUBSTEPS.BASIC_ORDER_INFO:
         return 2;
       default:
         return 0;
@@ -95,8 +134,16 @@ export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageComplet
   };
 
   const renderCurrentStep = (): React.ReactNode => {
-    switch (currentStep) {
-      case Stage1Steps.CLIENT_SEARCH:
+    if (!ui.isInitialized) {
+      return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+          <LinearProgress sx={{ width: '50%' }} />
+        </Box>
+      );
+    }
+
+    switch (ui.currentSubstep) {
+      case SUBSTEPS.CLIENT_SEARCH:
         return (
           <ClientSearchStep
             onClientSelected={handleClientSelected}
@@ -104,7 +151,7 @@ export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageComplet
           />
         );
 
-      case Stage1Steps.CLIENT_CREATION:
+      case SUBSTEPS.CLIENT_CREATION:
         return (
           <ClientCreationStep
             onClientCreated={handleClientCreated}
@@ -112,20 +159,17 @@ export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageComplet
           />
         );
 
-      case Stage1Steps.BASIC_ORDER_INFO:
-        if (!selectedClientId) {
-          return <Alert severity="error">Клієнт не обраний</Alert>;
-        }
+      case SUBSTEPS.BASIC_ORDER_INFO:
         return (
           <BasicOrderInfoStep
-            selectedClientId={selectedClientId}
+            selectedClientId={ui.selectedClientId || ''}
             onOrderInfoCompleted={handleOrderInfoCompleted}
             onGoBack={handleGoBackToClient}
           />
         );
 
       default:
-        return <Alert severity="error">Невідомий крок: {currentStep}</Alert>;
+        return <Alert severity="error">Невідомий крок: {ui.currentSubstep}</Alert>;
     }
   };
 
@@ -145,27 +189,36 @@ export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageComplet
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Stepper activeStep={getCurrentStepIndex()} alternativeLabel>
-            <Step>
+            <Step completed={ui.completedSubsteps.has(SUBSTEPS.CLIENT_SEARCH)}>
               <StepLabel>Пошук клієнта</StepLabel>
             </Step>
-            <Step>
+            <Step completed={ui.completedSubsteps.has(SUBSTEPS.CLIENT_CREATION)}>
               <StepLabel optional={<Typography variant="caption">Опціонально</Typography>}>
                 Створення клієнта
               </StepLabel>
             </Step>
-            <Step>
+            <Step completed={ui.completedSubsteps.has(SUBSTEPS.BASIC_ORDER_INFO)}>
               <StepLabel>Базова інформація</StepLabel>
             </Step>
           </Stepper>
         </CardContent>
       </Card>
 
+      {/* Помилки валідації */}
+      {ui.hasValidationErrors && ui.validationMessage && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {ui.validationMessage}
+        </Alert>
+      )}
+
       {/* Індикатор завантаження */}
-      {isLoading && (
+      {loading.isLoading && (
         <Box sx={{ mb: 2 }}>
           <LinearProgress />
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: 'center' }}>
-            Завершення етапу 1...
+            {loading.isInitializing && 'Ініціалізація...'}
+            {loading.isCompletingStage && 'Завершення етапу 1...'}
+            {loading.isSyncing && 'Синхронізація...'}
           </Typography>
         </Box>
       )}
@@ -177,11 +230,17 @@ export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageComplet
       <Card sx={{ mt: 3, bgcolor: 'grey.50' }}>
         <CardContent>
           <Typography variant="body2" color="text.secondary" align="center">
-            <strong>Поточний крок:</strong> {stepLabels[currentStep]}
-            {selectedClientId && (
+            <strong>Поточний крок:</strong> {stepLabels[ui.currentSubstep]}
+            {ui.sessionId && (
               <>
                 {' • '}
-                <strong>Клієнт обраний:</strong> ✓
+                <strong>Session ID:</strong> {ui.sessionId.slice(0, 8)}...
+              </>
+            )}
+            {ui.hasUnsavedChanges && (
+              <>
+                {' • '}
+                <strong>Незбережені зміни</strong> ⚠️
               </>
             )}
           </Typography>

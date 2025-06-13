@@ -40,6 +40,22 @@ export const BasicOrderInfoStep: React.FC<BasicOrderInfoStepProps> = ({
   // ========== ЛОКАЛЬНИЙ UI СТАН ==========
   const [errors, setErrors] = React.useState<{ branchId?: string; uniqueTag?: string }>({});
 
+  // ========== ІНІЦІАЛІЗАЦІЯ ==========
+  React.useEffect(() => {
+    const initializeBasicOrder = async () => {
+      if (ui.sessionId && !data.basicOrderData) {
+        try {
+          // Ініціалізуємо basic order workflow (без параметрів)
+          await mutations.initializeBasicOrder.mutateAsync();
+        } catch (error) {
+          console.error('Помилка ініціалізації basic order:', error);
+        }
+      }
+    };
+
+    initializeBasicOrder();
+  }, [ui.sessionId, data.basicOrderData, mutations.initializeBasicOrder]);
+
   // ========== EVENT HANDLERS ==========
   const handleBranchChange = (branchId: string) => {
     ui.setSelectedBranchId(branchId);
@@ -53,14 +69,44 @@ export const BasicOrderInfoStep: React.FC<BasicOrderInfoStepProps> = ({
     }
 
     try {
-      await mutations.updateBasicOrder.mutateAsync({
+      await mutations.selectBranch.mutateAsync({
         sessionId: ui.sessionId || '',
-        data: { selectedBranchId: ui.selectedBranchId },
+        params: { branchId: ui.selectedBranchId },
       });
-      ui.setIsBranchSelected(true);
+      // Використовуємо складну дію з стору для переходу до наступного кроку
+      ui.selectBranchAndProceed(ui.selectedBranchId);
+
+      // Автоматично генеруємо номер квитанції після вибору філії
+      await handleGenerateReceiptNumber();
     } catch (error) {
       console.error('Помилка вибору філії:', error);
       setErrors((prev) => ({ ...prev, branchId: 'Помилка вибору філії' }));
+    }
+  };
+
+  const handleGenerateReceiptNumber = async () => {
+    if (!ui.selectedBranchId || !data.branches) return;
+
+    try {
+      // Знаходимо код філії за ID
+      const selectedBranch = data.branches.find((branch) => branch.id === ui.selectedBranchId);
+      if (!selectedBranch?.code) {
+        console.error('Не знайдено код філії для ID:', ui.selectedBranchId);
+        return;
+      }
+
+      // Генеруємо номер квитанції через API
+      const receiptNumber = await mutations.generateReceiptNumber.mutateAsync({
+        sessionId: ui.sessionId || '',
+        params: { branchCode: selectedBranch.code },
+      });
+
+      if (receiptNumber) {
+        // Використовуємо складну дію з стору
+        ui.generateReceiptNumberAndProceed(receiptNumber);
+      }
+    } catch (error) {
+      console.error('Помилка генерації номера квитанції:', error);
     }
   };
 
@@ -83,7 +129,8 @@ export const BasicOrderInfoStep: React.FC<BasicOrderInfoStepProps> = ({
         sessionId: ui.sessionId || '',
         data: { uniqueTag: ui.uniqueTag },
       });
-      ui.setIsUniqueTagScanned(true);
+      // Використовуємо складну дію з стору
+      ui.enterUniqueTagAndComplete(ui.uniqueTag);
     } catch (error) {
       console.error('Помилка встановлення унікальної мітки:', error);
       setErrors((prev) => ({ ...prev, uniqueTag: 'Помилка встановлення мітки' }));
@@ -149,7 +196,7 @@ export const BasicOrderInfoStep: React.FC<BasicOrderInfoStepProps> = ({
           selectedBranchId={ui.selectedBranchId || ''}
           onBranchChange={handleBranchChange}
           availableBranches={
-            data.basicOrderData?.availableBranches?.map((branch) => ({
+            data.branches?.map((branch) => ({
               id: branch.id || '',
               name: branch.name || '',
               address: branch.address || '',

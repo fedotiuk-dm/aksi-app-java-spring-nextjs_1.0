@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { Box, Card, CardContent, Typography, Button, Alert, Stack } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
+import { Search as SearcIcon, Add as AddIcon } from '@mui/icons-material';
 
-// Доменна логіка
-import { useClientSearch } from '@/domains/wizard/stage1/client-search';
+// Доменна логіка - використовуємо новий debounce хук з workflow
+import { useClientSearchDebounce } from '@/domains/wizard/stage1/client-search';
 
 // Загальні компоненти
 import { ClientSearchForm, ClientResultsList } from '../components';
@@ -19,126 +19,89 @@ export const ClientSearchStep: React.FC<ClientSearchStepProps> = ({
   onClientSelected,
   onCreateNewClient,
 }) => {
-  // ========== ДОМЕННА ЛОГІКА ==========
-  const { ui, data, loading, mutations } = useClientSearch();
+  // ========== ДОМЕННА ЛОГІКА З DEBOUNCE + WORKFLOW ==========
+  const { ui, data, loading, computed, actions, debounce, workflow } = useClientSearchDebounce();
 
-  // ========== ЛОКАЛЬНИЙ UI СТАН ==========
-  const [showAdvancedSearch, setShowAdvancedSearch] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
-  const [phone, setPhone] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [address, setAddress] = React.useState('');
-
-  // ========== EVENT HANDLERS ==========
-  const handleQuickSearch = async () => {
-    if (searchTerm && ui.sessionId) {
-      await mutations.searchClients.mutateAsync({
-        sessionId: ui.sessionId,
-        data: { generalSearchTerm: searchTerm },
-      });
-    }
+  // ========== ОБРОБНИКИ ПОДІЙ ==========
+  const handleSearchTermChange = (value: string) => {
+    actions.searchWithDebounce(value);
   };
 
-  const handleAdvancedSearch = async () => {
-    if (ui.sessionId) {
-      await mutations.searchClients.mutateAsync({
-        sessionId: ui.sessionId,
-        data: { firstName, lastName, phone, email, address },
-      });
-    }
-  };
-
-  const handleClientSelect = async (clientId: string) => {
-    try {
-      if (ui.sessionId) {
-        await mutations.selectClient.mutateAsync({
-          sessionId: ui.sessionId,
-          params: { clientId },
-        });
-        onClientSelected(clientId);
-      }
-    } catch (error) {
-      console.error('Помилка вибору клієнта:', error);
-    }
+  const handleQuickSearch = () => {
+    actions.forceSearch();
   };
 
   const handleClearSearch = () => {
-    setSearchTerm('');
-    setFirstName('');
-    setLastName('');
-    setPhone('');
-    setEmail('');
-    setAddress('');
-    ui.clearSearch();
+    actions.clearSearch();
+  };
+
+  const handleClientSelect = (clientId: string) => {
+    ui.setSelectedClientId(clientId);
+    onClientSelected(clientId);
   };
 
   // ========== RENDER ==========
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
       {/* Заголовок */}
-      <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <SearchIcon color="primary" />
+      <Typography variant="h4" component="h1" gutterBottom align="center">
         Пошук клієнта
       </Typography>
 
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Знайдіть існуючого клієнта або створіть нового
-      </Typography>
+      {/* Статус workflow */}
+      {!workflow.ui.isInitialized && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          <Typography variant="body2">Ініціалізація системи...</Typography>
+        </Alert>
+      )}
 
       {/* Форма пошуку */}
-      <Card sx={{ mb: 2 }}>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <ClientSearchForm
-            // Швидкий пошук
-            searchTerm={searchTerm}
-            onSearchTermChange={setSearchTerm}
+            searchTerm={ui.searchTerm}
+            onSearchTermChange={handleSearchTermChange}
             onQuickSearch={handleQuickSearch}
-            // Розширений пошук
-            showAdvancedSearch={showAdvancedSearch}
-            onToggleAdvancedSearch={() => setShowAdvancedSearch(!showAdvancedSearch)}
-            firstName={firstName}
-            onFirstNameChange={setFirstName}
-            lastName={lastName}
-            onLastNameChange={setLastName}
-            phone={phone}
-            onPhoneChange={setPhone}
-            email={email}
-            onEmailChange={setEmail}
-            address={address}
-            onAddressChange={setAddress}
-            onAdvancedSearch={handleAdvancedSearch}
-            // Стан
-            isSearching={loading.isSearching}
+            isSearching={loading.isLoading}
             onClearSearch={handleClearSearch}
+            placeholder="Введіть прізвище, ім'я, телефон або email"
+            disabled={!computed.hasSessionId}
+            isAutoSearching={debounce.isSearching}
+            showAutoSearchIndicator={true}
           />
         </CardContent>
       </Card>
 
-      {/* Результати пошуку */}
-      {data.searchResults?.clients && data.searchResults.clients.length > 0 && (
-        <Card sx={{ mb: 2 }}>
-          <CardContent>
-            <ClientResultsList
-              clients={data.searchResults.clients}
-              onClientSelect={handleClientSelect}
-              isSelecting={loading.isSelecting}
-            />
-          </CardContent>
-        </Card>
-      )}
-
       {/* Повідомлення про відсутність результатів */}
-      {data.searchResults?.clients &&
-        data.searchResults.clients.length === 0 &&
-        ui.isSearchActive && (
+      {!computed.hasResults &&
+        ui.isSearchActive &&
+        computed.hasValidSearchTerm &&
+        !loading.isLoading && (
           <Alert severity="info" sx={{ mb: 2 }}>
             <Typography variant="body2">
-              За вашим запитом клієнтів не знайдено. Ви можете створити нового клієнта.
+              За вашим запитом &ldquo;{ui.searchTerm}&rdquo; клієнтів не знайдено. Ви можете
+              створити нового клієнта.
             </Typography>
           </Alert>
         )}
+
+      {/* Debounce індикатор */}
+      {debounce.isSearching && debounce.hasMinLength && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          <Typography variant="body2">
+            Автоматичний пошук за запитом &ldquo;{debounce.debouncedSearchTerm}&rdquo;...
+          </Typography>
+        </Alert>
+      )}
+
+      {/* Результати пошуку */}
+      {computed.hasResults && (
+        <ClientResultsList
+          clients={data.searchResults?.clients || []}
+          onClientSelect={handleClientSelect}
+          isSelecting={loading.isLoading}
+        />
+      )}
 
       {/* Кнопка створення нового клієнта */}
       <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
@@ -152,16 +115,6 @@ export const ClientSearchStep: React.FC<ClientSearchStepProps> = ({
           Створити нового клієнта
         </Button>
       </Stack>
-
-      {/* Помилки */}
-      {(mutations.searchClients.error || mutations.selectClient.error) && (
-        <Alert severity="error" sx={{ mt: 2 }}>
-          <Typography variant="body2">
-            Помилка:{' '}
-            {mutations.searchClients.error?.message || mutations.selectClient.error?.message}
-          </Typography>
-        </Alert>
-      )}
     </Box>
   );
 };

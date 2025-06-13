@@ -15,15 +15,25 @@ import {
   useStage1ResetBasicOrder,
   useStage1CancelBasicOrder,
   useStage1ClearBasicOrderErrors,
+  useStage1GetBranchesForSession,
+  useStage1SelectBranch,
+  useStage1GenerateReceiptNumber,
 } from '../../../../shared/api/generated/stage1';
 
 // Локальні імпорти
 import { useBasicOrderInfoStore } from './basic-order-info.store';
 
+// Workflow для отримання sessionId
+import { useStage1Workflow } from '../workflow';
+
 // =================== ТОНКА ОБГОРТКА ===================
 export const useBasicOrderInfo = () => {
   // UI стан з Zustand
   const uiState = useBasicOrderInfoStore();
+
+  // Workflow для sessionId
+  const workflow = useStage1Workflow();
+  const sessionId = workflow.ui.sessionId;
 
   // Orval API хуки (без додаткової логіки)
   const updateBasicOrderMutation = useStage1UpdateBasicOrder();
@@ -34,14 +44,20 @@ export const useBasicOrderInfo = () => {
   const resetBasicOrderMutation = useStage1ResetBasicOrder();
   const cancelBasicOrderMutation = useStage1CancelBasicOrder();
   const clearErrorsMutation = useStage1ClearBasicOrderErrors();
+  const selectBranchMutation = useStage1SelectBranch();
+  const generateReceiptNumberMutation = useStage1GenerateReceiptNumber();
 
   // Запити даних
-  const basicOrderDataQuery = useStage1GetBasicOrderData(uiState.sessionId || '', {
-    query: { enabled: !!uiState.sessionId },
+  const basicOrderDataQuery = useStage1GetBasicOrderData(sessionId || '', {
+    query: { enabled: !!sessionId },
   });
 
-  const basicOrderStateQuery = useStage1GetBasicOrderState(uiState.sessionId || '', {
-    query: { enabled: !!uiState.sessionId },
+  const basicOrderStateQuery = useStage1GetBasicOrderState(sessionId || '', {
+    query: { enabled: !!sessionId },
+  });
+
+  const branchesQuery = useStage1GetBranchesForSession(sessionId || '', {
+    query: { enabled: !!sessionId },
   });
 
   // Стан завантаження (простий)
@@ -55,8 +71,11 @@ export const useBasicOrderInfo = () => {
       isResetting: resetBasicOrderMutation.isPending,
       isCancelling: cancelBasicOrderMutation.isPending,
       isClearingErrors: clearErrorsMutation.isPending,
+      isSelectingBranch: selectBranchMutation.isPending,
+      isGeneratingReceiptNumber: generateReceiptNumberMutation.isPending,
       isLoadingData: basicOrderDataQuery.isLoading,
       isLoadingState: basicOrderStateQuery.isLoading,
+      isLoadingBranches: branchesQuery.isLoading,
       isLoading:
         updateBasicOrderMutation.isPending ||
         startWorkflowMutation.isPending ||
@@ -65,7 +84,9 @@ export const useBasicOrderInfo = () => {
         completeBasicOrderMutation.isPending ||
         resetBasicOrderMutation.isPending ||
         cancelBasicOrderMutation.isPending ||
-        clearErrorsMutation.isPending,
+        clearErrorsMutation.isPending ||
+        selectBranchMutation.isPending ||
+        generateReceiptNumberMutation.isPending,
     }),
     [
       updateBasicOrderMutation.isPending,
@@ -76,20 +97,63 @@ export const useBasicOrderInfo = () => {
       resetBasicOrderMutation.isPending,
       cancelBasicOrderMutation.isPending,
       clearErrorsMutation.isPending,
+      selectBranchMutation.isPending,
+      generateReceiptNumberMutation.isPending,
       basicOrderDataQuery.isLoading,
       basicOrderStateQuery.isLoading,
+      branchesQuery.isLoading,
+    ]
+  );
+
+  // Обчислені значення для правильної послідовності
+  const computed = useMemo(
+    () => ({
+      // Крок 1: Вибір філії
+      canSelectBranch: !!sessionId,
+      isBranchSelected: !!uiState.selectedBranchId,
+
+      // Крок 2: Генерація номера квитанції (після вибору філії)
+      canGenerateReceiptNumber: !!uiState.selectedBranchId,
+      isReceiptNumberGenerated: !!uiState.receiptNumber && uiState.isReceiptNumberGenerated,
+
+      // Крок 3: Введення унікальної мітки (після генерації номера)
+      canEnterUniqueTag: !!uiState.receiptNumber && uiState.isReceiptNumberGenerated,
+      isUniqueTagEntered: !!uiState.uniqueTag && uiState.uniqueTag.length >= 3,
+
+      // Загальна готовність
+      canProceedToNextStage:
+        !!uiState.selectedBranchId &&
+        !!uiState.receiptNumber &&
+        uiState.isReceiptNumberGenerated &&
+        !!uiState.uniqueTag &&
+        uiState.uniqueTag.length >= 3 &&
+        !uiState.hasValidationErrors,
+
+      hasSessionId: !!sessionId,
+    }),
+    [
+      sessionId,
+      uiState.selectedBranchId,
+      uiState.receiptNumber,
+      uiState.isReceiptNumberGenerated,
+      uiState.uniqueTag,
+      uiState.hasValidationErrors,
     ]
   );
 
   // =================== ПОВЕРНЕННЯ (ГРУПУВАННЯ) ===================
   return {
-    // UI стан (прямо з Zustand)
-    ui: uiState,
+    // UI стан (прямо з Zustand + sessionId з workflow)
+    ui: {
+      ...uiState,
+      sessionId,
+    },
 
     // API дані (прямо з Orval)
     data: {
       basicOrderData: basicOrderDataQuery.data,
       basicOrderState: basicOrderStateQuery.data,
+      branches: branchesQuery.data,
       workflowResult: startWorkflowMutation.data,
       validationResult: validateBasicOrderMutation.data,
       initializationResult: initializeBasicOrderMutation.data,
@@ -97,6 +161,9 @@ export const useBasicOrderInfo = () => {
 
     // Стан завантаження
     loading,
+
+    // Обчислені значення
+    computed,
 
     // API мутації (прямо з Orval)
     mutations: {
@@ -108,13 +175,19 @@ export const useBasicOrderInfo = () => {
       resetBasicOrder: resetBasicOrderMutation,
       cancelBasicOrder: cancelBasicOrderMutation,
       clearErrors: clearErrorsMutation,
+      selectBranch: selectBranchMutation,
+      generateReceiptNumber: generateReceiptNumberMutation,
     },
 
     // Запити (прямо з Orval)
     queries: {
       basicOrderData: basicOrderDataQuery,
       basicOrderState: basicOrderStateQuery,
+      branches: branchesQuery,
     },
+
+    // Workflow
+    workflow,
   };
 };
 
