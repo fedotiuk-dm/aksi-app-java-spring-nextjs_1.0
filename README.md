@@ -1,5 +1,3 @@
-<div align="center">
-
 # 🧼 AKSI Chemical Cleaning Management System
 
 **Професійна система управління хімчисткою з Order Wizard**
@@ -13,8 +11,6 @@
 
 [![Documentation](https://img.shields.io/badge/docs-available-blue.svg)](#-документація)
 [![Architecture](https://img.shields.io/badge/architecture-DDD%20%2B%20FSD-purple.svg)](#-архітектура)
-
-</div>
 
 ---
 
@@ -268,18 +264,21 @@ git push origin feature/your-feature-name
 <td align="center">
 <img src="https://via.placeholder.com/100x100/4A90E2/FFFFFF?text=Lead" width="100px;" alt=""/><br />
 <b>Fedotiuk Dmytro</b><br />
-<sub>Lead Developer</sub><br />
+<sub>Developer</sub><br />
 <a href="https://github.com/username1">💻</a>
-<a href="aksi.vn.ua@gmail.com">📧</a>
+<a href="mailto:aksi.vn.ua@gmail.com">📧</a>
 </td>
+<td align="center">
+<img src="https://via.placeholder.com/100x100/E24A4A/FFFFFF?text=FE" width="100px;" alt=""/><br />
+</table>
 
 ---
 
 **📞 Зв'язок з нами:**
 
-[![Website](https://img.shields.io/badge/Website-aksi.com-blue?style=flat-square)](https://aksi.com)
-[![Email](https://img.shields.io/badge/Email-contact@aksi.com-red?style=flat-square)](mailto:contact@aksi.com)
-[![Telegram](https://img.shields.io/badge/Telegram-@aksi_support-blue?style=flat-square)](https://t.me/aksi_support)
+[![Website](https://img.shields.io/badge/Website-aksi.com-blue?style=flat-square)](https://aksi.vn.ua)
+[![Email](https://img.shields.io/badge/Email-contact@aksi.com-red?style=flat-square)](mailto:aksi.vn.ua@gmail.com)
+[![Telegram](https://img.shields.io/badge/Telegram-@aksi_support-blue?style=flat-square)](https://t.me/aksi_vnua)
 
 </div>
 
@@ -292,7 +291,7 @@ git push origin feature/your-feature-name
 ### MIT License
 
 ```
-Copyright (c) 2024 AKSI Chemical Cleaning
+Copyright (c) 2025 AKSI Chemical Cleaning
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -361,7 +360,7 @@ SOFTWARE.
 [![Star on GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-yellow?style=for-the-badge)](https://github.com/your-username/aksi-app)
 [![Fork on GitHub](https://img.shields.io/badge/🍴_Fork_on_GitHub-green?style=for-the-badge)](https://github.com/your-username/aksi-app/fork)
 
-## 📄 Ліцензія
+**Дякуємо всім контрибюторам! 🙏**
 
 </div>
 
