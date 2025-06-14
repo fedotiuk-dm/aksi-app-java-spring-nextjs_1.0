@@ -265,7 +265,7 @@ git push origin feature/your-feature-name
 <img src="https://via.placeholder.com/100x100/4A90E2/FFFFFF?text=Lead" width="100px;" alt=""/><br />
 <b>Fedotiuk Dmytro</b><br />
 <sub>Developer</sub><br />
-<a href="https://github.com/username1">💻</a>
+<a href="https://github.com/fedotiuk-dm">💻</a>
 <a href="mailto:aksi.vn.ua@gmail.com">📧</a>
 </td>
 <td align="center">
@@ -276,8 +276,8 @@ git push origin feature/your-feature-name
 
 **📞 Зв'язок з нами:**
 
-[![Website](https://img.shields.io/badge/Website-aksi.com-blue?style=flat-square)](https://aksi.vn.ua)
-[![Email](https://img.shields.io/badge/Email-contact@aksi.com-red?style=flat-square)](mailto:aksi.vn.ua@gmail.com)
+[![Website](https://img.shields.io/badge/Website-aksi.vn.ua-blue?style=flat-square)](https://aksi.vn.ua)
+[![Email](https://img.shields.io/badge/Email-aksi.vn.ua@gmail.com-red?style=flat-square)](mailto:aksi.vn.ua@gmail.com)
 [![Telegram](https://img.shields.io/badge/Telegram-@aksi_support-blue?style=flat-square)](https://t.me/aksi_vnua)
 
 </div>
@@ -357,8 +357,8 @@ SOFTWARE.
 
 Якщо цей проект корисний для вас, підтримайте нас:
 
-[![Star on GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-yellow?style=for-the-badge)](https://github.com/your-username/aksi-app)
-[![Fork on GitHub](https://img.shields.io/badge/🍴_Fork_on_GitHub-green?style=for-the-badge)](https://github.com/your-username/aksi-app/fork)
+[![Star on GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-yellow?style=for-the-badge)](https://github.com/fedotiuk-dm/aksi-app-java-spring-nextjs_1.0/tree/ddd_inside_fsd_outside_order_wizard)
+[![Fork on GitHub](https://img.shields.io/badge/🍴_Fork_on_GitHub-green?style=for-the-badge)](https://github.com/fedotiuk-dm/aksi-app-java-spring-nextjs_1.0/tree/ddd_inside_fsd_outside_order_wizard)
 
 **Дякуємо всім контрибюторам! 🙏**
 
