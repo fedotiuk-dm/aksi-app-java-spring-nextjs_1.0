@@ -96,7 +96,14 @@ export const ValidationStep: React.FC<ValidationStepProps> = ({
               <ListItemIcon>
                 <CategoryIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary="Категорія послуги" secondary={selectedCategory.name} />
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  Категорія послуги
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  {selectedCategory.name}
+                </Typography>
+              </Box>
             </ListItem>
 
             <Divider variant="inset" component="li" />
@@ -106,27 +113,31 @@ export const ValidationStep: React.FC<ValidationStepProps> = ({
               <ListItemIcon>
                 <ItemIcon color="primary" />
               </ListItemIcon>
-              <ListItemText
-                primary="Найменування предмета"
-                secondary={
-                  <Box>
-                    <Typography variant="body2">{selectedItem.name}</Typography>
-                    {selectedItem.description && (
-                      <Typography variant="caption" color="text.secondary">
-                        {selectedItem.description}
-                      </Typography>
-                    )}
-                    {selectedItem.code && (
-                      <Chip
-                        label={`Код: ${selectedItem.code}`}
-                        size="small"
-                        variant="outlined"
-                        sx={{ mt: 0.5 }}
-                      />
-                    )}
-                  </Box>
-                }
-              />
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  Найменування предмета
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  {selectedItem.name}
+                </Typography>
+                {selectedItem.description && (
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ display: 'block', mt: 0.25 }}
+                  >
+                    {selectedItem.description}
+                  </Typography>
+                )}
+                {selectedItem.code && (
+                  <Chip
+                    label={`Код: ${selectedItem.code}`}
+                    size="small"
+                    variant="outlined"
+                    sx={{ mt: 0.5 }}
+                  />
+                )}
+              </Box>
             </ListItem>
 
             <Divider variant="inset" component="li" />
@@ -136,7 +147,14 @@ export const ValidationStep: React.FC<ValidationStepProps> = ({
               <ListItemIcon>
                 <QuantityIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary="Кількість" secondary={`${quantity} ${selectedItem.unit}`} />
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  Кількість
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  {quantity} {selectedItem.unit}
+                </Typography>
+              </Box>
             </ListItem>
 
             <Divider variant="inset" component="li" />
@@ -146,19 +164,21 @@ export const ValidationStep: React.FC<ValidationStepProps> = ({
               <ListItemIcon>
                 <PriceIcon color="success" />
               </ListItemIcon>
-              <ListItemText
-                primary="Базова ціна"
-                secondary={
-                  <Box>
-                    <Typography variant="body2">
-                      {selectedItem.basePrice} грн за {selectedItem.unit}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Загалом: {quantity} × {selectedItem.basePrice} = {totalPrice.toFixed(2)} грн
-                    </Typography>
-                  </Box>
-                }
-              />
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  Базова ціна
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  {selectedItem.basePrice} грн за {selectedItem.unit}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: 'block', mt: 0.25 }}
+                >
+                  Загалом: {quantity} × {selectedItem.basePrice} = {totalPrice.toFixed(2)} грн
+                </Typography>
+              </Box>
             </ListItem>
           </List>
         </CardContent>
