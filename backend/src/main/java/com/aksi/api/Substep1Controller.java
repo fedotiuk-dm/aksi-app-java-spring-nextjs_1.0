@@ -21,6 +21,7 @@ import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * REST API контроллер для Stage 2 Substep 1 - Основна інформація про предмет.
@@ -37,6 +38,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/v1/order-wizard/stage2/substep1")
 @Tag(name = "Order Wizard - Stage 2 Substep 1", description = "Підетап 1: Основна інформація про предмет")
+@Slf4j
 public class Substep1Controller {
 
     private final ItemBasicInfoAdapter itemBasicInfoAdapter;
@@ -54,7 +56,17 @@ public class Substep1Controller {
     )
     @PostMapping("/start")
     public ResponseEntity<ItemBasicInfoDTO> startSubstep1() {
-        return itemBasicInfoAdapter.startSubstep();
+        log.info("🚀 API ЗАПИТ: POST /v1/order-wizard/stage2/substep1/start - ПОЧАТОК ПІДЕТАПУ 1");
+
+        ResponseEntity<ItemBasicInfoDTO> response = itemBasicInfoAdapter.startSubstep();
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("✅ ПІДЕТАП 1 УСПІШНО РОЗПОЧАТО: sessionId створено, готовий до роботи");
+        } else {
+            log.error("❌ ПОМИЛКА ПОЧАТКУ ПІДЕТАПУ 1: статус {}", response.getStatusCode());
+        }
+
+        return response;
     }
 
     @Operation(
@@ -64,7 +76,22 @@ public class Substep1Controller {
     )
     @GetMapping("/service-categories")
     public ResponseEntity<List<ServiceCategoryDTO>> getServiceCategories() {
-        return itemBasicInfoAdapter.getServiceCategories();
+        log.info("🔍 API ЗАПИТ: GET /v1/order-wizard/stage2/substep1/service-categories");
+
+        ResponseEntity<List<ServiceCategoryDTO>> response = itemBasicInfoAdapter.getServiceCategories();
+
+                List<ServiceCategoryDTO> categories = response.getBody();
+        if (categories == null || categories.isEmpty()) {
+            log.warn("⚠️ API ВІДПОВІДЬ: Порожній список категорій! Можливо база даних не містить даних.");
+            log.info("💡 РЕКОМЕНДАЦІЯ: Перевірте чи запущені міграції та SQL скрипти для імпорту даних");
+        } else {
+            log.info("✅ API ВІДПОВІДЬ: Повертаємо {} категорій послуг", categories.size());
+            categories.forEach(cat ->
+                log.info("📋 Категорія: {} (код: {})", cat.getName(), cat.getCode())
+            );
+        }
+
+        return response;
     }
 
     @Operation(
@@ -76,7 +103,20 @@ public class Substep1Controller {
     public ResponseEntity<ItemBasicInfoDTO> selectServiceCategory(
             @PathVariable UUID sessionId,
             @RequestParam UUID categoryId) {
-        return itemBasicInfoAdapter.selectServiceCategory(sessionId, categoryId);
+        log.info("🎯 API ЗАПИТ: POST /v1/order-wizard/stage2/substep1/{}/select-category?categoryId={}",
+                sessionId, categoryId);
+        log.info("📝 ПЕРЕХІД НА КРОК: Вибір категорії послуги в підетапі 1");
+
+        ResponseEntity<ItemBasicInfoDTO> response = itemBasicInfoAdapter.selectServiceCategory(sessionId, categoryId);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("✅ КАТЕГОРІЯ ВИБРАНА: sessionId={}, categoryId={}", sessionId, categoryId);
+        } else {
+            log.error("❌ ПОМИЛКА ВИБОРУ КАТЕГОРІЇ: sessionId={}, categoryId={}, статус={}",
+                    sessionId, categoryId, response.getStatusCode());
+        }
+
+        return response;
     }
 
     @Operation(

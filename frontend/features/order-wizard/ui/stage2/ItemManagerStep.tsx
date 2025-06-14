@@ -3,7 +3,6 @@
 import { Add as AddIcon } from '@mui/icons-material';
 import { Box, Typography, Alert, Fab, Card, CardContent } from '@mui/material';
 import React, { useEffect, useRef, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 
 // Доменна логіка
 import { useStage2ItemManager } from '@/domains/wizard/stage2/item-manager';
@@ -90,7 +89,6 @@ export const ItemManagerStep: React.FC<ItemManagerStepProps> = ({ onCompleteStag
   const { ui, data, loading, mutations, computed, forms } = useStage2ItemManager();
   const stage2Workflow = useStage2Workflow();
   const mainWizard = useMainWizard();
-  const queryClient = useQueryClient();
 
   // Ref для відстеження стану ініціалізації
   const initializationAttempted = useRef(false);
@@ -153,11 +151,6 @@ export const ItemManagerStep: React.FC<ItemManagerStepProps> = ({ onCompleteStag
       if (response?.sessionId) {
         console.log('🔄 Встановлюємо Stage2 sessionId:', response.sessionId);
 
-        // Інвалідуємо кеш для старого sessionId
-        await queryClient.invalidateQueries({
-          queryKey: ['stage2'],
-        });
-
         ui.setSessionId(response.sessionId);
         stage2Workflow.ui.setSessionId(response.sessionId);
       }
@@ -176,7 +169,6 @@ export const ItemManagerStep: React.FC<ItemManagerStepProps> = ({ onCompleteStag
     computed.isInitialized,
     loading.isInitializing,
     mutations.initializeManager,
-    queryClient,
     stage2Workflow.ui,
   ]);
 
@@ -361,6 +353,7 @@ export const ItemManagerStep: React.FC<ItemManagerStepProps> = ({ onCompleteStag
     return (
       <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
         <Substep1Container
+          sessionId={ui.sessionId}
           onNext={() => {
             // Перехід до наступного підетапу
             stage2Workflow.ui.goToNextSubstep();

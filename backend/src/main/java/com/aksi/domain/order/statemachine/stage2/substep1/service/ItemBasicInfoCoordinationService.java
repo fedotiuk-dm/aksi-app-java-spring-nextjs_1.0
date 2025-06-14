@@ -14,11 +14,14 @@ import com.aksi.domain.order.statemachine.stage2.substep1.validator.ValidationRe
 import com.aksi.domain.pricing.dto.PriceListItemDTO;
 import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Координаційний сервіс для підетапу 2.1 - головний делегатор
  * Інкапсулює всю логіку роботи з основною інформацією про предмет
  */
 @Service
+@Slf4j
 public class ItemBasicInfoCoordinationService {
 
     private final ItemBasicInfoValidationService validationService;
@@ -95,7 +98,16 @@ public class ItemBasicInfoCoordinationService {
     // ========== Делегування до PricingOperationsService ==========
 
     public List<ServiceCategoryDTO> getAllActiveServiceCategories() {
-        return pricingOperationsService.getAllActiveServiceCategories();
+        log.info("🔧 КООРДИНАЦІЯ: Запит на отримання активних категорій послуг");
+
+        List<ServiceCategoryDTO> categories = pricingOperationsService.getAllActiveServiceCategories();
+
+        log.info("📋 КООРДИНАЦІЯ: Отримано {} категорій від pricing операцій", categories.size());
+        if (categories.isEmpty()) {
+            log.error("❌ КООРДИНАЦІЯ: Pricing операції повернули порожній список! Перевірте базу даних.");
+        }
+
+        return categories;
     }
 
     public ServiceCategoryDTO getServiceCategoryById(UUID categoryId) {

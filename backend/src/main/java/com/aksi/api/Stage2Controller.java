@@ -20,6 +20,7 @@ import com.aksi.domain.order.statemachine.stage2.validator.ValidationResult;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * REST API контроллер для Stage 2 - Головний менеджер предметів.
@@ -37,6 +38,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/v1/order-wizard/stage2")
 @Tag(name = "Order Wizard - Stage 2", description = "Етап 2: Головний менеджер предметів")
+@Slf4j
 public class Stage2Controller {
 
     private final Stage2StateMachineAdapter stage2Adapter;
@@ -54,7 +56,24 @@ public class Stage2Controller {
     )
     @PostMapping("/initialize/{orderId}")
     public ResponseEntity<ItemManagerDTO> initializeItemManager(@PathVariable UUID orderId) {
-        return stage2Adapter.initializeItemManager(orderId);
+        log.info("🔧 API ЗАПИТ: POST /v1/order-wizard/stage2/initialize/{} - ІНІЦІАЛІЗАЦІЯ STAGE2", orderId);
+        log.info("📝 ПЕРЕХІД: Ініціалізація менеджера предметів для orderId={}", orderId);
+
+        ResponseEntity<ItemManagerDTO> response = stage2Adapter.initializeItemManager(orderId);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            ItemManagerDTO manager = response.getBody();
+            if (manager != null) {
+                log.info("✅ STAGE2 УСПІШНО ІНІЦІАЛІЗОВАНО: orderId={}, sessionId={}", orderId, manager.getSessionId());
+                log.info("📊 СТАН МЕНЕДЖЕРА: currentStatus={}, itemCount={}",
+                    manager.getCurrentStatus(),
+                    manager.getItemCount());
+            }
+        } else {
+            log.error("❌ ПОМИЛКА ІНІЦІАЛІЗАЦІЇ STAGE2: orderId={}, статус={}", orderId, response.getStatusCode());
+        }
+
+        return response;
     }
 
     @Operation(
@@ -74,7 +93,19 @@ public class Stage2Controller {
     )
     @PostMapping("/wizard/new/{sessionId}")
     public ResponseEntity<ItemManagerDTO> startNewItemWizard(@PathVariable UUID sessionId) {
-        return stage2Adapter.startNewItemWizard(sessionId);
+        log.info("🚀 API ЗАПИТ: POST /v1/order-wizard/stage2/wizard/new/{} - ПОЧАТОК НОВОГО ПІДВІЗАРДА", sessionId);
+        log.info("📝 ПЕРЕХІД: Запуск нового підвізарда додавання предмета для sessionId={}", sessionId);
+
+        ResponseEntity<ItemManagerDTO> response = stage2Adapter.startNewItemWizard(sessionId);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("✅ ПІДВІЗАРД УСПІШНО ЗАПУЩЕНО: sessionId={}, готовий до переходу на substep1", sessionId);
+            log.info("💡 НАСТУПНИЙ КРОК: Фронтенд має викликати GET /v1/order-wizard/stage2/substep1/service-categories");
+        } else {
+            log.error("❌ ПОМИЛКА ЗАПУСКУ ПІДВІЗАРДА: sessionId={}, статус={}", sessionId, response.getStatusCode());
+        }
+
+        return response;
     }
 
     @Operation(

@@ -20,11 +20,14 @@ import com.aksi.domain.order.statemachine.stage2.substep1.validator.ValidationRe
 import com.aksi.domain.pricing.dto.PriceListItemDTO;
 import com.aksi.domain.pricing.dto.ServiceCategoryDTO;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * REST API контролер для підетапу 2.1 - Основна інформація про предмет
  */
 @RestController
 @RequestMapping("/order-wizard/stage2/substep1")
+@Slf4j
 public class ItemBasicInfoAdapter {
 
     private final ItemBasicInfoCoordinationService coordinationService;
@@ -48,7 +51,15 @@ public class ItemBasicInfoAdapter {
      */
     @GetMapping("/service-categories")
     public ResponseEntity<List<ServiceCategoryDTO>> getServiceCategories() {
+        log.info("🌐 API ЗАПИТ: GET /v1/order-wizard/stage2/substep1/service-categories");
+
         List<ServiceCategoryDTO> categories = coordinationService.getAllActiveServiceCategories();
+
+        log.info("📤 API ВІДПОВІДЬ: Повертаємо {} категорій", categories.size());
+        if (categories.isEmpty()) {
+            log.warn("⚠️ API УВАГА: Порожній список категорій - фронтенд отримає помилку 'немає доступних категорій'");
+        }
+
         return ResponseEntity.ok(categories);
     }
 

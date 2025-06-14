@@ -33,6 +33,7 @@ import {
 } from './components';
 
 interface Substep1ContainerProps {
+  sessionId: string | null;
   onNext: () => void;
   onPrevious: () => void;
   onComplete: () => void;
@@ -47,6 +48,7 @@ const STEPS = [
 ] as const;
 
 export const Substep1Container: React.FC<Substep1ContainerProps> = ({
+  sessionId,
   onNext,
   onPrevious,
   onComplete,
@@ -54,6 +56,14 @@ export const Substep1Container: React.FC<Substep1ContainerProps> = ({
   // ========== ДОМЕННА ЛОГІКА ==========
   const substep = useSubstep1ItemBasicInfo();
   const workflow = useStage2Workflow();
+
+  // ========== ВСТАНОВЛЕННЯ SESSION ID ==========
+  React.useEffect(() => {
+    if (sessionId && sessionId !== substep.ui.sessionId) {
+      console.log('🔄 Встановлюємо sessionId в substep1:', sessionId);
+      substep.ui.setSessionId(sessionId);
+    }
+  }, [sessionId, substep.ui]);
 
   // ========== ПОТОЧНИЙ КРОК ==========
   const currentStepIndex = STEPS.findIndex((step) => step.key === substep.ui.currentStep);
