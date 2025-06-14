@@ -2,9 +2,9 @@
 // Тонка обгортка над Orval хуками для substep4 - Калькулятор ціни
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки (готові з бекенду)
 import {
@@ -21,10 +21,9 @@ import {
   useSubstep4GetAvailableModifiers,
   useSubstep4GetRecommendedModifiers,
   useSubstep4ValidateCurrentState,
-} from '@/shared/api/generated/substep4';
+} from '@api/substep4';
 
 // Локальні імпорти
-import { usePriceCalculationStore, usePriceCalculationSelectors } from './store';
 import {
   SUBSTEP4_UI_STEPS,
   SUBSTEP4_VALIDATION_RULES,
@@ -44,6 +43,7 @@ import {
   type CalculationConfirmationFormData,
   type PriceCalculationNavigationFormData,
 } from './schemas';
+import { usePriceCalculationStore, usePriceCalculationSelectors } from './store';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useSubstep4PriceCalculation = () => {

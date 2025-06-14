@@ -1,9 +1,9 @@
 // 📋 STAGE2 WORKFLOW: Тонка обгортка над Orval хуками для координації підетапів
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки для Stage2 Workflow
 import {
@@ -17,10 +17,9 @@ import {
   useStage2GetCurrentState,
   useStage2ValidateCurrentState,
   useStage2CheckReadinessToProceed,
-} from '@/shared/api/generated/stage2';
+} from '@api/stage2';
 
 // Локальні імпорти
-import { useStage2WorkflowStore, useStage2WorkflowSelectors } from './store';
 import {
   STAGE2_WORKFLOW_UI_STATES,
   STAGE2_WORKFLOW_OPERATIONS,
@@ -37,6 +36,7 @@ import {
   type CompleteStageFormData,
   type CloseWizardFormData,
 } from './schemas';
+import { useStage2WorkflowStore, useStage2WorkflowSelectors } from './store';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useStage2Workflow = () => {

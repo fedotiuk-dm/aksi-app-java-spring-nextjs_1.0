@@ -1,9 +1,9 @@
 // Substep4 Workflow Hook - тонка обгортка над Orval хуками
 // Координація між API та UI станом для substep4 (розрахунок ціни)
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm, type UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки
 import {
@@ -26,15 +26,9 @@ import {
   type Substep4GetAvailableModifiersQueryResult,
   type Substep4GetRecommendedModifiersQueryResult,
   type Substep4ValidateCurrentStateQueryResult,
-} from '@/shared/api/generated/substep4/aksiApi';
+} from '@api/substep4/aksiApi';
 
 // Локальні імпорти
-import { useSubstep4WorkflowSelectors } from './workflow.store';
-import {
-  SUBSTEP4_WORKFLOW_STEPS,
-  SUBSTEP4_VALIDATION_RULES,
-  SUBSTEP4_WORKFLOW_LIMITS,
-} from './workflow.constants';
 import {
   workflowInitializationFormSchema,
   workflowNavigationFormSchema,
@@ -45,6 +39,12 @@ import {
   type Substep4GetAvailableModifiersParams,
   type Substep4GetRecommendedModifiersParams,
 } from './schemas';
+import {
+  SUBSTEP4_WORKFLOW_STEPS,
+  SUBSTEP4_VALIDATION_RULES,
+  SUBSTEP4_WORKFLOW_LIMITS,
+} from './workflow.constants';
+import { useSubstep4WorkflowSelectors } from './workflow.store';
 
 // =================== ТИПИ ===================
 export interface UseSubstep4WorkflowReturn {

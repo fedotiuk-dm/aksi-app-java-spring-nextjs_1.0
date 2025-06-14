@@ -7,14 +7,14 @@ export {
   SubstepResultDTOCurrentState,
   SubstepResultDTOPreviousState,
   SubstepResultDTOAvailableEventsItem,
-} from '@/shared/api/generated/substep5/aksiApi.schemas';
+} from '@api/substep5/aksiApi.schemas';
 
 // Реекспорт типів
 export type {
   SubstepResultDTOCurrentState as Substep5State,
   SubstepResultDTOPreviousState as Substep5PreviousState,
   SubstepResultDTOAvailableEventsItem as Substep5Event,
-} from '@/shared/api/generated/substep5/aksiApi.schemas';
+} from '@api/substep5/aksiApi.schemas';
 
 // =================== UI WORKFLOW СТАНИ ===================
 // Базові стани для UI координації (НЕ дублюємо API стани)

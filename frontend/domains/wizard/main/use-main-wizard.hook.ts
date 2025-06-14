@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import {
   useOrderWizardStart,
   useOrderWizardGoBack,
@@ -9,7 +10,7 @@ import {
   useOrderWizardCancelOrder,
   useOrderWizardGetCurrentState,
   useOrderWizardGetSessionInfo,
-} from '@/shared/api/generated/main';
+} from '@api/main';
 
 import { useMainWizardStore } from './wizard.store';
 

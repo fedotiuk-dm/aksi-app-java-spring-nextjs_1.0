@@ -7,7 +7,7 @@
 export type {
   OrderWizardResponseDTOCurrentState as WizardState,
   OrderWizardResponseDTO as WizardResponse,
-} from '@/shared/api/generated/main';
+} from '@api/main';
 
 // Реекспорт Zod схем для валідації
 export {
@@ -51,4 +51,4 @@ export {
   // Current state
   orderWizardGetCurrentStateParams as WizardGetCurrentStateParamsSchema,
   orderWizardGetCurrentState200Response as WizardGetCurrentStateResponseSchema,
-} from '@/shared/api/generated/main';
+} from '@api/main';

@@ -3,13 +3,13 @@
 
 // =================== ORVAL КОНСТАНТИ ===================
 // Імпортуємо готові константи з Orval
-export { Stage2GetCurrentState200 } from '@/shared/api/generated/stage2';
+export { Stage2GetCurrentState200 } from '@api/stage2';
 
 // Реекспорт типів з читабельними назвами
 export type {
   Stage2GetCurrentState200 as Stage2WorkflowApiState,
   ItemManagerDTO,
-} from '@/shared/api/generated/stage2';
+} from '@api/stage2';
 
 // =================== UI КОНСТАНТИ ===================
 // UI стани для workflow координації

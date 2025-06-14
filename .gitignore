@@ -8,7 +8,7 @@
 .project
 .settings/
 .cursor/
-./windsurf/
+.windsurf/
 
 # Бекенд
 backend/target/

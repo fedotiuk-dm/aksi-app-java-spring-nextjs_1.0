@@ -3,11 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import type { LoginRequest } from '@/shared/api/generated/auth';
+
 import { useLogin as useApiLogin } from '../api';
 import { adaptOrvalLoginResponse } from '../model/types';
 import { useAuthStore } from '../store';
 
-import type { LoginRequest } from '@/shared/api/generated/auth';
 
 /**
  * Клієнтський хук для входу користувача у систему

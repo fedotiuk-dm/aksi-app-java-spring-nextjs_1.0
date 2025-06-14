@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useAuthStore } from '../store';
 import { Box, CircularProgress } from '@mui/material';
+import { useEffect, useState } from 'react';
+
 import { UserRole } from '../model/types';
+import { useAuthStore } from '../store';
 
 /**
  * Компонент для ініціалізації авторизації при завантаженні додатку

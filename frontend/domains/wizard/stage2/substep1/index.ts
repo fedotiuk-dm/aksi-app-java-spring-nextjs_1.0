@@ -1,5 +1,5 @@
-// Публічне API для Substep1 домену
-// Експортуємо тільки головний хук, константи та необхідні схеми
+// 📋 ПІДЕТАП 2.1: Публічне API для основної інформації про предмет
+// Композиційний підхід з експортом головного хука та допоміжних типів
 
 // =================== ГОЛОВНИЙ ХУК ===================
 export { useSubstep1ItemBasicInfo } from './use-substep1-item-basic-info.hook';
@@ -24,38 +24,42 @@ export {
 export { useItemBasicInfoStore, useItemBasicInfoSelectors } from './store';
 export type { ItemBasicInfoStore } from './store';
 
-// =================== ORVAL СХЕМИ (якщо потрібні в UI) ===================
+// =================== СХЕМИ ТА ТИПИ ===================
 export {
-  // TypeScript типи
-  type ItemBasicInfoDTO,
-  type ServiceCategoryDTO,
-  type PriceListItemDTO,
-  type SubstepResultDTO,
+  // Orval Zod схеми з унікальними назвами
+  Substep1SelectServiceCategoryParamsSchema,
+  Substep1SelectServiceCategoryQueryParamsSchema,
+  Substep1SelectPriceListItemParamsSchema,
+  Substep1SelectPriceListItemQueryParamsSchema,
+  Substep1EnterQuantityParamsSchema,
+  Substep1EnterQuantityQueryParamsSchema,
+  Substep1ValidateAndCompleteParamsSchema,
+  Substep1StartSubstepResponseSchema,
+  Substep1SelectServiceCategoryResponseSchema,
+  Substep1SelectPriceListItemResponseSchema,
+  Substep1EnterQuantityResponseSchema,
+  Substep1ValidateAndCompleteResponseSchema,
+  Substep1GetStatusResponseSchema,
+  Substep1GetServiceCategoriesResponseSchema,
+  Substep1GetItemsForCategoryResponseSchema,
 
-  // Zod схеми
-  SelectServiceCategoryParamsSchema,
-  SelectServiceCategoryQueryParamsSchema,
-  SelectPriceListItemParamsSchema,
-  SelectPriceListItemQueryParamsSchema,
-  EnterQuantityParamsSchema,
-  EnterQuantityQueryParamsSchema,
-  ValidateAndCompleteParamsSchema,
-  StartSubstepResponseSchema,
-  SelectServiceCategoryResponseSchema,
-  SelectPriceListItemResponseSchema,
-  EnterQuantityResponseSchema,
-  ValidateAndCompleteResponseSchema,
-  GetStatusResponseSchema,
-  GetServiceCategoriesResponseSchema,
-  GetItemsForCategoryResponseSchema,
+  // UI форми з унікальними назвами
+  substep1CategorySearchFormSchema,
+  substep1ItemSearchFormSchema,
+  substep1QuantityFormSchema,
+  substep1ValidationFormSchema,
+} from './schemas';
 
-  // UI форми
-  categorySearchFormSchema,
-  itemSearchFormSchema,
-  quantityFormSchema,
-  validationFormSchema,
-  type CategorySearchFormData,
-  type ItemSearchFormData,
-  type QuantityFormData,
-  type ValidationFormData,
+export type {
+  // Orval TypeScript типи з унікальними назвами
+  Substep1ItemBasicInfoDTO,
+  Substep1ServiceCategoryDTO,
+  Substep1PriceListItemDTO,
+  Substep1SubstepResultDTO,
+
+  // UI форми типи з унікальними назвами
+  Substep1CategorySearchFormData,
+  Substep1ItemSearchFormData,
+  Substep1QuantityFormData,
+  Substep1ValidationFormData,
 } from './schemas';

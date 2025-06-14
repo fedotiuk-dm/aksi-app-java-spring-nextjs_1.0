@@ -9,7 +9,7 @@ export type {
   AdditionalInfoDTO,
   SubstepResultDTO,
   ErrorResponse,
-} from '@/shared/api/generated/substep2';
+} from '@api/substep2';
 
 // =================== МІНІМАЛЬНІ UI ФОРМИ ===================
 

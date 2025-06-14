@@ -8,7 +8,7 @@ export {
   SubstepResultDTOAvailableEventsItem,
   StainTypeDTORiskLevel,
   DefectTypeDTORiskLevel,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // Реекспорт типів
 export type {
@@ -16,7 +16,7 @@ export type {
   SubstepResultDTOAvailableEventsItem as Substep3Event,
   StainTypeDTORiskLevel as StainRiskLevel,
   DefectTypeDTORiskLevel as DefectRiskLevel,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // =================== UI WORKFLOW СТАНИ ===================
 // Тільки для UI координації (НЕ дублюємо API стани)

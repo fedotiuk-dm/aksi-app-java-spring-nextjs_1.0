@@ -1,7 +1,6 @@
 'use client';
 
-import { Inventory } from '@mui/icons-material';
-import { ExpandMore, ExpandLess } from '@mui/icons-material';
+import { Inventory , ExpandMore, ExpandLess } from '@mui/icons-material';
 import {
   Grid,
   Card,

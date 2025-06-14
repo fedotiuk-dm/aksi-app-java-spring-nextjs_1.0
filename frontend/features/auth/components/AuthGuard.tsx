@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
 import { useAuthStore } from '../store';
 
 // Маршрути, які потребують авторизації

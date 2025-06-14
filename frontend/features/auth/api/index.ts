@@ -14,7 +14,6 @@ import {
   useAuthRefreshToken,
   useAuthTestEndpoint,
 } from '@/shared/api/generated/auth';
-
 import type {
   LoginRequest,
   RegisterRequest,

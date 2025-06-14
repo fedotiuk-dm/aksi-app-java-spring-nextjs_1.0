@@ -3,9 +3,10 @@
 import { TextField, Button, Grid, Box, Alert, CircularProgress } from '@mui/material';
 import React, { useState } from 'react';
 
+import type { LoginRequest } from '@/shared/api/generated/auth';
+
 import { useLogin } from '../hooks/useLogin';
 
-import type { LoginRequest } from '@/shared/api/generated/auth';
 
 interface LoginFormProps {
   onSuccess?: () => void;

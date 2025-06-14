@@ -2,6 +2,7 @@
 // Використовуємо готові Orval схеми БЕЗ кастомних UI форм
 
 import { z } from 'zod';
+
 import { STAGE2_WORKFLOW_LIMITS, STAGE2_SUBSTEPS } from './constants';
 
 // Константа для повідомлення підтвердження
@@ -10,7 +11,7 @@ const CONFIRMATION_REQUIRED_MESSAGE = "Підтвердження обов'яз�
 // =================== ORVAL СХЕМИ ===================
 
 // Реекспорт TypeScript типів
-export type { ItemManagerDTO, Stage2GetCurrentState200 } from '@/shared/api/generated/stage2';
+export type { ItemManagerDTO, Stage2GetCurrentState200 } from '@api/stage2';
 
 // Реекспорт Zod схем для валідації
 export {
@@ -33,7 +34,7 @@ export {
   stage2SynchronizeManager200Response as SynchronizeWorkflowResponseSchema,
   stage2GetCurrentState200Response as GetCurrentStateResponseSchema,
   stage2ValidateCurrentState200Response as ValidateCurrentStateResponseSchema,
-} from '@/shared/api/generated/stage2';
+} from '@api/stage2';
 
 // =================== МІНІМАЛЬНІ UI ФОРМИ ===================
 // Тільки для UI компонентів, які не покриті Orval схемами

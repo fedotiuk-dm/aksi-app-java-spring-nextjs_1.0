@@ -1,9 +1,10 @@
-import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
+
+import { useOrderWizardClearAllSessions } from '@api/main';
 
 import { useMainStore } from '../../main/store/main.store';
 import { useStage1Store } from '../../stage1/store/stage1.store';
-import { useOrderWizardClearAllSessions } from '@/shared/api/generated/main';
 
 /**
  * 🧹 Хук для очищення всієї пам'яті Order Wizard

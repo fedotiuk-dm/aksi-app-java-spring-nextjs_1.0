@@ -1,9 +1,9 @@
 // 📋 ПІДЕТАП 2.2: Тонка обгортка над Orval хуками для характеристик предмета
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки (готові з бекенду)
 import {
@@ -16,10 +16,9 @@ import {
   useSubstep2CompleteSubstep,
   useSubstep2GetAvailableMaterials,
   useSubstep2GetCurrentCharacteristics,
-} from '@/shared/api/generated/substep2';
+} from '@api/substep2';
 
 // Локальні імпорти
-import { useItemCharacteristicsStore, useItemCharacteristicsSelectors } from './store';
 import {
   SUBSTEP2_UI_STEPS,
   SUBSTEP2_STEP_ORDER,
@@ -30,18 +29,18 @@ import {
   getPreviousSubstep2Step,
   isFirstSubstep2Step,
   isLastSubstep2Step,
-  type Substep2UIStep,
 } from './constants';
 import {
-  materialSearchFormSchema,
-  colorSearchFormSchema,
-  fillerSearchFormSchema,
-  displaySettingsFormSchema,
-  type MaterialSearchFormData,
-  type ColorSearchFormData,
-  type FillerSearchFormData,
-  type DisplaySettingsFormData,
+  substep2MaterialSearchFormSchema,
+  substep2ColorSearchFormSchema,
+  substep2FillerSearchFormSchema,
+  substep2DisplaySettingsFormSchema,
+  type Substep2MaterialSearchFormData,
+  type Substep2ColorSearchFormData,
+  type Substep2FillerSearchFormData,
+  type Substep2DisplaySettingsFormData,
 } from './schemas';
+import { useItemCharacteristicsStore, useItemCharacteristicsSelectors } from './store';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useSubstep2ItemCharacteristics = () => {
@@ -69,29 +68,29 @@ export const useSubstep2ItemCharacteristics = () => {
   });
 
   // =================== ФОРМИ (МІНІМАЛЬНІ) ===================
-  const materialSearchForm = useForm<MaterialSearchFormData>({
-    resolver: zodResolver(materialSearchFormSchema),
+  const materialSearchForm = useForm<Substep2MaterialSearchFormData>({
+    resolver: zodResolver(substep2MaterialSearchFormSchema),
     defaultValues: {
       searchTerm: store.materialSearchTerm,
     },
   });
 
-  const colorSearchForm = useForm<ColorSearchFormData>({
-    resolver: zodResolver(colorSearchFormSchema),
+  const colorSearchForm = useForm<Substep2ColorSearchFormData>({
+    resolver: zodResolver(substep2ColorSearchFormSchema),
     defaultValues: {
       searchTerm: store.colorSearchTerm,
     },
   });
 
-  const fillerSearchForm = useForm<FillerSearchFormData>({
-    resolver: zodResolver(fillerSearchFormSchema),
+  const fillerSearchForm = useForm<Substep2FillerSearchFormData>({
+    resolver: zodResolver(substep2FillerSearchFormSchema),
     defaultValues: {
       searchTerm: store.fillerSearchTerm,
     },
   });
 
-  const displaySettingsForm = useForm({
-    resolver: zodResolver(displaySettingsFormSchema),
+  const displaySettingsForm = useForm<Substep2DisplaySettingsFormData>({
+    resolver: zodResolver(substep2DisplaySettingsFormSchema),
     defaultValues: {
       showMaterialDetails: store.showMaterialDetails,
       showColorDetails: store.showColorDetails,

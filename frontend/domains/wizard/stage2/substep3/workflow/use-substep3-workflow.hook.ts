@@ -1,9 +1,9 @@
 // Substep3 Workflow Hook - тонка обгортка над Orval хуками
 // Координація між API та UI станом для substep3 (забруднення та дефекти)
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки
 import {
@@ -16,15 +16,11 @@ import {
   useSubstep3GetAvailableStainTypes,
   useSubstep3GetAvailableDefectTypes,
   useSubstep3GetContext,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // Локальні імпорти
-import { useSubstep3WorkflowSelectors } from './workflow.store';
-import {
-  SUBSTEP3_WORKFLOW_STEPS,
-  SUBSTEP3_VALIDATION_RULES,
-  SUBSTEP3_WORKFLOW_LIMITS,
-} from './workflow.constants';
+import type { StainsDefectsContext, StainTypeDTO, DefectTypeDTO } from '@api/substep3';
+
 import {
   workflowInitializationFormSchema,
   workflowNavigationFormSchema,
@@ -33,13 +29,14 @@ import {
   type WorkflowNavigationFormData,
   type WorkflowCompletionFormData,
 } from './schemas';
+import {
+  SUBSTEP3_WORKFLOW_STEPS,
+  SUBSTEP3_VALIDATION_RULES,
+  SUBSTEP3_WORKFLOW_LIMITS,
+} from './workflow.constants';
+import { useSubstep3WorkflowSelectors } from './workflow.store';
 
 // Імпорт типів з Orval
-import type {
-  StainsDefectsContext,
-  StainTypeDTO,
-  DefectTypeDTO,
-} from '@/shared/api/generated/substep3';
 
 // =================== ТИПИ ===================
 

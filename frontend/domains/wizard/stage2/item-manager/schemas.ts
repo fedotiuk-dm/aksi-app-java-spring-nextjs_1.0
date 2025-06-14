@@ -2,6 +2,7 @@
 // Використовуємо готові Orval схеми БЕЗ кастомних UI форм
 
 import { z } from 'zod';
+
 import { ITEM_MANAGER_LIMITS, TABLE_CONFIG } from './constants';
 
 // =================== ORVAL СХЕМИ ===================
@@ -11,7 +12,7 @@ export type {
   ItemManagerDTO,
   OrderItemDTO,
   Stage2GetCurrentState200,
-} from '@/shared/api/generated/stage2';
+} from '@api/stage2';
 
 // Реекспорт Zod схем для валідації
 export {
@@ -47,7 +48,7 @@ export {
   stage2ValidateCurrentState200Response as ValidateCurrentStateResponseSchema,
   stage2GetCurrentState200Response as GetCurrentStateResponseSchema,
   stage2CheckReadinessToProceed200Response as CheckReadinessToProceedResponseSchema,
-} from '@/shared/api/generated/stage2';
+} from '@api/stage2';
 
 // =================== МІНІМАЛЬНІ UI ФОРМИ ===================
 // Тільки для UI компонентів, які не покриті Orval схемами
@@ -67,7 +68,7 @@ export const itemSearchFormSchema = z.object({
     .optional(),
 });
 
-export type ItemSearchFormData = z.infer<typeof itemSearchFormSchema>;
+export type ItemManagerSearchFormData = z.infer<typeof itemSearchFormSchema>;
 
 // Форма налаштувань відображення таблиці
 export const tableDisplayFormSchema = z.object({

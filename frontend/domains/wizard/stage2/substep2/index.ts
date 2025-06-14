@@ -1,5 +1,5 @@
 // 📋 ПІДЕТАП 2.2: Публічне API для характеристик предмета
-// Експортуємо головний хук, константи та схеми
+// Композиційний підхід з експортом головного хука та допоміжних типів
 
 // =================== ГОЛОВНИЙ ХУК ===================
 export { useSubstep2ItemCharacteristics } from './use-substep2-item-characteristics.hook';
@@ -19,54 +19,44 @@ export {
   type Substep2UIStep,
 } from './constants';
 
-// =================== ORVAL СХЕМИ (якщо потрібні в UI) ===================
-export {
-  // TypeScript типи
-  type OrderItemDTO,
-  type AdditionalInfoDTO,
-  type SubstepResultDTO,
-  type SelectMaterialParams,
-  type SelectColorParams,
-  type SelectFillerParams,
-  type SelectWearLevelParams,
-  type ItemCharacteristicsResponse,
-  type AdditionalInfoResponse,
-  type SubstepResultResponse,
+// =================== СТОР (якщо потрібен прямий доступ) ===================
+export { useItemCharacteristicsStore, useItemCharacteristicsSelectors } from './store';
 
-  // Zod схеми
-  InitializeSubstepParamsSchema,
-  InitializeSubstepQueryParamsSchema,
-  SelectMaterialParamsSchema,
-  SelectMaterialQueryParamsSchema,
-  SelectColorParamsSchema,
-  SelectColorQueryParamsSchema,
-  SelectFillerParamsSchema,
-  SelectFillerQueryParamsSchema,
-  SelectWearLevelParamsSchema,
-  SelectWearLevelQueryParamsSchema,
-  ValidateCharacteristicsParamsSchema,
-  CompleteSubstepParamsSchema,
-  GetAvailableMaterialsParamsSchema,
-  GetCurrentCharacteristicsParamsSchema,
-  InitializeSubstepResponseSchema,
-  SelectMaterialResponseSchema,
-  SelectColorResponseSchema,
-  SelectFillerResponseSchema,
-  SelectWearLevelResponseSchema,
-  ValidateCharacteristicsResponseSchema,
-  CompleteSubstepResponseSchema,
-  GetAvailableMaterialsResponseSchema,
-  GetCurrentCharacteristicsResponseSchema,
+// =================== СХЕМИ ТА ТИПИ ===================
+export {
+  // Orval Zod схеми з унікальними назвами
+  Substep2InitializeSubstepParamsSchema,
+  Substep2InitializeSubstepQueryParamsSchema,
+  Substep2SelectMaterialParamsSchema,
+  Substep2SelectMaterialQueryParamsSchema,
+  Substep2SelectColorParamsSchema,
+  Substep2SelectColorQueryParamsSchema,
+  Substep2InitializeSubstepResponseSchema,
+  Substep2SelectMaterialResponseSchema,
+  Substep2SelectColorResponseSchema,
+  Substep2SelectFillerResponseSchema,
+  Substep2SelectWearLevelResponseSchema,
+  Substep2ValidateCharacteristicsResponseSchema,
+  Substep2CompleteSubstepResponseSchema,
+  Substep2GetAvailableMaterialsResponseSchema,
+  Substep2GetCurrentCharacteristicsResponseSchema,
+
+  // UI форми з унікальними назвами
+  substep2MaterialSearchFormSchema,
+  substep2ColorSearchFormSchema,
+  substep2FillerSearchFormSchema,
+  substep2DisplaySettingsFormSchema,
 } from './schemas';
 
-// =================== UI ФОРМИ (якщо потрібні в UI) ===================
-export {
-  materialSearchFormSchema,
-  colorSearchFormSchema,
-  fillerSearchFormSchema,
-  displaySettingsFormSchema,
-  type MaterialSearchFormData,
-  type ColorSearchFormData,
-  type FillerSearchFormData,
-  type DisplaySettingsFormData,
+export type {
+  // Orval TypeScript типи з унікальними назвами
+  Substep2OrderItemDTO,
+  Substep2AdditionalInfoDTO,
+  Substep2SubstepResultDTO,
+
+  // UI форми типи з унікальними назвами
+  Substep2MaterialSearchFormData,
+  Substep2ColorSearchFormData,
+  Substep2FillerSearchFormData,
+  Substep2DisplaySettingsFormData,
 } from './schemas';

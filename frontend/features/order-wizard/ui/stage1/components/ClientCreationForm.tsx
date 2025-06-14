@@ -1,6 +1,10 @@
 'use client';
 
-import React from 'react';
+import {
+  Phone as PhoneIcon,
+  Email as EmailIcon,
+  LocationOn as LocationIcon,
+} from '@mui/icons-material';
 import {
   Stack,
   TextField,
@@ -12,11 +16,7 @@ import {
   Radio,
   Typography,
 } from '@mui/material';
-import {
-  Phone as PhoneIcon,
-  Email as EmailIcon,
-  LocationOn as LocationIcon,
-} from '@mui/icons-material';
+import React from 'react';
 
 // Константи
 const CONTACT_METHODS = {

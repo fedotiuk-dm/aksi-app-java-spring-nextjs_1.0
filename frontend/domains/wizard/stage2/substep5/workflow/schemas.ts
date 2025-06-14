@@ -1,7 +1,8 @@
 // Substep5 Workflow Schemas - ТІЛЬКИ Orval схеми + мінімальні UI форми
-// Використовуємо готові схеми з @/shared/api/generated/substep5
+// Використовуємо готові схеми з @api/substep5
 
 import { z } from 'zod';
+
 import {
   SUBSTEP5_WORKFLOW_STEPS,
   SUBSTEP5_WORKFLOW_LIMITS,
@@ -17,10 +18,10 @@ export type {
   substep5CompletePhotoDocumentationParams as CompletePhotoDocumentationParamsSchema,
   substep5GetDocumentationStatusParams as GetDocumentationStatusParamsSchema,
   substep5GetDocumentationDataParams as GetDocumentationDataParamsSchema,
-} from '@/shared/api/generated/substep5';
+} from '@api/substep5';
 
 // Body схеми
-export type { Substep5AddPhotoBody as AddPhotoBodySchema } from '@/shared/api/generated/substep5';
+export type { Substep5AddPhotoBody as AddPhotoBodySchema } from '@api/substep5';
 
 // Response схеми (основні DTO)
 export type {
@@ -28,7 +29,7 @@ export type {
   OrderItemPhotoDTO as OrderItemPhotoSchema,
   SubstepResultDTO as SubstepResultSchema,
   ErrorResponse as ErrorResponseSchema,
-} from '@/shared/api/generated/substep5';
+} from '@api/substep5';
 
 // =================== ТИПИ ===================
 // Реекспорт типів з читабельними назвами
@@ -39,7 +40,7 @@ export type {
   substep5CompletePhotoDocumentationParams as CompletePhotoDocumentationParams,
   substep5GetDocumentationStatusParams as GetDocumentationStatusParams,
   substep5GetDocumentationDataParams as GetDocumentationDataParams,
-} from '@/shared/api/generated/substep5';
+} from '@api/substep5';
 
 // Response типи
 export type {
@@ -47,7 +48,7 @@ export type {
   OrderItemPhotoDTO as OrderItemPhotoResponse,
   SubstepResultDTO as SubstepResultResponse,
   ErrorResponse as ErrorResponse,
-} from '@/shared/api/generated/substep5';
+} from '@api/substep5';
 
 // =================== МІНІМАЛЬНІ UI ФОРМИ ===================
 // Тільки для workflow навігації та координації

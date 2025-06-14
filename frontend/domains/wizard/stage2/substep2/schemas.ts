@@ -5,91 +5,91 @@ import { z } from 'zod';
 
 // =================== ORVAL СХЕМИ ===================
 
-// Реекспорт TypeScript типів
+// Реекспорт TypeScript типів з унікальними назвами
 export type {
-  OrderItemDTO,
-  AdditionalInfoDTO,
-  SubstepResultDTO,
-} from '@/shared/api/generated/substep2';
+  OrderItemDTO as Substep2OrderItemDTO,
+  AdditionalInfoDTO as Substep2AdditionalInfoDTO,
+  SubstepResultDTO as Substep2SubstepResultDTO,
+} from '@api/substep2';
 
 // Реекспорт Zod схем для валідації
 export {
   // Params схеми
-  substep2InitializeSubstepParams as InitializeSubstepParamsSchema,
-  substep2InitializeSubstepQueryParams as InitializeSubstepQueryParamsSchema,
-  substep2SelectMaterialParams as SelectMaterialParamsSchema,
-  substep2SelectMaterialQueryParams as SelectMaterialQueryParamsSchema,
-  substep2SelectColorParams as SelectColorParamsSchema,
-  substep2SelectColorQueryParams as SelectColorQueryParamsSchema,
-  substep2SelectFillerParams as SelectFillerParamsSchema,
-  substep2SelectFillerQueryParams as SelectFillerQueryParamsSchema,
-  substep2SelectWearLevelParams as SelectWearLevelParamsSchema,
-  substep2SelectWearLevelQueryParams as SelectWearLevelQueryParamsSchema,
-  substep2ValidateCharacteristicsParams as ValidateCharacteristicsParamsSchema,
-  substep2CompleteSubstepParams as CompleteSubstepParamsSchema,
-  substep2CancelSubstepParams as CancelSubstepParamsSchema,
-  substep2GetAvailableMaterialsParams as GetAvailableMaterialsParamsSchema,
-  substep2GetCurrentCharacteristicsParams as GetCurrentCharacteristicsParamsSchema,
+  substep2InitializeSubstepParams as Substep2InitializeSubstepParamsSchema,
+  substep2InitializeSubstepQueryParams as Substep2InitializeSubstepQueryParamsSchema,
+  substep2SelectMaterialParams as Substep2SelectMaterialParamsSchema,
+  substep2SelectMaterialQueryParams as Substep2SelectMaterialQueryParamsSchema,
+  substep2SelectColorParams as Substep2SelectColorParamsSchema,
+  substep2SelectColorQueryParams as Substep2SelectColorQueryParamsSchema,
+  substep2SelectFillerParams as Substep2SelectFillerParamsSchema,
+  substep2SelectFillerQueryParams as Substep2SelectFillerQueryParamsSchema,
+  substep2SelectWearLevelParams as Substep2SelectWearLevelParamsSchema,
+  substep2SelectWearLevelQueryParams as Substep2SelectWearLevelQueryParamsSchema,
+  substep2ValidateCharacteristicsParams as Substep2ValidateCharacteristicsParamsSchema,
+  substep2CompleteSubstepParams as Substep2CompleteSubstepParamsSchema,
+  substep2CancelSubstepParams as Substep2CancelSubstepParamsSchema,
+  substep2GetAvailableMaterialsParams as Substep2GetAvailableMaterialsParamsSchema,
+  substep2GetCurrentCharacteristicsParams as Substep2GetCurrentCharacteristicsParamsSchema,
 
   // Response схеми
-  substep2InitializeSubstep200Response as InitializeSubstepResponseSchema,
-  substep2SelectMaterial200Response as SelectMaterialResponseSchema,
-  substep2SelectColor200Response as SelectColorResponseSchema,
-  substep2SelectFiller200Response as SelectFillerResponseSchema,
-  substep2SelectWearLevel200Response as SelectWearLevelResponseSchema,
-  substep2ValidateCharacteristics200Response as ValidateCharacteristicsResponseSchema,
-  substep2CompleteSubstep200Response as CompleteSubstepResponseSchema,
-  substep2GetAvailableMaterials200Response as GetAvailableMaterialsResponseSchema,
-  substep2GetCurrentCharacteristics200Response as GetCurrentCharacteristicsResponseSchema,
-} from '@/shared/api/generated/substep2';
+  substep2InitializeSubstep200Response as Substep2InitializeSubstepResponseSchema,
+  substep2SelectMaterial200Response as Substep2SelectMaterialResponseSchema,
+  substep2SelectColor200Response as Substep2SelectColorResponseSchema,
+  substep2SelectFiller200Response as Substep2SelectFillerResponseSchema,
+  substep2SelectWearLevel200Response as Substep2SelectWearLevelResponseSchema,
+  substep2ValidateCharacteristics200Response as Substep2ValidateCharacteristicsResponseSchema,
+  substep2CompleteSubstep200Response as Substep2CompleteSubstepResponseSchema,
+  substep2GetAvailableMaterials200Response as Substep2GetAvailableMaterialsResponseSchema,
+  substep2GetCurrentCharacteristics200Response as Substep2GetCurrentCharacteristicsResponseSchema,
+} from '@api/substep2';
 
 // =================== ТИПИ ===================
 // Реекспорт типів з читабельними назвами
 export type {
-  Substep2SelectMaterialParams as SelectMaterialParams,
-  Substep2SelectColorParams as SelectColorParams,
-  Substep2SelectFillerParams as SelectFillerParams,
-  Substep2SelectWearLevelParams as SelectWearLevelParams,
-} from '@/shared/api/generated/substep2';
+  Substep2SelectMaterialParams,
+  Substep2SelectColorParams,
+  Substep2SelectFillerParams,
+  Substep2SelectWearLevelParams,
+} from '@api/substep2';
 
 // Response типи
 export type {
-  OrderItemDTO as ItemCharacteristicsResponse,
-  AdditionalInfoDTO as AdditionalInfoResponse,
-  SubstepResultDTO as SubstepResultResponse,
-} from '@/shared/api/generated/substep2';
+  OrderItemDTO as Substep2ItemCharacteristicsResponse,
+  AdditionalInfoDTO as Substep2AdditionalInfoResponse,
+  SubstepResultDTO as Substep2SubstepResultResponse,
+} from '@api/substep2';
 
 // =================== МІНІМАЛЬНІ UI ФОРМИ ===================
 
 const SEARCH_VALIDATION_MESSAGE = 'Мінімум 2 символи для пошуку';
 
 // Форма пошуку матеріалу
-export const materialSearchFormSchema = z.object({
+export const substep2MaterialSearchFormSchema = z.object({
   searchTerm: z.string().min(2, SEARCH_VALIDATION_MESSAGE),
 });
 
-export type MaterialSearchFormData = z.infer<typeof materialSearchFormSchema>;
+export type Substep2MaterialSearchFormData = z.infer<typeof substep2MaterialSearchFormSchema>;
 
 // Форма пошуку кольору
-export const colorSearchFormSchema = z.object({
+export const substep2ColorSearchFormSchema = z.object({
   searchTerm: z.string().min(2, SEARCH_VALIDATION_MESSAGE),
 });
 
-export type ColorSearchFormData = z.infer<typeof colorSearchFormSchema>;
+export type Substep2ColorSearchFormData = z.infer<typeof substep2ColorSearchFormSchema>;
 
 // Форма пошуку наповнювача
-export const fillerSearchFormSchema = z.object({
+export const substep2FillerSearchFormSchema = z.object({
   searchTerm: z.string().min(2, SEARCH_VALIDATION_MESSAGE),
 });
 
-export type FillerSearchFormData = z.infer<typeof fillerSearchFormSchema>;
+export type Substep2FillerSearchFormData = z.infer<typeof substep2FillerSearchFormSchema>;
 
 // Форма налаштувань відображення
-export const displaySettingsFormSchema = z.object({
-  showMaterialDetails: z.boolean().default(false),
-  showColorDetails: z.boolean().default(false),
-  showFillerDetails: z.boolean().default(false),
-  showWearLevelDetails: z.boolean().default(false),
+export const substep2DisplaySettingsFormSchema = z.object({
+  showMaterialDetails: z.boolean(),
+  showColorDetails: z.boolean(),
+  showFillerDetails: z.boolean(),
+  showWearLevelDetails: z.boolean(),
 });
 
-export type DisplaySettingsFormData = z.infer<typeof displaySettingsFormSchema>;
+export type Substep2DisplaySettingsFormData = z.infer<typeof substep2DisplaySettingsFormSchema>;

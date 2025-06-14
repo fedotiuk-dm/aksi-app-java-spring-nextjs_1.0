@@ -1,9 +1,9 @@
 // Substep5 Workflow Hook - тонка обгортка над Orval хуками
 // Координація між API та UI станом для substep5 workflow (фотодокументація)
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm, type UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки
 import {
@@ -13,7 +13,7 @@ import {
   useSubstep5CompletePhotoDocumentation,
   useSubstep5GetDocumentationStatus,
   useSubstep5GetDocumentationData,
-} from '@/shared/api/generated/substep5';
+} from '@api/substep5';
 
 // Локальні типи (з наших workflow схем)
 import {
@@ -28,7 +28,6 @@ import {
 } from './schemas';
 
 // Workflow стор та константи
-import { useSubstep5WorkflowStore, useSubstep5WorkflowSelectors } from './workflow.store';
 import {
   SUBSTEP5_WORKFLOW_STEPS,
   SUBSTEP5_WORKFLOW_LIMITS,
@@ -39,6 +38,7 @@ import {
   isFirstSubstep5Step,
   isLastSubstep5Step,
 } from './workflow.constants';
+import { useSubstep5WorkflowStore, useSubstep5WorkflowSelectors } from './workflow.store';
 
 // =================== ТИПИ ===================
 export interface UseSubstep5WorkflowReturn {

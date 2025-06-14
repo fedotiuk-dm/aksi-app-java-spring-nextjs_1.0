@@ -1,19 +1,26 @@
 // 📋 SUBSTEP2 WORKFLOW: Тонка обгортка для координації характеристик предмета
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки (готові з бекенду)
 import {
   useSubstep2InitializeSubstep,
   useSubstep2CompleteSubstep,
   useSubstep2GetCurrentCharacteristics,
-} from '@/shared/api/generated/substep2';
+} from '@api/substep2';
 
 // Локальні імпорти
-import { useSubstep2WorkflowStore, useSubstep2WorkflowSelectors } from './workflow.store';
+import {
+  initializationFormSchema,
+  navigationFormSchema,
+  completionFormSchema,
+  type InitializationFormData,
+  type NavigationFormData,
+  type CompletionFormData,
+} from './schemas';
 import {
   SUBSTEP2_UI_STEPS,
   SUBSTEP2_STEP_ORDER,
@@ -26,14 +33,7 @@ import {
   isLastSubstep2Step,
   type Substep2UIStep,
 } from './workflow.constants';
-import {
-  initializationFormSchema,
-  navigationFormSchema,
-  completionFormSchema,
-  type InitializationFormData,
-  type NavigationFormData,
-  type CompletionFormData,
-} from './schemas';
+import { useSubstep2WorkflowStore, useSubstep2WorkflowSelectors } from './workflow.store';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useSubstep2Workflow = () => {

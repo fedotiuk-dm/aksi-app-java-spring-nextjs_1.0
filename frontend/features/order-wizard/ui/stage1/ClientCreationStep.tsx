@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { PersonAdd as PersonAddIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -11,7 +11,7 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { PersonAdd as PersonAddIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import React, { useState } from 'react';
 
 // Доменна логіка
 import { useClientCreation } from '@/domains/wizard/stage1/client-creation';

@@ -8,7 +8,7 @@ export {
   PriceModifierDTOType,
   ModifierRecommendationDTOPriority,
   Substep4GetAvailableEvents200Item,
-} from '@/shared/api/generated/substep4';
+} from '@api/substep4';
 
 // Реекспорт типів з читабельними назвами
 export type {
@@ -27,7 +27,7 @@ export type {
   FixedModifierQuantityDTO,
   AddModifierRequest,
   PriceDiscountDTO,
-} from '@/shared/api/generated/substep4';
+} from '@api/substep4';
 
 // =================== UI КОНСТАНТИ ===================
 // Тільки для UI координації (НЕ дублюємо API логіку)

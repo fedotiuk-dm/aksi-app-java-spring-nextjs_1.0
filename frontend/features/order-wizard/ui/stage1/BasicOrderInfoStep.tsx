@@ -1,6 +1,10 @@
 'use client';
 
-import React from 'react';
+import {
+  Receipt as ReceiptIcon,
+  ArrowBack as ArrowBackIcon,
+  CheckCircle as CheckCircleIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -11,11 +15,7 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import {
-  Receipt as ReceiptIcon,
-  ArrowBack as ArrowBackIcon,
-  CheckCircle as CheckCircleIcon,
-} from '@mui/icons-material';
+import React from 'react';
 
 // Доменна логіка
 import { useBasicOrderInfo } from '@/domains/wizard/stage1/basic-order-info';

@@ -1,9 +1,9 @@
 // Тонка обгортка над Orval хуками для substep3 - Забруднення та дефекти
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки (готові з бекенду)
 import {
@@ -16,10 +16,9 @@ import {
   useSubstep3GetAvailableStainTypes,
   useSubstep3GetAvailableDefectTypes,
   useSubstep3GetContext,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // Локальні імпорти
-import { useStainsDefectsStore, useStainsDefectsSelectors } from './store';
 import {
   SUBSTEP3_UI_STEPS,
   SUBSTEP3_VALIDATION_RULES,
@@ -31,15 +30,15 @@ import {
   getPreviousSubstep3Step,
 } from './constants';
 import {
-  stainSelectionFormSchema,
-  defectSelectionFormSchema,
-  defectNotesFormSchema,
-  displaySettingsFormSchema,
-  type StainSelectionFormData,
-  type DefectSelectionFormData,
-  type DefectNotesFormData,
-  type DisplaySettingsFormData,
+  substep3StainSelectionFormSchema,
+  substep3DefectSelectionFormSchema,
+  substep3DefectNotesFormSchema,
+  type Substep3StainSelectionFormData,
+  type Substep3DefectSelectionFormData,
+  type Substep3DefectNotesFormData,
+  type Substep3DisplaySettingsFormData,
 } from './schemas';
+import { useStainsDefectsStore, useStainsDefectsSelectors } from './store';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useSubstep3StainsDefects = () => {
@@ -69,30 +68,30 @@ export const useSubstep3StainsDefects = () => {
   });
 
   // React Hook Form інтеграція
-  const stainSelectionForm = useForm<StainSelectionFormData>({
-    resolver: zodResolver(stainSelectionFormSchema),
+  const stainSelectionForm = useForm<Substep3StainSelectionFormData>({
+    resolver: zodResolver(substep3StainSelectionFormSchema),
     defaultValues: {
       selectedStains: uiState.selectedStains,
       otherStains: uiState.otherStains,
     },
   });
 
-  const defectSelectionForm = useForm<DefectSelectionFormData>({
-    resolver: zodResolver(defectSelectionFormSchema),
+  const defectSelectionForm = useForm<Substep3DefectSelectionFormData>({
+    resolver: zodResolver(substep3DefectSelectionFormSchema),
     defaultValues: {
       selectedDefects: uiState.selectedDefects,
       noGuaranteeReason: uiState.noGuaranteeReason,
     },
   });
 
-  const defectNotesForm = useForm<DefectNotesFormData>({
-    resolver: zodResolver(defectNotesFormSchema),
+  const defectNotesForm = useForm<Substep3DefectNotesFormData>({
+    resolver: zodResolver(substep3DefectNotesFormSchema),
     defaultValues: {
       defectNotes: uiState.defectNotes,
     },
   });
 
-  const displaySettingsForm = useForm<DisplaySettingsFormData>({
+  const displaySettingsForm = useForm<Substep3DisplaySettingsFormData>({
     defaultValues: {
       showRiskLevels: true,
       groupByCategory: false,

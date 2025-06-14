@@ -1,6 +1,11 @@
 'use client';
 
-import React from 'react';
+import {
+  Person as PersonIcon,
+  Phone as PhoneIcon,
+  Email as EmailIcon,
+  LocationOn as LocationIcon,
+} from '@mui/icons-material';
 import {
   List,
   ListItemButton,
@@ -10,12 +15,7 @@ import {
   CircularProgress,
   Box,
 } from '@mui/material';
-import {
-  Person as PersonIcon,
-  Phone as PhoneIcon,
-  Email as EmailIcon,
-  LocationOn as LocationIcon,
-} from '@mui/icons-material';
+import React from 'react';
 
 interface Client {
   id?: string;

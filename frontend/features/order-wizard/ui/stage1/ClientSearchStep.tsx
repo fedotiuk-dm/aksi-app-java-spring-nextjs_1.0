@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { Box, Card, CardContent, Typography, Button, Alert, Stack } from '@mui/material';
 import { Search as SearcIcon, Add as AddIcon } from '@mui/icons-material';
+import { Box, Card, CardContent, Typography, Button, Alert, Stack } from '@mui/material';
+import React from 'react';
 
 // Доменна логіка - використовуємо новий debounce хук з workflow
 import { useClientSearchDebounce } from '@/domains/wizard/stage1/client-search';

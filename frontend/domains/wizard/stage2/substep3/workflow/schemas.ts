@@ -1,5 +1,5 @@
 // Substep3 Workflow Schemas - ТІЛЬКИ Orval схеми + мінімальні UI форми
-// Використовуємо готові схеми з @/shared/api/generated/substep3
+// Використовуємо готові схеми з @api/substep3
 
 import { z } from 'zod';
 
@@ -10,7 +10,7 @@ export type {
   Substep3ProcessDefectSelectionParams as ProcessDefectSelectionParamsSchema,
   Substep3ProcessDefectNotesParams as ProcessDefectNotesParamsSchema,
   Substep3GoBackParams as GoBackParamsSchema,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // Response схеми (основні DTO)
 export type {
@@ -21,7 +21,7 @@ export type {
   OrderItemAddRequest as OrderItemAddRequestSchema,
   SubstepResultDTO as SubstepResultSchema,
   ErrorResponse as ErrorResponseSchema,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // =================== ТИПИ ===================
 // Реекспорт типів з читабельними назвами
@@ -30,7 +30,7 @@ export type {
   Substep3ProcessDefectSelectionParams as ProcessDefectSelectionParams,
   Substep3ProcessDefectNotesParams as ProcessDefectNotesParams,
   Substep3GoBackParams as GoBackParams,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // Response типи
 export type {
@@ -41,7 +41,7 @@ export type {
   OrderItemAddRequest as OrderItemAddRequestResponse,
   SubstepResultDTO as SubstepResultResponse,
   ErrorResponse as ErrorResponse,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // =================== МІНІМАЛЬНІ UI ФОРМИ ===================
 // Тільки для workflow навігації та координації

@@ -1,7 +1,7 @@
 // Константи для Main Wizard - Координація етапів Order Wizard
 // Використовуємо стани з Spring State Machine через Orval
 
-import { OrderWizardResponseDTOCurrentState } from '@/shared/api/generated/main';
+import { OrderWizardResponseDTOCurrentState } from '@api/main';
 
 // =================== СТАНИ WIZARD (З ORVAL) ===================
 export const MAIN_WIZARD_STATES = OrderWizardResponseDTOCurrentState;

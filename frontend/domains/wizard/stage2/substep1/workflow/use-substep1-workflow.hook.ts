@@ -1,9 +1,9 @@
 // Substep1 Workflow Hook - тонка обгортка над Orval хуками
 // Координація між API та UI станом для substep1
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки
 import {
@@ -17,16 +17,9 @@ import {
   useSubstep1GetStatus,
   useSubstep1GetServiceCategories,
   useSubstep1GetItemsForCategory,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // Локальні імпорти
-import { useSubstep1WorkflowStore, useSubstep1WorkflowSelectors } from './workflow.store';
-import {
-  SUBSTEP1_WORKFLOW_STEPS,
-  SUBSTEP1_VALIDATION_RULES,
-  SUBSTEP1_WORKFLOW_LIMITS,
-  type Substep1WorkflowStep,
-} from './workflow.constants';
 import {
   workflowInitializationFormSchema,
   workflowNavigationFormSchema,
@@ -39,6 +32,13 @@ import {
   type PriceListItemResponse,
   type SubstepResultResponse,
 } from './schemas';
+import {
+  SUBSTEP1_WORKFLOW_STEPS,
+  SUBSTEP1_VALIDATION_RULES,
+  SUBSTEP1_WORKFLOW_LIMITS,
+  type Substep1WorkflowStep,
+} from './workflow.constants';
+import { useSubstep1WorkflowStore, useSubstep1WorkflowSelectors } from './workflow.store';
 
 // =================== ТИПИ ===================
 

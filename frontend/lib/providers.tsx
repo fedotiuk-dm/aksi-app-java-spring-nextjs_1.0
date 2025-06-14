@@ -4,8 +4,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 
 import { ClientOnlyToaster } from '@/components/ui/ClientOnlyToaster';
-import { AuthInitializer } from '@/features/auth/components/AuthInitializer';
 import { AuthGuard } from '@/features/auth/components/AuthGuard';
+import { AuthInitializer } from '@/features/auth/components/AuthInitializer';
 
 import { queryClient } from './reactQuery';
 import { ThemeRegistry } from './theme-registry';

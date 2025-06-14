@@ -7,10 +7,11 @@ import { useEffect, useRef } from 'react';
 import { useDebounceSearch } from '../../../../shared/lib/hooks/useDebounce';
 
 // Базовий хук
+import { useStage1Workflow } from '../workflow';
+
 import { useClientSearch } from './use-client-search.hook';
 
 // Workflow
-import { useStage1Workflow } from '../workflow';
 
 export const useClientSearchDebounce = () => {
   const workflow = useStage1Workflow();

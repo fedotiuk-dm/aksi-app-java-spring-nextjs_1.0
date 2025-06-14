@@ -5,6 +5,11 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
 // Локальні імпорти
+import type {
+  WorkflowInitializationFormData,
+  WorkflowNavigationFormData,
+  WorkflowCompletionFormData,
+} from './schemas';
 import {
   SUBSTEP5_WORKFLOW_STEPS,
   SUBSTEP5_STEP_ORDER,
@@ -16,11 +21,6 @@ import {
   type Substep5WorkflowStep,
 } from './workflow.constants';
 
-import type {
-  WorkflowInitializationFormData,
-  WorkflowNavigationFormData,
-  WorkflowCompletionFormData,
-} from './schemas';
 
 // =================== ТИПИ ===================
 

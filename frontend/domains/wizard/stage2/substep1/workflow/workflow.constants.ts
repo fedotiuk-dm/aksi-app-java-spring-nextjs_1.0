@@ -7,14 +7,14 @@ export {
   SubstepResultDTOCurrentState,
   SubstepResultDTOAvailableEventsItem,
   PriceCalculationResponseDTOUnitOfMeasure,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // Реекспорт типів
 export type {
   SubstepResultDTOCurrentState as Substep1State,
   SubstepResultDTOAvailableEventsItem as Substep1Event,
   PriceCalculationResponseDTOUnitOfMeasure as UnitOfMeasure,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // =================== UI WORKFLOW СТАНИ ===================
 // Базові стани для UI координації (НЕ дублюємо API стани)

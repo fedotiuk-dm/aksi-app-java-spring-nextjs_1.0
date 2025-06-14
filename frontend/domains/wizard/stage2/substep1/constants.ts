@@ -7,7 +7,7 @@ export {
   SubstepResultDTOCurrentState,
   SubstepResultDTOAvailableEventsItem,
   PriceCalculationResponseDTOUnitOfMeasure,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // Реекспорт типів з читабельними назвами
 export type {
@@ -20,7 +20,7 @@ export type {
   ServiceCategoryDTO,
   PriceListItemDTO,
   ItemBasicInfoDTO,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // =================== UI КОНСТАНТИ ===================
 // UI кроки для базової інформації предмета

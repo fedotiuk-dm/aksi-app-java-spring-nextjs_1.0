@@ -1,5 +1,5 @@
 // Substep4 Workflow Schemas - ТІЛЬКИ Orval схеми + мінімальні UI форми
-// Використовуємо готові схеми з @/shared/api/generated/substep4
+// Використовуємо готові схеми з @api/substep4
 
 import { z } from 'zod';
 
@@ -12,7 +12,7 @@ export type {
   substep4RemoveModifierParams as RemoveModifierParamsSchema,
   substep4ConfirmCalculationParams as ConfirmCalculationParamsSchema,
   substep4ResetCalculationParams as ResetCalculationParamsSchema,
-} from '@/shared/api/generated/substep4';
+} from '@api/substep4';
 
 // Response схеми (основні DTO)
 export type {
@@ -29,7 +29,7 @@ export type {
   // Параметри для запитів
   Substep4GetAvailableModifiersParams,
   Substep4GetRecommendedModifiersParams,
-} from '@/shared/api/generated/substep4';
+} from '@api/substep4';
 
 // =================== UI ФОРМИ ===================
 // Мінімальні Zod схеми для workflow UI форм
@@ -77,4 +77,4 @@ export type {
   AddModifierRequest as AddModifierRequestResponse,
   SubstepResultDTO as SubstepResultResponse,
   ErrorResponse as ErrorResponse,
-} from '@/shared/api/generated/substep4';
+} from '@api/substep4';

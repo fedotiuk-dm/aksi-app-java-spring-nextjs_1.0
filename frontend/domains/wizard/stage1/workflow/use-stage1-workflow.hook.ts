@@ -8,7 +8,7 @@ import {
   useOrderWizardStart,
   useOrderWizardGetCurrentState,
   useOrderWizardCompleteStage1,
-} from '@/shared/api/generated/main';
+} from '@api/main';
 
 // Workflow стор
 import { useStage1WorkflowStore } from './workflow.store';

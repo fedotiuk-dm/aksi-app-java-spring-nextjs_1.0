@@ -1,9 +1,9 @@
 // Тонка обгортка над Orval хуками для Stage2 Item Manager
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки (готові з бекенду)
 import {
@@ -20,10 +20,9 @@ import {
   useStage2ValidateCurrentState,
   useStage2GetCurrentState,
   useStage2CheckReadinessToProceed,
-} from '@/shared/api/generated/stage2';
+} from '@api/stage2';
 
 // Локальні імпорти
-import { useItemManagerStore, useItemManagerSelectors } from './store';
 import {
   ITEM_MANAGER_OPERATIONS,
   ITEM_MANAGER_UI_STATES,
@@ -36,11 +35,12 @@ import {
   tableDisplayFormSchema,
   deleteConfirmationFormSchema,
   proceedToNextStageFormSchema,
-  type ItemSearchFormData,
+  type ItemManagerSearchFormData,
   type TableDisplayFormData,
   type DeleteConfirmationFormData,
   type ProceedToNextStageFormData,
 } from './schemas';
+import { useItemManagerStore, useItemManagerSelectors } from './store';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useStage2ItemManager = () => {
@@ -78,7 +78,7 @@ export const useStage2ItemManager = () => {
 
   // =================== ФОРМИ З ZOD ВАЛІДАЦІЄЮ ===================
   // Форма пошуку предметів
-  const itemSearchForm = useForm<ItemSearchFormData>({
+  const itemSearchForm = useForm<ItemManagerSearchFormData>({
     resolver: zodResolver(itemSearchFormSchema),
     defaultValues: {
       searchTerm: uiState.searchTerm,

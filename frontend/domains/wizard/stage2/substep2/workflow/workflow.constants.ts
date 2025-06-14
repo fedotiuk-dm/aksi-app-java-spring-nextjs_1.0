@@ -6,13 +6,13 @@
 export {
   SubstepResultDTOCurrentState,
   SubstepResultDTOAvailableEventsItem,
-} from '@/shared/api/generated/substep2';
+} from '@api/substep2';
 
 // Реекспорт типів
 export type {
   SubstepResultDTOCurrentState as Substep2State,
   SubstepResultDTOAvailableEventsItem as Substep2Event,
-} from '@/shared/api/generated/substep2';
+} from '@api/substep2';
 
 // =================== UI WORKFLOW КРОКИ ===================
 // Тільки для UI координації (НЕ дублюємо API стани)

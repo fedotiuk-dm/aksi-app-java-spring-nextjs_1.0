@@ -8,7 +8,7 @@ export type { UseStage2ItemManagerReturn } from './use-stage2-item-manager.hook'
 // =================== ТИПИ ДЛЯ UI ===================
 // Експортуємо тільки типи, які потрібні в UI компонентах
 export type {
-  ItemSearchFormData,
+  ItemManagerSearchFormData,
   TableDisplayFormData,
   DeleteConfirmationFormData,
   ProceedToNextStageFormData,

@@ -1,5 +1,5 @@
 // Substep1 Workflow Schemas - ТІЛЬКИ Orval схеми + мінімальні UI форми
-// Використовуємо готові схеми з @/shared/api/generated/substep1
+// Використовуємо готові схеми з @api/substep1
 
 import { z } from 'zod';
 
@@ -9,7 +9,7 @@ export type {
   Substep1SelectServiceCategoryParams as SelectServiceCategoryParamsSchema,
   Substep1SelectPriceListItemParams as SelectPriceListItemParamsSchema,
   Substep1EnterQuantityParams as EnterQuantityParamsSchema,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // Response схеми (основні DTO)
 export type {
@@ -18,7 +18,7 @@ export type {
   PriceListItemDTO as PriceListItemSchema,
   SubstepResultDTO as SubstepResultSchema,
   ErrorResponse as ErrorResponseSchema,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // =================== ТИПИ ===================
 // Реекспорт типів з читабельними назвами
@@ -26,7 +26,7 @@ export type {
   Substep1SelectServiceCategoryParams as SelectServiceCategoryParams,
   Substep1SelectPriceListItemParams as SelectPriceListItemParams,
   Substep1EnterQuantityParams as EnterQuantityParams,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // Response типи
 export type {
@@ -35,7 +35,7 @@ export type {
   PriceListItemDTO as PriceListItemResponse,
   SubstepResultDTO as SubstepResultResponse,
   ErrorResponse as ErrorResponse,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // =================== МІНІМАЛЬНІ UI ФОРМИ ===================
 // Тільки для workflow навігації та координації

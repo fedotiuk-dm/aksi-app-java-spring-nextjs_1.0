@@ -1,9 +1,9 @@
 // Substep5 Photo Documentation Hook - тонка обгортка над Orval хуками
 // Координація між API та UI станом для substep5 (фотодокументація)
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm, type UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки
 import {
@@ -14,7 +14,7 @@ import {
   useSubstep5GetDocumentationData,
   useSubstep5CompletePhotoDocumentation,
   useSubstep5CloseSession,
-} from '@/shared/api/generated/substep5';
+} from '@api/substep5';
 
 // Локальні імпорти
 import {
@@ -22,6 +22,7 @@ import {
   SUBSTEP5_VALIDATION_RULES,
   SUBSTEP5_LIMITS,
 } from './constants';
+import { usePhotoDocumentationSelectors } from './photo-documentation.store';
 import {
   photoUploadFormSchema,
   photoAnnotationFormSchema,
@@ -32,7 +33,6 @@ import {
   type StepNavigationFormData,
   type CompletionFormData,
 } from './schemas';
-import { usePhotoDocumentationSelectors } from './photo-documentation.store';
 
 // =================== ТИПИ ===================
 export interface UseSubstep5PhotoDocumentationReturn {

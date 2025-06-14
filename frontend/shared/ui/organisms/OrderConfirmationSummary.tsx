@@ -4,6 +4,7 @@ import { Grid, Box, Typography } from '@mui/material';
 import React from 'react';
 
 import { OrderInfoCard, ClientInfoCard, FinancialSummaryCard } from '../molecules';
+
 import { OrderItemsTable, OrderItemData } from './OrderItemsTable';
 
 interface OrderConfirmationSummaryProps {

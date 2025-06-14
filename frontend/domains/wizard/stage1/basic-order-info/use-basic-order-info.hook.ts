@@ -21,10 +21,11 @@ import {
 } from '../../../../shared/api/generated/stage1';
 
 // Локальні імпорти
+import { useStage1Workflow } from '../workflow';
+
 import { useBasicOrderInfoStore } from './basic-order-info.store';
 
 // Workflow для отримання sessionId
-import { useStage1Workflow } from '../workflow';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useBasicOrderInfo = () => {

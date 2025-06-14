@@ -1,5 +1,5 @@
 // Substep5 Constants - ТІЛЬКИ Orval константи + UI кроки
-// Використовуємо готові константи з @/shared/api/generated/substep5
+// Використовуємо готові константи з @api/substep5
 
 // =================== ORVAL КОНСТАНТИ ===================
 // Реекспорт готових констант з читабельними назвами
@@ -7,7 +7,7 @@ export {
   SubstepResultDTOCurrentState as SUBSTEP5_STATES,
   SubstepResultDTOPreviousState as SUBSTEP5_PREVIOUS_STATES,
   SubstepResultDTOAvailableEventsItem as SUBSTEP5_EVENTS,
-} from '@/shared/api/generated/substep5/aksiApi.schemas';
+} from '@api/substep5/aksiApi.schemas';
 
 // =================== UI КРОКИ ===================
 // Кроки для UI навігації (НЕ дублюють API стани)

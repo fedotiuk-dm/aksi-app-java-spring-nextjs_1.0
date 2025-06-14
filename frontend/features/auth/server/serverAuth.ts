@@ -16,6 +16,7 @@ import {
   authRefreshToken,
   authTestEndpoint,
 } from '@/shared/api/generated/auth';
+import type { LoginRequest, RegisterRequest } from '@/shared/api/generated/auth';
 
 import {
   AuthUser,
@@ -25,7 +26,6 @@ import {
   adaptOrvalRegisterResponse,
 } from '../model/types';
 
-import type { LoginRequest, RegisterRequest } from '@/shared/api/generated/auth';
 
 // Назви cookies
 const TOKEN_COOKIE = 'auth_token';

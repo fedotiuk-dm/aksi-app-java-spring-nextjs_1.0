@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { Box, TextField, Button, Stack, IconButton, CircularProgress } from '@mui/material';
 import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
+import { Box, TextField, Button, Stack, IconButton, CircularProgress } from '@mui/material';
+import React from 'react';
 
 interface ClientSearchFormProps {
   // Швидкий пошук

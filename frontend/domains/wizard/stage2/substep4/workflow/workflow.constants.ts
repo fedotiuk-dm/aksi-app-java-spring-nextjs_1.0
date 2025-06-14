@@ -8,7 +8,7 @@ export {
   SubstepResultDTOAvailableEventsItem,
   PriceModifierDTOType,
   PriceCalculationResponseDTOUnitOfMeasure,
-} from '@/shared/api/generated/substep4';
+} from '@api/substep4';
 
 // Реекспорт типів
 export type {
@@ -16,7 +16,7 @@ export type {
   SubstepResultDTOAvailableEventsItem as Substep4Event,
   PriceModifierDTOType as ModifierType,
   PriceCalculationResponseDTOUnitOfMeasure as UnitOfMeasure,
-} from '@/shared/api/generated/substep4';
+} from '@api/substep4';
 
 // =================== UI WORKFLOW СТАНИ ===================
 // Тільки для UI координації (НЕ дублюємо API стани)

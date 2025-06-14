@@ -24,7 +24,7 @@ export type {
   Stage1GetClientFormState200,
   Stage1GetClientSearchState200,
   Stage1GetBasicOrderState200,
-} from '@/shared/api/generated/stage1';
+} from '@api/stage1';
 
 // Реекспорт Zod схем для валідації
 export {
@@ -49,4 +49,4 @@ export {
   stage1SetUniqueTagParams as SetUniqueTagParamsSchema,
   stage1SelectBranchParams as SelectBranchParamsSchema,
   stage1GenerateReceiptNumberParams as GenerateReceiptNumberParamsSchema,
-} from '@/shared/api/generated/stage1';
+} from '@api/stage1';

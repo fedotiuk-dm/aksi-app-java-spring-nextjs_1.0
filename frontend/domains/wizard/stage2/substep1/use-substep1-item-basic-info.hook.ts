@@ -1,9 +1,9 @@
 // Тонка обгортка над Orval хуками для substep1 - Основна інформація про предмет
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки (готові з бекенду)
 import {
@@ -17,10 +17,9 @@ import {
   useSubstep1GetStatus,
   useSubstep1GetServiceCategories,
   useSubstep1GetItemsForCategory,
-} from '@/shared/api/generated/substep1';
+} from '@api/substep1';
 
 // Локальні імпорти
-import { useItemBasicInfoStore, useItemBasicInfoSelectors } from './store';
 import {
   SUBSTEP1_UI_STEPS,
   SUBSTEP1_VALIDATION_RULES,
@@ -29,15 +28,16 @@ import {
   getPreviousSubstep1Step,
 } from './constants';
 import {
-  categorySearchFormSchema,
-  itemSearchFormSchema,
-  quantityFormSchema,
-  validationFormSchema,
-  type CategorySearchFormData,
-  type ItemSearchFormData,
-  type QuantityFormData,
-  type ValidationFormData,
+  substep1CategorySearchFormSchema,
+  substep1ItemSearchFormSchema,
+  substep1QuantityFormSchema,
+  substep1ValidationFormSchema,
+  type Substep1CategorySearchFormData,
+  type Substep1ItemSearchFormData,
+  type Substep1QuantityFormData,
+  type Substep1ValidationFormData,
 } from './schemas';
+import { useItemBasicInfoStore, useItemBasicInfoSelectors } from './store';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useSubstep1ItemBasicInfo = () => {
@@ -69,16 +69,16 @@ export const useSubstep1ItemBasicInfo = () => {
 
   // =================== ФОРМИ З ZOD ВАЛІДАЦІЄЮ ===================
   // Форма пошуку категорій
-  const categorySearchForm = useForm<CategorySearchFormData>({
-    resolver: zodResolver(categorySearchFormSchema),
+  const categorySearchForm = useForm<Substep1CategorySearchFormData>({
+    resolver: zodResolver(substep1CategorySearchFormSchema),
     defaultValues: {
       searchTerm: uiState.searchTerm,
     },
   });
 
   // Форма пошуку предметів
-  const itemSearchForm = useForm<ItemSearchFormData>({
-    resolver: zodResolver(itemSearchFormSchema),
+  const itemSearchForm = useForm<Substep1ItemSearchFormData>({
+    resolver: zodResolver(substep1ItemSearchFormSchema),
     defaultValues: {
       searchTerm: uiState.searchTerm,
       categoryId: uiState.selectedCategoryId || '',
@@ -86,16 +86,16 @@ export const useSubstep1ItemBasicInfo = () => {
   });
 
   // Форма введення кількості
-  const quantityForm = useForm<QuantityFormData>({
-    resolver: zodResolver(quantityFormSchema),
+  const quantityForm = useForm<Substep1QuantityFormData>({
+    resolver: zodResolver(substep1QuantityFormSchema),
     defaultValues: {
       quantity: uiState.quantity,
     },
   });
 
   // Форма валідації
-  const validationForm = useForm<ValidationFormData>({
-    resolver: zodResolver(validationFormSchema),
+  const validationForm = useForm<Substep1ValidationFormData>({
+    resolver: zodResolver(substep1ValidationFormSchema),
     defaultValues: {
       confirmed: false,
     },
@@ -238,6 +238,5 @@ export const useSubstep1ItemBasicInfo = () => {
     },
   };
 };
-
 // =================== ТИПИ ===================
 export type UseSubstep1ItemBasicInfoReturn = ReturnType<typeof useSubstep1ItemBasicInfo>;

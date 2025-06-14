@@ -85,11 +85,22 @@ const eslintConfig = [
       },
     },
     rules: {
-      // Глобальне правило, що забороняє імпорти напряму з директорії generated
+      // 🚀 Автоматичне виправлення API імпортів - використовуйте короткі alias
       'no-restricted-imports': [
         'error',
         {
-          patterns: ['**/lib/api/generated/**/*', '**/shared/api/generated/**/!(index)*'],
+          patterns: [
+            {
+              group: ['@/shared/api/generated/*'],
+              message:
+                'Використовуйте короткі alias: @api/stage1, @api/substep1, @api/main тощо замість @/shared/api/generated/*',
+            },
+            {
+              group: ['**/lib/api/generated/**/*', '**/shared/api/generated/**/!(index)*'],
+              message:
+                'Не імпортуйте напряму з папки generated. Використовуйте індексні файли або короткі alias.',
+            },
+          ],
         },
       ],
       // Базові правила TypeScript
@@ -99,12 +110,14 @@ const eslintConfig = [
       // Вимикаємо правила, що потребують type-checking для швидшої роботи
       '@typescript-eslint/no-misused-promises': 'off',
 
-      // Правила для імпортів
+      // 📦 Правила для імпортів з автоматичним сортуванням
       'import/no-unresolved': 'off', // Вимкнено, бо TypeScript перевіряє це
       'import/named': 'error',
       'import/namespace': 'error',
       'import/default': 'error',
       'import/export': 'error',
+      'import/no-duplicates': 'error',
+      'import/order': 'off', // Тимчасово відключено для зручності розробки
 
       // SonarJS rules
       'sonarjs/no-duplicate-string': ['error', { threshold: 3 }],
@@ -120,9 +133,6 @@ const eslintConfig = [
       'sonarjs/prefer-object-literal': 'error',
       'sonarjs/prefer-single-boolean-return': 'error',
       'sonarjs/prefer-while': 'error',
-
-      // Відключаємо правило порядку імпортів для зручності розробки
-      'import/order': 'off',
     },
   },
 

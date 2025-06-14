@@ -1,7 +1,8 @@
 // Substep5 Schemas - ТІЛЬКИ Orval схеми + мінімальні UI форми
-// Використовуємо готові схеми з @/shared/api/generated/substep5
+// Використовуємо готові схеми з @api/substep5
 
 import { z } from 'zod';
+
 import { SUBSTEP5_VALIDATION_RULES, SUBSTEP5_UI_STEPS } from './constants';
 
 // =================== ORVAL СХЕМИ ===================
@@ -13,7 +14,7 @@ export type {
   OrderItemPhotoDTO as OrderItemPhotoSchema,
   SubstepResultDTO as SubstepResultSchema,
   ErrorResponse as ErrorResponseSchema,
-} from '@/shared/api/generated/substep5';
+} from '@api/substep5';
 
 // Params схеми
 export type {
@@ -23,10 +24,10 @@ export type {
   substep5CompletePhotoDocumentationParams as CompletePhotoDocumentationParamsSchema,
   substep5GetDocumentationStatusParams as GetDocumentationStatusParamsSchema,
   substep5GetDocumentationDataParams as GetDocumentationDataParamsSchema,
-} from '@/shared/api/generated/substep5';
+} from '@api/substep5';
 
 // Body схеми
-export type { Substep5AddPhotoBody as AddPhotoBodySchema } from '@/shared/api/generated/substep5';
+export type { Substep5AddPhotoBody as AddPhotoBodySchema } from '@api/substep5';
 
 // Response схеми
 export type {
@@ -36,7 +37,7 @@ export type {
   substep5CompletePhotoDocumentation200Response as CompletePhotoDocumentationResponseSchema,
   substep5GetDocumentationStatus200Response as GetDocumentationStatusResponseSchema,
   substep5GetDocumentationData200Response as GetDocumentationDataResponseSchema,
-} from '@/shared/api/generated/substep5';
+} from '@api/substep5';
 
 // =================== UI ФОРМИ ===================
 // Мінімальні Zod схеми для UI форм (НЕ дублюють API)

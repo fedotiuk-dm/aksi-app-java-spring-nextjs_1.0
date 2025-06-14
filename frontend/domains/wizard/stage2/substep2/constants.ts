@@ -6,7 +6,7 @@
 export {
   SubstepResultDTOCurrentState,
   SubstepResultDTOAvailableEventsItem,
-} from '@/shared/api/generated/substep2';
+} from '@api/substep2';
 
 // Реекспорт типів з читабельними назвами
 export type {
@@ -18,7 +18,7 @@ export type {
   Substep2SelectWearLevelParams,
   OrderItemDTO,
   AdditionalInfoDTO,
-} from '@/shared/api/generated/substep2';
+} from '@api/substep2';
 
 // =================== UI КОНСТАНТИ ===================
 // Базові кроки для UI координації (НЕ дублюємо API стани)

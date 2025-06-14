@@ -5,7 +5,7 @@ import {
   Stage1GetClientFormState200,
   Stage1GetClientSearchState200,
   Stage1GetBasicOrderState200,
-} from '@/shared/api/generated/stage1';
+} from '@api/stage1';
 
 // =================== СТАНИ З ORVAL ===================
 export const STAGE1_CLIENT_FORM_STATES = Stage1GetClientFormState200;

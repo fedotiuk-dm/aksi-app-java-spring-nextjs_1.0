@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import {
   Box,
   Stepper,
@@ -12,14 +11,15 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
+import React, { useEffect } from 'react';
 
 // Workflow хук
 import { useStage1Workflow } from '@/domains/wizard/stage1/workflow';
 
 // UI компоненти кроків
-import { ClientSearchStep } from './ClientSearchStep';
-import { ClientCreationStep } from './ClientCreationStep';
 import { BasicOrderInfoStep } from './BasicOrderInfoStep';
+import { ClientCreationStep } from './ClientCreationStep';
+import { ClientSearchStep } from './ClientSearchStep';
 
 interface Stage1ContainerProps {
   onStageCompleted: () => void;

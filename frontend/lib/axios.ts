@@ -1,10 +1,10 @@
 'use client';
 
 import axios from 'axios';
+import type { AxiosError, AxiosResponse, AxiosRequestConfig, AxiosInstance } from 'axios';
 
 import { useAuthStore } from '@/features/auth/store';
 
-import type { AxiosError, AxiosResponse, AxiosRequestConfig, AxiosInstance } from 'axios';
 
 // Розширюємо тип AxiosRequestConfig для власних властивостей
 interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {

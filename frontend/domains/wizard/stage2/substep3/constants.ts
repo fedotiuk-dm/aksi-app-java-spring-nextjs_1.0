@@ -8,7 +8,7 @@ export {
   StainTypeDTORiskLevel,
   DefectTypeDTORiskLevel,
   Substep3GoBackTargetState,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // Реекспорт типів з читабельними назвами
 export type {
@@ -22,7 +22,7 @@ export type {
   StainsDefectsDTO,
   StainsDefectsContext,
   OrderItemAddRequest,
-} from '@/shared/api/generated/substep3';
+} from '@api/substep3';
 
 // =================== UI КОНСТАНТИ ===================
 // Базові кроки UI для substep3
