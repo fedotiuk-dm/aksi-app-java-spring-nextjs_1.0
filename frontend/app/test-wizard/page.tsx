@@ -1,4 +1,4 @@
-import { WizardContainer } from '@/features/order-wizard-test/components/WizardContainer';
+import { WizardContainer } from '@/features/order-wizard/components/WizardContainer';
 
 export default function TestWizardPage() {
   return (
