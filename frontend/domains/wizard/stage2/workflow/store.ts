@@ -203,8 +203,17 @@ export const useStage2WorkflowStore = create<WorkflowStoreState & WorkflowStoreA
       const state = get();
       const currentIndex = STAGE2_SUBSTEP_ORDER.indexOf(state.currentSubstep);
       const nextSubstep = STAGE2_SUBSTEP_ORDER[currentIndex + 1];
+      console.log('🔄 Stage2Workflow goToNextSubstep:', {
+        currentSubstep: state.currentSubstep,
+        currentIndex,
+        nextSubstep,
+        substepOrder: STAGE2_SUBSTEP_ORDER,
+      });
       if (nextSubstep) {
+        console.log('✅ Переходимо до підетапу:', nextSubstep);
         set({ currentSubstep: nextSubstep });
+      } else {
+        console.log('⚠️ Немає наступного підетапу');
       }
     },
 

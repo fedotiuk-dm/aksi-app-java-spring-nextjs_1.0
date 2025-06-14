@@ -173,7 +173,7 @@ export const useSubstep1ItemBasicInfo = () => {
 
       // Стан кроків
       isFirstStep: uiState.currentStep === SUBSTEP1_UI_STEPS.CATEGORY_SELECTION,
-      isLastStep: uiState.currentStep === SUBSTEP1_UI_STEPS.COMPLETED,
+      isLastStep: uiState.currentStep === SUBSTEP1_UI_STEPS.VALIDATION,
 
       // Загальна готовність
       isReadyToComplete: SUBSTEP1_VALIDATION_RULES.canComplete(

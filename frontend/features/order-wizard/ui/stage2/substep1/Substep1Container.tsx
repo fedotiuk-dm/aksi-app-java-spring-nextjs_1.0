@@ -63,27 +63,42 @@ export const Substep1Container: React.FC<Substep1ContainerProps> = ({
       console.log('🔄 Встановлюємо sessionId в substep1:', sessionId);
       substep.ui.setSessionId(sessionId);
     }
-  }, [sessionId, substep.ui]);
+  }, [sessionId, substep.ui.sessionId]);
 
   // ========== ПОТОЧНИЙ КРОК ==========
   const currentStepIndex = STEPS.findIndex((step) => step.key === substep.ui.currentStep);
 
   // ========== ОБРОБНИКИ НАВІГАЦІЇ ==========
   const handleNext = async () => {
+    console.log('🔄 Substep1Container handleNext:', {
+      currentStep: substep.ui.currentStep,
+      isLastStep: substep.computed.isLastStep,
+      isReadyToComplete: substep.computed.isReadyToComplete,
+      canGoToNextStep: substep.computed.canGoToNextStep,
+      nextStep: substep.computed.nextStep,
+    });
+
     if (substep.computed.isLastStep && substep.computed.isReadyToComplete) {
-      try {
-        await substep.mutations.validateAndComplete.mutateAsync({
-          sessionId: substep.ui.sessionId || '',
-        });
-        onComplete();
-      } catch (error) {
-        console.error('Помилка завершення підетапу:', error);
-      }
+      console.log('✅ Substep1 готовий до завершення - повідомляємо батьківський компонент');
+      console.log('📊 Поточний стан substep1:', {
+        sessionId: substep.ui.sessionId,
+        selectedCategoryId: substep.ui.selectedCategoryId,
+        selectedItemId: substep.ui.selectedItemId,
+        quantity: substep.ui.quantity,
+        currentStep: substep.ui.currentStep,
+        statusData: substep.data.status,
+      });
+      // ✅ ПРАВИЛЬНО: тільки повідомляємо про готовність, НЕ викликаємо API
+      // Згідно з еталонним підходом Stage1 - батьківський компонент викличе API
+      onComplete();
     } else if (substep.computed.canGoToNextStep) {
       const nextStep = substep.computed.nextStep;
       if (nextStep) {
+        console.log('➡️ Переходимо до наступного кроку:', nextStep);
         substep.ui.setCurrentStep(nextStep);
       }
+    } else {
+      console.log('⚠️ Не можемо перейти далі - умови не виконані');
     }
   };
 

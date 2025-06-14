@@ -30,7 +30,7 @@ import { MAIN_WIZARD_STATES } from '@/domains/wizard/main/wizard.constants';
 
 // Імпорт компонентів етапів
 import { Stage1Container } from './stage1/Stage1Container';
-import { ItemManagerStep } from './stage2';
+import { Stage2Container } from './stage2';
 // import { Stage3OrderParameters } from './stages/Stage3OrderParameters';
 // import { Stage4Finalization } from './stages/Stage4Finalization';
 
@@ -211,7 +211,13 @@ export const OrderWizardContainer: React.FC = () => {
         );
 
       case MAIN_WIZARD_STATES.ITEM_MANAGEMENT:
-        return <ItemManagerStep onCompleteStage={handleCompleteStage2} />;
+        return (
+          <Stage2Container
+            sessionId={ui.sessionId || ''}
+            onStageCompleted={handleCompleteStage2}
+            onGoBack={handleGoBack}
+          />
+        );
 
       case MAIN_WIZARD_STATES.EXECUTION_PARAMS:
         return (
