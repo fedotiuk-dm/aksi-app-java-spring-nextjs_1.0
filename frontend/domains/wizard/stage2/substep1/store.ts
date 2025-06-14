@@ -3,6 +3,13 @@
 
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import {
+  SUBSTEP1_UI_STEPS,
+  SUBSTEP1_VALIDATION_RULES,
+  SUBSTEP1_LIMITS,
+  type Substep1UIStep,
+  type UnitOfMeasure,
+} from './constants';
 
 // =================== ТИПИ СТАНУ ===================
 interface ItemBasicInfoUIState {
@@ -22,7 +29,7 @@ interface ItemBasicInfoUIState {
   selectedItemName: string;
   selectedItemBasePrice: number | null;
   quantity: number;
-  unitOfMeasure: 'PIECES' | 'KILOGRAMS' | null;
+  unitOfMeasure: UnitOfMeasure | null;
   validationNotes: string;
 
   // UI прапорці
@@ -31,9 +38,9 @@ interface ItemBasicInfoUIState {
   isQuantityExpanded: boolean;
   isValidationExpanded: boolean;
 
-  // Workflow стан
-  currentStep: 'category' | 'item' | 'quantity' | 'validation' | 'completed';
-  stepsCompleted: string[];
+  // Workflow стан з константами
+  currentStep: Substep1UIStep;
+  stepsCompleted: Substep1UIStep[];
 
   // Помічники UI
   searchTerm: string;
@@ -62,7 +69,7 @@ interface ItemBasicInfoUIActions {
 
   // Форми - Кількість
   setQuantity: (quantity: number) => void;
-  setUnitOfMeasure: (unit: 'PIECES' | 'KILOGRAMS' | null) => void;
+  setUnitOfMeasure: (unit: UnitOfMeasure | null) => void;
 
   // Форми - Валідація
   setValidationNotes: (notes: string) => void;
@@ -73,9 +80,11 @@ interface ItemBasicInfoUIActions {
   toggleQuantityExpanded: () => void;
   toggleValidationExpanded: () => void;
 
-  // Workflow
-  setCurrentStep: (step: 'category' | 'item' | 'quantity' | 'validation' | 'completed') => void;
-  markStepCompleted: (step: string) => void;
+  // Workflow з константами
+  setCurrentStep: (step: Substep1UIStep) => void;
+  markStepCompleted: (step: Substep1UIStep) => void;
+  goToNextStep: () => void;
+  goToPreviousStep: () => void;
 
   // Помічники UI
   setSearchTerm: (term: string) => void;
@@ -104,7 +113,7 @@ const initialState: ItemBasicInfoUIState = {
   selectedItemId: null,
   selectedItemName: '',
   selectedItemBasePrice: null,
-  quantity: 1,
+  quantity: SUBSTEP1_LIMITS.MIN_QUANTITY,
   unitOfMeasure: null,
   validationNotes: '',
 
@@ -114,8 +123,8 @@ const initialState: ItemBasicInfoUIState = {
   isQuantityExpanded: false,
   isValidationExpanded: false,
 
-  // Workflow стан
-  currentStep: 'category',
+  // Workflow стан з константами
+  currentStep: SUBSTEP1_UI_STEPS.CATEGORY_SELECTION,
   stepsCompleted: [],
 
   // Помічники UI
@@ -126,7 +135,7 @@ const initialState: ItemBasicInfoUIState = {
 
 // =================== ZUSTAND СТОР ===================
 export const useItemBasicInfoStore = create<ItemBasicInfoUIState & ItemBasicInfoUIActions>()(
-  subscribeWithSelector((set) => ({
+  subscribeWithSelector((set, get) => ({
     ...initialState,
 
     // =================== СЕСІЯ ===================
@@ -175,7 +184,7 @@ export const useItemBasicInfoStore = create<ItemBasicInfoUIState & ItemBasicInfo
         isValidationExpanded: !state.isValidationExpanded,
       })),
 
-    // =================== WORKFLOW ===================
+    // =================== WORKFLOW З КОНСТАНТАМИ ===================
     setCurrentStep: (currentStep) => set({ currentStep }),
 
     markStepCompleted: (step) =>
@@ -184,6 +193,24 @@ export const useItemBasicInfoStore = create<ItemBasicInfoUIState & ItemBasicInfo
           ? state.stepsCompleted
           : [...state.stepsCompleted, step],
       })),
+
+    goToNextStep: () => {
+      const state = get();
+      const currentIndex = Object.values(SUBSTEP1_UI_STEPS).indexOf(state.currentStep);
+      const nextStep = Object.values(SUBSTEP1_UI_STEPS)[currentIndex + 1];
+      if (nextStep) {
+        set({ currentStep: nextStep });
+      }
+    },
+
+    goToPreviousStep: () => {
+      const state = get();
+      const currentIndex = Object.values(SUBSTEP1_UI_STEPS).indexOf(state.currentStep);
+      const previousStep = Object.values(SUBSTEP1_UI_STEPS)[currentIndex - 1];
+      if (previousStep) {
+        set({ currentStep: previousStep });
+      }
+    },
 
     // =================== ПОМІЧНИКИ UI ===================
     setSearchTerm: (searchTerm) => set({ searchTerm }),
@@ -200,14 +227,14 @@ export const useItemBasicInfoStore = create<ItemBasicInfoUIState & ItemBasicInfo
         selectedItemId: null,
         selectedItemName: '',
         selectedItemBasePrice: null,
-        quantity: 1,
+        quantity: SUBSTEP1_LIMITS.MIN_QUANTITY,
         unitOfMeasure: null,
         validationNotes: '',
       }),
   }))
 );
 
-// =================== СЕЛЕКТОРИ ===================
+// =================== СЕЛЕКТОРИ З КОНСТАНТАМИ ===================
 export const useItemBasicInfoSelectors = () => {
   const store = useItemBasicInfoStore();
 
@@ -216,12 +243,22 @@ export const useItemBasicInfoSelectors = () => {
     hasSession: !!store.sessionId,
     hasCategorySelected: !!store.selectedCategoryId,
     hasItemSelected: !!store.selectedItemId,
-    hasQuantityEntered: store.quantity > 0 && !!store.unitOfMeasure,
+    hasQuantityEntered: store.quantity >= SUBSTEP1_LIMITS.MIN_QUANTITY && !!store.unitOfMeasure,
     hasValidationNotes: !!store.validationNotes.trim(),
+
+    // Валідація з константами
+    canGoToItemSelection: SUBSTEP1_VALIDATION_RULES.canGoToItemSelection(store.selectedCategoryId),
+    canGoToQuantityEntry: SUBSTEP1_VALIDATION_RULES.canGoToQuantityEntry(store.selectedItemId),
+    canValidate: SUBSTEP1_VALIDATION_RULES.canValidate(store.quantity),
+    canComplete: SUBSTEP1_VALIDATION_RULES.canComplete(
+      store.selectedCategoryId,
+      store.selectedItemId,
+      store.quantity
+    ),
 
     // Обчислені значення
     completedStepsCount: store.stepsCompleted.length,
-    totalSteps: 4, // category, item, quantity, validation
+    totalSteps: Object.keys(SUBSTEP1_UI_STEPS).length,
 
     // UI стан
     isAnyExpanded:
@@ -230,16 +267,28 @@ export const useItemBasicInfoSelectors = () => {
       store.isQuantityExpanded ||
       store.isValidationExpanded,
 
-    // Workflow
-    isStepCompleted: (step: string) => store.stepsCompleted.includes(step),
-    canProceedToNext:
-      store.selectedCategoryId && store.selectedItemId && store.quantity > 0 && store.unitOfMeasure,
+    // Workflow з константами
+    isStepCompleted: (step: Substep1UIStep) => store.stepsCompleted.includes(step),
+    canProceedToNext: SUBSTEP1_VALIDATION_RULES.canComplete(
+      store.selectedCategoryId,
+      store.selectedItemId,
+      store.quantity
+    ),
 
     // Прогрес
-    progressPercentage: Math.round((store.stepsCompleted.length / 4) * 100),
+    progressPercentage: Math.round(
+      (store.stepsCompleted.length / Object.keys(SUBSTEP1_UI_STEPS).length) * 100
+    ),
 
     // Пошук
     hasSearchResults: store.filteredCategories.length > 0 || store.filteredItems.length > 0,
-    isSearching: !!store.searchTerm.trim(),
+    isSearching: store.searchTerm.length >= SUBSTEP1_LIMITS.MIN_SEARCH_LENGTH,
+
+    // Поточний крок
+    currentStep: store.currentStep,
+    isCurrentStep: (step: Substep1UIStep) => store.currentStep === step,
   };
 };
+
+// =================== ТИПИ ДЛЯ ЕКСПОРТУ ===================
+export type ItemBasicInfoStore = ItemBasicInfoUIState & ItemBasicInfoUIActions;

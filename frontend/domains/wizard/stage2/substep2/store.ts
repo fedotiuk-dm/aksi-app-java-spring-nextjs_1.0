@@ -4,225 +4,249 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
+// Локальні імпорти
+import {
+  SUBSTEP2_UI_STEPS,
+  SUBSTEP2_STEP_ORDER,
+  SUBSTEP2_VALIDATION_RULES,
+  SUBSTEP2_LIMITS,
+  calculateSubstep2Progress,
+  getNextSubstep2Step,
+  getPreviousSubstep2Step,
+  isFirstSubstep2Step,
+  isLastSubstep2Step,
+  type Substep2UIStep,
+} from './constants';
+
 // =================== ТИПИ СТАНУ ===================
 interface ItemCharacteristicsUIState {
   // Сесія
   sessionId: string | null;
 
+  // UI стан workflow (БЕЗ API даних)
+  currentStep: Substep2UIStep;
+
+  // Вибори користувача (тільки IDs)
+  selectedMaterialId: string | null;
+  selectedColorId: string | null;
+  selectedFillerId: string | null;
+  selectedWearLevelId: string | null;
+
   // UI налаштування
   showMaterialDetails: boolean;
-  showColorPicker: boolean;
-  showFillerOptions: boolean;
+  showColorDetails: boolean;
+  showFillerDetails: boolean;
   showWearLevelDetails: boolean;
 
-  // Форми стан
-  selectedMaterialId: string | null;
-  customMaterial: string;
-  selectedColorId: string | null;
-  customColor: string;
-  selectedFillerId: string | null;
-  customFiller: string;
-  isFillerDamaged: boolean;
-  selectedWearLevelId: string | null;
-  wearPercentage: number;
+  // Пошук
+  materialSearchTerm: string;
+  colorSearchTerm: string;
+  fillerSearchTerm: string;
 
   // UI прапорці
-  isMaterialExpanded: boolean;
-  isColorExpanded: boolean;
-  isFillerExpanded: boolean;
-  isWearLevelExpanded: boolean;
-
-  // Workflow стан
-  currentStep: 'material' | 'color' | 'filler' | 'wearLevel' | 'completed';
-  stepsCompleted: string[];
+  isWorkflowStarted: boolean;
+  canProceedToNext: boolean;
+  hasUnsavedChanges: boolean;
 }
 
 interface ItemCharacteristicsUIActions {
-  // Сесія
-  setSessionId: (sessionId: string | null) => void;
+  // Ініціалізація
+  initializeWorkflow: (sessionId: string) => void;
+  resetWorkflow: () => void;
+
+  // Кроки workflow
+  setCurrentStep: (step: Substep2UIStep) => void;
+  goToNextStep: () => void;
+  goToPreviousStep: () => void;
+
+  // Вибори
+  setSelectedMaterial: (materialId: string | null) => void;
+  setSelectedColor: (colorId: string | null) => void;
+  setSelectedFiller: (fillerId: string | null) => void;
+  setSelectedWearLevel: (wearLevelId: string | null) => void;
 
   // UI налаштування
   setShowMaterialDetails: (show: boolean) => void;
-  setShowColorPicker: (show: boolean) => void;
-  setShowFillerOptions: (show: boolean) => void;
+  setShowColorDetails: (show: boolean) => void;
+  setShowFillerDetails: (show: boolean) => void;
   setShowWearLevelDetails: (show: boolean) => void;
 
-  // Форми - Матеріал
-  setSelectedMaterialId: (materialId: string | null) => void;
-  setCustomMaterial: (material: string) => void;
+  // Пошук
+  setMaterialSearchTerm: (term: string) => void;
+  setColorSearchTerm: (term: string) => void;
+  setFillerSearchTerm: (term: string) => void;
 
-  // Форми - Колір
-  setSelectedColorId: (colorId: string | null) => void;
-  setCustomColor: (color: string) => void;
-
-  // Форми - Наповнювач
-  setSelectedFillerId: (fillerId: string | null) => void;
-  setCustomFiller: (filler: string) => void;
-  setIsFillerDamaged: (damaged: boolean) => void;
-
-  // Форми - Ступінь зносу
-  setSelectedWearLevelId: (wearLevelId: string | null) => void;
-  setWearPercentage: (percentage: number) => void;
-
-  // UI прапорці
-  toggleMaterialExpanded: () => void;
-  toggleColorExpanded: () => void;
-  toggleFillerExpanded: () => void;
-  toggleWearLevelExpanded: () => void;
-
-  // Workflow
-  setCurrentStep: (step: 'material' | 'color' | 'filler' | 'wearLevel' | 'completed') => void;
-  markStepCompleted: (step: string) => void;
-
-  // Скидання
-  resetUIState: () => void;
-  resetForms: () => void;
+  // UI стан
+  setCanProceedToNext: (canProceed: boolean) => void;
+  markHasUnsavedChanges: () => void;
+  markChangesSaved: () => void;
 }
+
+type ItemCharacteristicsStore = ItemCharacteristicsUIState & ItemCharacteristicsUIActions;
 
 // =================== ПОЧАТКОВИЙ СТАН ===================
 const initialState: ItemCharacteristicsUIState = {
-  // Сесія
   sessionId: null,
-
-  // UI налаштування
-  showMaterialDetails: true,
-  showColorPicker: false,
-  showFillerOptions: false,
-  showWearLevelDetails: true,
-
-  // Форми стан
+  currentStep: SUBSTEP2_UI_STEPS.MATERIAL_SELECTION,
   selectedMaterialId: null,
-  customMaterial: '',
   selectedColorId: null,
-  customColor: '',
   selectedFillerId: null,
-  customFiller: '',
-  isFillerDamaged: false,
   selectedWearLevelId: null,
-  wearPercentage: 10,
-
-  // UI прапорці
-  isMaterialExpanded: true,
-  isColorExpanded: false,
-  isFillerExpanded: false,
-  isWearLevelExpanded: false,
-
-  // Workflow стан
-  currentStep: 'material',
-  stepsCompleted: [],
+  showMaterialDetails: false,
+  showColorDetails: false,
+  showFillerDetails: false,
+  showWearLevelDetails: false,
+  materialSearchTerm: '',
+  colorSearchTerm: '',
+  fillerSearchTerm: '',
+  isWorkflowStarted: false,
+  canProceedToNext: false,
+  hasUnsavedChanges: false,
 };
 
-// =================== ZUSTAND СТОР ===================
-export const useItemCharacteristicsStore = create<
-  ItemCharacteristicsUIState & ItemCharacteristicsUIActions
->()(
-  subscribeWithSelector((set) => ({
+// =================== СТОР ===================
+export const useItemCharacteristicsStore = create<ItemCharacteristicsStore>()(
+  subscribeWithSelector((set, get) => ({
     ...initialState,
 
-    // =================== СЕСІЯ ===================
-    setSessionId: (sessionId) => set({ sessionId }),
-
-    // =================== UI НАЛАШТУВАННЯ ===================
-    setShowMaterialDetails: (showMaterialDetails) => set({ showMaterialDetails }),
-    setShowColorPicker: (showColorPicker) => set({ showColorPicker }),
-    setShowFillerOptions: (showFillerOptions) => set({ showFillerOptions }),
-    setShowWearLevelDetails: (showWearLevelDetails) => set({ showWearLevelDetails }),
-
-    // =================== ФОРМИ - МАТЕРІАЛ ===================
-    setSelectedMaterialId: (selectedMaterialId) => set({ selectedMaterialId }),
-    setCustomMaterial: (customMaterial) => set({ customMaterial }),
-
-    // =================== ФОРМИ - КОЛІР ===================
-    setSelectedColorId: (selectedColorId) => set({ selectedColorId }),
-    setCustomColor: (customColor) => set({ customColor }),
-
-    // =================== ФОРМИ - НАПОВНЮВАЧ ===================
-    setSelectedFillerId: (selectedFillerId) => set({ selectedFillerId }),
-    setCustomFiller: (customFiller) => set({ customFiller }),
-    setIsFillerDamaged: (isFillerDamaged) => set({ isFillerDamaged }),
-
-    // =================== ФОРМИ - СТУПІНЬ ЗНОСУ ===================
-    setSelectedWearLevelId: (selectedWearLevelId) => set({ selectedWearLevelId }),
-    setWearPercentage: (wearPercentage) => set({ wearPercentage }),
-
-    // =================== UI ПРАПОРЦІ ===================
-    toggleMaterialExpanded: () =>
-      set((state) => ({
-        isMaterialExpanded: !state.isMaterialExpanded,
-      })),
-
-    toggleColorExpanded: () =>
-      set((state) => ({
-        isColorExpanded: !state.isColorExpanded,
-      })),
-
-    toggleFillerExpanded: () =>
-      set((state) => ({
-        isFillerExpanded: !state.isFillerExpanded,
-      })),
-
-    toggleWearLevelExpanded: () =>
-      set((state) => ({
-        isWearLevelExpanded: !state.isWearLevelExpanded,
-      })),
-
-    // =================== WORKFLOW ===================
-    setCurrentStep: (currentStep) => set({ currentStep }),
-
-    markStepCompleted: (step) =>
-      set((state) => ({
-        stepsCompleted: state.stepsCompleted.includes(step)
-          ? state.stepsCompleted
-          : [...state.stepsCompleted, step],
-      })),
-
-    // =================== СКИДАННЯ ===================
-    resetUIState: () => set(initialState),
-
-    resetForms: () =>
+    // Ініціалізація
+    initializeWorkflow: (sessionId: string) => {
       set({
-        selectedMaterialId: null,
-        customMaterial: '',
-        selectedColorId: null,
-        customColor: '',
+        sessionId,
+        isWorkflowStarted: true,
+        currentStep: SUBSTEP2_UI_STEPS.MATERIAL_SELECTION,
+        hasUnsavedChanges: false,
+      });
+    },
+
+    resetWorkflow: () => {
+      set(initialState);
+    },
+
+    // Кроки workflow
+    setCurrentStep: (step) => {
+      set({ currentStep: step });
+    },
+
+    goToNextStep: () => {
+      const { currentStep } = get();
+      const nextStep = getNextSubstep2Step(currentStep);
+      if (nextStep) {
+        set({ currentStep: nextStep });
+      }
+    },
+
+    goToPreviousStep: () => {
+      const { currentStep } = get();
+      const previousStep = getPreviousSubstep2Step(currentStep);
+      if (previousStep) {
+        set({ currentStep: previousStep });
+      }
+    },
+
+    // Вибори
+    setSelectedMaterial: (materialId) => {
+      set({
+        selectedMaterialId: materialId,
+        selectedColorId: null, // Reset наступних вибоків
         selectedFillerId: null,
-        customFiller: '',
-        isFillerDamaged: false,
         selectedWearLevelId: null,
-        wearPercentage: 10,
-      }),
+        hasUnsavedChanges: true,
+      });
+    },
+
+    setSelectedColor: (colorId) => {
+      set({
+        selectedColorId: colorId,
+        selectedFillerId: null, // Reset наступних вибоків
+        selectedWearLevelId: null,
+        hasUnsavedChanges: true,
+      });
+    },
+
+    setSelectedFiller: (fillerId) => {
+      set({
+        selectedFillerId: fillerId,
+        selectedWearLevelId: null, // Reset наступних вибоків
+        hasUnsavedChanges: true,
+      });
+    },
+
+    setSelectedWearLevel: (wearLevelId) => {
+      set({
+        selectedWearLevelId: wearLevelId,
+        hasUnsavedChanges: true,
+      });
+    },
+
+    // UI налаштування
+    setShowMaterialDetails: (show) => set({ showMaterialDetails: show }),
+    setShowColorDetails: (show) => set({ showColorDetails: show }),
+    setShowFillerDetails: (show) => set({ showFillerDetails: show }),
+    setShowWearLevelDetails: (show) => set({ showWearLevelDetails: show }),
+
+    // Пошук
+    setMaterialSearchTerm: (term) => set({ materialSearchTerm: term }),
+    setColorSearchTerm: (term) => set({ colorSearchTerm: term }),
+    setFillerSearchTerm: (term) => set({ fillerSearchTerm: term }),
+
+    // UI стан
+    setCanProceedToNext: (canProceed) => set({ canProceedToNext: canProceed }),
+    markHasUnsavedChanges: () => set({ hasUnsavedChanges: true }),
+    markChangesSaved: () => set({ hasUnsavedChanges: false }),
   }))
 );
 
-// =================== СЕЛЕКТОРИ ===================
+// =================== СЕЛЕКТОРИ З КОНСТАНТАМИ ===================
 export const useItemCharacteristicsSelectors = () => {
   const store = useItemCharacteristicsStore();
 
   return {
-    // Базові селектори
-    hasSession: !!store.sessionId,
-    hasMaterialSelected: !!store.selectedMaterialId || !!store.customMaterial.trim(),
-    hasColorSelected: !!store.selectedColorId || !!store.customColor.trim(),
-    hasFillerSelected: !!store.selectedFillerId || !!store.customFiller.trim(),
-    hasWearLevelSelected: !!store.selectedWearLevelId,
+    // Основні селектори
+    isInitialized: store.sessionId !== null,
+    isCompleted: store.currentStep === SUBSTEP2_UI_STEPS.COMPLETED,
+    isFirstStep: isFirstSubstep2Step(store.currentStep),
+    isLastStep: isLastSubstep2Step(store.currentStep),
+    progressPercentage: calculateSubstep2Progress(store.currentStep),
 
-    // Обчислені значення
-    completedStepsCount: store.stepsCompleted.length,
-    totalSteps: 4, // material, color, filler, wearLevel
+    // Валідація переходів з константами
+    canGoToColorSelection: SUBSTEP2_VALIDATION_RULES.canGoToColorSelection(
+      store.selectedMaterialId
+    ),
+    canGoToFillerSelection: SUBSTEP2_VALIDATION_RULES.canGoToFillerSelection(
+      store.selectedMaterialId,
+      store.selectedColorId
+    ),
+    canGoToWearLevelSelection: SUBSTEP2_VALIDATION_RULES.canGoToWearLevelSelection(
+      store.selectedMaterialId,
+      store.selectedColorId,
+      store.selectedFillerId
+    ),
+    canValidate: SUBSTEP2_VALIDATION_RULES.canValidate(
+      store.selectedMaterialId,
+      store.selectedColorId,
+      store.selectedFillerId,
+      store.selectedWearLevelId
+    ),
+    canComplete: SUBSTEP2_VALIDATION_RULES.canComplete(
+      store.selectedMaterialId,
+      store.selectedColorId,
+      store.selectedFillerId,
+      store.selectedWearLevelId
+    ),
 
-    // UI стан
-    isAnyExpanded:
-      store.isMaterialExpanded ||
-      store.isColorExpanded ||
-      store.isFillerExpanded ||
-      store.isWearLevelExpanded,
+    // Навігація з константами
+    nextStep: getNextSubstep2Step(store.currentStep),
+    previousStep: getPreviousSubstep2Step(store.currentStep),
+    canGoNext: getNextSubstep2Step(store.currentStep) !== null,
+    canGoBack: getPreviousSubstep2Step(store.currentStep) !== null,
 
-    // Workflow
-    isStepCompleted: (step: string) => store.stepsCompleted.includes(step),
-    canProceedToNext:
-      store.selectedMaterialId && store.customColor.trim() && store.selectedWearLevelId,
+    // Пошук валідація
+    isMaterialSearchValid: store.materialSearchTerm.length >= SUBSTEP2_LIMITS.MIN_SEARCH_LENGTH,
+    isColorSearchValid: store.colorSearchTerm.length >= SUBSTEP2_LIMITS.MIN_SEARCH_LENGTH,
+    isFillerSearchValid: store.fillerSearchTerm.length >= SUBSTEP2_LIMITS.MIN_SEARCH_LENGTH,
 
-    // Прогрес
-    progressPercentage: Math.round((store.stepsCompleted.length / 4) * 100),
+    // Стан workflow
+    ...store,
   };
 };

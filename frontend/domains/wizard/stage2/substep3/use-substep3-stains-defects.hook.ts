@@ -2,6 +2,8 @@
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
 import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки (готові з бекенду)
 import {
@@ -17,12 +19,33 @@ import {
 } from '@/shared/api/generated/substep3';
 
 // Локальні імпорти
-import { useStainsDefectsStore } from './store';
+import { useStainsDefectsStore, useStainsDefectsSelectors } from './store';
+import {
+  SUBSTEP3_UI_STEPS,
+  SUBSTEP3_VALIDATION_RULES,
+  SUBSTEP3_LIMITS,
+  SUBSTEP3_STEP_LABELS,
+  SUBSTEP3_API_STATE_LABELS,
+  calculateSubstep3Progress,
+  getNextSubstep3Step,
+  getPreviousSubstep3Step,
+} from './constants';
+import {
+  stainSelectionFormSchema,
+  defectSelectionFormSchema,
+  defectNotesFormSchema,
+  displaySettingsFormSchema,
+  type StainSelectionFormData,
+  type DefectSelectionFormData,
+  type DefectNotesFormData,
+  type DisplaySettingsFormData,
+} from './schemas';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useSubstep3StainsDefects = () => {
   // UI стан з Zustand
   const uiState = useStainsDefectsStore();
+  const selectors = useStainsDefectsSelectors();
 
   // Orval API хуки (без додаткової логіки)
   const initializeMutation = useSubstep3InitializeSubstep();
@@ -45,6 +68,38 @@ export const useSubstep3StainsDefects = () => {
     query: { enabled: !!uiState.sessionId },
   });
 
+  // React Hook Form інтеграція
+  const stainSelectionForm = useForm<StainSelectionFormData>({
+    resolver: zodResolver(stainSelectionFormSchema),
+    defaultValues: {
+      selectedStains: uiState.selectedStains,
+      otherStains: uiState.otherStains,
+    },
+  });
+
+  const defectSelectionForm = useForm<DefectSelectionFormData>({
+    resolver: zodResolver(defectSelectionFormSchema),
+    defaultValues: {
+      selectedDefects: uiState.selectedDefects,
+      noGuaranteeReason: uiState.noGuaranteeReason,
+    },
+  });
+
+  const defectNotesForm = useForm<DefectNotesFormData>({
+    resolver: zodResolver(defectNotesFormSchema),
+    defaultValues: {
+      defectNotes: uiState.defectNotes,
+    },
+  });
+
+  const displaySettingsForm = useForm<DisplaySettingsFormData>({
+    defaultValues: {
+      showRiskLevels: true,
+      groupByCategory: false,
+      showDescriptions: true,
+    },
+  });
+
   // Стан завантаження (простий)
   const loading = useMemo(
     () => ({
@@ -57,6 +112,16 @@ export const useSubstep3StainsDefects = () => {
       isLoadingStainTypes: availableStainTypesQuery.isLoading,
       isLoadingDefectTypes: availableDefectTypesQuery.isLoading,
       isLoadingContext: contextQuery.isLoading,
+      isAnyLoading:
+        initializeMutation.isPending ||
+        processStainSelectionMutation.isPending ||
+        processDefectSelectionMutation.isPending ||
+        processDefectNotesMutation.isPending ||
+        completeSubstepMutation.isPending ||
+        goBackMutation.isPending ||
+        availableStainTypesQuery.isLoading ||
+        availableDefectTypesQuery.isLoading ||
+        contextQuery.isLoading,
     }),
     [
       initializeMutation.isPending,
@@ -71,10 +136,32 @@ export const useSubstep3StainsDefects = () => {
     ]
   );
 
+  // Обчислені значення з константами
+  const computed = useMemo(
+    () => ({
+      progressPercentage: selectors.progressPercentage,
+      nextStep: selectors.nextStep,
+      previousStep: selectors.previousStep,
+      canProceedFromStainSelection: selectors.canProceedFromStainSelection,
+      canProceedFromDefectSelection: selectors.canProceedFromDefectSelection,
+      canProceedFromDefectNotes: selectors.canProceedFromDefectNotes,
+      canCompleteSubstep: selectors.canCompleteSubstep,
+      isStainSelectionAtLimit: selectors.isStainSelectionAtLimit,
+      isDefectSelectionAtLimit: selectors.isDefectSelectionAtLimit,
+      defectNotesCharacterCount: selectors.defectNotesCharacterCount,
+      defectNotesCharacterLimit: selectors.defectNotesCharacterLimit,
+      currentStepLabel: SUBSTEP3_STEP_LABELS[uiState.currentStep],
+    }),
+    [selectors, uiState.currentStep]
+  );
+
   // =================== ПОВЕРНЕННЯ (ГРУПУВАННЯ) ===================
   return {
-    // UI стан (прямо з Zustand)
-    ui: uiState,
+    // UI стан (прямо з Zustand + селектори)
+    ui: {
+      ...uiState,
+      ...selectors,
+    },
 
     // API дані (прямо з Orval)
     data: {
@@ -101,6 +188,29 @@ export const useSubstep3StainsDefects = () => {
       availableStainTypes: availableStainTypesQuery,
       availableDefectTypes: availableDefectTypesQuery,
       context: contextQuery,
+    },
+
+    // Форми React Hook Form + Zod
+    forms: {
+      stainSelection: stainSelectionForm,
+      defectSelection: defectSelectionForm,
+      defectNotes: defectNotesForm,
+      displaySettings: displaySettingsForm,
+    },
+
+    // Обчислені значення з константами
+    computed,
+
+    // Константи для UI
+    constants: {
+      UI_STEPS: SUBSTEP3_UI_STEPS,
+      VALIDATION_RULES: SUBSTEP3_VALIDATION_RULES,
+      LIMITS: SUBSTEP3_LIMITS,
+      STEP_LABELS: SUBSTEP3_STEP_LABELS,
+      API_STATE_LABELS: SUBSTEP3_API_STATE_LABELS,
+      calculateProgress: calculateSubstep3Progress,
+      getNextStep: getNextSubstep3Step,
+      getPreviousStep: getPreviousSubstep3Step,
     },
   };
 };

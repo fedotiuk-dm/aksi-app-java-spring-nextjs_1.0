@@ -5,12 +5,22 @@
 export { useSubstep3StainsDefects } from './use-substep3-stains-defects.hook';
 export type { UseSubstep3StainsDefectsReturn } from './use-substep3-stains-defects.hook';
 
+// =================== КОНСТАНТИ (якщо потрібні в UI) ===================
+export {
+  SUBSTEP3_UI_STEPS,
+  SUBSTEP3_STEP_LABELS,
+  SUBSTEP3_LIMITS,
+  type Substep3UIStep,
+} from './constants';
+
 // =================== ORVAL СХЕМИ (якщо потрібні в UI) ===================
 export {
   // TypeScript типи
   type StainTypeDTO,
   type DefectTypeDTO,
   type SubstepResultDTO,
+  type StainsDefectsDTO,
+  type StainsDefectsContext,
 
   // Zod схеми
   InitializeSubstepBodySchema,
@@ -27,4 +37,16 @@ export {
   ProcessDefectNotesResponseSchema,
   GoBackResponseSchema,
   GetContextResponseSchema,
+} from './schemas';
+
+// =================== UI ФОРМИ (якщо потрібні в UI) ===================
+export {
+  stainSelectionFormSchema,
+  defectSelectionFormSchema,
+  defectNotesFormSchema,
+  displaySettingsFormSchema,
+  type StainSelectionFormData,
+  type DefectSelectionFormData,
+  type DefectNotesFormData,
+  type DisplaySettingsFormData,
 } from './schemas';

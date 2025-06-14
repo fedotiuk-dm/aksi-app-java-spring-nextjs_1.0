@@ -1,6 +1,8 @@
 // 📋 ПІДЕТАП 2.4: Схеми для калькулятора ціни
 // Реекспорт Orval схем + локальні UI форми
 
+import { z } from 'zod';
+
 // =================== ORVAL СХЕМИ ===================
 
 // Реекспорт TypeScript типів
@@ -13,6 +15,9 @@ export type {
   InitializeSubstepRequest,
   SubstepResultDTO,
   ModifierRecommendationDTO,
+  CalculationDetailsDTO,
+  RangeModifierValueDTO,
+  FixedModifierQuantityDTO,
 } from '@/shared/api/generated/substep4';
 
 // Реекспорт Zod схем для валідації
@@ -52,3 +57,48 @@ export {
   substep4GetAvailableModifiers200Response as GetAvailableModifiersResponseSchema,
   substep4GetRecommendedModifiers200Response as GetRecommendedModifiersResponseSchema,
 } from '@/shared/api/generated/substep4';
+
+// =================== UI ФОРМИ ===================
+// Мінімальні Zod схеми для UI форм (НЕ дублюємо API)
+
+// Форма для вибору модифікаторів
+export const modifierSelectionFormSchema = z.object({
+  selectedModifierIds: z.array(z.string()),
+  rangeValues: z.record(z.string(), z.number().min(0).max(200)),
+  fixedQuantities: z.record(z.string(), z.number().min(1).max(100)),
+  notes: z.string().max(1000).optional(),
+});
+
+// Форма для розрахунку ціни
+export const priceCalculationFormSchema = z.object({
+  categoryCode: z.string().min(1),
+  itemName: z.string().min(1).max(255),
+  color: z.string().max(100).optional(),
+  quantity: z.number().min(1).max(1000),
+  expedited: z.boolean(),
+  expeditePercent: z.number().min(0).max(200).optional(),
+  discountPercent: z.number().min(0).max(50).optional(),
+});
+
+// Форма для підтвердження розрахунку
+export const calculationConfirmationFormSchema = z.object({
+  finalPriceAccepted: z.boolean(),
+  calculationNotes: z.string().max(1000).optional(),
+  proceedToNext: z.boolean(),
+});
+
+// Форма для навігації
+export const priceCalculationNavigationFormSchema = z.object({
+  currentStep: z.string(),
+  targetStep: z.string().optional(),
+  saveProgress: z.boolean(),
+});
+
+// =================== ТИПИ UI ФОРМ ===================
+
+export type ModifierSelectionFormData = z.infer<typeof modifierSelectionFormSchema>;
+export type PriceCalculationFormData = z.infer<typeof priceCalculationFormSchema>;
+export type CalculationConfirmationFormData = z.infer<typeof calculationConfirmationFormSchema>;
+export type PriceCalculationNavigationFormData = z.infer<
+  typeof priceCalculationNavigationFormSchema
+>;

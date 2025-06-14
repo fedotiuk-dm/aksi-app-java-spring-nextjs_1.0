@@ -1,6 +1,8 @@
 // Схеми для Substep1 - ТІЛЬКИ Orval схеми
 // Використовуємо готові Orval схеми БЕЗ кастомних UI форм
 
+import { z } from 'zod';
+
 // =================== ORVAL СХЕМИ ===================
 
 // Реекспорт TypeScript типів
@@ -37,3 +39,38 @@ export {
   substep1GetServiceCategories200Response as GetServiceCategoriesResponseSchema,
   substep1GetItemsForCategory200Response as GetItemsForCategoryResponseSchema,
 } from '@/shared/api/generated/substep1';
+
+// =================== МІНІМАЛЬНІ UI ФОРМИ ===================
+// Тільки для UI компонентів, які не покриті Orval схемами
+
+// Форма пошуку категорій
+export const categorySearchFormSchema = z.object({
+  searchTerm: z.string().min(2, 'Мінімум 2 символи для пошуку'),
+});
+
+export type CategorySearchFormData = z.infer<typeof categorySearchFormSchema>;
+
+// Форма пошуку предметів
+export const itemSearchFormSchema = z.object({
+  searchTerm: z.string().min(2, 'Мінімум 2 символи для пошуку'),
+  categoryId: z.string().min(1, "Категорія обов'язкова"),
+});
+
+export type ItemSearchFormData = z.infer<typeof itemSearchFormSchema>;
+
+// Форма введення кількості
+export const quantityFormSchema = z.object({
+  quantity: z
+    .number()
+    .min(1, 'Кількість повинна бути більше 0')
+    .max(1000, 'Максимальна кількість 1000'),
+});
+
+export type QuantityFormData = z.infer<typeof quantityFormSchema>;
+
+// Форма валідації
+export const validationFormSchema = z.object({
+  confirmed: z.boolean().refine((val) => val === true, "Підтвердження обов'язкове"),
+});
+
+export type ValidationFormData = z.infer<typeof validationFormSchema>;

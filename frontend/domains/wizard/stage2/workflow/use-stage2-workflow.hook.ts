@@ -1,4 +1,4 @@
-// Тонка обгортка над Orval хуками для Stage2 Workflow - Координація підетапів
+// 📋 STAGE2 WORKFLOW: Тонка обгортка над Orval хуками для координації підетапів
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
 import { useMemo } from 'react';
@@ -13,25 +13,36 @@ import {
   useStage2StartEditItemWizard,
   useStage2CloseWizard,
   useStage2CompleteStage,
+  useStage2SynchronizeManager,
   useStage2GetCurrentState,
   useStage2ValidateCurrentState,
+  useStage2CheckReadinessToProceed,
 } from '@/shared/api/generated/stage2';
 
 // Локальні імпорти
-import { useStage2WorkflowStore } from '../store/workflow.store';
+import { useStage2WorkflowStore, useStage2WorkflowSelectors } from './store';
 import {
-  workflowInitializationFormSchema,
-  workflowNavigationFormSchema,
-  workflowValidationFormSchema,
-  type WorkflowInitializationFormData,
-  type WorkflowNavigationFormData,
-  type WorkflowValidationFormData,
+  STAGE2_WORKFLOW_UI_STATES,
+  STAGE2_WORKFLOW_OPERATIONS,
+  STAGE2_SUBSTEPS,
+  STAGE2_SUBSTEP_ORDER,
+  STAGE2_WORKFLOW_VALIDATION_RULES,
+  STAGE2_WORKFLOW_LIMITS,
+} from './constants';
+import {
+  substepNavigationFormSchema,
+  completeStageFormSchema,
+  closeWizardFormSchema,
+  type SubstepNavigationFormData,
+  type CompleteStageFormData,
+  type CloseWizardFormData,
 } from './schemas';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useStage2Workflow = () => {
   // UI стан з Zustand
-  const uiState = useStage2WorkflowStore((state) => state);
+  const uiState = useStage2WorkflowStore();
+  const selectors = useStage2WorkflowSelectors();
 
   // Orval API хуки (без додаткової логіки)
   const initializeManagerMutation = useStage2InitializeItemManager();
@@ -39,9 +50,7 @@ export const useStage2Workflow = () => {
   const startEditWizardMutation = useStage2StartEditItemWizard();
   const closeWizardMutation = useStage2CloseWizard();
   const completeStageMutation = useStage2CompleteStage();
-  const validateStateQuery = useStage2ValidateCurrentState(uiState.sessionId || '', {
-    query: { enabled: !!uiState.sessionId },
-  });
+  const synchronizeManagerMutation = useStage2SynchronizeManager();
 
   // Запити даних
   const currentManagerQuery = useStage2GetCurrentManager(uiState.sessionId || '', {
@@ -52,28 +61,39 @@ export const useStage2Workflow = () => {
     query: { enabled: !!uiState.sessionId },
   });
 
-  // Форми (мінімальні)
-  const initializationForm = useForm<WorkflowInitializationFormData>({
-    resolver: zodResolver(workflowInitializationFormSchema),
+  const validateStateQuery = useStage2ValidateCurrentState(uiState.sessionId || '', {
+    query: { enabled: !!uiState.sessionId },
+  });
+
+  const readinessQuery = useStage2CheckReadinessToProceed(uiState.sessionId || '', {
+    query: { enabled: !!uiState.sessionId },
+  });
+
+  // =================== ФОРМИ З ZOD ВАЛІДАЦІЄЮ ===================
+  // Форма навігації між підетапами
+  const substepNavigationForm = useForm<SubstepNavigationFormData>({
+    resolver: zodResolver(substepNavigationFormSchema),
     defaultValues: {
-      orderId: uiState.orderId || '',
-      sessionId: uiState.sessionId || '',
+      targetSubstep: uiState.currentSubstep,
+      confirmed: false,
     },
   });
 
-  const navigationForm = useForm<WorkflowNavigationFormData>({
-    resolver: zodResolver(workflowNavigationFormSchema),
+  // Форма завершення етапу
+  const completeStageForm = useForm<CompleteStageFormData>({
+    resolver: zodResolver(completeStageFormSchema),
     defaultValues: {
-      currentState: uiState.currentState,
-      targetState: uiState.currentState,
+      confirmed: false,
+      itemsCount: uiState.totalItemsCount,
     },
   });
 
-  const validationForm = useForm<WorkflowValidationFormData>({
-    resolver: zodResolver(workflowValidationFormSchema),
+  // Форма закриття візарда
+  const closeWizardForm = useForm<CloseWizardFormData>({
+    resolver: zodResolver(closeWizardFormSchema),
     defaultValues: {
-      isValid: true,
-      notes: '',
+      saveChanges: false,
+      confirmed: false,
     },
   });
 
@@ -85,10 +105,22 @@ export const useStage2Workflow = () => {
       isStartingEditWizard: startEditWizardMutation.isPending,
       isClosingWizard: closeWizardMutation.isPending,
       isCompletingStage: completeStageMutation.isPending,
-      isValidating: validateStateQuery.isLoading,
+      isSynchronizing: synchronizeManagerMutation.isPending,
       isLoadingManager: currentManagerQuery.isLoading,
       isLoadingState: currentStateQuery.isLoading,
-      isTransitioning: uiState.isTransitioning,
+      isValidating: validateStateQuery.isLoading,
+      isCheckingReadiness: readinessQuery.isLoading,
+      isAnyLoading:
+        initializeManagerMutation.isPending ||
+        startNewWizardMutation.isPending ||
+        startEditWizardMutation.isPending ||
+        closeWizardMutation.isPending ||
+        completeStageMutation.isPending ||
+        synchronizeManagerMutation.isPending ||
+        currentManagerQuery.isLoading ||
+        currentStateQuery.isLoading ||
+        validateStateQuery.isLoading ||
+        readinessQuery.isLoading,
     }),
     [
       initializeManagerMutation.isPending,
@@ -96,23 +128,89 @@ export const useStage2Workflow = () => {
       startEditWizardMutation.isPending,
       closeWizardMutation.isPending,
       completeStageMutation.isPending,
-      validateStateQuery.isLoading,
+      synchronizeManagerMutation.isPending,
       currentManagerQuery.isLoading,
       currentStateQuery.isLoading,
-      uiState.isTransitioning,
+      validateStateQuery.isLoading,
+      readinessQuery.isLoading,
+    ]
+  );
+
+  // =================== ОБЧИСЛЕНІ ЗНАЧЕННЯ ===================
+  const computed = useMemo(
+    () => ({
+      // Прогрес з константами
+      substepProgressPercentage: Math.round(
+        ((STAGE2_SUBSTEP_ORDER.indexOf(uiState.currentSubstep) + 1) / STAGE2_SUBSTEP_ORDER.length) *
+          100
+      ),
+      operationProgressPercentage: Math.round(
+        ((Object.values(STAGE2_WORKFLOW_OPERATIONS).indexOf(uiState.currentOperation) + 1) /
+          Object.values(STAGE2_WORKFLOW_OPERATIONS).length) *
+          100
+      ),
+
+      // Навігація з константами
+      nextSubstep: (() => {
+        const currentIndex = STAGE2_SUBSTEP_ORDER.indexOf(uiState.currentSubstep);
+        return STAGE2_SUBSTEP_ORDER[currentIndex + 1] || null;
+      })(),
+      previousSubstep: (() => {
+        const currentIndex = STAGE2_SUBSTEP_ORDER.indexOf(uiState.currentSubstep);
+        return STAGE2_SUBSTEP_ORDER[currentIndex - 1] || null;
+      })(),
+
+      // Валідація з константами
+      canNavigateToNext: (() => {
+        const currentIndex = STAGE2_SUBSTEP_ORDER.indexOf(uiState.currentSubstep);
+        return currentIndex < STAGE2_SUBSTEP_ORDER.length - 1;
+      })(),
+      canNavigateToPrevious: (() => {
+        const currentIndex = STAGE2_SUBSTEP_ORDER.indexOf(uiState.currentSubstep);
+        return currentIndex > 0;
+      })(),
+
+      // Стан підетапів
+      isFirstSubstep: uiState.currentSubstep === STAGE2_SUBSTEPS.SUBSTEP1,
+      isLastSubstep: uiState.currentSubstep === STAGE2_SUBSTEPS.SUBSTEP5,
+
+      // Workflow стан
+      isWorkflowReady: uiState.currentUIState === STAGE2_WORKFLOW_UI_STATES.READY,
+      isWorkflowBusy:
+        uiState.currentUIState === STAGE2_WORKFLOW_UI_STATES.LOADING ||
+        uiState.currentUIState === STAGE2_WORKFLOW_UI_STATES.SAVING,
+
+      // Готовність до завершення
+      isReadyToComplete: STAGE2_WORKFLOW_VALIDATION_RULES.canCompleteStage(
+        uiState.sessionId,
+        uiState.totalItemsCount
+      ),
+      hasMinimumItems: uiState.totalItemsCount >= STAGE2_WORKFLOW_LIMITS.MIN_ITEMS_COUNT,
+      canAddMoreItems: uiState.totalItemsCount < STAGE2_WORKFLOW_LIMITS.MAX_ITEMS_COUNT,
+    }),
+    [
+      uiState.currentSubstep,
+      uiState.currentOperation,
+      uiState.currentUIState,
+      uiState.sessionId,
+      uiState.totalItemsCount,
     ]
   );
 
   // =================== ПОВЕРНЕННЯ (ГРУПУВАННЯ) ===================
   return {
-    // UI стан (прямо з Zustand)
-    ui: uiState,
+    // UI стан (прямо з Zustand + селектори)
+    ui: {
+      ...uiState,
+      ...selectors,
+    },
 
     // API дані (прямо з Orval)
     data: {
       currentManager: currentManagerQuery.data,
       currentState: currentStateQuery.data,
       validationResult: validateStateQuery.data,
+      readinessCheck: readinessQuery.data,
     },
 
     // Стан завантаження
@@ -125,21 +223,26 @@ export const useStage2Workflow = () => {
       startEditWizard: startEditWizardMutation,
       closeWizard: closeWizardMutation,
       completeStage: completeStageMutation,
-      validateState: validateStateQuery,
+      synchronizeManager: synchronizeManagerMutation,
     },
 
     // Запити (прямо з Orval)
     queries: {
       currentManager: currentManagerQuery,
       currentState: currentStateQuery,
+      validateState: validateStateQuery,
+      readiness: readinessQuery,
     },
 
-    // Форми
+    // Форми з Zod валідацією
     forms: {
-      initialization: initializationForm,
-      navigation: navigationForm,
-      validation: validationForm,
+      substepNavigation: substepNavigationForm,
+      completeStage: completeStageForm,
+      closeWizard: closeWizardForm,
     },
+
+    // Обчислені значення з константами
+    computed,
   };
 };
 

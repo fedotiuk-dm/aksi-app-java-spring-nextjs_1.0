@@ -1,6 +1,8 @@
 // 📋 ПІДЕТАП 2.3: Схеми для забруднень та дефектів
 // Реекспорт Orval схем + локальні UI форми
 
+import { z } from 'zod';
+
 // =================== ORVAL СХЕМИ ===================
 
 // Реекспорт TypeScript типів
@@ -10,6 +12,8 @@ export type {
   StainsDefectsDTO,
   SubstepResultDTO,
   OrderItemAddRequest,
+  StainsDefectsContext,
+  StainsDefectsContextCurrentState,
 } from '@/shared/api/generated/substep3';
 
 // Реекспорт Zod схем для валідації
@@ -41,3 +45,46 @@ export {
   substep3GetAvailableDefectTypes200Response as GetAvailableDefectTypesResponseSchema,
   substep3GetContext200Response as GetContextResponseSchema,
 } from '@/shared/api/generated/substep3';
+
+// =================== ЛОКАЛЬНІ UI ФОРМИ ===================
+// Мінімальні схеми для UI компонентів (НЕ дублюємо API)
+
+// Форма вибору забруднень
+export const stainSelectionFormSchema = z.object({
+  selectedStains: z.array(z.string()).min(1, 'Оберіть принаймні одне забруднення'),
+  otherStains: z.string().optional(),
+});
+
+export type StainSelectionFormData = z.infer<typeof stainSelectionFormSchema>;
+
+// Форма вибору дефектів
+export const defectSelectionFormSchema = z
+  .object({
+    selectedDefects: z.array(z.string()),
+    noGuaranteeReason: z.string().optional(),
+  })
+  .refine((data) => data.selectedDefects.length > 0 || !!data.noGuaranteeReason, {
+    message: 'Оберіть дефекти або вкажіть причину відсутності гарантії',
+    path: ['selectedDefects'],
+  });
+
+export type DefectSelectionFormData = z.infer<typeof defectSelectionFormSchema>;
+
+// Форма приміток до дефектів
+export const defectNotesFormSchema = z.object({
+  defectNotes: z
+    .string()
+    .min(10, 'Примітки повинні містити мінімум 10 символів')
+    .max(1000, 'Примітки не можуть перевищувати 1000 символів'),
+});
+
+export type DefectNotesFormData = z.infer<typeof defectNotesFormSchema>;
+
+// Форма налаштувань відображення
+export const displaySettingsFormSchema = z.object({
+  showRiskLevels: z.boolean().default(true),
+  groupByCategory: z.boolean().default(false),
+  showDescriptions: z.boolean().default(true),
+});
+
+export type DisplaySettingsFormData = z.infer<typeof displaySettingsFormSchema>;

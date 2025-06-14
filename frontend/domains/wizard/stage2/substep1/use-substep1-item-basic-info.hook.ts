@@ -2,6 +2,8 @@
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
 import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки (готові з бекенду)
 import {
@@ -18,12 +20,30 @@ import {
 } from '@/shared/api/generated/substep1';
 
 // Локальні імпорти
-import { useItemBasicInfoStore } from './store';
+import { useItemBasicInfoStore, useItemBasicInfoSelectors } from './store';
+import {
+  SUBSTEP1_UI_STEPS,
+  SUBSTEP1_VALIDATION_RULES,
+  calculateSubstep1Progress,
+  getNextSubstep1Step,
+  getPreviousSubstep1Step,
+} from './constants';
+import {
+  categorySearchFormSchema,
+  itemSearchFormSchema,
+  quantityFormSchema,
+  validationFormSchema,
+  type CategorySearchFormData,
+  type ItemSearchFormData,
+  type QuantityFormData,
+  type ValidationFormData,
+} from './schemas';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useSubstep1ItemBasicInfo = () => {
   // UI стан з Zustand
   const uiState = useItemBasicInfoStore();
+  const selectors = useItemBasicInfoSelectors();
 
   // Orval API хуки (без додаткової логіки)
   const startSubstepMutation = useSubstep1StartSubstep();
@@ -47,6 +67,40 @@ export const useSubstep1ItemBasicInfo = () => {
     query: { enabled: !!uiState.sessionId && !!uiState.selectedCategoryId },
   });
 
+  // =================== ФОРМИ З ZOD ВАЛІДАЦІЄЮ ===================
+  // Форма пошуку категорій
+  const categorySearchForm = useForm<CategorySearchFormData>({
+    resolver: zodResolver(categorySearchFormSchema),
+    defaultValues: {
+      searchTerm: uiState.searchTerm,
+    },
+  });
+
+  // Форма пошуку предметів
+  const itemSearchForm = useForm<ItemSearchFormData>({
+    resolver: zodResolver(itemSearchFormSchema),
+    defaultValues: {
+      searchTerm: uiState.searchTerm,
+      categoryId: uiState.selectedCategoryId || '',
+    },
+  });
+
+  // Форма введення кількості
+  const quantityForm = useForm<QuantityFormData>({
+    resolver: zodResolver(quantityFormSchema),
+    defaultValues: {
+      quantity: uiState.quantity,
+    },
+  });
+
+  // Форма валідації
+  const validationForm = useForm<ValidationFormData>({
+    resolver: zodResolver(validationFormSchema),
+    defaultValues: {
+      confirmed: false,
+    },
+  });
+
   // Стан завантаження (простий)
   const loading = useMemo(
     () => ({
@@ -60,6 +114,17 @@ export const useSubstep1ItemBasicInfo = () => {
       isLoadingStatus: statusQuery.isLoading,
       isLoadingCategories: serviceCategoriesQuery.isLoading,
       isLoadingItems: itemsForCategoryQuery.isLoading,
+      isAnyLoading:
+        startSubstepMutation.isPending ||
+        selectServiceCategoryMutation.isPending ||
+        selectPriceListItemMutation.isPending ||
+        enterQuantityMutation.isPending ||
+        validateAndCompleteMutation.isPending ||
+        resetMutation.isPending ||
+        finalizeSessionMutation.isPending ||
+        statusQuery.isLoading ||
+        serviceCategoriesQuery.isLoading ||
+        itemsForCategoryQuery.isLoading,
     }),
     [
       startSubstepMutation.isPending,
@@ -75,10 +140,57 @@ export const useSubstep1ItemBasicInfo = () => {
     ]
   );
 
+  // =================== ОБЧИСЛЕНІ ЗНАЧЕННЯ ===================
+  const computed = useMemo(
+    () => ({
+      // Прогрес з константами
+      progressPercentage: calculateSubstep1Progress(uiState.currentStep),
+
+      // Навігація з константами
+      nextStep: getNextSubstep1Step(uiState.currentStep),
+      previousStep: getPreviousSubstep1Step(uiState.currentStep),
+
+      // Валідація з константами
+      canGoToNextStep: (() => {
+        switch (uiState.currentStep) {
+          case SUBSTEP1_UI_STEPS.CATEGORY_SELECTION:
+            return SUBSTEP1_VALIDATION_RULES.canGoToItemSelection(uiState.selectedCategoryId);
+          case SUBSTEP1_UI_STEPS.ITEM_SELECTION:
+            return SUBSTEP1_VALIDATION_RULES.canGoToQuantityEntry(uiState.selectedItemId);
+          case SUBSTEP1_UI_STEPS.QUANTITY_ENTRY:
+            return SUBSTEP1_VALIDATION_RULES.canValidate(uiState.quantity);
+          case SUBSTEP1_UI_STEPS.VALIDATION:
+            return SUBSTEP1_VALIDATION_RULES.canComplete(
+              uiState.selectedCategoryId,
+              uiState.selectedItemId,
+              uiState.quantity
+            );
+          default:
+            return false;
+        }
+      })(),
+
+      // Стан кроків
+      isFirstStep: uiState.currentStep === SUBSTEP1_UI_STEPS.CATEGORY_SELECTION,
+      isLastStep: uiState.currentStep === SUBSTEP1_UI_STEPS.COMPLETED,
+
+      // Загальна готовність
+      isReadyToComplete: SUBSTEP1_VALIDATION_RULES.canComplete(
+        uiState.selectedCategoryId,
+        uiState.selectedItemId,
+        uiState.quantity
+      ),
+    }),
+    [uiState.currentStep, uiState.selectedCategoryId, uiState.selectedItemId, uiState.quantity]
+  );
+
   // =================== ПОВЕРНЕННЯ (ГРУПУВАННЯ) ===================
   return {
-    // UI стан (прямо з Zustand)
-    ui: uiState,
+    // UI стан (прямо з Zustand + селектори)
+    ui: {
+      ...uiState,
+      ...selectors,
+    },
 
     // API дані (прямо з Orval)
     data: {
@@ -106,6 +218,23 @@ export const useSubstep1ItemBasicInfo = () => {
       status: statusQuery,
       serviceCategories: serviceCategoriesQuery,
       itemsForCategory: itemsForCategoryQuery,
+    },
+
+    // Форми з валідацією
+    forms: {
+      categorySearch: categorySearchForm,
+      itemSearch: itemSearchForm,
+      quantity: quantityForm,
+      validation: validationForm,
+    },
+
+    // Обчислені значення з константами
+    computed,
+
+    // Константи для UI
+    constants: {
+      UI_STEPS: SUBSTEP1_UI_STEPS,
+      VALIDATION_RULES: SUBSTEP1_VALIDATION_RULES,
     },
   };
 };

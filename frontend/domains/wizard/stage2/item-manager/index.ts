@@ -1,23 +1,26 @@
-// Публічне API для Stage2 Item Manager домену
-// Експортуємо тільки головний хук та Orval схеми
+// 📋 STAGE2 ITEM MANAGER: Публічне API домену
+// Експорт тільки необхідного для UI компонентів
 
 // =================== ГОЛОВНИЙ ХУК ===================
 export { useStage2ItemManager } from './use-stage2-item-manager.hook';
 export type { UseStage2ItemManagerReturn } from './use-stage2-item-manager.hook';
 
-// =================== ORVAL СХЕМИ (якщо потрібні в UI) ===================
-export {
-  // TypeScript типи
-  type InitializeItemManagerParamsSchema,
-  type InitializeItemManagerResponseSchema,
-  type AddItemParamsSchema,
-  type AddItemBodySchema,
-  type AddItemResponseSchema,
-  type UpdateItemParamsSchema,
-  type UpdateItemBodySchema,
-  type UpdateItemResponseSchema,
-  type DeleteItemParamsSchema,
-  type DeleteItemResponseSchema,
-  type GetCurrentManagerParamsSchema,
-  type GetCurrentManagerResponseSchema,
+// =================== ТИПИ ДЛЯ UI ===================
+// Експортуємо тільки типи, які потрібні в UI компонентах
+export type {
+  ItemSearchFormData,
+  TableDisplayFormData,
+  DeleteConfirmationFormData,
+  ProceedToNextStageFormData,
 } from './schemas';
+
+export type { ItemManagerOperation, ItemManagerUIState, ViewMode } from './constants';
+
+// =================== КОНСТАНТИ ДЛЯ UI ===================
+// Експортуємо тільки константи, які потрібні в UI компонентах
+export {
+  ITEM_MANAGER_OPERATIONS,
+  ITEM_MANAGER_UI_STATES,
+  VIEW_MODES,
+  TABLE_CONFIG,
+} from './constants';

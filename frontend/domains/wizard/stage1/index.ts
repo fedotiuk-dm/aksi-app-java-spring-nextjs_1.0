@@ -11,12 +11,3 @@ export * from './client-creation';
 
 // 3. Basic Order Info - Базова інформація замовлення
 export * from './basic-order-info';
-
-// =================== ТИПИ STAGE1 ===================
-
-// Реекспорт основних типів для зручності
-export type { UseClientSearchReturn } from './client-search';
-
-export type { UseClientCreationReturn } from './client-creation';
-
-export type { UseBasicOrderInfoReturn } from './basic-order-info';

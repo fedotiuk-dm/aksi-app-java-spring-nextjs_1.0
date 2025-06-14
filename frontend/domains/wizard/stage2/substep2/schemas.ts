@@ -1,10 +1,16 @@
 // 📋 ПІДЕТАП 2.2: Схеми для характеристик предмета
 // Реекспорт Orval схем + локальні UI форми
 
+import { z } from 'zod';
+
 // =================== ORVAL СХЕМИ ===================
 
 // Реекспорт TypeScript типів
-export type { ItemCharacteristicsDTO, SubstepResultDTO } from '@/shared/api/generated/substep2';
+export type {
+  OrderItemDTO,
+  AdditionalInfoDTO,
+  SubstepResultDTO,
+} from '@/shared/api/generated/substep2';
 
 // Реекспорт Zod схем для валідації
 export {
@@ -37,50 +43,53 @@ export {
   substep2GetCurrentCharacteristics200Response as GetCurrentCharacteristicsResponseSchema,
 } from '@/shared/api/generated/substep2';
 
-// =================== ЛОКАЛЬНІ UI ФОРМИ ===================
-import { z } from 'zod';
+// =================== ТИПИ ===================
+// Реекспорт типів з читабельними назвами
+export type {
+  Substep2SelectMaterialParams as SelectMaterialParams,
+  Substep2SelectColorParams as SelectColorParams,
+  Substep2SelectFillerParams as SelectFillerParams,
+  Substep2SelectWearLevelParams as SelectWearLevelParams,
+} from '@/shared/api/generated/substep2';
 
-// Форма для вибору матеріалу
-export const materialSelectionFormSchema = z.object({
-  materialId: z.string().min(1, 'Оберіть матеріал'),
-  customMaterial: z
-    .string()
-    .max(100, 'Назва матеріалу не може перевищувати 100 символів')
-    .optional(),
+// Response типи
+export type {
+  OrderItemDTO as ItemCharacteristicsResponse,
+  AdditionalInfoDTO as AdditionalInfoResponse,
+  SubstepResultDTO as SubstepResultResponse,
+} from '@/shared/api/generated/substep2';
+
+// =================== МІНІМАЛЬНІ UI ФОРМИ ===================
+
+const SEARCH_VALIDATION_MESSAGE = 'Мінімум 2 символи для пошуку';
+
+// Форма пошуку матеріалу
+export const materialSearchFormSchema = z.object({
+  searchTerm: z.string().min(2, SEARCH_VALIDATION_MESSAGE),
 });
 
-export type MaterialSelectionFormData = z.infer<typeof materialSelectionFormSchema>;
+export type MaterialSearchFormData = z.infer<typeof materialSearchFormSchema>;
 
-// Форма для вибору кольору
-export const colorSelectionFormSchema = z.object({
-  colorId: z.string().optional(),
-  customColor: z
-    .string()
-    .min(1, 'Введіть колір')
-    .max(50, 'Назва кольору не може перевищувати 50 символів'),
+// Форма пошуку кольору
+export const colorSearchFormSchema = z.object({
+  searchTerm: z.string().min(2, SEARCH_VALIDATION_MESSAGE),
 });
 
-export type ColorSelectionFormData = z.infer<typeof colorSelectionFormSchema>;
+export type ColorSearchFormData = z.infer<typeof colorSearchFormSchema>;
 
-// Форма для вибору наповнювача
-export const fillerSelectionFormSchema = z.object({
-  fillerId: z.string().optional(),
-  customFiller: z
-    .string()
-    .max(100, 'Назва наповнювача не може перевищувати 100 символів')
-    .optional(),
-  isFillerDamaged: z.boolean(),
+// Форма пошуку наповнювача
+export const fillerSearchFormSchema = z.object({
+  searchTerm: z.string().min(2, SEARCH_VALIDATION_MESSAGE),
 });
 
-export type FillerSelectionFormData = z.infer<typeof fillerSelectionFormSchema>;
+export type FillerSearchFormData = z.infer<typeof fillerSearchFormSchema>;
 
-// Форма для вибору ступеня зносу
-export const wearLevelSelectionFormSchema = z.object({
-  wearLevelId: z.string().min(1, 'Оберіть ступінь зносу'),
-  wearPercentage: z
-    .number()
-    .min(0, 'Відсоток зносу не може бути менше 0')
-    .max(100, 'Відсоток зносу не може бути більше 100'),
+// Форма налаштувань відображення
+export const displaySettingsFormSchema = z.object({
+  showMaterialDetails: z.boolean().default(false),
+  showColorDetails: z.boolean().default(false),
+  showFillerDetails: z.boolean().default(false),
+  showWearLevelDetails: z.boolean().default(false),
 });
 
-export type WearLevelSelectionFormData = z.infer<typeof wearLevelSelectionFormSchema>;
+export type DisplaySettingsFormData = z.infer<typeof displaySettingsFormSchema>;

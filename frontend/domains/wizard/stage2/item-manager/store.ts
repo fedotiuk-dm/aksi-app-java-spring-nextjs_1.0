@@ -1,163 +1,172 @@
-// Zustand стор для Stage2 Item Manager - Головний екран менеджера предметів
-// ТІЛЬКИ UI стан, НЕ API дані (React Query керує API)
+// 📋 STAGE2 ITEM MANAGER: Zustand стор для управління предметами замовлення
+// Тільки UI стан, API дані керуються React Query
 
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import {
+  ITEM_MANAGER_OPERATIONS,
+  ITEM_MANAGER_UI_STATES,
+  VIEW_MODES,
+  TABLE_CONFIG,
+  ITEM_MANAGER_VALIDATION_RULES,
+  type ItemManagerOperation,
+  type ItemManagerUIState as ItemManagerUIStateType,
+  type ViewMode,
+} from './constants';
 
-// =================== UI СТАН ===================
-interface ItemManagerUIState {
+// =================== ТИПИ СТАНУ ===================
+interface ItemManagerStoreState {
   // Сесія
   sessionId: string | null;
   orderId: string | null;
 
-  // UI налаштування таблиці
+  // UI налаштування
   showItemDetails: boolean;
-  showPriceBreakdown: boolean;
-  showModifiers: boolean;
-  showPhotos: boolean;
+  showPriceDetails: boolean;
+  showTableControls: boolean;
+  showOperationButtons: boolean;
 
-  // Пошук та фільтрація
-  searchTerm: string;
-  categoryFilter: string | null;
-  priceRangeMin: number | null;
-  priceRangeMax: number | null;
-
-  // Відображення таблиці
+  // Таблиця стан
+  currentViewMode: ViewMode;
   itemsPerPage: number;
   currentPage: number;
-  sortBy: 'name' | 'category' | 'price' | 'quantity';
+  sortBy: string;
   sortOrder: 'asc' | 'desc';
+  searchTerm: string;
+
+  // Вибрані елементи
+  selectedItemIds: string[];
+  editingItemId: string | null;
+  deletingItemId: string | null;
 
   // UI прапорці
   isTableExpanded: boolean;
-  isSearchExpanded: boolean;
   isFiltersExpanded: boolean;
-  isSummaryExpanded: boolean;
+  isActionsExpanded: boolean;
+  isWizardActive: boolean;
+
+  // Workflow стан з константами
+  currentOperation: ItemManagerOperation;
+  operationsCompleted: ItemManagerOperation[];
+  currentUIState: ItemManagerUIStateType;
 
   // Модальні вікна
-  isDeleteModalOpen: boolean;
-  isProceedModalOpen: boolean;
-  isWizardActive: boolean;
-  selectedItemForEdit: string | null;
-  selectedItemForDelete: string | null;
-
-  // Workflow стан
-  currentView: 'table' | 'wizard' | 'summary';
-  hasUnsavedChanges: boolean;
-  lastSyncTime: Date | null;
+  showDeleteConfirmation: boolean;
+  showProceedConfirmation: boolean;
+  showSynchronizeDialog: boolean;
 
   // Помічники UI
-  expandedItemIds: string[];
-  selectedItemIds: string[];
-  draggedItemId: string | null;
+  filteredItemIds: string[];
+  totalItemsCount: number;
+  canProceedToNextStage: boolean;
 }
 
-// =================== UI ДІЇ ===================
-interface ItemManagerUIActions {
+interface ItemManagerStoreActions {
   // Сесія
   setSessionId: (sessionId: string | null) => void;
   setOrderId: (orderId: string | null) => void;
 
   // UI налаштування
   setShowItemDetails: (show: boolean) => void;
-  setShowPriceBreakdown: (show: boolean) => void;
-  setShowModifiers: (show: boolean) => void;
-  setShowPhotos: (show: boolean) => void;
+  setShowPriceDetails: (show: boolean) => void;
+  setShowTableControls: (show: boolean) => void;
+  setShowOperationButtons: (show: boolean) => void;
 
-  // Пошук та фільтрація
-  setSearchTerm: (term: string) => void;
-  setCategoryFilter: (category: string | null) => void;
-  setPriceRange: (min: number | null, max: number | null) => void;
-  clearFilters: () => void;
-
-  // Відображення таблиці
+  // Таблиця
+  setCurrentViewMode: (mode: ViewMode) => void;
   setItemsPerPage: (count: number) => void;
   setCurrentPage: (page: number) => void;
-  setSorting: (sortBy: 'name' | 'category' | 'price' | 'quantity', order: 'asc' | 'desc') => void;
+  setSortBy: (field: string) => void;
+  setSortOrder: (order: 'asc' | 'desc') => void;
+  setSearchTerm: (term: string) => void;
+
+  // Вибрані елементи
+  setSelectedItemIds: (ids: string[]) => void;
+  addSelectedItemId: (id: string) => void;
+  removeSelectedItemId: (id: string) => void;
+  clearSelectedItems: () => void;
+  setEditingItemId: (id: string | null) => void;
+  setDeletingItemId: (id: string | null) => void;
 
   // UI прапорці
   toggleTableExpanded: () => void;
-  toggleSearchExpanded: () => void;
   toggleFiltersExpanded: () => void;
-  toggleSummaryExpanded: () => void;
+  toggleActionsExpanded: () => void;
+  setIsWizardActive: (active: boolean) => void;
+
+  // Workflow з константами
+  setCurrentOperation: (operation: ItemManagerOperation) => void;
+  markOperationCompleted: (operation: ItemManagerOperation) => void;
+  goToNextOperation: () => void;
+  goToPreviousOperation: () => void;
+  setCurrentUIState: (state: ItemManagerUIStateType) => void;
 
   // Модальні вікна
-  openDeleteModal: (itemId: string) => void;
-  closeDeleteModal: () => void;
-  openProceedModal: () => void;
-  closeProceedModal: () => void;
-  setWizardActive: (active: boolean) => void;
-  setSelectedItemForEdit: (itemId: string | null) => void;
-
-  // Workflow
-  setCurrentView: (view: 'table' | 'wizard' | 'summary') => void;
-  setHasUnsavedChanges: (hasChanges: boolean) => void;
-  updateLastSyncTime: () => void;
+  setShowDeleteConfirmation: (show: boolean) => void;
+  setShowProceedConfirmation: (show: boolean) => void;
+  setShowSynchronizeDialog: (show: boolean) => void;
 
   // Помічники UI
-  toggleItemExpanded: (itemId: string) => void;
-  toggleItemSelected: (itemId: string) => void;
-  selectAllItems: (itemIds: string[]) => void;
-  clearSelection: () => void;
-  setDraggedItem: (itemId: string | null) => void;
+  setFilteredItemIds: (ids: string[]) => void;
+  setTotalItemsCount: (count: number) => void;
+  setCanProceedToNextStage: (canProceed: boolean) => void;
 
   // Скидання
   resetUIState: () => void;
-  resetFilters: () => void;
-  resetModals: () => void;
+  resetTableState: () => void;
+  resetSelections: () => void;
 }
 
 // =================== ПОЧАТКОВИЙ СТАН ===================
-const initialState: ItemManagerUIState = {
+const initialState: ItemManagerStoreState = {
   // Сесія
   sessionId: null,
   orderId: null,
 
   // UI налаштування
   showItemDetails: true,
-  showPriceBreakdown: true,
-  showModifiers: false,
-  showPhotos: false,
+  showPriceDetails: true,
+  showTableControls: true,
+  showOperationButtons: true,
 
-  // Пошук та фільтрація
-  searchTerm: '',
-  categoryFilter: null,
-  priceRangeMin: null,
-  priceRangeMax: null,
-
-  // Відображення таблиці
-  itemsPerPage: 10,
-  currentPage: 1,
-  sortBy: 'name',
+  // Таблиця стан
+  currentViewMode: VIEW_MODES.TABLE,
+  itemsPerPage: TABLE_CONFIG.DEFAULT_PAGE_SIZE,
+  currentPage: 0,
+  sortBy: TABLE_CONFIG.DEFAULT_SORT_BY,
   sortOrder: 'asc',
+  searchTerm: '',
+
+  // Вибрані елементи
+  selectedItemIds: [],
+  editingItemId: null,
+  deletingItemId: null,
 
   // UI прапорці
   isTableExpanded: true,
-  isSearchExpanded: false,
   isFiltersExpanded: false,
-  isSummaryExpanded: true,
+  isActionsExpanded: true,
+  isWizardActive: false,
+
+  // Workflow стан з константами
+  currentOperation: ITEM_MANAGER_OPERATIONS.INITIALIZE,
+  operationsCompleted: [],
+  currentUIState: ITEM_MANAGER_UI_STATES.INITIALIZING,
 
   // Модальні вікна
-  isDeleteModalOpen: false,
-  isProceedModalOpen: false,
-  isWizardActive: false,
-  selectedItemForEdit: null,
-  selectedItemForDelete: null,
-
-  // Workflow стан
-  currentView: 'table',
-  hasUnsavedChanges: false,
-  lastSyncTime: null,
+  showDeleteConfirmation: false,
+  showProceedConfirmation: false,
+  showSynchronizeDialog: false,
 
   // Помічники UI
-  expandedItemIds: [],
-  selectedItemIds: [],
-  draggedItemId: null,
+  filteredItemIds: [],
+  totalItemsCount: 0,
+  canProceedToNextStage: false,
 };
 
 // =================== ZUSTAND СТОР ===================
-export const useItemManagerStore = create<ItemManagerUIState & ItemManagerUIActions>()(
-  subscribeWithSelector((set) => ({
+export const useItemManagerStore = create<ItemManagerStoreState & ItemManagerStoreActions>()(
+  subscribeWithSelector((set, get) => ({
     ...initialState,
 
     // =================== СЕСІЯ ===================
@@ -166,26 +175,33 @@ export const useItemManagerStore = create<ItemManagerUIState & ItemManagerUIActi
 
     // =================== UI НАЛАШТУВАННЯ ===================
     setShowItemDetails: (showItemDetails) => set({ showItemDetails }),
-    setShowPriceBreakdown: (showPriceBreakdown) => set({ showPriceBreakdown }),
-    setShowModifiers: (showModifiers) => set({ showModifiers }),
-    setShowPhotos: (showPhotos) => set({ showPhotos }),
+    setShowPriceDetails: (showPriceDetails) => set({ showPriceDetails }),
+    setShowTableControls: (showTableControls) => set({ showTableControls }),
+    setShowOperationButtons: (showOperationButtons) => set({ showOperationButtons }),
 
-    // =================== ПОШУК ТА ФІЛЬТРАЦІЯ ===================
-    setSearchTerm: (searchTerm) => set({ searchTerm }),
-    setCategoryFilter: (categoryFilter) => set({ categoryFilter }),
-    setPriceRange: (priceRangeMin, priceRangeMax) => set({ priceRangeMin, priceRangeMax }),
-    clearFilters: () =>
-      set({
-        searchTerm: '',
-        categoryFilter: null,
-        priceRangeMin: null,
-        priceRangeMax: null,
-      }),
-
-    // =================== ВІДОБРАЖЕННЯ ТАБЛИЦІ ===================
-    setItemsPerPage: (itemsPerPage) => set({ itemsPerPage, currentPage: 1 }),
+    // =================== ТАБЛИЦЯ ===================
+    setCurrentViewMode: (currentViewMode) => set({ currentViewMode }),
+    setItemsPerPage: (itemsPerPage) => set({ itemsPerPage, currentPage: 0 }),
     setCurrentPage: (currentPage) => set({ currentPage }),
-    setSorting: (sortBy, sortOrder) => set({ sortBy, sortOrder }),
+    setSortBy: (sortBy) => set({ sortBy }),
+    setSortOrder: (sortOrder) => set({ sortOrder }),
+    setSearchTerm: (searchTerm) => set({ searchTerm, currentPage: 0 }),
+
+    // =================== ВИБРАНІ ЕЛЕМЕНТИ ===================
+    setSelectedItemIds: (selectedItemIds) => set({ selectedItemIds }),
+    addSelectedItemId: (id) =>
+      set((state) => ({
+        selectedItemIds: state.selectedItemIds.includes(id)
+          ? state.selectedItemIds
+          : [...state.selectedItemIds, id],
+      })),
+    removeSelectedItemId: (id) =>
+      set((state) => ({
+        selectedItemIds: state.selectedItemIds.filter((itemId) => itemId !== id),
+      })),
+    clearSelectedItems: () => set({ selectedItemIds: [] }),
+    setEditingItemId: (editingItemId) => set({ editingItemId }),
+    setDeletingItemId: (deletingItemId) => set({ deletingItemId }),
 
     // =================== UI ПРАПОРЦІ ===================
     toggleTableExpanded: () =>
@@ -193,82 +209,75 @@ export const useItemManagerStore = create<ItemManagerUIState & ItemManagerUIActi
         isTableExpanded: !state.isTableExpanded,
       })),
 
-    toggleSearchExpanded: () =>
-      set((state) => ({
-        isSearchExpanded: !state.isSearchExpanded,
-      })),
-
     toggleFiltersExpanded: () =>
       set((state) => ({
         isFiltersExpanded: !state.isFiltersExpanded,
       })),
 
-    toggleSummaryExpanded: () =>
+    toggleActionsExpanded: () =>
       set((state) => ({
-        isSummaryExpanded: !state.isSummaryExpanded,
+        isActionsExpanded: !state.isActionsExpanded,
       })),
+
+    setIsWizardActive: (isWizardActive) => set({ isWizardActive }),
+
+    // =================== WORKFLOW З КОНСТАНТАМИ ===================
+    setCurrentOperation: (currentOperation) => set({ currentOperation }),
+
+    markOperationCompleted: (operation) =>
+      set((state) => ({
+        operationsCompleted: state.operationsCompleted.includes(operation)
+          ? state.operationsCompleted
+          : [...state.operationsCompleted, operation],
+      })),
+
+    goToNextOperation: () => {
+      const state = get();
+      const currentIndex = Object.values(ITEM_MANAGER_OPERATIONS).indexOf(state.currentOperation);
+      const nextOperation = Object.values(ITEM_MANAGER_OPERATIONS)[currentIndex + 1];
+      if (nextOperation) {
+        set({ currentOperation: nextOperation });
+      }
+    },
+
+    goToPreviousOperation: () => {
+      const state = get();
+      const currentIndex = Object.values(ITEM_MANAGER_OPERATIONS).indexOf(state.currentOperation);
+      const previousOperation = Object.values(ITEM_MANAGER_OPERATIONS)[currentIndex - 1];
+      if (previousOperation) {
+        set({ currentOperation: previousOperation });
+      }
+    },
+
+    setCurrentUIState: (currentUIState) => set({ currentUIState }),
 
     // =================== МОДАЛЬНІ ВІКНА ===================
-    openDeleteModal: (itemId) =>
-      set({
-        isDeleteModalOpen: true,
-        selectedItemForDelete: itemId,
-      }),
-
-    closeDeleteModal: () =>
-      set({
-        isDeleteModalOpen: false,
-        selectedItemForDelete: null,
-      }),
-
-    openProceedModal: () => set({ isProceedModalOpen: true }),
-    closeProceedModal: () => set({ isProceedModalOpen: false }),
-
-    setWizardActive: (isWizardActive) => set({ isWizardActive }),
-    setSelectedItemForEdit: (selectedItemForEdit) => set({ selectedItemForEdit }),
-
-    // =================== WORKFLOW ===================
-    setCurrentView: (currentView) => set({ currentView }),
-    setHasUnsavedChanges: (hasUnsavedChanges) => set({ hasUnsavedChanges }),
-    updateLastSyncTime: () => set({ lastSyncTime: new Date() }),
+    setShowDeleteConfirmation: (showDeleteConfirmation) => set({ showDeleteConfirmation }),
+    setShowProceedConfirmation: (showProceedConfirmation) => set({ showProceedConfirmation }),
+    setShowSynchronizeDialog: (showSynchronizeDialog) => set({ showSynchronizeDialog }),
 
     // =================== ПОМІЧНИКИ UI ===================
-    toggleItemExpanded: (itemId) =>
-      set((state) => ({
-        expandedItemIds: state.expandedItemIds.includes(itemId)
-          ? state.expandedItemIds.filter((id) => id !== itemId)
-          : [...state.expandedItemIds, itemId],
-      })),
-
-    toggleItemSelected: (itemId) =>
-      set((state) => ({
-        selectedItemIds: state.selectedItemIds.includes(itemId)
-          ? state.selectedItemIds.filter((id) => id !== itemId)
-          : [...state.selectedItemIds, itemId],
-      })),
-
-    selectAllItems: (itemIds) => set({ selectedItemIds: itemIds }),
-    clearSelection: () => set({ selectedItemIds: [] }),
-    setDraggedItem: (draggedItemId) => set({ draggedItemId }),
+    setFilteredItemIds: (filteredItemIds) => set({ filteredItemIds }),
+    setTotalItemsCount: (totalItemsCount) => set({ totalItemsCount }),
+    setCanProceedToNextStage: (canProceedToNextStage) => set({ canProceedToNextStage }),
 
     // =================== СКИДАННЯ ===================
     resetUIState: () => set(initialState),
 
-    resetFilters: () =>
+    resetTableState: () =>
       set({
+        currentPage: 0,
         searchTerm: '',
-        categoryFilter: null,
-        priceRangeMin: null,
-        priceRangeMax: null,
-        currentPage: 1,
+        selectedItemIds: [],
+        sortBy: TABLE_CONFIG.DEFAULT_SORT_BY,
+        sortOrder: 'asc',
       }),
 
-    resetModals: () =>
+    resetSelections: () =>
       set({
-        isDeleteModalOpen: false,
-        isProceedModalOpen: false,
-        selectedItemForEdit: null,
-        selectedItemForDelete: null,
+        selectedItemIds: [],
+        editingItemId: null,
+        deletingItemId: null,
       }),
   }))
 );
@@ -278,38 +287,35 @@ export const useItemManagerSelectors = () => {
   const store = useItemManagerStore();
 
   return {
-    // Базові селектори
-    hasSession: !!store.sessionId,
-    hasOrder: !!store.orderId,
-    hasActiveWizard: store.isWizardActive,
-    hasFiltersApplied: !!(
-      store.searchTerm ||
-      store.categoryFilter ||
-      store.priceRangeMin ||
-      store.priceRangeMax
+    // Валідація з константами
+    canAddItem: ITEM_MANAGER_VALIDATION_RULES.canAddItem(store.sessionId),
+    canEditItem: ITEM_MANAGER_VALIDATION_RULES.canEditItem(store.editingItemId, store.sessionId),
+    canDeleteItem: ITEM_MANAGER_VALIDATION_RULES.canDeleteItem(
+      store.deletingItemId,
+      store.sessionId
     ),
+    canCompleteStage: ITEM_MANAGER_VALIDATION_RULES.canCompleteStage(store.totalItemsCount),
+    canSynchronize: ITEM_MANAGER_VALIDATION_RULES.canSynchronize(store.sessionId),
 
     // Обчислені значення
-    hasSelection: store.selectedItemIds.length > 0,
-    selectedCount: store.selectedItemIds.length,
-    hasExpandedItems: store.expandedItemIds.length > 0,
+    hasSelectedItems: store.selectedItemIds.length > 0,
+    selectedItemsCount: store.selectedItemIds.length,
+    isMultipleSelection: store.selectedItemIds.length > 1,
+    hasSearchFilter: store.searchTerm.length > 0,
+    isInitialized: store.sessionId !== null && store.orderId !== null,
+    isReady: store.currentUIState === ITEM_MANAGER_UI_STATES.READY,
+    isLoading: store.currentUIState === ITEM_MANAGER_UI_STATES.LOADING,
+    isSaving: store.currentUIState === ITEM_MANAGER_UI_STATES.SAVING,
+    hasError: store.currentUIState === ITEM_MANAGER_UI_STATES.ERROR,
 
-    // UI стан
-    isAnyModalOpen: store.isDeleteModalOpen || store.isProceedModalOpen,
-    isAnyExpanded:
-      store.isTableExpanded ||
-      store.isSearchExpanded ||
-      store.isFiltersExpanded ||
-      store.isSummaryExpanded,
-
-    // Workflow
-    canProceedToNext: store.currentView === 'table' && !store.isWizardActive,
-    needsSync: store.hasUnsavedChanges,
-    timeSinceLastSync: store.lastSyncTime ? Date.now() - store.lastSyncTime.getTime() : null,
-
-    // Помічники
-    isItemExpanded: (itemId: string) => store.expandedItemIds.includes(itemId),
-    isItemSelected: (itemId: string) => store.selectedItemIds.includes(itemId),
-    isDragging: !!store.draggedItemId,
+    // Пагінація
+    totalPages: Math.ceil(store.totalItemsCount / store.itemsPerPage),
+    hasNextPage: store.currentPage < Math.ceil(store.totalItemsCount / store.itemsPerPage) - 1,
+    hasPreviousPage: store.currentPage > 0,
+    startIndex: store.currentPage * store.itemsPerPage,
+    endIndex: Math.min((store.currentPage + 1) * store.itemsPerPage, store.totalItemsCount),
   };
 };
+
+// =================== ТИПИ ===================
+export type ItemManagerStore = ItemManagerStoreState & ItemManagerStoreActions;

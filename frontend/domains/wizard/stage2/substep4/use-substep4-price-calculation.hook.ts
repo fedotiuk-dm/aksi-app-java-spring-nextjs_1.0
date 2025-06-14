@@ -3,6 +3,8 @@
 // МІНІМАЛЬНА логіка, максимальне використання готових Orval можливостей
 
 import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // Orval хуки (готові з бекенду)
 import {
@@ -22,12 +24,32 @@ import {
 } from '@/shared/api/generated/substep4';
 
 // Локальні імпорти
-import { usePriceCalculationStore } from './store';
+import { usePriceCalculationStore, usePriceCalculationSelectors } from './store';
+import {
+  SUBSTEP4_UI_STEPS,
+  SUBSTEP4_VALIDATION_RULES,
+  calculateSubstep4Progress,
+  getNextSubstep4Step,
+  getPreviousSubstep4Step,
+  isFirstSubstep4Step,
+  isLastSubstep4Step,
+} from './constants';
+import {
+  modifierSelectionFormSchema,
+  priceCalculationFormSchema,
+  calculationConfirmationFormSchema,
+  priceCalculationNavigationFormSchema,
+  type ModifierSelectionFormData,
+  type PriceCalculationFormData,
+  type CalculationConfirmationFormData,
+  type PriceCalculationNavigationFormData,
+} from './schemas';
 
 // =================== ТОНКА ОБГОРТКА ===================
 export const useSubstep4PriceCalculation = () => {
   // UI стан з Zustand
   const uiState = usePriceCalculationStore();
+  const uiSelectors = usePriceCalculationSelectors();
 
   // Orval API хуки (без додаткової логіки)
   const initializeMutation = useSubstep4InitializeSubstep();
@@ -49,17 +71,68 @@ export const useSubstep4PriceCalculation = () => {
   });
 
   const availableModifiersQuery = useSubstep4GetAvailableModifiers(
-    { categoryCode: 'GENERAL' },
-    { query: { enabled: true } }
+    {
+      categoryCode: 'GENERAL',
+    },
+    {
+      query: { enabled: true },
+    }
   );
 
   const recommendedModifiersQuery = useSubstep4GetRecommendedModifiers(
-    { categoryCode: 'GENERAL', itemName: 'DEFAULT' },
-    { query: { enabled: true } }
+    {
+      categoryCode: 'GENERAL',
+      itemName: 'DEFAULT',
+    },
+    {
+      query: { enabled: true },
+    }
   );
 
   const validationQuery = useSubstep4ValidateCurrentState(uiState.sessionId || '', {
     query: { enabled: !!uiState.sessionId },
+  });
+
+  // React Hook Form форми
+  const modifierSelectionForm = useForm<ModifierSelectionFormData>({
+    resolver: zodResolver(modifierSelectionFormSchema),
+    defaultValues: {
+      selectedModifierIds: uiState.selectedModifiers || [],
+      rangeValues: {},
+      fixedQuantities: {},
+      notes: uiState.calculationNotes || '',
+    },
+  });
+
+  const priceCalculationForm = useForm<PriceCalculationFormData>({
+    resolver: zodResolver(priceCalculationFormSchema),
+    defaultValues: {
+      categoryCode: '',
+      itemName: '',
+      color: '',
+      quantity: 1,
+      expedited: false,
+      expeditePercent: 0,
+      discountPercent: 0,
+    },
+  });
+
+  const confirmationForm = useForm<CalculationConfirmationFormData>({
+    resolver: zodResolver(calculationConfirmationFormSchema),
+    defaultValues: {
+      finalPriceAccepted: false,
+      calculationNotes: '',
+      proceedToNext: false,
+    },
+  });
+
+  const navigationForm = useForm<PriceCalculationNavigationFormData>({
+    resolver: zodResolver(priceCalculationNavigationFormSchema),
+    defaultValues: {
+      currentStep: uiState.currentStep,
+      targetStep: undefined,
+      saveProgress: true,
+    },
   });
 
   // Стан завантаження (простий)
@@ -77,6 +150,20 @@ export const useSubstep4PriceCalculation = () => {
       isLoadingData: currentDataQuery.isLoading,
       isLoadingModifiers: availableModifiersQuery.isLoading,
       isValidating: validationQuery.isLoading,
+      isAnyLoading: [
+        initializeMutation.isPending,
+        calculatePriceMutation.isPending,
+        calculateFinalPriceMutation.isPending,
+        calculateBasePriceMutation.isPending,
+        addModifierMutation.isPending,
+        removeModifierMutation.isPending,
+        confirmCalculationMutation.isPending,
+        resetCalculationMutation.isPending,
+        currentStateQuery.isLoading,
+        currentDataQuery.isLoading,
+        availableModifiersQuery.isLoading,
+        validationQuery.isLoading,
+      ].some(Boolean),
     }),
     [
       initializeMutation.isPending,
@@ -94,10 +181,24 @@ export const useSubstep4PriceCalculation = () => {
     ]
   );
 
+  // Обчислені значення
+  const computed = useMemo(
+    () => ({
+      progress: calculateSubstep4Progress(uiState.currentStep),
+      nextStep: getNextSubstep4Step(uiState.currentStep),
+      previousStep: getPreviousSubstep4Step(uiState.currentStep),
+      isFirstStep: isFirstSubstep4Step(uiState.currentStep),
+      isLastStep: isLastSubstep4Step(uiState.currentStep),
+      canProceedNext: !loading.isAnyLoading && uiSelectors.hasSelectedModifiers,
+      canGoBack: !isFirstSubstep4Step(uiState.currentStep) && !loading.isAnyLoading,
+    }),
+    [uiState.currentStep, loading.isAnyLoading, uiSelectors.hasSelectedModifiers]
+  );
+
   // =================== ПОВЕРНЕННЯ (ГРУПУВАННЯ) ===================
   return {
     // UI стан (прямо з Zustand)
-    ui: uiState,
+    ui: uiSelectors,
 
     // API дані (прямо з Orval)
     data: {
@@ -130,6 +231,23 @@ export const useSubstep4PriceCalculation = () => {
       availableModifiers: availableModifiersQuery,
       recommendedModifiers: recommendedModifiersQuery,
       validation: validationQuery,
+    },
+
+    // Форми React Hook Form
+    forms: {
+      modifierSelection: modifierSelectionForm,
+      priceCalculation: priceCalculationForm,
+      confirmation: confirmationForm,
+      navigation: navigationForm,
+    },
+
+    // Обчислені значення
+    computed,
+
+    // Константи
+    constants: {
+      steps: SUBSTEP4_UI_STEPS,
+      validationRules: SUBSTEP4_VALIDATION_RULES,
     },
   };
 };

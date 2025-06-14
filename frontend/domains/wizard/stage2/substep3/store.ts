@@ -3,6 +3,15 @@
 
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import {
+  SUBSTEP3_UI_STEPS,
+  SUBSTEP3_VALIDATION_RULES,
+  SUBSTEP3_LIMITS,
+  calculateSubstep3Progress,
+  getNextSubstep3Step,
+  getPreviousSubstep3Step,
+  type Substep3UIStep,
+} from './constants';
 
 // =================== ТИПИ СТАНУ ===================
 interface StainsDefectsUIState {
@@ -28,7 +37,7 @@ interface StainsDefectsUIState {
   isNotesExpanded: boolean;
 
   // Workflow стан
-  currentStep: 'stains' | 'defects' | 'notes' | 'completed';
+  currentStep: Substep3UIStep;
   stepsCompleted: string[];
 }
 
@@ -61,7 +70,7 @@ interface StainsDefectsUIActions {
   toggleNotesExpanded: () => void;
 
   // Workflow
-  setCurrentStep: (step: 'stains' | 'defects' | 'notes' | 'completed') => void;
+  setCurrentStep: (step: Substep3UIStep) => void;
   markStepCompleted: (step: string) => void;
 
   // Скидання
@@ -93,7 +102,7 @@ const initialState: StainsDefectsUIState = {
   isNotesExpanded: false,
 
   // Workflow стан
-  currentStep: 'stains',
+  currentStep: SUBSTEP3_UI_STEPS.STAIN_SELECTION,
   stepsCompleted: [],
 };
 
@@ -185,7 +194,7 @@ export const useStainsDefectsStore = create<StainsDefectsUIState & StainsDefects
   }))
 );
 
-// =================== СЕЛЕКТОРИ ===================
+// =================== СЕЛЕКТОРИ З КОНСТАНТАМИ ===================
 export const useStainsDefectsSelectors = () => {
   const store = useStainsDefectsStore();
 
@@ -197,10 +206,38 @@ export const useStainsDefectsSelectors = () => {
     hasOtherStains: !!store.otherStains.trim(),
     hasDefectNotes: !!store.defectNotes.trim(),
 
-    // Обчислені значення
+    // Обчислені значення з константами
     stainsCount: store.selectedStains.length,
     defectsCount: store.selectedDefects.length,
     completedStepsCount: store.stepsCompleted.length,
+    progressPercentage: calculateSubstep3Progress(store.currentStep),
+
+    // Валідація з константами
+    canProceedFromStainSelection: SUBSTEP3_VALIDATION_RULES.canProceedFromStainSelection(
+      store.selectedStains
+    ),
+    canProceedFromDefectSelection: SUBSTEP3_VALIDATION_RULES.canProceedFromDefectSelection(
+      store.selectedDefects,
+      store.noGuaranteeReason
+    ),
+    canProceedFromDefectNotes: SUBSTEP3_VALIDATION_RULES.canProceedFromDefectNotes(
+      store.defectNotes
+    ),
+    canCompleteSubstep: SUBSTEP3_VALIDATION_RULES.canCompleteSubstep(
+      store.selectedStains,
+      store.selectedDefects,
+      store.defectNotes
+    ),
+
+    // Навігація з константами
+    nextStep: getNextSubstep3Step(store.currentStep),
+    previousStep: getPreviousSubstep3Step(store.currentStep),
+
+    // Ліміти з константами
+    isStainSelectionAtLimit: store.selectedStains.length >= SUBSTEP3_LIMITS.MAX_STAIN_SELECTION,
+    isDefectSelectionAtLimit: store.selectedDefects.length >= SUBSTEP3_LIMITS.MAX_DEFECT_SELECTION,
+    defectNotesCharacterCount: store.defectNotes.length,
+    defectNotesCharacterLimit: SUBSTEP3_LIMITS.MAX_DEFECT_NOTES_LENGTH,
 
     // UI стан
     isExpanded:
@@ -209,6 +246,6 @@ export const useStainsDefectsSelectors = () => {
 
     // Workflow
     isStepCompleted: (step: string) => store.stepsCompleted.includes(step),
-    canProceedToNext: store.selectedStains.length > 0 || store.selectedDefects.length > 0,
+    currentStepIndex: Object.values(SUBSTEP3_UI_STEPS).indexOf(store.currentStep),
   };
 };
