@@ -143,14 +143,9 @@ export const BasicOrderInfoStep: React.FC<BasicOrderInfoStepProps> = ({
   };
 
   const handleCompleteOrderInfo = async () => {
-    try {
-      await mutations.completeBasicOrder.mutateAsync({
-        sessionId: ui.sessionId || '',
-      });
-      onOrderInfoCompleted();
-    } catch (error) {
-      console.error('Помилка завершення базової інформації:', error);
-    }
+    // Просто викликаємо callback, який передасть управління до Stage1Container
+    // Stage1Container сам викличе правильний API для завершення всього етапу
+    onOrderInfoCompleted();
   };
 
   // ========== RENDER ==========
@@ -237,7 +232,7 @@ export const BasicOrderInfoStep: React.FC<BasicOrderInfoStepProps> = ({
         <Card>
           <CardContent>
             <Stack direction="row" spacing={2} justifyContent="space-between">
-              <Button variant="outlined" onClick={onGoBack} disabled={loading.isCompleting}>
+              <Button variant="outlined" onClick={onGoBack} disabled={loading.isUpdating}>
                 Назад до клієнта
               </Button>
 
@@ -245,7 +240,7 @@ export const BasicOrderInfoStep: React.FC<BasicOrderInfoStepProps> = ({
                 variant="contained"
                 onClick={handleCompleteOrderInfo}
                 disabled={
-                  loading.isCompleting ||
+                  loading.isUpdating ||
                   !ui.isBranchSelected ||
                   !ui.isUniqueTagScanned ||
                   !ui.receiptNumber
@@ -253,7 +248,7 @@ export const BasicOrderInfoStep: React.FC<BasicOrderInfoStepProps> = ({
                 size="large"
                 sx={{ minWidth: 200 }}
               >
-                {loading.isCompleting ? (
+                {loading.isUpdating ? (
                   <>
                     <CircularProgress size={20} sx={{ mr: 1 }} />
                     Завершення...

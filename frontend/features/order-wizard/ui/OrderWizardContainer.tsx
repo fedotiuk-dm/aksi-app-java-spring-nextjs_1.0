@@ -30,7 +30,7 @@ import { MAIN_WIZARD_STATES } from '@/domains/wizard/main/wizard.constants';
 
 // Імпорт компонентів етапів
 import { Stage1Container } from './stage1/Stage1Container';
-// import { Stage2ItemManager } from './stage2/Stage2ItemManager';
+import { ItemManagerStep } from './stage2';
 // import { Stage3OrderParameters } from './stages/Stage3OrderParameters';
 // import { Stage4Finalization } from './stages/Stage4Finalization';
 
@@ -130,24 +130,66 @@ export const OrderWizardContainer: React.FC = () => {
     if (!ui.sessionId) return;
 
     try {
-      console.log('Завершення етапу 1...');
+      console.log('🔄 Завершення етапу 1 через API...');
       ui.setIsNavigating(true);
 
       await mutations.completeStage1.mutateAsync({
         sessionId: ui.sessionId,
       });
 
+      console.log('✅ API complete-stage1 успішно викликано');
+
       // Оновлюємо UI стан
       ui.addCompletedStage(1);
       ui.setCurrentStage(2);
       ui.setCurrentState(MAIN_WIZARD_STATES.ITEM_MANAGEMENT);
-      console.log('✅ Етап 1 завершено');
+      console.log('✅ Етап 1 завершено, перехід до етапу 2');
     } catch (error) {
       console.error('❌ Помилка завершення етапу 1:', error);
       ui.setLastError('Помилка завершення етапу 1');
     } finally {
       ui.setIsNavigating(false);
     }
+  };
+
+  const handleCompleteStage2 = async () => {
+    if (!ui.sessionId) return;
+
+    try {
+      console.log('Завершення етапу 2...');
+      ui.setIsNavigating(true);
+
+      await mutations.completeStage2.mutateAsync({
+        sessionId: ui.sessionId,
+      });
+
+      // Оновлюємо UI стан
+      ui.addCompletedStage(2);
+      ui.setCurrentStage(3);
+      ui.setCurrentState(MAIN_WIZARD_STATES.EXECUTION_PARAMS);
+      console.log('✅ Етап 2 завершено');
+    } catch (error) {
+      console.error('❌ Помилка завершення етапу 2:', error);
+      ui.setLastError('Помилка завершення етапу 2');
+    } finally {
+      ui.setIsNavigating(false);
+    }
+  };
+
+  // Обробники для Stage2 Item Manager
+  const handleStartItemWizard = () => {
+    console.log('Запуск візарда предметів...');
+    // TODO: Додати логіку запуску візарда предметів
+  };
+
+  const handleEditItem = (itemId: string) => {
+    console.log('Редагування предмета:', itemId);
+    // TODO: Додати логіку редагування предмета
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    console.log('Видалення предмета:', itemId);
+    // TODO: Додати логіку видалення предмета
   };
 
   // Рендер компонента для поточного етапу
@@ -180,13 +222,18 @@ export const OrderWizardContainer: React.FC = () => {
     // Рендер етапів на основі currentState
     switch (ui.currentState) {
       case MAIN_WIZARD_STATES.CLIENT_SELECTION:
-        return <Stage1Container onStageCompleted={handleCompleteStage1} />;
+        return (
+          <Stage1Container sessionId={ui.sessionId || ''} onStageCompleted={handleCompleteStage1} />
+        );
 
       case MAIN_WIZARD_STATES.ITEM_MANAGEMENT:
         return (
-          <Typography variant="h6" sx={{ p: 3 }}>
-            Етап 2: Менеджер предметів (у розробці)
-          </Typography>
+          <ItemManagerStep
+            onStartItemWizard={handleStartItemWizard}
+            onEditItem={handleEditItem}
+            onDeleteItem={handleDeleteItem}
+            onCompleteStage={handleCompleteStage2}
+          />
         );
 
       case MAIN_WIZARD_STATES.EXECUTION_PARAMS:
@@ -307,10 +354,7 @@ export const OrderWizardContainer: React.FC = () => {
               {ui.currentState === MAIN_WIZARD_STATES.ITEM_MANAGEMENT && (
                 <Button
                   variant="contained"
-                  onClick={() => {
-                    // TODO: Додати логіку завершення другого етапу
-                    console.log('Завершення другого етапу');
-                  }}
+                  onClick={handleCompleteStage2}
                   disabled={ui.isNavigating || loading.isCompletingStage}
                 >
                   Завершити етап 2

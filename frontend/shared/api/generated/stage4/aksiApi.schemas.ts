@@ -74,11 +74,11 @@ export interface PaymentConfigurationDTO {
   isValid?: boolean;
   validationMessage?: string;
   lastUpdated?: string;
-  fullyPaid?: boolean;
   prepaymentAmount?: number;
   paymentMethod?: PaymentConfigurationDTOPaymentMethod;
-  paymentConfigComplete?: boolean;
   readyForCompletion?: boolean;
+  fullyPaid?: boolean;
+  paymentConfigComplete?: boolean;
 }
 
 export interface ValidationResult {
@@ -89,8 +89,8 @@ export interface ValidationResult {
   firstError?: string;
   errorCount?: number;
   firstWarning?: string;
-  warningCount?: number;
   fullMessage?: string;
+  warningCount?: number;
 }
 
 export type CompletionDateCalculationRequestExpediteType = typeof CompletionDateCalculationRequestExpediteType[keyof typeof CompletionDateCalculationRequestExpediteType];
@@ -135,9 +135,9 @@ export interface ExecutionParamsDTO {
   needsRecalculation?: boolean;
   lastUpdated?: string;
   expediteType?: ExecutionParamsDTOExpediteType;
+  readyForCompletion?: boolean;
   executionParamsComplete?: boolean;
   effectiveExecutionDate?: string;
-  readyForCompletion?: boolean;
 }
 
 export type DiscountConfigurationDTODiscountType = typeof DiscountConfigurationDTODiscountType[keyof typeof DiscountConfigurationDTODiscountType];
@@ -165,10 +165,10 @@ export interface DiscountConfigurationDTO {
   validationMessage?: string;
   lastUpdated?: string;
   discountType?: DiscountConfigurationDTODiscountType;
-  discountConfigComplete?: boolean;
   discountPercentage?: number;
   discountDescription?: string;
   readyForCompletion?: boolean;
+  discountConfigComplete?: boolean;
 }
 
 export type OrderDiscountRequestDiscountType = typeof OrderDiscountRequestDiscountType[keyof typeof OrderDiscountRequestDiscountType];
@@ -233,9 +233,9 @@ export interface AdditionalInfoDTO {
   validationMessage?: string;
   lastUpdated?: string;
   customerNotes?: string;
+  readyForCompletion?: boolean;
   additionalRequirements?: string;
   additionalInfoComplete?: boolean;
-  readyForCompletion?: boolean;
 }
 
 export interface AdditionalRequirementsRequest {
@@ -374,10 +374,10 @@ export interface BasicOrderInfoDTO {
   uniqueTagEntered?: boolean;
   branchSelected?: boolean;
   creationDateSet?: boolean;
-  allBranches?: BranchLocationDTO[];
-  complete?: boolean;
   uniqueTagValid?: boolean;
   receiptNumberValid?: boolean;
+  allBranches?: BranchLocationDTO[];
+  complete?: boolean;
   branchesCount?: number;
 }
 
@@ -636,8 +636,8 @@ export interface OrderDTO {
   finalizedAt?: string;
   express?: boolean;
   draft?: boolean;
-  emailed?: boolean;
   printed?: boolean;
+  emailed?: boolean;
 }
 
 export type OrderSummaryDTOStatus = typeof OrderSummaryDTOStatus[keyof typeof OrderSummaryDTOStatus];
@@ -1334,9 +1334,9 @@ export interface PriceDiscountDTO {
   calculationCompleted?: boolean;
   hasCalculationErrors?: boolean;
   errorMessage?: string;
+  calculationDetails?: CalculationDetailsDTO[];
   basePrice?: number;
   finalPrice?: number;
-  calculationDetails?: CalculationDetailsDTO[];
   modifiersCount?: number;
 }
 

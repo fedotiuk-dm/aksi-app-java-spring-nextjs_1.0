@@ -22,6 +22,7 @@ import { ClientCreationStep } from './ClientCreationStep';
 import { ClientSearchStep } from './ClientSearchStep';
 
 interface Stage1ContainerProps {
+  sessionId: string;
   onStageCompleted: () => void;
 }
 
@@ -38,40 +39,37 @@ const stepLabels = {
   [SUBSTEPS.BASIC_ORDER_INFO]: 'Базова інформація',
 };
 
-export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageCompleted }) => {
+export const Stage1Container: React.FC<Stage1ContainerProps> = ({
+  sessionId,
+  onStageCompleted,
+}) => {
   // ========== WORKFLOW ХУКИ ==========
   const { ui, loading, mutations } = useStage1Workflow();
 
   // ========== ІНІЦІАЛІЗАЦІЯ ==========
   useEffect(() => {
-    const initializeWizard = async () => {
-      if (!ui.isInitialized) {
-        try {
-          // Стартуємо wizard через backend API
-          const response = await mutations.startWizard.mutateAsync();
-
-          if (response?.sessionId) {
-            // Ініціалізуємо workflow з sessionId від backend
-            ui.initializeWorkflow(response.sessionId);
-          }
-        } catch (error) {
-          console.error('Помилка ініціалізації wizard:', error);
-          ui.setValidationError('Помилка ініціалізації. Спробуйте перезавантажити сторінку.');
-        }
+    const initializeWorkflow = () => {
+      if (!ui.isInitialized && sessionId) {
+        console.log('🔄 Ініціалізація Stage1 workflow з sessionId:', sessionId);
+        // Ініціалізуємо workflow з sessionId від OrderWizardContainer
+        ui.initializeWorkflow(sessionId);
+        console.log('✅ Stage1 workflow ініціалізовано з sessionId');
       }
     };
 
-    initializeWizard();
-  }, [ui.isInitialized, mutations.startWizard, ui]);
+    initializeWorkflow();
+  }, [ui.isInitialized, sessionId, ui]);
 
   // ========== EVENT HANDLERS ==========
-  const handleClientSelected = (clientId: string) => {
-    // Зберігаємо selectedClientId в workflow
-    ui.setSelectedClientId(clientId);
-    // Переходимо до basic-order-info
-    ui.goToSubstep(SUBSTEPS.BASIC_ORDER_INFO);
-    ui.markSubstepCompleted(SUBSTEPS.CLIENT_SEARCH);
-    ui.setCanProceedToNext(true);
+  const handleClientSelected = async (clientId: string) => {
+    console.log('🔄 Вибір клієнта:', clientId);
+    // Використовуємо композиційний метод з workflow
+    const success = await ui.selectClient(clientId, 'client-search');
+    if (success) {
+      console.log('✅ Клієнт успішно обраний, перехід до basic-order-info');
+    } else {
+      console.error('❌ Помилка при виборі клієнта');
+    }
   };
 
   const handleCreateNewClient = () => {
@@ -79,13 +77,15 @@ export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageComplet
     ui.goToSubstep(SUBSTEPS.CLIENT_CREATION);
   };
 
-  const handleClientCreated = (clientId: string) => {
-    // Зберігаємо selectedClientId в workflow
-    ui.setSelectedClientId(clientId);
-    // Переходимо до basic-order-info після створення клієнта
-    ui.goToSubstep(SUBSTEPS.BASIC_ORDER_INFO);
-    ui.markSubstepCompleted(SUBSTEPS.CLIENT_CREATION);
-    ui.setCanProceedToNext(true);
+  const handleClientCreated = async (clientId: string) => {
+    console.log('🔄 Створення та вибір клієнта:', clientId);
+    // Використовуємо композиційний метод з workflow
+    const success = await ui.selectClient(clientId, 'client-creation');
+    if (success) {
+      console.log('✅ Клієнт успішно створений та обраний, перехід до basic-order-info');
+    } else {
+      console.error('❌ Помилка при створенні/виборі клієнта');
+    }
   };
 
   const handleGoBackToSearch = () => {
@@ -104,18 +104,21 @@ export const Stage1Container: React.FC<Stage1ContainerProps> = ({ onStageComplet
 
   const handleOrderInfoCompleted = async () => {
     try {
+      console.log('🔄 Підготовка до завершення Stage1, sessionId:', ui.sessionId);
+      console.log('🔄 Обраний клієнт:', ui.selectedClientId);
+      console.log('🔄 Поточний підетап:', ui.currentSubstep);
+
       // Завершуємо basic-order-info
       ui.markSubstepCompleted(SUBSTEPS.BASIC_ORDER_INFO);
+      ui.completeWorkflow();
 
-      // Завершуємо весь Stage1 через API
-      if (ui.sessionId) {
-        await mutations.completeStage1.mutateAsync({ sessionId: ui.sessionId });
-        ui.completeWorkflow();
-        onStageCompleted();
-      }
+      console.log('✅ Stage1 workflow завершено, повідомляємо OrderWizardContainer');
+      // Повідомляємо OrderWizardContainer про готовність до завершення
+      // OrderWizardContainer викличе API complete-stage1
+      onStageCompleted();
     } catch (error) {
-      console.error('Помилка завершення Stage1:', error);
-      ui.setValidationError('Помилка завершення етапу. Спробуйте ще раз.');
+      console.error('❌ Помилка підготовки до завершення Stage1:', error);
+      ui.setValidationError('Помилка підготовки до завершення етапу. Спробуйте ще раз.');
     }
   };
 

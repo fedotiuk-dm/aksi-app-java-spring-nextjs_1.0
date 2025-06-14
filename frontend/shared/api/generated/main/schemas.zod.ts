@@ -342,6 +342,62 @@ export const orderWizardCompleteOrder409Response = zod.object({
 
 
 /**
+ * @summary Перехід після вибору клієнта з CLIENT_SELECTION до ORDER_INITIALIZATION
+ */
+export const orderWizardClientSelectedParams = zod.object({
+  "sessionId": zod.coerce.string()
+}).strict()
+
+export const orderWizardClientSelected200Response = zod.object({
+  "sessionId": zod.coerce.string().optional(),
+  "currentState": zod.enum(['INITIAL', 'CLIENT_SELECTION', 'ORDER_INITIALIZATION', 'ITEM_MANAGEMENT', 'ITEM_WIZARD_ACTIVE', 'EXECUTION_PARAMS', 'GLOBAL_DISCOUNTS', 'PAYMENT_PROCESSING', 'ADDITIONAL_INFO', 'ORDER_CONFIRMATION', 'ORDER_REVIEW', 'LEGAL_ASPECTS', 'RECEIPT_GENERATION', 'COMPLETED', 'CANCELLED']).optional(),
+  "timestamp": zod.coerce.string().datetime({}).optional(),
+  "success": zod.coerce.boolean().optional(),
+  "message": zod.coerce.string().optional()
+}).strict()
+
+export const orderWizardClientSelected400Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const orderWizardClientSelected401Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const orderWizardClientSelected403Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const orderWizardClientSelected404Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+export const orderWizardClientSelected409Response = zod.object({
+  "timestamp": zod.coerce.string().optional(),
+  "status": zod.coerce.number().optional(),
+  "error": zod.coerce.string().optional(),
+  "message": zod.coerce.string().optional(),
+  "path": zod.coerce.string().optional()
+}).strict().describe('Інформація про помилку з часовою міткою у форматі ISO-8601')
+
+
+/**
  * @summary Скасування Order Wizard
  */
 export const orderWizardCancelOrderParams = zod.object({

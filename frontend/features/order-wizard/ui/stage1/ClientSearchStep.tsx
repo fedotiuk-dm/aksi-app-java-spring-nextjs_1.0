@@ -36,7 +36,9 @@ export const ClientSearchStep: React.FC<ClientSearchStepProps> = ({
   };
 
   const handleClientSelect = (clientId: string) => {
+    console.log('🔄 ClientSearchStep: вибір клієнта', clientId);
     ui.setSelectedClientId(clientId);
+    console.log('🔄 ClientSearchStep: викликаємо onClientSelected callback');
     onClientSelected(clientId);
   };
 

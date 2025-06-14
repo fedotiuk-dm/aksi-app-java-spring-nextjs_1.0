@@ -27,6 +27,7 @@ import {
   getNextSubstep1Step,
   getPreviousSubstep1Step,
 } from './constants';
+import { adaptServiceCategories, adaptPriceListItems } from './utils';
 import {
   substep1CategorySearchFormSchema,
   substep1ItemSearchFormSchema,
@@ -192,11 +193,15 @@ export const useSubstep1ItemBasicInfo = () => {
       ...selectors,
     },
 
-    // API дані (прямо з Orval)
+    // API дані (адаптовані для UI)
     data: {
       status: statusQuery.data,
-      serviceCategories: serviceCategoriesQuery.data,
-      itemsForCategory: itemsForCategoryQuery.data,
+      serviceCategories: serviceCategoriesQuery.data
+        ? adaptServiceCategories(serviceCategoriesQuery.data)
+        : undefined,
+      itemsForCategory: itemsForCategoryQuery.data
+        ? adaptPriceListItems(itemsForCategoryQuery.data)
+        : undefined,
     },
 
     // Стан завантаження

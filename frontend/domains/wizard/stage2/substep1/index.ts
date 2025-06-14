@@ -63,3 +63,13 @@ export type {
   Substep1QuantityFormData,
   Substep1ValidationFormData,
 } from './schemas';
+
+// =================== АДАПТЕРИ ТА UI ТИПИ ===================
+export {
+  adaptServiceCategory,
+  adaptServiceCategories,
+  adaptPriceListItem,
+  adaptPriceListItems,
+  type ServiceCategory,
+  type PriceListItem,
+} from './utils';

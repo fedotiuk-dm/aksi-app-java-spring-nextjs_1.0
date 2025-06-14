@@ -288,6 +288,16 @@ public class OrderWizardMainController {
     }
 
     @Operation(
+        summary = "Перехід після вибору клієнта з CLIENT_SELECTION до ORDER_INITIALIZATION",
+        operationId = "orderWizardClientSelected",
+        tags = {"Order Wizard - Main API", "Stage Transitions"}
+    )
+    @PostMapping("/session/{sessionId}/client-selected")
+    public ResponseEntity<com.aksi.domain.order.statemachine.dto.OrderWizardResponseDTO> clientSelected(@PathVariable String sessionId) {
+        return orderWizardAdapter.clientSelected(sessionId);
+    }
+
+    @Operation(
         summary = "Перехід до Stage3 з Stage2",
         operationId = "orderWizardCompleteStage2",
         tags = {"Order Wizard - Main API", "Stage Transitions"}

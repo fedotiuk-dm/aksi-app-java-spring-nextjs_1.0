@@ -427,6 +427,69 @@ export const useOrderWizardCompleteOrder = <TError = ErrorResponse,
     }
     
 /**
+ * @summary Перехід після вибору клієнта з CLIENT_SELECTION до ORDER_INITIALIZATION
+ */
+export const orderWizardClientSelected = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<OrderWizardResponseDTO>(
+      {url: `/order-wizard/session/${sessionId}/client-selected`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getOrderWizardClientSelectedMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardClientSelected>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof orderWizardClientSelected>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['orderWizardClientSelected'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof orderWizardClientSelected>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  orderWizardClientSelected(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OrderWizardClientSelectedMutationResult = NonNullable<Awaited<ReturnType<typeof orderWizardClientSelected>>>
+    
+    export type OrderWizardClientSelectedMutationError = ErrorResponse
+
+    /**
+ * @summary Перехід після вибору клієнта з CLIENT_SELECTION до ORDER_INITIALIZATION
+ */
+export const useOrderWizardClientSelected = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof orderWizardClientSelected>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof orderWizardClientSelected>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getOrderWizardClientSelectedMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
  * @summary Скасування Order Wizard
  */
 export const orderWizardCancelOrder = (

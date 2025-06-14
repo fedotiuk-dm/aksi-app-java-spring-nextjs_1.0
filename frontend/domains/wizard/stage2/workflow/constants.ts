@@ -40,6 +40,7 @@ export type Stage2WorkflowOperation =
 
 // Підетапи візарда предметів
 export const STAGE2_SUBSTEPS = {
+  ITEM_MANAGER: 'item-manager',
   SUBSTEP1: 'substep1',
   SUBSTEP2: 'substep2',
   SUBSTEP3: 'substep3',

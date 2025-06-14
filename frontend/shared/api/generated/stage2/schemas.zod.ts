@@ -1033,8 +1033,8 @@ export const stage2ValidateCurrentState200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional(),
-  "fullMessage": zod.coerce.string().optional()
+  "fullMessage": zod.coerce.string().optional(),
+  "warningCount": zod.coerce.number().optional()
 }).strict()
 
 export const stage2ValidateCurrentState400Response = zod.object({

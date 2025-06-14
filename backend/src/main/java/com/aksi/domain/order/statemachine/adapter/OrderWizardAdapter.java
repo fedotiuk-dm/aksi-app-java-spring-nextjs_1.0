@@ -138,6 +138,19 @@ public class OrderWizardAdapter {
     }
 
     /**
+     * Перехід після вибору клієнта з CLIENT_SELECTION до ORDER_INITIALIZATION.
+     */
+    public ResponseEntity<OrderWizardResponseDTO> clientSelected(String sessionId) {
+        StateMachine<OrderState, OrderEvent> stateMachine = getStateMachine(sessionId);
+        return StateMachineUtils.processStateTransition(
+            stateMachine,
+            sessionId,
+            OrderEvent.CLIENT_SELECTED,
+            "Client selected successfully"
+        );
+    }
+
+    /**
      * Перехід до Stage3 з Stage2.
      */
     @PostMapping("/session/{sessionId}/complete-stage2")

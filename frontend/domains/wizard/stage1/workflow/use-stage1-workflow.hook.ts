@@ -8,6 +8,7 @@ import {
   useOrderWizardStart,
   useOrderWizardGetCurrentState,
   useOrderWizardCompleteStage1,
+  useOrderWizardClientSelected,
 } from '@api/main';
 
 // Workflow стор
@@ -24,6 +25,7 @@ export const useStage1Workflow = () => {
   // ========== ORVAL МУТАЦІЇ ==========
   const startWizardMutation = useOrderWizardStart();
   const completeStage1Mutation = useOrderWizardCompleteStage1();
+  const clientSelectedMutation = useOrderWizardClientSelected();
 
   // ========== ORVAL ЗАПИТИ ==========
   const currentStateQuery = useOrderWizardGetCurrentState(ui.sessionId || '', {
@@ -39,13 +41,18 @@ export const useStage1Workflow = () => {
     () => ({
       isInitializing: startWizardMutation.isPending,
       isCompletingStage: completeStage1Mutation.isPending,
+      isSelectingClient: clientSelectedMutation.isPending,
       isNavigating: ui.hasUnsavedChanges,
       isSyncing: currentStateQuery.isFetching,
-      isLoading: startWizardMutation.isPending || completeStage1Mutation.isPending,
+      isLoading:
+        startWizardMutation.isPending ||
+        completeStage1Mutation.isPending ||
+        clientSelectedMutation.isPending,
     }),
     [
       startWizardMutation.isPending,
       completeStage1Mutation.isPending,
+      clientSelectedMutation.isPending,
       ui.hasUnsavedChanges,
       currentStateQuery.isFetching,
     ]
@@ -83,6 +90,45 @@ export const useStage1Workflow = () => {
       markHasUnsavedChanges: ui.markHasUnsavedChanges,
       markChangesSaved: ui.markChangesSaved,
       completeWorkflow: ui.completeWorkflow,
+
+      // Композиційні дії (комбінують UI + API)
+      selectClient: async (clientId: string, substep: 'client-search' | 'client-creation') => {
+        try {
+          console.log('🔄 selectClient викликано:', { clientId, substep, sessionId: ui.sessionId });
+
+          // 1. Зберігаємо selectedClientId в UI стані
+          ui.setSelectedClientId(clientId);
+          console.log('✅ selectedClientId збережено в UI стані');
+
+          // 2. Викликаємо API для переходу з CLIENT_SELECTION до ORDER_INITIALIZATION
+          if (ui.sessionId) {
+            console.log('🔄 Викликаємо clientSelected API...');
+            console.log('🔄 sessionId для API виклику:', ui.sessionId);
+            const result = await clientSelectedMutation.mutateAsync({ sessionId: ui.sessionId });
+            console.log('🔄 Результат clientSelected API:', result);
+            console.log(
+              '✅ Client selected API успішно викликано, state machine має перейти до ORDER_INITIALIZATION'
+            );
+          } else {
+            console.error('❌ Немає sessionId для виклику clientSelected API');
+            ui.setValidationError('Немає активної сесії для вибору клієнта');
+            return false;
+          }
+
+          // 3. Оновлюємо UI стан
+          console.log('🔄 Оновлюємо UI стан...');
+          ui.goToSubstep('basic-order-info');
+          ui.markSubstepCompleted(substep);
+          ui.setCanProceedToNext(true);
+          console.log('✅ UI стан оновлено, перехід до basic-order-info');
+
+          return true;
+        } catch (error) {
+          console.error('❌ Помилка при виборі клієнта:', error);
+          ui.setValidationError('Помилка при виборі клієнта. Спробуйте ще раз.');
+          return false;
+        }
+      },
     },
 
     // API дані з Orval
@@ -97,6 +143,7 @@ export const useStage1Workflow = () => {
     mutations: {
       startWizard: startWizardMutation,
       completeStage1: completeStage1Mutation,
+      clientSelected: clientSelectedMutation,
     },
 
     // Прямий доступ до Orval запитів
