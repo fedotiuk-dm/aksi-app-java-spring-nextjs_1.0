@@ -61,19 +61,27 @@ export const useStage2ItemManager = () => {
 
   // Запити даних
   const currentManagerQuery = useStage2GetCurrentManager(uiState.sessionId || '', {
-    query: { enabled: !!uiState.sessionId },
+    query: {
+      enabled: !!uiState.sessionId && uiState.currentUIState === ITEM_MANAGER_UI_STATES.READY,
+    },
   });
 
   const validateCurrentStateQuery = useStage2ValidateCurrentState(uiState.sessionId || '', {
-    query: { enabled: !!uiState.sessionId },
+    query: {
+      enabled: !!uiState.sessionId && uiState.currentUIState === ITEM_MANAGER_UI_STATES.READY,
+    },
   });
 
   const getCurrentStateQuery = useStage2GetCurrentState(uiState.sessionId || '', {
-    query: { enabled: !!uiState.sessionId },
+    query: {
+      enabled: !!uiState.sessionId && uiState.currentUIState === ITEM_MANAGER_UI_STATES.READY,
+    },
   });
 
   const checkReadinessToProceedQuery = useStage2CheckReadinessToProceed(uiState.sessionId || '', {
-    query: { enabled: !!uiState.sessionId },
+    query: {
+      enabled: !!uiState.sessionId && uiState.currentUIState === ITEM_MANAGER_UI_STATES.READY,
+    },
   });
 
   // =================== ФОРМИ З ZOD ВАЛІДАЦІЄЮ ===================

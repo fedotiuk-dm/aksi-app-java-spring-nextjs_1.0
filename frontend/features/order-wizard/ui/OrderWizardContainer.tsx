@@ -176,22 +176,6 @@ export const OrderWizardContainer: React.FC = () => {
     }
   };
 
-  // Обробники для Stage2 Item Manager
-  const handleStartItemWizard = () => {
-    console.log('Запуск візарда предметів...');
-    // TODO: Додати логіку запуску візарда предметів
-  };
-
-  const handleEditItem = (itemId: string) => {
-    console.log('Редагування предмета:', itemId);
-    // TODO: Додати логіку редагування предмета
-  };
-
-  const handleDeleteItem = async (itemId: string) => {
-    console.log('Видалення предмета:', itemId);
-    // TODO: Додати логіку видалення предмета
-  };
-
   // Рендер компонента для поточного етапу
   const renderCurrentStage = (): React.ReactNode => {
     // Показуємо кнопку запуску тільки якщо немає сесії
@@ -227,14 +211,7 @@ export const OrderWizardContainer: React.FC = () => {
         );
 
       case MAIN_WIZARD_STATES.ITEM_MANAGEMENT:
-        return (
-          <ItemManagerStep
-            onStartItemWizard={handleStartItemWizard}
-            onEditItem={handleEditItem}
-            onDeleteItem={handleDeleteItem}
-            onCompleteStage={handleCompleteStage2}
-          />
-        );
+        return <ItemManagerStep onCompleteStage={handleCompleteStage2} />;
 
       case MAIN_WIZARD_STATES.EXECUTION_PARAMS:
         return (

@@ -145,7 +145,7 @@ export const BasicOrderInfoStep: React.FC<BasicOrderInfoStepProps> = ({
   const handleCompleteOrderInfo = async () => {
     // Просто викликаємо callback, який передасть управління до Stage1Container
     // Stage1Container сам викличе правильний API для завершення всього етапу
-    onOrderInfoCompleted();
+      onOrderInfoCompleted();
   };
 
   // ========== RENDER ==========
