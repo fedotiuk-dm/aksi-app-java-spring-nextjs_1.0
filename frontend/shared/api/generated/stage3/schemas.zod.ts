@@ -44,9 +44,9 @@ export const stage3UpdatePaymentConfigBody = zod.object({
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "prepaymentAmount": zod.coerce.number().optional(),
   "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional(),
-  "readyForCompletion": zod.coerce.boolean().optional(),
   "fullyPaid": zod.coerce.boolean().optional(),
-  "paymentConfigComplete": zod.coerce.boolean().optional()
+  "paymentConfigComplete": zod.coerce.boolean().optional(),
+  "readyForCompletion": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage3UpdatePaymentConfig200Response = zod.object({
@@ -57,8 +57,8 @@ export const stage3UpdatePaymentConfig200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const stage3UpdatePaymentConfig400Response = zod.object({
@@ -126,9 +126,9 @@ export const stage3UpdateExecutionParamsBody = zod.object({
   "needsRecalculation": zod.coerce.boolean().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H']).optional(),
-  "readyForCompletion": zod.coerce.boolean().optional(),
   "executionParamsComplete": zod.coerce.boolean().optional(),
-  "effectiveExecutionDate": zod.coerce.string().datetime({}).optional()
+  "effectiveExecutionDate": zod.coerce.string().datetime({}).optional(),
+  "readyForCompletion": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage3UpdateExecutionParams200Response = zod.object({
@@ -139,8 +139,8 @@ export const stage3UpdateExecutionParams200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const stage3UpdateExecutionParams400Response = zod.object({
@@ -227,10 +227,10 @@ export const stage3UpdateDiscountConfigBody = zod.object({
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']).optional(),
-  "discountPercentage": zod.coerce.number().optional(),
+  "discountConfigComplete": zod.coerce.boolean().optional(),
   "discountDescription": zod.coerce.string().optional(),
-  "readyForCompletion": zod.coerce.boolean().optional(),
-  "discountConfigComplete": zod.coerce.boolean().optional()
+  "discountPercentage": zod.coerce.number().optional(),
+  "readyForCompletion": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage3UpdateDiscountConfig200Response = zod.object({
@@ -241,8 +241,8 @@ export const stage3UpdateDiscountConfig200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const stage3UpdateDiscountConfig400Response = zod.object({
@@ -320,9 +320,9 @@ export const stage3UpdateAdditionalInfoBody = zod.object({
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "customerNotes": zod.coerce.string().optional(),
-  "readyForCompletion": zod.coerce.boolean().optional(),
   "additionalRequirements": zod.coerce.string().optional(),
-  "additionalInfoComplete": zod.coerce.boolean().optional()
+  "additionalInfoComplete": zod.coerce.boolean().optional(),
+  "readyForCompletion": zod.coerce.boolean().optional()
 }).strict()
 
 export const stage3UpdateAdditionalInfo200Response = zod.object({
@@ -333,8 +333,8 @@ export const stage3UpdateAdditionalInfo200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const stage3UpdateAdditionalInfo400Response = zod.object({
@@ -537,8 +537,8 @@ export const stage3ValidateAllSubsteps200Response = zod.object({
   "firstError": zod.coerce.string().optional(),
   "errorCount": zod.coerce.number().optional(),
   "firstWarning": zod.coerce.string().optional(),
-  "fullMessage": zod.coerce.string().optional(),
-  "warningCount": zod.coerce.number().optional()
+  "warningCount": zod.coerce.number().optional(),
+  "fullMessage": zod.coerce.string().optional()
 }).strict()
 
 export const stage3ValidateAllSubsteps400Response = zod.object({
@@ -975,9 +975,9 @@ export const stage3GetSessionContext200Response = zod.object({
   "needsRecalculation": zod.coerce.boolean().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "expediteType": zod.enum(['STANDARD', 'EXPRESS_48H', 'EXPRESS_24H']).optional(),
-  "readyForCompletion": zod.coerce.boolean().optional(),
   "executionParamsComplete": zod.coerce.boolean().optional(),
-  "effectiveExecutionDate": zod.coerce.string().datetime({}).optional()
+  "effectiveExecutionDate": zod.coerce.string().datetime({}).optional(),
+  "readyForCompletion": zod.coerce.boolean().optional()
 }).strict().optional(),
   "discountConfiguration": zod.object({
   "sessionId": zod.coerce.string().uuid().optional(),
@@ -1007,10 +1007,10 @@ export const stage3GetSessionContext200Response = zod.object({
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "discountType": zod.enum(['NO_DISCOUNT', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'CUSTOM']).optional(),
-  "discountPercentage": zod.coerce.number().optional(),
+  "discountConfigComplete": zod.coerce.boolean().optional(),
   "discountDescription": zod.coerce.string().optional(),
-  "readyForCompletion": zod.coerce.boolean().optional(),
-  "discountConfigComplete": zod.coerce.boolean().optional()
+  "discountPercentage": zod.coerce.number().optional(),
+  "readyForCompletion": zod.coerce.boolean().optional()
 }).strict().optional(),
   "paymentConfiguration": zod.object({
   "sessionId": zod.coerce.string().uuid().optional(),
@@ -1037,9 +1037,9 @@ export const stage3GetSessionContext200Response = zod.object({
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "prepaymentAmount": zod.coerce.number().optional(),
   "paymentMethod": zod.enum(['TERMINAL', 'CASH', 'BANK_TRANSFER']).optional(),
-  "readyForCompletion": zod.coerce.boolean().optional(),
   "fullyPaid": zod.coerce.boolean().optional(),
-  "paymentConfigComplete": zod.coerce.boolean().optional()
+  "paymentConfigComplete": zod.coerce.boolean().optional(),
+  "readyForCompletion": zod.coerce.boolean().optional()
 }).strict().optional(),
   "additionalInfo": zod.object({
   "sessionId": zod.coerce.string().uuid().optional(),
@@ -1060,9 +1060,9 @@ export const stage3GetSessionContext200Response = zod.object({
   "validationMessage": zod.coerce.string().optional(),
   "lastUpdated": zod.coerce.string().datetime({}).optional(),
   "customerNotes": zod.coerce.string().optional(),
-  "readyForCompletion": zod.coerce.boolean().optional(),
   "additionalRequirements": zod.coerce.string().optional(),
-  "additionalInfoComplete": zod.coerce.boolean().optional()
+  "additionalInfoComplete": zod.coerce.boolean().optional(),
+  "readyForCompletion": zod.coerce.boolean().optional()
 }).strict().optional(),
   "lastAction": zod.coerce.string().optional(),
   "lastError": zod.coerce.string().optional(),

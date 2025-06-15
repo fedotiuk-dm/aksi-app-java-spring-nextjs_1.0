@@ -5,7 +5,7 @@
 
 'use client';
 
-import { OrderWizardContainer } from '@/features/order-wizard/ui';
+import { WizardContainer as OrderWizardContainer } from '@/features/order-wizard/WizardContainer';
 
 /**
  * 🎯 Головна сторінка Order Wizard

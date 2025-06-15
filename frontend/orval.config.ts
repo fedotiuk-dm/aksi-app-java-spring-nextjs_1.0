@@ -44,6 +44,7 @@ const MUTATOR_NAME = 'orvalFetcher';
 // 🎯 Теги для модулів
 const TAGS = {
   auth: ['Authentication'],
+  orders: ['Orders'],
   stage1: ['Order Wizard - Stage 1'],
   stage2: ['Order Wizard - Stage 2'],
   substep1: ['Order Wizard - Stage 2 Substep 1'],
@@ -133,6 +134,9 @@ const createModuleConfig = (name: string, tags: string[]) => ({
 const config: Config = {
   // 🔐 Authentication
   ...createModuleConfig('auth', TAGS.auth),
+
+  // 📦 Orders API (OrderDraft, CRUD operations)
+  ...createModuleConfig('orders', TAGS.orders),
 
   // 🔥 Order Wizard - Stage 1
   ...createModuleConfig('stage1', TAGS.stage1),

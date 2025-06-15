@@ -1,4 +1,4 @@
-import { WizardContainer } from './components/WizardContainer';
+import { WizardContainer } from './WizardContainer';
 
 export default function TestWizardPage() {
   return <WizardContainer />;

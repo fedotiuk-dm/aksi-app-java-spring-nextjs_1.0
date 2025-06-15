@@ -76,9 +76,9 @@ export interface PaymentConfigurationDTO {
   lastUpdated?: string;
   prepaymentAmount?: number;
   paymentMethod?: PaymentConfigurationDTOPaymentMethod;
-  readyForCompletion?: boolean;
   fullyPaid?: boolean;
   paymentConfigComplete?: boolean;
+  readyForCompletion?: boolean;
 }
 
 export interface ValidationResult {
@@ -89,8 +89,8 @@ export interface ValidationResult {
   firstError?: string;
   errorCount?: number;
   firstWarning?: string;
-  fullMessage?: string;
   warningCount?: number;
+  fullMessage?: string;
 }
 
 export type CompletionDateCalculationRequestExpediteType = typeof CompletionDateCalculationRequestExpediteType[keyof typeof CompletionDateCalculationRequestExpediteType];
@@ -135,9 +135,9 @@ export interface ExecutionParamsDTO {
   needsRecalculation?: boolean;
   lastUpdated?: string;
   expediteType?: ExecutionParamsDTOExpediteType;
-  readyForCompletion?: boolean;
   executionParamsComplete?: boolean;
   effectiveExecutionDate?: string;
+  readyForCompletion?: boolean;
 }
 
 export type DiscountConfigurationDTODiscountType = typeof DiscountConfigurationDTODiscountType[keyof typeof DiscountConfigurationDTODiscountType];
@@ -165,10 +165,10 @@ export interface DiscountConfigurationDTO {
   validationMessage?: string;
   lastUpdated?: string;
   discountType?: DiscountConfigurationDTODiscountType;
-  discountPercentage?: number;
-  discountDescription?: string;
-  readyForCompletion?: boolean;
   discountConfigComplete?: boolean;
+  discountDescription?: string;
+  discountPercentage?: number;
+  readyForCompletion?: boolean;
 }
 
 export type OrderDiscountRequestDiscountType = typeof OrderDiscountRequestDiscountType[keyof typeof OrderDiscountRequestDiscountType];
@@ -233,9 +233,9 @@ export interface AdditionalInfoDTO {
   validationMessage?: string;
   lastUpdated?: string;
   customerNotes?: string;
-  readyForCompletion?: boolean;
   additionalRequirements?: string;
   additionalInfoComplete?: boolean;
+  readyForCompletion?: boolean;
 }
 
 export interface AdditionalRequirementsRequest {
@@ -309,8 +309,8 @@ export interface ItemManagerDTO {
   activeWizardId?: string;
   editingItemId?: string;
   currentStatus?: string;
-  wizardActive?: boolean;
   editMode?: boolean;
+  wizardActive?: boolean;
 }
 
 export type NewClientFormDTOCommunicationChannelsItem = typeof NewClientFormDTOCommunicationChannelsItem[keyof typeof NewClientFormDTOCommunicationChannelsItem];
@@ -374,10 +374,10 @@ export interface BasicOrderInfoDTO {
   uniqueTagEntered?: boolean;
   branchSelected?: boolean;
   creationDateSet?: boolean;
-  uniqueTagValid?: boolean;
-  receiptNumberValid?: boolean;
   allBranches?: BranchLocationDTO[];
   complete?: boolean;
+  uniqueTagValid?: boolean;
+  receiptNumberValid?: boolean;
   branchesCount?: number;
 }
 
@@ -1334,9 +1334,9 @@ export interface PriceDiscountDTO {
   calculationCompleted?: boolean;
   hasCalculationErrors?: boolean;
   errorMessage?: string;
-  calculationDetails?: CalculationDetailsDTO[];
   basePrice?: number;
   finalPrice?: number;
+  calculationDetails?: CalculationDetailsDTO[];
   modifiersCount?: number;
 }
 

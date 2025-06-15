@@ -2,13 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Box, Stepper, Step, StepLabel, Button, Typography, Paper, Alert } from '@mui/material';
-import { useWizardStore } from '../stores/wizard.store';
 
 // Готові Orval хуки
 import { useOrderWizardStart } from '@/shared/api/generated/main';
 
-// Stage1 компонент (повний з підетапами)
-import { Stage1Container } from './stage1/Stage1Container';
+// Компоненти етапів
+import { WizardContainer as Stage1Container } from './stage1/WizardContainer';
+
+// Zustand store
+import { useOrderWizardStore } from './stage1/useOrderWizardStore';
 
 const steps = ['Клієнт та базова інформація', 'Предмети замовлення'];
 
@@ -20,8 +22,9 @@ export const WizardContainer = () => {
   const [activeStep, setActiveStep] = useState(0);
 
   // UI стан з Zustand
-  const { sessionId, currentStage, setSessionId, setCurrentStage, setLoading, isLoading, reset } =
-    useWizardStore();
+  const { sessionId, setSessionId, setLoading, isLoading, reset } = useOrderWizardStore();
+
+  const [currentStage, setCurrentStage] = useState<string>('stage1');
 
   // Головний Orval хук для початку візарда
   const startWizardMutation = useOrderWizardStart();
@@ -46,6 +49,13 @@ export const WizardContainer = () => {
     console.log('✅ Stage1 завершено, перехід до Stage2');
     setCurrentStage('stage2');
     setActiveStep(1);
+  }, [setCurrentStage]);
+
+  // Завершення Stage2 - переданий в Stage2Container через onStageCompleted
+  const handleStage2Completed = useCallback(() => {
+    console.log('✅ Stage2 завершено, перехід до Stage3');
+    setCurrentStage('stage3');
+    setActiveStep(2);
   }, [setCurrentStage]);
 
   // Повернення до попереднього кроку
@@ -89,19 +99,11 @@ export const WizardContainer = () => {
 
     switch (step) {
       case 0:
-        return <Stage1Container sessionId={sessionId} onStageCompleted={handleStage1Completed} />;
+        return <Stage1Container onStageCompleted={handleStage1Completed} />;
       case 1:
         return (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Stage 2: Предмети замовлення
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              Тут буде реалізований Stage2 - додавання предметів до замовлення
-            </Typography>
-            <Button variant="outlined" onClick={handleBack}>
-              Повернутися назад
-            </Button>
+            <Typography variant="h6">Stage2 (Предмети замовлення) поки не реалізовано</Typography>
           </Box>
         );
       default:
