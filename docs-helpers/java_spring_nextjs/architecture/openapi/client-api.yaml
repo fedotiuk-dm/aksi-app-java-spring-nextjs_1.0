@@ -1,0 +1,371 @@
+openapi: 3.0.3
+info:
+  title: Aksi Dry Cleaning - Client API
+  description: API для управління клієнтами хімчистки
+  version: 1.0.0
+
+tags:
+  - name: clients
+    description: Управління клієнтами
+
+paths:
+  /clients:
+    post:
+      tags:
+        - clients
+      summary: Створення нового клієнта
+      operationId: createClient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClientRequest"
+      responses:
+        '201':
+          description: Клієнт успішно створений
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientDTO"
+        '400':
+          description: Некоректні дані клієнта
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      tags:
+        - clients
+      summary: Отримання всіх клієнтів із пагінацією
+      operationId: getAllClients
+      parameters:
+        - name: page
+          in: query
+          description: Номер сторінки, починаючи з 0
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Розмір сторінки
+          schema:
+            type: integer
+            default: 20
+        - name: sort
+          in: query
+          description: Поле та напрямок сортування, наприклад lastName,asc
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успішне отримання списку клієнтів
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageClientDTO"
+
+  /clients/{id}:
+    get:
+      tags:
+        - clients
+      summary: Отримання клієнта за ID
+      operationId: getClientById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Успішне отримання клієнта
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientDTO"
+        '404':
+          description: Клієнт не знайдений
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - clients
+      summary: Оновлення клієнта
+      operationId: updateClient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClientRequest"
+      responses:
+        '200':
+          description: Успішне оновлення клієнта
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientDTO"
+        '404':
+          description: Клієнт не знайдений
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '400':
+          description: Некоректні дані клієнта
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - clients
+      summary: Видалення клієнта
+      operationId: deleteClient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Успішне видалення клієнта
+        '404':
+          description: Клієнт не знайдений
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /clients/search:
+    post:
+      tags:
+        - clients
+      summary: Пошук клієнтів за різними критеріями
+      operationId: searchClients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientSearchRequest"
+      responses:
+        '200':
+          description: Успішний пошук клієнтів
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageClientDTO"
+
+components:
+  schemas:
+    ClientDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        firstName:
+          type: string
+          example: "Іван"
+        lastName:
+          type: string
+          example: "Петренко"
+        phone:
+          type: string
+          example: "+380501234567"
+        email:
+          type: string
+          example: "ivan.petrenko@example.com"
+        address:
+          type: string
+          example: "м. Київ, вул. Хрещатик, 1"
+        contactMethods:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactMethod"
+        clientSource:
+          $ref: "#/components/schemas/ClientSource"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - firstName
+        - lastName
+        - phone
+    
+    CreateClientRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Іван"
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Петренко"
+        phone:
+          type: string
+          pattern: "^\\+?[0-9]{10,15}$"
+          example: "+380501234567"
+        email:
+          type: string
+          format: email
+          example: "ivan.petrenko@example.com"
+        address:
+          type: string
+          maxLength: 255
+          example: "м. Київ, вул. Хрещатик, 1"
+        contactMethods:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactMethod"
+        clientSource:
+          $ref: "#/components/schemas/ClientSource"
+      required:
+        - firstName
+        - lastName
+        - phone
+    
+    UpdateClientRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Іван"
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "Петренко"
+        phone:
+          type: string
+          pattern: "^\\+?[0-9]{10,15}$"
+          example: "+380501234567"
+        email:
+          type: string
+          format: email
+          example: "ivan.petrenko@example.com"
+        address:
+          type: string
+          maxLength: 255
+          example: "м. Київ, вул. Хрещатик, 1"
+        contactMethods:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactMethod"
+        clientSource:
+          $ref: "#/components/schemas/ClientSource"
+    
+    ContactMethod:
+      type: string
+      enum:
+        - PHONE
+        - SMS
+        - VIBER
+      example: "PHONE"
+    
+    ClientSource:
+      type: string
+      enum:
+        - INSTAGRAM
+        - GOOGLE
+        - RECOMMENDATION
+        - OTHER
+      example: "RECOMMENDATION"
+    
+    ClientSearchRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "Іван"
+        lastName:
+          type: string
+          example: "Петренко"
+        phone:
+          type: string
+          example: "+380501234567"
+        email:
+          type: string
+          example: "ivan.petrenko@example.com"
+        address:
+          type: string
+          example: "Київ"
+        page:
+          type: integer
+          default: 0
+          minimum: 0
+          example: 0
+        size:
+          type: integer
+          default: 20
+          minimum: 1
+          maximum: 100
+          example: 20
+    
+    PageClientDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClientDTO"
+        page:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 20
+        totalElements:
+          type: integer
+          format: int64
+          example: 100
+        totalPages:
+          type: integer
+          example: 5
+    
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          format: int32
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
