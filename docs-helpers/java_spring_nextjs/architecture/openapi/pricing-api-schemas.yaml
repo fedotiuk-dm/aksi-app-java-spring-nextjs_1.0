@@ -1,0 +1,455 @@
+components:
+  schemas:
+    # Модифікатори цін
+    PriceModifierDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          description: Назва модифікатора
+        code:
+          type: string
+          description: Унікальний код модифікатора
+        description:
+          type: string
+          description: Опис модифікатора
+        type:
+          $ref: "#/components/schemas/ModifierType"
+        defaultValue:
+          type: number
+          format: double
+          description: Значення модифікатора за замовчуванням
+        minValue:
+          type: number
+          format: double
+          description: Мінімальне значення (для діапазонів)
+        maxValue:
+          type: number
+          format: double
+          description: Максимальне значення (для діапазонів)
+        active:
+          type: boolean
+          description: Чи активний модифікатор
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - code
+        - type
+        - defaultValue
+        - active
+
+    CreatePriceModifierRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Назва модифікатора
+          minLength: 1
+          maxLength: 100
+        code:
+          type: string
+          description: Унікальний код модифікатора
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+          description: Опис модифікатора
+        type:
+          $ref: "#/components/schemas/ModifierType"
+        defaultValue:
+          type: number
+          format: double
+          description: Значення модифікатора за замовчуванням
+        minValue:
+          type: number
+          format: double
+          description: Мінімальне значення (для діапазонів)
+        maxValue:
+          type: number
+          format: double
+          description: Максимальне значення (для діапазонів)
+        active:
+          type: boolean
+          description: Чи активний модифікатор
+          default: true
+      required:
+        - name
+        - code
+        - type
+        - defaultValue
+
+    UpdatePriceModifierRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Назва модифікатора
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          description: Опис модифікатора
+        defaultValue:
+          type: number
+          format: double
+          description: Значення модифікатора за замовчуванням
+        minValue:
+          type: number
+          format: double
+          description: Мінімальне значення (для діапазонів)
+        maxValue:
+          type: number
+          format: double
+          description: Максимальне значення (для діапазонів)
+        active:
+          type: boolean
+          description: Чи активний модифікатор
+
+    PriceModifierSearchRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Частина назви для пошуку
+        code:
+          type: string
+          description: Код для пошуку
+        type:
+          $ref: "#/components/schemas/ModifierType"
+        activeOnly:
+          type: boolean
+          description: Фільтрувати лише активні
+          default: true
+        page:
+          type: integer
+          description: Номер сторінки
+          default: 0
+        size:
+          type: integer
+          description: Розмір сторінки
+          default: 20
+        sort:
+          type: string
+          description: Поле та напрямок сортування
+          default: "name,asc"
+
+    # Прайс-листи
+    PriceListDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          description: Назва прайс-листа
+        description:
+          type: string
+          description: Опис прайс-листа
+        validFrom:
+          type: string
+          format: date
+          description: Дата початку дії
+        validTo:
+          type: string
+          format: date
+          description: Дата закінчення дії
+        active:
+          type: boolean
+          description: Чи активний прайс-лист
+        itemsCount:
+          type: integer
+          description: Кількість позицій у прайс-листі
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - validFrom
+        - active
+
+    CreatePriceListRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Назва прайс-листа
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          description: Опис прайс-листа
+        validFrom:
+          type: string
+          format: date
+          description: Дата початку дії
+        validTo:
+          type: string
+          format: date
+          description: Дата закінчення дії
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceListItemRequest"
+          description: Позиції прайс-листа
+        active:
+          type: boolean
+          description: Чи активний прайс-лист
+          default: false
+      required:
+        - name
+        - validFrom
+        - items
+
+    UpdatePriceListRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Назва прайс-листа
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          description: Опис прайс-листа
+        validFrom:
+          type: string
+          format: date
+          description: Дата початку дії
+        validTo:
+          type: string
+          format: date
+          description: Дата закінчення дії
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceListItemRequest"
+          description: Оновлені позиції прайс-листа
+
+    PriceListItemDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        priceListId:
+          type: integer
+          format: int64
+          description: ID прайс-листа
+        itemTypeId:
+          type: integer
+          format: int64
+          description: ID типу предмета
+        itemTypeName:
+          type: string
+          description: Назва типу предмета
+        categoryId:
+          type: integer
+          format: int64
+          description: ID категорії
+        categoryName:
+          type: string
+          description: Назва категорії
+        basePrice:
+          type: number
+          format: double
+          description: Базова ціна
+        availableModifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceModifierDTO"
+          description: Доступні модифікатори
+      required:
+        - id
+        - priceListId
+        - itemTypeId
+        - itemTypeName
+        - basePrice
+
+    PriceListItemRequest:
+      type: object
+      properties:
+        itemTypeId:
+          type: integer
+          format: int64
+          description: ID типу предмета
+        basePrice:
+          type: number
+          format: double
+          description: Базова ціна
+        modifierIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: ID модифікаторів, які можна застосувати
+      required:
+        - itemTypeId
+        - basePrice
+        - modifierIds
+
+    # Калькулятори цін
+    ItemPriceCalculationRequest:
+      type: object
+      properties:
+        itemTypeId:
+          type: integer
+          format: int64
+          description: ID типу предмета
+        quantity:
+          type: integer
+          default: 1
+          minimum: 1
+          description: Кількість
+        modifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApplyModifierRequest"
+          description: Модифікатори для застосування
+        color:
+          type: string
+          description: Колір предмета (для кольорових модифікаторів)
+        expediteOption:
+          type: string
+          enum:
+            - REGULAR
+            - EXPEDITED_50
+            - EXPEDITED_100
+          description: Опція терміновості
+      required:
+        - itemTypeId
+
+    ApplyModifierRequest:
+      type: object
+      properties:
+        modifierId:
+          type: integer
+          format: int64
+          description: ID модифікатора
+        value:
+          type: number
+          format: double
+          description: Значення модифікатора (якщо застосовується)
+      required:
+        - modifierId
+
+    ItemPriceCalculationResult:
+      type: object
+      properties:
+        basePrice:
+          type: number
+          format: double
+          description: Базова ціна
+        finalPrice:
+          type: number
+          format: double
+          description: Кінцева ціна
+        appliedModifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppliedModifierDTO"
+          description: Застосовані модифікатори
+        pricePerItem:
+          type: number
+          format: double
+          description: Ціна за одиницю
+        quantity:
+          type: integer
+          description: Кількість
+      required:
+        - basePrice
+        - finalPrice
+        - pricePerItem
+        - quantity
+
+    AppliedModifierDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/ModifierType"
+        value:
+          type: number
+          format: double
+          description: Значення модифікатора
+        appliedValue:
+          type: number
+          format: double
+          description: Застосована вартість
+      required:
+        - id
+        - name
+        - type
+        - value
+        - appliedValue
+
+    # Пагінація
+    PagePriceModifierDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceModifierDTO"
+        pageable:
+          $ref: "#/components/schemas/PageableDTO"
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        last:
+          type: boolean
+        size:
+          type: integer
+        number:
+          type: integer
+        sort:
+          $ref: "#/components/schemas/SortDTO"
+        numberOfElements:
+          type: integer
+        first:
+          type: boolean
+        empty:
+          type: boolean
+      required:
+        - content
+        - totalElements
+        - totalPages
+
+    PageableDTO:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        sort:
+          $ref: "#/components/schemas/SortDTO"
+
+    SortDTO:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean

@@ -1,1 +1,0 @@
-PGPASSWORD="1911" docker exec -i postgres-dev psql -h localhost -U aksi_user -d aksi_cleaners_db_v5 -c "SELECT table_schema, table_name, column_name, data_type, is_nullable, column_default FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_schema, table_name, ordinal_position;" > db_schema_details.txt

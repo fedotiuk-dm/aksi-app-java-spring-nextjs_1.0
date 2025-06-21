@@ -1,7 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: 1.0/001-create-branch-locations-table.yaml
-      relativeToChangelogFile: true
-  - include:
-      file: 1.0/002-insert-test-branch-locations.yaml
-      relativeToChangelogFile: true

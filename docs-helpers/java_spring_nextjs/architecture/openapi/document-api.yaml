@@ -1,0 +1,658 @@
+openapi: 3.0.3
+info:
+  title: Aksi Dry Cleaning - Document API
+  description: API для управління документами у системі хімчистки
+  version: 1.0.0
+
+tags:
+  - name: documents
+    description: Управління документами
+  - name: receipts
+    description: Управління чеками та квитанціями
+
+paths:
+  /documents:
+    post:
+      tags:
+        - documents
+      summary: Створення нового документа
+      operationId: createDocument
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDocumentRequest"
+      responses:
+        '201':
+          description: Документ успішно створено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentDTO"
+        '400':
+          description: Некоректні дані документа
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      tags:
+        - documents
+      summary: Отримання всіх документів із пагінацією
+      operationId: getAllDocuments
+      parameters:
+        - name: page
+          in: query
+          description: Номер сторінки, починаючи з 0
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Розмір сторінки
+          schema:
+            type: integer
+            default: 20
+        - name: sort
+          in: query
+          description: Поле та напрямок сортування, наприклад createdAt,desc
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успішне отримання списку документів
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageDocumentDTO"
+
+  /documents/{id}:
+    get:
+      tags:
+        - documents
+      summary: Отримання документу за ID
+      operationId: getDocumentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Успішне отримання документу
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentDTO"
+        '404':
+          description: Документ не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - documents
+      summary: Оновлення документу
+      operationId: updateDocument
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDocumentRequest"
+      responses:
+        '200':
+          description: Успішне оновлення документу
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentDTO"
+        '404':
+          description: Документ не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '400':
+          description: Некоректні дані документу
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - documents
+      summary: Видалення документу
+      operationId: deleteDocument
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Успішне видалення документу
+        '404':
+          description: Документ не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /documents/search:
+    post:
+      tags:
+        - documents
+      summary: Пошук документів за різними критеріями
+      operationId: searchDocuments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentSearchRequest"
+      responses:
+        '200':
+          description: Успішний пошук документів
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageDocumentDTO"
+
+  /documents/{id}/download:
+    get:
+      tags:
+        - documents
+      summary: Завантаження документу
+      operationId: downloadDocument
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Успішне завантаження документу
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Документ не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /receipts/create-for-order/{orderId}:
+    post:
+      tags:
+        - receipts
+      summary: Створення чеку для замовлення
+      operationId: createReceiptForOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReceiptRequest"
+      responses:
+        '201':
+          description: Чек успішно створено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReceiptDTO"
+        '404':
+          description: Замовлення не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '400':
+          description: Некоректні дані чеку
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /receipts/{id}:
+    get:
+      tags:
+        - receipts
+      summary: Отримання чеку за ID
+      operationId: getReceiptById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Успішне отримання чеку
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReceiptDTO"
+        '404':
+          description: Чек не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /receipts/{id}/download:
+    get:
+      tags:
+        - receipts
+      summary: Завантаження чеку у PDF форматі
+      operationId: downloadReceipt
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Успішне завантаження чеку
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Чек не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    DocumentType:
+      type: string
+      enum:
+        - RECEIPT
+        - INVOICE
+        - ACT
+        - CONTRACT
+        - OTHER
+      description: Тип документу
+
+    DocumentFormat:
+      type: string
+      enum:
+        - PDF
+        - DOCX
+        - XLSX
+        - TXT
+        - IMAGE
+      description: Формат документу
+
+    DocumentDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        documentNumber:
+          type: string
+          example: "DOC-2025-00123"
+        type:
+          $ref: "#/components/schemas/DocumentType"
+        name:
+          type: string
+          description: Назва документу
+        format:
+          $ref: "#/components/schemas/DocumentFormat"
+        relatedEntityType:
+          type: string
+          description: Тип пов'язаної сутності (Order, Client тощо)
+        relatedEntityId:
+          type: integer
+          format: int64
+          description: ID пов'язаної сутності
+        fileSize:
+          type: integer
+          format: int64
+          description: Розмір файлу в байтах
+        downloadUrl:
+          type: string
+          description: URL для завантаження документу
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+      required:
+        - id
+        - documentNumber
+        - type
+        - name
+        - format
+        - createdAt
+        - createdBy
+
+    CreateDocumentRequest:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/DocumentType"
+        name:
+          type: string
+          description: Назва документу
+        format:
+          $ref: "#/components/schemas/DocumentFormat"
+        relatedEntityType:
+          type: string
+          description: Тип пов'язаної сутності (Order, Client тощо)
+        relatedEntityId:
+          type: integer
+          format: int64
+          description: ID пов'язаної сутності
+        base64Content:
+          type: string
+          description: Вміст документу в форматі base64
+      required:
+        - type
+        - name
+        - format
+        - base64Content
+
+    UpdateDocumentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Оновлена назва документу
+        type:
+          $ref: "#/components/schemas/DocumentType"
+        relatedEntityType:
+          type: string
+          description: Оновлений тип пов'язаної сутності
+        relatedEntityId:
+          type: integer
+          format: int64
+          description: Оновлений ID пов'язаної сутності
+        base64Content:
+          type: string
+          description: Оновлений вміст документу в форматі base64
+
+    DocumentSearchRequest:
+      type: object
+      properties:
+        documentNumber:
+          type: string
+          description: Номер документу для пошуку
+        type:
+          $ref: "#/components/schemas/DocumentType"
+          description: Тип документу для фільтрації
+        relatedEntityType:
+          type: string
+          description: Тип пов'язаної сутності для фільтрації
+        relatedEntityId:
+          type: integer
+          format: int64
+          description: ID пов'язаної сутності для фільтрації
+        dateFrom:
+          type: string
+          format: date
+          description: Дата створення (від)
+        dateTo:
+          type: string
+          format: date
+          description: Дата створення (до)
+        page:
+          type: integer
+          default: 0
+          description: Номер сторінки
+        size:
+          type: integer
+          default: 20
+          description: Розмір сторінки
+        sort:
+          type: string
+          description: Поле та напрямок сортування
+
+    ReceiptDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        receiptNumber:
+          type: string
+          example: "REC-2025-00123"
+        orderId:
+          type: integer
+          format: int64
+        orderNumber:
+          type: string
+        clientInfo:
+          $ref: "#/components/schemas/ClientShortInfo"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReceiptItemDTO"
+        totalAmount:
+          type: number
+          format: double
+        discount:
+          type: number
+          format: double
+        finalAmount:
+          type: number
+          format: double
+        paymentMethod:
+          type: string
+          enum:
+            - CASH
+            - CARD
+            - BANK_TRANSFER
+        paymentStatus:
+          type: string
+          enum:
+            - NOT_PAID
+            - PARTIALLY_PAID
+            - PAID
+        notes:
+          type: string
+        documentId:
+          type: integer
+          format: int64
+          description: ID документу з PDF версією чеку
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+      required:
+        - id
+        - receiptNumber
+        - orderId
+        - totalAmount
+        - finalAmount
+        - paymentMethod
+        - paymentStatus
+        - createdAt
+
+    CreateReceiptRequest:
+      type: object
+      properties:
+        paymentMethod:
+          type: string
+          enum:
+            - CASH
+            - CARD
+            - BANK_TRANSFER
+        paymentStatus:
+          type: string
+          enum:
+            - NOT_PAID
+            - PARTIALLY_PAID
+            - PAID
+        discount:
+          type: number
+          format: double
+          description: Додаткова знижка при оплаті
+        notes:
+          type: string
+          description: Нотатки до чеку
+      required:
+        - paymentMethod
+        - paymentStatus
+
+    ReceiptItemDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        orderItemId:
+          type: integer
+          format: int64
+        itemTypeName:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+          format: double
+        totalPrice:
+          type: number
+          format: double
+        discount:
+          type: number
+          format: double
+        finalPrice:
+          type: number
+          format: double
+      required:
+        - id
+        - orderItemId
+        - itemTypeName
+        - quantity
+        - unitPrice
+        - totalPrice
+        - finalPrice
+
+    ClientShortInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+      required:
+        - id
+        - firstName
+        - lastName
+        - phone
+
+    PageDocumentDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocumentDTO"
+        pageable:
+          type: object
+          properties:
+            pageNumber:
+              type: integer
+            pageSize:
+              type: integer
+            sort:
+              type: object
+              properties:
+                empty:
+                  type: boolean
+                sorted:
+                  type: boolean
+                unsorted:
+                  type: boolean
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        last:
+          type: boolean
+        size:
+          type: integer
+        number:
+          type: integer
+        sort:
+          type: object
+          properties:
+            empty:
+              type: boolean
+            sorted:
+              type: boolean
+            unsorted:
+              type: boolean
+        numberOfElements:
+          type: integer
+        first:
+          type: boolean
+        empty:
+          type: boolean
+      required:
+        - content
+        - totalElements
+        - totalPages
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          format: int32
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path

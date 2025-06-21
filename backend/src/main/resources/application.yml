@@ -1,178 +1,100 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
 spring:
   application:
-    name: aksi-backend
-  profiles:
-    include: files
-  main:
-    allow-circular-references: false
+    name: dry-cleaning-order-system
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aksi_dry_cleaning
+    username: aksi_user
+    password: aksi_password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+
+  security:
+    user:
+      name: admin
+      password: admin123
+      roles: ADMIN
+
   mail:
     host: smtp.gmail.com
     port: 587
-    username: aksi.vn.ua@gmail.com
-    password: ${MAIL_PASSWORD:your_password}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-    test-connection: false
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-    default-schema: public
-    contexts: default
-    clear-checksums: true
-    drop-first: false
-    parameters:
-      create-uuid-extension: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-  datasource:
-    url: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5
-    username: aksi_user
-    password: 1911
-    driver-class-name: org.postgresql.Driver
-    schema: public
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
-  jpa:
-    hibernate:
-      ddl-auto: validate
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
-        jdbc:
-          time_zone: UTC
-    open-in-view: false
-    generate-ddl: false
-  web:
-    cors:
-      allowed-origins: "http://localhost:3000,http://127.0.0.1:3000"
-      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS,PATCH"
-      allowed-headers: "*"
-      allow-credentials: true
 
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
-    deserialization:
-      fail-on-unknown-properties: false
-    default-property-inclusion: non_null
+# OpenAPI Documentation
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+  info:
+    title: AKSI Dry Cleaning Order System API
+    description: API для односторінкової системи замовлень хімчистки з DDD архітектурою
+    version: 1.0.0
+    contact:
+      name: AKSI Development Team
 
-server:
-  port: 8080
-  servlet:
-    context-path: /api
-  error:
-    include-message: always
-    include-binding-errors: always
-    include-stacktrace: never
-    include-exception: false
-  tomcat:
-    connection-timeout: 30000 # 30 секунд
-    max-http-header-size: 65536 # 64KB
-    max-swallow-size: 10485760 # 10MB
-  compression:
-    enabled: true # Увімкнути стиснення відповідей
-    mime-types: application/json,application/xml,text/html,text/plain
-    min-response-size: 2048 # Стискати відповіді більше 2KB
-
-# Налаштування JWT
-jwt:
-  secret: 7Jl7CMvDgZaYWEr3ZsRMRi1CJG3vjYXm0QFrDHB3z1WGMhsQ+yWgYMwzM6MqkVEM3J40TxOFsYyyvmFkh76WDQ==
-  expiration: 86400000 # 24 години у мілісекундах
-  refresh:
-    expiration: 604800000 # 7 днів у мілісекундах
-
-# Налаштування адміністратора за замовчуванням
-admin:
-  username: admin
-  password: Aksi1911
-  email: admin@aksi.com
-
-# Налаштування Actuator
+# Actuator endpoints
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
-      base-path: /actuator
+        include: health,info,metrics
   endpoint:
     health:
-      show-details: always
-    loggers:
-      enabled: true
-    logfile:
-      enabled: true
-      path: logs/aksi-app.log
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-    web:
-      server:
-        request:
-          autotime:
-            enabled: true
+      show-details: when-authorized
 
+# Logging
 logging:
   level:
-    root: INFO
-    org.springframework: INFO
-    org.springframework.web: DEBUG
     com.aksi: DEBUG
-    org.hibernate.SQL: WARN
-    org.hibernate.type.descriptor.sql.BasicBinder: WARN
-    com.aksi.config: DEBUG
     org.springframework.security: DEBUG
-    org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: ERROR
-    # Приховуємо попередження про BeanPostProcessor від Spring State Machine (це проблема фреймворку, не нашого коду)
-    org.springframework.context.support.PostProcessorRegistrationDelegate: ERROR
-  file:
-    name: logs/aksi-app.log
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    console: "%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %cyan(%logger{15}) - %msg%n"
+  file:
+    name: logs/application.log
 
-# Налаштування OpenAPI/Swagger
-springdoc:
-  api-docs:
-    enabled: true
-    path: /v3/api-docs
-  swagger-ui:
-    path: /swagger-ui.html
-    enabled: true
-    doc-expansion: none
-  packages-to-scan: com.aksi.api
-  paths-to-match: /**
-  operationsSorter: method
-  disable-swagger-default-url: true
-  display-request-duration: true
-  default-models-expand-depth: -1
-  try-it-out-enabled: true
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
-  cache:
-    disabled: true # Вімкнено кешування для виправлення помилок
-
-# Налаштування валюти та локалізації
-app:
-  currency:
-    code: UAH
-    symbol: грн
-    decimal-places: 2
-    locale: uk_UA
-    use-grouping-separator: true
-    grouping-separator: " "
-    decimal-separator: "."
+# Custom application properties
+aksi:
+  order:
+    receipt:
+      number:
+        prefix: "AKSI-"
+        length: 8
+    photo:
+      max-size-mb: 5
+      max-count-per-item: 5
+      upload-path: "uploads/photos/"
+  pdf:
+    output-path: "uploads/receipts/"
+  qr:
+    base-url: "https://aksi.com.ua/track/"

@@ -1,35 +1,5 @@
 databaseChangeLog:
-  # Користувачі системи
   - include:
-      file: domains/users/users-index.yaml
-      relativeToChangelogFile: true
-
-  # Автентифікація та авторизація
+      file: db/changelog/001-initial-schema.yaml
   - include:
-      file: domains/login/login-index.yaml
-      relativeToChangelogFile: true
-
-  # Клієнти хімчистки
-  - include:
-      file: domains/clients/clients-index.yaml
-      relativeToChangelogFile: true
-
-  # Прайс-листи
-  - include:
-      file: domains/pricelist/pricelist-index.yaml
-      relativeToChangelogFile: true
-
-  # Філії та пункти прийому
-  - include:
-      file: domains/branches/branches-index.yaml
-      relativeToChangelogFile: true
-
-  # Замовлення
-  - include:
-      file: domains/orders/orders-index.yaml
-      relativeToChangelogFile: true
-
-  # Order Wizard State Machine
-  - include:
-      file: domains/order-wizard/order-wizard-index.yaml
-      relativeToChangelogFile: true
+      file: db/changelog/002-seed-data.yaml

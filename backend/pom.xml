@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -13,47 +13,92 @@
     </parent>
 
     <groupId>com.aksi</groupId>
-    <artifactId>aksi-backend</artifactId>
+    <artifactId>dry-cleaning-order-system</artifactId>
     <version>1.0.0</version>
-    <name>aksi-backend</name>
-    <description>Clean Spring Boot backend for Aksi</description>
+    <name>AKSI Dry Cleaning Order System</name>
+    <description>Односторінкова система замовлень хімчистки з DDD архітектурою</description>
 
     <properties>
         <java.version>21</java.version>
-        <jjwt.version>0.12.6</jjwt.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <org.springdoc.version>2.8.8</org.springdoc.version>
-        <liquibase.version>4.31.1</liquibase.version>
-        <postgresql.version>42.7.5</postgresql.version>
-        <micrometer.version>1.14.5</micrometer.version>
-        <junit-jupiter.version>5.12.1</junit-jupiter.version>
-        <spring-security-test.version>6.4.4</spring-security-test.version>
-        <!-- Plugin Versions -->
-        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
-        <lombok.version>1.18.38</lombok.version>
-        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>10.23.1</checkstyle.version>
-        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
-        <node.version>v22.14.0</node.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
-        <itextpdf.version>5.5.13.4</itextpdf.version>
+        <itext.version>5.5.13.4</itext.version>
         <zxing.version>3.5.3</zxing.version>
-        <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
-        <spring-statemachine.version>4.0.0</spring-statemachine.version>
-        <!-- Кодування для всього проекту -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <springdoc.version>2.8.9</springdoc.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
     <dependencies>
         <!-- Spring Boot Starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Database -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Liquibase for DB migrations -->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <!-- MapStruct for mapping -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>${mapstruct.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- PDF Generation -->
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
-            <version>${itextpdf.version}</version>
+            <version>${itext.version}</version>
         </dependency>
 
         <!-- QR Code Generation -->
@@ -62,110 +107,25 @@
             <artifactId>core</artifactId>
             <version>${zxing.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
             <version>${zxing.version}</version>
         </dependency>
 
-        <!-- Email -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
-        <!-- Liquibase -->
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-        </dependency>
-        <!-- PostgreSQL -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- JWT -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>${jjwt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>${jjwt.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>${jjwt.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- Swagger/OpenAPI -->
+        <!-- OpenAPI Documentation -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${org.springdoc.version}</version>
+            <version>${springdoc.version}</version>
         </dependency>
 
-        <!-- Monitoring -->
+        <!-- OpenAPI Generator Runtime -->
         <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-prometheus</artifactId>
-        </dependency>
-
-        <!-- MapStruct -->
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${mapstruct.version}</version>
-        </dependency>
-
-        <!-- Spring State Machine -->
-        <dependency>
-            <groupId>org.springframework.statemachine</groupId>
-            <artifactId>spring-statemachine-core</artifactId>
-            <version>${spring-statemachine.version}</version>
-        </dependency>
-
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- DevTools -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.6</version>
         </dependency>
 
         <!-- Testing -->
@@ -174,28 +134,52 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Compiler -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <release>${java.version}</release>
+                    <release>21</release>
                     <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
@@ -204,276 +188,147 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>${lombok-mapstruct-binding.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${mapstruct.version}</version>
+                            <version>0.2.0</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
-                <executions>
-                    <!-- Конфігурація для основної компіляції -->
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>-Amapstruct.verbose=true</arg>
-                                <arg>-Amapstruct.defaultComponentModel=spring</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </execution>
-
-                    <!-- Конфігурація для тестової компіляції -->
-                    <execution>
-                        <id>testCompile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
-            <!-- Spring Boot Plugin -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-            <!-- Maven Surefire Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
-                <configuration>
-                    <argLine>
-                        -Xmx2048m -Xms512m
-                        -javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.15.11/byte-buddy-agent-1.15.11.jar
-                        -XX:+EnableDynamicAgentLoading
-                    </argLine>
-                    <forkCount>1</forkCount>
-                    <reuseForks>false</reuseForks>
-                    <testFailureIgnore>false</testFailureIgnore>
-                </configuration>
-            </plugin>
-
-            <!-- Liquibase Maven Plugin -->
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <configuration>
                     <propertyFile>src/main/resources/liquibase.properties</propertyFile>
-                    <changeLogFile>src/main/resources/db/changelog/db.changelog-master.yaml</changeLogFile>
                 </configuration>
             </plugin>
 
-            <!-- Checkstyle для перевірки стилю коду -->
+            <!-- OpenAPI Generator для генерації DTO та контролерів -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle-plugin.version}</version>
-                <configuration>
-                    <configLocation>${basedir}/checkstyle.xml</configLocation>
-                    <suppressionsLocation>${basedir}/checkstyle-suppressions.xml</suppressionsLocation>
-                    <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
-                    <propertyExpansion>
-                        basedir=${project.basedir}
-                        project.basedir=${project.basedir}
-                    </propertyExpansion>
-                    <inputEncoding>UTF-8</inputEncoding>
-                    <consoleOutput>true</consoleOutput>
-                    <failsOnError>false</failsOnError>
-                    <linkXRef>false</linkXRef>
-                </configuration>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.13.0</version>
                 <executions>
+                    <!-- Client API -->
                     <execution>
-                      <?m2e ignore?>
-                        <id>validate</id>
-                        <phase>validate</phase>
+                        <id>generate-client-api</id>
                         <goals>
-                            <goal>check</goal>
+                            <goal>generate</goal>
                         </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/client-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.client</apiPackage>
+                            <modelPackage>com.aksi.api.client.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                            </configOptions>
+                        </configuration>
                     </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>${checkstyle.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
 
-            <!-- PMD для пошуку дублювання коду (CPD) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>${maven-pmd-plugin.version}</version>
-                <configuration>
-                    <minimumTokens>30</minimumTokens>
-                    <skipEmptyReport>false</skipEmptyReport>
-                    <analysisCache>true</analysisCache>
-                    <printFailingErrors>true</printFailingErrors>
-                    <linkXRef>false</linkXRef>
-                    <failOnViolation>false</failOnViolation>
-                    <!-- Виключення контролерів з CPD -->
-                    <excludes>
-                        <exclude>**/api/**/*Controller.java</exclude>
-                        <exclude>**/util/ApiResponseUtils.java</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
+                    <!-- Order API -->
                     <execution>
-                        <id>cpd-check</id>
-                        <phase>verify</phase>
+                        <id>generate-order-api</id>
                         <goals>
-                            <goal>cpd-check</goal>
+                            <goal>generate</goal>
                         </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/order-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.order</apiPackage>
+                            <modelPackage>com.aksi.api.order.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Item API -->
+                    <execution>
+                        <id>generate-item-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/item-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.item</apiPackage>
+                            <modelPackage>com.aksi.api.item.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Branch API -->
+                    <execution>
+                        <id>generate-branch-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/branch-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.branch</apiPackage>
+                            <modelPackage>com.aksi.api.branch.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Document API -->
+                    <execution>
+                        <id>generate-document-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/document-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.document</apiPackage>
+                            <modelPackage>com.aksi.api.document.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                            </configOptions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
-    <!-- Профілі для різних середовищ -->
-    <profiles>
-        <profile>
-            <id>prod</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <!-- Остання версія на момент створення -->
-                        <version>${frontend-maven-plugin.version}</version>
-                        <configuration>
-                            <!-- Шлях до директорії фронтенду відносно pom.xml -->
-                            <workingDirectory>../frontend</workingDirectory>
-                            <nodeVersion>${node.version}</nodeVersion>
-                            <!-- Версію npm можна не вказувати, плагін використає ту, що йде з Node -->
-                        </configuration>
-                        <executions>
-                            <!-- 1. Встановлення Node та npm -->
-                            <execution>
-                                <id>install-node-and-npm</id>
-                                <goals>
-                                    <goal>install-node-and-npm</goal>
-                                </goals>
-                                <!-- Фаза process-resources або інша перед компіляцією -->
-                                <phase>generate-resources</phase>
-                            </execution>
-                            <!-- 2. Встановлення frontend залежностей -->
-                            <execution>
-                                <id>npm-install</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- Виконуємо команду npm install -->
-                                    <arguments>install</arguments>
-                                </configuration>
-                                <phase>generate-resources</phase>
-                            </execution>
-                            <!-- 3. Збірка frontend додатку -->
-                            <execution>
-                                <id>npm-build</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- Команда для збірки фронтенду -->
-                                    <arguments>run build</arguments>
-                                </configuration>
-                                <!-- Та сама фаза, що й компіляція Java коду -->
-                                <phase>compile</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- 4. Копіювання зібраних ресурсів фронтенду до папки static бекенду -->
-                     <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>${maven-resources-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>copy-frontend</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <!-- Шлях до зібраних статичних файлів Next.js -->
-                                            <directory>../frontend/.next/static</directory>
-                                        </resource>
-                                         <resource>
-                                            <!-- Копіюємо також публічні файли -->
-                                            <directory>../frontend/public</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <properties>
-                 <!-- Встановлюємо активний профіль Spring Boot для продакшну -->
-                <spring.profiles.active>prod</spring.profiles.active>
-            </properties>
-        </profile>
-
-        <!-- Профіль для інтеграції з Docker -->
-        <profile>
-            <id>docker</id>
-            <properties>
-                <checkstyle.skip>true</checkstyle.skip>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <configuration>
-                            <image>
-                                <!-- Ім'я Docker-образу: aksi/artifactId:version -->
-                                <name>aksi/${project.artifactId}:${project.version}</name>
-                                <!-- Можна вказати базовий образ, якщо потрібно -->
-                                <!-- <builder>paketobuildpacks/builder-jammy-base:latest</builder> -->
-                                <env>
-                                    <!-- Передаємо версію Java в buildpack -->
-                                    <BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
-                                </env>
-                            </image>
-                            <!-- Якщо ваш Docker демон слухає не стандартний сокет/порт -->
-                            <!-- <docker>
-                                <host>tcp://127.0.0.1:2375</host>
-                                <tlsVerify>false</tlsVerify>
-                             </docker> -->
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <!-- Ціль для створення образу -->
-                                    <goal>build-image</goal>
-                                </goals>
-                                <!-- Не прив'язуємо до фази, викликається окремо -->
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-    </profiles>
-
 </project>
