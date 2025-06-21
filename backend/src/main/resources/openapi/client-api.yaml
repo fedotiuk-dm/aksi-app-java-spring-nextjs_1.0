@@ -56,18 +56,18 @@ paths:
           - createdAt
           default: lastName
       responses:
-        '200':
+        "200":
           description: Список клієнтів
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientPageResponse'
-        '400':
+                $ref: "#/components/schemas/ClientPageResponse"
+        "400":
           description: Некоректні параметри запиту
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getClients
     post:
       tags:
@@ -79,26 +79,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateClientRequest'
+              $ref: "#/components/schemas/CreateClientRequest"
       responses:
-        '201':
+        "201":
           description: Клієнт успішно створений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientResponse'
-        '400':
+                $ref: "#/components/schemas/ClientResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '409':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "409":
           description: Клієнт з таким телефоном вже існує
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: createClient
   /api/clients/{id}:
     get:
@@ -115,18 +115,18 @@ paths:
           type: string
           format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про клієнта
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientResponse'
-        '404':
+                $ref: "#/components/schemas/ClientResponse"
+        "404":
           description: Клієнт не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getClientById
     put:
       tags:
@@ -146,32 +146,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateClientRequest'
+              $ref: "#/components/schemas/UpdateClientRequest"
       responses:
-        '200':
+        "200":
           description: Клієнт успішно оновлений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientResponse'
-        '400':
+                $ref: "#/components/schemas/ClientResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Клієнт не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: updateClient
     delete:
       tags:
       - clients
       summary: Видалити клієнта
-      description: Видаляє клієнта (м'яке видалення)
+      description: Видаляє клієнта (м"яке видалення)
       parameters:
       - name: id
         in: path
@@ -181,14 +181,14 @@ paths:
           type: string
           format: uuid
       responses:
-        '204':
+        "204":
           description: Клієнт успішно видалений
-        '404':
+        "404":
           description: Клієнт не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: deleteClient
   /api/clients/search:
     get:
@@ -200,7 +200,7 @@ paths:
       - name: query
         in: query
         required: true
-        description: Пошуковий запит (ім'я, прізвище, телефон, email)
+        description: Пошуковий запит (ім"я, прізвище, телефон, email)
         schema:
           type: string
           minLength: 2
@@ -215,18 +215,18 @@ paths:
           maximum: 50
           default: 10
       responses:
-        '200':
+        "200":
           description: Результати пошуку
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientSearchResponse'
-        '400':
+                $ref: "#/components/schemas/ClientSearchResponse"
+        "400":
           description: Некоректний пошуковий запит
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: searchClients
   /api/clients/search/advanced:
     post:
@@ -239,20 +239,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientSearchRequest'
+              $ref: "#/components/schemas/ClientSearchRequest"
       responses:
-        '200':
+        "200":
           description: Результати розширеного пошуку
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientPageResponse'
-        '400':
+                $ref: "#/components/schemas/ClientPageResponse"
+        "400":
           description: Некоректні параметри пошуку
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
+                $ref: "#/components/schemas/ValidationErrorResponse"
       operationId: advancedSearchClients
   /api/clients/{id}/contacts:
     get:
@@ -269,18 +269,18 @@ paths:
           type: string
           format: uuid
       responses:
-        '200':
+        "200":
           description: Контактна інформація клієнта
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientContactsResponse'
-        '404':
+                $ref: "#/components/schemas/ClientContactsResponse"
+        "404":
           description: Клієнт не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getClientContacts
     put:
       tags:
@@ -300,26 +300,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateClientContactsRequest'
+              $ref: "#/components/schemas/UpdateClientContactsRequest"
       responses:
-        '200':
+        "200":
           description: Контактна інформація успішно оновлена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientContactsResponse'
-        '400':
+                $ref: "#/components/schemas/ClientContactsResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Клієнт не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: updateClientContacts
   /api/clients/{id}/statistics:
     get:
@@ -336,18 +336,18 @@ paths:
           type: string
           format: uuid
       responses:
-        '200':
+        "200":
           description: Статистика клієнта
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientStatistics'
-        '404':
+                $ref: "#/components/schemas/ClientStatistics"
+        "404":
           description: Клієнт не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getClientStatistics
 components:
   schemas:
@@ -362,7 +362,7 @@ components:
           type: string
           minLength: 2
           maxLength: 50
-          description: Ім'я клієнта
+          description: Ім"я клієнта
           example: Олександр
         lastName:
           type: string
@@ -374,7 +374,7 @@ components:
           type: string
           pattern: ^\+380\d{9}$
           description: Номер телефону в міжнародному форматі
-          example: '+380501234567'
+          example: "+380501234567"
         email:
           type: string
           format: email
@@ -382,18 +382,18 @@ components:
           description: Email адреса (опціонально)
           example: oleksandr.petrenko@example.com
         address:
-          $ref: '#/components/schemas/CreateAddressRequest'
+          $ref: "#/components/schemas/CreateAddressRequest"
         communicationMethods:
           type: array
           items:
-            $ref: '#/components/schemas/CommunicationMethod'
-          description: Бажані способи зв'язку
+            $ref: "#/components/schemas/CommunicationMethod"
+          description: Бажані способи зв"язку
           example:
           - PHONE
           - SMS
           - VIBER
         sourceType:
-          $ref: '#/components/schemas/ClientSourceType'
+          $ref: "#/components/schemas/ClientSourceType"
           description: Джерело надходження клієнта
         notes:
           type: string
@@ -406,7 +406,7 @@ components:
           type: string
           minLength: 2
           maxLength: 50
-          description: Ім'я клієнта
+          description: Ім"я клієнта
         lastName:
           type: string
           minLength: 2
@@ -422,14 +422,14 @@ components:
           maxLength: 100
           description: Email адреса
         address:
-          $ref: '#/components/schemas/UpdateAddressRequest'
+          $ref: "#/components/schemas/UpdateAddressRequest"
         communicationMethods:
           type: array
           items:
-            $ref: '#/components/schemas/CommunicationMethod'
-          description: Бажані способи зв'язку
+            $ref: "#/components/schemas/CommunicationMethod"
+          description: Бажані способи зв"язку
         sourceType:
-          $ref: '#/components/schemas/ClientSourceType'
+          $ref: "#/components/schemas/ClientSourceType"
         notes:
           type: string
           maxLength: 500
@@ -456,7 +456,7 @@ components:
           type: string
           maxLength: 10
           description: Поштовий індекс
-          example: '01001'
+          example: "01001"
         country:
           type: string
           maxLength: 100
@@ -496,7 +496,7 @@ components:
         firstName:
           type: string
           maxLength: 50
-          description: Фільтр за ім'ям
+          description: Фільтр за ім"ям
         lastName:
           type: string
           maxLength: 50
@@ -512,11 +512,11 @@ components:
           maxLength: 100
           description: Фільтр за містом
         sourceType:
-          $ref: '#/components/schemas/ClientSourceType'
+          $ref: "#/components/schemas/ClientSourceType"
         communicationMethods:
           type: array
           items:
-            $ref: '#/components/schemas/CommunicationMethod'
+            $ref: "#/components/schemas/CommunicationMethod"
         registrationDateFrom:
           type: string
           format: date
@@ -565,10 +565,10 @@ components:
         communicationMethods:
           type: array
           items:
-            $ref: '#/components/schemas/CommunicationMethod'
-          description: Бажані способи зв'язку
+            $ref: "#/components/schemas/CommunicationMethod"
+          description: Бажані способи зв"язку
         address:
-          $ref: '#/components/schemas/UpdateAddressRequest'
+          $ref: "#/components/schemas/UpdateAddressRequest"
     ClientResponse:
       type: object
       required:
@@ -584,13 +584,13 @@ components:
           description: Унікальний ідентифікатор клієнта
         firstName:
           type: string
-          description: Ім'я клієнта
+          description: Ім"я клієнта
         lastName:
           type: string
           description: Прізвище клієнта
         fullName:
           type: string
-          description: Повне ім'я (firstName + lastName)
+          description: Повне ім"я (firstName + lastName)
           readOnly: true
         phone:
           type: string
@@ -599,18 +599,18 @@ components:
           type: string
           description: Email адреса
         address:
-          $ref: '#/components/schemas/AddressDto'
+          $ref: "#/components/schemas/AddressDto"
         communicationMethods:
           type: array
           items:
-            $ref: '#/components/schemas/CommunicationMethod'
+            $ref: "#/components/schemas/CommunicationMethod"
         sourceType:
-          $ref: '#/components/schemas/ClientSourceType'
+          $ref: "#/components/schemas/ClientSourceType"
         notes:
           type: string
           description: Примітки
         statistics:
-          $ref: '#/components/schemas/ClientStatistics'
+          $ref: "#/components/schemas/ClientStatistics"
         createdAt:
           type: string
           format: date-time
@@ -625,9 +625,9 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/ClientResponse'
+            $ref: "#/components/schemas/ClientResponse"
         pageable:
-          $ref: '#/components/schemas/PageableInfo'
+          $ref: "#/components/schemas/PageableInfo"
         totalElements:
           type: integer
           format: int64
@@ -650,7 +650,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/ClientSearchResult'
+            $ref: "#/components/schemas/ClientSearchResult"
         totalFound:
           type: integer
           description: Загальна кількість знайдених результатів
@@ -701,9 +701,9 @@ components:
         communicationMethods:
           type: array
           items:
-            $ref: '#/components/schemas/CommunicationMethod'
+            $ref: "#/components/schemas/CommunicationMethod"
         address:
-          $ref: '#/components/schemas/AddressDto'
+          $ref: "#/components/schemas/AddressDto"
     AddressDto:
       type: object
       properties:
@@ -726,7 +726,7 @@ components:
           type: string
           maxLength: 10
           description: Поштовий індекс
-          example: '01001'
+          example: "01001"
         country:
           type: string
           maxLength: 100
@@ -779,7 +779,7 @@ components:
       - VIBER
       - TELEGRAM
       - EMAIL
-      description: 'Способи зв''язку з клієнтом:
+      description: "Способи зв'язку з клієнтом:
 
         * PHONE - Телефонний дзвінок
 
@@ -791,7 +791,7 @@ components:
 
         * EMAIL - Електронна пошта
 
-        '
+        "
     ClientSourceType:
       type: string
       enum:
@@ -802,7 +802,7 @@ components:
       - WALKING_BY
       - REPEAT_CUSTOMER
       - OTHER
-      description: 'Джерело надходження клієнта:
+      description: "Джерело надходження клієнта:
 
         * REFERRAL - Рекомендація
 
@@ -818,7 +818,7 @@ components:
 
         * OTHER - Інше
 
-        '
+        "
     ErrorResponse:
       type: object
       properties:
@@ -855,7 +855,7 @@ components:
         validationErrors:
           type: array
           items:
-            $ref: '#/components/schemas/FieldError'
+            $ref: "#/components/schemas/FieldError"
     FieldError:
       type: object
       properties:

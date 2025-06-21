@@ -7,60 +7,60 @@ info:
     name: AKSI Development Team
     email: dev@aksi.com
 servers:
-- url: http://localhost:8080
-  description: Development server
-- url: https://api.aksi.com
-  description: Production server
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.aksi.com
+    description: Production server
 tags:
-- name: branches
-  description: Управління філіями
-- name: working-schedule
-  description: Графік роботи філій
-- name: receipt-numbers
-  description: Генерація номерів квитанцій
-- name: branch-statistics
-  description: Статистика філій
+  - name: branches
+    description: Управління філіями
+  - name: working-schedule
+    description: Графік роботи філій
+  - name: receipt-numbers
+    description: Генерація номерів квитанцій
+  - name: branch-statistics
+    description: Статистика філій
 paths:
   /api/branches:
     get:
       tags:
-      - branches
+        - branches
       summary: Отримати список філій
       description: Повертає список всіх філій з можливістю фільтрації
       parameters:
-      - name: active
-        in: query
-        description: Фільтр за активними філіями
-        required: false
-        schema:
-          type: boolean
-          default: true
-      - name: city
-        in: query
-        description: Фільтр за містом
-        required: false
-        schema:
-          type: string
-      - name: includeInactive
-        in: query
-        description: Включити неактивні філії
-        required: false
-        schema:
-          type: boolean
-          default: false
+        - name: active
+          in: query
+          description: Фільтр за активними філіями
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: city
+          in: query
+          description: Фільтр за містом
+          required: false
+          schema:
+            type: string
+        - name: includeInactive
+          in: query
+          description: Включити неактивні філії
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
-        '200':
+        "200":
           description: Список філій
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BranchResponse'
+                  $ref: "#/components/schemas/BranchResponse"
       operationId: getBranches
     post:
       tags:
-      - branches
+        - branches
       summary: Створити нову філію
       description: Створює нову філію хімчистки
       requestBody:
@@ -68,347 +68,347 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateBranchRequest'
+              $ref: "#/components/schemas/CreateBranchRequest"
       responses:
-        '201':
+        "201":
           description: Філія успішно створена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchResponse'
-        '400':
+                $ref: "#/components/schemas/BranchResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '409':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "409":
           description: Філія з таким кодом вже існує
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: createBranche
   /api/branches/{id}:
     get:
       tags:
-      - branches
+        - branches
       summary: Отримати філію за ID
       description: Повертає детальну інформацію про філію
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор філії (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор філії (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про філію
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchResponse'
-        '404':
+                $ref: "#/components/schemas/BranchResponse"
+        "404":
           description: Філія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getBrancheById
     put:
       tags:
-      - branches
+        - branches
       summary: Оновити філію
       description: Оновлює інформацію про філію
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор філії (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор філії (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateBranchRequest'
+              $ref: "#/components/schemas/UpdateBranchRequest"
       responses:
-        '200':
+        "200":
           description: Філія успішно оновлена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchResponse'
-        '400':
+                $ref: "#/components/schemas/BranchResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Філія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: updateBranche
     delete:
       tags:
-      - branches
+        - branches
       summary: Деактивувати філію
       description: Деактивує філію (не видаляє, а робить неактивною)
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор філії (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор філії (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '204':
+        "204":
           description: Філія успішно деактивована
-        '404':
+        "404":
           description: Філія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: deleteBranche
   /api/branches/code/{code}:
     get:
       tags:
-      - branches
+        - branches
       summary: Отримати філію за кодом
       description: Повертає філію за унікальним кодом
       parameters:
-      - name: code
-        in: path
-        required: true
-        description: Унікальний код філії
-        schema:
-          type: string
-          pattern: ^[A-Z0-9-]+$
-          example: AKSI-01
+        - name: code
+          in: path
+          required: true
+          description: Унікальний код філії
+          schema:
+            type: string
+            pattern: ^[A-Z0-9-]+$
+            example: AKSI-01
       responses:
-        '200':
+        "200":
           description: Інформація про філію
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchResponse'
-        '404':
+                $ref: "#/components/schemas/BranchResponse"
+        "404":
           description: Філія з таким кодом не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getBranches3
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getBranchByCode
   /api/branches/nearby:
     get:
       tags:
-      - branches
+        - branches
       summary: Знайти найближчі філії
       description: Повертає філії в радіусі від заданих координат
       parameters:
-      - name: latitude
-        in: query
-        required: true
-        description: Широта
-        schema:
-          type: number
-          format: double
-          minimum: -90
-          maximum: 90
-      - name: longitude
-        in: query
-        required: true
-        description: Довгота
-        schema:
-          type: number
-          format: double
-          minimum: -180
-          maximum: 180
-      - name: radius
-        in: query
-        description: Радіус пошуку в кілометрах
-        required: false
-        schema:
-          type: number
-          format: double
-          minimum: 0.1
-          maximum: 100
-          default: 10
-      - name: limit
-        in: query
-        description: Максимальна кількість результатів
-        required: false
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 50
-          default: 10
+        - name: latitude
+          in: query
+          required: true
+          description: Широта
+          schema:
+            type: number
+            format: double
+            minimum: -90
+            maximum: 90
+        - name: longitude
+          in: query
+          required: true
+          description: Довгота
+          schema:
+            type: number
+            format: double
+            minimum: -180
+            maximum: 180
+        - name: radius
+          in: query
+          description: Радіус пошуку в кілометрах
+          required: false
+          schema:
+            type: number
+            format: double
+            minimum: 0.1
+            maximum: 100
+            default: 10
+        - name: limit
+          in: query
+          description: Максимальна кількість результатів
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
       responses:
-        '200':
+        "200":
           description: Список найближчих філій
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BranchWithDistanceResponse'
-        '400':
+                  $ref: "#/components/schemas/BranchWithDistanceResponse"
+        "400":
           description: Неправильні координати
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-      operationId: getBranches1
+                $ref: "#/components/schemas/ValidationErrorResponse"
+      operationId: getNearbyBranches
   /api/branches/{id}/schedule:
     get:
       tags:
-      - working-schedule
+        - working-schedule
       summary: Отримати графік роботи філії
       description: Повертає графік роботи конкретної філії
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор філії (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор філії (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Графік роботи філії
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkingScheduleResponse'
-        '404':
+                $ref: "#/components/schemas/WorkingScheduleResponse"
+        "404":
           description: Філія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getBrancheById4
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getBranchSchedule
     put:
       tags:
-      - working-schedule
+        - working-schedule
       summary: Оновити графік роботи
       description: Оновлює графік роботи філії
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор філії (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор філії (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateWorkingScheduleRequest'
+              $ref: "#/components/schemas/UpdateWorkingScheduleRequest"
       responses:
-        '200':
+        "200":
           description: Графік роботи оновлено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkingScheduleResponse'
-        '400':
+                $ref: "#/components/schemas/WorkingScheduleResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Філія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: updateBranche2
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: updateBranchSchedule
   /api/branches/{id}/is-open:
     get:
       tags:
-      - working-schedule
+        - working-schedule
       summary: Перевірити чи відкрита філія
       description: Перевіряє чи працює філія в конкретний час
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор філії (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: dateTime
-        in: query
-        description: Дата та час для перевірки (ISO 8601)
-        required: false
-        schema:
-          type: string
-          format: date-time
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор філії (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: dateTime
+          in: query
+          description: Дата та час для перевірки (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date-time
       responses:
-        '200':
+        "200":
           description: Статус роботи філії
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchOpenStatusResponse'
-        '404':
+                $ref: "#/components/schemas/BranchOpenStatusResponse"
+        "404":
           description: Філія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getBrancheById1
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getBranchOpenStatus
   /api/branches/{id}/next-working-day:
     get:
       tags:
-      - working-schedule
+        - working-schedule
       summary: Наступний робочий день
       description: Повертає наступний робочий день філії
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор філії (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: fromDate
-        in: query
-        description: Дата від якої шукати (ISO 8601 date)
-        required: false
-        schema:
-          type: string
-          format: date
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор філії (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: fromDate
+          in: query
+          description: Дата від якої шукати (ISO 8601 date)
+          required: false
+          schema:
+            type: string
+            format: date
       responses:
-        '200':
+        "200":
           description: Наступний робочий день
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NextWorkingDayResponse'
-        '404':
+                $ref: "#/components/schemas/NextWorkingDayResponse"
+        "404":
           description: Філія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getBrancheById2
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getBranchNextWorkingDay
   /api/receipt-numbers/generate:
     post:
       tags:
-      - receipt-numbers
+        - receipt-numbers
       summary: Згенерувати номер квитанції
       description: Генерує унікальний номер квитанції для філії
       requestBody:
@@ -416,31 +416,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenerateReceiptNumberRequest'
+              $ref: "#/components/schemas/GenerateReceiptNumberRequest"
       responses:
-        '201':
+        "201":
           description: Номер квитанції згенеровано
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReceiptNumberResponse'
-        '400':
+                $ref: "#/components/schemas/ReceiptNumberResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Філія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: generateQrCode
   /api/receipt-numbers/validate:
     post:
       tags:
-      - receipt-numbers
+        - receipt-numbers
       summary: Валідувати номер квитанції
       description: Перевіряє правильність формату номера квитанції
       requestBody:
@@ -450,24 +450,24 @@ paths:
             schema:
               type: object
               required:
-              - receiptNumber
+                - receiptNumber
               properties:
                 receiptNumber:
                   type: string
                   description: Номер квитанції для валідації
                   example: AKSI-01-2024-000001
       responses:
-        '200':
+        "200":
           description: Результат валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReceiptValidationResponse'
-      operationId: getReceiptNumberbynumber
+                $ref: "#/components/schemas/ReceiptValidationResponse"
+      operationId: validateReceiptNumber
   /api/receipt-numbers/parse:
     post:
       tags:
-      - receipt-numbers
+        - receipt-numbers
       summary: Розпарсити номер квитанції
       description: Розбирає номер квитанції на компоненти
       requestBody:
@@ -477,131 +477,131 @@ paths:
             schema:
               type: object
               required:
-              - receiptNumber
+                - receiptNumber
               properties:
                 receiptNumber:
                   type: string
                   description: Номер квитанції для розбору
                   example: AKSI-01-2024-000001
       responses:
-        '200':
+        "200":
           description: Компоненти номера квитанції
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReceiptNumberParseResponse'
-        '400':
+                $ref: "#/components/schemas/ReceiptNumberParseResponse"
+        "400":
           description: Неправильний формат номера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-      operationId: getReceiptNumberbynumber1
+                $ref: "#/components/schemas/ValidationErrorResponse"
+      operationId: parseReceiptNumber
   /api/branches/{id}/statistics:
     get:
       tags:
-      - branch-statistics
+        - branch-statistics
       summary: Статистика філії
       description: Повертає статистику замовлень та доходів філії
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор філії (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: startDate
-        in: query
-        required: true
-        description: Початкова дата періоду
-        schema:
-          type: string
-          format: date
-      - name: endDate
-        in: query
-        required: true
-        description: Кінцева дата періоду
-        schema:
-          type: string
-          format: date
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор філії (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          required: true
+          description: Початкова дата періоду
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: true
+          description: Кінцева дата періоду
+          schema:
+            type: string
+            format: date
       responses:
-        '200':
+        "200":
           description: Статистика філії
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchStatisticsResponse'
-        '400':
+                $ref: "#/components/schemas/BranchStatisticsResponse"
+        "400":
           description: Неправильний період дат
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Філія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getBrancheStatistics
   /api/branches/statistics/compare:
     get:
       tags:
-      - branch-statistics
+        - branch-statistics
       summary: Порівняння філій
       description: Порівнює показники всіх філій за період
       parameters:
-      - name: startDate
-        in: query
-        required: true
-        description: Початкова дата періоду
-        schema:
-          type: string
-          format: date
-      - name: endDate
-        in: query
-        required: true
-        description: Кінцева дата періоду
-        schema:
-          type: string
-          format: date
-      - name: metric
-        in: query
-        description: Метрика для порівняння
-        required: false
-        schema:
-          type: string
-          enum:
-          - ORDERS_COUNT
-          - REVENUE
-          - AVERAGE_ORDER_VALUE
-          default: REVENUE
+        - name: startDate
+          in: query
+          required: true
+          description: Початкова дата періоду
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: true
+          description: Кінцева дата періоду
+          schema:
+            type: string
+            format: date
+        - name: metric
+          in: query
+          description: Метрика для порівняння
+          required: false
+          schema:
+            type: string
+            enum:
+              - ORDERS_COUNT
+              - REVENUE
+              - AVERAGE_ORDER_VALUE
+            default: REVENUE
       responses:
-        '200':
+        "200":
           description: Порівняння філій
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BranchComparisonResponse'
-        '400':
+                  $ref: "#/components/schemas/BranchComparisonResponse"
+        "400":
           description: Неправильний період дат
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-      operationId: getBrancheStatistics2
+                $ref: "#/components/schemas/ValidationErrorResponse"
+      operationId: compareBranchesStatistics
 components:
   schemas:
     CreateBranchRequest:
       type: object
       required:
-      - code
-      - name
-      - address
-      - contactInfo
+        - code
+        - name
+        - address
+        - contactInfo
       properties:
         code:
           type: string
@@ -619,13 +619,13 @@ components:
           maxLength: 500
           description: Опис розташування
         address:
-          $ref: '#/components/schemas/AddressRequest'
+          $ref: "#/components/schemas/AddressRequest"
         contactInfo:
-          $ref: '#/components/schemas/ContactInfoRequest'
+          $ref: "#/components/schemas/ContactInfoRequest"
         coordinates:
-          $ref: '#/components/schemas/CoordinatesRequest'
+          $ref: "#/components/schemas/CoordinatesRequest"
         workingSchedule:
-          $ref: '#/components/schemas/WorkingScheduleRequest'
+          $ref: "#/components/schemas/WorkingScheduleRequest"
     UpdateBranchRequest:
       type: object
       properties:
@@ -639,18 +639,18 @@ components:
           maxLength: 500
           description: Опис розташування
         address:
-          $ref: '#/components/schemas/AddressRequest'
+          $ref: "#/components/schemas/AddressRequest"
         contactInfo:
-          $ref: '#/components/schemas/ContactInfoRequest'
+          $ref: "#/components/schemas/ContactInfoRequest"
         coordinates:
-          $ref: '#/components/schemas/CoordinatesRequest'
+          $ref: "#/components/schemas/CoordinatesRequest"
         status:
-          $ref: '#/components/schemas/BranchStatus'
+          $ref: "#/components/schemas/BranchStatus"
     AddressRequest:
       type: object
       required:
-      - street
-      - city
+        - street
+        - city
       properties:
         street:
           type: string
@@ -673,7 +673,7 @@ components:
           type: string
           pattern: ^[0-9]{5}$
           description: Поштовий індекс
-          example: '01001'
+          example: "01001"
         country:
           type: string
           maxLength: 50
@@ -683,13 +683,13 @@ components:
     ContactInfoRequest:
       type: object
       required:
-      - phone
+        - phone
       properties:
         phone:
           type: string
           pattern: ^\+380[0-9]{9}$
           description: Основний телефон
-          example: '+380501234567'
+          example: "+380501234567"
         alternativePhone:
           type: string
           pattern: ^\+380[0-9]{9}$
@@ -732,14 +732,14 @@ components:
         workingDays:
           type: array
           items:
-            $ref: '#/components/schemas/WorkingDayRequest'
+            $ref: "#/components/schemas/WorkingDayRequest"
           minItems: 7
           maxItems: 7
           description: Робочі дні (7 днів тижня)
         holidays:
           type: array
           items:
-            $ref: '#/components/schemas/HolidayRequest'
+            $ref: "#/components/schemas/HolidayRequest"
           description: Святкові дні
         timezone:
           type: string
@@ -749,19 +749,19 @@ components:
     WorkingDayRequest:
       type: object
       required:
-      - dayOfWeek
-      - isWorkingDay
+        - dayOfWeek
+        - isWorkingDay
       properties:
         dayOfWeek:
           type: string
           enum:
-          - MONDAY
-          - TUESDAY
-          - WEDNESDAY
-          - THURSDAY
-          - FRIDAY
-          - SATURDAY
-          - SUNDAY
+            - MONDAY
+            - TUESDAY
+            - WEDNESDAY
+            - THURSDAY
+            - FRIDAY
+            - SATURDAY
+            - SUNDAY
           description: День тижня
         openTime:
           type: string
@@ -772,7 +772,7 @@ components:
           type: string
           format: time
           description: Час закриття (якщо робочий день)
-          example: '18:00'
+          example: "18:00"
         isWorkingDay:
           type: boolean
           description: Чи є день робочим
@@ -783,8 +783,8 @@ components:
     HolidayRequest:
       type: object
       required:
-      - date
-      - name
+        - date
+        - name
       properties:
         date:
           type: string
@@ -805,20 +805,20 @@ components:
         workingDays:
           type: array
           items:
-            $ref: '#/components/schemas/WorkingDayRequest'
+            $ref: "#/components/schemas/WorkingDayRequest"
           minItems: 7
           maxItems: 7
         holidays:
           type: array
           items:
-            $ref: '#/components/schemas/HolidayRequest'
+            $ref: "#/components/schemas/HolidayRequest"
         timezone:
           type: string
           example: Europe/Kiev
     GenerateReceiptNumberRequest:
       type: object
       required:
-      - branchId
+        - branchId
       properties:
         branchId:
           type: string
@@ -847,15 +847,15 @@ components:
           type: string
           description: Опис розташування
         address:
-          $ref: '#/components/schemas/AddressResponse'
+          $ref: "#/components/schemas/AddressResponse"
         contactInfo:
-          $ref: '#/components/schemas/ContactInfoResponse'
+          $ref: "#/components/schemas/ContactInfoResponse"
         coordinates:
-          $ref: '#/components/schemas/CoordinatesResponse'
+          $ref: "#/components/schemas/CoordinatesResponse"
         status:
-          $ref: '#/components/schemas/BranchStatus'
+          $ref: "#/components/schemas/BranchStatus"
         workingSchedule:
-          $ref: '#/components/schemas/WorkingScheduleResponse'
+          $ref: "#/components/schemas/WorkingScheduleResponse"
         receiptCounter:
           type: integer
           format: int64
@@ -870,14 +870,14 @@ components:
           description: Дата останнього оновлення
     BranchWithDistanceResponse:
       allOf:
-      - $ref: '#/components/schemas/BranchResponse'
-      - type: object
-        properties:
-          distance:
-            type: number
-            format: double
-            description: Відстань в кілометрах
-            example: 2.5
+        - $ref: "#/components/schemas/BranchResponse"
+        - type: object
+          properties:
+            distance:
+              type: number
+              format: double
+              description: Відстань в кілометрах
+              example: 2.5
     AddressResponse:
       type: object
       properties:
@@ -941,11 +941,11 @@ components:
         workingDays:
           type: array
           items:
-            $ref: '#/components/schemas/WorkingDayResponse'
+            $ref: "#/components/schemas/WorkingDayResponse"
         holidays:
           type: array
           items:
-            $ref: '#/components/schemas/HolidayResponse'
+            $ref: "#/components/schemas/HolidayResponse"
         timezone:
           type: string
           description: Часовий пояс
@@ -958,13 +958,13 @@ components:
         dayOfWeek:
           type: string
           enum:
-          - MONDAY
-          - TUESDAY
-          - WEDNESDAY
-          - THURSDAY
-          - FRIDAY
-          - SATURDAY
-          - SUNDAY
+            - MONDAY
+            - TUESDAY
+            - WEDNESDAY
+            - THURSDAY
+            - FRIDAY
+            - SATURDAY
+            - SUNDAY
         openTime:
           type: string
           format: time
@@ -1011,16 +1011,16 @@ components:
         currentStatus:
           type: string
           enum:
-          - OPEN
-          - CLOSED
-          - HOLIDAY
+            - OPEN
+            - CLOSED
+            - HOLIDAY
           description: Поточний статус
         nextOpenTime:
           type: string
           format: date-time
           description: Наступний час відкриття (якщо зачинена)
         todaySchedule:
-          $ref: '#/components/schemas/WorkingDayResponse'
+          $ref: "#/components/schemas/WorkingDayResponse"
     NextWorkingDayResponse:
       type: object
       properties:
@@ -1101,7 +1101,7 @@ components:
           description: Порядковий номер
           example: 1
         branchInfo:
-          $ref: '#/components/schemas/BranchSummaryResponse'
+          $ref: "#/components/schemas/BranchSummaryResponse"
     BranchSummaryResponse:
       type: object
       properties:
@@ -1146,11 +1146,11 @@ components:
         popularServices:
           type: array
           items:
-            $ref: '#/components/schemas/ServiceStatisticResponse'
+            $ref: "#/components/schemas/ServiceStatisticResponse"
         dailyStats:
           type: array
           items:
-            $ref: '#/components/schemas/DailyStatisticResponse'
+            $ref: "#/components/schemas/DailyStatisticResponse"
     ServiceStatisticResponse:
       type: object
       properties:
@@ -1201,11 +1201,11 @@ components:
     BranchStatus:
       type: string
       enum:
-      - ACTIVE
-      - INACTIVE
-      - TEMPORARILY_CLOSED
-      - UNDER_RENOVATION
-      description: 'Статус філії:
+        - ACTIVE
+        - INACTIVE
+        - TEMPORARILY_CLOSED
+        - UNDER_RENOVATION
+      description: "Статус філії:
 
         * ACTIVE - Активна
 
@@ -1215,7 +1215,7 @@ components:
 
         * UNDER_RENOVATION - На ремонті
 
-        '
+        "
     ErrorResponse:
       type: object
       properties:
@@ -1247,7 +1247,7 @@ components:
         validationErrors:
           type: array
           items:
-            $ref: '#/components/schemas/FieldError'
+            $ref: "#/components/schemas/FieldError"
     FieldError:
       type: object
       properties:

@@ -1,0 +1,418 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+          "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+          "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+    Конфігурація Checkstyle для проєкту "Хімчистка AKSI"
+    Базується на Google Java Style з модифікаціями для Spring Boot проєктів з DDD
+    
+    Основні принципи:
+    1. Відповідність Java Code Conventions
+    2. Узгодженість коду в усьому проєкті
+    3. Покращена читабельність та підтримка коду
+    4. Виявлення потенційних помилок на ранніх етапах
+    5. Відповідність Spring Best Practices та DDD
+    6. Відсутність дублювання коду та хардкоду
+-->
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="warning"/>
+    <property name="fileExtensions" value="java, properties, xml, yml, yaml"/>
+
+    <!-- Виключення непотрібних файлів з перевірки -->
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" 
+            value="(.*[\\/]target[\\/].*|.*[\\/]generated-sources[\\/].*|.*[\\/]generated-test-sources[\\/].*|.*[\\/]bin[\\/].*|.*\.(gif|png|jpg|jpeg|svg|ico|json))$"/>
+    </module>
+
+    <!-- Перевірка формату файлу -->
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf"/>
+    </module>
+    
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+
+    <!-- Довжина рядків -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern" 
+            value="^\s*\*\s*@|^\s*\*\s*\[|^\s*\*\s*[a-zA-Z0-9_]+=|^\s*\*\s*https?://|^import\s+.*|^package\s+.*"/>
+    </module>
+
+    <!-- Підключення файлу виключень -->
+    <module name="SuppressionFilter">
+        <property name="file" value="${checkstyle.suppressions.file}" default="checkstyle-suppressions.xml"/>
+    </module>
+
+    <!-- Підтримка CPD (Copy-Paste Detector) -->
+    <module name="TreeWalker">
+        <!-- Загальні налаштування -->
+        <property name="tabWidth" value="4"/>
+
+        <!-- Імпорти -->
+        <module name="AvoidStarImport">
+            <property name="excludes" value="java.util.stream,java.util.function,java.util.concurrent,jakarta.validation.constraints,org.junit.jupiter.api.*,org.mockito.*,org.assertj.core.api.*,org.springframework.test.context.*"/>
+        </module>
+        <module name="IllegalImport">
+            <property name="illegalPkgs" value="java.awt, javax.swing, sun."/>
+        </module>
+        <module name="RedundantImport"/>
+        <module name="UnusedImports">
+            <property name="processJavadoc" value="false"/>
+        </module>
+
+        <!-- Документація -->
+        <module name="JavadocType">
+            <property name="tokens" value="CLASS_DEF,INTERFACE_DEF,ENUM_DEF,ANNOTATION_DEF"/>
+            <message key="javadoc.missing" value="Missing Javadoc comment."/>
+        </module>
+        
+        <module name="JavadocMethod">
+            <property name="accessModifiers" value="public, protected"/>
+            <property name="validateThrows" value="true"/>
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingReturnTag" value="true"/>
+            <property name="allowedAnnotations" value="Override,Test,BeforeEach,AfterEach,BeforeAll,AfterAll,ParameterizedTest,ValueSource,NullSource,EmptySource"/>
+        </module>
+        
+        <module name="JavadocVariable">
+            <property name="accessModifiers" value="public, protected"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
+        </module>
+        
+        <module name="JavadocStyle">
+            <property name="checkFirstSentence" value="false"/>
+            <property name="checkHtml" value="false"/>
+        </module>
+
+        <!-- Назви -->
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9_$]*$"/>
+            <message key="name.invalidPattern" value="Type ''{0}'' should use PascalCase to match TypeScript/JavaScript conventions."/>
+        </module>
+        
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
+            <message key="name.invalidPattern" value="Method ''{0}'' should use camelCase to match TypeScript/JavaScript conventions."/>
+        </module>
+        
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+        
+        <module name="StaticVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$|^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+        
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern" value="Field ''{0}'' should use camelCase to match TypeScript/JavaScript conventions."/>
+        </module>
+        
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        
+        <module name="ClassTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]?)$"/>
+        </module>
+        
+        <module name="MethodTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]?)$"/>
+        </module>
+
+        <!-- Форматування коду -->
+        <module name="LeftCurly">
+            <property name="option" value="eol"/>
+            <property name="tokens" value="ANNOTATION_DEF,CLASS_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,LAMBDA,LITERAL_CASE,LITERAL_CATCH,LITERAL_DEFAULT,LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_FOR,LITERAL_IF,LITERAL_SWITCH,LITERAL_SYNCHRONIZED,LITERAL_TRY,LITERAL_WHILE,METHOD_DEF,OBJBLOCK,STATIC_INIT,COMPACT_CTOR_DEF,RECORD_DEF"/>
+        </module>
+        
+        <module name="RightCurly">
+            <property name="option" value="same"/>
+        </module>
+        
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI, TYPECAST, LITERAL_IF, LITERAL_ELSE, LITERAL_WHILE, LITERAL_DO, LITERAL_FOR, DO_WHILE"/>
+        </module>
+        
+        <module name="OneStatementPerLine"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="FallThrough"/>
+        <module name="UpperEll"/>
+        <module name="ModifierOrder">
+            <property name="tokens" value="MODIFIERS"/>
+        </module>
+        
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+            <property name="allowMultipleEmptyLines" value="false"/>
+            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+            <property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF, STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, RECORD_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+        
+        <module name="SeparatorWrap">
+            <property name="tokens" value="DOT"/>
+            <property name="option" value="nl"/>
+        </module>
+        
+        <module name="SeparatorWrap">
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="EOL"/>
+        </module>
+        
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z0-9]+)*$"/>
+        </module>
+        
+        <module name="MethodLength">
+            <property name="max" value="100"/>
+            <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+        
+        <module name="ParameterNumber">
+            <property name="max" value="7"/>
+            <property name="tokens" value="METHOD_DEF, CTOR_DEF"/>
+        </module>
+        
+        <module name="NestedIfDepth">
+            <property name="max" value="3"/>
+        </module>
+        
+        <module name="NestedTryDepth">
+            <property name="max" value="2"/>
+        </module>
+        
+        <!-- Spring специфічні перевірки -->
+        <module name="SuppressWarnings">
+            <property name="format" value="^unchecked$|^unused$|^rawtypes$|^deprecation$|^synthetic-access$|^resource$|^try$"/>
+        </module>
+        
+        <module name="SuppressWarningsHolder"/>
+        
+        <!-- Lombok специфічні налаштування -->
+        <module name="SuppressWarnings">
+            <property name="format" value="^lombok"/>
+            <property name="tokens" value="ANNOTATION_FIELD_DEF,CLASS_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
+        </module>
+        
+        <!-- Інші перевірки -->
+        <module name="FinalClass">
+            <property name="severity" value="ignore"/>
+        </module>
+        
+        <module name="HideUtilityClassConstructor">
+            <property name="severity" value="ignore"/>
+        </module>
+        
+        <module name="ExplicitInitialization">
+            <property name="tokens" value="VARIABLE_DEF"/>
+        </module>
+        
+        <module name="DefaultComesLast">
+            <property name="skipIfLastAndSharedWithCase" value="true"/>
+        </module>
+        
+        <module name="UnnecessaryParentheses">
+            <property name="tokens" value="EXPR, LAMBDA"/>
+        </module>
+        
+        <module name="OneTopLevelClass"/>
+        <module name="NoFinalizer"/>
+        <module name="OverloadMethodsDeclarationOrder"/>
+        
+        <module name="AtclauseOrder">
+            <property name="tagOrder" value="@param, @return, @throws, @deprecated, @see, @since, @serial, @serialField, @serialData, @author, @version, @category, @uses, @provides, @apiNote, @implSpec, @implNote, @hidden, @index"/>
+            <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, ANNOTATION_DEF, ANNOTATION_FIELD_DEF, RECORD_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+        
+        <module name="JavadocTagContinuationIndentation"/>
+        
+        <module name="SummaryJavadoc">
+            <property name="forbiddenSummaryFragments" value="^@return the *|^This method returns |^A \{[^}]*\} (is )?(a )?[a-zA-Z0-9]+\s*\."/>
+        </module>
+        
+        <module name="JavadocParagraph">
+            <property name="allowNewlineParagraph" value="false"/>
+        </module>
+        
+        <!-- Додаткові перевірки для вимог DDD/хімчистки -->
+        <module name="Regexp">
+            <property name="format" value="[\s\w\.\(\)]new BigDecimal\(\s*\d"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Уникайте хардкоду числових значень. Використовуйте константи чи значення з конфігурації/БД"/>
+        </module>
+        
+        <!-- Перевірка хардкоду категорій послуг -->
+        <module name="Regexp">
+            <property name="format" value="&quot;(IRONING|WASHING|DYEING|LEATHER|CLOTHING|FUR|PADDING|LAUNDRY)&quot;"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Хардкод кодів категорій. Використовуйте enum або константи"/>
+        </module>
+        
+        <!-- DDD-специфічні правила іменування -->
+        <module name="TypeName">
+            <property name="format" value="^(?!.*(?&lt;!Entity)Repository$|.*(?&lt;!Service)Impl$).*$"/>
+            <message key="name.invalidPattern" value="Репозиторії повинні закінчуватися на 'Repository', а реалізація сервісів - на 'ServiceImpl'"/>
+        </module>
+        
+        <!-- Перевірка сутностей DDD -->
+        <module name="Regexp">
+            <property name="format" value="@Entity\s+public\s+class\s+(?!.*Entity)"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Клас сутності повинен мати суфікс 'Entity'"/>
+        </module>
+        
+        <!-- Правила для DTO класів -->
+        <module name="Regexp">
+            <property name="format" value="public\s+class\s+([a-zA-Z0-9_]+)(?!(Request|Response|DTO))\s+\{[\s\S]*?@ApiModel"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="DTO класи для API повинні мати суфікси 'Request', 'Response' або 'DTO'"/>
+        </module>
+        
+        <!-- Уникнення бізнес-логіки в DTO/моделях -->
+        <module name="Regexp">
+            <property name="format" value="@Data.*class.*DTO[\s\r\n]*\{[\s\S]*?public [a-zA-Z0-9_]+\("/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="DTO не повинні містити бізнес-методи, тільки дані"/>
+        </module>
+
+        <!-- Перевірка структури модифікаторів цін для OrderWizard -->
+        <module name="Regexp">
+            <property name="format" value="calculatePriceWithModifiers\([^)]*\)\s*\{(?!.*service)"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Метод calculatePriceWithModifiers повинен делегувати логіку розрахунку в спеціалізований сервіс"/>
+        </module>
+
+        <!-- Перевірка методів для OrderWizard - заборона хардкоду знижок -->
+        <module name="Regexp">
+            <property name="format" value="discount\s*=\s*\d+"/>
+            <property name="illegalPattern" value="true"/>
+            <property name="ignoreComments" value="true"/>
+            <message key="illegal.regexp" value="Використовуйте константи для знижок замість хардкоду"/>
+        </module>
+    </module>
+    
+    <!-- Додаткові перевірки для XML файлів -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\t"/>
+        <property name="fileExtensions" value="xml"/>
+        <message key="regexp.exceeded" value="Line contains a tab character."/>
+    </module>
+    
+    <module name="RegexpSingleline">
+        <property name="format" value="\s+$"/>
+        <message key="regexp.exceeded" value="Line has trailing spaces."/>
+    </module>
+    
+    <module name="RegexpSingleline">
+        <property name="format" value="\r\n"/>
+        <message key="regexp.exceeded" value="Line has Windows line ending (CRLF)."/>
+    </module>
+    
+    <!-- Перевірки для YAML файлів -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\t"/>
+        <property name="fileExtensions" value="yml,yaml"/>
+        <message key="regexp.exceeded" value="Line contains a tab character."/>
+    </module>
+    
+    <module name="RegexpSingleline">
+        <property name="format" value="\s+$"/>
+        <property name="fileExtensions" value="yml,yaml"/>
+        <message key="regexp.exceeded" value="Line has trailing spaces."/>
+    </module>
+    
+    <!-- Перевірки для виявлення закоментованого коду -->
+    <module name="RegexpMultiline">
+        <property name="format" value="/\*\s*.*\bpublic\b.*\*/|//\s*.*\bpublic\b"/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Закоментований код має бути видалений"/>
+    </module>
+    
+    <!-- Перевірка хардкоду URL та шляхів -->
+    <module name="RegexpSingleline">
+        <property name="format" value="&quot;(http|https|ftp)://"/>
+        <message key="regexp.exceeded" value="Хардкодовані URL мають бути винесені в конфігурацію"/>
+    </module>
+    
+    <!-- Перевірка тестових даних у продакшн коді -->
+    <module name="RegexpSingleline">
+        <property name="format" value="(?i)\b(test|mock|dummy|fake|stub)\w*\s*="/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Тестові дані у продакшн коді"/>
+    </module>
+    
+    <!-- API Documentation Rules -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@ApiIgnore"/>
+        <message key="regexp.exceeded" value="Do not use @ApiIgnore for public API endpoints. Use @Hidden or proper documentation instead."/>
+    </module>
+
+    <module name="RegexpSingleline">
+        <property name="format" value="private\s+boolean\s+is[A-Z]"/>
+        <message key="regexp.exceeded" value="Avoid using 'is' prefix for boolean fields to prevent issues with OpenAPI and JSON serialization."/>
+    </module>
+    
+    <module name="RegexpSingleline">
+        <property name="format" value="@JsonIgnore"/>
+        <message key="regexp.exceeded" value="Be careful with @JsonIgnore. Consider using @Schema(hidden = true) for OpenAPI documentation."/>
+    </module>
+
+    <!-- Правила для API та DTO сумісності з фронтендом -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@(RestController|Controller).*class\s+(?!.*Controller)"/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="REST контролери повинні мати суфікс 'Controller' для послідовності іменування"/>
+    </module>
+    
+    <module name="RegexpSingleline">
+        <property name="format" value="@RequestMapping\s*\(\s*&quot;/api/"/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Не додавайте '/api/' у RequestMapping - це додається автоматично"/>
+    </module>
+    
+    <!-- API URL конвенції для фронтенду -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@(GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping)\s*\(\s*&quot;[^&quot;]*[A-Z]"/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="API URL повинні бути в kebab-case (маленькі літери з дефісами)"/>
+    </module>
+    
+    <!-- Перевірка узгодженості DTO для REST API -->
+    <module name="RegexpSingleline">
+        <property name="format" value="(@PostMapping|@PutMapping)[\s\S]{0,100}public[\s\S]{0,100}\([^)]*(?!(Request|DTO))[a-zA-Z0-9_]+\s+\w+\)"/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Вхідні параметри для POST/PUT повинні використовувати класи з суфіксом Request або DTO"/>
+    </module>
+
+    <!-- Вимоги до бази даних для OrderWizard -->
+    <module name="RegexpSingleline">
+        <property name="format" value="@Column\(name = &quot;[^&quot;]*[A-Z]"/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Імена колонок в БД мають бути в snake_case"/>
+    </module>
+
+    <!-- Правила для відповідності DDD та Feature-Sliced Design -->
+    <module name="RegexpSingleline">
+        <property name="format" value="package com\.aksi\.domain\.[^.]+\.service;"/>
+        <property name="fileExtensions" value="java"/>
+        <message key="regexp.exceeded" value="Сервіси повинні бути в пакеті domain.[domainName].service"/>
+    </module>
+</module>

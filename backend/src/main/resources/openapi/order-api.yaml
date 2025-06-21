@@ -7,95 +7,95 @@ info:
     name: AKSI Development Team
     email: dev@aksi.com
 servers:
-- url: http://localhost:8080
-  description: Development server
-- url: https://api.aksi.com
-  description: Production server
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.aksi.com
+    description: Production server
 tags:
-- name: orders
-  description: Управління замовленнями
-- name: order-items
-  description: Управління предметами замовлення
-- name: order-calculations
-  description: Розрахунки та калькулятор
-- name: order-completion
-  description: Завершення замовлення
+  - name: orders
+    description: Управління замовленнями
+  - name: order-items
+    description: Управління предметами замовлення
+  - name: order-calculations
+    description: Розрахунки та калькулятор
+  - name: order-completion
+    description: Завершення замовлення
 paths:
   /api/orders:
     get:
       tags:
-      - orders
+        - orders
       summary: Отримати список замовлень
       description: Повертає список замовлень з можливістю фільтрації та пагінації
       parameters:
-      - name: page
-        in: query
-        description: Номер сторінки (починаючи з 0)
-        required: false
-        schema:
-          type: integer
-          minimum: 0
-          default: 0
-      - name: size
-        in: query
-        description: Розмір сторінки
-        required: false
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
-      - name: status
-        in: query
-        description: Фільтр за статусом замовлення
-        required: false
-        schema:
-          $ref: '#/components/schemas/OrderStatus'
-      - name: branchId
-        in: query
-        description: Фільтр за філією
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: clientId
-        in: query
-        description: Фільтр за клієнтом
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: dateFrom
-        in: query
-        description: Дата створення (від)
-        required: false
-        schema:
-          type: string
-          format: date
-      - name: dateTo
-        in: query
-        description: Дата створення (до)
-        required: false
-        schema:
-          type: string
-          format: date
+        - name: page
+          in: query
+          description: Номер сторінки (починаючи з 0)
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Розмір сторінки
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Фільтр за статусом замовлення
+          required: false
+          schema:
+            $ref: "#/components/schemas/OrderStatus"
+        - name: branchId
+          in: query
+          description: Фільтр за філією
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: clientId
+          in: query
+          description: Фільтр за клієнтом
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: dateFrom
+          in: query
+          description: Дата створення (від)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          description: Дата створення (до)
+          required: false
+          schema:
+            type: string
+            format: date
       responses:
-        '200':
+        "200":
           description: Список замовлень
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderPageResponse'
-        '400':
+                $ref: "#/components/schemas/OrderPageResponse"
+        "400":
           description: Некоректні параметри запиту
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getOrders
     post:
       tags:
-      - orders
+        - orders
       summary: Створити нове замовлення
       description: Створює нове замовлення для односторінкової системи
       requestBody:
@@ -103,472 +103,473 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOrderRequest'
+              $ref: "#/components/schemas/CreateOrderRequest"
       responses:
-        '201':
+        "201":
           description: Замовлення успішно створене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderResponse'
-        '400':
+                $ref: "#/components/schemas/OrderResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
+                $ref: "#/components/schemas/ValidationErrorResponse"
       operationId: createOrder
   /api/orders/{id}:
     get:
       tags:
-      - orders
+        - orders
       summary: Отримати замовлення за ID
       description: Повертає детальну інформацію про замовлення
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про замовлення
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderResponse'
-        '404':
+                $ref: "#/components/schemas/OrderResponse"
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getOrderById
     put:
       tags:
-      - orders
+        - orders
       summary: Оновити замовлення
       description: Оновлює існуюче замовлення
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateOrderRequest'
+              $ref: "#/components/schemas/UpdateOrderRequest"
       responses:
-        '200':
+        "200":
           description: Замовлення успішно оновлене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderResponse'
-        '400':
+                $ref: "#/components/schemas/OrderResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: updateOrder
     delete:
       tags:
-      - orders
+        - orders
       summary: Скасувати замовлення
       description: Скасовує замовлення (м'яке видалення)
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '204':
+        "204":
           description: Замовлення успішно скасоване
-        '404':
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: deleteOrder
   /api/orders/{id}/items:
     get:
       tags:
-      - order-items
+        - order-items
       summary: Отримати предмети замовлення
       description: Повертає список всіх предметів в замовленні
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Список предметів замовлення
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrderItemResponse'
-        '404':
+                  $ref: "#/components/schemas/OrderItemResponse"
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getOrderById3
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getOrderItems
     post:
       tags:
-      - order-items
+        - order-items
       summary: Додати предмет до замовлення
       description: Додає новий предмет до замовлення з повним розрахунком ціни
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOrderItemRequest'
+              $ref: "#/components/schemas/CreateOrderItemRequest"
       responses:
-        '201':
+        "201":
           description: Предмет успішно додано
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderItemResponse'
-        '400':
+                $ref: "#/components/schemas/OrderItemResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: createOrder5
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: addOrderItem
   /api/orders/{orderId}/items/{itemId}:
     get:
       tags:
-      - order-items
+        - order-items
       summary: Отримати конкретний предмет замовлення
       description: Повертає детальну інформацію про предмет
       parameters:
-      - name: orderId
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: itemId
-        in: path
-        required: true
-        description: Унікальний ідентифікатор предмета (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: orderId
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: path
+          required: true
+          description: Унікальний ідентифікатор предмета (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про предмет
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderItemResponse'
-        '404':
+                $ref: "#/components/schemas/OrderItemResponse"
+        "404":
           description: Предмет або замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getOrders2
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getOrderItem
     put:
       tags:
-      - order-items
+        - order-items
       summary: Оновити предмет замовлення
       description: Оновлює існуючий предмет з перерахунком ціни
       parameters:
-      - name: orderId
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: itemId
-        in: path
-        required: true
-        description: Унікальний ідентифікатор предмета (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: orderId
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: path
+          required: true
+          description: Унікальний ідентифікатор предмета (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateOrderItemRequest'
+              $ref: "#/components/schemas/UpdateOrderItemRequest"
       responses:
-        '200':
+        "200":
           description: Предмет успішно оновлений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderItemResponse'
-        '400':
+                $ref: "#/components/schemas/OrderItemResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Предмет або замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: updateOrder3
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: updateOrderItem
     delete:
       tags:
-      - order-items
+        - order-items
       summary: Видалити предмет з замовлення
       description: Видаляє предмет з замовлення та перераховує загальну суму
       parameters:
-      - name: orderId
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: itemId
-        in: path
-        required: true
-        description: Унікальний ідентифікатор предмета (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: orderId
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: path
+          required: true
+          description: Унікальний ідентифікатор предмета (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '204':
+        "204":
           description: Предмет успішно видалений
-        '404':
+        "404":
           description: Предмет або замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: deleteOrder2
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: deleteOrderItem
   /api/orders/{id}/calculate:
     post:
       tags:
-      - order-calculations
+        - order-calculations
       summary: Розрахувати вартість замовлення
-      description: Перераховує загальну вартість замовлення з усіма модифікаторами
+      description:
+        Перераховує загальну вартість замовлення з усіма модифікаторами
         та знижками
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CalculateOrderRequest'
+              $ref: "#/components/schemas/CalculateOrderRequest"
       responses:
-        '200':
+        "200":
           description: Розрахунок завершений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderCalculationResponse'
-        '400':
+                $ref: "#/components/schemas/OrderCalculationResponse"
+        "400":
           description: Помилка валідації параметрів розрахунку
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: createOrder1
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: calculateOrder
   /api/orders/{id}/calculate/preview:
     post:
       tags:
-      - order-calculations
+        - order-calculations
       summary: Попередній розрахунок вартості
       description: Розраховує вартість без збереження змін (для інтерактивного калькулятора)
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CalculateOrderRequest'
+              $ref: "#/components/schemas/CalculateOrderRequest"
       responses:
-        '200':
+        "200":
           description: Попередній розрахунок
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderCalculationResponse'
-        '400':
+                $ref: "#/components/schemas/OrderCalculationResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-      operationId: createOrder2
+                $ref: "#/components/schemas/ValidationErrorResponse"
+      operationId: previewOrderCalculation
   /api/orders/{id}/payment:
     put:
       tags:
-      - orders
+        - orders
       summary: Оновити інформацію про оплату
       description: Оновлює спосіб оплати та суму передоплати
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePaymentRequest'
+              $ref: "#/components/schemas/UpdatePaymentRequest"
       responses:
-        '200':
+        "200":
           description: Інформація про оплату оновлена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderResponse'
-        '400':
+                $ref: "#/components/schemas/OrderResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: updateOrder1
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: updateOrderPayment
   /api/orders/{id}/complete:
     post:
       tags:
-      - order-completion
+        - order-completion
       summary: Завершити замовлення
       description: Завершує замовлення з цифровим підписом клієнта та генерацією квитанції
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CompleteOrderRequest'
+              $ref: "#/components/schemas/CompleteOrderRequest"
       responses:
-        '200':
+        "200":
           description: Замовлення успішно завершене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompletedOrderResponse'
-        '400':
+                $ref: "#/components/schemas/CompletedOrderResponse"
+        "400":
           description: Помилка валідації або незавершені обов'язкові поля
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: createOrder3
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: completeOrder
   /api/orders/{id}/receipt:
     get:
       tags:
-      - order-completion
+        - order-completion
       summary: Отримати квитанцію замовлення
       description: Генерує та повертає квитанцію у форматі PDF
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор замовлення (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: format
-        in: query
-        description: Формат квитанції
-        required: false
-        schema:
-          type: string
-          enum:
-          - PDF
-          - HTML
-          default: PDF
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор замовлення (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: format
+          in: query
+          description: Формат квитанції
+          required: false
+          schema:
+            type: string
+            enum:
+              - PDF
+              - HTML
+            default: PDF
       responses:
-        '200':
+        "200":
           description: Квитанція згенерована
           content:
             application/pdf:
@@ -578,21 +579,41 @@ paths:
             text/html:
               schema:
                 type: string
-        '404':
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receiptId:
+                    type: string
+                    format: uuid
+                    description: Ідентифікатор згенерованої квитанції
+                  downloadUrl:
+                    type: string
+                    format: uri
+                    description: URL для завантаження PDF квитанції
+                  format:
+                    type: string
+                    enum: [PDF, HTML]
+                    description: Формат згенерованої квитанції
+                  generatedAt:
+                    type: string
+                    format: date-time
+                    description: Час генерації квитанції
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getOrderById1
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: generateOrderReceipt
 components:
   schemas:
     CreateOrderRequest:
       type: object
       required:
-      - clientId
-      - branchId
-      - uniqueTag
+        - clientId
+        - branchId
+        - uniqueTag
       properties:
         clientId:
           type: string
@@ -613,7 +634,7 @@ components:
           maxLength: 1000
           description: Примітки до замовлення
         urgency:
-          $ref: '#/components/schemas/UrgencyType'
+          $ref: "#/components/schemas/UrgencyType"
           description: Терміновість виконання
           default: NORMAL
     UpdateOrderRequest:
@@ -629,9 +650,9 @@ components:
           format: date-time
           description: Дата виконання замовлення
         urgency:
-          $ref: '#/components/schemas/UrgencyType'
+          $ref: "#/components/schemas/UrgencyType"
         discount:
-          $ref: '#/components/schemas/DiscountRequest'
+          $ref: "#/components/schemas/DiscountRequest"
         notes:
           type: string
           maxLength: 1000
@@ -639,12 +660,12 @@ components:
     CreateOrderItemRequest:
       type: object
       required:
-      - itemName
-      - category
-      - quantity
-      - unit
-      - material
-      - color
+        - itemName
+        - category
+        - quantity
+        - unit
+        - material
+        - color
       properties:
         itemName:
           type: string
@@ -656,13 +677,13 @@ components:
           type: string
           description: Категорія послуги
           enum:
-          - TEXTILE_CLEANING
-          - LAUNDRY
-          - IRONING
-          - LEATHER_CLEANING
-          - SHEEPSKIN
-          - FUR
-          - DYEING
+            - TEXTILE_CLEANING
+            - LAUNDRY
+            - IRONING
+            - LEATHER_CLEANING
+            - SHEEPSKIN
+            - FUR
+            - DYEING
         quantity:
           type: integer
           minimum: 1
@@ -670,8 +691,8 @@ components:
         unit:
           type: string
           enum:
-          - PIECE
-          - KILOGRAM
+            - PIECE
+            - KILOGRAM
           description: Одиниця виміру
         material:
           type: string
@@ -699,28 +720,28 @@ components:
           items:
             type: string
             enum:
-            - FAT
-            - BLOOD
-            - PROTEIN
-            - WINE
-            - COFFEE
-            - GRASS
-            - INK
-            - COSMETICS
-            - OTHER
+              - FAT
+              - BLOOD
+              - PROTEIN
+              - WINE
+              - COFFEE
+              - GRASS
+              - INK
+              - COSMETICS
+              - OTHER
           description: Типи плям
         defects:
           type: array
           items:
             type: string
             enum:
-            - WEAR
-            - TORN
-            - MISSING_HARDWARE
-            - DAMAGED_HARDWARE
-            - COLOR_CHANGE_RISK
-            - DEFORMATION_RISK
-            - NO_WARRANTY
+              - WEAR
+              - TORN
+              - MISSING_HARDWARE
+              - DAMAGED_HARDWARE
+              - COLOR_CHANGE_RISK
+              - DEFORMATION_RISK
+              - NO_WARRANTY
           description: Дефекти та ризики
         defectNotes:
           type: string
@@ -729,7 +750,7 @@ components:
         modifiers:
           type: array
           items:
-            $ref: '#/components/schemas/PriceModifierRequest'
+            $ref: "#/components/schemas/PriceModifierRequest"
           description: Застосовані модифікатори ціни
         photos:
           type: array
@@ -772,27 +793,27 @@ components:
           items:
             type: string
             enum:
-            - FAT
-            - BLOOD
-            - PROTEIN
-            - WINE
-            - COFFEE
-            - GRASS
-            - INK
-            - COSMETICS
-            - OTHER
+              - FAT
+              - BLOOD
+              - PROTEIN
+              - WINE
+              - COFFEE
+              - GRASS
+              - INK
+              - COSMETICS
+              - OTHER
         defects:
           type: array
           items:
             type: string
             enum:
-            - WEAR
-            - TORN
-            - MISSING_HARDWARE
-            - DAMAGED_HARDWARE
-            - COLOR_CHANGE_RISK
-            - DEFORMATION_RISK
-            - NO_WARRANTY
+              - WEAR
+              - TORN
+              - MISSING_HARDWARE
+              - DAMAGED_HARDWARE
+              - COLOR_CHANGE_RISK
+              - DEFORMATION_RISK
+              - NO_WARRANTY
         defectNotes:
           type: string
           maxLength: 500
@@ -800,7 +821,7 @@ components:
         modifiers:
           type: array
           items:
-            $ref: '#/components/schemas/PriceModifierRequest'
+            $ref: "#/components/schemas/PriceModifierRequest"
         photos:
           type: array
           items:
@@ -811,10 +832,10 @@ components:
       type: object
       properties:
         urgency:
-          $ref: '#/components/schemas/UrgencyType'
+          $ref: "#/components/schemas/UrgencyType"
           description: Терміновість виконання
         discount:
-          $ref: '#/components/schemas/DiscountRequest'
+          $ref: "#/components/schemas/DiscountRequest"
           description: Знижка на замовлення
         recalculateItems:
           type: boolean
@@ -823,11 +844,11 @@ components:
     UpdatePaymentRequest:
       type: object
       required:
-      - paymentMethod
-      - paidAmount
+        - paymentMethod
+        - paidAmount
       properties:
         paymentMethod:
-          $ref: '#/components/schemas/PaymentMethod'
+          $ref: "#/components/schemas/PaymentMethod"
         paidAmount:
           type: number
           format: double
@@ -837,8 +858,8 @@ components:
     CompleteOrderRequest:
       type: object
       required:
-      - clientSignature
-      - legalAcceptance
+        - clientSignature
+        - legalAcceptance
       properties:
         clientSignature:
           type: string
@@ -858,10 +879,10 @@ components:
     DiscountRequest:
       type: object
       required:
-      - type
+        - type
       properties:
         type:
-          $ref: '#/components/schemas/DiscountType'
+          $ref: "#/components/schemas/DiscountType"
         customPercentage:
           type: number
           format: double
@@ -875,16 +896,16 @@ components:
     PriceModifierRequest:
       type: object
       required:
-      - name
-      - type
-      - value
+        - name
+        - type
+        - value
       properties:
         name:
           type: string
           maxLength: 100
           description: Назва модифікатора
         type:
-          $ref: '#/components/schemas/ModifierType'
+          $ref: "#/components/schemas/ModifierType"
         value:
           type: number
           format: double
@@ -892,13 +913,13 @@ components:
     OrderResponse:
       type: object
       required:
-      - id
-      - receiptNumber
-      - uniqueTag
-      - clientId
-      - branchId
-      - status
-      - createdAt
+        - id
+        - receiptNumber
+        - uniqueTag
+        - clientId
+        - branchId
+        - status
+        - createdAt
       properties:
         id:
           type: string
@@ -916,31 +937,31 @@ components:
           format: uuid
           description: Ідентифікатор клієнта
         clientInfo:
-          $ref: '#/components/schemas/ClientSummary'
+          $ref: "#/components/schemas/ClientSummary"
         branchId:
           type: string
           format: uuid
           description: Ідентифікатор філії
         branchInfo:
-          $ref: '#/components/schemas/BranchSummary'
+          $ref: "#/components/schemas/BranchSummary"
         status:
-          $ref: '#/components/schemas/OrderStatus'
+          $ref: "#/components/schemas/OrderStatus"
         items:
           type: array
           items:
-            $ref: '#/components/schemas/OrderItemResponse'
+            $ref: "#/components/schemas/OrderItemResponse"
         calculation:
-          $ref: '#/components/schemas/OrderCalculationSummary'
+          $ref: "#/components/schemas/OrderCalculationSummary"
         urgency:
-          $ref: '#/components/schemas/UrgencyType'
+          $ref: "#/components/schemas/UrgencyType"
         executionDate:
           type: string
           format: date-time
           description: Дата виконання замовлення
         discount:
-          $ref: '#/components/schemas/DiscountInfo'
+          $ref: "#/components/schemas/DiscountInfo"
         payment:
-          $ref: '#/components/schemas/PaymentInfo'
+          $ref: "#/components/schemas/PaymentInfo"
         notes:
           type: string
           description: Примітки до замовлення
@@ -961,15 +982,15 @@ components:
     OrderItemResponse:
       type: object
       required:
-      - id
-      - itemName
-      - category
-      - quantity
-      - unit
-      - material
-      - color
-      - basePrice
-      - finalPrice
+        - id
+        - itemName
+        - category
+        - quantity
+        - unit
+        - material
+        - color
+        - basePrice
+        - finalPrice
       properties:
         id:
           type: string
@@ -987,8 +1008,8 @@ components:
         unit:
           type: string
           enum:
-          - PIECE
-          - KILOGRAM
+            - PIECE
+            - KILOGRAM
           description: Одиниця виміру
         material:
           type: string
@@ -1022,14 +1043,14 @@ components:
         modifiers:
           type: array
           items:
-            $ref: '#/components/schemas/AppliedModifier'
+            $ref: "#/components/schemas/AppliedModifier"
           description: Застосовані модифікатори
         finalPrice:
           type: number
           format: double
           description: Фінальна ціна за предмет
         calculation:
-          $ref: '#/components/schemas/ItemCalculationDetails'
+          $ref: "#/components/schemas/ItemCalculationDetails"
         photos:
           type: array
           items:
@@ -1065,7 +1086,7 @@ components:
         itemCalculations:
           type: array
           items:
-            $ref: '#/components/schemas/ItemCalculationDetails'
+            $ref: "#/components/schemas/ItemCalculationDetails"
           description: Детальні розрахунки по кожному предмету
         discountWarnings:
           type: array
@@ -1081,7 +1102,7 @@ components:
         receiptNumber:
           type: string
         status:
-          $ref: '#/components/schemas/OrderStatus'
+          $ref: "#/components/schemas/OrderStatus"
         receiptUrl:
           type: string
           format: uri
@@ -1098,9 +1119,9 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/OrderResponse'
+            $ref: "#/components/schemas/OrderResponse"
         pageable:
-          $ref: '#/components/schemas/PageableInfo'
+          $ref: "#/components/schemas/PageableInfo"
         totalElements:
           type: integer
           format: int64
@@ -1157,7 +1178,7 @@ components:
       type: object
       properties:
         type:
-          $ref: '#/components/schemas/DiscountType'
+          $ref: "#/components/schemas/DiscountType"
         percentage:
           type: number
           format: double
@@ -1170,7 +1191,7 @@ components:
       type: object
       properties:
         method:
-          $ref: '#/components/schemas/PaymentMethod'
+          $ref: "#/components/schemas/PaymentMethod"
         totalAmount:
           type: number
           format: double
@@ -1186,7 +1207,7 @@ components:
         name:
           type: string
         type:
-          $ref: '#/components/schemas/ModifierType'
+          $ref: "#/components/schemas/ModifierType"
         value:
           type: number
           format: double
@@ -1220,7 +1241,7 @@ components:
         calculationSteps:
           type: array
           items:
-            $ref: '#/components/schemas/CalculationStep'
+            $ref: "#/components/schemas/CalculationStep"
     CalculationStep:
       type: object
       properties:
@@ -1252,13 +1273,13 @@ components:
     OrderStatus:
       type: string
       enum:
-      - DRAFT
-      - CREATED
-      - IN_PROGRESS
-      - READY
-      - COMPLETED
-      - CANCELLED
-      description: 'Статуси замовлення:
+        - DRAFT
+        - CREATED
+        - IN_PROGRESS
+        - READY
+        - COMPLETED
+        - CANCELLED
+      description: "Статуси замовлення:
 
         * DRAFT - Чернетка
 
@@ -1272,14 +1293,14 @@ components:
 
         * CANCELLED - Скасовано
 
-        '
+        "
     UrgencyType:
       type: string
       enum:
-      - NORMAL
-      - URGENT_48H
-      - URGENT_24H
-      description: 'Терміновість виконання:
+        - NORMAL
+        - URGENT_48H
+        - URGENT_24H
+      description: "Терміновість виконання:
 
         * NORMAL - Звичайне (без надбавки)
 
@@ -1287,16 +1308,16 @@ components:
 
         * URGENT_24H - Термінове 24 год (+100%)
 
-        '
+        "
     DiscountType:
       type: string
       enum:
-      - NONE
-      - EVERCARD
-      - SOCIAL_MEDIA
-      - MILITARY
-      - OTHER
-      description: 'Типи знижок:
+        - NONE
+        - EVERCARD
+        - SOCIAL_MEDIA
+        - MILITARY
+        - OTHER
+      description: "Типи знижок:
 
         * NONE - Без знижки
 
@@ -1308,14 +1329,14 @@ components:
 
         * OTHER - Інше (кастомний відсоток)
 
-        '
+        "
     PaymentMethod:
       type: string
       enum:
-      - TERMINAL
-      - CASH
-      - BANK_ACCOUNT
-      description: 'Способи оплати:
+        - TERMINAL
+        - CASH
+        - BANK_ACCOUNT
+      description: "Способи оплати:
 
         * TERMINAL - Термінал
 
@@ -1323,14 +1344,14 @@ components:
 
         * BANK_ACCOUNT - На рахунок
 
-        '
+        "
     ModifierType:
       type: string
       enum:
-      - PERCENTAGE
-      - FIXED
-      - MULTIPLIER
-      description: 'Типи модифікаторів ціни:
+        - PERCENTAGE
+        - FIXED
+        - MULTIPLIER
+      description: "Типи модифікаторів ціни:
 
         * PERCENTAGE - Відсотковий
 
@@ -1338,7 +1359,7 @@ components:
 
         * MULTIPLIER - Множник
 
-        '
+        "
     ErrorResponse:
       type: object
       properties:
@@ -1370,7 +1391,7 @@ components:
         validationErrors:
           type: array
           items:
-            $ref: '#/components/schemas/FieldError'
+            $ref: "#/components/schemas/FieldError"
     FieldError:
       type: object
       properties:

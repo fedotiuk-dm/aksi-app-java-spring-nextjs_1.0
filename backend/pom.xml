@@ -90,7 +90,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -155,6 +154,7 @@
     </dependencies>
 
     <build>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -174,6 +174,11 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>21</release>
+                    <compilerArgs>
+                        <arg>-Xlint:unchecked</arg>
+                        <arg>-Xlint:deprecation</arg>
+                        <arg>-Xlint:-unused</arg>
+                    </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct</groupId>
@@ -185,11 +190,6 @@
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
                         </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>0.2.0</version>
-                        </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
@@ -200,6 +200,26 @@
                 <configuration>
                     <propertyFile>src/main/resources/liquibase.properties</propertyFile>
                 </configuration>
+            </plugin>
+
+            <!-- Build Helper для додавання generated-sources до IDE -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-generated-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- OpenAPI Generator для генерації DTO та контролерів -->
@@ -220,7 +240,7 @@
                             <apiPackage>com.aksi.api.client</apiPackage>
                             <modelPackage>com.aksi.api.client.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
+                                <interfaceOnly>false</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -228,6 +248,8 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
+                                <delegatePattern>true</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -244,7 +266,7 @@
                             <apiPackage>com.aksi.api.order</apiPackage>
                             <modelPackage>com.aksi.api.order.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
+                                <interfaceOnly>false</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -252,6 +274,8 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
+                                <delegatePattern>true</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -268,7 +292,7 @@
                             <apiPackage>com.aksi.api.item</apiPackage>
                             <modelPackage>com.aksi.api.item.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
+                                <interfaceOnly>false</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -276,6 +300,8 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
+                                <delegatePattern>true</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -292,7 +318,7 @@
                             <apiPackage>com.aksi.api.branch</apiPackage>
                             <modelPackage>com.aksi.api.branch.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
+                                <interfaceOnly>false</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -300,6 +326,8 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
+                                <delegatePattern>true</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -316,7 +344,7 @@
                             <apiPackage>com.aksi.api.document</apiPackage>
                             <modelPackage>com.aksi.api.document.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
+                                <interfaceOnly>false</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -324,6 +352,8 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
+                                <delegatePattern>true</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>

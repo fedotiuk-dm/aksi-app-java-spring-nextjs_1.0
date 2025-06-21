@@ -7,92 +7,92 @@ info:
     name: AKSI Development Team
     email: dev@aksi.com
 servers:
-- url: http://localhost:8080
-  description: Development server
-- url: https://api.aksi.com
-  description: Production server
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.aksi.com
+    description: Production server
 tags:
-- name: receipts
-  description: Управління квитанціями
-- name: documents
-  description: Управління документами
-- name: digital-signatures
-  description: Цифрові підписи
-- name: qr-codes
-  description: QR-коди
-- name: pdf-generation
-  description: Генерація PDF
+  - name: receipts
+    description: Управління квитанціями
+  - name: documents
+    description: Управління документами
+  - name: digital-signatures
+    description: Цифрові підписи
+  - name: qr-codes
+    description: QR-коди
+  - name: pdf-generation
+    description: Генерація PDF
 paths:
   /api/receipts:
     get:
       tags:
-      - receipts
+        - receipts
       summary: Отримати список квитанцій
       description: Повертає список квитанцій з можливістю фільтрації
       parameters:
-      - name: orderId
-        in: query
-        description: Фільтр за замовленням
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: branchId
-        in: query
-        description: Фільтр за філією
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: clientId
-        in: query
-        description: Фільтр за клієнтом
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: startDate
-        in: query
-        description: Початкова дата
-        required: false
-        schema:
-          type: string
-          format: date
-      - name: endDate
-        in: query
-        description: Кінцева дата
-        required: false
-        schema:
-          type: string
-          format: date
-      - name: page
-        in: query
-        description: Номер сторінки
-        required: false
-        schema:
-          type: integer
-          minimum: 0
-          default: 0
-      - name: size
-        in: query
-        description: Розмір сторінки
-        required: false
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+        - name: orderId
+          in: query
+          description: Фільтр за замовленням
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: branchId
+          in: query
+          description: Фільтр за філією
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: clientId
+          in: query
+          description: Фільтр за клієнтом
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          description: Початкова дата
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Кінцева дата
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          description: Номер сторінки
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Розмір сторінки
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
-        '200':
+        "200":
           description: Список квитанцій
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReceiptPageResponse'
+                $ref: "#/components/schemas/ReceiptPageResponse"
       operationId: getReceipts
     post:
       tags:
-      - receipts
+        - receipts
       summary: Згенерувати квитанцію
       description: Генерує нову квитанцію для замовлення
       requestBody:
@@ -100,153 +100,171 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenerateReceiptRequest'
+              $ref: "#/components/schemas/GenerateReceiptRequest"
       responses:
-        '201':
+        "201":
           description: Квитанція успішно згенерована
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReceiptResponse'
-        '400':
+                $ref: "#/components/schemas/ReceiptResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Замовлення не знайдене
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: createReceipt
   /api/receipts/{id}:
     get:
       tags:
-      - receipts
+        - receipts
       summary: Отримати квитанцію за ID
       description: Повертає детальну інформацію про квитанцію
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор квитанції (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор квитанції (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про квитанцію
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReceiptResponse'
-        '404':
+                $ref: "#/components/schemas/ReceiptResponse"
+        "404":
           description: Квитанція не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getReceiptById
     put:
       tags:
-      - receipts
+        - receipts
       summary: Оновити квитанцію
       description: Оновлює дані квитанції (якщо ще не роздрукована)
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор квитанції (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор квитанції (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateReceiptRequest'
+              $ref: "#/components/schemas/UpdateReceiptRequest"
       responses:
-        '200':
+        "200":
           description: Квитанція успішно оновлена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReceiptResponse'
-        '400':
+                $ref: "#/components/schemas/ReceiptResponse"
+        "400":
           description: Помилка валідації або квитанція вже роздрукована
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "404":
           description: Квитанція не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: updateReceipt
   /api/receipts/{id}/pdf:
     get:
       tags:
-      - pdf-generation
+        - pdf-generation
       summary: Отримати PDF квитанції
       description: Повертає PDF версію квитанції
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор квитанції (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: template
-        in: query
-        description: Шаблон квитанції
-        required: false
-        schema:
-          type: string
-          enum:
-          - STANDARD
-          - COMPACT
-          - DETAILED
-          default: STANDARD
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор квитанції (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: template
+          in: query
+          description: Шаблон квитанції
+          required: false
+          schema:
+            type: string
+            enum:
+              - STANDARD
+              - COMPACT
+              - DETAILED
+            default: STANDARD
       responses:
-        '200':
+        "200":
           description: PDF файл квитанції
           content:
             application/pdf:
               schema:
                 type: string
                 format: binary
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documentId:
+                    type: string
+                    format: uuid
+                    description: Ідентифікатор документа
+                  filename:
+                    type: string
+                    description: Ім'я файлу
+                  size:
+                    type: integer
+                    description: Розмір файлу в байтах
+                  downloadUrl:
+                    type: string
+                    format: uri
+                    description: URL для завантаження PDF
           headers:
             Content-Disposition:
               description: Attachment filename
               schema:
                 type: string
                 example: attachment; filename="receipt-AKSI-01-2024-000001.pdf"
-        '404':
+        "404":
           description: Квитанція не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getReceiptPdf
     post:
       tags:
-      - pdf-generation
+        - pdf-generation
       summary: Згенерувати PDF квитанції
       description: Генерує PDF версію квитанції (якщо ще не згенерована)
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор квитанції (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор квитанції (UUID)
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: false
         content:
@@ -257,9 +275,9 @@ paths:
                 template:
                   type: string
                   enum:
-                  - STANDARD
-                  - COMPACT
-                  - DETAILED
+                    - STANDARD
+                    - COMPACT
+                    - DETAILED
                   default: STANDARD
                   description: Шаблон для генерації
                 regenerate:
@@ -267,86 +285,86 @@ paths:
                   default: false
                   description: Перегенерувати якщо вже існує
       responses:
-        '201':
+        "201":
           description: PDF успішно згенеровано
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DocumentResponse'
-        '200':
+                $ref: "#/components/schemas/DocumentResponse"
+        "200":
           description: PDF вже існує
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DocumentResponse'
-        '404':
+                $ref: "#/components/schemas/DocumentResponse"
+        "404":
           description: Квитанція не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: generateReceiptPdf
   /api/receipts/{id}/print:
     post:
       tags:
-      - receipts
+        - receipts
       summary: Позначити як роздруковану
       description: Позначає квитанцію як роздруковану
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор квитанції (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор квитанції (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Квитанція позначена як роздрукована
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReceiptResponse'
-        '404':
+                $ref: "#/components/schemas/ReceiptResponse"
+        "404":
           description: Квитанція не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: printReceipt
   /api/receipts/number/{receiptNumber}:
     get:
       tags:
-      - receipts
+        - receipts
       summary: Отримати квитанцію за номером
       description: Повертає квитанцію за номером
       parameters:
-      - name: receiptNumber
-        in: path
-        required: true
-        description: Номер квитанції
-        schema:
-          type: string
-          pattern: ^[A-Z0-9-]+$
-          example: AKSI-01-2024-000001
+        - name: receiptNumber
+          in: path
+          required: true
+          description: Номер квитанції
+          schema:
+            type: string
+            pattern: ^[A-Z0-9-]+$
+            example: AKSI-01-2024-000001
       responses:
-        '200':
+        "200":
           description: Інформація про квитанцію
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReceiptResponse'
-        '404':
+                $ref: "#/components/schemas/ReceiptResponse"
+        "404":
           description: Квитанція з таким номером не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getReceiptByNumber
   /api/qr-codes/generate:
     post:
       tags:
-      - qr-codes
+        - qr-codes
       summary: Згенерувати QR-код
       description: Генерує QR-код для замовлення або квитанції
       requestBody:
@@ -354,57 +372,57 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenerateQRCodeRequest'
+              $ref: "#/components/schemas/GenerateQRCodeRequest"
       responses:
-        '201':
+        "201":
           description: QR-код успішно згенеровано
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QRCodeResponse'
-        '400':
+                $ref: "#/components/schemas/QRCodeResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
+                $ref: "#/components/schemas/ValidationErrorResponse"
       operationId: generateQrCode
   /api/qr-codes/{id}:
     get:
       tags:
-      - qr-codes
+        - qr-codes
       summary: Отримати QR-код
       description: Повертає зображення QR-коду
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор QR-коду (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: format
-        in: query
-        description: Формат зображення
-        required: false
-        schema:
-          type: string
-          enum:
-          - PNG
-          - SVG
-          - JPEG
-          default: PNG
-      - name: size
-        in: query
-        description: Розмір зображення в пікселях
-        required: false
-        schema:
-          type: integer
-          minimum: 50
-          maximum: 1000
-          default: 200
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор QR-коду (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: format
+          in: query
+          description: Формат зображення
+          required: false
+          schema:
+            type: string
+            enum:
+              - PNG
+              - SVG
+              - JPEG
+            default: PNG
+        - name: size
+          in: query
+          description: Розмір зображення в пікселях
+          required: false
+          schema:
+            type: integer
+            minimum: 50
+            maximum: 1000
+            default: 200
       responses:
-        '200':
+        "200":
           description: QR-код зображення
           content:
             image/png:
@@ -418,17 +436,36 @@ paths:
               schema:
                 type: string
                 format: binary
-        '404':
+            application/json:
+              schema:
+                type: object
+                properties:
+                  qrCodeId:
+                    type: string
+                    format: uuid
+                    description: Ідентифікатор QR-коду
+                  format:
+                    type: string
+                    enum: [PNG, SVG, JPEG]
+                    description: Формат зображення
+                  size:
+                    type: integer
+                    description: Розмір в пікселях
+                  downloadUrl:
+                    type: string
+                    format: uri
+                    description: URL для завантаження зображення
+        "404":
           description: QR-код не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getQrCodebyid
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getQrCodeById
   /api/digital-signatures:
     post:
       tags:
-      - digital-signatures
+        - digital-signatures
       summary: Створити цифровий підпис
       description: Зберігає цифровий підпис клієнта або оператора
       requestBody:
@@ -436,75 +473,75 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateDigitalSignatureRequest'
+              $ref: "#/components/schemas/CreateDigitalSignatureRequest"
       responses:
-        '201':
+        "201":
           description: Підпис успішно збережено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DigitalSignatureResponse'
-        '400':
+                $ref: "#/components/schemas/DigitalSignatureResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
+                $ref: "#/components/schemas/ValidationErrorResponse"
       operationId: createDigitalSignature
   /api/digital-signatures/{id}:
     get:
       tags:
-      - digital-signatures
+        - digital-signatures
       summary: Отримати цифровий підпис
       description: Повертає інформацію про цифровий підпис
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор підпису (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор підпису (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про підпис
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DigitalSignatureResponse'
-        '404':
+                $ref: "#/components/schemas/DigitalSignatureResponse"
+        "404":
           description: Підпис не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getDigitalSignaturebyid
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getDigitalSignatureById
   /api/digital-signatures/{id}/image:
     get:
       tags:
-      - digital-signatures
+        - digital-signatures
       summary: Отримати зображення підпису
       description: Повертає зображення цифрового підпису
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор підпису (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: format
-        in: query
-        description: Формат зображення
-        required: false
-        schema:
-          type: string
-          enum:
-          - PNG
-          - SVG
-          default: PNG
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор підпису (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: format
+          in: query
+          description: Формат зображення
+          required: false
+          schema:
+            type: string
+            enum:
+              - PNG
+              - SVG
+            default: PNG
       responses:
-        '200':
+        "200":
           description: Зображення підпису
           content:
             image/png:
@@ -514,137 +551,153 @@ paths:
             image/svg+xml:
               schema:
                 type: string
-        '404':
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signatureId:
+                    type: string
+                    format: uuid
+                    description: Ідентифікатор підпису
+                  format:
+                    type: string
+                    enum: [PNG, SVG]
+                    description: Формат зображення
+                  downloadUrl:
+                    type: string
+                    format: uri
+                    description: URL для завантаження зображення підпису
+        "404":
           description: Підпис не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getDigitalSignaturebyid1
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getDigitalSignatureById1
   /api/documents:
     get:
       tags:
-      - documents
+        - documents
       summary: Отримати список документів
       description: Повертає список документів з можливістю фільтрації
       parameters:
-      - name: type
-        in: query
-        description: Тип документа
-        required: false
-        schema:
-          $ref: '#/components/schemas/DocumentType'
-      - name: relatedEntityId
-        in: query
-        description: ID пов'язаної сутності
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: status
-        in: query
-        description: Статус документа
-        required: false
-        schema:
-          $ref: '#/components/schemas/DocumentStatus'
-      - name: page
-        in: query
-        description: Номер сторінки
-        required: false
-        schema:
-          type: integer
-          minimum: 0
-          default: 0
-      - name: size
-        in: query
-        description: Розмір сторінки
-        required: false
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+        - name: type
+          in: query
+          description: Тип документа
+          required: false
+          schema:
+            $ref: "#/components/schemas/DocumentType"
+        - name: relatedEntityId
+          in: query
+          description: ID пов"язаної сутності
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Статус документа
+          required: false
+          schema:
+            $ref: "#/components/schemas/DocumentStatus"
+        - name: page
+          in: query
+          description: Номер сторінки
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Розмір сторінки
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
-        '200':
+        "200":
           description: Список документів
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DocumentPageResponse'
+                $ref: "#/components/schemas/DocumentPageResponse"
       operationId: getDocuments
   /api/documents/{id}:
     get:
       tags:
-      - documents
+        - documents
       summary: Отримати документ за ID
       description: Повертає інформацію про документ
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор документа (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор документа (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про документ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DocumentResponse'
-        '404':
+                $ref: "#/components/schemas/DocumentResponse"
+        "404":
           description: Документ не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getDocumentById
     delete:
       tags:
-      - documents
+        - documents
       summary: Видалити документ
-      description: Видаляє документ та пов'язані файли
+      description: Видаляє документ та пов"язані файли
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор документа (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор документа (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '204':
+        "204":
           description: Документ успішно видалено
-        '404':
+        "404":
           description: Документ не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
           description: Документ не можна видалити (використовується)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: deleteDocument
   /api/documents/{id}/download:
     get:
       tags:
-      - documents
+        - documents
       summary: Завантажити документ
       description: Завантажує файл документа
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор документа (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор документа (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Файл документа
           content:
             application/pdf:
@@ -655,24 +708,45 @@ paths:
               schema:
                 type: string
                 format: binary
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documentId:
+                    type: string
+                    format: uuid
+                    description: Ідентифікатор документа
+                  filename:
+                    type: string
+                    description: Ім'я файлу
+                  contentType:
+                    type: string
+                    description: MIME тип файлу
+                  size:
+                    type: integer
+                    description: Розмір файлу в байтах
+                  downloadUrl:
+                    type: string
+                    format: uri
+                    description: URL для завантаження файлу
           headers:
             Content-Disposition:
               description: Attachment filename
               schema:
                 type: string
-        '404':
+        "404":
           description: Документ не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: downloadDocument
 components:
   schemas:
     GenerateReceiptRequest:
       type: object
       required:
-      - orderId
+        - orderId
       properties:
         orderId:
           type: string
@@ -681,9 +755,9 @@ components:
         template:
           type: string
           enum:
-          - STANDARD
-          - COMPACT
-          - DETAILED
+            - STANDARD
+            - COMPACT
+            - DETAILED
           default: STANDARD
           description: Шаблон квитанції
         includePhotos:
@@ -702,7 +776,7 @@ components:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ReceiptDataRequest'
+          $ref: "#/components/schemas/ReceiptDataRequest"
         regeneratePdf:
           type: boolean
           default: false
@@ -711,11 +785,11 @@ components:
       type: object
       properties:
         companyInfo:
-          $ref: '#/components/schemas/CompanyInfoRequest'
+          $ref: "#/components/schemas/CompanyInfoRequest"
         operatorInfo:
-          $ref: '#/components/schemas/OperatorInfoRequest'
+          $ref: "#/components/schemas/OperatorInfoRequest"
         legalInfo:
-          $ref: '#/components/schemas/LegalInfoRequest'
+          $ref: "#/components/schemas/LegalInfoRequest"
     CompanyInfoRequest:
       type: object
       properties:
@@ -767,8 +841,8 @@ components:
     GenerateQRCodeRequest:
       type: object
       required:
-      - data
-      - type
+        - data
+        - type
       properties:
         data:
           type: string
@@ -777,9 +851,9 @@ components:
         type:
           type: string
           enum:
-          - ORDER_TRACKING
-          - RECEIPT_VERIFICATION
-          - CONTACT_INFO
+            - ORDER_TRACKING
+            - RECEIPT_VERIFICATION
+            - CONTACT_INFO
           description: Тип QR-коду
         size:
           type: integer
@@ -790,27 +864,27 @@ components:
         format:
           type: string
           enum:
-          - PNG
-          - SVG
-          - JPEG
+            - PNG
+            - SVG
+            - JPEG
           default: PNG
           description: Формат зображення
         errorCorrectionLevel:
           type: string
           enum:
-          - LOW
-          - MEDIUM
-          - QUARTILE
-          - HIGH
+            - LOW
+            - MEDIUM
+            - QUARTILE
+            - HIGH
           default: MEDIUM
           description: Рівень корекції помилок
     CreateDigitalSignatureRequest:
       type: object
       required:
-      - documentId
-      - signatureData
-      - type
-      - signerName
+        - documentId
+        - signatureData
+        - type
+        - signerName
       properties:
         documentId:
           type: string
@@ -820,17 +894,17 @@ components:
           type: string
           description: Base64 дані підпису (SVG або PNG)
         type:
-          $ref: '#/components/schemas/SignatureType'
+          $ref: "#/components/schemas/SignatureType"
         signerName:
           type: string
           maxLength: 100
-          description: Ім'я підписанта
+          description: Ім"я підписанта
         signerRole:
           type: string
           maxLength: 50
           description: Роль підписанта
         metadata:
-          $ref: '#/components/schemas/SignatureMetadataRequest'
+          $ref: "#/components/schemas/SignatureMetadataRequest"
     SignatureMetadataRequest:
       type: object
       properties:
@@ -849,9 +923,9 @@ components:
         signatureMethod:
           type: string
           enum:
-          - TOUCH
-          - MOUSE
-          - STYLUS
+            - TOUCH
+            - MOUSE
+            - STYLUS
           description: Метод створення підпису
     ReceiptResponse:
       type: object
@@ -869,15 +943,15 @@ components:
           description: Номер квитанції
           example: AKSI-01-2024-000001
         data:
-          $ref: '#/components/schemas/ReceiptDataResponse'
+          $ref: "#/components/schemas/ReceiptDataResponse"
         pdfDocument:
-          $ref: '#/components/schemas/DocumentSummaryResponse'
+          $ref: "#/components/schemas/DocumentSummaryResponse"
         qrCode:
-          $ref: '#/components/schemas/QRCodeSummaryResponse'
+          $ref: "#/components/schemas/QRCodeSummaryResponse"
         signatures:
           type: array
           items:
-            $ref: '#/components/schemas/DigitalSignatureSummaryResponse'
+            $ref: "#/components/schemas/DigitalSignatureSummaryResponse"
         isPrinted:
           type: boolean
           description: Чи роздрукована квитанція
@@ -896,23 +970,23 @@ components:
       type: object
       properties:
         companyInfo:
-          $ref: '#/components/schemas/CompanyInfoResponse'
+          $ref: "#/components/schemas/CompanyInfoResponse"
         branchInfo:
-          $ref: '#/components/schemas/BranchInfoResponse'
+          $ref: "#/components/schemas/BranchInfoResponse"
         orderInfo:
-          $ref: '#/components/schemas/OrderInfoResponse'
+          $ref: "#/components/schemas/OrderInfoResponse"
         clientInfo:
-          $ref: '#/components/schemas/ClientInfoResponse'
+          $ref: "#/components/schemas/ClientInfoResponse"
         items:
           type: array
           items:
-            $ref: '#/components/schemas/ItemDetailResponse'
+            $ref: "#/components/schemas/ItemDetailResponse"
         financial:
-          $ref: '#/components/schemas/FinancialSummaryResponse'
+          $ref: "#/components/schemas/FinancialSummaryResponse"
         legalInfo:
-          $ref: '#/components/schemas/LegalInfoResponse'
+          $ref: "#/components/schemas/LegalInfoResponse"
         operatorInfo:
-          $ref: '#/components/schemas/OperatorInfoResponse'
+          $ref: "#/components/schemas/OperatorInfoResponse"
     CompanyInfoResponse:
       type: object
       properties:
@@ -965,9 +1039,9 @@ components:
         expediteType:
           type: string
           enum:
-          - NORMAL
-          - URGENT_48H
-          - URGENT_24H
+            - NORMAL
+            - URGENT_48H
+            - URGENT_24H
         totalAmount:
           type: number
           format: double
@@ -1024,7 +1098,7 @@ components:
         modifiers:
           type: array
           items:
-            $ref: '#/components/schemas/ModifierDetailResponse'
+            $ref: "#/components/schemas/ModifierDetailResponse"
         finalPrice:
           type: number
           format: double
@@ -1041,7 +1115,7 @@ components:
         photos:
           type: array
           items:
-            $ref: '#/components/schemas/PhotoSummaryResponse'
+            $ref: "#/components/schemas/PhotoSummaryResponse"
     ModifierDetailResponse:
       type: object
       properties:
@@ -1050,9 +1124,9 @@ components:
         type:
           type: string
           enum:
-          - PERCENTAGE
-          - FIXED_AMOUNT
-          - MULTIPLIER
+            - PERCENTAGE
+            - FIXED_AMOUNT
+            - MULTIPLIER
         value:
           type: number
           format: double
@@ -1129,7 +1203,7 @@ components:
         documentNumber:
           type: string
         type:
-          $ref: '#/components/schemas/DocumentType'
+          $ref: "#/components/schemas/DocumentType"
         relatedEntityId:
           type: string
           format: uuid
@@ -1143,12 +1217,12 @@ components:
         mimeType:
           type: string
         status:
-          $ref: '#/components/schemas/DocumentStatus'
+          $ref: "#/components/schemas/DocumentStatus"
         downloadUrl:
           type: string
           format: uri
         metadata:
-          $ref: '#/components/schemas/DocumentMetadataResponse'
+          $ref: "#/components/schemas/DocumentMetadataResponse"
         createdAt:
           type: string
           format: date-time
@@ -1200,17 +1274,17 @@ components:
         type:
           type: string
           enum:
-          - ORDER_TRACKING
-          - RECEIPT_VERIFICATION
-          - CONTACT_INFO
+            - ORDER_TRACKING
+            - RECEIPT_VERIFICATION
+            - CONTACT_INFO
         size:
           type: integer
         format:
           type: string
           enum:
-          - PNG
-          - SVG
-          - JPEG
+            - PNG
+            - SVG
+            - JPEG
         imageUrl:
           type: string
           format: uri
@@ -1239,7 +1313,7 @@ components:
           type: string
           format: uuid
         type:
-          $ref: '#/components/schemas/SignatureType'
+          $ref: "#/components/schemas/SignatureType"
         signerName:
           type: string
         signerRole:
@@ -1254,7 +1328,7 @@ components:
           format: uri
           description: URL для отримання зображення підпису
         metadata:
-          $ref: '#/components/schemas/SignatureMetadataResponse'
+          $ref: "#/components/schemas/SignatureMetadataResponse"
         isValid:
           type: boolean
           description: Чи валідний підпис
@@ -1265,7 +1339,7 @@ components:
           type: string
           format: uuid
         type:
-          $ref: '#/components/schemas/SignatureType'
+          $ref: "#/components/schemas/SignatureType"
         signerName:
           type: string
         signedAt:
@@ -1286,9 +1360,9 @@ components:
         signatureMethod:
           type: string
           enum:
-          - TOUCH
-          - MOUSE
-          - STYLUS
+            - TOUCH
+            - MOUSE
+            - STYLUS
         signatureDuration:
           type: number
           format: double
@@ -1299,9 +1373,9 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/ReceiptResponse'
+            $ref: "#/components/schemas/ReceiptResponse"
         pageable:
-          $ref: '#/components/schemas/PageableInfo'
+          $ref: "#/components/schemas/PageableInfo"
         totalElements:
           type: integer
           format: int64
@@ -1319,9 +1393,9 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/DocumentResponse'
+            $ref: "#/components/schemas/DocumentResponse"
         pageable:
-          $ref: '#/components/schemas/PageableInfo'
+          $ref: "#/components/schemas/PageableInfo"
         totalElements:
           type: integer
           format: int64
@@ -1347,13 +1421,13 @@ components:
     DocumentType:
       type: string
       enum:
-      - RECEIPT
-      - CONTRACT
-      - INVOICE
-      - PHOTO
-      - QR_CODE
-      - SIGNATURE
-      description: 'Типи документів:
+        - RECEIPT
+        - CONTRACT
+        - INVOICE
+        - PHOTO
+        - QR_CODE
+        - SIGNATURE
+      description: "Типи документів:
 
         * RECEIPT - Квитанція
 
@@ -1367,16 +1441,16 @@ components:
 
         * SIGNATURE - Підпис
 
-        '
+        "
     DocumentStatus:
       type: string
       enum:
-      - DRAFT
-      - GENERATED
-      - SIGNED
-      - PRINTED
-      - ARCHIVED
-      description: 'Статуси документів:
+        - DRAFT
+        - GENERATED
+        - SIGNED
+        - PRINTED
+        - ARCHIVED
+      description: "Статуси документів:
 
         * DRAFT - Чернетка
 
@@ -1388,15 +1462,15 @@ components:
 
         * ARCHIVED - Заархівовано
 
-        '
+        "
     SignatureType:
       type: string
       enum:
-      - CLIENT_HANDOVER
-      - CLIENT_PICKUP
-      - OPERATOR
-      - DIGITAL
-      description: 'Типи підписів:
+        - CLIENT_HANDOVER
+        - CLIENT_PICKUP
+        - OPERATOR
+        - DIGITAL
+      description: "Типи підписів:
 
         * CLIENT_HANDOVER - Підпис клієнта при здачі
 
@@ -1406,7 +1480,7 @@ components:
 
         * DIGITAL - Цифровий підпис
 
-        '
+        "
     ErrorResponse:
       type: object
       properties:
@@ -1438,7 +1512,7 @@ components:
         validationErrors:
           type: array
           items:
-            $ref: '#/components/schemas/FieldError'
+            $ref: "#/components/schemas/FieldError"
     FieldError:
       type: object
       properties:

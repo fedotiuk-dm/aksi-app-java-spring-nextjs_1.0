@@ -1,391 +1,393 @@
 openapi: 3.0.3
 info:
   title: Item Domain API
-  description: API для управління предметами, послугами та розрахунками в односторінковій
+  description:
+    API для управління предметами, послугами та розрахунками в односторінковій
     системі хімчистки
   version: 1.0.0
   contact:
     name: AKSI Development Team
     email: dev@aksi.com
 servers:
-- url: http://localhost:8080
-  description: Development server
-- url: https://api.aksi.com
-  description: Production server
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.aksi.com
+    description: Production server
 tags:
-- name: service-categories
-  description: Категорії послуг
-- name: price-list
-  description: Прайс-лист предметів
-- name: item-characteristics
-  description: Характеристики предметів
-- name: price-modifiers
-  description: Модифікатори цін
-- name: price-calculator
-  description: Калькулятор цін
-- name: photo-management
-  description: Управління фотографіями
+  - name: service-categories
+    description: Категорії послуг
+  - name: price-list
+    description: Прайс-лист предметів
+  - name: item-characteristics
+    description: Характеристики предметів
+  - name: price-modifiers
+    description: Модифікатори цін
+  - name: price-calculator
+    description: Калькулятор цін
+  - name: photo-management
+    description: Управління фотографіями
 paths:
   /api/service-categories:
     get:
       tags:
-      - service-categories
+        - service-categories
       summary: Отримати список категорій послуг
       description: Повертає ієрархічний список всіх категорій послуг хімчистки
       parameters:
-      - name: active
-        in: query
-        description: Фільтр за активними категоріями
-        required: false
-        schema:
-          type: boolean
-          default: true
-      - name: includeInactive
-        in: query
-        description: Включити неактивні категорії
-        required: false
-        schema:
-          type: boolean
-          default: false
+        - name: active
+          in: query
+          description: Фільтр за активними категоріями
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: includeInactive
+          in: query
+          description: Включити неактивні категорії
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
-        '200':
+        "200":
           description: Список категорій послуг
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ServiceCategoryResponse'
+                  $ref: "#/components/schemas/ServiceCategoryResponse"
       operationId: getServiceCategories
   /api/service-categories/{id}:
     get:
       tags:
-      - service-categories
+        - service-categories
       summary: Отримати категорію за ID
       description: Повертає детальну інформацію про категорію послуг
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор категорії (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор категорії (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про категорію
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceCategoryResponse'
-        '404':
+                $ref: "#/components/schemas/ServiceCategoryResponse"
+        "404":
           description: Категорія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getServiceCategoriebyid
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getServiceCategoryById
   /api/service-categories/{id}/items:
     get:
       tags:
-      - price-list
+        - price-list
       summary: Отримати предмети категорії
       description: Повертає прайс-лист предметів для конкретної категорії
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор категорії (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: active
-        in: query
-        description: Фільтр за активними предметами
-        required: false
-        schema:
-          type: boolean
-          default: true
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор категорії (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: active
+          in: query
+          description: Фільтр за активними предметами
+          required: false
+          schema:
+            type: boolean
+            default: true
       responses:
-        '200':
+        "200":
           description: Список предметів категорії
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PriceListItemResponse'
-        '404':
+                  $ref: "#/components/schemas/PriceListItemResponse"
+        "404":
           description: Категорія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getServiceCategoriebyid1
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getCategoryItems
   /api/price-list:
     get:
       tags:
-      - price-list
+        - price-list
       summary: Отримати повний прайс-лист
       description: Повертає повний прайс-лист з можливістю фільтрації та пошуку
       parameters:
-      - name: search
-        in: query
-        description: Пошук за назвою предмета
-        required: false
-        schema:
-          type: string
-      - name: categoryId
-        in: query
-        description: Фільтр за категорією
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: active
-        in: query
-        description: Тільки активні предмети
-        required: false
-        schema:
-          type: boolean
-          default: true
-      - name: page
-        in: query
-        description: Номер сторінки
-        required: false
-        schema:
-          type: integer
-          minimum: 0
-          default: 0
-      - name: size
-        in: query
-        description: Розмір сторінки
-        required: false
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+        - name: search
+          in: query
+          description: Пошук за назвою предмета
+          required: false
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          description: Фільтр за категорією
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: active
+          in: query
+          description: Тільки активні предмети
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: page
+          in: query
+          description: Номер сторінки
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Розмір сторінки
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
-        '200':
+        "200":
           description: Прайс-лист предметів
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PriceListPageResponse'
+                $ref: "#/components/schemas/PriceListPageResponse"
       operationId: getPriceList
   /api/price-list/{id}:
     get:
       tags:
-      - price-list
+        - price-list
       summary: Отримати предмет прайс-листа
       description: Повертає детальну інформацію про предмет з прайс-листа
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор предмета (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор предмета (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про предмет
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PriceListItemResponse'
-        '404':
+                $ref: "#/components/schemas/PriceListItemResponse"
+        "404":
           description: Предмет не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getPriceListbyid
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getPriceListById
   /api/materials:
     get:
       tags:
-      - item-characteristics
+        - item-characteristics
       summary: Отримати список матеріалів
       description: Повертає список доступних матеріалів для конкретної категорії
       parameters:
-      - name: categoryId
-        in: query
-        description: Фільтр за категорією послуг
-        required: false
-        schema:
-          type: string
-          format: uuid
+        - name: categoryId
+          in: query
+          description: Фільтр за категорією послуг
+          required: false
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Список матеріалів
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MaterialOption'
+                  $ref: "#/components/schemas/MaterialOption"
       operationId: getMaterials
   /api/colors:
     get:
       tags:
-      - item-characteristics
+        - item-characteristics
       summary: Отримати список кольорів
       description: Повертає список базових кольорів для швидкого вибору
       responses:
-        '200':
+        "200":
           description: Список кольорів
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ColorOption'
+                  $ref: "#/components/schemas/ColorOption"
       operationId: getColors
   /api/fillings:
     get:
       tags:
-      - item-characteristics
+        - item-characteristics
       summary: Отримати список наповнювачів
       description: Повертає список доступних наповнювачів
       responses:
-        '200':
+        "200":
           description: Список наповнювачів
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FillingOption'
+                  $ref: "#/components/schemas/FillingOption"
       operationId: getFillings
   /api/stains:
     get:
       tags:
-      - item-characteristics
+        - item-characteristics
       summary: Отримати типи плям
       description: Повертає каталог типів плям
       responses:
-        '200':
+        "200":
           description: Каталог плям
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/StainType'
+                  $ref: "#/components/schemas/StainType"
       operationId: getStains
   /api/defects:
     get:
       tags:
-      - item-characteristics
+        - item-characteristics
       summary: Отримати типи дефектів
       description: Повертає каталог дефектів та ризиків
       responses:
-        '200':
+        "200":
           description: Каталог дефектів
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DefectType'
+                  $ref: "#/components/schemas/DefectType"
       operationId: getDefects
   /api/price-modifiers:
     get:
       tags:
-      - price-modifiers
+        - price-modifiers
       summary: Отримати список модифікаторів цін
       description: Повертає список доступних модифікаторів для конкретної категорії
       parameters:
-      - name: categoryId
-        in: query
-        description: Фільтр за категорією послуг
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: type
-        in: query
-        description: Тип модифікатора
-        required: false
-        schema:
-          $ref: '#/components/schemas/ModifierType'
-      - name: active
-        in: query
-        description: Тільки активні модифікатори
-        required: false
-        schema:
-          type: boolean
-          default: true
+        - name: categoryId
+          in: query
+          description: Фільтр за категорією послуг
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: Тип модифікатора
+          required: false
+          schema:
+            $ref: "#/components/schemas/ModifierType"
+        - name: active
+          in: query
+          description: Тільки активні модифікатори
+          required: false
+          schema:
+            type: boolean
+            default: true
       responses:
-        '200':
+        "200":
           description: Список модифікаторів
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PriceModifierResponse'
+                  $ref: "#/components/schemas/PriceModifierResponse"
       operationId: getPriceModifiers
   /api/price-modifiers/{id}:
     get:
       tags:
-      - price-modifiers
+        - price-modifiers
       summary: Отримати модифікатор за ID
       description: Повертає детальну інформацію про модифікатор ціни
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор модифікатора (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор модифікатора (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Інформація про модифікатор
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PriceModifierResponse'
-        '404':
+                $ref: "#/components/schemas/PriceModifierResponse"
+        "404":
           description: Модифікатор не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      operationId: getPriceModifierbyid
+                $ref: "#/components/schemas/ErrorResponse"
+      operationId: getPriceModifierById
   /api/calculate/item:
     post:
       tags:
-      - price-calculator
+        - price-calculator
       summary: Розрахувати ціну предмета
-      description: Розраховує ціну предмета з усіма модифікаторами (інтерактивний
+      description:
+        Розраховує ціну предмета з усіма модифікаторами (інтерактивний
         калькулятор)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ItemCalculationRequest'
+              $ref: "#/components/schemas/ItemCalculationRequest"
       responses:
-        '200':
+        "200":
           description: Розрахунок ціни предмета
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ItemCalculationResponse'
-        '400':
+                $ref: "#/components/schemas/ItemCalculationResponse"
+        "400":
           description: Помилка валідації параметрів
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
+                $ref: "#/components/schemas/ValidationErrorResponse"
       operationId: createCalculate
   /api/calculate/item/preview:
     post:
       tags:
-      - price-calculator
+        - price-calculator
       summary: Попередній розрахунок ціни
       description: Швидкий розрахунок без збереження (для real-time калькулятора)
       requestBody:
@@ -393,25 +395,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ItemCalculationRequest'
+              $ref: "#/components/schemas/ItemCalculationRequest"
       responses:
-        '200':
+        "200":
           description: Попередній розрахунок
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ItemCalculationResponse'
-        '400':
+                $ref: "#/components/schemas/ItemCalculationResponse"
+        "400":
           description: Помилка валідації
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-      operationId: createCalculate2
+                $ref: "#/components/schemas/ValidationErrorResponse"
+      operationId: previewCalculation
   /api/photos:
     post:
       tags:
-      - photo-management
+        - photo-management
       summary: Завантажити фотографію
       description: Завантажує фотографію предмета (максимум 5MB)
       requestBody:
@@ -421,8 +423,8 @@ paths:
             schema:
               type: object
               required:
-              - file
-              - itemId
+                - file
+                - itemId
               properties:
                 file:
                   type: string
@@ -437,52 +439,52 @@ paths:
                   maxLength: 200
                   description: Опис фотографії
       responses:
-        '201':
+        "201":
           description: Фотографія успішно завантажена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PhotoResponse'
-        '400':
+                $ref: "#/components/schemas/PhotoResponse"
+        "400":
           description: Помилка валідації або розмір файлу
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '413':
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "413":
           description: Файл занадто великий (максимум 5MB)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: createPhoto
   /api/photos/{id}:
     get:
       tags:
-      - photo-management
+        - photo-management
       summary: Отримати фотографію
       description: Повертає фотографію за ID
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор фотографії (UUID)
-        schema:
-          type: string
-          format: uuid
-      - name: size
-        in: query
-        description: Розмір зображення
-        required: false
-        schema:
-          type: string
-          enum:
-          - thumbnail
-          - medium
-          - full
-          default: medium
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор фотографії (UUID)
+          schema:
+            type: string
+            format: uuid
+        - name: size
+          in: query
+          description: Розмір зображення
+          required: false
+          schema:
+            type: string
+            enum:
+              - thumbnail
+              - medium
+              - full
+            default: medium
       responses:
-        '200':
+        "200":
           description: Фотографія
           content:
             image/jpeg:
@@ -493,74 +495,96 @@ paths:
               schema:
                 type: string
                 format: binary
-        '404':
+            application/json:
+              schema:
+                type: object
+                properties:
+                  photoId:
+                    type: string
+                    format: uuid
+                    description: Ідентифікатор фотографії
+                  filename:
+                    type: string
+                    description: Ім'я файлу
+                  format:
+                    type: string
+                    enum: [JPEG, PNG]
+                    description: Формат зображення
+                  size:
+                    type: integer
+                    description: Розмір файлу в байтах
+                  downloadUrl:
+                    type: string
+                    format: uri
+                    description: URL для завантаження зображення
+        "404":
           description: Фотографія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getPhotoById
     delete:
       tags:
-      - photo-management
+        - photo-management
       summary: Видалити фотографію
       description: Видаляє фотографію предмета
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: Унікальний ідентифікатор фотографії (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор фотографії (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '204':
+        "204":
           description: Фотографія успішно видалена
-        '404':
+        "404":
           description: Фотографія не знайдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: deletePhoto
   /api/photos/item/{itemId}:
     get:
       tags:
-      - photo-management
+        - photo-management
       summary: Отримати фотографії предмета
       description: Повертає всі фотографії конкретного предмета
       parameters:
-      - name: itemId
-        in: path
-        required: true
-        description: Унікальний ідентифікатор предмета (UUID)
-        schema:
-          type: string
-          format: uuid
+        - name: itemId
+          in: path
+          required: true
+          description: Унікальний ідентифікатор предмета (UUID)
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Список фотографій предмета
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PhotoResponse'
-        '404':
+                  $ref: "#/components/schemas/PhotoResponse"
+        "404":
           description: Предмет не знайдений
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       operationId: getPhotos
 components:
   schemas:
     ItemCalculationRequest:
       type: object
       required:
-      - priceListItemId
-      - quantity
-      - characteristics
+        - priceListItemId
+        - quantity
+        - characteristics
       properties:
         priceListItemId:
           type: string
@@ -571,7 +595,7 @@ components:
           minimum: 1
           description: Кількість предметів
         characteristics:
-          $ref: '#/components/schemas/ItemCharacteristicsRequest'
+          $ref: "#/components/schemas/ItemCharacteristicsRequest"
         modifiers:
           type: array
           items:
@@ -581,16 +605,16 @@ components:
         urgency:
           type: string
           enum:
-          - NORMAL
-          - URGENT_48H
-          - URGENT_24H
+            - NORMAL
+            - URGENT_48H
+            - URGENT_24H
           description: Терміновість виконання
           default: NORMAL
     ItemCharacteristicsRequest:
       type: object
       required:
-      - material
-      - color
+        - material
+        - color
       properties:
         material:
           type: string
@@ -614,15 +638,15 @@ components:
           items:
             type: string
             enum:
-            - FAT
-            - BLOOD
-            - PROTEIN
-            - WINE
-            - COFFEE
-            - GRASS
-            - INK
-            - COSMETICS
-            - OTHER
+              - FAT
+              - BLOOD
+              - PROTEIN
+              - WINE
+              - COFFEE
+              - GRASS
+              - INK
+              - COSMETICS
+              - OTHER
           description: Типи плям
         customStain:
           type: string
@@ -633,13 +657,13 @@ components:
           items:
             type: string
             enum:
-            - WORN
-            - TORN
-            - MISSING_HARDWARE
-            - DAMAGED_HARDWARE
-            - COLOR_CHANGE_RISK
-            - DEFORMATION_RISK
-            - NO_GUARANTEE
+              - WORN
+              - TORN
+              - MISSING_HARDWARE
+              - DAMAGED_HARDWARE
+              - COLOR_CHANGE_RISK
+              - DEFORMATION_RISK
+              - NO_GUARANTEE
           description: Дефекти та ризики
         defectNotes:
           type: string
@@ -655,11 +679,11 @@ components:
     ServiceCategoryResponse:
       type: object
       required:
-      - id
-      - code
-      - name
-      - standardDays
-      - isActive
+        - id
+        - code
+        - name
+        - standardDays
+        - isActive
       properties:
         id:
           type: string
@@ -704,13 +728,13 @@ components:
     PriceListItemResponse:
       type: object
       required:
-      - id
-      - categoryId
-      - itemNumber
-      - name
-      - unit
-      - basePrice
-      - isActive
+        - id
+        - categoryId
+        - itemNumber
+        - name
+        - unit
+        - basePrice
+        - isActive
       properties:
         id:
           type: string
@@ -721,7 +745,7 @@ components:
           format: uuid
           description: Ідентифікатор категорії
         categoryInfo:
-          $ref: '#/components/schemas/ServiceCategorySummary'
+          $ref: "#/components/schemas/ServiceCategorySummary"
         itemNumber:
           type: integer
           description: Номер предмета в каталозі
@@ -733,8 +757,8 @@ components:
         unit:
           type: string
           enum:
-          - PIECE
-          - KILOGRAM
+            - PIECE
+            - KILOGRAM
           description: Одиниця виміру
         basePrice:
           type: number
@@ -760,12 +784,12 @@ components:
     PriceModifierResponse:
       type: object
       required:
-      - id
-      - code
-      - name
-      - type
-      - value
-      - isActive
+        - id
+        - code
+        - name
+        - type
+        - value
+        - isActive
       properties:
         id:
           type: string
@@ -780,7 +804,7 @@ components:
           description: Назва модифікатора
           example: Дитячі речі (до 30 розміру)
         type:
-          $ref: '#/components/schemas/ModifierType'
+          $ref: "#/components/schemas/ModifierType"
         value:
           type: number
           format: double
@@ -819,7 +843,7 @@ components:
         appliedModifiers:
           type: array
           items:
-            $ref: '#/components/schemas/AppliedModifierResult'
+            $ref: "#/components/schemas/AppliedModifierResult"
           description: Застосовані модифікатори
         modifiersTotal:
           type: number
@@ -840,7 +864,7 @@ components:
         calculationSteps:
           type: array
           items:
-            $ref: '#/components/schemas/CalculationStep'
+            $ref: "#/components/schemas/CalculationStep"
           description: Детальні кроки розрахунку
         warnings:
           type: array
@@ -850,11 +874,11 @@ components:
     PhotoResponse:
       type: object
       required:
-      - id
-      - itemId
-      - filename
-      - url
-      - uploadedAt
+        - id
+        - itemId
+        - filename
+        - url
+        - uploadedAt
       properties:
         id:
           type: string
@@ -899,9 +923,9 @@ components:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/PriceListItemResponse'
+            $ref: "#/components/schemas/PriceListItemResponse"
         pageable:
-          $ref: '#/components/schemas/PageableInfo'
+          $ref: "#/components/schemas/PageableInfo"
         totalElements:
           type: integer
           format: int64
@@ -934,7 +958,7 @@ components:
         name:
           type: string
         type:
-          $ref: '#/components/schemas/ModifierType'
+          $ref: "#/components/schemas/ModifierType"
         value:
           type: number
           format: double
@@ -985,7 +1009,7 @@ components:
           example: Чорний
         hexCode:
           type: string
-          example: '#000000'
+          example: "#000000"
         affectsPrice:
           type: boolean
           description: Чи впливає колір на ціну
@@ -1014,9 +1038,9 @@ components:
         severity:
           type: string
           enum:
-          - LOW
-          - MEDIUM
-          - HIGH
+            - LOW
+            - MEDIUM
+            - HIGH
         affectsPrice:
           type: boolean
     DefectType:
@@ -1033,10 +1057,10 @@ components:
         riskLevel:
           type: string
           enum:
-          - LOW
-          - MEDIUM
-          - HIGH
-          - CRITICAL
+            - LOW
+            - MEDIUM
+            - HIGH
+            - CRITICAL
         requiresNotes:
           type: boolean
         affectsWarranty:
@@ -1055,11 +1079,11 @@ components:
     ModifierType:
       type: string
       enum:
-      - PERCENTAGE
-      - FIXED_AMOUNT
-      - MULTIPLIER
-      - REPLACEMENT
-      description: 'Типи модифікаторів ціни:
+        - PERCENTAGE
+        - FIXED_AMOUNT
+        - MULTIPLIER
+        - REPLACEMENT
+      description: "Типи модифікаторів ціни:
 
         * PERCENTAGE - Відсотковий (+20%)
 
@@ -1069,7 +1093,7 @@ components:
 
         * REPLACEMENT - Заміна базової ціни
 
-        '
+        "
     ErrorResponse:
       type: object
       properties:
@@ -1101,7 +1125,7 @@ components:
         validationErrors:
           type: array
           items:
-            $ref: '#/components/schemas/FieldError'
+            $ref: "#/components/schemas/FieldError"
     FieldError:
       type: object
       properties:

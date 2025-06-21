@@ -1,0 +1,38 @@
+# Git files
+.git/
+.gitignore
+
+# Maven target directory
+target/
+
+# IDE files
+.cursor/
+.windsurf/
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Log files
+*.log
+
+# Build files (downloaded by mvnw wrapper, Dockerfile handles this)
+# .mvn/wrapper/maven-wrapper.jar
+
+# Test sources (not needed for running the app)
+src/test/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Other potential files
+HELP.md
+pom.xml.versionsBackup
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+*.swp
+*.swo
