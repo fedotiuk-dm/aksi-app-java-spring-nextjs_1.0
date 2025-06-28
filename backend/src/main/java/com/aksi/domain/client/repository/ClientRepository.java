@@ -1,9 +1,8 @@
 package com.aksi.domain.client.repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,114 +16,138 @@ import com.aksi.domain.client.enums.ClientSourceType;
 import com.aksi.domain.client.enums.CommunicationMethodType;
 
 /**
- * Repository для роботи з клієнтами
- * Підтримує всі типи пошуку згідно OpenAPI
+ * Spring Data JPA репозиторій для роботи з клієнтами.
+ * Надає методи для CRUD операцій та спеціалізованого пошуку.
  */
 @Repository
 public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
 
-    // === ОСНОВНІ CRUD ОПЕРАЦІЇ ===
-
     /**
-     * Пошук активного клієнта за UUID
+     * Пошук клієнта за номером телефону
      */
-    Optional<ClientEntity> findByUuidAndIsActiveTrue(UUID uuid);
+    Optional<ClientEntity> findByPhone(String phone);
 
     /**
-     * Пошук клієнта за телефоном (для перевірки унікальності)
+     * Пошук клієнта за email
      */
-    Optional<ClientEntity> findByPhoneAndIsActiveTrue(String phone);
+    Optional<ClientEntity> findByEmail(String email);
 
     /**
-     * Всі активні клієнти з сортуванням
+     * Перевірка існування клієнта з таким телефоном
      */
-    Page<ClientEntity> findByIsActiveTrueOrderByLastNameAscFirstNameAsc(Pageable pageable);
-
-    // === ШВИДКИЙ ПОШУК (для Order Wizard) ===
+    boolean existsByPhone(String phone);
 
     /**
-     * Швидкий пошук клієнтів за ім'ям, прізвищем, телефоном, email
+     * Перевірка існування клієнта з таким email
+     */
+    boolean existsByEmail(String email);
+
+    /**
+     * Пошук активних клієнтів
+     */
+    Page<ClientEntity> findByIsActiveTrue(Pageable pageable);
+
+    /**
+     * Пошук клієнтів за джерелом
+     */
+    Page<ClientEntity> findBySourceTypeAndIsActiveTrue(ClientSourceType sourceType, Pageable pageable);
+
+    /**
+     * Швидкий пошук клієнтів для OrderWizard - НАЙГОЛОВНІШИЙ МЕТОД
+     * Пошук за прізвищем, ім'ям, телефоном, email з автозаповненням
      */
     @Query("""
         SELECT c FROM ClientEntity c
         WHERE c.isActive = true
         AND (
-            LOWER(c.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR
-            LOWER(c.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR
+            LOWER(c.firstName) LIKE LOWER(CONCAT(:query, '%')) OR
+            LOWER(c.lastName) LIKE LOWER(CONCAT(:query, '%')) OR
+            LOWER(CONCAT(c.firstName, ' ', c.lastName)) LIKE LOWER(CONCAT('%', :query, '%')) OR
             LOWER(CONCAT(c.lastName, ' ', c.firstName)) LIKE LOWER(CONCAT('%', :query, '%')) OR
             c.phone LIKE CONCAT('%', :query, '%') OR
             LOWER(c.email) LIKE LOWER(CONCAT('%', :query, '%'))
         )
-        ORDER BY c.lastName ASC, c.firstName ASC
+        ORDER BY
+            CASE
+                WHEN LOWER(c.lastName) LIKE LOWER(CONCAT(:query, '%')) THEN 1
+                WHEN LOWER(c.firstName) LIKE LOWER(CONCAT(:query, '%')) THEN 2
+                WHEN c.phone LIKE CONCAT(:query, '%') THEN 3
+                ELSE 4
+            END,
+            c.lastName, c.firstName
         """)
     List<ClientEntity> quickSearch(@Param("query") String query, Pageable pageable);
 
-    // === РОЗШИРЕНИЙ ПОШУК ===
-
     /**
-     * Пошук за ім'ям (часткове співпадіння)
-     */
-    Page<ClientEntity> findByIsActiveTrueAndFirstNameContainingIgnoreCase(String firstName, Pageable pageable);
-
-    /**
-     * Пошук за прізвищем (часткове співпадіння)
-     */
-    Page<ClientEntity> findByIsActiveTrueAndLastNameContainingIgnoreCase(String lastName, Pageable pageable);
-
-    /**
-     * Пошук за email (часткове співпадіння)
-     */
-    Page<ClientEntity> findByIsActiveTrueAndEmailContainingIgnoreCase(String email, Pageable pageable);
-
-    /**
-     * Пошук за джерелом надходження
-     */
-    Page<ClientEntity> findByIsActiveTrueAndSourceType(ClientSourceType sourceType, Pageable pageable);
-
-    /**
-     * Пошук за способом зв'язку
+     * Розширений пошук клієнтів з фільтрами
      */
     @Query("""
         SELECT c FROM ClientEntity c
         WHERE c.isActive = true
-        AND :communicationMethod MEMBER OF c.communicationMethods
+        AND (:firstName IS NULL OR LOWER(c.firstName) LIKE LOWER(CONCAT('%', :firstName, '%')))
+        AND (:lastName IS NULL OR LOWER(c.lastName) LIKE LOWER(CONCAT('%', :lastName, '%')))
+        AND (:phone IS NULL OR c.phone LIKE CONCAT('%', :phone, '%'))
+        AND (:email IS NULL OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%')))
+        AND (:city IS NULL OR LOWER(c.address.city) LIKE LOWER(CONCAT('%', :city, '%')))
+        AND (:sourceType IS NULL OR c.sourceType = :sourceType)
+        AND (:registrationDateFrom IS NULL OR c.registrationDate >= :registrationDateFrom)
+        AND (:registrationDateTo IS NULL OR c.registrationDate <= :registrationDateTo)
+        AND (:isVip IS NULL OR
+             (:isVip = true AND (c.totalOrders >= 10 OR c.totalSpent >= 5000.0)) OR
+             (:isVip = false AND (c.totalOrders < 10 AND c.totalSpent < 5000.0)))
         """)
-    Page<ClientEntity> findByIsActiveTrueAndCommunicationMethodsContaining(
-        @Param("communicationMethod") CommunicationMethodType communicationMethod,
-        Pageable pageable);
+    Page<ClientEntity> advancedSearch(
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("phone") String phone,
+            @Param("email") String email,
+            @Param("city") String city,
+            @Param("sourceType") ClientSourceType sourceType,
+            @Param("registrationDateFrom") LocalDateTime registrationDateFrom,
+            @Param("registrationDateTo") LocalDateTime registrationDateTo,
+            @Param("isVip") Boolean isVip,
+            Pageable pageable);
 
     /**
-     * Пошук за періодом реєстрації
+     * Пошук клієнтів з певним способом зв'язку
      */
-    @Query("""
-        SELECT c FROM ClientEntity c
-        WHERE c.isActive = true
-        AND DATE(c.createdAt) BETWEEN :dateFrom AND :dateTo
-        """)
-    Page<ClientEntity> findByIsActiveTrueAndCreatedAtBetween(
-        @Param("dateFrom") LocalDate dateFrom,
-        @Param("dateTo") LocalDate dateTo,
-        Pageable pageable);
-
-    // === СТАТИСТИКА ===
+    @Query("SELECT c FROM ClientEntity c JOIN c.communicationMethods cm WHERE cm = :method AND c.isActive = true")
+    List<ClientEntity> findByCommunicationMethod(@Param("method") CommunicationMethodType method);
 
     /**
-     * Кількість активних клієнтів
+     * Пошук VIP клієнтів
+     */
+    @Query("SELECT c FROM ClientEntity c WHERE c.isActive = true AND (c.totalOrders >= 10 OR c.totalSpent >= 5000.0)")
+    Page<ClientEntity> findVipClients(Pageable pageable);
+
+    /**
+     * Пошук неактивних клієнтів (давно не робили замовлення)
+     */
+    @Query("SELECT c FROM ClientEntity c WHERE c.isActive = true AND (c.lastOrderDate IS NULL OR c.lastOrderDate < :cutoffDate)")
+    Page<ClientEntity> findInactiveClients(@Param("cutoffDate") LocalDateTime cutoffDate, Pageable pageable);
+
+    /**
+     * Підрахунок загальної кількості активних клієнтів
      */
     long countByIsActiveTrue();
 
     /**
-     * Кількість клієнтів за джерелом
+     * Підрахунок клієнтів за джерелом
      */
-    long countByIsActiveTrueAndSourceType(ClientSourceType sourceType);
+    long countBySourceTypeAndIsActiveTrue(ClientSourceType sourceType);
 
     /**
-     * Клієнти зареєстровані за сьогодні
+     * Топ клієнти за сумою витрат
      */
-    @Query("""
-        SELECT COUNT(c) FROM ClientEntity c
-        WHERE c.isActive = true
-        AND DATE(c.createdAt) = CURRENT_DATE
-        """)
-    long countRegisteredToday();
+    @Query("SELECT c FROM ClientEntity c WHERE c.isActive = true ORDER BY c.totalSpent DESC")
+    Page<ClientEntity> findTopClientsBySpending(Pageable pageable);
+
+    /**
+     * Клієнти зареєстровані за період
+     */
+    @Query("SELECT c FROM ClientEntity c WHERE c.isActive = true AND c.registrationDate BETWEEN :startDate AND :endDate")
+    Page<ClientEntity> findClientsByRegistrationPeriod(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            Pageable pageable);
 }

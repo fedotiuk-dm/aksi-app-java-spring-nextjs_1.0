@@ -1,208 +1,201 @@
 package com.aksi.domain.client.validation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
 import com.aksi.domain.client.entity.ClientEntity;
-import com.aksi.domain.client.repository.ClientRepository;
+import com.aksi.domain.client.enums.CommunicationMethodType;
+import com.aksi.domain.client.exception.ClientValidationException;
 
 /**
- * Централізований валідатор для всіх бізнес-правил клієнтів
- * Інкапсулює ВСІ правила валідації в одному місці
+ * Валідатор для бізнес-правил клієнтів.
+ * Містить додаткову валідацію поверх JPA аннотацій.
  */
 @Component
 public class ClientValidator {
 
     private static final Pattern PHONE_PATTERN = Pattern.compile("^\\+380\\d{9}$");
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$");
-    private static final int MIN_NAME_LENGTH = 2;
-    private static final int MAX_NAME_LENGTH = 50;
-    private static final int MAX_EMAIL_LENGTH = 100;
-    private static final int MAX_ADDRESS_LENGTH = 500;
-    private static final int MAX_NOTES_LENGTH = 500;
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
 
-    private final ClientRepository clientRepository;
+    /**
+     * Валідація клієнта перед створенням
+     */
+    public void validateForCreation(ClientEntity client) {
+        Map<String, List<String>> errors = new HashMap<>();
 
-    public ClientValidator(ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
+        validateBasicFields(client, errors);
+        validatePhoneFormat(client.getPhone(), errors);
+        validateEmailFormat(client.getEmail(), errors);
+        validateCommunicationMethods(client, errors);
+
+        if (!errors.isEmpty()) {
+            throw new ClientValidationException("Помилки валідації при створенні клієнта", errors);
+        }
     }
 
     /**
-     * Валідація нового клієнта (перед створенням)
+     * Валідація клієнта перед оновленням
      */
-    public List<String> validateNewClient(ClientEntity client) {
-        List<String> errors = new ArrayList<>();
+    public void validateForUpdate(ClientEntity client) {
+        Map<String, List<String>> errors = new HashMap<>();
 
-        // Базова валідація
-        errors.addAll(validateBasicFields(client));
+        validateBasicFields(client, errors);
+        validatePhoneFormat(client.getPhone(), errors);
+        validateEmailFormat(client.getEmail(), errors);
+        validateCommunicationMethods(client, errors);
 
-        // Перевірка унікальності телефону
-        validatePhoneUniqueness(client.getPhone(), null)
-            .ifPresent(errors::add);
-
-        return errors;
+        if (!errors.isEmpty()) {
+            throw new ClientValidationException("Помилки валідації при оновленні клієнта", errors);
+        }
     }
 
     /**
-     * Валідація існуючого клієнта (перед оновленням)
+     * Валідація номера телефону
      */
-    public List<String> validateExistingClient(ClientEntity client) {
-        List<String> errors = new ArrayList<>();
+    public void validatePhone(String phone) {
+        if (phone == null || phone.trim().isEmpty()) {
+            throw new ClientValidationException("phone", "Номер телефону обов'язковий");
+        }
 
-        // Базова валідація
-        errors.addAll(validateBasicFields(client));
-
-        // Перевірка унікальності телефону (виключаючи поточного клієнта)
-        validatePhoneUniqueness(client.getPhone(), client.getUuid())
-            .ifPresent(errors::add);
-
-        return errors;
+        if (!PHONE_PATTERN.matcher(phone).matches()) {
+            throw new ClientValidationException("phone",
+                "Номер телефону повинен бути у форматі +380XXXXXXXXX");
+        }
     }
 
     /**
-     * Валідація базових полів
+     * Валідація email (якщо вказаний)
      */
-    private List<String> validateBasicFields(ClientEntity client) {
-        List<String> errors = new ArrayList<>();
+    public void validateEmail(String email) {
+        if (email != null && !email.trim().isEmpty()) {
+            if (!EMAIL_PATTERN.matcher(email).matches()) {
+                throw new ClientValidationException("email", "Некоректний формат email");
+            }
+        }
+    }
 
+    private void validateBasicFields(ClientEntity client, Map<String, List<String>> errors) {
         // Ім'я
-        validateName(client.getFirstName(), "Ім'я")
-            .ifPresent(errors::add);
+        if (client.getFirstName() == null || client.getFirstName().trim().isEmpty()) {
+            addError(errors, "firstName", "Ім'я клієнта обов'язкове");
+        } else if (client.getFirstName().trim().length() < 2) {
+            addError(errors, "firstName", "Ім'я повинно містити мінімум 2 символи");
+        } else if (client.getFirstName().trim().length() > 50) {
+            addError(errors, "firstName", "Ім'я не може перевищувати 50 символів");
+        }
 
         // Прізвище
-        validateName(client.getLastName(), "Прізвище")
-            .ifPresent(errors::add);
-
-        // Телефон
-        validatePhone(client.getPhone())
-            .ifPresent(errors::add);
-
-        // Email (опціональний)
-        if (client.getEmail() != null && !client.getEmail().trim().isEmpty()) {
-            validateEmail(client.getEmail())
-                .ifPresent(errors::add);
+        if (client.getLastName() == null || client.getLastName().trim().isEmpty()) {
+            addError(errors, "lastName", "Прізвище клієнта обов'язкове");
+        } else if (client.getLastName().trim().length() < 2) {
+            addError(errors, "lastName", "Прізвище повинно містити мінімум 2 символи");
+        } else if (client.getLastName().trim().length() > 50) {
+            addError(errors, "lastName", "Прізвище не може перевищувати 50 символів");
         }
 
-        // Адреса (опціональна)
-        if (client.getAddress() != null && !client.getAddress().trim().isEmpty()) {
-            validateAddress(client.getAddress())
-                .ifPresent(errors::add);
+        // Примітки
+        if (client.getNotes() != null && client.getNotes().length() > 500) {
+            addError(errors, "notes", "Примітки не можуть перевищувати 500 символів");
         }
-
-        // Примітки (опціональні)
-        if (client.getNotes() != null && !client.getNotes().trim().isEmpty()) {
-            validateNotes(client.getNotes())
-                .ifPresent(errors::add);
-        }
-
-        return errors;
     }
 
-    /**
-     * Валідація імені/прізвища
-     */
-    private Optional<String> validateName(String name, String fieldName) {
-        if (name == null || name.trim().isEmpty()) {
-            return Optional.of(fieldName + " є обов'язковим");
-        }
-
-        String trimmedName = name.trim();
-        if (trimmedName.length() < MIN_NAME_LENGTH) {
-            return Optional.of(fieldName + " має бути не менше " + MIN_NAME_LENGTH + " символів");
-        }
-
-        if (trimmedName.length() > MAX_NAME_LENGTH) {
-            return Optional.of(fieldName + " не може перевищувати " + MAX_NAME_LENGTH + " символів");
-        }
-
-        return Optional.empty();
-    }
-
-    /**
-     * Валідація телефону
-     */
-    private Optional<String> validatePhone(String phone) {
+    private void validatePhoneFormat(String phone, Map<String, List<String>> errors) {
         if (phone == null || phone.trim().isEmpty()) {
-            return Optional.of("Телефон є обов'язковим");
+            addError(errors, "phone", "Номер телефону обов'язковий");
+            return;
         }
 
-        if (!PHONE_PATTERN.matcher(phone.trim()).matches()) {
-            return Optional.of("Телефон має бути в форматі +380XXXXXXXXX");
+        if (!PHONE_PATTERN.matcher(phone).matches()) {
+            addError(errors, "phone", "Номер телефону повинен бути у форматі +380XXXXXXXXX");
+        }
+    }
+
+    private void validateEmailFormat(String email, Map<String, List<String>> errors) {
+        if (email != null && !email.trim().isEmpty()) {
+            if (!EMAIL_PATTERN.matcher(email).matches()) {
+                addError(errors, "email", "Некоректний формат email");
+            }
+        }
+    }
+
+    private void validateCommunicationMethods(ClientEntity client, Map<String, List<String>> errors) {
+        List<CommunicationMethodType> methods = client.getCommunicationMethods();
+
+        if (methods != null && !methods.isEmpty()) {
+            // Якщо обрано EMAIL, то email повинен бути вказаний
+            if (methods.contains(CommunicationMethodType.EMAIL)) {
+                if (client.getEmail() == null || client.getEmail().trim().isEmpty()) {
+                    addError(errors, "communicationMethods",
+                        "При виборі EMAIL як способу зв'язку, email адреса обов'язкова");
+                }
+            }
+
+            // Перевірка на дублікати
+            if (methods.size() != methods.stream().distinct().count()) {
+                addError(errors, "communicationMethods",
+                    "Способи зв'язку не повинні дублюватися");
+            }
+        }
+    }
+
+    private void addError(Map<String, List<String>> errors, String field, String error) {
+        errors.computeIfAbsent(field, k -> new ArrayList<>()).add(error);
+    }
+
+    /**
+     * Перевірка чи рядок є валідним українським іменем/прізвищем
+     */
+    public boolean isValidUkrainianName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return false;
         }
 
-        return Optional.empty();
+        // Українські літери, апостроф, дефіс та пробіл
+        Pattern ukrainianNamePattern = Pattern.compile("^[А-ЯІЇЄҐа-яіїєґ\\s'-]+$");
+        return ukrainianNamePattern.matcher(name.trim()).matches() &&
+               name.trim().length() >= 2 &&
+               name.trim().length() <= 50;
     }
 
     /**
-     * Валідація email
+     * Нормалізація імені (перша літера велика, решта малі)
      */
-    private Optional<String> validateEmail(String email) {
-        String trimmedEmail = email.trim();
-
-        if (trimmedEmail.length() > MAX_EMAIL_LENGTH) {
-            return Optional.of("Email не може перевищувати " + MAX_EMAIL_LENGTH + " символів");
+    public String normalizeName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return name;
         }
 
-        if (!EMAIL_PATTERN.matcher(trimmedEmail).matches()) {
-            return Optional.of("Некоректний формат email");
+        String trimmed = name.trim();
+        return trimmed.substring(0, 1).toUpperCase() +
+               (trimmed.length() > 1 ? trimmed.substring(1).toLowerCase() : "");
+    }
+
+    /**
+     * Нормалізація номера телефону
+     */
+    public String normalizePhone(String phone) {
+        if (phone == null) {
+            return null;
         }
 
-        return Optional.empty();
-    }
+        // Видаляємо всі не-цифри
+        String digits = phone.replaceAll("\\D", "");
 
-    /**
-     * Валідація адреси
-     */
-    private Optional<String> validateAddress(String address) {
-        if (address.trim().length() > MAX_ADDRESS_LENGTH) {
-            return Optional.of("Адреса не може перевищувати " + MAX_ADDRESS_LENGTH + " символів");
+        // Якщо починається з 380, додаємо +
+        if (digits.startsWith("380") && digits.length() == 12) {
+            return "+" + digits;
         }
 
-        return Optional.empty();
-    }
-
-    /**
-     * Валідація приміток
-     */
-    private Optional<String> validateNotes(String notes) {
-        if (notes.trim().length() > MAX_NOTES_LENGTH) {
-            return Optional.of("Примітки не можуть перевищувати " + MAX_NOTES_LENGTH + " символів");
+        // Якщо починається з 0, замінюємо на +380
+        if (digits.startsWith("0") && digits.length() == 10) {
+            return "+380" + digits.substring(1);
         }
 
-        return Optional.empty();
-    }
-
-    /**
-     * Перевірка унікальності телефону
-     */
-    private Optional<String> validatePhoneUniqueness(String phone, java.util.UUID excludeClientUuid) {
-        return clientRepository.findByPhoneAndIsActiveTrue(phone.trim())
-            .filter(existingClient -> !existingClient.getUuid().equals(excludeClientUuid))
-            .map(existingClient -> "Клієнт з телефоном " + phone + " вже існує");
-    }
-
-    /**
-     * Швидка перевірка чи клієнт валідний
-     */
-    public boolean isValidClient(ClientEntity client) {
-        return validateNewClient(client).isEmpty();
-    }
-
-    /**
-     * Швидка перевірка чи телефон валідний
-     */
-    public boolean isValidPhone(String phone) {
-        return validatePhone(phone).isEmpty();
-    }
-
-    /**
-     * Швидка перевірка чи email валідний
-     */
-    public boolean isValidEmail(String email) {
-        return email != null && !email.trim().isEmpty() && validateEmail(email).isEmpty();
+        return phone; // Повертаємо оригінал якщо не можемо нормалізувати
     }
 }

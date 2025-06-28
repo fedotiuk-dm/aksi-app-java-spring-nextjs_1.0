@@ -1,7 +1,8 @@
 package com.aksi.domain.client.entity;
 
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.aksi.domain.client.enums.ClientSourceType;
 import com.aksi.domain.client.enums.CommunicationMethodType;
@@ -10,131 +11,204 @@ import com.aksi.shared.BaseEntity;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
- * JPA Entity для клієнта хімчистки
- * Розширює BaseEntity (ID, timestamps, isActive)
+ * Сутність клієнта хімчистки.
+ * Представляє доменну модель клієнта з повною бізнес-логікою.
  */
-@Entity
-@Table(name = "clients", indexes = {
-    @Index(name = "idx_client_uuid", columnList = "uuid", unique = true),
-    @Index(name = "idx_client_phone", columnList = "phone"),
-    @Index(name = "idx_client_email", columnList = "email"),
-    @Index(name = "idx_client_active", columnList = "isActive"),
-    @Index(name = "idx_client_fullname", columnList = "lastName, firstName")
-})
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, of = {"uuid"})
-@ToString(callSuper = true, exclude = {"communicationMethods"})
+@EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "clients", indexes = {
+    @Index(name = "idx_client_phone", columnList = "phone"),
+    @Index(name = "idx_client_email", columnList = "email"),
+    @Index(name = "idx_client_last_name", columnList = "lastName"),
+    @Index(name = "idx_client_full_name", columnList = "lastName, firstName")
+})
 public class ClientEntity extends BaseEntity {
 
-    @Column(name = "uuid", nullable = false, unique = true, updatable = false)
-    private UUID uuid;
-
-    @NotBlank(message = "Ім'я є обов'язковим")
-    @Size(min = 2, max = 50, message = "Ім'я має бути від 2 до 50 символів")
     @Column(name = "first_name", nullable = false, length = 50)
+    @NotBlank(message = "Ім'я клієнта обов'язкове")
+    @Size(min = 2, max = 50, message = "Ім'я повинно містити від 2 до 50 символів")
     private String firstName;
 
-    @NotBlank(message = "Прізвище є обов'язковим")
-    @Size(min = 2, max = 50, message = "Прізвище має бути від 2 до 50 символів")
     @Column(name = "last_name", nullable = false, length = 50)
+    @NotBlank(message = "Прізвище клієнта обов'язкове")
+    @Size(min = 2, max = 50, message = "Прізвище повинно містити від 2 до 50 символів")
     private String lastName;
 
-    @NotBlank(message = "Телефон є обов'язковим")
-    @Pattern(regexp = "^\\+380\\d{9}$", message = "Телефон має бути в форматі +380XXXXXXXXX")
     @Column(name = "phone", nullable = false, unique = true, length = 13)
+    @NotBlank(message = "Номер телефону обов'язковий")
+    @Pattern(regexp = "^\\+380\\d{9}$", message = "Номер телефону повинен бути у форматі +380XXXXXXXXX")
     private String phone;
 
+    @Column(name = "email", length = 100)
     @Email(message = "Некоректний формат email")
     @Size(max = 100, message = "Email не може перевищувати 100 символів")
-    @Column(name = "email", length = 100)
     private String email;
 
-    @Size(max = 500, message = "Адреса не може перевищувати 500 символів")
-    @Column(name = "address", length = 500)
-    private String address;
+    @Valid
+    @Embedded
+    private Address address;
 
-    @ElementCollection(targetClass = CommunicationMethodType.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = CommunicationMethodType.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "client_communication_methods",
                     joinColumns = @JoinColumn(name = "client_id"))
     @Column(name = "communication_method")
-    @Builder.Default
-    private Set<CommunicationMethodType> communicationMethods = Set.of();
+    private List<CommunicationMethodType> communicationMethods = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "source_type", length = 20)
     private ClientSourceType sourceType;
 
-    @Size(max = 500, message = "Примітки не можуть перевищувати 500 символів")
     @Column(name = "notes", length = 500)
+    @Size(max = 500, message = "Примітки не можуть перевищувати 500 символів")
     private String notes;
 
-    @Builder.Default
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
-    /**
-     * Автогенерація UUID перед збереженням
-     */
+    @Column(name = "registration_date", nullable = false)
+    private LocalDateTime registrationDate;
+
+    // Business fields для статистики (можуть бути оновлені через events)
+    @Column(name = "total_orders")
+    private Integer totalOrders = 0;
+
+    @Column(name = "total_spent")
+    private Double totalSpent = 0.0;
+
+    @Column(name = "last_order_date")
+    private LocalDateTime lastOrderDate;
+
+
+
     @PrePersist
-    private void generateUuid() {
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID();
+    protected void onCreate() {
+        if (registrationDate == null) {
+            registrationDate = LocalDateTime.now();
+        }
+        if (address == null) {
+            address = Address.empty();
         }
     }
 
+    // Business methods
+
     /**
-     * Business method: повне ім'я клієнта
+     * Повне ім'я клієнта
      */
     public String getFullName() {
-        return String.format("%s %s", lastName, firstName).trim();
+        return firstName + " " + lastName;
     }
 
     /**
-     * Business method: активний клієнт з контактним телефоном
+     * Перевірка чи клієнт VIP (більше 10 замовлень або витратив більше 5000 грн)
      */
-    public boolean hasValidContact() {
-        return isActive && phone != null && !phone.trim().isEmpty();
+    public boolean isVip() {
+        return (totalOrders != null && totalOrders >= 10) ||
+               (totalSpent != null && totalSpent >= 5000.0);
     }
 
     /**
-     * Business method: чи має клієнт email для зв'язку
+     * Оновлення контактної інформації
      */
-    public boolean hasEmailCommunication() {
-        return email != null &&
-               !email.trim().isEmpty() &&
-               communicationMethods.contains(CommunicationMethodType.EMAIL);
+    public void updateContactInfo(String phone, String email, Address address,
+                                 List<CommunicationMethodType> communicationMethods) {
+        if (phone != null && !phone.equals(this.phone)) {
+            this.phone = phone;
+        }
+        this.email = email;
+        this.address = address != null ? address : Address.empty();
+        this.communicationMethods = communicationMethods != null ?
+            new ArrayList<>(communicationMethods) : new ArrayList<>();
     }
 
     /**
-     * Business method: м'яке видалення клієнта
+     * Оновлення статистики замовлень
+     */
+    public void updateOrderStatistics(int orderCount, double totalAmount, LocalDateTime lastOrderDate) {
+        this.totalOrders = orderCount;
+        this.totalSpent = totalAmount;
+        this.lastOrderDate = lastOrderDate;
+    }
+
+    /**
+     * Деактивація клієнта (м'яке видалення)
      */
     public void deactivate() {
         this.isActive = false;
     }
+
+    /**
+     * Активація клієнта
+     */
+    public void activate() {
+        this.isActive = true;
+    }
+
+    /**
+     * Перевірка чи клієнт має певний спосіб зв'язку
+     */
+    public boolean hasCommunicationMethod(CommunicationMethodType method) {
+        return communicationMethods.contains(method);
+    }
+
+    /**
+     * Додавання способу зв'язку
+     */
+    public void addCommunicationMethod(CommunicationMethodType method) {
+        if (!communicationMethods.contains(method)) {
+            communicationMethods.add(method);
+        }
+    }
+
+    /**
+     * Видалення способу зв'язку
+     */
+    public void removeCommunicationMethod(CommunicationMethodType method) {
+        communicationMethods.remove(method);
+    }
+
+    /**
+     * Середня вартість замовлення
+     */
+    public Double getAverageOrderValue() {
+        if (totalOrders == null || totalOrders == 0 || totalSpent == null) {
+            return 0.0;
+        }
+        return totalSpent / totalOrders;
+    }
+
+    /**
+     * Перевірка чи клієнт давно не робив замовлення (більше року)
+     */
+    public boolean isInactive() {
+        return lastOrderDate == null ||
+               lastOrderDate.isBefore(LocalDateTime.now().minusYears(1));
+    }
+
+
 }
