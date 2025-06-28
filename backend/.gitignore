@@ -1,5 +1,4 @@
 HELP.md
-target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -40,6 +39,3 @@ build/
 **/application-local.yml
 **/application-local.properties
 
-# Generated sources - no linting needed
-target/
-*.class

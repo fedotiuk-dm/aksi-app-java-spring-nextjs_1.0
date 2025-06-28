@@ -177,7 +177,6 @@
                     <compilerArgs>
                         <arg>-Xlint:unchecked</arg>
                         <arg>-Xlint:deprecation</arg>
-                        <arg>-Xlint:-unused</arg>
                     </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
