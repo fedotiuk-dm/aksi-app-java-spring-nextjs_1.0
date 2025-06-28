@@ -75,9 +75,44 @@
             schema:
               type: string
               format: binary
+            example: "[Binary PNG signature data]"
           image/svg+xml:
             schema:
               type: string
+            example: "<svg><path d='M10,10 L20,20'></path></svg>"
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: URL для завантаження зображення підпису
+                format:
+                  type: string
+                  enum: [PNG, SVG]
+                  description: Формат зображення
+                filename:
+                  type: string
+                  description: Ім'я файлу для завантаження
+                size:
+                  type: integer
+                  description: Розмір файлу в байтах
+                dimensions:
+                  type: object
+                  properties:
+                    width:
+                      type: integer
+                    height:
+                      type: integer
+              example:
+                url: "http://localhost:8080/api/digital-signatures/550e8400-e29b-41d4-a716-446655440000/image?format=PNG"
+                format: "PNG"
+                filename: "signature-550e8400-e29b-41d4-a716-446655440000.png"
+                size: 5120
+                dimensions:
+                  width: 200
+                  height: 100
         headers:
           Content-Disposition:
             description: Attachment filename

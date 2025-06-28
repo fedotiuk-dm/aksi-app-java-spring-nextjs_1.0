@@ -200,14 +200,40 @@
             schema:
               type: string
               format: binary
+            example: "[Binary JPEG data]"
           image/png:
             schema:
               type: string
               format: binary
+            example: "[Binary PNG data]"
           image/webp:
             schema:
               type: string
               format: binary
+            example: "[Binary WebP data]"
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: URL для завантаження файлу
+                contentType:
+                  type: string
+                  enum: [image/jpeg, image/png, image/webp]
+                  description: MIME тип файлу
+                size:
+                  type: integer
+                  description: Розмір файлу в байтах
+                thumbnail:
+                  type: boolean
+                  description: Чи це мініатюра
+              example:
+                url: "http://localhost:8080/api/photos/123e4567-e89b-12d3-a456-426614174000/file"
+                contentType: "image/jpeg"
+                size: 102400
+                thumbnail: false
       404:
         description: Фотографія не знайдена
         content:

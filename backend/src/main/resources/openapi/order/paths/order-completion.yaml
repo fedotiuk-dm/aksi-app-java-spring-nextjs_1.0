@@ -78,9 +78,31 @@
             schema:
               type: string
               format: binary
+            example: "[Binary PDF data]"
           text/html:
             schema:
               type: string
+            example: "<html><body>Receipt content</body></html>"
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: URL для завантаження квитанції
+                format:
+                  type: string
+                  enum: [PDF, HTML]
+                  description: Формат згенерованої квитанції
+                generateTime:
+                  type: string
+                  format: date-time
+                  description: Час генерації
+              example:
+                url: "http://localhost:8080/api/orders/123e4567-e89b-12d3-a456-426614174000/receipt?format=PDF"
+                format: "PDF"
+                generateTime: "2025-01-11T12:00:00Z"
       "404":
         description: Замовлення не знайдене
         content:
