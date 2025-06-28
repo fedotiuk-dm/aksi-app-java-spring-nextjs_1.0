@@ -1,0 +1,90 @@
+# Paths для завершення замовлення
+/api/orders/{id}/complete:
+  post:
+    tags:
+      - order-completion
+    summary: Завершити оформлення замовлення
+    description: Завершує оформлення замовлення та генерує квитанцію
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Унікальний ідентифікатор замовлення (UUID)
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/order-requests.yaml#/CompleteOrderRequest"
+    responses:
+      "200":
+        description: Замовлення успішно завершене
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-calculation-schemas.yaml#/CompletedOrderResponse"
+      "400":
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      "404":
+        description: Замовлення не знайдене
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+      "409":
+        description: Замовлення вже завершене
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: completeOrder
+
+/api/orders/{id}/receipt:
+  get:
+    tags:
+      - order-completion
+    summary: Отримати квитанцію замовлення
+    description: Генерує та повертає квитанцію в PDF форматі
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Унікальний ідентифікатор замовлення (UUID)
+        schema:
+          type: string
+          format: uuid
+      - name: format
+        in: query
+        required: false
+        description: Формат квитанції
+        schema:
+          type: string
+          enum:
+            - PDF
+            - HTML
+          default: PDF
+    responses:
+      "200":
+        description: Квитанція згенерована
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+          text/html:
+            schema:
+              type: string
+      "404":
+        description: Замовлення не знайдене
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: generateOrderReceipt

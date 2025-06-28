@@ -1,0 +1,134 @@
+# Enum схеми для Document домену
+DocumentType:
+  type: string
+  enum:
+    - RECEIPT
+    - CONTRACT
+    - INVOICE
+    - PHOTO
+    - QR_CODE
+    - SIGNATURE
+  description: |
+    Типи документів:
+    * RECEIPT - Квитанція
+    * CONTRACT - Договір
+    * INVOICE - Рахунок
+    * PHOTO - Фото
+    * QR_CODE - QR-код
+    * SIGNATURE - Підпис
+
+DocumentStatus:
+  type: string
+  enum:
+    - DRAFT
+    - GENERATED
+    - SIGNED
+    - PRINTED
+    - ARCHIVED
+  description: |
+    Статуси документів:
+    * DRAFT - Чернетка
+    * GENERATED - Згенеровано
+    * SIGNED - Підписано
+    * PRINTED - Роздруковано
+    * ARCHIVED - Заархівовано
+
+SignatureType:
+  type: string
+  enum:
+    - CLIENT_HANDOVER
+    - CLIENT_PICKUP
+    - OPERATOR
+    - DIGITAL
+  description: |
+    Типи підписів:
+    * CLIENT_HANDOVER - Підпис клієнта при здачі
+    * CLIENT_PICKUP - Підпис клієнта при отриманні
+    * OPERATOR - Підпис оператора
+    * DIGITAL - Цифровий підпис
+
+ReceiptTemplate:
+  type: string
+  enum:
+    - STANDARD
+    - COMPACT
+    - DETAILED
+  description: |
+    Шаблони квитанцій:
+    * STANDARD - Стандартний
+    * COMPACT - Компактний
+    * DETAILED - Детальний
+
+QRCodeType:
+  type: string
+  enum:
+    - ORDER_TRACKING
+    - RECEIPT_VERIFICATION
+    - CONTACT_INFO
+  description: |
+    Типи QR-кодів:
+    * ORDER_TRACKING - Відстеження замовлення
+    * RECEIPT_VERIFICATION - Перевірка квитанції
+    * CONTACT_INFO - Контактна інформація
+
+QRCodeFormat:
+  type: string
+  enum:
+    - PNG
+    - SVG
+    - JPEG
+  description: |
+    Формати QR-кодів:
+    * PNG - Растрове зображення PNG
+    * SVG - Векторне зображення SVG
+    * JPEG - Растрове зображення JPEG
+
+ErrorCorrectionLevel:
+  type: string
+  enum:
+    - LOW
+    - MEDIUM
+    - QUARTILE
+    - HIGH
+  description: |
+    Рівні корекції помилок:
+    * LOW - Низький (7%)
+    * MEDIUM - Середній (15%)
+    * QUARTILE - Високий (25%)
+    * HIGH - Максимальний (30%)
+
+SignatureMethod:
+  type: string
+  enum:
+    - TOUCH
+    - MOUSE
+    - STYLUS
+  description: |
+    Методи створення підпису:
+    * TOUCH - Сенсорний екран
+    * MOUSE - Комп'ютерна миша
+    * STYLUS - Стилус
+
+ModifierType:
+  type: string
+  enum:
+    - PERCENTAGE
+    - FIXED_AMOUNT
+    - MULTIPLIER
+  description: |
+    Типи модифікаторів:
+    * PERCENTAGE - Відсоток
+    * FIXED_AMOUNT - Фіксована сума
+    * MULTIPLIER - Множник
+
+ExpediteType:
+  type: string
+  enum:
+    - NORMAL
+    - URGENT_48H
+    - URGENT_24H
+  description: |
+    Типи терміновості:
+    * NORMAL - Звичайний термін
+    * URGENT_48H - Терміново за 48 годин
+    * URGENT_24H - Терміново за 24 години

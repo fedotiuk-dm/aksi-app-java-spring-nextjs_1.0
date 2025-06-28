@@ -1,0 +1,193 @@
+# Endpoints для управління категоріями послуг
+/api/service-categories:
+  get:
+    tags:
+      - service-categories
+    summary: Отримати список категорій послуг
+    operationId: getServiceCategories
+    parameters:
+      - name: active
+        in: query
+        description: Фільтр по активності
+        required: false
+        schema:
+          type: boolean
+      - name: parentId
+        in: query
+        description: Фільтр по батьківській категорії
+        required: false
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: Список категорій
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/item-responses.yaml#/ServiceCategoryResponse"
+
+  post:
+    tags:
+      - service-categories
+    summary: Створити нову категорію
+    operationId: createServiceCategory
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - name
+              - standardDays
+            properties:
+              code:
+                type: string
+              name:
+                type: string
+              description:
+                type: string
+              parentId:
+                type: string
+                format: uuid
+              standardDays:
+                type: integer
+              isActive:
+                type: boolean
+                default: true
+    responses:
+      201:
+        description: Категорія створена
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/item-responses.yaml#/ServiceCategoryResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+
+/api/service-categories/{id}:
+  get:
+    tags:
+      - service-categories
+    summary: Отримати категорію за ID
+    operationId: getServiceCategoryById
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: Категорія знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/item-responses.yaml#/ServiceCategoryResponse"
+      404:
+        description: Категорія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+
+  put:
+    tags:
+      - service-categories
+    summary: Оновити категорію
+    operationId: updateServiceCategory
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              standardDays:
+                type: integer
+              isActive:
+                type: boolean
+    responses:
+      200:
+        description: Категорія оновлена
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/item-responses.yaml#/ServiceCategoryResponse"
+      404:
+        description: Категорія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+
+  delete:
+    tags:
+      - service-categories
+    summary: Видалити категорію
+    operationId: deleteServiceCategory
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      204:
+        description: Категорія видалена
+      404:
+        description: Категорія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+
+/api/service-categories/{id}/items:
+  get:
+    tags:
+      - service-categories
+    summary: Отримати список предметів категорії
+    operationId: getCategoryItems
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: active
+        in: query
+        description: Фільтр по активності
+        required: false
+        schema:
+          type: boolean
+    responses:
+      200:
+        description: Список предметів
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/item-responses.yaml#/PriceListItemResponse"

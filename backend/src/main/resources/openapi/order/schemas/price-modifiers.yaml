@@ -1,0 +1,172 @@
+# Схеми модифікаторів ціни згідно документації OrderWizard
+GeneralModifiers:
+  type: object
+  description: Загальні коефіцієнти (доступні для всіх категорій)
+  properties:
+    childrenClothes:
+      type: boolean
+      description: Дитячі речі (до 30 розміру) - 30% від вартості
+    manualCleaning:
+      type: boolean
+      description: Ручна чистка +20% до вартості
+    heavilySoiled:
+      type: object
+      description: Дуже забруднені речі +від 20 до 100% до вартості
+      properties:
+        enabled:
+          type: boolean
+        percentage:
+          type: number
+          minimum: 20
+          maximum: 100
+    urgentCleaning:
+      type: object
+      description: Термінова чистка +від 50 до 100% до вартості
+      properties:
+        enabled:
+          type: boolean
+        percentage:
+          type: number
+          minimum: 50
+          maximum: 100
+
+TextileModifiers:
+  type: object
+  description: Модифікатори для текстильних виробів
+  properties:
+    furCollarsCuffs:
+      type: boolean
+      description: Чистка виробів з хутряними комірами та манжетами +30%
+    waterRepellent:
+      type: boolean
+      description: Нанесення водовідштовхуючого покриття +30%
+    silkSatinChiffon:
+      type: boolean
+      description: Чистка виробів із натурального шовку, атласу, шифону +50%
+    combinedProducts:
+      type: boolean
+      description: Чистка комбінованих виробів (шкіра+текстиль) +100%
+    largeSoftToys:
+      type: boolean
+      description: Ручна чистка великих м'яких іграшок +100%
+    sewingButtons:
+      type: object
+      description: Пришивання гудзиків (фіксована вартість за одиницю)
+      properties:
+        enabled:
+          type: boolean
+        quantity:
+          type: integer
+          minimum: 1
+        pricePerButton:
+          type: number
+          format: double
+    blackAndLightColors:
+      type: boolean
+      description: Чистка виробів чорного та світлих тонів +20%
+    weddingDressWithTrain:
+      type: boolean
+      description: Чистка весільної сукні зі шлейфом +30%
+
+LeatherModifiers:
+  type: object
+  description: Модифікатори для шкіряних виробів
+  properties:
+    ironingLeather:
+      type: boolean
+      description: Прасування шкіряних виробів 70% від вартості чистки
+    waterRepellent:
+      type: boolean
+      description: Нанесення водовідштовхуючого покриття +30%
+    dyeingAfterOurCleaning:
+      type: boolean
+      description: Фарбування (після нашої чистки) +50%
+    dyeingAfterOtherCleaning:
+      type: boolean
+      description: Фарбування (після чистки деінде) 100% вартість чистки
+    leatherWithInserts:
+      type: boolean
+      description: Чистка шкіряних виробів із вставками +30%
+    pearlCoating:
+      type: boolean
+      description: Нанесення перламутрового покриття +30%
+    naturalSheepskinArtificialFur:
+      type: boolean
+      description: Чистка натуральних дублянок на штучному хутрі -20%
+    manualLeatherCleaning:
+      type: boolean
+      description: Ручна чистка виробів зі шкіри +30%
+
+ServiceCategory:
+  type: string
+  description: Категорії послуг
+  enum:
+    - TEXTILE_CLEANING
+    - LAUNDRY
+    - IRONING
+    - LEATHER_CLEANING
+    - SHEEPSKIN
+    - FUR
+    - DYEING
+  x-enum-varnames:
+    - TEXTILE_CLEANING
+    - LAUNDRY
+    - IRONING
+    - LEATHER_CLEANING
+    - SHEEPSKIN
+    - FUR
+    - DYEING
+  x-enum-descriptions:
+    - Чистка одягу та текстилю
+    - Прання білизни
+    - Прасування
+    - Чистка та відновлення шкіряних виробів
+    - Дублянки
+    - Вироби із натурального хутра
+    - Фарбування текстильних виробів
+
+MaterialType:
+  type: string
+  description: Типи матеріалів
+  enum:
+    - COTTON
+    - WOOL
+    - SILK
+    - SYNTHETIC
+    - SMOOTH_LEATHER
+    - NUBUCK
+    - SPLIT_LEATHER
+    - SUEDE
+    - OTHER
+  x-enum-descriptions:
+    - Бавовна
+    - Шерсть
+    - Шовк
+    - Синтетика
+    - Гладка шкіра
+    - Нубук
+    - Спілок
+    - Замша
+    - Інше
+
+FillingType:
+  type: string
+  description: Типи наповнювачів
+  enum:
+    - DOWN
+    - SYNTHETIC
+    - OTHER
+  x-enum-descriptions:
+    - Пух
+    - Синтепон
+    - Інше
+
+UnitType:
+  type: string
+  description: Одиниці виміру
+  enum:
+    - PIECE
+    - KILOGRAM
+  x-enum-descriptions:
+    - Штуки
+    - Кілограми

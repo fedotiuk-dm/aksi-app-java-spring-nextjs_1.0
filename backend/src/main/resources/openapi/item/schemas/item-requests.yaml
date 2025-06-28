@@ -1,0 +1,77 @@
+# Request схеми для Item домену
+ItemCalculationRequest:
+  type: object
+  required:
+    - priceListItemId
+    - quantity
+    - characteristics
+  properties:
+    priceListItemId:
+      type: string
+      format: uuid
+      description: Ідентифікатор предмета з прайс-листа
+    quantity:
+      type: integer
+      minimum: 1
+      description: Кількість предметів
+    characteristics:
+      $ref: "#/ItemCharacteristicsRequest"
+    modifiers:
+      type: array
+      items:
+        type: string
+        format: uuid
+      description: Список ідентифікаторів застосованих модифікаторів
+    urgency:
+      $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
+      description: Терміновість виконання
+      default: NORMAL
+
+ItemCharacteristicsRequest:
+  type: object
+  required:
+    - material
+    - color
+  properties:
+    material:
+      type: string
+      maxLength: 50
+      description: Матеріал виробу
+    color:
+      type: string
+      maxLength: 50
+      description: Колір виробу
+    filling:
+      type: string
+      maxLength: 50
+      description: Наповнювач
+    wearDegree:
+      type: integer
+      minimum: 10
+      maximum: 75
+      description: Ступінь зносу у відсотках
+    stains:
+      type: array
+      items:
+        $ref: "../../order/schemas/order-item-schemas.yaml#/StainType"
+      description: Типи плям
+    customStain:
+      type: string
+      maxLength: 100
+      description: Опис кастомної плями (якщо вибрано OTHER)
+    defects:
+      type: array
+      items:
+        $ref: "../../order/schemas/order-item-schemas.yaml#/DefectType"
+      description: Дефекти та ризики
+    defectNotes:
+      type: string
+      maxLength: 500
+      description: Примітки щодо дефектів
+    hasRisks:
+      type: boolean
+      description: Наявність ризиків
+    riskDescription:
+      type: string
+      maxLength: 500
+      description: Опис ризиків

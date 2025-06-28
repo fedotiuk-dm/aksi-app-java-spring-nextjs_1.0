@@ -1,0 +1,92 @@
+# Enum схеми для Order домену
+OrderStatus:
+  type: string
+  description: Статус замовлення
+  enum:
+    - DRAFT
+    - NEW
+    - IN_PROGRESS
+    - READY
+    - COMPLETED
+    - CANCELLED
+  x-enum-varnames:
+    - DRAFT
+    - NEW
+    - IN_PROGRESS
+    - READY
+    - COMPLETED
+    - CANCELLED
+  x-enum-descriptions:
+    - Чернетка
+    - Нове замовлення
+    - В роботі
+    - Готове
+    - Завершене
+    - Скасоване
+
+UrgencyType:
+  type: string
+  description: Тип терміновості виконання
+  enum:
+    - NORMAL
+    - URGENT_48H
+    - URGENT_24H
+  x-enum-varnames:
+    - NORMAL
+    - URGENT_48H
+    - URGENT_24H
+  x-enum-descriptions:
+    - Звичайне виконання
+    - Термінове 48 годин (+50%)
+    - Термінове 24 години (+100%)
+
+DiscountType:
+  type: string
+  description: Тип знижки
+  enum:
+    - NONE
+    - EVERCARD
+    - SOCIAL_MEDIA
+    - MILITARY
+    - OTHER
+  x-enum-varnames:
+    - NONE
+    - EVERCARD
+    - SOCIAL_MEDIA
+    - MILITARY
+    - OTHER
+  x-enum-descriptions:
+    - Без знижки
+    - Еверкард (10%)
+    - Соцмережі (5%)
+    - ЗСУ (10%)
+    - Інша знижка
+
+PaymentMethod:
+  type: string
+  description: Спосіб оплати
+  enum:
+    - TERMINAL
+    - CASH
+    - BANK_TRANSFER
+  x-enum-varnames:
+    - TERMINAL
+    - CASH
+    - BANK_TRANSFER
+  x-enum-descriptions:
+    - Термінал
+    - Готівка
+    - На рахунок
+
+ModifierType:
+  type: string
+  description: Тип модифікатора ціни
+  enum:
+    - PERCENTAGE
+    - FIXED_AMOUNT
+  x-enum-varnames:
+    - PERCENTAGE
+    - FIXED_AMOUNT
+  x-enum-descriptions:
+    - Відсотковий модифікатор
+    - Фіксована сума

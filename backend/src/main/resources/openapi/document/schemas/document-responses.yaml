@@ -1,0 +1,444 @@
+# Response схеми для Document домену
+
+# Receipt Responses
+ReceiptResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    orderId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    receiptNumber:
+      type: string
+      description: Номер квитанції
+      example: AKSI-01-2024-000001
+    data:
+      $ref: "#/ReceiptDataResponse"
+    pdfDocument:
+      $ref: "#/DocumentSummaryResponse"
+    qrCode:
+      $ref: "#/QRCodeSummaryResponse"
+    signatures:
+      type: array
+      items:
+        $ref: "#/DigitalSignatureSummaryResponse"
+    isPrinted:
+      type: boolean
+      description: Чи роздрукована квитанція
+    printedAt:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+    generatedAt:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+    generatedBy:
+      type: string
+      description: Хто згенерував
+
+ReceiptDataResponse:
+  type: object
+  properties:
+    companyInfo:
+      $ref: "#/CompanyInfoResponse"
+    branchInfo:
+      $ref: "#/BranchInfoResponse"
+    orderInfo:
+      $ref: "#/OrderInfoResponse"
+    clientInfo:
+      $ref: "#/ClientInfoResponse"
+    items:
+      type: array
+      items:
+        $ref: "#/ItemDetailResponse"
+    financial:
+      $ref: "#/FinancialSummaryResponse"
+    legalInfo:
+      $ref: "#/LegalInfoResponse"
+    operatorInfo:
+      $ref: "#/OperatorInfoResponse"
+
+CompanyInfoResponse:
+  type: object
+  properties:
+    companyName:
+      type: string
+    legalName:
+      type: string
+    address:
+      type: string
+    phone:
+      type: string
+    email:
+      type: string
+    website:
+      type: string
+    logoUrl:
+      type: string
+    taxNumber:
+      type: string
+
+BranchInfoResponse:
+  type: object
+  properties:
+    branchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    branchCode:
+      type: string
+    branchName:
+      type: string
+    address:
+      type: string
+    phone:
+      type: string
+    managerName:
+      type: string
+
+OrderInfoResponse:
+  type: object
+  properties:
+    orderId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    orderNumber:
+      type: string
+    createdAt:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+    expectedCompletionDate:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+    expediteType:
+      $ref: "../schemas/document-enums.yaml#/ExpediteType"
+    totalAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    discountAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    finalAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    paidAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    remainingAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+
+ClientInfoResponse:
+  type: object
+  properties:
+    clientId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    firstName:
+      type: string
+    lastName:
+      type: string
+    phone:
+      type: string
+    email:
+      type: string
+    address:
+      type: string
+    preferredContactMethod:
+      type: string
+
+ItemDetailResponse:
+  type: object
+  properties:
+    itemNumber:
+      type: integer
+    itemName:
+      type: string
+    category:
+      type: string
+    quantity:
+      type: string
+    material:
+      type: string
+    color:
+      type: string
+    filling:
+      type: string
+    basePrice:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    modifiers:
+      type: array
+      items:
+        $ref: "#/ModifierDetailResponse"
+    finalPrice:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    stains:
+      type: array
+      items:
+        type: string
+    defects:
+      type: array
+      items:
+        type: string
+    defectNotes:
+      type: string
+    photos:
+      type: array
+      items:
+        $ref: "#/PhotoSummaryResponse"
+
+ModifierDetailResponse:
+  type: object
+  properties:
+    name:
+      type: string
+    type:
+      $ref: "../schemas/document-enums.yaml#/ModifierType"
+    value:
+      type: number
+      format: double
+    appliedAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+
+PhotoSummaryResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    thumbnailUrl:
+      type: string
+      format: uri
+    fullUrl:
+      type: string
+      format: uri
+
+FinancialSummaryResponse:
+  type: object
+  properties:
+    subtotal:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    discountType:
+      type: string
+    discountAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    expediteCharge:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    totalAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    paidAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    remainingAmount:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    paymentMethod:
+      type: string
+
+LegalInfoResponse:
+  type: object
+  properties:
+    termsAndConditions:
+      type: string
+    liabilityLimitations:
+      type: string
+    warrantyInfo:
+      type: string
+    acceptanceConfirmed:
+      type: boolean
+    acceptanceDate:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+
+OperatorInfoResponse:
+  type: object
+  properties:
+    operatorName:
+      type: string
+    operatorPosition:
+      type: string
+    operatorId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+
+# Document Responses
+DocumentResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    documentNumber:
+      type: string
+    type:
+      $ref: "../schemas/document-enums.yaml#/DocumentType"
+    relatedEntityId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    fileName:
+      type: string
+    filePath:
+      type: string
+    fileSize:
+      type: integer
+      format: int64
+    mimeType:
+      type: string
+    status:
+      $ref: "../schemas/document-enums.yaml#/DocumentStatus"
+    downloadUrl:
+      type: string
+      format: uri
+    metadata:
+      $ref: "#/DocumentMetadataResponse"
+  allOf:
+    - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
+    - type: object
+      properties:
+        createdBy:
+          type: string
+
+DocumentSummaryResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    fileName:
+      type: string
+    fileSize:
+      type: integer
+      format: int64
+    downloadUrl:
+      type: string
+      format: uri
+    createdAt:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+
+DocumentMetadataResponse:
+  type: object
+  properties:
+    template:
+      type: string
+    version:
+      type: string
+    generationTime:
+      type: number
+      format: double
+      description: Час генерації в секундах
+    pageCount:
+      type: integer
+      description: Кількість сторінок (для PDF)
+
+# QR Code Responses
+QRCodeResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    data:
+      type: string
+      description: Закодовані дані
+    type:
+      $ref: "../schemas/document-enums.yaml#/QRCodeType"
+    size:
+      type: integer
+    format:
+      $ref: "../schemas/document-enums.yaml#/QRCodeFormat"
+    imageUrl:
+      type: string
+      format: uri
+      description: URL для отримання зображення
+    createdAt:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+
+QRCodeSummaryResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    imageUrl:
+      type: string
+      format: uri
+    size:
+      type: integer
+
+# Digital Signature Responses
+DigitalSignatureResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    documentId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    type:
+      $ref: "../schemas/document-enums.yaml#/SignatureType"
+    signerName:
+      type: string
+    signerRole:
+      type: string
+    signedAt:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+    ipAddress:
+      type: string
+    imageUrl:
+      type: string
+      format: uri
+      description: URL для отримання зображення підпису
+    metadata:
+      $ref: "#/SignatureMetadataResponse"
+    isValid:
+      type: boolean
+      description: Чи валідний підпис
+
+DigitalSignatureSummaryResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    type:
+      $ref: "../schemas/document-enums.yaml#/SignatureType"
+    signerName:
+      type: string
+    signedAt:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+    imageUrl:
+      type: string
+      format: uri
+
+SignatureMetadataResponse:
+  type: object
+  properties:
+    deviceInfo:
+      type: string
+    browserInfo:
+      type: string
+    screenResolution:
+      type: string
+    signatureMethod:
+      $ref: "../schemas/document-enums.yaml#/SignatureMethod"
+    signatureDuration:
+      type: number
+      format: double
+      description: Час створення підпису в секундах
+
+# Page Responses
+ReceiptPageResponse:
+  type: object
+  properties:
+    content:
+      type: array
+      items:
+        $ref: "#/ReceiptResponse"
+    pageable:
+      $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
+    totalElements:
+      type: integer
+      format: int64
+    totalPages:
+      type: integer
+    last:
+      type: boolean
+    first:
+      type: boolean
+    numberOfElements:
+      type: integer
+
+DocumentPageResponse:
+  type: object
+  properties:
+    content:
+      type: array
+      items:
+        $ref: "#/DocumentResponse"
+    pageable:
+      $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
+    totalElements:
+      type: integer
+      format: int64
+    totalPages:
+      type: integer
+    last:
+      type: boolean
+    first:
+      type: boolean
+    numberOfElements:
+      type: integer

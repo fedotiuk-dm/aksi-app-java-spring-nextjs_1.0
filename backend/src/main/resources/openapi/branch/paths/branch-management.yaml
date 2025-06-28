@@ -1,0 +1,230 @@
+# Endpoints для управління філіями
+/api/branches:
+  get:
+    tags:
+      - branches
+    summary: Отримати список філій
+    description: Повертає список всіх філій з можливістю фільтрації
+    parameters:
+      - $ref: "../../common/parameters/query.yaml#/ActiveParam"
+      - name: city
+        in: query
+        description: Фільтр за містом
+        required: false
+        schema:
+          type: string
+      - name: includeInactive
+        in: query
+        description: Включити неактивні філії
+        required: false
+        schema:
+          type: boolean
+          default: false
+    responses:
+      200:
+        description: Список філій
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/branch-responses.yaml#/BranchResponse"
+    operationId: getBranches
+
+  post:
+    tags:
+      - branches
+    summary: Створити нову філію
+    description: Створює нову філію хімчистки
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/branch-requests.yaml#/CreateBranchRequest"
+    responses:
+      201:
+        description: Філія успішно створена
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/BranchResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      409:
+        description: Філія з таким кодом вже існує
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: createBranch
+
+/api/branches/{id}:
+  get:
+    tags:
+      - branches
+    summary: Отримати філію за ID
+    description: Повертає детальну інформацію про філію
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+    responses:
+      200:
+        description: Інформація про філію
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/BranchResponse"
+      404:
+        description: Філія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getBranchById
+
+  put:
+    tags:
+      - branches
+    summary: Оновити філію
+    description: Оновлює інформацію про філію
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/branch-requests.yaml#/UpdateBranchRequest"
+    responses:
+      200:
+        description: Філія успішно оновлена
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/BranchResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      404:
+        description: Філія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: updateBranch
+
+  delete:
+    tags:
+      - branches
+    summary: Деактивувати філію
+    description: Деактивує філію (не видаляє, а робить неактивною)
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+    responses:
+      204:
+        description: Філія успішно деактивована
+      404:
+        description: Філія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: deleteBranch
+
+/api/branches/code/{code}:
+  get:
+    tags:
+      - branches
+    summary: Отримати філію за кодом
+    description: Повертає філію за унікальним кодом
+    parameters:
+      - name: code
+        in: path
+        required: true
+        description: Унікальний код філії
+        schema:
+          type: string
+          pattern: ^[A-Z0-9-]+$
+          example: AKSI-01
+    responses:
+      200:
+        description: Інформація про філію
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/BranchResponse"
+      404:
+        description: Філія з таким кодом не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getBranchByCode
+
+/api/branches/nearby:
+  get:
+    tags:
+      - branches
+    summary: Знайти найближчі філії
+    description: Повертає філії в радіусі від заданих координат
+    parameters:
+      - name: latitude
+        in: query
+        required: true
+        description: Широта
+        schema:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+      - name: longitude
+        in: query
+        required: true
+        description: Довгота
+        schema:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+      - name: radius
+        in: query
+        description: Радіус пошуку в кілометрах
+        required: false
+        schema:
+          type: number
+          format: double
+          minimum: 0.1
+          maximum: 100
+          default: 10
+      - name: limit
+        in: query
+        description: Максимальна кількість результатів
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+    responses:
+      200:
+        description: Список найближчих філій
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/branch-responses.yaml#/BranchWithDistanceResponse"
+      400:
+        description: Неправильні координати
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+    operationId: getNearbyBranches

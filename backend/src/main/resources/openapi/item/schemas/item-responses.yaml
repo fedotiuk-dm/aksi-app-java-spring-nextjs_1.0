@@ -1,0 +1,284 @@
+# Response схеми для Item домену
+ServiceCategoryResponse:
+  type: object
+  required:
+    - id
+    - code
+    - name
+    - standardDays
+    - isActive
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    code:
+      type: string
+      description: Унікальний код категорії
+      example: TEXTILE_CLEANING
+    name:
+      type: string
+      description: Назва категорії
+      example: Чистка одягу та текстилю
+    description:
+      type: string
+      description: Опис категорії
+    parentId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    standardDays:
+      type: integer
+      description: Стандартний термін виконання в днях
+      example: 2
+    isActive:
+      type: boolean
+      description: Чи активна категорія
+    availableMaterials:
+      type: array
+      items:
+        type: string
+      description: Доступні матеріали для категорії
+    availableModifiers:
+      type: array
+      items:
+        type: string
+        format: uuid
+      description: Доступні модифікатори для категорії
+    itemsCount:
+      type: integer
+      description: Кількість предметів в категорії
+
+PriceListItemResponse:
+  type: object
+  required:
+    - id
+    - categoryId
+    - itemNumber
+    - name
+    - unit
+    - basePrice
+    - isActive
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    categoryId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    categoryInfo:
+      $ref: "#/ServiceCategorySummary"
+    itemNumber:
+      type: integer
+      description: Номер предмета в каталозі
+      example: 101
+    name:
+      type: string
+      description: Назва предмета
+      example: Костюм чоловічий
+    unit:
+      $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
+      description: Одиниця виміру
+    basePrice:
+      type: number
+      format: double
+      description: Базова ціна
+      example: 150.0
+    blackPrice:
+      type: number
+      format: double
+      description: Ціна для чорних речей
+      example: 180.0
+    lightPrice:
+      type: number
+      format: double
+      description: Ціна для світлих речей
+      example: 150.0
+    isActive:
+      type: boolean
+      description: Чи активний предмет
+    notes:
+      type: string
+      description: Примітки до предмета
+
+PriceModifierResponse:
+  type: object
+  required:
+    - id
+    - code
+    - name
+    - type
+    - value
+    - isActive
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    code:
+      type: string
+      description: Унікальний код модифікатора
+      example: CHILDREN_ITEMS
+    name:
+      type: string
+      description: Назва модифікатора
+      example: Дитячі речі (до 30 розміру)
+    type:
+      $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
+    value:
+      type: number
+      format: double
+      description: Значення модифікатора
+      example: 30.0
+    applicableTo:
+      type: array
+      items:
+        type: string
+        format: uuid
+      description: Категорії, до яких застосовується
+    isActive:
+      type: boolean
+      description: Чи активний модифікатор
+    description:
+      type: string
+      description: Опис модифікатора
+
+ItemCalculationResponse:
+  type: object
+  properties:
+    priceListItemId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    itemName:
+      type: string
+    quantity:
+      type: integer
+    basePrice:
+      type: number
+      format: double
+      description: Базова ціна за одиницю
+    totalBasePrice:
+      type: number
+      format: double
+      description: Базова ціна за кількість
+    appliedModifiers:
+      type: array
+      items:
+        $ref: "#/AppliedModifierResult"
+      description: Застосовані модифікатори
+    modifiersTotal:
+      type: number
+      format: double
+      description: Загальна сума модифікаторів
+    subtotal:
+      type: number
+      format: double
+      description: Проміжна сума
+    urgencyCharge:
+      type: number
+      format: double
+      description: Надбавка за терміновість
+    finalPrice:
+      type: number
+      format: double
+      description: Фінальна ціна
+    calculationSteps:
+      type: array
+      items:
+        $ref: "#/CalculationStep"
+      description: Детальні кроки розрахунку
+    warnings:
+      type: array
+      items:
+        type: string
+      description: Попередження щодо розрахунку
+
+PhotoResponse:
+  type: object
+  required:
+    - id
+    - itemId
+    - filename
+    - url
+    - uploadedAt
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    itemId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    filename:
+      type: string
+      description: Ім'я файлу
+    originalFilename:
+      type: string
+      description: Оригінальне ім'я файлу
+    url:
+      type: string
+      format: uri
+      description: URL для доступу до фотографії
+    thumbnailUrl:
+      type: string
+      format: uri
+      description: URL мініатюри
+    fileSize:
+      type: integer
+      format: int64
+      description: Розмір файлу в байтах
+    mimeType:
+      type: string
+      description: MIME тип файлу
+      example: image/jpeg
+    description:
+      type: string
+      description: Опис фотографії
+    uploadedAt:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+
+PriceListPageResponse:
+  type: object
+  properties:
+    content:
+      type: array
+      items:
+        $ref: "#/PriceListItemResponse"
+    pageable:
+      $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
+
+ServiceCategorySummary:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    code:
+      type: string
+    name:
+      type: string
+    standardDays:
+      type: integer
+
+AppliedModifierResult:
+  type: object
+  properties:
+    modifierId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    name:
+      type: string
+    type:
+      $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
+    value:
+      type: number
+      format: double
+    appliedAmount:
+      type: number
+      format: double
+    description:
+      type: string
+
+CalculationStep:
+  type: object
+  properties:
+    step:
+      type: string
+      description: Назва кроку
+    description:
+      type: string
+      description: Опис кроку
+    amount:
+      type: number
+      format: double
+      description: Сума на цьому кроці
+    runningTotal:
+      type: number
+      format: double
+      description: Накопичена сума

@@ -1,0 +1,187 @@
+# Endpoints для управління документами
+/api/documents:
+  get:
+    tags:
+      - documents
+    summary: Отримати список документів
+    description: Повертає список документів з можливістю фільтрації
+    parameters:
+      - name: type
+        in: query
+        description: Фільтр за типом документа
+        required: false
+        schema:
+          $ref: "../schemas/document-enums.yaml#/DocumentType"
+      - name: status
+        in: query
+        description: Фільтр за статусом документа
+        required: false
+        schema:
+          $ref: "../schemas/document-enums.yaml#/DocumentStatus"
+      - name: relatedEntityId
+        in: query
+        description: Фільтр за пов'язаною сутністю
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: startDate
+        in: query
+        description: Початкова дата
+        required: false
+        schema:
+          $ref: "../../common/schemas/base.yaml#/Date"
+      - name: endDate
+        in: query
+        description: Кінцева дата
+        required: false
+        schema:
+          $ref: "../../common/schemas/base.yaml#/Date"
+      - $ref: "../../common/parameters/query.yaml#/PageParam"
+      - $ref: "../../common/parameters/query.yaml#/SizeParam"
+      - $ref: "../../common/parameters/query.yaml#/SortParam"
+    responses:
+      200:
+        description: Список документів
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/document-responses.yaml#/DocumentPageResponse"
+    operationId: getDocuments
+
+/api/documents/{id}:
+  get:
+    tags:
+      - documents
+    summary: Отримати документ за ID
+    description: Повертає інформацію про документ
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    responses:
+      200:
+        description: Інформація про документ
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/document-responses.yaml#/DocumentResponse"
+      404:
+        description: Документ не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getDocumentById
+
+  delete:
+    tags:
+      - documents
+    summary: Видалити документ
+    description: Видаляє документ (м'яке видалення)
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    responses:
+      204:
+        description: Документ успішно видалений
+      404:
+        description: Документ не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: deleteDocument
+
+/api/documents/{id}/download:
+  get:
+    tags:
+      - documents
+    summary: Завантажити документ
+    description: Повертає файл документа для завантаження
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    responses:
+      200:
+        description: Файл документа
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+          application/json:
+            schema:
+              type: object
+              properties:
+                documentId:
+                  $ref: "../../common/schemas/base.yaml#/UUID"
+                filename:
+                  type: string
+                  description: Ім'я файлу
+                contentType:
+                  type: string
+                  description: MIME тип файлу
+                size:
+                  type: integer
+                  description: Розмір файлу в байтах
+                downloadUrl:
+                  type: string
+                  format: uri
+                  description: URL для завантаження файлу
+        headers:
+          Content-Disposition:
+            description: Attachment filename
+            schema:
+              type: string
+      404:
+        description: Документ не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: downloadDocument
+
+/api/documents/{id}/status:
+  patch:
+    tags:
+      - documents
+    summary: Змінити статус документа
+    description: Оновлює статус документа
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - status
+            properties:
+              status:
+                $ref: "../schemas/document-enums.yaml#/DocumentStatus"
+              reason:
+                type: string
+                maxLength: 500
+                description: Причина зміни статусу
+    responses:
+      200:
+        description: Статус успішно змінено
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/document-responses.yaml#/DocumentResponse"
+      400:
+        description: Неприпустима зміна статусу
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      404:
+        description: Документ не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: updateDocumentStatus

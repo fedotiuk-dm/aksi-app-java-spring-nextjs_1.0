@@ -1,0 +1,48 @@
+# Спільні схеми пагінації
+PageableInfo:
+  type: object
+  required:
+    - page
+    - size
+    - totalElements
+    - totalPages
+    - last
+    - first
+    - numberOfElements
+  properties:
+    page:
+      type: integer
+      minimum: 0
+      description: Номер поточної сторінки (починаючи з 0)
+    size:
+      type: integer
+      minimum: 1
+      description: Розмір сторінки
+    totalElements:
+      type: integer
+      format: int64
+      description: Загальна кількість елементів
+    totalPages:
+      type: integer
+      description: Загальна кількість сторінок
+    last:
+      type: boolean
+      description: Чи є поточна сторінка останньою
+    first:
+      type: boolean
+      description: Чи є поточна сторінка першою
+    numberOfElements:
+      type: integer
+      description: Кількість елементів на поточній сторінці
+    sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+          description: Чи застосовано сортування
+        unsorted:
+          type: boolean
+          description: Чи не застосовано сортування
+        empty:
+          type: boolean
+          description: Чи відсутнє сортування

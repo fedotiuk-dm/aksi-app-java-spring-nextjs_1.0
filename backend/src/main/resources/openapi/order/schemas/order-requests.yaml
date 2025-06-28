@@ -1,0 +1,102 @@
+# Схеми запитів для Order домену
+CreateOrderRequest:
+  type: object
+  required:
+    - clientId
+    - branchId
+    - uniqueTag
+  properties:
+    clientId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    branchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    uniqueTag:
+      type: string
+      minLength: 1
+      maxLength: 50
+      description: Унікальна мітка замовлення
+      example: TAG-2025-001
+    notes:
+      type: string
+      maxLength: 1000
+      description: Примітки до замовлення
+    urgency:
+      $ref: "../schemas/order-enums.yaml#/UrgencyType"
+      description: Терміновість виконання
+      default: NORMAL
+
+UpdateOrderRequest:
+  type: object
+  properties:
+    uniqueTag:
+      type: string
+      minLength: 1
+      maxLength: 50
+      description: Унікальна мітка замовлення
+    executionDate:
+      type: string
+      format: date-time
+      description: Дата виконання замовлення
+    urgency:
+      $ref: "../schemas/order-enums.yaml#/UrgencyType"
+    discount:
+      $ref: "#/DiscountRequest"
+    notes:
+      type: string
+      maxLength: 1000
+      description: Примітки до замовлення
+
+DiscountRequest:
+  type: object
+  required:
+    - type
+  properties:
+    type:
+      $ref: "../schemas/order-enums.yaml#/DiscountType"
+    customPercentage:
+      type: number
+      format: double
+      minimum: 0
+      maximum: 100
+      description: Кастомний відсоток знижки (для типу OTHER)
+    description:
+      type: string
+      maxLength: 200
+      description: Опис знижки
+
+UpdatePaymentRequest:
+  type: object
+  required:
+    - paymentMethod
+    - paidAmount
+  properties:
+    paymentMethod:
+      $ref: "../schemas/order-enums.yaml#/PaymentMethod"
+    paidAmount:
+      type: number
+      format: double
+      minimum: 0
+      description: Сума передоплати
+      example: 500.0
+
+CompleteOrderRequest:
+  type: object
+  required:
+    - clientSignature
+    - legalAcceptance
+  properties:
+    clientSignature:
+      type: string
+      description: Цифровий підпис клієнта (base64)
+    legalAcceptance:
+      type: boolean
+      description: Згода з умовами надання послуг
+      example: true
+    operatorName:
+      type: string
+      maxLength: 100
+      description: Ім'я оператора
+    finalNotes:
+      type: string
+      maxLength: 500
+      description: Фінальні примітки

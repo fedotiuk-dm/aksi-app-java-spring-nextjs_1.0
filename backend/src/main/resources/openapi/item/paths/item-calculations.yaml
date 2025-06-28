@@ -1,0 +1,140 @@
+# Endpoints для розрахунків цін
+/api/calculate/item:
+  post:
+    tags:
+      - item-calculations
+    summary: Розрахувати вартість предмета з усіма модифікаторами
+    operationId: calculateItemPrice
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/item-requests.yaml#/ItemCalculationRequest"
+    responses:
+      200:
+        description: Розрахунок виконано
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/item-responses.yaml#/ItemCalculationResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      404:
+        description: Предмет або модифікатор не знайдено
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+
+/api/calculate/item/preview:
+  post:
+    tags:
+      - item-calculations
+    summary: Попередній розрахунок для інтерактивного калькулятора
+    description: Швидкий розрахунок без збереження для відображення в реальному часі
+    operationId: previewItemPrice
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/item-requests.yaml#/ItemCalculationRequest"
+    responses:
+      200:
+        description: Попередній розрахунок
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                basePrice:
+                  type: number
+                  format: double
+                totalBasePrice:
+                  type: number
+                  format: double
+                modifiersAmount:
+                  type: number
+                  format: double
+                subtotal:
+                  type: number
+                  format: double
+                urgencyAmount:
+                  type: number
+                  format: double
+                finalPrice:
+                  type: number
+                  format: double
+
+/api/calculate/order-summary:
+  post:
+    tags:
+      - item-calculations
+    summary: Розрахувати загальну вартість замовлення
+    operationId: calculateOrderSummary
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "../schemas/item-requests.yaml#/ItemCalculationRequest"
+                minItems: 1
+              discount:
+                type: object
+                properties:
+                  type:
+                    $ref: "../../order/schemas/order-enums.yaml#/DiscountType"
+                  value:
+                    type: number
+                    format: double
+              urgency:
+                $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
+    responses:
+      200:
+        description: Підсумок розрахунку
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                itemsTotal:
+                  type: number
+                  format: double
+                  description: Сума всіх предметів
+                urgencyCharge:
+                  type: number
+                  format: double
+                  description: Надбавка за терміновість
+                discountAmount:
+                  type: number
+                  format: double
+                  description: Сума знижки
+                subtotal:
+                  type: number
+                  format: double
+                  description: Проміжна сума
+                finalTotal:
+                  type: number
+                  format: double
+                  description: Фінальна сума до сплати
+                itemCalculations:
+                  type: array
+                  items:
+                    $ref: "../schemas/item-responses.yaml#/ItemCalculationResponse"
+                warnings:
+                  type: array
+                  items:
+                    type: string
+                  description: Попередження (наприклад, про незастосовані знижки)

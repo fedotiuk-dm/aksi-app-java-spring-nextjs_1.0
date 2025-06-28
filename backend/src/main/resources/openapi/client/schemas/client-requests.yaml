@@ -1,0 +1,159 @@
+# Request схеми для Client домену
+CreateClientRequest:
+  type: object
+  required:
+    - firstName
+    - lastName
+    - phone
+  properties:
+    firstName:
+      type: string
+      minLength: 2
+      maxLength: 50
+      description: Ім'я клієнта
+      example: Олександр
+    lastName:
+      type: string
+      minLength: 2
+      maxLength: 50
+      description: Прізвище клієнта
+      example: Петренко
+    phone:
+      type: string
+      pattern: ^\+380\d{9}$
+      description: Номер телефону в міжнародному форматі
+      example: "+380501234567"
+    email:
+      $ref: "../../common/schemas/base.yaml#/Email"
+    address:
+      $ref: "../../common/schemas/address.yaml#/CreateAddressRequest"
+    communicationMethods:
+      type: array
+      items:
+        $ref: "./client-enums.yaml#/CommunicationMethod"
+      description: Бажані способи зв'язку
+      example:
+        - PHONE
+        - SMS
+        - VIBER
+    sourceType:
+      $ref: "./client-enums.yaml#/ClientSourceType"
+      description: Джерело надходження клієнта
+    notes:
+      type: string
+      maxLength: 500
+      description: Додаткові примітки про клієнта
+
+UpdateClientRequest:
+  type: object
+  properties:
+    firstName:
+      type: string
+      minLength: 2
+      maxLength: 50
+      description: Ім'я клієнта
+    lastName:
+      type: string
+      minLength: 2
+      maxLength: 50
+      description: Прізвище клієнта
+    phone:
+      type: string
+      pattern: ^\+380\d{9}$
+      description: Номер телефону в міжнародному форматі
+    email:
+      $ref: "../../common/schemas/base.yaml#/Email"
+    address:
+      $ref: "../../common/schemas/address.yaml#/UpdateAddressRequest"
+    communicationMethods:
+      type: array
+      items:
+        $ref: "./client-enums.yaml#/CommunicationMethod"
+      description: Бажані способи зв'язку
+    sourceType:
+      $ref: "./client-enums.yaml#/ClientSourceType"
+    notes:
+      type: string
+      maxLength: 500
+      description: Додаткові примітки про клієнта
+
+ClientSearchRequest:
+  type: object
+  properties:
+    query:
+      type: string
+      minLength: 2
+      maxLength: 100
+      description: Загальний пошуковий запит
+    firstName:
+      type: string
+      maxLength: 50
+      description: Фільтр за ім'ям
+    lastName:
+      type: string
+      maxLength: 50
+      description: Фільтр за прізвищем
+    phone:
+      type: string
+      description: Фільтр за телефоном
+    email:
+      type: string
+      description: Фільтр за email
+    city:
+      type: string
+      maxLength: 100
+      description: Фільтр за містом
+    sourceType:
+      $ref: "./client-enums.yaml#/ClientSourceType"
+    communicationMethods:
+      type: array
+      items:
+        $ref: "./client-enums.yaml#/CommunicationMethod"
+    registrationDateFrom:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Дата реєстрації (від)
+    registrationDateTo:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Дата реєстрації (до)
+    isVip:
+      type: boolean
+      description: Фільтр VIP клієнтів
+    page:
+      type: integer
+      minimum: 0
+      default: 0
+      description: Номер сторінки
+    size:
+      type: integer
+      minimum: 1
+      maximum: 100
+      default: 20
+      description: Розмір сторінки
+    sort:
+      type: string
+      enum:
+        - firstName
+        - lastName
+        - phone
+        - createdAt
+        - totalOrders
+        - totalSpent
+      default: lastName
+      description: Поле для сортування
+
+UpdateClientContactsRequest:
+  type: object
+  properties:
+    phone:
+      type: string
+      pattern: ^\+380\d{9}$
+      description: Номер телефону
+    email:
+      $ref: "../../common/schemas/base.yaml#/Email"
+    communicationMethods:
+      type: array
+      items:
+        $ref: "./client-enums.yaml#/CommunicationMethod"
+      description: Бажані способи зв'язку
+    address:
+      $ref: "../../common/schemas/address.yaml#/UpdateAddressRequest"

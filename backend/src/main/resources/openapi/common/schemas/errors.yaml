@@ -1,0 +1,79 @@
+# Спільні схеми помилок для всіх доменів
+ErrorResponse:
+  type: object
+  required:
+    - timestamp
+    - status
+    - error
+    - message
+    - path
+  properties:
+    timestamp:
+      type: string
+      format: date-time
+      description: Час виникнення помилки
+    status:
+      type: integer
+      description: HTTP статус код
+    error:
+      type: string
+      description: Тип помилки
+    message:
+      type: string
+      description: Опис помилки
+    path:
+      type: string
+      description: Шлях запиту
+    traceId:
+      type: string
+      description: Ідентифікатор для відстеження помилки
+
+ValidationErrorResponse:
+  type: object
+  required:
+    - timestamp
+    - status
+    - error
+    - message
+    - path
+    - errors
+  properties:
+    timestamp:
+      type: string
+      format: date-time
+      description: Час виникнення помилки
+    status:
+      type: integer
+      description: HTTP статус код (400)
+    error:
+      type: string
+      description: Тип помилки
+    message:
+      type: string
+      description: Загальний опис помилки валідації
+    path:
+      type: string
+      description: Шлях запиту
+    errors:
+      type: array
+      items:
+        $ref: "#/FieldError"
+      description: Список помилок валідації полів
+
+FieldError:
+  type: object
+  required:
+    - field
+    - message
+  properties:
+    field:
+      type: string
+      description: Назва поля з помилкою
+    message:
+      type: string
+      description: Опис помилки
+    rejectedValue:
+      description: Відхилене значення
+    code:
+      type: string
+      description: Код помилки валідації

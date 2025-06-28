@@ -1,0 +1,57 @@
+# Endpoints для управління контактною інформацією клієнтів
+/api/clients/{id}/contacts:
+  get:
+    tags:
+      - client-contacts
+    summary: Отримати контактну інформацію клієнта
+    description: Повертає всю контактну інформацію клієнта
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    responses:
+      200:
+        description: Контактна інформація клієнта
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientContactsResponse"
+      404:
+        description: Клієнт не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getClientContacts
+
+  put:
+    tags:
+      - client-contacts
+    summary: Оновити контактну інформацію клієнта
+    description: Оновлює контактну інформацію існуючого клієнта
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/client-requests.yaml#/UpdateClientContactsRequest"
+    responses:
+      200:
+        description: Контактна інформація успішно оновлена
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientContactsResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      404:
+        description: Клієнт не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: updateClientContacts

@@ -1,0 +1,151 @@
+# Response схеми для Client домену
+ClientResponse:
+  type: object
+  required:
+    - id
+    - firstName
+    - lastName
+    - phone
+    - createdAt
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    firstName:
+      type: string
+      description: Ім'я клієнта
+    lastName:
+      type: string
+      description: Прізвище клієнта
+    fullName:
+      type: string
+      description: Повне ім'я (firstName + lastName)
+      readOnly: true
+    phone:
+      type: string
+      description: Номер телефону
+    email:
+      type: string
+      description: Email адреса
+    address:
+      $ref: "../../common/schemas/address.yaml#/Address"
+    communicationMethods:
+      type: array
+      items:
+        $ref: "./client-enums.yaml#/CommunicationMethod"
+    sourceType:
+      $ref: "./client-enums.yaml#/ClientSourceType"
+    notes:
+      type: string
+      description: Примітки
+    statistics:
+      $ref: "#/ClientStatistics"
+  allOf:
+    - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
+
+ClientPageResponse:
+  type: object
+  properties:
+    content:
+      type: array
+      items:
+        $ref: "#/ClientResponse"
+    pageable:
+      $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
+    totalElements:
+      type: integer
+      format: int64
+      description: Загальна кількість елементів
+    totalPages:
+      type: integer
+      description: Загальна кількість сторінок
+    last:
+      type: boolean
+      description: Чи це остання сторінка
+    first:
+      type: boolean
+      description: Чи це перша сторінка
+    numberOfElements:
+      type: integer
+      description: Кількість елементів на поточній сторінці
+
+ClientSearchResponse:
+  type: object
+  properties:
+    results:
+      type: array
+      items:
+        $ref: "#/ClientSearchResult"
+    totalFound:
+      type: integer
+      description: Загальна кількість знайдених результатів
+    hasMore:
+      type: boolean
+      description: Чи є ще результати
+
+ClientSearchResult:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    firstName:
+      type: string
+    lastName:
+      type: string
+    fullName:
+      type: string
+      readOnly: true
+    phone:
+      type: string
+    email:
+      type: string
+    lastOrderDate:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Дата останнього замовлення
+    orderCount:
+      type: integer
+      description: Кількість замовлень
+    highlightedFields:
+      type: array
+      items:
+        type: string
+      description: Поля, які відповідають пошуковому запиту
+
+ClientContactsResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    phone:
+      type: string
+      description: Номер телефону
+    email:
+      type: string
+      description: Email адреса
+    communicationMethods:
+      type: array
+      items:
+        $ref: "./client-enums.yaml#/CommunicationMethod"
+    address:
+      $ref: "../../common/schemas/address.yaml#/Address"
+
+ClientStatistics:
+  type: object
+  properties:
+    totalOrders:
+      type: integer
+      description: Загальна кількість замовлень
+    totalSpent:
+      $ref: "../../common/schemas/base.yaml#/Money"
+      description: Загальна сума витрат
+    lastOrderDate:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Дата останнього замовлення
+    averageOrderValue:
+      $ref: "../../common/schemas/base.yaml#/Money"
+      description: Середня вартість замовлення
+    isVip:
+      type: boolean
+      description: Чи є клієнт VIP
+    registrationDate:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Дата першого замовлення

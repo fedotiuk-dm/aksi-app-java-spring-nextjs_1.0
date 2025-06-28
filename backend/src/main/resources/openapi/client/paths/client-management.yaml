@@ -1,0 +1,166 @@
+# Endpoints для управління клієнтами
+/api/clients:
+  get:
+    tags:
+      - clients
+    summary: Отримати список клієнтів
+    description: Повертає список всіх клієнтів з можливістю пагінації
+    parameters:
+      - $ref: "../../common/parameters/query.yaml#/PageParam"
+      - $ref: "../../common/parameters/query.yaml#/SizeParam"
+      - name: sort
+        in: query
+        description: Поле для сортування
+        required: false
+        schema:
+          type: string
+          enum:
+            - firstName
+            - lastName
+            - phone
+            - createdAt
+          default: lastName
+    responses:
+      200:
+        description: Список клієнтів
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientPageResponse"
+      400:
+        description: Некоректні параметри запиту
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getClients
+
+  post:
+    tags:
+      - clients
+    summary: Створити нового клієнта
+    description: Створює нового клієнта хімчистки
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/client-requests.yaml#/CreateClientRequest"
+    responses:
+      201:
+        description: Клієнт успішно створений
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      409:
+        description: Клієнт з таким телефоном вже існує
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: createClient
+
+/api/clients/{id}:
+  get:
+    tags:
+      - clients
+    summary: Отримати клієнта за ID
+    description: Повертає детальну інформацію про конкретного клієнта
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    responses:
+      200:
+        description: Інформація про клієнта
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientResponse"
+      404:
+        description: Клієнт не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getClientById
+
+  put:
+    tags:
+      - clients
+    summary: Оновити інформацію про клієнта
+    description: Оновлює існуючого клієнта
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/client-requests.yaml#/UpdateClientRequest"
+    responses:
+      200:
+        description: Клієнт успішно оновлений
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      404:
+        description: Клієнт не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: updateClient
+
+  delete:
+    tags:
+      - clients
+    summary: Видалити клієнта
+    description: Видаляє клієнта (м'яке видалення)
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    responses:
+      204:
+        description: Клієнт успішно видалений
+      404:
+        description: Клієнт не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: deleteClient
+
+/api/clients/{id}/statistics:
+  get:
+    tags:
+      - clients
+    summary: Отримати статистику клієнта
+    description: Повертає статистику замовлень та витрат клієнта
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    responses:
+      200:
+        description: Статистика клієнта
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientStatistics"
+      404:
+        description: Клієнт не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getClientStatistics

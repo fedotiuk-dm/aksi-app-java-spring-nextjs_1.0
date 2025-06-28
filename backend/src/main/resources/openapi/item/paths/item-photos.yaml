@@ -1,0 +1,216 @@
+# Endpoints для управління фотографіями предметів
+/api/items/{itemId}/photos:
+  get:
+    tags:
+      - item-photos
+    summary: Отримати фотографії предмета
+    operationId: getItemPhotos
+    parameters:
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: Список фотографій
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/item-responses.yaml#/PhotoResponse"
+      404:
+        description: Предмет не знайдено
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+
+  post:
+    tags:
+      - item-photos
+    summary: Завантажити фотографію предмета
+    operationId: uploadItemPhoto
+    parameters:
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - file
+            properties:
+              file:
+                type: string
+                format: binary
+                description: Файл фотографії
+              description:
+                type: string
+                description: Опис фотографії
+              isDefect:
+                type: boolean
+                description: Чи це фото дефекту
+                default: false
+    responses:
+      201:
+        description: Фотографія завантажена
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/item-responses.yaml#/PhotoResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      404:
+        description: Предмет не знайдено
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+      413:
+        description: Файл занадто великий
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+
+/api/photos/{photoId}:
+  get:
+    tags:
+      - item-photos
+    summary: Отримати фотографію за ID
+    operationId: getPhotoById
+    parameters:
+      - name: photoId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      200:
+        description: Фотографія знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/item-responses.yaml#/PhotoResponse"
+      404:
+        description: Фотографія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+
+  put:
+    tags:
+      - item-photos
+    summary: Оновити метадані фотографії
+    operationId: updatePhotoMetadata
+    parameters:
+      - name: photoId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+              isDefect:
+                type: boolean
+    responses:
+      200:
+        description: Метадані оновлено
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/item-responses.yaml#/PhotoResponse"
+      404:
+        description: Фотографія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+
+  delete:
+    tags:
+      - item-photos
+    summary: Видалити фотографію
+    operationId: deletePhoto
+    parameters:
+      - name: photoId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      204:
+        description: Фотографія видалена
+      404:
+        description: Фотографія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+
+/api/photos/{photoId}/file:
+  get:
+    tags:
+      - item-photos
+    summary: Завантажити файл фотографії
+    operationId: downloadPhotoFile
+    parameters:
+      - name: photoId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: thumbnail
+        in: query
+        description: Чи повернути мініатюру
+        required: false
+        schema:
+          type: boolean
+          default: false
+    responses:
+      200:
+        description: Файл фотографії
+        content:
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/webp:
+            schema:
+              type: string
+              format: binary
+      404:
+        description: Фотографія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"

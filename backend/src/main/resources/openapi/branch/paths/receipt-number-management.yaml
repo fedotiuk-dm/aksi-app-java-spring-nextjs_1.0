@@ -1,0 +1,81 @@
+# Endpoints для управління номерами квитанцій
+/api/receipt-numbers/generate:
+  post:
+    tags:
+      - receipt-numbers
+    summary: Згенерувати номер квитанції
+    description: Генерує унікальний номер квитанції для філії
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/branch-requests.yaml#/GenerateReceiptNumberRequest"
+    responses:
+      201:
+        description: Номер квитанції згенеровано
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/ReceiptNumberResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      404:
+        description: Філія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: generateReceiptNumber
+
+/api/receipt-numbers/validate:
+  post:
+    tags:
+      - receipt-numbers
+    summary: Валідувати номер квитанції
+    description: Перевіряє правильність формату номера квитанції
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/branch-requests.yaml#/ValidateReceiptNumberRequest"
+    responses:
+      200:
+        description: Результат валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/ReceiptValidationResponse"
+    operationId: validateReceiptNumber
+
+/api/receipt-numbers/parse:
+  post:
+    tags:
+      - receipt-numbers
+    summary: Розпарсити номер квитанції
+    description: Розбирає номер квитанції на компоненти
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/branch-requests.yaml#/ParseReceiptNumberRequest"
+    responses:
+      200:
+        description: Компоненти номера квитанції
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/ReceiptNumberParseResponse"
+      400:
+        description: Неправильний формат номера
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+    operationId: parseReceiptNumber

@@ -1,0 +1,323 @@
+# Response схеми для Branch домену
+BranchResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    code:
+      type: string
+      description: Унікальний код філії
+      example: AKSI-01
+    name:
+      type: string
+      description: Назва філії
+      example: Хімчистка AKSI - Центр
+    description:
+      type: string
+      description: Опис розташування
+    address:
+      $ref: "../../common/schemas/address.yaml#/Address"
+    contactInfo:
+      $ref: "#/ContactInfoResponse"
+    coordinates:
+      $ref: "#/CoordinatesResponse"
+    status:
+      $ref: "../schemas/branch-enums.yaml#/BranchStatus"
+    workingSchedule:
+      $ref: "#/WorkingScheduleResponse"
+    receiptCounter:
+      type: integer
+      format: int64
+      description: Поточний лічильник квитанцій
+  allOf:
+    - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
+
+BranchWithDistanceResponse:
+  allOf:
+    - $ref: "#/BranchResponse"
+    - type: object
+      properties:
+        distance:
+          type: number
+          format: double
+          description: Відстань в кілометрах
+          example: 2.5
+
+ContactInfoResponse:
+  type: object
+  properties:
+    phone:
+      type: string
+      description: Основний телефон
+    alternativePhone:
+      type: string
+      description: Додатковий телефон
+    email:
+      type: string
+      description: Email філії
+    managerName:
+      type: string
+      description: Ім'я менеджера
+
+CoordinatesResponse:
+  type: object
+  properties:
+    latitude:
+      type: number
+      format: double
+      description: Широта
+    longitude:
+      type: number
+      format: double
+      description: Довгота
+    mapUrl:
+      type: string
+      format: uri
+      description: Посилання на карту
+
+WorkingScheduleResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    branchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    workingDays:
+      type: array
+      items:
+        $ref: "#/WorkingDayResponse"
+    holidays:
+      type: array
+      items:
+        $ref: "#/HolidayResponse"
+    timezone:
+      type: string
+      description: Часовий пояс
+
+WorkingDayResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    dayOfWeek:
+      $ref: "../schemas/branch-enums.yaml#/DayOfWeek"
+    openTime:
+      type: string
+      format: time
+      description: Час відкриття
+    closeTime:
+      type: string
+      format: time
+      description: Час закриття
+    isWorkingDay:
+      type: boolean
+      description: Чи є день робочим
+    notes:
+      type: string
+      description: Примітки до дня
+
+HolidayResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    date:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Дата свята
+    name:
+      type: string
+      description: Назва свята
+    isRecurring:
+      type: boolean
+      description: Чи повторюється щороку
+
+BranchOpenStatusResponse:
+  type: object
+  properties:
+    branchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    isOpen:
+      type: boolean
+      description: Чи відкрита філія зараз
+    checkDateTime:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+      description: Час перевірки
+    currentStatus:
+      $ref: "../schemas/branch-enums.yaml#/BranchOpenStatus"
+      description: Поточний статус
+    nextOpenTime:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+      description: Наступний час відкриття (якщо зачинена)
+    todaySchedule:
+      $ref: "#/WorkingDayResponse"
+
+NextWorkingDayResponse:
+  type: object
+  properties:
+    branchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    nextWorkingDate:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Наступна робоча дата
+    workingHours:
+      type: object
+      properties:
+        openTime:
+          type: string
+          format: time
+        closeTime:
+          type: string
+          format: time
+    daysUntilNextWorking:
+      type: integer
+      description: Кількість днів до наступного робочого дня
+
+ReceiptNumberResponse:
+  type: object
+  properties:
+    receiptNumber:
+      type: string
+      description: Згенерований номер квитанції
+      example: AKSI-01-2024-000001
+    branchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    branchCode:
+      type: string
+      example: AKSI-01
+    year:
+      type: integer
+      example: 2024
+    sequenceNumber:
+      type: integer
+      example: 1
+    generatedAt:
+      $ref: "../../common/schemas/base.yaml#/Timestamp"
+
+ReceiptValidationResponse:
+  type: object
+  properties:
+    receiptNumber:
+      type: string
+      description: Перевірений номер
+    isValid:
+      type: boolean
+      description: Чи правильний формат
+    errors:
+      type: array
+      items:
+        type: string
+      description: Список помилок (якщо є)
+    branchCode:
+      type: string
+      description: Код філії (якщо валідний)
+
+ReceiptNumberParseResponse:
+  type: object
+  properties:
+    receiptNumber:
+      type: string
+      description: Оригінальний номер
+    branchCode:
+      type: string
+      description: Код філії
+      example: AKSI-01
+    year:
+      type: integer
+      description: Рік
+      example: 2024
+    sequenceNumber:
+      type: integer
+      description: Порядковий номер
+      example: 1
+    branchInfo:
+      $ref: "#/BranchSummaryResponse"
+
+BranchSummaryResponse:
+  type: object
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    code:
+      type: string
+    name:
+      type: string
+    city:
+      type: string
+
+# Statistics Responses
+BranchStatisticsResponse:
+  type: object
+  properties:
+    branchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    branchName:
+      type: string
+    period:
+      type: object
+      properties:
+        startDate:
+          $ref: "../../common/schemas/base.yaml#/Date"
+        endDate:
+          $ref: "../../common/schemas/base.yaml#/Date"
+    ordersCount:
+      type: integer
+      format: int64
+      description: Кількість замовлень
+    totalRevenue:
+      $ref: "../../common/schemas/base.yaml#/Money"
+      description: Загальний дохід
+    averageOrderValue:
+      $ref: "../../common/schemas/base.yaml#/Money"
+      description: Середня вартість замовлення
+    popularServices:
+      type: array
+      items:
+        $ref: "#/ServiceStatisticResponse"
+    dailyStats:
+      type: array
+      items:
+        $ref: "#/DailyStatisticResponse"
+
+ServiceStatisticResponse:
+  type: object
+  properties:
+    serviceName:
+      type: string
+    ordersCount:
+      type: integer
+    totalRevenue:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    percentage:
+      type: number
+      format: double
+      description: Відсоток від загального доходу
+
+DailyStatisticResponse:
+  type: object
+  properties:
+    date:
+      $ref: "../../common/schemas/base.yaml#/Date"
+    ordersCount:
+      type: integer
+    revenue:
+      $ref: "../../common/schemas/base.yaml#/Money"
+
+BranchComparisonResponse:
+  type: object
+  properties:
+    branchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    branchName:
+      type: string
+    branchCode:
+      type: string
+    ordersCount:
+      type: integer
+      format: int64
+    totalRevenue:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    averageOrderValue:
+      $ref: "../../common/schemas/base.yaml#/Money"
+    ranking:
+      type: integer
+      description: Позиція в рейтингу

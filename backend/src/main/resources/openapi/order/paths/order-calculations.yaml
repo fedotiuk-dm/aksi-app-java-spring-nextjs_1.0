@@ -1,0 +1,76 @@
+# Paths для розрахунків замовлень
+/api/orders/{id}/calculate:
+  post:
+    tags:
+      - order-calculations
+    summary: Розрахувати вартість замовлення
+    description: Перераховує загальну вартість замовлення з усіма модифікаторами та знижками
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Унікальний ідентифікатор замовлення (UUID)
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/order-calculation-schemas.yaml#/CalculateOrderRequest"
+    responses:
+      "200":
+        description: Розрахунок завершений
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-calculation-schemas.yaml#/OrderCalculationResponse"
+      "400":
+        description: Помилка валідації параметрів розрахунку
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      "404":
+        description: Замовлення не знайдене
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: calculateOrder
+
+/api/orders/{id}/calculate/preview:
+  post:
+    tags:
+      - order-calculations
+    summary: Попередній розрахунок вартості
+    description: Розраховує вартість без збереження змін (для інтерактивного калькулятора)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Унікальний ідентифікатор замовлення (UUID)
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/order-calculation-schemas.yaml#/CalculateOrderRequest"
+    responses:
+      "200":
+        description: Попередній розрахунок
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-calculation-schemas.yaml#/OrderCalculationResponse"
+      "400":
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+    operationId: previewOrderCalculation

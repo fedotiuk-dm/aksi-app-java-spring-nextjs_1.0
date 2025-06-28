@@ -1,0 +1,182 @@
+# Paths для управління предметами замовлення
+/api/orders/{id}/items:
+  get:
+    tags:
+      - order-items
+    summary: Отримати предмети замовлення
+    description: Повертає список всіх предметів в замовленні
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Унікальний ідентифікатор замовлення (UUID)
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: Список предметів замовлення
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../schemas/order-responses.yaml#/OrderItemResponse"
+      "404":
+        description: Замовлення не знайдене
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getOrderItems
+  post:
+    tags:
+      - order-items
+    summary: Додати предмет до замовлення
+    description: Додає новий предмет до замовлення з повним розрахунком ціни
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Унікальний ідентифікатор замовлення (UUID)
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/order-item-schemas.yaml#/CreateOrderItemRequest"
+    responses:
+      "201":
+        description: Предмет успішно додано
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-responses.yaml#/OrderItemResponse"
+      "400":
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      "404":
+        description: Замовлення не знайдене
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: addOrderItem
+
+/api/orders/{orderId}/items/{itemId}:
+  get:
+    tags:
+      - order-items
+    summary: Отримати конкретний предмет замовлення
+    description: Повертає детальну інформацію про предмет
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Унікальний ідентифікатор замовлення (UUID)
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        description: Унікальний ідентифікатор предмета (UUID)
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: Інформація про предмет
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-responses.yaml#/OrderItemResponse"
+      "404":
+        description: Предмет або замовлення не знайдене
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getOrderItem
+  put:
+    tags:
+      - order-items
+    summary: Оновити предмет замовлення
+    description: Оновлює існуючий предмет з перерахунком ціни
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Унікальний ідентифікатор замовлення (UUID)
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        description: Унікальний ідентифікатор предмета (UUID)
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/order-item-schemas.yaml#/UpdateOrderItemRequest"
+    responses:
+      "200":
+        description: Предмет успішно оновлений
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-responses.yaml#/OrderItemResponse"
+      "400":
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      "404":
+        description: Предмет або замовлення не знайдене
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: updateOrderItem
+  delete:
+    tags:
+      - order-items
+    summary: Видалити предмет з замовлення
+    description: Видаляє предмет з замовлення та перераховує загальну суму
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Унікальний ідентифікатор замовлення (UUID)
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        description: Унікальний ідентифікатор предмета (UUID)
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "204":
+        description: Предмет успішно видалений
+      "404":
+        description: Предмет або замовлення не знайдене
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: deleteOrderItem

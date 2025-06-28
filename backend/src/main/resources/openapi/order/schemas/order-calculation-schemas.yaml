@@ -1,0 +1,68 @@
+# Схеми для розрахунків замовлень
+CalculateOrderRequest:
+  type: object
+  properties:
+    urgency:
+      $ref: "../schemas/order-enums.yaml#/UrgencyType"
+      description: Терміновість виконання
+    discount:
+      $ref: "../schemas/order-requests.yaml#/DiscountRequest"
+      description: Знижка на замовлення
+    recalculateItems:
+      type: boolean
+      default: true
+      description: Чи перераховувати ціни предметів
+
+OrderCalculationResponse:
+  type: object
+  properties:
+    orderId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    itemsTotal:
+      type: number
+      format: double
+      description: Сума за всі предмети
+    urgencyCharge:
+      type: number
+      format: double
+      description: Надбавка за терміновість
+    subtotal:
+      type: number
+      format: double
+      description: Проміжна сума
+    discountAmount:
+      type: number
+      format: double
+      description: Сума знижки
+    totalAmount:
+      type: number
+      format: double
+      description: Загальна сума до сплати
+    itemCalculations:
+      type: array
+      items:
+        $ref: "../schemas/order-responses.yaml#/ItemCalculationDetails"
+      description: Детальні розрахунки по кожному предмету
+    discountWarnings:
+      type: array
+      items:
+        type: string
+      description: Попередження про неприйнятні знижки
+
+CompletedOrderResponse:
+  type: object
+  properties:
+    orderId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    receiptNumber:
+      type: string
+    status:
+      $ref: "../schemas/order-enums.yaml#/OrderStatus"
+    receiptUrl:
+      type: string
+      format: uri
+      description: URL для завантаження квитанції
+    receiptPdf:
+      type: string
+      format: byte
+      description: PDF квитанції в base64

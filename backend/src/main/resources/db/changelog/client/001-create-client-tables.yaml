@@ -1,0 +1,216 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-client-tables
+      author: aksi-dev
+      comment: "Створення таблиць для Client domain"
+      changes:
+        # Створення таблиці clients
+        - createTable:
+            tableName: clients
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+                    unique: true
+              - column:
+                  name: source_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: communication_methods
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: notes
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: total_orders
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_spent
+                  type: DECIMAL(10,2)
+                  defaultValue: "0.00"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: average_order_value
+                  type: DECIMAL(10,2)
+                  defaultValue: "0.00"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_order_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_vip
+                  type: BOOLEAN
+                  defaultValue: "false"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValue: "true"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Створення таблиці client_addresses
+        - createTable:
+            tableName: client_addresses
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: client_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: city
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: region
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: postal_code
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: country
+                  type: VARCHAR(100)
+                  defaultValue: "Україна"
+                  constraints:
+                    nullable: false
+
+        # Додавання foreign key constraint
+        - addForeignKeyConstraint:
+            baseTableName: client_addresses
+            baseColumnNames: client_id
+            referencedTableName: clients
+            referencedColumnNames: id
+            constraintName: fk_client_address_client
+            onDelete: CASCADE
+
+        # Створення індексів для оптимізації пошуку
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_phone
+            columns:
+              - column:
+                  name: phone
+
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_email
+            columns:
+              - column:
+                  name: email
+
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_last_name
+            columns:
+              - column:
+                  name: last_name
+
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_source_type
+            columns:
+              - column:
+                  name: source_type
+
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_created_at
+            columns:
+              - column:
+                  name: created_at
+
+        - createIndex:
+            tableName: clients
+            indexName: idx_clients_is_vip
+            columns:
+              - column:
+                  name: is_vip
+
+        # Повнотекстовий пошук індекс
+        - sql:
+            sql: >
+              CREATE INDEX idx_clients_fulltext_search
+              ON clients USING gin(
+                to_tsvector('simple',
+                  coalesce(first_name, '') || ' ' ||
+                  coalesce(last_name, '') || ' ' ||
+                  coalesce(phone, '') || ' ' ||
+                  coalesce(email, '')
+                )
+              );
+            comment: "Індекс для повнотекстового пошуку клієнтів"
+
+      rollback:
+        - dropTable:
+            tableName: client_addresses
+        - dropTable:
+            tableName: clients

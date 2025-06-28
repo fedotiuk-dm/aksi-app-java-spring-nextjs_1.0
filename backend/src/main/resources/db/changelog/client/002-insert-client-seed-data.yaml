@@ -1,0 +1,239 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-insert-client-seed-data
+      author: aksi-dev
+      comment: "Додавання тестових даних для Client domain"
+      changes:
+        # Вставка тестових клієнтів
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: first_name
+                  value: "Іван"
+              - column:
+                  name: last_name
+                  value: "Петренко"
+              - column:
+                  name: phone
+                  value: "+380671234567"
+              - column:
+                  name: email
+                  value: "ivan.petrenko@gmail.com"
+              - column:
+                  name: source_type
+                  value: "INSTAGRAM"
+              - column:
+                  name: communication_methods
+                  value: '["PHONE", "VIBER"]'
+              - column:
+                  name: notes
+                  value: "Постійний клієнт, завжди приводить чистку в суботу"
+              - column:
+                  name: total_orders
+                  value: "15"
+              - column:
+                  name: total_spent
+                  value: "2500.00"
+              - column:
+                  name: average_order_value
+                  value: "166.67"
+              - column:
+                  name: is_vip
+                  value: "true"
+
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: first_name
+                  value: "Марія"
+              - column:
+                  name: last_name
+                  value: "Коваленко"
+              - column:
+                  name: phone
+                  value: "+380509876543"
+              - column:
+                  name: email
+                  value: "maria.kovalenko@ukr.net"
+              - column:
+                  name: source_type
+                  value: "GOOGLE"
+              - column:
+                  name: communication_methods
+                  value: '["PHONE", "SMS"]'
+              - column:
+                  name: notes
+                  value: "Надає перевагу екологічним засобам"
+              - column:
+                  name: total_orders
+                  value: "8"
+              - column:
+                  name: total_spent
+                  value: "1200.00"
+              - column:
+                  name: average_order_value
+                  value: "150.00"
+              - column:
+                  name: is_vip
+                  value: "false"
+
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: first_name
+                  value: "Олександр"
+              - column:
+                  name: last_name
+                  value: "Шевченко"
+              - column:
+                  name: phone
+                  value: "+380631111111"
+              - column:
+                  name: email
+                  value: "alex.shevchenko@outlook.com"
+              - column:
+                  name: source_type
+                  value: "RECOMMENDATION"
+              - column:
+                  name: communication_methods
+                  value: '["PHONE"]'
+              - column:
+                  name: notes
+                  value: "Бізнесмен, часто здає костюми"
+              - column:
+                  name: total_orders
+                  value: "25"
+              - column:
+                  name: total_spent
+                  value: "4500.00"
+              - column:
+                  name: average_order_value
+                  value: "180.00"
+              - column:
+                  name: is_vip
+                  value: "true"
+
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: first_name
+                  value: "Анна"
+              - column:
+                  name: last_name
+                  value: "Іванова"
+              - column:
+                  name: phone
+                  value: "+380442222222"
+              - column:
+                  name: email
+                  value: "anna.ivanova@gmail.com"
+              - column:
+                  name: source_type
+                  value: "OTHER"
+              - column:
+                  name: communication_methods
+                  value: '["PHONE", "VIBER", "SMS"]'
+              - column:
+                  name: notes
+                  value: "Нова клієнтка, дізналася від колеги"
+              - column:
+                  name: total_orders
+                  value: "3"
+              - column:
+                  name: total_spent
+                  value: "450.00"
+              - column:
+                  name: average_order_value
+                  value: "150.00"
+              - column:
+                  name: is_vip
+                  value: "false"
+
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: first_name
+                  value: "Дмитро"
+              - column:
+                  name: last_name
+                  value: "Сидоренко"
+              - column:
+                  name: phone
+                  value: "+380953333333"
+              - column:
+                  name: source_type
+                  value: "INSTAGRAM"
+              - column:
+                  name: communication_methods
+                  value: '["PHONE", "VIBER"]'
+              - column:
+                  name: notes
+                  value: "Студент, часто здає джинси та светри"
+              - column:
+                  name: total_orders
+                  value: "5"
+              - column:
+                  name: total_spent
+                  value: "300.00"
+              - column:
+                  name: average_order_value
+                  value: "60.00"
+              - column:
+                  name: is_vip
+                  value: "false"
+
+        # Вставка адрес для деяких клієнтів
+        - insert:
+            tableName: client_addresses
+            columns:
+              - column:
+                  name: client_id
+                  value: "1"
+              - column:
+                  name: street
+                  value: "вул. Хрещатик, 25"
+              - column:
+                  name: city
+                  value: "Київ"
+              - column:
+                  name: region
+                  value: "Київська область"
+              - column:
+                  name: postal_code
+                  value: "01001"
+              - column:
+                  name: country
+                  value: "Україна"
+
+        - insert:
+            tableName: client_addresses
+            columns:
+              - column:
+                  name: client_id
+                  value: "3"
+              - column:
+                  name: street
+                  value: "пр. Науки, 45, кв. 12"
+              - column:
+                  name: city
+                  value: "Київ"
+              - column:
+                  name: region
+                  value: "Київська область"
+              - column:
+                  name: postal_code
+                  value: "03028"
+              - column:
+                  name: country
+                  value: "Україна"
+
+      rollback:
+        - delete:
+            tableName: client_addresses
+        - delete:
+            tableName: clients

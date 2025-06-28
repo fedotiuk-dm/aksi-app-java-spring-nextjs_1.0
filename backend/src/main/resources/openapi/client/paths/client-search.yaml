@@ -1,0 +1,66 @@
+# Endpoints для пошуку клієнтів
+/api/clients/search:
+  get:
+    tags:
+      - client-search
+    summary: Пошук клієнтів
+    description: Швидкий пошук клієнтів за різними критеріями з автозаповненням
+    parameters:
+      - name: query
+        in: query
+        required: true
+        description: Пошуковий запит (ім'я, прізвище, телефон, email)
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 100
+      - name: limit
+        in: query
+        description: Максимальна кількість результатів (для автозаповнення)
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+    responses:
+      200:
+        description: Результати пошуку
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientSearchResponse"
+      400:
+        description: Некоректний пошуковий запит
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: searchClients
+
+/api/clients/search/advanced:
+  post:
+    tags:
+      - client-search
+    summary: Розширений пошук клієнтів
+    description: Розширений пошук з фільтрами та сортуванням
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/client-requests.yaml#/ClientSearchRequest"
+    responses:
+      200:
+        description: Результати розширеного пошуку
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientPageResponse"
+      400:
+        description: Некоректні параметри пошуку
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+    operationId: advancedSearchClients

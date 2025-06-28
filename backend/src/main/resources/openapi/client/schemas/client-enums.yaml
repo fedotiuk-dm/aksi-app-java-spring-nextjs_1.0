@@ -1,0 +1,36 @@
+# Enum схеми для Client домену
+CommunicationMethod:
+  type: string
+  enum:
+    - PHONE
+    - SMS
+    - VIBER
+    - TELEGRAM
+    - EMAIL
+  description: |
+    Способи зв'язку з клієнтом:
+    * PHONE - Телефонний дзвінок
+    * SMS - SMS повідомлення
+    * VIBER - Viber месенджер
+    * TELEGRAM - Telegram месенджер
+    * EMAIL - Електронна пошта
+
+ClientSourceType:
+  type: string
+  enum:
+    - REFERRAL
+    - ADVERTISING
+    - SOCIAL_MEDIA
+    - WEBSITE
+    - WALKING_BY
+    - REPEAT_CUSTOMER
+    - OTHER
+  description: |
+    Джерело надходження клієнта:
+    * REFERRAL - Рекомендація
+    * ADVERTISING - Реклама
+    * SOCIAL_MEDIA - Соціальні мережі
+    * WEBSITE - Веб-сайт
+    * WALKING_BY - Проходив повз
+    * REPEAT_CUSTOMER - Постійний клієнт
+    * OTHER - Інше

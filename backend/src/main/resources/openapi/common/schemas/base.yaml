@@ -1,0 +1,92 @@
+# Базові спільні схеми для всіх доменів
+UUID:
+  type: string
+  format: uuid
+  description: Унікальний ідентифікатор (UUID v4)
+  example: 550e8400-e29b-41d4-a716-446655440000
+
+Timestamp:
+  type: string
+  format: date-time
+  description: Мітка часу в ISO 8601 форматі
+  example: 2025-01-07T10:30:00Z
+
+Date:
+  type: string
+  format: date
+  description: Дата в ISO 8601 форматі
+  example: 2025-01-07
+
+TimestampProperties:
+  type: object
+  properties:
+    createdAt:
+      type: string
+      format: date-time
+      description: Дата створення
+      readOnly: true
+    updatedAt:
+      type: string
+      format: date-time
+      description: Дата останнього оновлення
+      readOnly: true
+
+BaseEntityResponse:
+  type: object
+  required:
+    - id
+    - createdAt
+  properties:
+    id:
+      $ref: "#/UUID"
+    createdAt:
+      $ref: "#/Timestamp"
+    updatedAt:
+      $ref: "#/Timestamp"
+
+Money:
+  type: number
+  format: double
+  minimum: 0
+  description: Грошова сума (в гривнях)
+  example: 150.50
+
+Percentage:
+  type: number
+  format: double
+  minimum: 0
+  maximum: 100
+  description: Відсоток (0-100)
+  example: 15.5
+
+Email:
+  type: string
+  format: email
+  maxLength: 254
+  description: Email адреса
+  example: user@example.com
+
+PhoneNumber:
+  type: string
+  pattern: '^\+380\d{9}$'
+  description: Номер телефону в міжнародному форматі
+  example: "+380501234567"
+
+PositiveInteger:
+  type: integer
+  minimum: 1
+  description: Позитивне ціле число
+  example: 5
+
+FileSize:
+  type: integer
+  format: int64
+  minimum: 0
+  description: Розмір файлу в байтах
+  example: 1048576
+
+Url:
+  type: string
+  format: uri
+  description: URL адреса
+  example: https://example.com/resource

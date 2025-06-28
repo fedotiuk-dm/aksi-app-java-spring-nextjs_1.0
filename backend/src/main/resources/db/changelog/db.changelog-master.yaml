@@ -1,5 +1,22 @@
 databaseChangeLog:
+  # Client Domain міграції
   - include:
-      file: db/changelog/001-initial-schema.yaml
+      file: db/changelog/client/001-create-client-tables.yaml
   - include:
-      file: db/changelog/002-seed-data.yaml
+      file: db/changelog/client/002-insert-client-seed-data.yaml
+
+  # Order Domain міграції (TODO)
+  # - include:
+  #     file: db/changelog/order/001-create-order-tables.yaml
+
+  # Item Domain міграції (TODO)
+  # - include:
+  #     file: db/changelog/item/001-create-item-tables.yaml
+
+  # Branch Domain міграції (TODO)
+  # - include:
+  #     file: db/changelog/branch/001-create-branch-tables.yaml
+
+  # Document Domain міграції (TODO)
+  # - include:
+  #     file: db/changelog/document/001-create-document-tables.yaml

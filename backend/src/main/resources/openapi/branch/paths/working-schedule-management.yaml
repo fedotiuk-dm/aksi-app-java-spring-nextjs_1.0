@@ -1,0 +1,117 @@
+# Endpoints для управління графіком роботи філій
+/api/branches/{id}/schedule:
+  get:
+    tags:
+      - working-schedule
+    summary: Отримати графік роботи філії
+    description: Повертає графік роботи конкретної філії
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+    responses:
+      200:
+        description: Графік роботи філії
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/WorkingScheduleResponse"
+      404:
+        description: Філія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getBranchSchedule
+
+  put:
+    tags:
+      - working-schedule
+    summary: Оновити графік роботи
+    description: Оновлює графік роботи філії
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/branch-requests.yaml#/UpdateWorkingScheduleRequest"
+    responses:
+      200:
+        description: Графік роботи оновлено
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/WorkingScheduleResponse"
+      400:
+        description: Помилка валідації
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+      404:
+        description: Філія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: updateBranchSchedule
+
+/api/branches/{id}/is-open:
+  get:
+    tags:
+      - working-schedule
+    summary: Перевірити чи відкрита філія
+    description: Перевіряє чи працює філія в конкретний час
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - name: dateTime
+        in: query
+        description: Дата та час для перевірки (ISO 8601)
+        required: false
+        schema:
+          type: string
+          format: date-time
+    responses:
+      200:
+        description: Статус роботи філії
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/BranchOpenStatusResponse"
+      404:
+        description: Філія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getBranchOpenStatus
+
+/api/branches/{id}/next-working-day:
+  get:
+    tags:
+      - working-schedule
+    summary: Наступний робочий день
+    description: Повертає наступний робочий день філії
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - name: fromDate
+        in: query
+        description: Дата від якої шукати (ISO 8601 date)
+        required: false
+        schema:
+          type: string
+          format: date
+    responses:
+      200:
+        description: Наступний робочий день
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-responses.yaml#/NextWorkingDayResponse"
+      404:
+        description: Філія не знайдена
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getBranchNextWorkingDay

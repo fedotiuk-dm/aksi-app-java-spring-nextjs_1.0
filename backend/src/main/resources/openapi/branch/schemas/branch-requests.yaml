@@ -1,0 +1,216 @@
+# Request схеми для Branch домену
+CreateBranchRequest:
+  type: object
+  required:
+    - code
+    - name
+    - address
+    - contactInfo
+  properties:
+    code:
+      type: string
+      pattern: ^[A-Z0-9-]+$
+      minLength: 3
+      maxLength: 20
+      description: Унікальний код філії
+      example: AKSI-01
+    name:
+      type: string
+      minLength: 3
+      maxLength: 100
+      description: Назва філії
+      example: Хімчистка AKSI - Центр
+    description:
+      type: string
+      maxLength: 500
+      description: Опис розташування
+      example: ТЦ Глобус, 2 поверх
+    address:
+      $ref: "../../common/schemas/address.yaml#/CreateAddressRequest"
+    contactInfo:
+      $ref: "#/ContactInfoRequest"
+    coordinates:
+      $ref: "#/CoordinatesRequest"
+    workingSchedule:
+      $ref: "#/WorkingScheduleRequest"
+
+UpdateBranchRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      minLength: 3
+      maxLength: 100
+      description: Назва філії
+    description:
+      type: string
+      maxLength: 500
+      description: Опис розташування
+    address:
+      $ref: "../../common/schemas/address.yaml#/UpdateAddressRequest"
+    contactInfo:
+      $ref: "#/ContactInfoRequest"
+    coordinates:
+      $ref: "#/CoordinatesRequest"
+    status:
+      $ref: "../schemas/branch-enums.yaml#/BranchStatus"
+
+ContactInfoRequest:
+  type: object
+  properties:
+    phone:
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
+      description: Основний телефон
+      example: +380501234567
+    alternativePhone:
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
+      description: Додатковий телефон
+      example: +380991234567
+    email:
+      $ref: "../../common/schemas/base.yaml#/Email"
+      description: Email філії
+      example: branch01@aksi.com
+    managerName:
+      type: string
+      maxLength: 100
+      description: Ім'я менеджера
+      example: Іванова Марія Петрівна
+
+CoordinatesRequest:
+  type: object
+  properties:
+    latitude:
+      type: number
+      format: double
+      minimum: -90
+      maximum: 90
+      description: Широта
+      example: 50.4501
+    longitude:
+      type: number
+      format: double
+      minimum: -180
+      maximum: 180
+      description: Довгота
+      example: 30.5234
+    mapUrl:
+      type: string
+      format: uri
+      description: Посилання на карту
+      example: https://maps.google.com/...
+
+WorkingScheduleRequest:
+  type: object
+  properties:
+    workingDays:
+      type: array
+      items:
+        $ref: "#/WorkingDayRequest"
+      minItems: 7
+      maxItems: 7
+      description: Робочі дні (7 днів тижня)
+    holidays:
+      type: array
+      items:
+        $ref: "#/HolidayRequest"
+      description: Святкові дні
+    timezone:
+      type: string
+      description: Часовий пояс
+      example: Europe/Kyiv
+      default: Europe/Kyiv
+
+WorkingDayRequest:
+  type: object
+  required:
+    - dayOfWeek
+    - isWorkingDay
+  properties:
+    dayOfWeek:
+      $ref: "../schemas/branch-enums.yaml#/DayOfWeek"
+    openTime:
+      type: string
+      format: time
+      description: Час відкриття (якщо робочий день)
+      example: "09:00"
+    closeTime:
+      type: string
+      format: time
+      description: Час закриття (якщо робочий день)
+      example: "18:00"
+    isWorkingDay:
+      type: boolean
+      description: Чи є день робочим
+    notes:
+      type: string
+      maxLength: 200
+      description: Примітки до дня
+
+HolidayRequest:
+  type: object
+  required:
+    - date
+    - name
+  properties:
+    date:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Дата свята
+    name:
+      type: string
+      maxLength: 100
+      description: Назва свята
+      example: Новий рік
+    isRecurring:
+      type: boolean
+      description: Чи повторюється щороку
+      default: false
+
+UpdateWorkingScheduleRequest:
+  type: object
+  properties:
+    workingDays:
+      type: array
+      items:
+        $ref: "#/WorkingDayRequest"
+      minItems: 7
+      maxItems: 7
+    holidays:
+      type: array
+      items:
+        $ref: "#/HolidayRequest"
+    timezone:
+      type: string
+      example: Europe/Kyiv
+
+GenerateReceiptNumberRequest:
+  type: object
+  required:
+    - branchId
+  properties:
+    branchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+      description: Ідентифікатор філії
+    branchCode:
+      type: string
+      description: Код філії (альтернатива до branchId)
+      pattern: ^[A-Z0-9-]+$
+
+ValidateReceiptNumberRequest:
+  type: object
+  required:
+    - receiptNumber
+  properties:
+    receiptNumber:
+      type: string
+      description: Номер квитанції для валідації
+      example: AKSI-01-2024-000001
+
+ParseReceiptNumberRequest:
+  type: object
+  required:
+    - receiptNumber
+  properties:
+    receiptNumber:
+      type: string
+      description: Номер квитанції для розбору
+      example: AKSI-01-2024-000001

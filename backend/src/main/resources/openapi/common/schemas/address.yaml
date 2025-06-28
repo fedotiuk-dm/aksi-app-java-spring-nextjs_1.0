@@ -1,0 +1,82 @@
+# Спільні схеми адрес для всіх доменів
+Address:
+  type: object
+  properties:
+    street:
+      type: string
+      maxLength: 200
+      description: Вулиця та номер будинку
+      example: вул. Хрещатик, 1
+    city:
+      type: string
+      maxLength: 100
+      description: Місто
+      example: Київ
+    region:
+      type: string
+      maxLength: 100
+      description: Область/регіон
+      example: Київська область
+    postalCode:
+      type: string
+      maxLength: 10
+      description: Поштовий індекс
+      example: "01001"
+    country:
+      type: string
+      maxLength: 100
+      description: Країна
+      default: Україна
+
+CreateAddressRequest:
+  type: object
+  properties:
+    street:
+      type: string
+      maxLength: 200
+      description: Вулиця та номер будинку
+      example: вул. Хрещатик, 1
+    city:
+      type: string
+      maxLength: 100
+      description: Місто
+      example: Київ
+    region:
+      type: string
+      maxLength: 100
+      description: Область/регіон
+      example: Київська область
+    postalCode:
+      type: string
+      maxLength: 10
+      description: Поштовий індекс
+      example: "01001"
+    country:
+      type: string
+      maxLength: 100
+      description: Країна
+      default: Україна
+
+UpdateAddressRequest:
+  type: object
+  properties:
+    street:
+      type: string
+      maxLength: 200
+      description: Вулиця та номер будинку
+    city:
+      type: string
+      maxLength: 100
+      description: Місто
+    region:
+      type: string
+      maxLength: 100
+      description: Область/регіон
+    postalCode:
+      type: string
+      maxLength: 10
+      description: Поштовий індекс
+    country:
+      type: string
+      maxLength: 100
+      description: Країна
