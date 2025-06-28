@@ -1,204 +1,114 @@
-# Client Domain - TODO Implementation
+# **СПРОЩЕНИЙ ВОРКФЛОУ API-First (Крок за кроком)**
 
-## Функціональні вимоги (з OrderWizard)
-
-- **quickSearch** - автозаповнення за ім'ям, прізвищем, телефоном, email
-- **createClient** - створення нового клієнта через міні-форму
-- **updateClient** - редагування обраного клієнта
-- **deleteClient** - soft delete клієнта
-
-## Структура файлів і відповідальності
-
-### 1. enums/ (domain types)
-
-**Файли:** `CommunicationMethodType.java`, `ClientSourceType.java`
-**Відповідальність:** Domain enum'и без залежностей
-**Імпорти:** НІЯКИХ - pure enum'и
-**Правило:** Ніхто не імпортує enum'и, тільки використовує їх
-
-### 2. entity/ (domain model)
-
-**Файли:** `ClientEntity.java`
-**Відповідальність:** JPA Entity + business methods
-**Імпорти:**
-
-- `enums.*` - для enum полів
-- JPA annotations
-- BaseEntity (якщо є)
-  **Правило:** Тільки entity знає про domain enum'и
-
-### 3. repository/ (data access)
-
-**Файли:** `ClientRepository.java`
-**Відповідальність:** Spring Data JPA query methods
-**Імпорти:**
-
-- `entity.ClientEntity` - для типізації
-- `enums.*` - для параметрів query методів
-- Spring Data JPA
-  **Правило:** Repository працює тільки з Entity
-
-### 4. validation/ (business rules)
-
-**Файли:** `ClientValidator.java`
-**Відповідальність:** Валідація бізнес-правил + domain exceptions
-**Імпорти:**
-
-- `entity.ClientEntity` - для валідації
-- `repository.ClientRepository` - для перевірки унікальності
-  **Правило:** Validator інкапсулює всі правила валідації
-
-### 5. service/ (business logic)
-
-**Файли:** `ClientService.java`
-**Відповідальність:** Pure business logic ТІЛЬКИ
-**Імпорти:**
-
-- `entity.ClientEntity` - для роботи з domain model
-- `repository.ClientRepository` - для data access
-- `validation.ClientValidator` - для валідації
-  **Правило:** Service НЕ знає про DTO/API, тільки Entity
-
-### 6. mapper/ (DTO ↔ Entity)
-
-**Файли:** `ClientMapper.java`
-**Відповідальність:** Конверсія між DTO та Entity доменами
-**Імпорти:**
-
-- `entity.ClientEntity` - domain model
-- API generated DTO classes
-- MapStruct annotations
-  **Правило:** Mapper - єдине місце знань про обидва домени
-
-### 7. delegate/ (API coordination)
-
-**Файли:** `ClientApiDelegate.java`
-**Відповідальність:** Координація API викликів ТІЛЬКИ
-**Імпорти:**
-
-- `service.ClientService` - для business logic
-- `mapper.ClientMapper` - для конверсій
-- API generated interfaces
-- Spring Web annotations
-  **Правило:** Delegate = mapper + service, БЕЗ власної логіки
-
-## Правила імпортів (контроль залежностей)
-
-### ✅ ДОЗВОЛЕНІ ІМПОРТИ
-
+## **СТРУКТУРА DOMAIN:**
 ```
-enums/           → НІЯКИХ
-entity/          → enums/
-repository/      → entity/ + enums/
-validation/      → entity/ + repository/
-service/         → entity/ + repository/ + validation/
-mapper/          → entity/ + API DTO
-delegate/        → service/ + mapper/ + API interfaces
+domain/client/
+├── enums/           # OpenAPI → Domain enums
+├── entity/          # JPA entities (незалежні від API)
+├── repository/      # Spring Data JPA
+├── exception/       # Domain exceptions
+├── validation/      # Business validation
+├── service/         # Business logic + транзакції
+├── mapper/          # Entity ↔ DTO (MapStruct)
+└── delegate/        # API implementation
 ```
 
-### ❌ ЗАБОРОНЕНІ ІМПОРТИ
+---
 
-```
-enums/           → будь-що (pure enum'и)
-entity/          → repository/, service/, mapper/, delegate/
-repository/      → validation/, service/, mapper/, delegate/
-validation/      → service/, mapper/, delegate/
-service/         → mapper/, delegate/, API classes
-mapper/          → validation/, другі mapper'и
-delegate/        → інші delegate'и, repository/, validation/
-```
+## **ЕТАП 1: БАЗА (Foundation)**
 
-## TODO Checklist
+### **Крок 1.1: Enums (`/enums/`)**
+- [ ] Скопіювати всі enum з OpenAPI до domain
+- [ ] Додати domain-specific методи якщо потрібно
+- [ ] Використовувати ці enum в Entity та Service
 
-### Крок 1: Створити enum'и
+### **Крок 1.2: Entity (`/entity/`)**
+- [ ] Створити JPA entities на основі OpenAPI схем
+- [ ] Додати JPA анотації (@Entity, @Table, @Id, тощо)
+- [ ] Використати Lombok (@Data, @Builder, @NoArgsConstructor, @AllArgsConstructor)
+- [ ] Додати audit поля (createdAt, updatedAt) з @CreationTimestamp, @UpdateTimestamp
+- [ ] НЕ використовувати API DTO в Entity
 
-- [ ] `CommunicationMethodType` - PHONE, SMS, VIBER
-- [ ] `ClientSourceType` - INSTAGRAM, GOOGLE, RECOMMENDATIONS, OTHER
-- [ ] Перевірити: БЕЗ імпортів, тільки enum значення
+### **Крок 1.3: Repository (`/repository/`)**
+- [ ] Створити інтерфейси що extends JpaRepository<Entity, ID>
+- [ ] Додати custom query методи (findByEmail, existsByEmail, тощо)
+- [ ] Використати @Query для складних запитів
 
-### Крок 2: Створити Entity
+### **Крок 1.4: Exception (`/exception/`)**
+- [ ] Створити domain-specific exceptions
+- [ ] Зробити їх RuntimeException
+- [ ] Додати конструктори з параметрами для зручності
 
-- [ ] `ClientEntity` з полями: firstName, lastName, phone, email, address
-- [ ] Enum поля: sourceType, communicationMethods (Set)
-- [ ] Business methods: getFullName(), deactivate()
-- [ ] Перевірити імпорти: тільки enums/ + JPA
+### **Крок 1.5: Validation (`/validation/`)**
+- [ ] Створити validator компоненти з @Component
+- [ ] Реалізувати business rules validation
+- [ ] Методи для validateForCreate, validateForUpdate
 
-### Крок 3: Створити Repository
+---
 
-- [ ] `ClientRepository extends JpaRepository`
-- [ ] Методи: findByUuidAndIsActiveTrue(), quickSearch()
-- [ ] Перевірити імпорти: тільки entity/ + enums/ + Spring Data
+## **ЕТАП 2: БІЗНЕС-ЛОГІКА**
 
-### Крок 4: Створити Validator
+### **Крок 2.1: Service (`/service/`)**
+- [ ] Створити Service клас з @Service та @Transactional
+- [ ] Injecting Repository та Validator через @RequiredArgsConstructor
+- [ ] Реалізувати CRUD операції:
+  - [ ] findById (readOnly = true)
+  - [ ] findAll (readOnly = true)
+  - [ ] create
+  - [ ] update
+  - [ ] delete
+- [ ] Додати business logic та validation calls
+- [ ] Обробити exceptions
 
-- [ ] `ClientValidator` з методами validateNewClient(), validateExistingClient()
-- [ ] Інкапсулювати ВСІ правила валідації
-- [ ] Перевірити імпорти: тільки entity/ + repository/
+---
 
-### Крок 5: Створити Service
+## **ЕТАП 3: КООРДИНАЦІЯ**
 
-- [ ] `ClientService` з методами: quickSearch(), createClient(), findByUuid(), updateClient(), deleteClient()
-- [ ] БЕЗ валідації (делегувати в Validator)
-- [ ] БЕЗ mapping (працювати тільки з Entity)
-- [ ] Перевірити імпорти: entity/ + repository/ + validation/
+### **Крок 3.1: Mapper (`/mapper/`)**
+- [ ] Створити MapStruct interface з @Mapper(componentModel = "spring")
+- [ ] Реалізувати mapping методи:
+  - [ ] DTO → Entity (для create/update)
+  - [ ] Entity → DTO (для response)
+  - [ ] List mappings
+- [ ] Додати @Mapping для ignore полів (id, timestamps)
+- [ ] Обробити enum mappings якщо потрібно
 
-### Крок 6: Створити Mapper
+### **Крок 3.2: Delegate (`/delegate/`)**
+- [ ] Створити Delegate клас з @Component
+- [ ] Implements згенерований ApiDelegate interface
+- [ ] Injecting Service та Mapper через @RequiredArgsConstructor
+- [ ] Реалізувати всі API методи:
+  - [ ] Отримати DTO з request
+  - [ ] Mapper: DTO → Entity
+  - [ ] Викликати Service method
+  - [ ] Mapper: Entity → Response DTO
+  - [ ] Повернути ResponseEntity з правильним HTTP status
 
-- [ ] `ClientMapper` з методами: toEntity(), toDto(), toDtoList()
-- [ ] MapStruct з правильними маппінгами
-- [ ] Перевірити імпорти: entity/ + API DTO
+---
 
-### Крок 7: Створити Delegate
+## **ПОРЯДОК ВИКОНАННЯ:**
 
-- [ ] `ClientApiDelegate` з endpoint'ами для OrderWizard
-- [ ] Workflow: DTO → Mapper → Entity → Service → Entity → Mapper → DTO
-- [ ] БЕЗ бізнес логіки, тільки координація
-- [ ] Перевірити імпорти: service/ + mapper/ + API interfaces
+1. **Спочатку Етап 1** (вся база)
+2. **Потім Етап 2** (бізнес-логіка)
+3. **Нарешті Етап 3** (API координація)
 
-### Крок 8: Перевірити архітектуру
+## **КЛЮЧОВІ ПРАВИЛА:**
 
-- [ ] Кожен файл < 200 рядків
-- [ ] Немає дублювання логіки
-- [ ] Правильні імпорти згідно правил
-- [ ] Functional approach (Optional + map/filter)
-- [ ] БЕЗ логування в business logic
+✅ **OpenAPI як Single Source of Truth**
+✅ **Entity незалежні від API**
+✅ **Тільки одна відповідальність на клас**
+✅ **Ніякого дублювання коду**
+✅ **Mapper тільки для конвертації**
+✅ **Delegate тільки для координації**
+✅ **Service для всієї бізнес-логіки**
 
-## Контроль якості
+## **ЧЕКЛІСТ ЗАВЕРШЕННЯ:**
 
-### Перевірка відсутності дублювання
-
-- [ ] Валідація тільки в `ClientValidator`
-- [ ] Mapping тільки в `ClientMapper`
-- [ ] Business logic тільки в `ClientService`
-- [ ] API координація тільки в `ClientApiDelegate`
-
-### Перевірка імпортів
-
-- [ ] Repository НЕ імпортує Service
-- [ ] Service НЕ імпортує Mapper або API класи
-- [ ] Entity НЕ імпортує Repository
-- [ ] Validator НЕ імпортує Service
-
-### Перевірка Single Responsibility
-
-- [ ] Кожен файл має одну чітку відповідальність
-- [ ] Немає "god objects" з багатьма обов'язками
-- [ ] Легко тестувати кожен компонент окремо
-
-## Готовність для фронтенду
-
-### API endpoints (мінімальний набір)
-
-- [ ] `GET /api/clients/search?query=...&limit=10` - quickSearch
-- [ ] `POST /api/clients` - createClient
-- [ ] `GET /api/clients/{id}` - getClient
-- [ ] `PUT /api/clients/{id}` - updateClient
-- [ ] `DELETE /api/clients/{id}` - deleteClient
-
-### Валідація та error handling
-
-- [ ] 409 Conflict для validation errors
-- [ ] 404 Not Found для неіснуючих clients
-- [ ] 400 Bad Request для некоректних даних
-
-Результат: 8 файлів ~600 рядків, готовий для OrderWizard фронтенду
+- [ ] Всі enum створені з OpenAPI
+- [ ] Entity з JPA анотаціями
+- [ ] Repository з custom методами
+- [ ] Exception класи створені
+- [ ] Validation логіка реалізована
+- [ ] Service з транзакціями
+- [ ] Mapper з MapStruct
+- [ ] Delegate реалізує API
