@@ -77,6 +77,7 @@ public class ClientEntity extends BaseEntity {
     @CollectionTable(name = "client_communication_methods",
                     joinColumns = @JoinColumn(name = "client_id"))
     @Column(name = "communication_method")
+    @Builder.Default
     private List<CommunicationMethodType> communicationMethods = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -88,28 +89,23 @@ public class ClientEntity extends BaseEntity {
     private String notes;
 
     @Column(name = "is_active", nullable = false)
+    @Builder.Default
     private Boolean isActive = true;
-
-    @Column(name = "registration_date", nullable = false)
-    private LocalDateTime registrationDate;
 
     // Business fields для статистики (можуть бути оновлені через events)
     @Column(name = "total_orders")
+    @Builder.Default
     private Integer totalOrders = 0;
 
     @Column(name = "total_spent")
+    @Builder.Default
     private Double totalSpent = 0.0;
 
     @Column(name = "last_order_date")
     private LocalDateTime lastOrderDate;
 
-
-
     @PrePersist
     protected void onCreate() {
-        if (registrationDate == null) {
-            registrationDate = LocalDateTime.now();
-        }
         if (address == null) {
             address = Address.empty();
         }

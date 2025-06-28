@@ -90,8 +90,8 @@ public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
         AND (:email IS NULL OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%')))
         AND (:city IS NULL OR LOWER(c.address.city) LIKE LOWER(CONCAT('%', :city, '%')))
         AND (:sourceType IS NULL OR c.sourceType = :sourceType)
-        AND (:registrationDateFrom IS NULL OR c.registrationDate >= :registrationDateFrom)
-        AND (:registrationDateTo IS NULL OR c.registrationDate <= :registrationDateTo)
+        AND (:registrationDateFrom IS NULL OR c.createdAt >= :registrationDateFrom)
+        AND (:registrationDateTo IS NULL OR c.createdAt <= :registrationDateTo)
         AND (:isVip IS NULL OR
              (:isVip = true AND (c.totalOrders >= 10 OR c.totalSpent >= 5000.0)) OR
              (:isVip = false AND (c.totalOrders < 10 AND c.totalSpent < 5000.0)))
@@ -145,7 +145,7 @@ public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
     /**
      * Клієнти зареєстровані за період
      */
-    @Query("SELECT c FROM ClientEntity c WHERE c.isActive = true AND c.registrationDate BETWEEN :startDate AND :endDate")
+    @Query("SELECT c FROM ClientEntity c WHERE c.isActive = true AND c.createdAt BETWEEN :startDate AND :endDate")
     Page<ClientEntity> findClientsByRegistrationPeriod(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
