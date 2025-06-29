@@ -95,19 +95,30 @@ api/client/          # Контролери (окремо від domain)
 
 ---
 
-## **ЕТАП 3: HTTP ШЛАК**
+## **ЕТАП 3: HTTP ШАР**
 
 ### **Крок 3.1: Controllers (`src/main/java/com/aksi/api/`)**
 
 - [ ] Створити Controller класи з @Controller
 - [ ] Implements згенеровані Api interfaces (ClientsApi, ClientSearchApi, etc.)
 - [ ] Injecting тільки Service через @RequiredArgsConstructor
-- [ ] **ТІЛЬКИ HTTP логіка:**
+- [ ] **ТІЛЬКИ HTTP логіка (ТОНКИЙ ШАР):**
   - [ ] Отримати DTO з request
   - [ ] Викликати Service API method з DTO
   - [ ] Повернути ResponseEntity з правильним HTTP status
-- [ ] **НЕ ІМПОРТУВАТИ Entity або Mapper!**
-- [ ] Додати логування (log.debug)
+- [ ] **ЗАБОРОНЕНО:**
+  - [ ] ❌ Entity або Mapper імпорти
+  - [ ] ❌ Логування (log.debug, log.info)
+  - [ ] ❌ Try-catch блоки
+  - [ ] ❌ Складна логіка або валідація
+  - [ ] ❌ Зайві коментарі
+- [ ] **ДОЗВОЛЕНО ТІЛЬКИ:**
+  - [ ] ✅ @Controller, @RequiredArgsConstructor
+  - [ ] ✅ implements {ApiName}Api
+  - [ ] ✅ Простий коментар з відповідальністю
+  - [ ] ✅ Прямі виклики service методів
+
+**ПРИНЦИП:** OpenAPI робить всю важку роботу (validation, serialization, documentation), контролер - тільки делегація!
 
 ---
 

@@ -1,10 +1,10 @@
-// 🔥 AUTO-GENERATED BARREL EXPORT for ORDER DOMAIN
-// 📦 Order Domain - замовлення, розрахунки, завершення
-// Згенеровано: 2025-06-29T13:35:44.508Z
+// 🔥 AUTO-GENERATED BARREL EXPORT for AUTH DOMAIN
+// Домен auth
+// Згенеровано: 2025-06-29T13:35:44.507Z
 // Не редагуйте вручну - файл буде перезаписаний при наступній генерації
 //
 // 💡 Це дозволяє використовувати чисті імпорти:
-// import { useClients, ClientResponse, clientSchema } from '@/shared/api/generated/order';
+// import { useClients, ClientResponse, clientSchema } from '@/shared/api/generated/auth';
 //
 // 🎯 Доступні експорти:
 // - з aKSIDryCleaningOrderSystemAPI.ts: React Query хуки (useQuery, useMutation)

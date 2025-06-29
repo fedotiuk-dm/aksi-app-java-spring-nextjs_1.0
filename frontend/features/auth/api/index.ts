@@ -1,56 +1,68 @@
 /**
- * @fileoverview Auth API хуки з використанням Orval згенерованих клієнтів
+ * @fileoverview Auth API хуки з використанням поточних Orval згенерованих клієнтів
  *
  * Використовує:
- * - Orval згенеровані auth функції
+ * - Orval згенеровані auth функції (оновлені назви)
  * - React Query для стану та кешування
  * - Zod схеми для валідації
  */
 
-// Використовуємо готові Orval хуки
+// Використовуємо поточні Orval хуки з правильними назвами
 import {
-  useAuthLogin,
-  useAuthRegister,
-  useAuthRefreshToken,
-  useAuthTestEndpoint,
+  useLoginUser,
+  useLogoutUser,
+  useRefreshAccessToken,
+  useGetCurrentUser,
 } from '@/shared/api/generated/auth';
 import type {
   LoginRequest,
-  RegisterRequest,
-  AuthLogin200,
-  AuthRegister200,
-  AuthRefreshToken200,
+  AuthResponse,
+  UserResponse,
+  LogoutResponse,
+  RefreshTokenRequest,
 } from '@/shared/api/generated/auth';
 
 /**
  * Хук для авторизації користувача
- * Обгортка над Orval згенерованим useAuthLogin
+ * Обгортка над Orval згенерованим useLoginUser
  */
 export const useLogin = () => {
-  return useAuthLogin({
+  return useLoginUser({
     mutation: {
       onError: (error) => {
         console.error('❌ Помилка при вході в систему:', error);
       },
       onSuccess: (data) => {
         console.log('✅ Успішний вхід в систему:', data);
+
+        // Зберігаємо токени в localStorage
+        if (data.accessToken) {
+          localStorage.setItem('accessToken', data.accessToken);
+        }
+        if (data.refreshToken) {
+          localStorage.setItem('refreshToken', data.refreshToken);
+        }
       },
     },
   });
 };
 
 /**
- * Хук для реєстрації користувача
- * Обгортка над Orval згенерованим useAuthRegister
+ * Хук для виходу з системи
+ * Використовує Orval згенерований useLogoutUser
  */
-export const useRegister = () => {
-  return useAuthRegister({
+export const useLogout = () => {
+  return useLogoutUser({
     mutation: {
       onError: (error) => {
-        console.error('❌ Помилка при реєстрації:', error);
+        console.error('❌ Помилка при виході з системи:', error);
       },
-      onSuccess: (data) => {
-        console.log('✅ Успішна реєстрація:', data);
+      onSuccess: () => {
+        console.log('✅ Успішний вихід з системи');
+
+        // Очищуємо токени з localStorage
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
       },
     },
   });
@@ -58,49 +70,58 @@ export const useRegister = () => {
 
 /**
  * Хук для оновлення JWT токена
- * Обгортка над Orval згенерованим useAuthRefreshToken
+ * Обгортка над Orval згенерованим useRefreshAccessToken
  */
 export const useRefreshToken = () => {
-  return useAuthRefreshToken({
+  return useRefreshAccessToken({
     mutation: {
       onError: (error) => {
         console.error('❌ Помилка при оновленні токена:', error);
+
+        // При помилці оновлення токена очищуємо localStorage
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
       },
       onSuccess: (data) => {
         console.log('✅ Токен успішно оновлено:', data);
+
+        // Зберігаємо новий токен
+        if (data.accessToken) {
+          localStorage.setItem('accessToken', data.accessToken);
+        }
       },
     },
   });
 };
 
 /**
- * Хук для тестування доступності auth API
- * Обгортка над Orval згенерованим useAuthTestEndpoint
+ * Хук для отримання поточного користувача
+ * Використовує Orval згенерований useGetCurrentUser
  */
-export const useAuthTest = () => {
-  return useAuthTestEndpoint({
+export const useCurrentUser = () => {
+  const accessToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+
+  // Використовуємо API тільки якщо є токен
+  const getCurrentUserQuery = useGetCurrentUser({
     query: {
-      staleTime: 5 * 60 * 1000, // 5 хвилин
+      enabled: Boolean(accessToken), // Виконуємо запит тільки якщо є токен
+      staleTime: 5 * 60 * 1000, // Кешуємо на 5 хвилин
       retry: 1,
     },
   });
-};
 
-/**
- * Хук для виходу з системи
- * Поки що використовує локальну логіку, оскільки logout endpoint не реалізований на бекенді
- */
-export const useLogout = () => {
-  // TODO: Додати logout endpoint на бекенді та використати Orval хук
+  const isAuthenticated = Boolean(accessToken) && !getCurrentUserQuery.isError;
+  const isLoading = getCurrentUserQuery.isLoading && Boolean(accessToken);
+
   return {
-    mutate: () => {
-      console.log('🚪 Вихід з системи (локальна логіка)');
-    },
-    isPending: false,
-    isError: false,
-    error: null,
+    isAuthenticated,
+    isLoading,
+    user: getCurrentUserQuery.data,
+    error: getCurrentUserQuery.error,
+    accessToken,
+    refetch: getCurrentUserQuery.refetch,
   };
 };
 
 // 📝 Експорт типів для зручності
-export type { LoginRequest, RegisterRequest, AuthLogin200, AuthRegister200, AuthRefreshToken200 };
+export type { LoginRequest, AuthResponse, UserResponse, LogoutResponse, RefreshTokenRequest };

@@ -19,9 +19,16 @@ interface AuthState {
   setError: (error: AuthError | null) => void;
   setLoading: (loading: boolean) => void;
   logout: () => void;
+  clearUser: () => void; // Додаємо alias для logout
   hasRole: (role: UserRole) => boolean;
   checkIsLoggedIn: () => boolean;
   clearError: () => void;
+
+  // Додаткові методи для перевірки ролей
+  isAdmin: () => boolean;
+  isManagerOrAdmin: () => boolean;
+  canHandleCash: () => boolean;
+  canTakeOrders: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -50,8 +57,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         userId: user.id,
         position: user.position || null,
         error: null,
+        loading: false,
       });
-      console.log('✅ Користувач збережений в store, isLoggedIn:', true);
+      console.log('✅ Користувач збережений в store, роль:', user.role);
     } else {
       // Якщо user = null, виконуємо logout
       console.log('🚪 Очищуємо користувача з store');
@@ -62,7 +70,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   /**
    * Встановлює стан помилки
    */
-  setError: (error: AuthError | null) => set({ error }),
+  setError: (error: AuthError | null) => {
+    console.log('🚨 Встановлюємо помилку в store:', error);
+    set({ error, loading: false });
+  },
 
   /**
    * Очищає помилку
@@ -72,12 +83,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   /**
    * Встановлює стан завантаження
    */
-  setLoading: (loading: boolean) => set({ loading }),
+  setLoading: (loading: boolean) => {
+    console.log('⏳ Встановлюємо стан завантаження:', loading);
+    set({ loading });
+  },
 
   /**
    * Виконує вихід користувача - очищає всі дані сесії
    */
-  logout: () =>
+  logout: () => {
+    console.log('🚪 Виконуємо logout в store');
+
+    // Очищуємо токени з localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      console.log('🗑️ Токени очищено з localStorage');
+    }
+
     set({
       isLoggedIn: false,
       username: null,
@@ -87,7 +110,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       userId: null,
       position: null,
       error: null,
-    }),
+      loading: false,
+    });
+  },
+
+  /**
+   * Alias для logout
+   */
+  clearUser: () => get().logout(),
 
   /**
    * Перевіряє, чи користувач має певну роль
@@ -101,4 +131,39 @@ export const useAuthStore = create<AuthState>((set, get) => ({
    * Перевіряє, чи користувач залогінений
    */
   checkIsLoggedIn: () => get().isLoggedIn,
+
+  /**
+   * Перевіряє чи є користувач адміністратором
+   */
+  isAdmin: () => {
+    const { isLoggedIn, role } = get();
+    return isLoggedIn && role === UserRole.ADMIN;
+  },
+
+  /**
+   * Перевіряє чи є користувач менеджером або адміністратором
+   */
+  isManagerOrAdmin: () => {
+    const { isLoggedIn, role } = get();
+    return isLoggedIn && (role === UserRole.MANAGER || role === UserRole.ADMIN);
+  },
+
+  /**
+   * Перевіряє чи може користувач працювати з касою
+   */
+  canHandleCash: () => {
+    const { isLoggedIn, role } = get();
+    return (
+      isLoggedIn &&
+      (role === UserRole.CASHIER || role === UserRole.MANAGER || role === UserRole.ADMIN)
+    );
+  },
+
+  /**
+   * Перевіряє чи може користувач приймати замовлення
+   */
+  canTakeOrders: () => {
+    const { isLoggedIn, role } = get();
+    return isLoggedIn && role !== UserRole.CASHIER; // Всі крім касира
+  },
 }));

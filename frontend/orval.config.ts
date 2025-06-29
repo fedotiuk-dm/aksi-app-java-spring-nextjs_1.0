@@ -5,17 +5,15 @@
  *
  * ✅ Що генерується для КОЖНОГО домену:
  * - {domain}Api.ts - всі React Query хуки (useQuery, useMutation)
- * - {domain}Api.schemas.ts - всі TypeScript типи
+ * - index.ts - TypeScript типи + BARREL EXPORT
  * - schemas.zod.ts - всі Zod схеми для валідації
- * - index.ts - BARREL EXPORT (публічне API домену)
  *
  * 📁 Результат:
  * shared/api/generated/
  *   ├── client/           # Client Domain
  *   │   ├── clientApi.ts              - хуки (useClients, useCreateClient тощо)
- *   │   ├── clientApi.schemas.ts      - типи (ClientResponse, CreateClientRequest тощо)
- *   │   ├── schemas.zod.ts            - Zod схеми
- *   │   └── index.ts                  - BARREL: export * from './clientApi'
+ *   │   ├── index.ts                  - типи + BARREL: export * from './clientApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
  *   ├── branch/           # Branch Domain
  *   │   ├── branchApi.ts              - хуки (useBranches, useCreateBranch тощо)
  *   │   └── ...
@@ -77,11 +75,9 @@ const createDomainConfig = (name: string, tags: string[]) => ({
       },
     },
     output: {
-      target: `./shared/api/generated/${name}/${name}Api.ts`,
+      target: `shared/api/generated/${name}`,
       client: 'react-query' as const,
       mode: 'split' as const,
-      // 📝 Кастомні назви файлів
-      schemas: `${name}Api.schemas.ts`,
       override: {
         mutator: {
           path: MUTATOR_PATH,
@@ -115,7 +111,7 @@ const createDomainConfig = (name: string, tags: string[]) => ({
       },
     },
     output: {
-      target: `./shared/api/generated/${name}/schemas.zod.ts`,
+      target: `shared/api/generated/${name}/schemas.zod.ts`,
       client: 'zod' as const,
       mode: 'single' as const,
       override: {

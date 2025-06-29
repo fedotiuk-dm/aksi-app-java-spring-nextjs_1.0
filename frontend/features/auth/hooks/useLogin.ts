@@ -6,9 +6,8 @@ import { useState } from 'react';
 import type { LoginRequest } from '@/shared/api/generated/auth';
 
 import { useLogin as useApiLogin } from '../api';
-import { adaptOrvalLoginResponse } from '../model/types';
+import { adaptAuthResponseToAuthUser } from '../model/types';
 import { useAuthStore } from '../store';
-
 
 /**
  * Клієнтський хук для входу користувача у систему
@@ -23,7 +22,7 @@ export const useLogin = () => {
   const setStoreError = useAuthStore((state) => state.setError);
   const setStoreLoading = useAuthStore((state) => state.setLoading);
 
-  // Отримуємо хук для API-запиту (тепер з Orval)
+  // Отримуємо хук для API-запиту (тепер з оновленим Orval)
   const apiLoginMutation = useApiLogin();
 
   /**
@@ -41,10 +40,12 @@ export const useLogin = () => {
       // Використовуємо оновлений Orval API хук для логіну
       const response = await apiLoginMutation.mutateAsync({ data: credentials });
 
-      // Адаптуємо Orval response до AuthUser формату
-      const user = adaptOrvalLoginResponse(response);
+      console.log('✅ Успішний логін, відповідь:', response);
 
-      // Зберігаємо дані користувача в глобальному стані
+      // Конвертуємо API response в AuthUser через адаптер
+      const user = adaptAuthResponseToAuthUser(response);
+
+      // Зберігаємо користувача в store
       setUser(user);
 
       console.log('🔄 Перенаправляємо користувача на:', redirectTo);
@@ -56,12 +57,15 @@ export const useLogin = () => {
         console.log('✅ Логін завершено успішно, перенаправлення виконано');
       }, 50);
 
-      return user;
+      return response;
     } catch (error: unknown) {
-      const errorMessage = (error as Error).message || 'Помилка при вході в систему';
+      // 🚨 Обробляємо помилки
+      const apiError = error as { message?: string; status?: number };
+      const errorMessage = apiError?.message || 'Помилка при вході в систему';
+
       console.error('❌ Помилка при вході в систему:', error);
       setError(errorMessage);
-      setStoreError({ message: errorMessage, status: 401 });
+      setStoreError({ message: errorMessage, status: apiError?.status || 500 });
       throw error;
     } finally {
       setIsLoading(false);

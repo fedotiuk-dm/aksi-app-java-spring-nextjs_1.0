@@ -33,14 +33,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtTokenService {
 
-    private final int jwtExpirationInMs;
-    private final int refreshTokenExpirationInMs;
+    private final long jwtExpirationInMs;
+    private final long refreshTokenExpirationInMs;
     private final SecretKey secretKey;
 
     public JwtTokenService(
-            @Value("${app.jwt.secret:mySecretKey123456789012345678901234567890}") String jwtSecret,
-            @Value("${app.jwt.expiration:3600000}") int jwtExpirationInMs,
-            @Value("${app.jwt.refresh-expiration:2592000000}") int refreshTokenExpirationInMs) {
+            @Value("${jwt.secret:mySecretKey123456789012345678901234567890}") String jwtSecret,
+            @Value("${jwt.expiration:3600000}") long jwtExpirationInMs,
+            @Value("${jwt.refresh.expiration:2592000000}") long refreshTokenExpirationInMs) {
         this.jwtExpirationInMs = jwtExpirationInMs;
         this.refreshTokenExpirationInMs = refreshTokenExpirationInMs;
         this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
@@ -187,7 +187,7 @@ public class JwtTokenService {
     /**
      * Отримання експірації в секундах (для API response)
      */
-    public int getExpirationInSeconds() {
+    public long getExpirationInSeconds() {
         return jwtExpirationInMs / 1000;
     }
 

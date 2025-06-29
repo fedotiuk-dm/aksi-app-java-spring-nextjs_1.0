@@ -60,7 +60,7 @@ public interface AuthMapper {
      */
     @Mapping(target = "tokenType", expression = "java(com.aksi.api.auth.dto.AuthResponse.TokenTypeEnum.BEARER)")
     @Mapping(target = "user", source = "userEntity")
-    AuthResponse toAuthResponse(String accessToken, String refreshToken, Integer expiresIn, UserEntity userEntity);
+    AuthResponse toAuthResponse(String accessToken, String refreshToken, Long expiresIn, UserEntity userEntity);
 
     // Utility mappings
 

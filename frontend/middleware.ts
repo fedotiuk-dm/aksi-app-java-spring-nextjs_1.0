@@ -11,13 +11,13 @@ const protectedRoutes = [
   '/order-wizard',
   '/price-list',
   '/settings',
-];
+] as const;
 
 // Публічні маршрути (не потребують авторизації)
-const publicRoutes = ['/login', '/register'];
+const publicRoutes = ['/login', '/register'] as const;
 
 // Перевірка, чи шлях є публічним
-const isPublic = (path: string) => {
+const isPublic = (path: string): boolean => {
   // Перевіряємо точний збіг або чи починається з публічного шляху
   if (publicRoutes.some((publicPath) => path === publicPath || path.startsWith(`${publicPath}/`))) {
     return true;
@@ -43,6 +43,22 @@ const isTokenValid = (token: string): boolean => {
   }
 };
 
+// Перевірка, чи користувач має необхідну роль для доступу до маршруту
+const hasRequiredRole = (userRole: UserRole, requiredRoles: UserRole[]): boolean => {
+  return requiredRoles.includes(userRole);
+};
+
+// Отримання ролі з токена
+const getRoleFromToken = (token: string): UserRole | null => {
+  try {
+    const payload = jwtDecode<JwtPayload>(token);
+    return payload.role;
+  } catch (error) {
+    console.error('Error getting role from token:', error);
+    return null;
+  }
+};
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -50,7 +66,7 @@ export function middleware(request: NextRequest) {
   // або пропускаємо перевірку для localStorage (клієнтська перевірка)
 
   // Якщо це публічний маршрут, дозволяємо доступ
-  if (publicRoutes.includes(pathname)) {
+  if (isPublic(pathname)) {
     return NextResponse.next();
   }
 
@@ -58,6 +74,14 @@ export function middleware(request: NextRequest) {
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     // Тут можна додати перевірку токена в cookies
     // Наразі пропускаємо, оскільки використовуємо localStorage
+
+    // Можливо, в майбутньому додамо роль-базовану перевірку:
+    // const token = request.cookies.get('accessToken')?.value;
+    // if (token && isTokenValid(token)) {
+    //   const userRole = getRoleFromToken(token);
+    //   // Перевірка ролей для конкретних маршрутів
+    // }
+
     return NextResponse.next();
   }
 

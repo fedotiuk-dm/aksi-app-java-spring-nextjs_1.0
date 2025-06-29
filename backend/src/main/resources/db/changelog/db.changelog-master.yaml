@@ -1,4 +1,8 @@
 databaseChangeLog:
+  # Auth Domain міграції
+  - include:
+      file: db/changelog/auth/001-create-auth-tables.yaml
+
   # Client Domain міграції
   - include:
       file: db/changelog/client/001-create-client-tables.yaml

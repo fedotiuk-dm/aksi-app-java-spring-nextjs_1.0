@@ -1,12 +1,12 @@
 'use client';
 
-import { useAuthTest } from '../api';
+import { useCurrentUser } from '../api';
 import { useAuthStore } from '../store';
 
 /**
  * Хук для отримання інформації про поточного користувача
  * та методів для управління автентифікацією
- * Тепер з підтримкою Orval згенерованих API клієнтів
+ * Оновлено для використання нових Orval згенерованих API клієнтів та методів store
  */
 export const useAuth = () => {
   // Витягуємо необхідні значення та методи з глобального стану авторизації
@@ -21,32 +21,40 @@ export const useAuth = () => {
     error,
     hasRole,
     checkIsLoggedIn,
+    isAdmin,
+    isManagerOrAdmin,
+    canHandleCash,
+    canTakeOrders,
   } = useAuthStore();
 
-  // Додаємо можливість тестування auth API
-  const authTest = useAuthTest();
+  // Використовуємо новий API для отримання поточного користувача
+  const currentUser = useCurrentUser();
 
   return {
-    // Основні дані користувача
-    isLoggedIn,
-    username,
-    name,
-    email,
-    role,
-    userId,
+    // Основні дані користувача (пріоритет API над store)
+    isLoggedIn: currentUser.isAuthenticated || isLoggedIn,
+    username: currentUser.user?.username || username,
+    name: currentUser.user?.firstName || name,
+    email: currentUser.user?.email || email,
+    role: currentUser.user?.roles?.[0] || role,
+    userId: currentUser.user?.id || userId,
     position,
-    error,
+    error: currentUser.error || error,
 
-    // Методи
+    // API дані
+    user: currentUser.user,
+    accessToken: currentUser.accessToken,
+    isLoading: currentUser.isLoading,
+
+    // Методи перевірки ролей (з store)
     hasRole,
     checkIsLoggedIn,
+    isAdmin,
+    isManagerOrAdmin,
+    canHandleCash,
+    canTakeOrders,
 
-    // API тестування
-    authTest: {
-      data: authTest.data,
-      isLoading: authTest.isLoading,
-      error: authTest.error,
-      refetch: authTest.refetch,
-    },
+    // API методи
+    refetch: currentUser.refetch,
   };
 };

@@ -1,567 +1,164 @@
-iddqd at dima1911 in ~/I/J/J/backend
-↪ mvn openapi-generator:generate@generate-auth-api --debug 2>&1 | grep -A5 -B5 "complex"
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='username', complexType='null', getter='getUsername', setter='setUsername', description='Ім'я користувача або email', dataType='String', datatypeWithEnum='String', dataFormat='null', name='username', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.username;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Ім'я користувача або email', maxLength=100, minLength=3, pattern='^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}|^[a-zA-Z0-9_]+$', example='admin@aksi.com', jsonSchema='{
-  "description" : "Ім'я користувача або email",
-  "example" : "admin@aksi.com",
-  "maxLength" : 100,
-  "minLength" : 3,
-  "pattern" : "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}|^[a-zA-Z0-9_]+$",
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='password', complexType='null', getter='getPassword', setter='setPassword', description='Пароль користувача', dataType='String', datatypeWithEnum='String', dataFormat='password', name='password', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.password;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Пароль користувача', maxLength=128, minLength=6, pattern='null', example='password123', jsonSchema='{
-  "description" : "Пароль користувача",
-  "example" : "password123",
-  "format" : "password",
-  "maxLength" : 128,
-  "minLength" : 6,
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='refreshToken', complexType='null', getter='getRefreshToken', setter='setRefreshToken', description='Refresh токен для оновлення access токену', dataType='String', datatypeWithEnum='String', dataFormat='null', name='refreshToken', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.refreshToken;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Refresh токен для оновлення access токену', maxLength=null, minLength=10, pattern='null', example='jwt.refresh.token', jsonSchema='{
-  "description" : "Refresh токен для оновлення access токену",
-  "example" : "jwt.refresh.token",
-  "minLength" : 10,
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=true, isInherited=false, discriminatorValue='null', nameInCamelCase='refreshToken', nameInPascalCase='RefreshToken', nameInSnakeCase='REFRESH_TOKEN', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='accessToken', complexType='null', getter='getAccessToken', setter='setAccessToken', description='JWT access токен для автентифікації API запитів', dataType='String', datatypeWithEnum='String', dataFormat='null', name='accessToken', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.accessToken;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='JWT access токен для автентифікації API запитів', maxLength=null, minLength=null, pattern='null', example='jwt.access.token', jsonSchema='{
-  "description" : "JWT access токен для автентифікації API запитів",
-  "example" : "jwt.access.token",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='accessToken', nameInPascalCase='AccessToken', nameInSnakeCase='ACCESS_TOKEN', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for refreshToken: class StringSchema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='refreshToken', complexType='null', getter='getRefreshToken', setter='setRefreshToken', description='Refresh токен для оновлення access токену', dataType='String', datatypeWithEnum='String', dataFormat='null', name='refreshToken', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.refreshToken;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Refresh токен для оновлення access токену', maxLength=null, minLength=null, pattern='null', example='jwt.refresh.token', jsonSchema='{
-  "description" : "Refresh токен для оновлення access токену",
-  "example" : "jwt.refresh.token",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='refreshToken', nameInPascalCase='RefreshToken', nameInSnakeCase='REFRESH_TOKEN', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for tokenType: class StringSchema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='tokenType', complexType='null', getter='getTokenType', setter='setTokenType', description='Тип токену (завжди Bearer)', dataType='String', datatypeWithEnum='TokenTypeEnum', dataFormat='null', name='tokenType', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.tokenType;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Тип токену (завжди Bearer)', maxLength=null, minLength=null, pattern='null', example='Bearer', jsonSchema='{
-  "description" : "Тип токену (завжди Bearer)",
-  "enum" : [ "Bearer" ],
-  "example" : "Bearer",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=true, isInnerEnum=true, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=[Bearer], allowableValues={values=[Bearer]}, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='tokenType', nameInPascalCase='TokenType', nameInSnakeCase='TOKEN_TYPE', enumName='TokenTypeEnum', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='integer', baseName='expiresIn', complexType='null', getter='getExpiresIn', setter='setExpiresIn', description='Час життя access токену в секундах', dataType='Integer', datatypeWithEnum='Integer', dataFormat='null', name='expiresIn', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.expiresIn;', baseType='Integer', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Час життя access токену в секундах', maxLength=null, minLength=null, pattern='null', example='3600', jsonSchema='{
-  "description" : "Час життя access токену в секундах",
-  "example" : 3600,
-  "maximum" : 86400,
-  "minimum" : 300,
-  "type" : "integer"
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='UserResponse', baseName='user', complexType='UserResponse', getter='getUser', setter='setUser', description='null', dataType='UserResponse', datatypeWithEnum='UserResponse', dataFormat='null', name='user', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.user;', baseType='UserResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/UserResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='user', nameInPascalCase='User', nameInSnakeCase='USER', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/UserResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for id: class UUIDSchema {
-    class Schema {
-        type: string
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='id', complexType='UUID', getter='getId', setter='setId', description='Унікальний ідентифікатор користувача', dataType='UUID', datatypeWithEnum='UUID', dataFormat='uuid', name='id', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.id;', baseType='UUID', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Унікальний ідентифікатор користувача', maxLength=null, minLength=null, pattern='null', example='123e4567-e89b-12d3-a456-426614174000', jsonSchema='{
-  "description" : "Унікальний ідентифікатор користувача",
-  "example" : "123e4567-e89b-12d3-a456-426614174000",
-  "format" : "uuid",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=true, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='id', nameInPascalCase='Id', nameInSnakeCase='ID', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=uuid, dependentRequired=null, contains=null}
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='username', complexType='null', getter='getUsername', setter='setUsername', description='Ім'я користувача', dataType='String', datatypeWithEnum='String', dataFormat='null', name='username', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.username;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Ім'я користувача', maxLength=50, minLength=3, pattern='null', example='admin', jsonSchema='{
-  "description" : "Ім'я користувача",
-  "example" : "admin",
-  "maxLength" : 50,
-  "minLength" : 3,
-  "type" : "string"
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='email', complexType='null', getter='getEmail', setter='setEmail', description='Email користувача', dataType='String', datatypeWithEnum='String', dataFormat='email', name='email', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.email;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Email користувача', maxLength=null, minLength=null, pattern='null', example='admin@aksi.com', jsonSchema='{
-  "description" : "Email користувача",
-  "example" : "admin@aksi.com",
-  "format" : "email",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=true, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='email', nameInPascalCase='Email', nameInSnakeCase='EMAIL', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=email, dependentRequired=null, contains=null}
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='firstName', complexType='null', getter='getFirstName', setter='setFirstName', description='Ім'я користувача', dataType='String', datatypeWithEnum='String', dataFormat='null', name='firstName', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.firstName;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Ім'я користувача', maxLength=50, minLength=1, pattern='null', example='Олександр', jsonSchema='{
-  "description" : "Ім'я користувача",
-  "example" : "Олександр",
-  "maxLength" : 50,
-  "minLength" : 1,
-  "type" : "string"
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='lastName', complexType='null', getter='getLastName', setter='setLastName', description='Прізвище користувача', dataType='String', datatypeWithEnum='String', dataFormat='null', name='lastName', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.lastName;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Прізвище користувача', maxLength=50, minLength=1, pattern='null', example='Петренко', jsonSchema='{
-  "description" : "Прізвище користувача",
-  "example" : "Петренко",
-  "maxLength" : 50,
-  "minLength" : 1,
-  "type" : "string"
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='UserRole', baseName='roles', complexType='UserRole', getter='getRoles', setter='setRoles', description='null', dataType='UserRole', datatypeWithEnum='UserRole', dataFormat='null', name='roles', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.roles;', baseType='UserRole', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/UserRole"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=false, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=true, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues={values=[ADMIN, MANAGER, EMPLOYEE, CASHIER, OPERATOR]}, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='roles', nameInPascalCase='Roles', nameInSnakeCase='ROLES', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/UserRole, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='array', baseName='roles', complexType='UserRole', getter='getRoles', setter='setRoles', description='Ролі користувача', dataType='List<UserRole>', datatypeWithEnum='List<UserRole>', dataFormat='null', name='roles', min='null', max='null', defaultValue='new ArrayList<>()', defaultValueWithParam=' = data.roles;', baseType='List', containerType='array', containerTypeMapped='List', title='null', unescapedDescription='Ролі користувача', maxLength=null, minLength=null, pattern='null', example='[\"ADMIN\",\"MANAGER\"]', jsonSchema='{
-  "description" : "Ролі користувача",
-  "example" : [ "ADMIN", "MANAGER" ],
-  "items" : {
-    "$ref" : "#/components/schemas/UserRole"
-  },
-  "minItems" : 1,
-  "type" : "array"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=false, isContainer=true, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=true, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=CodegenProperty{openApiType='UserRole', baseName='roles', complexType='UserRole', getter='getRoles', setter='setRoles', description='null', dataType='UserRole', datatypeWithEnum='UserRole', dataFormat='null', name='roles', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.roles;', baseType='UserRole', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/UserRole"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=false, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=true, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues={values=[ADMIN, MANAGER, EMPLOYEE, CASHIER, OPERATOR]}, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='roles', nameInPascalCase='Roles', nameInSnakeCase='ROLES', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/UserRole, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=CodegenProperty{openApiType='UserRole', baseName='roles', complexType='UserRole', getter='getRoles', setter='setRoles', description='null', dataType='UserRole', datatypeWithEnum='UserRole', dataFormat='null', name='roles', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.roles;', baseType='UserRole', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/UserRole"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=false, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=true, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues={values=[ADMIN, MANAGER, EMPLOYEE, CASHIER, OPERATOR]}, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='roles', nameInPascalCase='Roles', nameInSnakeCase='ROLES', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/UserRole, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}, vendorExtensions={}, hasValidation=true, isInherited=false, discriminatorValue='null', nameInCamelCase='roles', nameInPascalCase='Roles', nameInSnakeCase='ROLES', enumName='null', maxItems=null, minItems=1, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for isActive: class BooleanSchema {
-    class Schema {
-        type: boolean
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='boolean', baseName='isActive', complexType='null', getter='getIsActive', setter='setIsActive', description='Чи активний користувач', dataType='Boolean', datatypeWithEnum='Boolean', dataFormat='null', name='isActive', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.isActive;', baseType='Boolean', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Чи активний користувач', maxLength=null, minLength=null, pattern='null', example='true', jsonSchema='{
-  "description" : "Чи активний користувач",
-  "example" : true,
-  "type" : "boolean"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=true, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='isActive', nameInPascalCase='IsActive', nameInSnakeCase='IS_ACTIVE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for createdAt: class DateTimeSchema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='createdAt', complexType='OffsetDateTime', getter='getCreatedAt', setter='setCreatedAt', description='Дата створення користувача', dataType='OffsetDateTime', datatypeWithEnum='OffsetDateTime', dataFormat='date-time', name='createdAt', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.createdAt;', baseType='OffsetDateTime', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Дата створення користувача', maxLength=null, minLength=null, pattern='null', example='2024-01-15T10:30Z', jsonSchema='{
-  "description" : "Дата створення користувача",
-  "example" : "2024-01-15T10:30:00Z",
-  "format" : "date-time",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=false, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=true, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='createdAt', nameInPascalCase='CreatedAt', nameInSnakeCase='CREATED_AT', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=date-time, dependentRequired=null, contains=null}
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='boolean', baseName='success', complexType='null', getter='getSuccess', setter='setSuccess', description='Статус операції', dataType='Boolean', datatypeWithEnum='Boolean', dataFormat='null', name='success', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.success;', baseType='Boolean', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Статус операції', maxLength=null, minLength=null, pattern='null', example='true', jsonSchema='{
-  "description" : "Статус операції",
-  "example" : true,
-  "type" : "boolean"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=true, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='success', nameInPascalCase='Success', nameInSnakeCase='SUCCESS', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for message: class StringSchema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='message', complexType='null', getter='getMessage', setter='setMessage', description='Повідомлення про результат', dataType='String', datatypeWithEnum='String', dataFormat='null', name='message', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.message;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Повідомлення про результат', maxLength=null, minLength=null, pattern='null', example='Користувач успішно вийшов з системи', jsonSchema='{
-  "description" : "Повідомлення про результат",
-  "example" : "Користувач успішно вийшов з системи",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='message', nameInPascalCase='Message', nameInSnakeCase='MESSAGE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for timestamp: class DateTimeSchema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='timestamp', complexType='OffsetDateTime', getter='getTimestamp', setter='setTimestamp', description='Час виникнення помилки', dataType='OffsetDateTime', datatypeWithEnum='OffsetDateTime', dataFormat='date-time', name='timestamp', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.timestamp;', baseType='OffsetDateTime', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Час виникнення помилки', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Час виникнення помилки",
-  "format" : "date-time",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=false, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=true, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='timestamp', nameInPascalCase='Timestamp', nameInSnakeCase='TIMESTAMP', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=date-time, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for status: class IntegerSchema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='integer', baseName='status', complexType='null', getter='getStatus', setter='setStatus', description='HTTP статус код', dataType='Integer', datatypeWithEnum='Integer', dataFormat='null', name='status', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.status;', baseType='Integer', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='HTTP статус код', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "HTTP статус код",
-  "type" : "integer"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=false, isNumeric=true, isInteger=true, isShort=false, isLong=false, isUnboundedInteger=true, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='status', nameInPascalCase='Status', nameInSnakeCase='STATUS', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for error: class StringSchema {
-    class Schema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='error', complexType='null', getter='getError', setter='setError', description='Тип помилки', dataType='String', datatypeWithEnum='String', dataFormat='null', name='error', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.error;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Тип помилки', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Тип помилки",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='error', nameInPascalCase='Error', nameInSnakeCase='ERROR', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for message: class StringSchema {
-    class Schema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='message', complexType='null', getter='getMessage', setter='setMessage', description='Опис помилки', dataType='String', datatypeWithEnum='String', dataFormat='null', name='message', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.message;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Опис помилки', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Опис помилки",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='message', nameInPascalCase='Message', nameInSnakeCase='MESSAGE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for path: class StringSchema {
-    class Schema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='path', complexType='null', getter='getPath', setter='setPath', description='Шлях запиту', dataType='String', datatypeWithEnum='String', dataFormat='null', name='path', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.path;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Шлях запиту', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Шлях запиту",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='path', nameInPascalCase='Path', nameInSnakeCase='PATH', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for traceId: class StringSchema {
-    class Schema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='traceId', complexType='null', getter='getTraceId', setter='setTraceId', description='Ідентифікатор для відстеження помилки', dataType='String', datatypeWithEnum='String', dataFormat='null', name='traceId', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.traceId;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Ідентифікатор для відстеження помилки', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Ідентифікатор для відстеження помилки",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='traceId', nameInPascalCase='TraceId', nameInSnakeCase='TRACE_ID', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for timestamp: class DateTimeSchema {
-    class Schema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='integer', baseName='status', complexType='null', getter='getStatus', setter='setStatus', description='HTTP статус код (400)', dataType='Integer', datatypeWithEnum='Integer', dataFormat='null', name='status', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.status;', baseType='Integer', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='HTTP статус код (400)', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "HTTP статус код (400)",
-  "type" : "integer"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=false, isNumeric=true, isInteger=true, isShort=false, isLong=false, isUnboundedInteger=true, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='status', nameInPascalCase='Status', nameInSnakeCase='STATUS', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for error: class StringSchema {
-    class Schema {
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='message', complexType='null', getter='getMessage', setter='setMessage', description='Загальний опис помилки валідації', dataType='String', datatypeWithEnum='String', dataFormat='null', name='message', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.message;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Загальний опис помилки валідації', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Загальний опис помилки валідації",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='message', nameInPascalCase='Message', nameInSnakeCase='MESSAGE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for path: class StringSchema {
-    class Schema {
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='FieldError', baseName='errors', complexType='FieldError', getter='getErrors', setter='setErrors', description='null', dataType='FieldError', datatypeWithEnum='FieldError', dataFormat='null', name='errors', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.errors;', baseType='FieldError', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/FieldError"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='errors', nameInPascalCase='Errors', nameInSnakeCase='ERRORS', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/FieldError, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='array', baseName='errors', complexType='FieldError', getter='getErrors', setter='setErrors', description='Список помилок валідації полів', dataType='List<@Valid FieldError>', datatypeWithEnum='List<@Valid FieldError>', dataFormat='null', name='errors', min='null', max='null', defaultValue='new ArrayList<>()', defaultValueWithParam=' = data.errors;', baseType='List', containerType='array', containerTypeMapped='List', title='null', unescapedDescription='Список помилок валідації полів', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Список помилок валідації полів",
-  "items" : {
-    "$ref" : "#/components/schemas/FieldError"
-  },
-  "type" : "array"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=false, isContainer=true, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=true, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=CodegenProperty{openApiType='FieldError', baseName='errors', complexType='FieldError', getter='getErrors', setter='setErrors', description='null', dataType='FieldError', datatypeWithEnum='FieldError', dataFormat='null', name='errors', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.errors;', baseType='FieldError', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/FieldError"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='errors', nameInPascalCase='Errors', nameInSnakeCase='ERRORS', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/FieldError, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=CodegenProperty{openApiType='FieldError', baseName='errors', complexType='FieldError', getter='getErrors', setter='setErrors', description='null', dataType='FieldError', datatypeWithEnum='FieldError', dataFormat='null', name='errors', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.errors;', baseType='FieldError', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/FieldError"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='errors', nameInPascalCase='Errors', nameInSnakeCase='ERRORS', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/FieldError, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='errors', nameInPascalCase='Errors', nameInSnakeCase='ERRORS', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for field: class StringSchema {
-    class Schema {
-        type: string
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='field', complexType='null', getter='getField', setter='setField', description='Назва поля з помилкою', dataType='String', datatypeWithEnum='String', dataFormat='null', name='field', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.field;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Назва поля з помилкою', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Назва поля з помилкою",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=true, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='field', nameInPascalCase='Field', nameInSnakeCase='FIELD', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for message: class StringSchema {
-    class Schema {
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='Object', baseName='rejectedValue', complexType='null', getter='getRejectedValue', setter='setRejectedValue', description='Відхилене значення', dataType='Object', datatypeWithEnum='Object', dataFormat='null', name='rejectedValue', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.rejectedValue;', baseType='Object', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Відхилене значення', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Відхилене значення"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=true, isReadOnly=false, isWriteOnly=false, isNullable=true, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='rejectedValue', nameInPascalCase='RejectedValue', nameInSnakeCase='REJECTED_VALUE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for code: class StringSchema {
-    class Schema {
-        type: string
---
-        deprecated: null
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='string', baseName='code', complexType='null', getter='getCode', setter='setCode', description='Код помилки валідації', dataType='String', datatypeWithEnum='String', dataFormat='null', name='code', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.code;', baseType='String', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='Код помилки валідації', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "description" : "Код помилки валідації",
-  "type" : "string"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=true, isModel=false, isContainer=false, isString=true, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='code', nameInPascalCase='Code', nameInSnakeCase='CODE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=null, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
 [INFO] writing file /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/target/generated-sources/openapi/src/main/java/com/aksi/api/auth/dto/AuthResponse.java
-[INFO] writing file /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/target/generated-sources/openapi/src/main/java/com/aksi/api/auth/dto/ErrorResponse.java
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='AuthResponse', baseName='response', complexType='AuthResponse', getter='getResponse', setter='setResponse', description='null', dataType='AuthResponse', datatypeWithEnum='AuthResponse', dataFormat='null', name='response', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.response;', baseType='AuthResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/AuthResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='response', nameInPascalCase='Response', nameInSnakeCase='RESPONSE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/AuthResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] Property type is not primitive: AuthResponse
-[DEBUG] debugging fromProperty for SchemaFor200ResponseBodyApplicationJson: class Schema {
-    type: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='AuthResponse', baseName='SchemaFor200ResponseBodyApplicationJson', complexType='AuthResponse', getter='getSchemaFor200ResponseBodyApplicationJson', setter='setSchemaFor200ResponseBodyApplicationJson', description='null', dataType='AuthResponse', datatypeWithEnum='AuthResponse', dataFormat='null', name='schemaFor200ResponseBodyApplicationJson', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.SchemaFor200ResponseBodyApplicationJson;', baseType='AuthResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/AuthResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='schemaFor200ResponseBodyApplicationJson', nameInPascalCase='SchemaFor200ResponseBodyApplicationJson', nameInSnakeCase='SCHEMA_FOR200_RESPONSE_BODY_APPLICATION_JSON', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=true, requiredVarsMap=null, ref=#/components/schemas/AuthResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for response: class Schema {
-    type: null
-    format: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='ValidationErrorResponse', baseName='response', complexType='ValidationErrorResponse', getter='getResponse', setter='setResponse', description='null', dataType='ValidationErrorResponse', datatypeWithEnum='ValidationErrorResponse', dataFormat='null', name='response', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.response;', baseType='ValidationErrorResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/ValidationErrorResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='response', nameInPascalCase='Response', nameInSnakeCase='RESPONSE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/ValidationErrorResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] Property type is not primitive: ValidationErrorResponse
-[DEBUG] debugging fromProperty for SchemaFor400ResponseBodyApplicationJson: class Schema {
-    type: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='ValidationErrorResponse', baseName='SchemaFor400ResponseBodyApplicationJson', complexType='ValidationErrorResponse', getter='getSchemaFor400ResponseBodyApplicationJson', setter='setSchemaFor400ResponseBodyApplicationJson', description='null', dataType='ValidationErrorResponse', datatypeWithEnum='ValidationErrorResponse', dataFormat='null', name='schemaFor400ResponseBodyApplicationJson', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.SchemaFor400ResponseBodyApplicationJson;', baseType='ValidationErrorResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/ValidationErrorResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='schemaFor400ResponseBodyApplicationJson', nameInPascalCase='SchemaFor400ResponseBodyApplicationJson', nameInSnakeCase='SCHEMA_FOR400_RESPONSE_BODY_APPLICATION_JSON', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=true, requiredVarsMap=null, ref=#/components/schemas/ValidationErrorResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for response: class Schema {
-    type: null
-    format: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='ErrorResponse', baseName='response', complexType='ErrorResponse', getter='getResponse', setter='setResponse', description='null', dataType='ErrorResponse', datatypeWithEnum='ErrorResponse', dataFormat='null', name='response', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.response;', baseType='ErrorResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/ErrorResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='response', nameInPascalCase='Response', nameInSnakeCase='RESPONSE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/ErrorResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] Property type is not primitive: ErrorResponse
-[DEBUG] debugging fromProperty for SchemaFor401ResponseBodyApplicationJson: class Schema {
-    type: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='ErrorResponse', baseName='SchemaFor401ResponseBodyApplicationJson', complexType='ErrorResponse', getter='getSchemaFor401ResponseBodyApplicationJson', setter='setSchemaFor401ResponseBodyApplicationJson', description='null', dataType='ErrorResponse', datatypeWithEnum='ErrorResponse', dataFormat='null', name='schemaFor401ResponseBodyApplicationJson', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.SchemaFor401ResponseBodyApplicationJson;', baseType='ErrorResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/ErrorResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='schemaFor401ResponseBodyApplicationJson', nameInPascalCase='SchemaFor401ResponseBodyApplicationJson', nameInSnakeCase='SCHEMA_FOR401_RESPONSE_BODY_APPLICATION_JSON', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=true, requiredVarsMap=null, ref=#/components/schemas/ErrorResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for response: class Schema {
-    type: null
-    format: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='ErrorResponse', baseName='SchemaFor403ResponseBodyApplicationJson', complexType='ErrorResponse', getter='getSchemaFor403ResponseBodyApplicationJson', setter='setSchemaFor403ResponseBodyApplicationJson', description='null', dataType='ErrorResponse', datatypeWithEnum='ErrorResponse', dataFormat='null', name='schemaFor403ResponseBodyApplicationJson', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.SchemaFor403ResponseBodyApplicationJson;', baseType='ErrorResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/ErrorResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='schemaFor403ResponseBodyApplicationJson', nameInPascalCase='SchemaFor403ResponseBodyApplicationJson', nameInSnakeCase='SCHEMA_FOR403_RESPONSE_BODY_APPLICATION_JSON', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=true, requiredVarsMap=null, ref=#/components/schemas/ErrorResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for response: class Schema {
-    type: null
-    format: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='ErrorResponse', baseName='SchemaFor500ResponseBodyApplicationJson', complexType='ErrorResponse', getter='getSchemaFor500ResponseBodyApplicationJson', setter='setSchemaFor500ResponseBodyApplicationJson', description='null', dataType='ErrorResponse', datatypeWithEnum='ErrorResponse', dataFormat='null', name='schemaFor500ResponseBodyApplicationJson', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.SchemaFor500ResponseBodyApplicationJson;', baseType='ErrorResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/ErrorResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='schemaFor500ResponseBodyApplicationJson', nameInPascalCase='SchemaFor500ResponseBodyApplicationJson', nameInSnakeCase='SCHEMA_FOR500_RESPONSE_BODY_APPLICATION_JSON', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=true, requiredVarsMap=null, ref=#/components/schemas/ErrorResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for response: class Schema {
-    type: null
-    format: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='LoginRequest', baseName='SchemaForRequestBodyApplicationJson', complexType='LoginRequest', getter='getSchemaForRequestBodyApplicationJson', setter='setSchemaForRequestBodyApplicationJson', description='null', dataType='LoginRequest', datatypeWithEnum='LoginRequest', dataFormat='null', name='schemaForRequestBodyApplicationJson', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.SchemaForRequestBodyApplicationJson;', baseType='LoginRequest', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/LoginRequest"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='schemaForRequestBodyApplicationJson', nameInPascalCase='SchemaForRequestBodyApplicationJson', nameInSnakeCase='SCHEMA_FOR_REQUEST_BODY_APPLICATION_JSON', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=true, requiredVarsMap=null, ref=#/components/schemas/LoginRequest, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for username: class StringSchema {
-    class Schema {
-        type: string
---
-        discriminator: null
-        xml: null
-    }
-}
-[DEBUG] Cached fromProperty for password : null required=true
-[WARNING] Ignoring complex example on request body
-[DEBUG] Resolving model 'LoginRequest' to example
-[DEBUG] Creating example from model values
-[DEBUG] Resolving example for property class StringSchema {
-    class Schema {
-        type: string
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='LogoutResponse', baseName='response', complexType='LogoutResponse', getter='getResponse', setter='setResponse', description='null', dataType='LogoutResponse', datatypeWithEnum='LogoutResponse', dataFormat='null', name='response', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.response;', baseType='LogoutResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/LogoutResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='response', nameInPascalCase='Response', nameInSnakeCase='RESPONSE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/LogoutResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] Property type is not primitive: LogoutResponse
-[DEBUG] debugging fromProperty for SchemaFor200ResponseBodyApplicationJson: class Schema {
-    type: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='LogoutResponse', baseName='SchemaFor200ResponseBodyApplicationJson', complexType='LogoutResponse', getter='getSchemaFor200ResponseBodyApplicationJson', setter='setSchemaFor200ResponseBodyApplicationJson', description='null', dataType='LogoutResponse', datatypeWithEnum='LogoutResponse', dataFormat='null', name='schemaFor200ResponseBodyApplicationJson', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.SchemaFor200ResponseBodyApplicationJson;', baseType='LogoutResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/LogoutResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='schemaFor200ResponseBodyApplicationJson', nameInPascalCase='SchemaFor200ResponseBodyApplicationJson', nameInSnakeCase='SCHEMA_FOR200_RESPONSE_BODY_APPLICATION_JSON', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=true, requiredVarsMap=null, ref=#/components/schemas/LogoutResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for response: class Schema {
-    type: null
-    format: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='RefreshTokenRequest', baseName='SchemaForRequestBodyApplicationJson', complexType='RefreshTokenRequest', getter='getSchemaForRequestBodyApplicationJson', setter='setSchemaForRequestBodyApplicationJson', description='null', dataType='RefreshTokenRequest', datatypeWithEnum='RefreshTokenRequest', dataFormat='null', name='schemaForRequestBodyApplicationJson', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.SchemaForRequestBodyApplicationJson;', baseType='RefreshTokenRequest', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/RefreshTokenRequest"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='schemaForRequestBodyApplicationJson', nameInPascalCase='SchemaForRequestBodyApplicationJson', nameInSnakeCase='SCHEMA_FOR_REQUEST_BODY_APPLICATION_JSON', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=true, requiredVarsMap=null, ref=#/components/schemas/RefreshTokenRequest, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for refreshToken: class StringSchema {
-    class Schema {
-        type: string
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='UserResponse', baseName='response', complexType='UserResponse', getter='getResponse', setter='setResponse', description='null', dataType='UserResponse', datatypeWithEnum='UserResponse', dataFormat='null', name='response', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.response;', baseType='UserResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/UserResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='response', nameInPascalCase='Response', nameInSnakeCase='RESPONSE', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=false, requiredVarsMap=null, ref=#/components/schemas/UserResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] Property type is not primitive: UserResponse
-[DEBUG] debugging fromProperty for SchemaFor200ResponseBodyApplicationJson: class Schema {
-    type: null
---
-    externalDocs: null
-    deprecated: null
-    discriminator: null
-    xml: null
-}
-[DEBUG] debugging from property return: CodegenProperty{openApiType='UserResponse', baseName='SchemaFor200ResponseBodyApplicationJson', complexType='UserResponse', getter='getSchemaFor200ResponseBodyApplicationJson', setter='setSchemaFor200ResponseBodyApplicationJson', description='null', dataType='UserResponse', datatypeWithEnum='UserResponse', dataFormat='null', name='schemaFor200ResponseBodyApplicationJson', min='null', max='null', defaultValue='null', defaultValueWithParam=' = data.SchemaFor200ResponseBodyApplicationJson;', baseType='UserResponse', containerType='null', containerTypeMapped='null', title='null', unescapedDescription='null', maxLength=null, minLength=null, pattern='null', example='null', jsonSchema='{
-  "$ref" : "#/components/schemas/UserResponse"
-}', minimum='null', maximum='null', exclusiveMinimum=false, exclusiveMaximum=false, required=false, deprecated=false, hasMoreNonReadOnly=false, isPrimitiveType=false, isModel=true, isContainer=false, isString=false, isNumeric=false, isInteger=false, isShort=false, isLong=false, isUnboundedInteger=false, isNumber=false, isFloat=false, isDouble=false, isDecimal=false, isByteArray=false, isBinary=false, isFile=false, isBoolean=false, isDate=false, isDateTime=false, isUuid=false, isUri=false, isEmail=false, isPassword=false, isFreeFormObject=false, isArray=false, isMap=false, isOptional=false, isEnum=false, isInnerEnum=false, isEnumRef=false, isAnyType=false, isReadOnly=false, isWriteOnly=false, isNullable=false, isSelfReference=false, isCircularReference=false, isDiscriminator=false, isNew=false, isOverridden=null, _enum=null, allowableValues=null, items=null, additionalProperties=null, vars=[], requiredVars=[], mostInnerItems=null, vendorExtensions={}, hasValidation=false, isInherited=false, discriminatorValue='null', nameInCamelCase='schemaFor200ResponseBodyApplicationJson', nameInPascalCase='SchemaFor200ResponseBodyApplicationJson', nameInSnakeCase='SCHEMA_FOR200_RESPONSE_BODY_APPLICATION_JSON', enumName='null', maxItems=null, minItems=null, maxProperties=null, minProperties=null, uniqueItems=false, uniqueItemsBoolean=null, multipleOf=null, isXmlAttribute=false, xmlPrefix='null', xmlName='null', xmlNamespace='null', isXmlWrapped=false, isNull=false, isVoid=false, getAdditionalPropertiesIsAnyType=false, getHasVars=false, getHasRequired=false, getHasDiscriminatorWithNonEmptyMapping=false, composedSchemas=null, hasMultipleTypes=false, hasSanitizedName=true, requiredVarsMap=null, ref=#/components/schemas/UserResponse, schemaIsFromAdditionalProperties=false, isBooleanSchemaTrue=false, isBooleanSchemaFalse=false, format=null, dependentRequired=null, contains=null}
-[DEBUG] debugging fromProperty for response: class Schema {
-    type: null
-    format: null
-iddqd at dima1911 in ~/I/J/J/backend
-↪
+[WARNING] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/resources/openapi/auth-api.yaml [0:0]: unexpected error in Open-API generation
+java.lang.RuntimeException: Could not generate model 'AuthResponse'
+    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:582)
+    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:443)
+    at org.openapitools.codegen.DefaultGenerator.generate (DefaultGenerator.java:1293)
+    at org.openapitools.codegen.plugin.CodeGenMojo.execute (CodeGenMojo.java:989)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
+    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
+    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
+    at java.lang.reflect.Method.invoke (Method.java:580)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
+Caused by: java.nio.file.NoSuchFileException: /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/target/generated-sources/openapi/src/main/java/com/aksi/api/auth/dto/AuthResponse.java
+    at sun.nio.fs.UnixException.translateToIOException (UnixException.java:92)
+    at sun.nio.fs.UnixException.rethrowAsIOException (UnixException.java:106)
+    at sun.nio.fs.UnixException.rethrowAsIOException (UnixException.java:111)
+    at sun.nio.fs.UnixFileSystemProvider.newByteChannel (UnixFileSystemProvider.java:261)
+    at java.nio.file.spi.FileSystemProvider.newOutputStream (FileSystemProvider.java:482)
+    at java.nio.file.Files.newOutputStream (Files.java:228)
+    at java.nio.file.Files.write (Files.java:3505)
+    at org.openapitools.codegen.TemplateManager.writeToFileRaw (TemplateManager.java:259)
+    at org.openapitools.codegen.TemplateManager.writeToFile (TemplateManager.java:241)
+    at org.openapitools.codegen.TemplateManager.writeToFile (TemplateManager.java:202)
+    at org.openapitools.codegen.TemplateManager.write (TemplateManager.java:168)
+    at org.openapitools.codegen.DefaultGenerator.processTemplateToFile (DefaultGenerator.java:1451)
+    at org.openapitools.codegen.DefaultGenerator.processTemplateToFile (DefaultGenerator.java:1431)
+    at org.openapitools.codegen.DefaultGenerator.generateModel (DefaultGenerator.java:431)
+    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:573)
+    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:443)
+    at org.openapitools.codegen.DefaultGenerator.generate (DefaultGenerator.java:1293)
+    at org.openapitools.codegen.plugin.CodeGenMojo.execute (CodeGenMojo.java:989)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
+    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
+    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
+    at java.lang.reflect.Method.invoke (Method.java:580)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
+[ERROR]
+java.lang.RuntimeException: Could not generate model 'AuthResponse'
+    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:582)
+    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:443)
+    at org.openapitools.codegen.DefaultGenerator.generate (DefaultGenerator.java:1293)
+    at org.openapitools.codegen.plugin.CodeGenMojo.execute (CodeGenMojo.java:989)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
+    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
+    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
+    at java.lang.reflect.Method.invoke (Method.java:580)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
+Caused by: java.nio.file.NoSuchFileException: /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/target/generated-sources/openapi/src/main/java/com/aksi/api/auth/dto/AuthResponse.java
+    at sun.nio.fs.UnixException.translateToIOException (UnixException.java:92)
+    at sun.nio.fs.UnixException.rethrowAsIOException (UnixException.java:106)
+    at sun.nio.fs.UnixException.rethrowAsIOException (UnixException.java:111)
+    at sun.nio.fs.UnixFileSystemProvider.newByteChannel (UnixFileSystemProvider.java:261)
+    at java.nio.file.spi.FileSystemProvider.newOutputStream (FileSystemProvider.java:482)
+    at java.nio.file.Files.newOutputStream (Files.java:228)
+    at java.nio.file.Files.write (Files.java:3505)
+    at org.openapitools.codegen.TemplateManager.writeToFileRaw (TemplateManager.java:259)
+    at org.openapitools.codegen.TemplateManager.writeToFile (TemplateManager.java:241)
+    at org.openapitools.codegen.TemplateManager.writeToFile (TemplateManager.java:202)
+    at org.openapitools.codegen.TemplateManager.write (TemplateManager.java:168)
+    at org.openapitools.codegen.DefaultGenerator.processTemplateToFile (DefaultGenerator.java:1451)
+    at org.openapitools.codegen.DefaultGenerator.processTemplateToFile (DefaultGenerator.java:1431)
+    at org.openapitools.codegen.DefaultGenerator.generateModel (DefaultGenerator.java:431)
+    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:573)
+    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:443)
+    at org.openapitools.codegen.DefaultGenerator.generate (DefaultGenerator.java:1293)
+    at org.openapitools.codegen.plugin.CodeGenMojo.execute (CodeGenMojo.java:989)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
+    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
+    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
+    at java.lang.reflect.Method.invoke (Method.java:580)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.158 s
+[INFO] Finished at: 2025-06-29T13:39:08+02:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.openapitools:openapi-generator-maven-plugin:7.13.0:generate (generate-auth-api) on project dry-cleaning-order-system: Code generation failed. See above for the full exception. -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

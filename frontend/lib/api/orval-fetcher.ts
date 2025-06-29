@@ -27,7 +27,7 @@ declare module 'axios' {
 }
 
 // 🔧 Конфігурація
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+const BASE_URL = 'http://localhost:8080/api';
 
 const DEFAULT_TIMEOUT = 30000; // 30 секунд
 const MAX_RETRY_ATTEMPTS = 3;
@@ -63,19 +63,19 @@ const getAuthToken = async (): Promise<string | null> => {
   if (cachedToken) return cachedToken;
 
   // Перевіряємо чи є токен в localStorage
-  const storedToken = localStorage.getItem('auth-token');
+  const storedToken = localStorage.getItem('accessToken');
   if (storedToken) {
     // Якщо є збережений токен, використовуємо його
     cachedToken = storedToken;
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔐 Використовуємо токен з localStorage');
+      console.log('🔐 Використовуємо accessToken з localStorage');
     }
     return cachedToken;
   }
 
   // Якщо немає збереженого токена, повертаємо null
   if (process.env.NODE_ENV === 'development') {
-    console.log('🔐 Немає токена в localStorage');
+    console.log('🔐 Немає accessToken в localStorage');
   }
   return null;
 };
@@ -86,11 +86,12 @@ const clearAuthToken = (): void => {
   // Очищуємо кеш токена
   cachedToken = null;
 
-  // Очищуємо токен з localStorage
-  localStorage.removeItem('auth-token');
+  // Очищуємо токени з localStorage
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
 
   if (process.env.NODE_ENV === 'development') {
-    console.log('🗑️ Токен очищено з кешу та localStorage');
+    console.log('🗑️ Токени очищено з кешу та localStorage');
   }
 };
 

@@ -1,16 +1,16 @@
-# Development Dockerfile for Spring Boot with hot reload
+# Development Dockerfile for Spring Boot with Maven Wrapper and optimized builds
 FROM bellsoft/liberica-openjdk-alpine:21
 
-# Install Maven and other tools for development
+# Install essential tools for development (removing Maven - we'll use wrapper)
 RUN apk add --no-cache \
     bash \
     curl \
     wget \
-    maven \
     tar \
-    gzip
+    gzip \
+    findutils
 
-# Create non-root user to match host user
+# Create non-root user to match host user (1000:1000)
 RUN addgroup -g 1000 appgroup && \
     adduser -u 1000 -G appgroup -s /bin/bash -D appuser
 
@@ -27,14 +27,19 @@ ENV SPRING_PROFILES_ACTIVE=dev
 ENV JAVA_OPTS="-Xms512m -Xmx2048m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 ENV MAVEN_OPTS="-Xmx1024m -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -Dorg.slf4j.simpleLogger.log.org.openapitools=ERROR"
 
-# Copy pom.xml first for better Docker layer caching
-COPY pom.xml ./
+# Copy Maven Wrapper files first
+COPY --chown=appuser:appgroup .mvn/ .mvn/
+COPY --chown=appuser:appgroup mvnw pom.xml ./
 
-# Download dependencies (this layer will be cached)
-RUN mvn dependency:go-offline -B
+# Make Maven Wrapper executable
+RUN chmod +x mvnw
+
+# Download dependencies using dev-fast profile (this layer will be cached)
+# Using dev-fast profile to skip unnecessary steps for development
+RUN ./mvnw dependency:go-offline -B -Pdev-fast -q
 
 # Copy the rest of the source code
-COPY src ./src
+COPY --chown=appuser:appgroup src ./src
 
 # Expose ports: Spring Boot and Debug
 EXPOSE 8080 5005
@@ -42,9 +47,9 @@ EXPOSE 8080 5005
 # Create logs directory
 RUN mkdir -p logs
 
-# Command with hot reload support (using installed Maven)
-# Приховуємо Maven логи для чистого виводу
-CMD ["mvn", "spring-boot:run", "-q", \
+# Development command using Maven Wrapper with dev-fast profile
+# This skips tests, checkstyle, spotless, and OpenAPI generation for faster startup
+CMD ["./mvnw", "spring-boot:run", "-q", \
+     "-Pdev-fast", \
      "-Dspring-boot.run.profiles=dev", \
-     "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", \
-     "-Dorg.slf4j.simpleLogger.defaultLogLevel=WARN"]
+     "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"]

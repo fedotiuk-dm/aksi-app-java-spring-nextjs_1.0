@@ -12,22 +12,6 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || BACKEND_URL,
   },
 
-  // Standalone output для Docker production builds
-  output: 'standalone',
-
-  // Experimental features
-  experimental: {
-    // Турбопакет для прискорення розробки
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-  },
-
   // Пропуск перевірки типів під час збірки
   typescript: {
     // Дозволяємо успішне завершення збірки для продакшну, навіть якщо
@@ -40,20 +24,6 @@ const nextConfig: NextConfig = {
     // Дозволяємо успішне завершення збірки для продакшну, навіть якщо
     // у проекті є помилки ESLint.
     ignoreDuringBuilds: true,
-  },
-
-  // Налаштування для кращої продуктивності
-  compress: true,
-  poweredByHeader: false,
-
-  // Налаштування для роботи з API
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${BACKEND_URL}/api/:path*`,
-      },
-    ];
   },
 };
 

@@ -9,6 +9,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -33,6 +35,16 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
 
     private final Environment environment;
+
+    /**
+     * Password encoder для хешування паролів
+     * Використовує BCrypt algorithm з силою 12
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        log.info("🔐 Configuring BCrypt PasswordEncoder with strength 12");
+        return new BCryptPasswordEncoder(12);
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

@@ -1,0 +1,288 @@
+databaseChangeLog:
+  # Створення основної таблиці users
+  - changeSet:
+      id: 001-create-users-table
+      author: system
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              # BaseEntity поля
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+
+              # UserEntity основні поля
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              # Безпека та статус
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValue: "true"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_login_at
+                  type: TIMESTAMP
+              - column:
+                  name: failed_login_attempts
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: locked_until
+                  type: TIMESTAMP
+
+  # Створення індексів для продуктивності
+  - changeSet:
+      id: 002-create-users-indexes
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_user_username
+            tableName: users
+            columns:
+              - column:
+                  name: username
+        - createIndex:
+            indexName: idx_user_email
+            tableName: users
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            indexName: idx_user_active
+            tableName: users
+            columns:
+              - column:
+                  name: is_active
+        - createIndex:
+            indexName: idx_user_locked_until
+            tableName: users
+            columns:
+              - column:
+                  name: locked_until
+
+  # Створення таблиці для ролей користувачів (ElementCollection)
+  - changeSet:
+      id: 003-create-user-roles-table
+      author: system
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: user_id
+            constraintName: fk_user_roles_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_user_roles_user_id
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_user_roles_role
+            tableName: user_roles
+            columns:
+              - column:
+                  name: role
+
+  # Створення таблиці refresh_tokens
+  - changeSet:
+      id: 004-create-refresh-tokens-table
+      author: system
+      changes:
+        - createTable:
+            tableName: refresh_tokens
+            columns:
+              # BaseEntity поля
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+
+              # RefreshTokenEntity поля
+              - column:
+                  name: token
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_used
+                  type: BOOLEAN
+                  defaultValue: "false"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: invalidated_at
+                  type: TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: refresh_tokens
+            baseColumnNames: user_id
+            constraintName: fk_refresh_tokens_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  # Створення індексів для refresh_tokens
+  - changeSet:
+      id: 005-create-refresh-tokens-indexes
+      author: system
+      changes:
+        - createIndex:
+            indexName: idx_refresh_token_token
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: token
+        - createIndex:
+            indexName: idx_refresh_token_user_id
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_refresh_token_expires_at
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: expires_at
+        - createIndex:
+            indexName: idx_refresh_token_is_used
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: is_used
+
+  # Додавання check constraints для enum полів
+  - changeSet:
+      id: 006-add-auth-enum-constraints
+      author: system
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE user_roles ADD CONSTRAINT chk_user_role
+              CHECK (role IN ('ADMIN', 'MANAGER', 'EMPLOYEE', 'CASHIER', 'OPERATOR'));
+
+  # Додавання коментарів до таблиць
+  - changeSet:
+      id: 007-add-auth-table-comments
+      author: system
+      changes:
+        - setTableRemarks:
+            tableName: users
+            remarks: "Таблиця користувачів системи з автентифікацією та авторизацією"
+        - setTableRemarks:
+            tableName: user_roles
+            remarks: "Ролі користувачів (many-to-many через ElementCollection)"
+        - setTableRemarks:
+            tableName: refresh_tokens
+            remarks: "Refresh токени для оновлення access токенів"
+        - setColumnRemarks:
+            tableName: users
+            columnName: username
+            remarks: "Унікальний логін користувача"
+        - setColumnRemarks:
+            tableName: users
+            columnName: password_hash
+            remarks: "BCrypt хеш пароля"
+        - setColumnRemarks:
+            tableName: users
+            columnName: failed_login_attempts
+            remarks: "Кількість невдалих спроб входу (блокування після 5)"
+        - setColumnRemarks:
+            tableName: users
+            columnName: locked_until
+            remarks: "Час до якого заблокований користувач"
+        - setColumnRemarks:
+            tableName: refresh_tokens
+            columnName: token
+            remarks: "JWT refresh токен"
+        - setColumnRemarks:
+            tableName: refresh_tokens
+            columnName: is_used
+            remarks: "Чи використаний токен (для безпеки)"

@@ -7,7 +7,7 @@ import { useLogout as useApiLogout } from '../api';
 import { useAuthStore } from '../store';
 
 /**
- * Хук для виходу користувача із системи
+ * Клієнтський хук для виходу користувача з системи
  * Використовує оновлені Orval згенеровані API клієнти
  */
 export const useLogout = () => {
@@ -15,55 +15,61 @@ export const useLogout = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const logoutStore = useAuthStore((state) => state.logout);
+  const logoutFromStore = useAuthStore((state) => state.logout);
+  const setStoreError = useAuthStore((state) => state.setError);
+  const setStoreLoading = useAuthStore((state) => state.setLoading);
 
-  // Отримуємо хук для API-запиту (тепер з Orval)
-  const apiLogout = useApiLogout();
+  // Отримуємо хук для API-запиту
+  const apiLogoutMutation = useApiLogout();
 
   /**
-   * Функція виходу користувача із системи
-   * @param redirectTo - шлях для перенаправлення після виходу
+   * Функція для виходу користувача
+   * @param redirectTo - шлях, на який перенаправити після виходу
    */
   const logout = async (redirectTo: string = '/login') => {
     try {
       setIsLoading(true);
+      setStoreLoading(true);
       setError(null);
+      setStoreError(null);
 
-      // Викликаємо API для виходу (поки що тільки локальна логіка)
-      apiLogout.mutate();
+      console.log('🚪 Виконуємо логаут...');
 
-      // Очищаємо стан авторизації
-      logoutStore();
+      // Використовуємо Orval API хук для логауту
+      await apiLogoutMutation.mutateAsync();
 
-      // Очищаємо токен з localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth-token');
-        console.log('🗑️ Токен видалено з localStorage');
-      }
+      console.log('✅ Успішний логаут');
 
-      console.log('✅ Успішний вихід з системи');
+      // Очищуємо дані користувача зі стору
+      logoutFromStore();
 
-      // Перенаправляємо на цільову сторінку
-      router.push(redirectTo);
-    } catch (error) {
-      console.error('❌ Помилка при виході:', error);
+      console.log('🔄 Перенаправляємо на:', redirectTo);
 
-      // Навіть якщо виникла помилка, все одно очищаємо стан авторизації
-      logoutStore();
+      // Перенаправляємо на сторінку логіну
+      setTimeout(() => {
+        router.push(redirectTo);
+        console.log('✅ Логаут завершено успішно, перенаправлення виконано');
+      }, 50);
+    } catch (error: unknown) {
+      // 🚨 Обробляємо помилки
+      const apiError = error as { message?: string; status?: number };
+      const errorMessage = apiError?.message || 'Помилка при виході з системи';
 
-      // Очищаємо токен з localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth-token');
-      }
-
-      // Перенаправляємо на сторінку входу
-      router.push(redirectTo);
-
-      // Встановлюємо повідомлення про помилку
-      const errorMessage = error instanceof Error ? error.message : 'Невідома помилка при виході';
+      console.error('❌ Помилка при виході з системи:', error);
       setError(errorMessage);
+      setStoreError({ message: errorMessage, status: apiError?.status || 500 });
+
+      // Навіть якщо API помилка, очищуємо локальні дані
+      logoutFromStore();
+
+      // Все одно перенаправляємо на логін
+      setTimeout(() => {
+        router.push(redirectTo);
+        console.log('⚠️ Логаут з помилкою, але перенаправлення виконано');
+      }, 50);
     } finally {
       setIsLoading(false);
+      setStoreLoading(false);
     }
   };
 
@@ -72,8 +78,7 @@ export const useLogout = () => {
     isLoading,
     error,
     // Додаткові властивості з React Query
-    isApiLoading: apiLogout.isPending,
-    apiError: apiLogout.error,
-    logoutMutation: apiLogout,
+    isApiLoading: apiLogoutMutation.isPending,
+    apiError: apiLogoutMutation.error,
   };
 };

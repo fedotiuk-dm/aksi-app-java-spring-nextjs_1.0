@@ -20,16 +20,16 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
     const initializeAuth = () => {
       if (typeof window === 'undefined') return;
 
-      const token = localStorage.getItem('auth-token');
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
       console.log(
-        '🔍 AuthInitializer: Перевіряємо токен в localStorage:',
-        token ? 'Знайдено' : 'Відсутній'
+        '🔍 AuthInitializer: Перевіряємо токени в localStorage:',
+        accessToken ? 'accessToken знайдено' : 'accessToken відсутній',
+        refreshToken ? 'refreshToken знайдено' : 'refreshToken відсутній'
       );
 
-      const AUTH_TOKEN_KEY = 'auth-token';
-
-      if (!token) {
-        console.log('❌ AuthInitializer: Токен відсутній, очищуємо стан');
+      if (!accessToken) {
+        console.log('❌ AuthInitializer: Access токен відсутній, очищуємо стан');
         logout();
         setIsInitializing(false);
         return;
@@ -37,14 +37,15 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
 
       try {
         // Декодуємо JWT токен для отримання даних користувача
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const payload = JSON.parse(atob(accessToken.split('.')[1]));
         console.log('🔓 AuthInitializer: Декодовано JWT payload:', payload);
 
         // Перевіряємо чи токен не прострочений
         const currentTime = Math.floor(Date.now() / 1000);
         if (payload.exp && payload.exp < currentTime) {
           console.log('⏰ AuthInitializer: Токен прострочений, очищуємо');
-          localStorage.removeItem(AUTH_TOKEN_KEY);
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
           logout();
           setIsInitializing(false);
           return;
@@ -56,7 +57,7 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
           username: payload.username || payload.sub || 'unknown',
           name: payload.name || payload.fullName || 'Користувач',
           email: payload.email || '',
-          role: (payload.role as UserRole) || UserRole.STAFF,
+          role: (payload.role as UserRole) || UserRole.EMPLOYEE,
           position: payload.position,
         };
 
@@ -65,7 +66,8 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
         setIsInitializing(false);
       } catch (error) {
         console.error('❌ AuthInitializer: Помилка декодування токена:', error);
-        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         logout();
         setIsInitializing(false);
       }

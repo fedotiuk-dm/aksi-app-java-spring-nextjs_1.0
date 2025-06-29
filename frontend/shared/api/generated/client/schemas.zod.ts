@@ -17,6 +17,10 @@ export const getClientByIdParams = zod.object({
   "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
 }).strict()
 
+export const getClientById200ResponsePhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const getClientById200ResponseEmailMin = 0;
+
+export const getClientById200ResponseEmailMax = 254;
 export const getClientById200ResponseAddressStreetMin = 0;
 
 export const getClientById200ResponseAddressStreetMax = 200;
@@ -41,8 +45,8 @@ export const getClientById200Response = zod.object({
   "firstName": zod.coerce.string().describe('Ім\'я клієнта'),
   "lastName": zod.coerce.string().describe('Прізвище клієнта'),
   "fullName": zod.coerce.string().optional().describe('Повне ім\'я (firstName + lastName)'),
-  "phone": zod.coerce.string().describe('Номер телефону'),
-  "email": zod.coerce.string().optional().describe('Email адреса'),
+  "phone": zod.coerce.string().regex(getClientById200ResponsePhoneRegExp).describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(getClientById200ResponseEmailMin).max(getClientById200ResponseEmailMax).optional().describe('Email адреса'),
   "address": zod.object({
   "street": zod.coerce.string().min(getClientById200ResponseAddressStreetMin).max(getClientById200ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
   "city": zod.coerce.string().min(getClientById200ResponseAddressCityMin).max(getClientById200ResponseAddressCityMax).optional().describe('Місто'),
@@ -130,6 +134,10 @@ export const updateClientBody = zod.object({
   "notes": zod.coerce.string().min(updateClientBodyNotesMin).max(updateClientBodyNotesMax).optional().describe('Додаткові примітки про клієнта')
 }).strict()
 
+export const updateClient200ResponsePhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const updateClient200ResponseEmailMin = 0;
+
+export const updateClient200ResponseEmailMax = 254;
 export const updateClient200ResponseAddressStreetMin = 0;
 
 export const updateClient200ResponseAddressStreetMax = 200;
@@ -154,8 +162,8 @@ export const updateClient200Response = zod.object({
   "firstName": zod.coerce.string().describe('Ім\'я клієнта'),
   "lastName": zod.coerce.string().describe('Прізвище клієнта'),
   "fullName": zod.coerce.string().optional().describe('Повне ім\'я (firstName + lastName)'),
-  "phone": zod.coerce.string().describe('Номер телефону'),
-  "email": zod.coerce.string().optional().describe('Email адреса'),
+  "phone": zod.coerce.string().regex(updateClient200ResponsePhoneRegExp).describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(updateClient200ResponseEmailMin).max(updateClient200ResponseEmailMax).optional().describe('Email адреса'),
   "address": zod.object({
   "street": zod.coerce.string().min(updateClient200ResponseAddressStreetMin).max(updateClient200ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
   "city": zod.coerce.string().min(updateClient200ResponseAddressCityMin).max(updateClient200ResponseAddressCityMax).optional().describe('Місто'),
@@ -230,6 +238,10 @@ export const getClientContactsParams = zod.object({
   "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
 }).strict()
 
+export const getClientContacts200ResponsePhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const getClientContacts200ResponseEmailMin = 0;
+
+export const getClientContacts200ResponseEmailMax = 254;
 export const getClientContacts200ResponseAddressStreetMin = 0;
 
 export const getClientContacts200ResponseAddressStreetMax = 200;
@@ -249,8 +261,8 @@ export const getClientContacts200ResponseAddressCountryMax = 100;
 
 export const getClientContacts200Response = zod.object({
   "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
-  "phone": zod.coerce.string().optional().describe('Номер телефону'),
-  "email": zod.coerce.string().optional().describe('Email адреса'),
+  "phone": zod.coerce.string().regex(getClientContacts200ResponsePhoneRegExp).optional().describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(getClientContacts200ResponseEmailMin).max(getClientContacts200ResponseEmailMax).optional().describe('Email адреса'),
   "communicationMethods": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER', 'TELEGRAM', 'EMAIL'])).optional(),
   "address": zod.object({
   "street": zod.coerce.string().min(getClientContacts200ResponseAddressStreetMin).max(getClientContacts200ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
@@ -301,7 +313,7 @@ export const updateClientContactsBodyAddressCountryMax = 100;
 
 
 export const updateClientContactsBody = zod.object({
-  "phone": zod.coerce.string().regex(updateClientContactsBodyPhoneRegExp).optional().describe('Номер телефону'),
+  "phone": zod.coerce.string().regex(updateClientContactsBodyPhoneRegExp).optional().describe('Номер телефону в міжнародному форматі'),
   "email": zod.coerce.string().min(updateClientContactsBodyEmailMin).max(updateClientContactsBodyEmailMax).optional().describe('Email адреса'),
   "communicationMethods": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER', 'TELEGRAM', 'EMAIL'])).optional().describe('Бажані способи зв\'язку'),
   "address": zod.object({
@@ -313,6 +325,10 @@ export const updateClientContactsBody = zod.object({
 }).strict().optional()
 }).strict()
 
+export const updateClientContacts200ResponsePhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const updateClientContacts200ResponseEmailMin = 0;
+
+export const updateClientContacts200ResponseEmailMax = 254;
 export const updateClientContacts200ResponseAddressStreetMin = 0;
 
 export const updateClientContacts200ResponseAddressStreetMax = 200;
@@ -332,8 +348,8 @@ export const updateClientContacts200ResponseAddressCountryMax = 100;
 
 export const updateClientContacts200Response = zod.object({
   "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
-  "phone": zod.coerce.string().optional().describe('Номер телефону'),
-  "email": zod.coerce.string().optional().describe('Email адреса'),
+  "phone": zod.coerce.string().regex(updateClientContacts200ResponsePhoneRegExp).optional().describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(updateClientContacts200ResponseEmailMin).max(updateClientContacts200ResponseEmailMax).optional().describe('Email адреса'),
   "communicationMethods": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER', 'TELEGRAM', 'EMAIL'])).optional(),
   "address": zod.object({
   "street": zod.coerce.string().min(updateClientContacts200ResponseAddressStreetMin).max(updateClientContacts200ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
@@ -386,6 +402,10 @@ export const getClientsQueryParams = zod.object({
   "sort": zod.coerce.string().default(getClientsQuerySortDefault).describe('Поле для сортування')
 }).strict()
 
+export const getClients200ResponseContentItemPhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const getClients200ResponseContentItemEmailMin = 0;
+
+export const getClients200ResponseContentItemEmailMax = 254;
 export const getClients200ResponseContentItemAddressStreetMin = 0;
 
 export const getClients200ResponseContentItemAddressStreetMax = 200;
@@ -412,8 +432,8 @@ export const getClients200Response = zod.object({
   "firstName": zod.coerce.string().describe('Ім\'я клієнта'),
   "lastName": zod.coerce.string().describe('Прізвище клієнта'),
   "fullName": zod.coerce.string().optional().describe('Повне ім\'я (firstName + lastName)'),
-  "phone": zod.coerce.string().describe('Номер телефону'),
-  "email": zod.coerce.string().optional().describe('Email адреса'),
+  "phone": zod.coerce.string().regex(getClients200ResponseContentItemPhoneRegExp).describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(getClients200ResponseContentItemEmailMin).max(getClients200ResponseContentItemEmailMax).optional().describe('Email адреса'),
   "address": zod.object({
   "street": zod.coerce.string().min(getClients200ResponseContentItemAddressStreetMin).max(getClients200ResponseContentItemAddressStreetMax).optional().describe('Вулиця та номер будинку'),
   "city": zod.coerce.string().min(getClients200ResponseContentItemAddressCityMin).max(getClients200ResponseContentItemAddressCityMax).optional().describe('Місто'),
@@ -447,7 +467,7 @@ export const getClients200Response = zod.object({
   "sorted": zod.coerce.boolean().optional().describe('Чи застосовано сортування'),
   "unsorted": zod.coerce.boolean().optional().describe('Чи не застосовано сортування'),
   "empty": zod.coerce.boolean().optional().describe('Чи відсутнє сортування')
-}).strict().optional()
+}).strict().optional().describe('Інформація про сортування')
 }).strict().optional(),
   "totalElements": zod.coerce.number().optional().describe('Загальна кількість елементів'),
   "totalPages": zod.coerce.number().optional().describe('Загальна кількість сторінок'),
@@ -518,6 +538,10 @@ export const createClientBody = zod.object({
   "notes": zod.coerce.string().min(createClientBodyNotesMin).max(createClientBodyNotesMax).optional().describe('Додаткові примітки про клієнта')
 }).strict()
 
+export const createClient201ResponsePhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const createClient201ResponseEmailMin = 0;
+
+export const createClient201ResponseEmailMax = 254;
 export const createClient201ResponseAddressStreetMin = 0;
 
 export const createClient201ResponseAddressStreetMax = 200;
@@ -542,8 +566,8 @@ export const createClient201Response = zod.object({
   "firstName": zod.coerce.string().describe('Ім\'я клієнта'),
   "lastName": zod.coerce.string().describe('Прізвище клієнта'),
   "fullName": zod.coerce.string().optional().describe('Повне ім\'я (firstName + lastName)'),
-  "phone": zod.coerce.string().describe('Номер телефону'),
-  "email": zod.coerce.string().optional().describe('Email адреса'),
+  "phone": zod.coerce.string().regex(createClient201ResponsePhoneRegExp).describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(createClient201ResponseEmailMin).max(createClient201ResponseEmailMax).optional().describe('Email адреса'),
   "address": zod.object({
   "street": zod.coerce.string().min(createClient201ResponseAddressStreetMin).max(createClient201ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
   "city": zod.coerce.string().min(createClient201ResponseAddressCityMin).max(createClient201ResponseAddressCityMax).optional().describe('Місто'),
@@ -629,6 +653,10 @@ export const advancedSearchClientsBody = zod.object({
   "sort": zod.enum(['firstName', 'lastName', 'phone', 'createdAt', 'totalOrders', 'totalSpent']).optional().describe('Поле для сортування')
 }).strict()
 
+export const advancedSearchClients200ResponseContentItemPhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const advancedSearchClients200ResponseContentItemEmailMin = 0;
+
+export const advancedSearchClients200ResponseContentItemEmailMax = 254;
 export const advancedSearchClients200ResponseContentItemAddressStreetMin = 0;
 
 export const advancedSearchClients200ResponseContentItemAddressStreetMax = 200;
@@ -655,8 +683,8 @@ export const advancedSearchClients200Response = zod.object({
   "firstName": zod.coerce.string().describe('Ім\'я клієнта'),
   "lastName": zod.coerce.string().describe('Прізвище клієнта'),
   "fullName": zod.coerce.string().optional().describe('Повне ім\'я (firstName + lastName)'),
-  "phone": zod.coerce.string().describe('Номер телефону'),
-  "email": zod.coerce.string().optional().describe('Email адреса'),
+  "phone": zod.coerce.string().regex(advancedSearchClients200ResponseContentItemPhoneRegExp).describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(advancedSearchClients200ResponseContentItemEmailMin).max(advancedSearchClients200ResponseContentItemEmailMax).optional().describe('Email адреса'),
   "address": zod.object({
   "street": zod.coerce.string().min(advancedSearchClients200ResponseContentItemAddressStreetMin).max(advancedSearchClients200ResponseContentItemAddressStreetMax).optional().describe('Вулиця та номер будинку'),
   "city": zod.coerce.string().min(advancedSearchClients200ResponseContentItemAddressCityMin).max(advancedSearchClients200ResponseContentItemAddressCityMax).optional().describe('Місто'),
@@ -690,7 +718,7 @@ export const advancedSearchClients200Response = zod.object({
   "sorted": zod.coerce.boolean().optional().describe('Чи застосовано сортування'),
   "unsorted": zod.coerce.boolean().optional().describe('Чи не застосовано сортування'),
   "empty": zod.coerce.boolean().optional().describe('Чи відсутнє сортування')
-}).strict().optional()
+}).strict().optional().describe('Інформація про сортування')
 }).strict().optional(),
   "totalElements": zod.coerce.number().optional().describe('Загальна кількість елементів'),
   "totalPages": zod.coerce.number().optional().describe('Загальна кількість сторінок'),
@@ -763,14 +791,20 @@ export const searchClientsQueryParams = zod.object({
   "limit": zod.coerce.number().min(1).max(searchClientsQueryLimitMax).default(searchClientsQueryLimitDefault).describe('Максимальна кількість результатів (для автозаповнення)')
 }).strict()
 
+export const searchClients200ResponseResultsItemPhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const searchClients200ResponseResultsItemEmailMin = 0;
+
+export const searchClients200ResponseResultsItemEmailMax = 254;
+
+
 export const searchClients200Response = zod.object({
   "results": zod.array(zod.object({
   "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
   "firstName": zod.coerce.string().optional(),
   "lastName": zod.coerce.string().optional(),
   "fullName": zod.coerce.string().optional(),
-  "phone": zod.coerce.string().optional(),
-  "email": zod.coerce.string().optional(),
+  "phone": zod.coerce.string().regex(searchClients200ResponseResultsItemPhoneRegExp).optional().describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(searchClients200ResponseResultsItemEmailMin).max(searchClients200ResponseResultsItemEmailMax).optional().describe('Email адреса'),
   "lastOrderDate": zod.coerce.string().date().optional().describe('Дата в ISO 8601 форматі'),
   "orderCount": zod.coerce.number().optional().describe('Кількість замовлень'),
   "highlightedFields": zod.array(zod.coerce.string()).optional().describe('Поля, які відповідають пошуковому запиту')

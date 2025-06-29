@@ -452,4 +452,77 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- Профілі для оптимізації збірки -->
+    <profiles>
+        <!-- Швидкий профіль для розробки -->
+        <profile>
+            <id>dev-fast</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Пропускаємо тести для швидкої збірки -->
+                <skipTests>true</skipTests>
+                <maven.test.skip>true</maven.test.skip>
+                <!-- Пропускаємо checkstyle -->
+                <checkstyle.skip>true</checkstyle.skip>
+                <!-- Пропускаємо spotless форматування -->
+                <spotless.skip>true</spotless.skip>
+            </properties>
+            <build>
+                <plugins>
+                    <!-- Вимикаємо OpenAPI генерацію в dev режимі -->
+                    <plugin>
+                        <groupId>org.openapitools</groupId>
+                        <artifactId>openapi-generator-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>generate-auth-api</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>generate-client-api</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>generate-order-api</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>generate-item-api</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>generate-branch-api</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>generate-document-api</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Повна збірка для production -->
+        <profile>
+            <id>full-build</id>
+            <properties>
+                <skipTests>false</skipTests>
+                <checkstyle.skip>false</checkstyle.skip>
+                <spotless.skip>false</spotless.skip>
+            </properties>
+        </profile>
+
+        <!-- Генерація OpenAPI окремо -->
+        <profile>
+            <id>generate-api</id>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+    </profiles>
 </project>
