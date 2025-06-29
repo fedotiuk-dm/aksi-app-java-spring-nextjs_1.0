@@ -16,36 +16,15 @@
               admin:
                 summary: Адміністратор
                 value:
-                  id: "123e4567-e89b-12d3-a456-426614174000"
                   username: "admin"
                   email: "admin@aksi.com"
-                  firstName: "Олександр"
-                  lastName: "Петренко"
                   roles: ["ADMIN"]
-                  isActive: true
-                  createdAt: "2024-01-15T10:30:00Z"
               manager:
                 summary: Менеджер
                 value:
-                  id: "456e7890-e89b-12d3-a456-426614174001"
                   username: "manager"
                   email: "manager@aksi.com"
-                  firstName: "Ірина"
-                  lastName: "Коваленко"
                   roles: ["MANAGER"]
-                  isActive: true
-                  createdAt: "2024-01-16T08:15:00Z"
-              employee:
-                summary: Працівник
-                value:
-                  id: "789e0123-e89b-12d3-a456-426614174002"
-                  username: "employee"
-                  email: "employee@aksi.com"
-                  firstName: "Микола"
-                  lastName: "Сидоров"
-                  roles: ["EMPLOYEE", "CASHIER"]
-                  isActive: true
-                  createdAt: "2024-01-17T14:20:00Z"
       "401":
         description: Невалідний або відсутній токен
         content:

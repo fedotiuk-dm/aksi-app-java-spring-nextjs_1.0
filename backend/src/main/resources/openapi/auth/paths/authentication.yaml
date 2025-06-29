@@ -38,15 +38,6 @@
                   refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                   tokenType: "Bearer"
                   expiresIn: 3600
-                  user:
-                    id: "123e4567-e89b-12d3-a456-426614174000"
-                    username: "admin"
-                    email: "admin@aksi.com"
-                    firstName: "Олександр"
-                    lastName: "Петренко"
-                    roles: ["ADMIN"]
-                    isActive: true
-                    createdAt: "2024-01-15T10:30:00Z"
       "400":
         description: Невірний формат запиту
         content:
@@ -153,15 +144,6 @@
                   refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                   tokenType: "Bearer"
                   expiresIn: 3600
-                  user:
-                    id: "123e4567-e89b-12d3-a456-426614174000"
-                    username: "admin"
-                    email: "admin@aksi.com"
-                    firstName: "Олександр"
-                    lastName: "Петренко"
-                    roles: ["ADMIN"]
-                    isActive: true
-                    createdAt: "2024-01-15T10:30:00Z"
       "400":
         description: Невірний формат запиту
         content:

@@ -234,7 +234,37 @@
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>7.13.0</version>
+                <configuration>
+                    <!-- Вимикаємо post-processing - використовуємо Spotless замість цього -->
+                    <enablePostProcessFile>false</enablePostProcessFile>
+                </configuration>
                 <executions>
+                    <!-- Auth API -->
+                    <execution>
+                        <id>generate-auth-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/auth-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.auth</apiPackage>
+                            <modelPackage>com.aksi.api.auth.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
                     <!-- Client API -->
                     <execution>
                         <id>generate-client-api</id>
@@ -363,6 +393,38 @@
                                 <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Spotless - автоматичне форматування згенерованого коду -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.44.5</version>
+                <configuration>
+                    <java>
+                        <!-- Форматуємо тільки згенеровані OpenAPI файли -->
+                        <includes>
+                            <include>target/generated-sources/openapi/**/*.java</include>
+                        </includes>
+                        <!-- Використовуємо Google Java Format -->
+                        <googleJavaFormat>
+                            <version>1.27.0</version>
+                            <style>GOOGLE</style>
+                        </googleJavaFormat>
+                        <!-- Виправляємо imports -->
+                        <importOrder/>
+                        <removeUnusedImports/>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                        <!-- Запускаємо після генерації OpenAPI -->
+                        <phase>process-sources</phase>
                     </execution>
                 </executions>
             </plugin>

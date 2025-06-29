@@ -77,7 +77,7 @@ UserResponse:
       type: array
       description: Ролі користувача
       items:
-        $ref: "../auth-enums.yaml#/UserRole"
+        $ref: "../../auth-api.yaml#/components/schemas/UserRole"
       minItems: 1
       example: ["ADMIN", "MANAGER"]
     isActive:
