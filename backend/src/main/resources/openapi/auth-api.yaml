@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: Auth Domain API
+  description: API для автентифікації та авторизації користувачів хімчистки
+  version: 1.0.0
+  contact:
+    name: AKSI Development Team
+    email: dev@aksi.com
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.aksi.com
+    description: Production server
+tags:
+  - name: auth
+    description: Автентифікація користувачів
+  - name: authentication
+    description: Логін, логаут, оновлення токенів
+  - name: authorization
+    description: Авторизація та права доступу
+
+paths:
+  # Authentication
+  /api/auth/login:
+    $ref: "auth/paths/authentication.yaml#/~1api~1auth~1login"
+  /api/auth/logout:
+    $ref: "auth/paths/authentication.yaml#/~1api~1auth~1logout"
+  /api/auth/refresh-token:
+    $ref: "auth/paths/authentication.yaml#/~1api~1auth~1refresh-token"
+
+  # User Info
+  /api/auth/me:
+    $ref: "auth/paths/user-info.yaml#/~1api~1auth~1me"
+
+components:
+  schemas:
+    # Request Schemas
+    LoginRequest:
+      $ref: "auth/schemas/auth-requests.yaml#/LoginRequest"
+    RefreshTokenRequest:
+      $ref: "auth/schemas/auth-requests.yaml#/RefreshTokenRequest"
+
+    # Response Schemas
+    AuthResponse:
+      $ref: "auth/schemas/auth-responses.yaml#/AuthResponse"
+    UserResponse:
+      $ref: "auth/schemas/auth-responses.yaml#/UserResponse"
+    LogoutResponse:
+      $ref: "auth/schemas/auth-responses.yaml#/LogoutResponse"
+
+    # Enums
+    UserRole:
+      $ref: "auth/schemas/auth-enums.yaml#/UserRole"
+    TokenType:
+      $ref: "auth/schemas/auth-enums.yaml#/TokenType"
+
+    # Common Schemas (використовуємо спільні)
+    ErrorResponse:
+      $ref: "common/schemas/errors.yaml#/ErrorResponse"
+    ValidationErrorResponse:
+      $ref: "common/schemas/errors.yaml#/ValidationErrorResponse"
+    FieldError:
+      $ref: "common/schemas/errors.yaml#/FieldError"
+
+  securitySchemes:
+    BearerAuth:
+      $ref: "common/security.yaml#/securitySchemes/BearerAuth"
+
+# Більшість endpoints потребують автентифікації, крім login
+security:
+  - BearerAuth: []

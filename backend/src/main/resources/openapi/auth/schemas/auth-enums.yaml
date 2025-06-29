@@ -1,0 +1,17 @@
+UserRole:
+  type: string
+  description: Ролі користувачів в системі хімчистки
+  enum:
+    - ADMIN # Адміністратор системи
+    - MANAGER # Менеджер філії
+    - EMPLOYEE # Працівник філії
+    - CASHIER # Касир
+    - OPERATOR # Оператор прийому/видачі
+  example: "ADMIN"
+
+TokenType:
+  type: string
+  description: Типи токенів автентифікації
+  enum:
+    - Bearer # Bearer токен (JWT)
+  example: "Bearer"

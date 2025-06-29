@@ -10,6 +10,7 @@
     "lint:fix": "next lint --fix --dir app --dir components --dir domains --dir features --dir shared --dir lib",
     "lint:strict": "eslint \"**/*.{ts,tsx,js,jsx}\" --max-warnings 0",
     "lint:domains": "eslint \"domains/**/*.{ts,tsx}\"",
+    "lint:auth": "eslint \"domains/auth/**/*.{ts,tsx}\"",
     "lint:client": "eslint \"domains/client/**/*.{ts,tsx}\"",
     "lint:branch": "eslint \"domains/branch/**/*.{ts,tsx}\"",
     "lint:order": "eslint \"domains/order/**/*.{ts,tsx}\"",
@@ -33,6 +34,7 @@
 
     "# 🏗️ ORVAL DOMAIN ГЕНЕРАЦІЯ": "",
     "orval": "npx orval --config orval.config.ts",
+    "orval:auth": "npx orval --config orval.config.ts auth-api auth-zod",
     "orval:client": "npx orval --config orval.config.ts client-api client-zod",
     "orval:branch": "npx orval --config orval.config.ts branch-api branch-zod",
     "orval:order": "npx orval --config orval.config.ts order-api order-zod",
@@ -56,6 +58,7 @@
 
     "# 🚀 DEVELOPMENT WORKFLOW": "",
     "dev:api": "npm run api:clean && npm run orval && npm run barrel:all",
+    "dev:auth": "npm run orval:auth && npm run barrel:create",
     "dev:client": "npm run orval:client && npm run barrel:create",
     "dev:branch": "npm run orval:branch && npm run barrel:create",
     "dev:order": "npm run orval:order && npm run barrel:create",

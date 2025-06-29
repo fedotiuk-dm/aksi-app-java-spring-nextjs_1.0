@@ -1,0 +1,109 @@
+AuthResponse:
+  type: object
+  description: Відповідь з токенами після успішної автентифікації
+  required:
+    - accessToken
+    - refreshToken
+    - tokenType
+    - expiresIn
+    - user
+  properties:
+    accessToken:
+      type: string
+      description: JWT access токен для автентифікації API запитів
+      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+    refreshToken:
+      type: string
+      description: Refresh токен для оновлення access токену
+      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh_token_payload.signature"
+    tokenType:
+      type: string
+      description: Тип токену (завжди Bearer)
+      enum:
+        - "Bearer"
+      example: "Bearer"
+    expiresIn:
+      type: integer
+      description: Час життя access токену в секундах
+      minimum: 300
+      maximum: 86400
+      example: 3600
+    user:
+      $ref: "#/UserResponse"
+  additionalProperties: false
+
+UserResponse:
+  type: object
+  description: Інформація про користувача
+  required:
+    - id
+    - username
+    - email
+    - firstName
+    - lastName
+    - roles
+    - isActive
+    - createdAt
+  properties:
+    id:
+      type: string
+      format: uuid
+      description: Унікальний ідентифікатор користувача
+      example: "123e4567-e89b-12d3-a456-426614174000"
+    username:
+      type: string
+      description: Ім'я користувача
+      minLength: 3
+      maxLength: 50
+      example: "admin"
+    email:
+      type: string
+      format: email
+      description: Email користувача
+      example: "admin@aksi.com"
+    firstName:
+      type: string
+      description: Ім'я користувача
+      minLength: 1
+      maxLength: 50
+      example: "Олександр"
+    lastName:
+      type: string
+      description: Прізвище користувача
+      minLength: 1
+      maxLength: 50
+      example: "Петренко"
+    roles:
+      type: array
+      description: Ролі користувача
+      items:
+        $ref: "../auth-enums.yaml#/UserRole"
+      minItems: 1
+      example: ["ADMIN", "MANAGER"]
+    isActive:
+      type: boolean
+      description: Чи активний користувач
+      example: true
+    createdAt:
+      type: string
+      format: date-time
+      description: Дата створення користувача
+      example: "2024-01-15T10:30:00Z"
+  additionalProperties: false
+
+LogoutResponse:
+  type: object
+  description: Відповідь після успішного логауту
+  required:
+    - success
+    - message
+  properties:
+    success:
+      type: boolean
+      description: Статус операції
+      example: true
+    message:
+      type: string
+      description: Повідомлення про результат
+      example: "Користувач успішно вийшов з системи"
+  additionalProperties: false

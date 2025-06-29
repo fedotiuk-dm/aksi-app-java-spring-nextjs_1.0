@@ -1,0 +1,35 @@
+LoginRequest:
+  type: object
+  description: Запит на автентифікацію користувача
+  required:
+    - username
+    - password
+  properties:
+    username:
+      type: string
+      description: Ім'я користувача або email
+      minLength: 3
+      maxLength: 100
+      example: "admin@aksi.com"
+      pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|^[a-zA-Z0-9_]+$'
+    password:
+      type: string
+      description: Пароль користувача
+      minLength: 6
+      maxLength: 128
+      format: password
+      example: "securePassword123!"
+  additionalProperties: false
+
+RefreshTokenRequest:
+  type: object
+  description: Запит на оновлення access токену
+  required:
+    - refreshToken
+  properties:
+    refreshToken:
+      type: string
+      description: Refresh токен для оновлення access токену
+      minLength: 10
+      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  additionalProperties: false

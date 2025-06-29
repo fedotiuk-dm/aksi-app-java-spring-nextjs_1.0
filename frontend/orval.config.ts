@@ -47,6 +47,9 @@ const MUTATOR_NAME = 'orvalFetcher';
 
 // 🎯 ДОМЕННІ ТЕГИ (синхронізовані з backend OpenAPI)
 const DOMAIN_TAGS = {
+  // 🔐 Auth Domain
+  auth: ['auth', 'authentication', 'authorization'],
+
   // 👤 Client Domain
   client: ['clients', 'client-search', 'client-contacts'],
 
@@ -154,6 +157,9 @@ const createDomainConfig = (name: string, tags: string[]) => ({
 });
 
 const config: Config = {
+  // 🔐 AUTH DOMAIN
+  ...createDomainConfig('auth', DOMAIN_TAGS.auth),
+
   // 👤 CLIENT DOMAIN
   ...createDomainConfig('client', DOMAIN_TAGS.client),
 
