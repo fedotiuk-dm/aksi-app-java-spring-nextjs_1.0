@@ -22,10 +22,10 @@ ClientResponse:
       description: Повне ім'я (firstName + lastName)
       readOnly: true
     phone:
-      type: string
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
       description: Номер телефону
     email:
-      type: string
+      $ref: "../../common/schemas/base.yaml#/Email"
       description: Email адреса
     address:
       $ref: "../../common/schemas/address.yaml#/Address"
@@ -99,9 +99,9 @@ ClientSearchResult:
       type: string
       readOnly: true
     phone:
-      type: string
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
     email:
-      type: string
+      $ref: "../../common/schemas/base.yaml#/Email"
     lastOrderDate:
       $ref: "../../common/schemas/base.yaml#/Date"
       description: Дата останнього замовлення
@@ -121,10 +121,10 @@ ClientContactsResponse:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
     phone:
-      type: string
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
       description: Номер телефону
     email:
-      type: string
+      $ref: "../../common/schemas/base.yaml#/Email"
       description: Email адреса
     communicationMethods:
       type: array

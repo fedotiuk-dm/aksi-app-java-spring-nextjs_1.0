@@ -21,10 +21,8 @@ CreateClientRequest:
       description: Прізвище клієнта
       example: Петренко
     phone:
-      type: string
-      pattern: ^\+380\d{9}$
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
       description: Номер телефону в міжнародному форматі
-      example: "+380501234567"
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
     address:
@@ -62,8 +60,7 @@ UpdateClientRequest:
       maxLength: 50
       description: Прізвище клієнта
     phone:
-      type: string
-      pattern: ^\+380\d{9}$
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
       description: Номер телефону в міжнародному форматі
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
@@ -151,8 +148,7 @@ UpdateClientContactsRequest:
   title: UpdateClientContactsRequest
   properties:
     phone:
-      type: string
-      pattern: ^\+380\d{9}$
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
       description: Номер телефону
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
