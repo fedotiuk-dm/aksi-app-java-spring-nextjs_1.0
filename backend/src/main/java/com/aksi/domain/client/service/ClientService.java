@@ -50,7 +50,7 @@ public class ClientService {
      */
     public ClientResponse createClient(CreateClientRequest request) {
         ClientEntity entity = clientMapper.toEntity(request);
-        clientValidator.validateForCreate(entity);
+        clientValidator.validateUniqueness(entity);
         clientValidator.validateContactInfo(entity);
         ClientEntity savedEntity = clientRepository.save(entity);
         return clientMapper.toResponse(savedEntity);
@@ -73,7 +73,7 @@ public class ClientService {
         ClientEntity existingEntity = clientRepository.findByUuid(uuid)
             .orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
         clientMapper.updateEntityFromRequest(request, existingEntity);
-        clientValidator.validateForUpdate(existingEntity);
+        clientValidator.validateUniquenessForUpdate(existingEntity);
         clientValidator.validateContactInfo(existingEntity);
         ClientEntity updatedEntity = clientRepository.save(existingEntity);
         return clientMapper.toResponse(updatedEntity);
