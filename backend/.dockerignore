@@ -1,38 +1,47 @@
-# Git files
-.git/
-.gitignore
-
-# Maven target directory
+# Maven build output
 target/
+!target/classes/
+!target/generated-sources/
 
 # IDE files
-.cursor/
-.windsurf/
-.vscode/
 .idea/
+.vscode/
 *.iml
 *.ipr
 *.iws
 
-# Log files
-*.log
-
-# Build files (downloaded by mvnw wrapper, Dockerfile handles this)
-# .mvn/wrapper/maven-wrapper.jar
-
-# Test sources (not needed for running the app)
-src/test/
-
-# Operating System files
+# OS files
 .DS_Store
 Thumbs.db
 
-# Other potential files
-HELP.md
-pom.xml.versionsBackup
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
 *.swp
 *.swo
+*~
+
+# Maven wrapper (we copy it explicitly)
+.mvn/wrapper/maven-wrapper.jar
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+docs/
+
+# Checkstyle
+checkstyle.xml
+checkstyle-suppressions.xml
+
+# Test reports
+test-results/
+coverage/
+
+# Application specific
+uploads/

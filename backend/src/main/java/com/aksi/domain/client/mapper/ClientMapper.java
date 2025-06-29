@@ -9,11 +9,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
+import com.aksi.api.client.dto.ClientContactsResponse;
 import com.aksi.api.client.dto.ClientResponse;
 import com.aksi.api.client.dto.ClientSearchResult;
 import com.aksi.api.client.dto.ClientStatistics;
 import com.aksi.api.client.dto.CommunicationMethod;
 import com.aksi.api.client.dto.CreateClientRequest;
+import com.aksi.api.client.dto.UpdateClientContactsRequest;
 import com.aksi.api.client.dto.UpdateClientRequest;
 import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.client.enums.CommunicationMethodType;
@@ -32,28 +34,22 @@ public interface ClientMapper {
 
     /**
      * Конвертація CreateClientRequest → ClientEntity
-     * BaseEntity поля (id, createdAt, updatedAt, version) автоматично ігноруються
+     * BaseEntity поля автоматично ігноруються через BaseMapperConfig
      */
-    @Mapping(target = "uuid", ignore = true)
-    @Mapping(target = "totalOrders", ignore = true)
-    @Mapping(target = "totalSpent", ignore = true)
-    @Mapping(target = "lastOrderDate", ignore = true)
-    @Mapping(target = "averageOrderValue", ignore = true)
-    @Mapping(target = "isVip", ignore = true)
     @Mapping(target = "communicationMethods", source = "communicationMethods")
     ClientEntity toEntity(CreateClientRequest request);
 
     /**
      * Оновлення існуючого ClientEntity з UpdateClientRequest
      */
-    @Mapping(target = "uuid", ignore = true)
-    @Mapping(target = "totalOrders", ignore = true)
-    @Mapping(target = "totalSpent", ignore = true)
-    @Mapping(target = "lastOrderDate", ignore = true)
-    @Mapping(target = "averageOrderValue", ignore = true)
-    @Mapping(target = "isVip", ignore = true)
     @Mapping(target = "communicationMethods", source = "communicationMethods")
     void updateEntityFromRequest(UpdateClientRequest request, @MappingTarget ClientEntity entity);
+
+    /**
+     * Оновлення контактної інформації ClientEntity з UpdateClientContactsRequest
+     */
+    @Mapping(target = "communicationMethods", source = "communicationMethods")
+    void updateContactsFromRequest(UpdateClientContactsRequest request, @MappingTarget ClientEntity entity);
 
     // Entity → DTO mappings (для response)
 
@@ -67,6 +63,13 @@ public interface ClientMapper {
     @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "localDateTimeToOffsetDateTime")
     @Mapping(target = "communicationMethods", source = "communicationMethods")
     ClientResponse toResponse(ClientEntity entity);
+
+    /**
+     * Конвертація ClientEntity → ClientContactsResponse
+     */
+    @Mapping(target = "id", source = "uuid")
+    @Mapping(target = "communicationMethods", source = "communicationMethods")
+    ClientContactsResponse toContactsResponse(ClientEntity entity);
 
     /**
      * Конвертація ClientEntity → ClientSearchResult

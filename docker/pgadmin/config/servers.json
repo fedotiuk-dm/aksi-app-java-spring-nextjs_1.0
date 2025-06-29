@@ -1,0 +1,15 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "AKSI PostgreSQL",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "aksi_cleaners_db_v5",
+      "Username": "aksi_user",
+      "SSLMode": "prefer",
+      "PassFile": "/pgpass",
+      "SavePassword": true
+    }
+  }
+}

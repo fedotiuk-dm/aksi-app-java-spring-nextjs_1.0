@@ -6,12 +6,15 @@ import java.time.ZoneOffset;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * Базова MapStruct конфігурація з загальними маппінгами
  * Використовується всіма доменними мапперами для уникнення дублювання
+ * Автоматично ігнорує BaseEntity поля (id, createdAt, updatedAt, version)
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BaseMapperConfig {
 
     /**

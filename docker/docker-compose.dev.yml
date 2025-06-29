@@ -1,0 +1,198 @@
+services:
+  # Traefik - зворотний проксі для маршрутизації
+  traefik:
+    image: traefik:v3.4
+    container_name: traefik
+    ports:
+      - "80:80" # HTTP порт
+      - "9090:8080" # Traefik Dashboard (змінено з 8080 на 9090, щоб уникнути конфлікту)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      # Налаштування Docker провайдера
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # Налаштування точок входу
+      - "--entrypoints.web.address=:80"
+      # Включення API Dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      # Налаштування логування
+      - "--log.level=INFO"
+    networks:
+      - aksi-network-dev
+    restart: unless-stopped
+  # PostgreSQL - зберігаємо однаковий з основним compose файлом
+  postgres:
+    image: postgres:17
+    container_name: postgres-dev
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: aksi_user
+      POSTGRES_PASSWORD: 1911
+      POSTGRES_DB: aksi_cleaners_db_v5
+      POSTGRES_SCHEMA: public
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aksi_user -d aksi_cleaners_db_v5"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aksi-network-dev
+
+  # PgAdmin - зберігаємо однаковий з основним compose файлом
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: aksi-pgadmin-dev
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aksi.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - pgadmin_data_dev:/var/lib/pgadmin
+      - ./pgadmin/config/servers.json:/pgadmin4/servers.json
+      - ./pgadmin/pgpass:/pgpass
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - aksi-network-dev
+
+  # # Portainer
+  # portainer:
+  #   image: portainer/portainer-ce:latest
+  #   container_name: portainer
+  #   restart: unless-stopped
+  #   ports:
+  #     - "9000:9000"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - portainer_data:/data
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+
+  # Backend (Spring Boot) - розробка
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.dev
+    container_name: backend-dev
+    expose:
+      - "8080"
+      - "5005"
+    ports:
+      - "8080:8080"
+      - "5005:5005" # Debug port
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5
+      SPRING_DATASOURCE_USERNAME: aksi_user
+      SPRING_DATASOURCE_PASSWORD: 1911
+      SPRING_PROFILES_ACTIVE: dev
+      # Відключаємо поштовий сервер для розробки
+      SPRING_MAIL_HOST: localhost
+      SPRING_MAIL_PORT: 3025
+      SPRING_MAIL_TEST-CONNECTION: "false"
+      # Вимикаємо health checks для різних сервісів
+      MANAGEMENT_HEALTH_MAIL_ENABLED: "false"
+      # DevTools налаштування для hot reload
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
+      SPRING_DEVTOOLS_LIVERELOAD_ENABLED: "true"
+      # Рівень логування (ERROR для максимально чистих логів, DEBUG для детальної діагностики)
+      AKSI_LOG_LEVEL: "ERROR"
+    volumes:
+      - ../backend/src:/app/src # Монтуємо тільки src для hot reload
+      - ../backend/target:/app/target # Монтуємо target для збереження compiled класів
+      - backend_m2_cache:/home/appuser/.m2 # Кеш Maven для non-root користувача
+    depends_on:
+      postgres:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - aksi-network-dev
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "http://localhost:8080/api/actuator/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s # Даємо більше часу на запуск Spring Boot
+    labels:
+      # Налаштування Traefik
+      - "traefik.enable=true"
+      # Правило маршрутизації - всі запити на /api/* спрямовуються на бекенд
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      # Вказуємо на якому порті працює сервіс
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+      # Високий пріоритет для /api маршрутів
+      - "traefik.http.routers.backend.priority=100"
+
+  # Frontend (Next.js) - розробка (ТИМЧАСОВО ВІДКЛЮЧЕНО)
+  # frontend:
+  #   build:
+  #     context: ../frontend
+  #     dockerfile: Dockerfile.dev
+  #   container_name: frontend-dev
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     NODE_ENV: development
+  #     # Важливо: змінюємо URL на адресу Traefik, який забезпечує роутинг
+  #     NEXT_PUBLIC_API_URL: http://localhost/api
+  #     NEXT_TELEMETRY_DISABLED: 1
+  #   volumes:
+  #     - ../frontend:/app # Монтуємо весь проект для автоматичного перезавантаження
+  #     - frontend_node_modules:/app/node_modules # Зберігаємо node_modules у volume з повними правами
+  #     - frontend_next_cache:/app/.next # Зберігаємо .next кеш у volume
+  #   depends_on:
+  #     - backend
+  #     - traefik
+  #   restart: unless-stopped
+  #   networks:
+  #     - aksi-network-dev
+  #   # Додаємо healthcheck для Next.js
+  #   healthcheck:
+  #     test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 30s # Даємо час на запуск Next.js
+  #   labels:
+  #     # Налаштування Traefik
+  #     - "traefik.enable=true"
+  #     # Правило маршрутизації - всі запити, які не починаються з /api
+  #     - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+  #     # Пріоритет - низький, щоб дозволити спочатку обробити /api запити
+  #     - "traefik.http.routers.frontend.priority=1"
+  #     # Вказуємо на якому порті працює сервіс
+  #     - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+networks:
+  aksi-network-dev:
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+  pgadmin_data_dev:
+  # frontend_node_modules: # ТИМЧАСОВО ВІДКЛЮЧЕНО
+  # frontend_next_cache: # ТИМЧАСОВО ВІДКЛЮЧЕНО
+  backend_m2_cache:
+  portainer_data:

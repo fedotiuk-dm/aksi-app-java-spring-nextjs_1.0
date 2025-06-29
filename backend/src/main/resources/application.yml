@@ -8,9 +8,9 @@ spring:
     name: dry-cleaning-order-system
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/aksi_dry_cleaning
-    username: aksi_user
-    password: aksi_password
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/aksi_cleaners_db_v5}
+    username: ${SPRING_DATASOURCE_USERNAME:aksi_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:1911}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -26,6 +26,16 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     enabled: true
+
+  # DevTools configuration for hot reload
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: static/**,public/**
+    livereload:
+      enabled: true
+      port: 35729
 
   security:
     user:
@@ -98,3 +108,62 @@ aksi:
     output-path: "uploads/receipts/"
   qr:
     base-url: "https://aksi.com.ua/track/"
+
+---
+# Development profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5}
+    username: ${SPRING_DATASOURCE_USERNAME:aksi_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:1911}
+
+  jpa:
+    hibernate:
+      ddl-auto: update # Для dev - дозволяємо Hibernate оновлювати схему
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  # Liquibase для dev - стабільна схема
+  liquibase:
+    enabled: true # Liquibase увімкнений але без drop-first
+    # drop-first: true # ВІДКЛЮЧЕНО: призводить до постійних recreate при DevTools restart
+
+  # Disable mail health check in dev
+  mail:
+    test-connection: false
+
+# Actuator для dev
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+# МАКСИМАЛЬНО ЧИСТІ ЛОГИ - тільки критичні повідомлення
+logging:
+  level:
+    root: ERROR # Тільки помилки для всього
+    com.aksi: ${AKSI_LOG_LEVEL:WARN} # Наш код - керується змінною оточення
+    org.springframework: ERROR # Весь Spring - тільки помилки
+    org.hibernate: ERROR # Hibernate - тільки помилки
+    liquibase: ERROR # Liquibase - тільки помилки
+    org.postgresql: ERROR # PostgreSQL - тільки помилки
+    org.postgresql.Driver: ERROR # PostgreSQL Driver
+    com.zaxxer.hikari: ERROR # HikariCP connection pool
+    org.apache.maven: ERROR # Maven - тільки помилки
+    org.openapitools: ERROR # OpenAPI генератор - тільки помилки
+    # Критично важливі логи для діагностики
+    org.springframework.boot.actuator.health: WARN
+    org.springframework.boot.web.embedded.tomcat: WARN # Tomcat startup
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr([%t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"

@@ -1,199 +1,35 @@
 databaseChangeLog:
+  # Вставка тестових клієнтів для розробки
   - changeSet:
-      id: 002-insert-client-seed-data
-      author: aksi-dev
-      comment: "Додавання тестових даних для Client domain"
+      id: 001-insert-test-clients
+      author: system
+      context: dev
       changes:
-        # Вставка тестових клієнтів
+        # VIP клієнт з повною інформацією
         - insert:
             tableName: clients
             columns:
               - column:
-                  name: first_name
-                  value: "Іван"
-              - column:
-                  name: last_name
-                  value: "Петренко"
-              - column:
-                  name: phone
-                  value: "+380671234567"
-              - column:
-                  name: email
-                  value: "ivan.petrenko@gmail.com"
-              - column:
-                  name: source_type
-                  value: "INSTAGRAM"
-              - column:
-                  name: communication_methods
-                  value: '["PHONE", "VIBER"]'
-              - column:
-                  name: notes
-                  value: "Постійний клієнт, завжди приводить чистку в суботу"
-              - column:
-                  name: total_orders
-                  value: "15"
-              - column:
-                  name: total_spent
-                  value: "2500.00"
-              - column:
-                  name: average_order_value
-                  value: "166.67"
-              - column:
-                  name: is_vip
-                  value: "true"
-
-        - insert:
-            tableName: clients
-            columns:
+                  name: uuid
+                  value: "550e8400-e29b-41d4-a716-446655440001"
               - column:
                   name: first_name
-                  value: "Марія"
+                  value: "Олена"
               - column:
                   name: last_name
                   value: "Коваленко"
               - column:
                   name: phone
-                  value: "+380509876543"
+                  value: "+380671234567"
               - column:
                   name: email
-                  value: "maria.kovalenko@ukr.net"
+                  value: "olena.kovalenko@example.com"
               - column:
                   name: source_type
-                  value: "GOOGLE"
-              - column:
-                  name: communication_methods
-                  value: '["PHONE", "SMS"]'
+                  value: "REFERRAL"
               - column:
                   name: notes
-                  value: "Надає перевагу екологічним засобам"
-              - column:
-                  name: total_orders
-                  value: "8"
-              - column:
-                  name: total_spent
-                  value: "1200.00"
-              - column:
-                  name: average_order_value
-                  value: "150.00"
-              - column:
-                  name: is_vip
-                  value: "false"
-
-        - insert:
-            tableName: clients
-            columns:
-              - column:
-                  name: first_name
-                  value: "Олександр"
-              - column:
-                  name: last_name
-                  value: "Шевченко"
-              - column:
-                  name: phone
-                  value: "+380631111111"
-              - column:
-                  name: email
-                  value: "alex.shevchenko@outlook.com"
-              - column:
-                  name: source_type
-                  value: "RECOMMENDATION"
-              - column:
-                  name: communication_methods
-                  value: '["PHONE"]'
-              - column:
-                  name: notes
-                  value: "Бізнесмен, часто здає костюми"
-              - column:
-                  name: total_orders
-                  value: "25"
-              - column:
-                  name: total_spent
-                  value: "4500.00"
-              - column:
-                  name: average_order_value
-                  value: "180.00"
-              - column:
-                  name: is_vip
-                  value: "true"
-
-        - insert:
-            tableName: clients
-            columns:
-              - column:
-                  name: first_name
-                  value: "Анна"
-              - column:
-                  name: last_name
-                  value: "Іванова"
-              - column:
-                  name: phone
-                  value: "+380442222222"
-              - column:
-                  name: email
-                  value: "anna.ivanova@gmail.com"
-              - column:
-                  name: source_type
-                  value: "OTHER"
-              - column:
-                  name: communication_methods
-                  value: '["PHONE", "VIBER", "SMS"]'
-              - column:
-                  name: notes
-                  value: "Нова клієнтка, дізналася від колеги"
-              - column:
-                  name: total_orders
-                  value: "3"
-              - column:
-                  name: total_spent
-                  value: "450.00"
-              - column:
-                  name: average_order_value
-                  value: "150.00"
-              - column:
-                  name: is_vip
-                  value: "false"
-
-        - insert:
-            tableName: clients
-            columns:
-              - column:
-                  name: first_name
-                  value: "Дмитро"
-              - column:
-                  name: last_name
-                  value: "Сидоренко"
-              - column:
-                  name: phone
-                  value: "+380953333333"
-              - column:
-                  name: source_type
-                  value: "INSTAGRAM"
-              - column:
-                  name: communication_methods
-                  value: '["PHONE", "VIBER"]'
-              - column:
-                  name: notes
-                  value: "Студент, часто здає джинси та светри"
-              - column:
-                  name: total_orders
-                  value: "5"
-              - column:
-                  name: total_spent
-                  value: "300.00"
-              - column:
-                  name: average_order_value
-                  value: "60.00"
-              - column:
-                  name: is_vip
-                  value: "false"
-
-        # Вставка адрес для деяких клієнтів
-        - insert:
-            tableName: client_addresses
-            columns:
-              - column:
-                  name: client_id
-                  value: "1"
+                  value: "Постійний клієнт, завжди вчасно забирає замовлення"
               - column:
                   name: street
                   value: "вул. Хрещатик, 25"
@@ -209,16 +45,182 @@ databaseChangeLog:
               - column:
                   name: country
                   value: "Україна"
+              - column:
+                  name: total_orders
+                  value: "15"
+              - column:
+                  name: total_spent
+                  value: "4500.00"
+              - column:
+                  name: last_order_date
+                  value: "2024-12-20"
+              - column:
+                  name: average_order_value
+                  value: "300.00"
+              - column:
+                  name: is_vip
+                  value: "true"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-15T10:30:00"
 
+        # Звичайний клієнт без адреси
         - insert:
-            tableName: client_addresses
+            tableName: clients
             columns:
               - column:
-                  name: client_id
+                  name: uuid
+                  value: "550e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: first_name
+                  value: "Микола"
+              - column:
+                  name: last_name
+                  value: "Петренко"
+              - column:
+                  name: phone
+                  value: "+380503456789"
+              - column:
+                  name: source_type
+                  value: "GOOGLE"
+              - column:
+                  name: total_orders
                   value: "3"
               - column:
+                  name: total_spent
+                  value: "450.00"
+              - column:
+                  name: last_order_date
+                  value: "2024-12-18"
+              - column:
+                  name: average_order_value
+                  value: "150.00"
+              - column:
+                  name: is_vip
+                  value: "false"
+              - column:
+                  name: created_at
+                  valueDate: "2024-11-05T14:20:00"
+
+        # Новий клієнт без замовлень
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: uuid
+                  value: "550e8400-e29b-41d4-a716-446655440003"
+              - column:
+                  name: first_name
+                  value: "Анна"
+              - column:
+                  name: last_name
+                  value: "Іваненко"
+              - column:
+                  name: phone
+                  value: "+380961234567"
+              - column:
+                  name: email
+                  value: "anna.ivanenko@example.com"
+              - column:
+                  name: source_type
+                  value: "INSTAGRAM"
+              - column:
+                  name: notes
+                  value: "Новий клієнт, потребує особливої уваги"
+              - column:
                   name: street
-                  value: "пр. Науки, 45, кв. 12"
+                  value: "вул. Шевченка, 120, кв. 45"
+              - column:
+                  name: city
+                  value: "Львів"
+              - column:
+                  name: region
+                  value: "Львівська область"
+              - column:
+                  name: postal_code
+                  value: "79000"
+              - column:
+                  name: is_vip
+                  value: "false"
+              - column:
+                  name: created_at
+                  valueDate: "2024-12-25T09:00:00"
+
+        # Клієнт з Одеси
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: uuid
+                  value: "550e8400-e29b-41d4-a716-446655440004"
+              - column:
+                  name: first_name
+                  value: "Сергій"
+              - column:
+                  name: last_name
+                  value: "Морозов"
+              - column:
+                  name: phone
+                  value: "+380487654321"
+              - column:
+                  name: email
+                  value: "sergiy.morozov@example.com"
+              - column:
+                  name: source_type
+                  value: "ADVERTISING"
+              - column:
+                  name: city
+                  value: "Одеса"
+              - column:
+                  name: region
+                  value: "Одеська область"
+              - column:
+                  name: total_orders
+                  value: "8"
+              - column:
+                  name: total_spent
+                  value: "2400.00"
+              - column:
+                  name: last_order_date
+                  value: "2024-12-15"
+              - column:
+                  name: average_order_value
+                  value: "300.00"
+              - column:
+                  name: is_vip
+                  value: "false"
+              - column:
+                  name: created_at
+                  valueDate: "2024-03-10T16:45:00"
+
+        # Корпоративний клієнт
+        - insert:
+            tableName: clients
+            columns:
+              - column:
+                  name: uuid
+                  value: "550e8400-e29b-41d4-a716-446655440005"
+              - column:
+                  name: first_name
+                  value: "Марія"
+              - column:
+                  name: last_name
+                  value: "Бондаренко"
+              - column:
+                  name: phone
+                  value: "+380442001122"
+              - column:
+                  name: email
+                  value: "maria.bondarenko@company.ua"
+              - column:
+                  name: source_type
+                  value: "WEBSITE"
+              - column:
+                  name: notes
+                  value: "Корпоративний клієнт, потрібен спеціальний сервіс"
+              - column:
+                  name: street
+                  value: "вул. Володимирська, 50, оф. 301"
               - column:
                   name: city
                   value: "Київ"
@@ -227,13 +229,137 @@ databaseChangeLog:
                   value: "Київська область"
               - column:
                   name: postal_code
-                  value: "03028"
+                  value: "01030"
               - column:
-                  name: country
-                  value: "Україна"
+                  name: total_orders
+                  value: "25"
+              - column:
+                  name: total_spent
+                  value: "8750.00"
+              - column:
+                  name: last_order_date
+                  value: "2024-12-22"
+              - column:
+                  name: average_order_value
+                  value: "350.00"
+              - column:
+                  name: is_vip
+                  value: "true"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-08T11:15:00"
 
-      rollback:
-        - delete:
-            tableName: client_addresses
-        - delete:
-            tableName: clients
+  # Вставка способів зв'язку для клієнтів
+  - changeSet:
+      id: 002-insert-communication-methods
+      author: system
+      context: dev
+      changes:
+        # Олена Коваленко - всі способи зв'язку
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: communication_method
+                  value: "PHONE"
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: communication_method
+                  value: "EMAIL"
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: communication_method
+                  value: "VIBER"
+
+        # Микола Петренко - тільки телефон та SMS
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440002')"
+              - column:
+                  name: communication_method
+                  value: "PHONE"
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440002')"
+              - column:
+                  name: communication_method
+                  value: "SMS"
+
+        # Анна Іваненко - email та Telegram
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440003')"
+              - column:
+                  name: communication_method
+                  value: "EMAIL"
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440003')"
+              - column:
+                  name: communication_method
+                  value: "TELEGRAM"
+
+        # Сергій Морозов - телефон та email
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440004')"
+              - column:
+                  name: communication_method
+                  value: "PHONE"
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440004')"
+              - column:
+                  name: communication_method
+                  value: "EMAIL"
+
+        # Марія Бондаренко - всі корпоративні способи
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440005')"
+              - column:
+                  name: communication_method
+                  value: "PHONE"
+        - insert:
+            tableName: client_communication_methods
+            columns:
+              - column:
+                  name: client_id
+                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440005')"
+              - column:
+                  name: communication_method
+                  value: "EMAIL"

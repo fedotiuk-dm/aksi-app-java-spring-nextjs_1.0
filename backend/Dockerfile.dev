@@ -1,0 +1,50 @@
+# Development Dockerfile for Spring Boot with hot reload
+FROM bellsoft/liberica-openjdk-alpine:21
+
+# Install Maven and other tools for development
+RUN apk add --no-cache \
+    bash \
+    curl \
+    wget \
+    maven \
+    tar \
+    gzip
+
+# Create non-root user to match host user
+RUN addgroup -g 1000 appgroup && \
+    adduser -u 1000 -G appgroup -s /bin/bash -D appuser
+
+WORKDIR /app
+
+# Change ownership of app directory
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Set environment variables for development
+ENV SPRING_PROFILES_ACTIVE=dev
+ENV JAVA_OPTS="-Xms512m -Xmx2048m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+ENV MAVEN_OPTS="-Xmx1024m -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -Dorg.slf4j.simpleLogger.log.org.openapitools=ERROR"
+
+# Copy pom.xml first for better Docker layer caching
+COPY pom.xml ./
+
+# Download dependencies (this layer will be cached)
+RUN mvn dependency:go-offline -B
+
+# Copy the rest of the source code
+COPY src ./src
+
+# Expose ports: Spring Boot and Debug
+EXPOSE 8080 5005
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Command with hot reload support (using installed Maven)
+# Приховуємо Maven логи для чистого виводу
+CMD ["mvn", "spring-boot:run", "-q", \
+     "-Dspring-boot.run.profiles=dev", \
+     "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", \
+     "-Dorg.slf4j.simpleLogger.defaultLogLevel=WARN"]
