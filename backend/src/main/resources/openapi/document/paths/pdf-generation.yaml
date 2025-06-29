@@ -24,20 +24,7 @@
               format: binary
           application/json:
             schema:
-              type: object
-              properties:
-                documentId:
-                  $ref: "../../common/schemas/base.yaml#/UUID"
-                filename:
-                  type: string
-                  description: Ім'я файлу
-                size:
-                  type: integer
-                  description: Розмір файлу в байтах
-                downloadUrl:
-                  type: string
-                  format: uri
-                  description: URL для завантаження PDF
+              $ref: "../schemas/document-responses.yaml#/PdfGenerationResponse"
         headers:
           Content-Disposition:
             description: Attachment filename

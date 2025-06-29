@@ -1,6 +1,7 @@
 # Request схеми для Client домену
 CreateClientRequest:
   type: object
+  title: CreateClientRequest
   required:
     - firstName
     - lastName
@@ -48,6 +49,7 @@ CreateClientRequest:
 
 UpdateClientRequest:
   type: object
+  title: UpdateClientRequest
   properties:
     firstName:
       type: string
@@ -81,6 +83,7 @@ UpdateClientRequest:
 
 ClientSearchRequest:
   type: object
+  title: ClientSearchRequest
   properties:
     query:
       type: string
@@ -145,6 +148,7 @@ ClientSearchRequest:
 
 UpdateClientContactsRequest:
   type: object
+  title: UpdateClientContactsRequest
   properties:
     phone:
       type: string

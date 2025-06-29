@@ -1,6 +1,7 @@
 # Request схеми для Branch домену
 CreateBranchRequest:
   type: object
+  title: CreateBranchRequest
   required:
     - code
     - name
@@ -36,6 +37,7 @@ CreateBranchRequest:
 
 UpdateBranchRequest:
   type: object
+  title: UpdateBranchRequest
   properties:
     name:
       type: string
@@ -57,6 +59,7 @@ UpdateBranchRequest:
 
 ContactInfoRequest:
   type: object
+  title: ContactInfoRequest
   properties:
     phone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
@@ -78,6 +81,7 @@ ContactInfoRequest:
 
 CoordinatesRequest:
   type: object
+  title: CoordinatesRequest
   properties:
     latitude:
       type: number
@@ -101,6 +105,7 @@ CoordinatesRequest:
 
 WorkingScheduleRequest:
   type: object
+  title: WorkingScheduleRequest
   properties:
     workingDays:
       type: array
@@ -122,6 +127,7 @@ WorkingScheduleRequest:
 
 WorkingDayRequest:
   type: object
+  title: WorkingDayRequest
   required:
     - dayOfWeek
     - isWorkingDay
@@ -148,6 +154,7 @@ WorkingDayRequest:
 
 HolidayRequest:
   type: object
+  title: HolidayRequest
   required:
     - date
     - name
@@ -167,6 +174,7 @@ HolidayRequest:
 
 UpdateWorkingScheduleRequest:
   type: object
+  title: UpdateWorkingScheduleRequest
   properties:
     workingDays:
       type: array
@@ -184,6 +192,7 @@ UpdateWorkingScheduleRequest:
 
 GenerateReceiptNumberRequest:
   type: object
+  title: GenerateReceiptNumberRequest
   required:
     - branchId
   properties:
@@ -197,6 +206,7 @@ GenerateReceiptNumberRequest:
 
 ValidateReceiptNumberRequest:
   type: object
+  title: ValidateReceiptNumberRequest
   required:
     - receiptNumber
   properties:
@@ -207,6 +217,7 @@ ValidateReceiptNumberRequest:
 
 ParseReceiptNumberRequest:
   type: object
+  title: ParseReceiptNumberRequest
   required:
     - receiptNumber
   properties:

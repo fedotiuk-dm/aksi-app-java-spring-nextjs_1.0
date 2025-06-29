@@ -39,39 +39,7 @@
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - code
-              - name
-              - type
-              - value
-            properties:
-              code:
-                type: string
-                description: Унікальний код
-                example: CHILDREN_ITEMS
-              name:
-                type: string
-                description: Назва модифікатора
-                example: Дитячі речі (до 30 розміру)
-              type:
-                $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
-              value:
-                type: number
-                format: double
-                description: Значення модифікатора
-                example: 30.0
-              applicableTo:
-                type: array
-                items:
-                  type: string
-                  format: uuid
-                description: Категорії, до яких застосовується
-              description:
-                type: string
-              isActive:
-                type: boolean
-                default: true
+            $ref: "../schemas/item-requests.yaml#/CreatePriceModifierRequest"
     responses:
       201:
         description: Модифікатор створений
@@ -130,22 +98,7 @@
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              name:
-                type: string
-              value:
-                type: number
-                format: double
-              applicableTo:
-                type: array
-                items:
-                  type: string
-                  format: uuid
-              description:
-                type: string
-              isActive:
-                type: boolean
+            $ref: "../schemas/item-requests.yaml#/UpdatePriceModifierRequest"
     responses:
       200:
         description: Модифікатор оновлений

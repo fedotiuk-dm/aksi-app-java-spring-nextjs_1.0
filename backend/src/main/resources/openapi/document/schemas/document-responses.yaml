@@ -3,6 +3,7 @@
 # Receipt Responses
 ReceiptResponse:
   type: object
+  title: ReceiptResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -35,6 +36,7 @@ ReceiptResponse:
 
 ReceiptDataResponse:
   type: object
+  title: ReceiptDataResponse
   properties:
     companyInfo:
       $ref: "#/CompanyInfoResponse"
@@ -57,6 +59,7 @@ ReceiptDataResponse:
 
 CompanyInfoResponse:
   type: object
+  title: CompanyInfoResponse
   properties:
     companyName:
       type: string
@@ -77,6 +80,7 @@ CompanyInfoResponse:
 
 BranchInfoResponse:
   type: object
+  title: BranchInfoResponse
   properties:
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -93,6 +97,7 @@ BranchInfoResponse:
 
 OrderInfoResponse:
   type: object
+  title: OrderInfoResponse
   properties:
     orderId:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -117,6 +122,7 @@ OrderInfoResponse:
 
 ClientInfoResponse:
   type: object
+  title: ClientInfoResponse
   properties:
     clientId:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -135,6 +141,7 @@ ClientInfoResponse:
 
 ItemDetailResponse:
   type: object
+  title: ItemDetailResponse
   properties:
     itemNumber:
       type: integer
@@ -175,6 +182,7 @@ ItemDetailResponse:
 
 ModifierDetailResponse:
   type: object
+  title: ModifierDetailResponse
   properties:
     name:
       type: string
@@ -188,6 +196,7 @@ ModifierDetailResponse:
 
 PhotoSummaryResponse:
   type: object
+  title: PhotoSummaryResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -200,6 +209,7 @@ PhotoSummaryResponse:
 
 FinancialSummaryResponse:
   type: object
+  title: FinancialSummaryResponse
   properties:
     subtotal:
       $ref: "../../common/schemas/base.yaml#/Money"
@@ -220,6 +230,7 @@ FinancialSummaryResponse:
 
 LegalInfoResponse:
   type: object
+  title: LegalInfoResponse
   properties:
     termsAndConditions:
       type: string
@@ -234,6 +245,7 @@ LegalInfoResponse:
 
 OperatorInfoResponse:
   type: object
+  title: OperatorInfoResponse
   properties:
     operatorName:
       type: string
@@ -245,6 +257,7 @@ OperatorInfoResponse:
 # Document Responses
 DocumentResponse:
   type: object
+  title: DocumentResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -279,6 +292,7 @@ DocumentResponse:
 
 DocumentSummaryResponse:
   type: object
+  title: DocumentSummaryResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -295,6 +309,7 @@ DocumentSummaryResponse:
 
 DocumentMetadataResponse:
   type: object
+  title: DocumentMetadataResponse
   properties:
     template:
       type: string
@@ -311,6 +326,7 @@ DocumentMetadataResponse:
 # QR Code Responses
 QRCodeResponse:
   type: object
+  title: QRCodeResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -332,6 +348,7 @@ QRCodeResponse:
 
 QRCodeSummaryResponse:
   type: object
+  title: QRCodeSummaryResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -344,6 +361,7 @@ QRCodeSummaryResponse:
 # Digital Signature Responses
 DigitalSignatureResponse:
   type: object
+  title: DigitalSignatureResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -371,6 +389,7 @@ DigitalSignatureResponse:
 
 DigitalSignatureSummaryResponse:
   type: object
+  title: DigitalSignatureSummaryResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -386,6 +405,7 @@ DigitalSignatureSummaryResponse:
 
 SignatureMetadataResponse:
   type: object
+  title: SignatureMetadataResponse
   properties:
     deviceInfo:
       type: string
@@ -403,6 +423,7 @@ SignatureMetadataResponse:
 # Page Responses
 ReceiptPageResponse:
   type: object
+  title: ReceiptPageResponse
   properties:
     content:
       type: array
@@ -424,6 +445,7 @@ ReceiptPageResponse:
 
 DocumentPageResponse:
   type: object
+  title: DocumentPageResponse
   properties:
     content:
       type: array
@@ -442,3 +464,144 @@ DocumentPageResponse:
       type: boolean
     numberOfElements:
       type: integer
+
+# PDF Generation Responses
+PdfGenerationResponse:
+  type: object
+  title: PdfGenerationResponse
+  description: Відповідь з інформацією про згенерований PDF файл
+  properties:
+    documentId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+      description: Ідентифікатор документа
+    filename:
+      type: string
+      description: Ім'я файлу
+      example: "receipt-AKSI-01-2024-000001.pdf"
+    size:
+      type: integer
+      description: Розмір файлу в байтах
+      example: 245760
+    downloadUrl:
+      type: string
+      format: uri
+      description: URL для завантаження PDF
+      example: "/api/documents/550e8400-e29b-41d4-a716-446655440000/download"
+
+# QR Code Binary Response
+QrCodeBinaryResponse:
+  type: object
+  title: QrCodeBinaryResponse
+  description: Відповідь з інформацією про QR код для завантаження
+  properties:
+    qrCodeId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+      description: Ідентифікатор QR коду
+    format:
+      $ref: "../schemas/document-enums.yaml#/QRCodeFormat"
+      description: Формат зображення
+    size:
+      type: integer
+      description: Розмір зображення в пікселях
+      example: 256
+    downloadUrl:
+      type: string
+      format: uri
+      description: URL для завантаження зображення
+      example: "/api/qr-codes/550e8400-e29b-41d4-a716-446655440000?format=PNG&size=256"
+
+# Digital Signature Image Response
+SignatureImageResponse:
+  type: object
+  title: SignatureImageResponse
+  description: Відповідь з інформацією про зображення цифрового підпису
+  properties:
+    url:
+      type: string
+      format: uri
+      description: URL для завантаження зображення підпису
+      example: "http://localhost:8080/api/digital-signatures/550e8400-e29b-41d4-a716-446655440000/image?format=PNG"
+    format:
+      type: string
+      enum: [PNG, SVG]
+      description: Формат зображення
+      example: "PNG"
+    filename:
+      type: string
+      description: Ім'я файлу для завантаження
+      example: "signature-550e8400-e29b-41d4-a716-446655440000.png"
+    size:
+      type: integer
+      description: Розмір файлу в байтах
+      example: 5120
+    dimensions:
+      type: object
+      title: ImageDimensions
+      properties:
+        width:
+          type: integer
+          description: Ширина зображення в пікселях
+          example: 200
+        height:
+          type: integer
+          description: Висота зображення в пікселях
+          example: 100
+
+# Signature Validation Response
+SignatureValidationResponse:
+  type: object
+  title: SignatureValidationResponse
+  description: Результат валідації цифрового підпису
+  properties:
+    isValid:
+      type: boolean
+      description: Чи валідний підпис
+      example: true
+    validationDetails:
+      type: object
+      title: ValidationDetails
+      description: Детальна інформація про валідацію
+      properties:
+        signatureIntact:
+          type: boolean
+          description: Чи цілісний підпис
+          example: true
+        documentMatches:
+          type: boolean
+          description: Чи відповідає документу
+          example: true
+        notExpired:
+          type: boolean
+          description: Чи не прострочений
+          example: true
+        signerVerified:
+          type: boolean
+          description: Чи підтверджений підписант
+          example: true
+
+# Document Download Response
+DocumentDownloadResponse:
+  type: object
+  title: DocumentDownloadResponse
+  description: Відповідь з інформацією для завантаження документа
+  properties:
+    documentId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+      description: Ідентифікатор документа
+    filename:
+      type: string
+      description: Ім'я файлу
+      example: "document.pdf"
+    contentType:
+      type: string
+      description: MIME тип файлу
+      example: "application/pdf"
+    size:
+      type: integer
+      description: Розмір файлу в байтах
+      example: 1048576
+    downloadUrl:
+      type: string
+      format: uri
+      description: URL для завантаження файлу
+      example: "/api/documents/550e8400-e29b-41d4-a716-446655440000/download"

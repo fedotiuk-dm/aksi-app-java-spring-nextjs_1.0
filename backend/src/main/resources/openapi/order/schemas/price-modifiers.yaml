@@ -1,6 +1,7 @@
 # Схеми модифікаторів ціни згідно документації OrderWizard
 GeneralModifiers:
   type: object
+  title: GeneralModifiers
   description: Загальні коефіцієнти (доступні для всіх категорій)
   properties:
     childrenClothes:
@@ -10,28 +11,13 @@ GeneralModifiers:
       type: boolean
       description: Ручна чистка +20% до вартості
     heavilySoiled:
-      type: object
-      description: Дуже забруднені речі +від 20 до 100% до вартості
-      properties:
-        enabled:
-          type: boolean
-        percentage:
-          type: number
-          minimum: 20
-          maximum: 100
+      $ref: "#/HeavilysoiledModifier"
     urgentCleaning:
-      type: object
-      description: Термінова чистка +від 50 до 100% до вартості
-      properties:
-        enabled:
-          type: boolean
-        percentage:
-          type: number
-          minimum: 50
-          maximum: 100
+      $ref: "#/UrgentCleaningModifier"
 
 TextileModifiers:
   type: object
+  title: TextileModifiers
   description: Модифікатори для текстильних виробів
   properties:
     furCollarsCuffs:
@@ -50,17 +36,7 @@ TextileModifiers:
       type: boolean
       description: Ручна чистка великих м'яких іграшок +100%
     sewingButtons:
-      type: object
-      description: Пришивання гудзиків (фіксована вартість за одиницю)
-      properties:
-        enabled:
-          type: boolean
-        quantity:
-          type: integer
-          minimum: 1
-        pricePerButton:
-          type: number
-          format: double
+      $ref: "#/SewingButtonsModifier"
     blackAndLightColors:
       type: boolean
       description: Чистка виробів чорного та світлих тонів +20%
@@ -70,6 +46,7 @@ TextileModifiers:
 
 LeatherModifiers:
   type: object
+  title: LeatherModifiers
   description: Модифікатори для шкіряних виробів
   properties:
     ironingLeather:
@@ -165,8 +142,72 @@ UnitType:
   type: string
   description: Одиниці виміру
   enum:
+    - шт
+    - кг
+    - пара
+    - кв.м
+  x-enum-varnames:
     - PIECE
     - KILOGRAM
+    - PAIR
+    - SQUARE_METER
   x-enum-descriptions:
     - Штуки
     - Кілограми
+    - Пара
+    - Квадратні метри
+
+HeavilysoiledModifier:
+  type: object
+  title: HeavilysoiledModifier
+  description: Конфігурація модифікатора "Дуже забруднені речі"
+  required:
+    - enabled
+    - percentage
+  properties:
+    enabled:
+      type: boolean
+      description: Чи активний модифікатор
+    percentage:
+      type: number
+      minimum: 20
+      maximum: 100
+      description: Відсоток надбавки (від 20 до 100%)
+
+UrgentCleaningModifier:
+  type: object
+  title: UrgentCleaningModifier
+  description: Конфігурація модифікатора "Термінова чистка"
+  required:
+    - enabled
+    - percentage
+  properties:
+    enabled:
+      type: boolean
+      description: Чи активний модифікатор
+    percentage:
+      type: number
+      minimum: 50
+      maximum: 100
+      description: Відсоток надбавки (від 50 до 100%)
+
+SewingButtonsModifier:
+  type: object
+  title: SewingButtonsModifier
+  description: Конфігурація модифікатора "Пришивання гудзиків"
+  required:
+    - enabled
+    - quantity
+    - pricePerButton
+  properties:
+    enabled:
+      type: boolean
+      description: Чи активний модифікатор
+    quantity:
+      type: integer
+      minimum: 1
+      description: Кількість гудзиків
+    pricePerButton:
+      type: number
+      format: double
+      description: Ціна за один гудзик

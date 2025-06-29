@@ -101,9 +101,9 @@ components:
     UrgencyType:
       $ref: "order/schemas/order-enums.yaml#/UrgencyType"
     StainType:
-      $ref: "order/schemas/order-enums.yaml#/StainType"
+      $ref: "order/schemas/order-item-schemas.yaml#/StainType"
     DefectType:
-      $ref: "order/schemas/order-enums.yaml#/DefectType"
+      $ref: "order/schemas/order-item-schemas.yaml#/DefectType"
     DiscountType:
       $ref: "order/schemas/order-enums.yaml#/DiscountType"
 

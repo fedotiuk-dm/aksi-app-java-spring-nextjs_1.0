@@ -1,6 +1,7 @@
 # Спільні схеми помилок для всіх доменів
 ErrorResponse:
   type: object
+  title: ErrorResponse
   required:
     - timestamp
     - status
@@ -30,6 +31,7 @@ ErrorResponse:
 
 ValidationErrorResponse:
   type: object
+  title: ValidationErrorResponse
   required:
     - timestamp
     - status
@@ -62,6 +64,7 @@ ValidationErrorResponse:
 
 FieldError:
   type: object
+  title: FieldError
   required:
     - field
     - message

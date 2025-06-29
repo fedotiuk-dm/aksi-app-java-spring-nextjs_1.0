@@ -1,6 +1,7 @@
 # Схеми для розрахунків замовлень
 CalculateOrderRequest:
   type: object
+  title: CalculateOrderRequest
   properties:
     urgency:
       $ref: "../schemas/order-enums.yaml#/UrgencyType"
@@ -15,6 +16,7 @@ CalculateOrderRequest:
 
 OrderCalculationResponse:
   type: object
+  title: OrderCalculationResponse
   properties:
     orderId:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -51,6 +53,7 @@ OrderCalculationResponse:
 
 CompletedOrderResponse:
   type: object
+  title: CompletedOrderResponse
   properties:
     orderId:
       $ref: "../../common/schemas/base.yaml#/UUID"

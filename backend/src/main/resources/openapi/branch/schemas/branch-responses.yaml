@@ -1,6 +1,7 @@
 # Response схеми для Branch домену
 BranchResponse:
   type: object
+  title: BranchResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -45,6 +46,7 @@ BranchWithDistanceResponse:
 
 ContactInfoResponse:
   type: object
+  title: ContactInfoResponse
   properties:
     phone:
       type: string
@@ -61,6 +63,7 @@ ContactInfoResponse:
 
 CoordinatesResponse:
   type: object
+  title: CoordinatesResponse
   properties:
     latitude:
       type: number
@@ -77,6 +80,7 @@ CoordinatesResponse:
 
 WorkingScheduleResponse:
   type: object
+  title: WorkingScheduleResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -96,6 +100,7 @@ WorkingScheduleResponse:
 
 WorkingDayResponse:
   type: object
+  title: WorkingDayResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -118,6 +123,7 @@ WorkingDayResponse:
 
 HolidayResponse:
   type: object
+  title: HolidayResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -133,6 +139,7 @@ HolidayResponse:
 
 BranchOpenStatusResponse:
   type: object
+  title: BranchOpenStatusResponse
   properties:
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -153,6 +160,7 @@ BranchOpenStatusResponse:
 
 NextWorkingDayResponse:
   type: object
+  title: NextWorkingDayResponse
   properties:
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -160,20 +168,15 @@ NextWorkingDayResponse:
       $ref: "../../common/schemas/base.yaml#/Date"
       description: Наступна робоча дата
     workingHours:
-      type: object
-      properties:
-        openTime:
-          type: string
-          format: time
-        closeTime:
-          type: string
-          format: time
+      $ref: "#/WorkingHoursInfo"
+      description: Робочі години філії
     daysUntilNextWorking:
       type: integer
       description: Кількість днів до наступного робочого дня
 
 ReceiptNumberResponse:
   type: object
+  title: ReceiptNumberResponse
   properties:
     receiptNumber:
       type: string
@@ -195,6 +198,7 @@ ReceiptNumberResponse:
 
 ReceiptValidationResponse:
   type: object
+  title: ReceiptValidationResponse
   properties:
     receiptNumber:
       type: string
@@ -213,6 +217,7 @@ ReceiptValidationResponse:
 
 ReceiptNumberParseResponse:
   type: object
+  title: ReceiptNumberParseResponse
   properties:
     receiptNumber:
       type: string
@@ -234,6 +239,7 @@ ReceiptNumberParseResponse:
 
 BranchSummaryResponse:
   type: object
+  title: BranchSummaryResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -247,18 +253,15 @@ BranchSummaryResponse:
 # Statistics Responses
 BranchStatisticsResponse:
   type: object
+  title: BranchStatisticsResponse
   properties:
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
     branchName:
       type: string
     period:
-      type: object
-      properties:
-        startDate:
-          $ref: "../../common/schemas/base.yaml#/Date"
-        endDate:
-          $ref: "../../common/schemas/base.yaml#/Date"
+      $ref: "#/StatisticsPeriod"
+      description: Період статистики
     ordersCount:
       type: integer
       format: int64
@@ -280,6 +283,7 @@ BranchStatisticsResponse:
 
 ServiceStatisticResponse:
   type: object
+  title: ServiceStatisticResponse
   properties:
     serviceName:
       type: string
@@ -294,6 +298,7 @@ ServiceStatisticResponse:
 
 DailyStatisticResponse:
   type: object
+  title: DailyStatisticResponse
   properties:
     date:
       $ref: "../../common/schemas/base.yaml#/Date"
@@ -304,6 +309,7 @@ DailyStatisticResponse:
 
 BranchComparisonResponse:
   type: object
+  title: BranchComparisonResponse
   properties:
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -321,3 +327,32 @@ BranchComparisonResponse:
     ranking:
       type: integer
       description: Позиція в рейтингу
+
+# Extracted Inline Schemas
+WorkingHoursInfo:
+  type: object
+  title: WorkingHoursInfo
+  description: Інформація про робочі години
+  properties:
+    openTime:
+      type: string
+      format: time
+      description: Час відкриття
+      example: "09:00"
+    closeTime:
+      type: string
+      format: time
+      description: Час закриття
+      example: "18:00"
+
+StatisticsPeriod:
+  type: object
+  title: StatisticsPeriod
+  description: Період для статистики
+  properties:
+    startDate:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Дата початку періоду
+    endDate:
+      $ref: "../../common/schemas/base.yaml#/Date"
+      description: Дата закінчення періоду

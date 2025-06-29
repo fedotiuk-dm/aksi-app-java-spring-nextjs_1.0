@@ -108,9 +108,9 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@eslint/js": "^9.25.1",
-    "@orval/core": "^7.9.0",
-    "@orval/query": "^7.9.0",
+    "@eslint/js": "^9.30.0",
+    "@orval/core": "^7.10.0",
+    "@orval/query": "^7.10.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^22",

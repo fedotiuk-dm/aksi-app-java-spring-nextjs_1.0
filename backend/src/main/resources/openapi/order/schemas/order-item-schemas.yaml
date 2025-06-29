@@ -1,6 +1,7 @@
 # Схеми для предметів замовлення
 CreateOrderItemRequest:
   type: object
+  title: CreateOrderItemRequest
   required:
     - itemName
     - category
@@ -84,6 +85,7 @@ CreateOrderItemRequest:
 
 UpdateOrderItemRequest:
   type: object
+  title: UpdateOrderItemRequest
   properties:
     itemName:
       type: string
@@ -136,6 +138,7 @@ UpdateOrderItemRequest:
 
 PriceModifierRequest:
   type: object
+  title: PriceModifierRequest
   required:
     - name
     - type

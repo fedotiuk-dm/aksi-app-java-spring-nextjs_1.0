@@ -112,23 +112,7 @@
               format: binary
           application/json:
             schema:
-              type: object
-              properties:
-                documentId:
-                  $ref: "../../common/schemas/base.yaml#/UUID"
-                filename:
-                  type: string
-                  description: Ім'я файлу
-                contentType:
-                  type: string
-                  description: MIME тип файлу
-                size:
-                  type: integer
-                  description: Розмір файлу в байтах
-                downloadUrl:
-                  type: string
-                  format: uri
-                  description: URL для завантаження файлу
+              $ref: "../schemas/document-responses.yaml#/DocumentDownloadResponse"
         headers:
           Content-Disposition:
             description: Attachment filename
@@ -155,16 +139,7 @@
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - status
-            properties:
-              status:
-                $ref: "../schemas/document-enums.yaml#/DocumentStatus"
-              reason:
-                type: string
-                maxLength: 500
-                description: Причина зміни статусу
+            $ref: "../schemas/document-requests.yaml#/UpdateDocumentStatusRequest"
     responses:
       200:
         description: Статус успішно змінено

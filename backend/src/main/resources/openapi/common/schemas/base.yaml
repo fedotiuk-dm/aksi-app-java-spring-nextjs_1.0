@@ -19,6 +19,7 @@ Date:
 
 TimestampProperties:
   type: object
+  title: TimestampProperties
   properties:
     createdAt:
       type: string
@@ -33,6 +34,7 @@ TimestampProperties:
 
 BaseEntityResponse:
   type: object
+  title: BaseEntityResponse
   required:
     - id
     - createdAt

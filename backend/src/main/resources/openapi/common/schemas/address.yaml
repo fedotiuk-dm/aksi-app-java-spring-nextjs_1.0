@@ -1,6 +1,7 @@
 # Спільні схеми адрес для всіх доменів
 Address:
   type: object
+  title: Address
   properties:
     street:
       type: string
@@ -30,6 +31,7 @@ Address:
 
 CreateAddressRequest:
   type: object
+  title: CreateAddressRequest
   properties:
     street:
       type: string
@@ -59,6 +61,7 @@ CreateAddressRequest:
 
 UpdateAddressRequest:
   type: object
+  title: UpdateAddressRequest
   properties:
     street:
       type: string

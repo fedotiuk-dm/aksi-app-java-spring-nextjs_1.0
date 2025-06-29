@@ -1,5 +1,6 @@
 AuthResponse:
   type: object
+  title: AuthResponse
   description: Відповідь з токенами після успішної автентифікації
   required:
     - accessToken
@@ -11,11 +12,11 @@ AuthResponse:
     accessToken:
       type: string
       description: JWT access токен для автентифікації API запитів
-      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+      example: "jwt.access.token"
     refreshToken:
       type: string
       description: Refresh токен для оновлення access токену
-      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh_token_payload.signature"
+      example: "jwt.refresh.token"
     tokenType:
       type: string
       description: Тип токену (завжди Bearer)
@@ -34,6 +35,7 @@ AuthResponse:
 
 UserResponse:
   type: object
+  title: UserResponse
   description: Інформація про користувача
   required:
     - id
@@ -77,7 +79,7 @@ UserResponse:
       type: array
       description: Ролі користувача
       items:
-        $ref: "../../auth-api.yaml#/components/schemas/UserRole"
+        $ref: "./auth-enums.yaml#/UserRole"
       minItems: 1
       example: ["ADMIN", "MANAGER"]
     isActive:
@@ -93,6 +95,7 @@ UserResponse:
 
 LogoutResponse:
   type: object
+  title: LogoutResponse
   description: Відповідь після успішного логауту
   required:
     - success

@@ -1,6 +1,7 @@
 # Схеми відповідей для Order домену
 OrderResponse:
   type: object
+  title: OrderResponse
   required:
     - id
     - receiptNumber
@@ -59,6 +60,7 @@ OrderResponse:
 
 OrderPageResponse:
   type: object
+  title: OrderPageResponse
   required:
     - content
     - pageable
@@ -73,6 +75,7 @@ OrderPageResponse:
 
 OrderItemResponse:
   type: object
+  title: OrderItemResponse
   required:
     - id
     - itemName
@@ -147,6 +150,7 @@ OrderItemResponse:
 
 ClientSummary:
   type: object
+  title: ClientSummary
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -159,6 +163,7 @@ ClientSummary:
 
 BranchSummary:
   type: object
+  title: BranchSummary
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -169,6 +174,7 @@ BranchSummary:
 
 OrderCalculationSummary:
   type: object
+  title: OrderCalculationSummary
   properties:
     itemsTotal:
       type: number
@@ -185,6 +191,7 @@ OrderCalculationSummary:
 
 DiscountInfo:
   type: object
+  title: DiscountInfo
   properties:
     type:
       $ref: "../schemas/order-enums.yaml#/DiscountType"
@@ -199,6 +206,7 @@ DiscountInfo:
 
 PaymentInfo:
   type: object
+  title: PaymentInfo
   properties:
     method:
       $ref: "../schemas/order-enums.yaml#/PaymentMethod"
@@ -211,6 +219,7 @@ PaymentInfo:
 
 AppliedModifier:
   type: object
+  title: AppliedModifier
   properties:
     name:
       type: string
@@ -225,6 +234,7 @@ AppliedModifier:
 
 ItemCalculationDetails:
   type: object
+  title: ItemCalculationDetails
   properties:
     basePrice:
       type: number
@@ -239,6 +249,7 @@ ItemCalculationDetails:
 
 CalculationStep:
   type: object
+  title: CalculationStep
   properties:
     step:
       type: integer
@@ -252,3 +263,29 @@ CalculationStep:
     subtotal:
       type: number
       format: double
+
+ReceiptGenerationResponse:
+  type: object
+  title: ReceiptGenerationResponse
+  description: Відповідь для генерації квитанції
+  required:
+    - url
+    - format
+    - generateTime
+  properties:
+    url:
+      type: string
+      format: uri
+      description: URL для завантаження квитанції
+    format:
+      type: string
+      enum: [PDF, HTML]
+      description: Формат згенерованої квитанції
+    generateTime:
+      type: string
+      format: date-time
+      description: Час генерації
+  example:
+    url: "http://localhost:8080/api/orders/123e4567-e89b-12d3-a456-426614174000/receipt?format=PDF"
+    format: "PDF"
+    generateTime: "2025-01-11T12:00:00Z"

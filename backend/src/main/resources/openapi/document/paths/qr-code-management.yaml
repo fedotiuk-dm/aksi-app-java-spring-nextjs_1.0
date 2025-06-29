@@ -67,19 +67,7 @@
               format: binary
           application/json:
             schema:
-              type: object
-              properties:
-                qrCodeId:
-                  $ref: "../../common/schemas/base.yaml#/UUID"
-                format:
-                  $ref: "../schemas/document-enums.yaml#/QRCodeFormat"
-                size:
-                  type: integer
-                  description: Розмір в пікселях
-                downloadUrl:
-                  type: string
-                  format: uri
-                  description: URL для завантаження зображення
+              $ref: "../schemas/document-responses.yaml#/QrCodeBinaryResponse"
       404:
         description: QR-код не знайдений
         content:

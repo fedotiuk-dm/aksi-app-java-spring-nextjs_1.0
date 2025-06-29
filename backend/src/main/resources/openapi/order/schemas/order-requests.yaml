@@ -1,6 +1,7 @@
 # Схеми запитів для Order домену
 CreateOrderRequest:
   type: object
+  title: CreateOrderRequest
   required:
     - clientId
     - branchId
@@ -27,6 +28,7 @@ CreateOrderRequest:
 
 UpdateOrderRequest:
   type: object
+  title: UpdateOrderRequest
   properties:
     uniqueTag:
       type: string
@@ -48,6 +50,7 @@ UpdateOrderRequest:
 
 DiscountRequest:
   type: object
+  title: DiscountRequest
   required:
     - type
   properties:
@@ -66,6 +69,7 @@ DiscountRequest:
 
 UpdatePaymentRequest:
   type: object
+  title: UpdatePaymentRequest
   required:
     - paymentMethod
     - paidAmount
@@ -81,6 +85,7 @@ UpdatePaymentRequest:
 
 CompleteOrderRequest:
   type: object
+  title: CompleteOrderRequest
   required:
     - clientSignature
     - legalAcceptance

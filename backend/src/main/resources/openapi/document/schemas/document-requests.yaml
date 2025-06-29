@@ -1,6 +1,7 @@
 # Request схеми для Document домену
 GenerateReceiptRequest:
   type: object
+  title: GenerateReceiptRequest
   required:
     - orderId
   properties:
@@ -26,6 +27,7 @@ GenerateReceiptRequest:
 
 UpdateReceiptRequest:
   type: object
+  title: UpdateReceiptRequest
   properties:
     data:
       $ref: "#/ReceiptDataRequest"
@@ -36,6 +38,7 @@ UpdateReceiptRequest:
 
 ReceiptDataRequest:
   type: object
+  title: ReceiptDataRequest
   properties:
     companyInfo:
       $ref: "#/CompanyInfoRequest"
@@ -46,6 +49,7 @@ ReceiptDataRequest:
 
 CompanyInfoRequest:
   type: object
+  title: CompanyInfoRequest
   properties:
     companyName:
       type: string
@@ -72,6 +76,7 @@ CompanyInfoRequest:
 
 OperatorInfoRequest:
   type: object
+  title: OperatorInfoRequest
   properties:
     operatorName:
       type: string
@@ -82,6 +87,7 @@ OperatorInfoRequest:
 
 LegalInfoRequest:
   type: object
+  title: LegalInfoRequest
   properties:
     termsAndConditions:
       type: string
@@ -95,6 +101,7 @@ LegalInfoRequest:
 
 GenerateQRCodeRequest:
   type: object
+  title: GenerateQRCodeRequest
   required:
     - data
     - type
@@ -123,6 +130,7 @@ GenerateQRCodeRequest:
 
 CreateDigitalSignatureRequest:
   type: object
+  title: CreateDigitalSignatureRequest
   required:
     - documentId
     - signatureData
@@ -150,6 +158,7 @@ CreateDigitalSignatureRequest:
 
 SignatureMetadataRequest:
   type: object
+  title: SignatureMetadataRequest
   properties:
     deviceInfo:
       type: string
@@ -169,6 +178,7 @@ SignatureMetadataRequest:
 
 GeneratePdfRequest:
   type: object
+  title: GeneratePdfRequest
   properties:
     template:
       $ref: "./document-enums.yaml#/ReceiptTemplate"
@@ -178,3 +188,23 @@ GeneratePdfRequest:
       type: boolean
       default: false
       description: Перегенерувати якщо вже існує
+
+UpdateDocumentStatusRequest:
+  type: object
+  title: UpdateDocumentStatusRequest
+  description: Запит на оновлення статусу документа
+  required:
+    - status
+  properties:
+    status:
+      $ref: "./document-enums.yaml#/DocumentStatus"
+      description: Новий статус документа
+    reason:
+      type: string
+      maxLength: 500
+      description: Причина зміни статусу
+    metadata:
+      type: object
+      description: Додаткова інформація про зміну статусу
+      additionalProperties:
+        type: string

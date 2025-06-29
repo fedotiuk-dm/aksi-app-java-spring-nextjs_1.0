@@ -12,57 +12,35 @@
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/UserResponse"
-            examples:
-              admin:
-                summary: Адміністратор
-                value:
-                  username: "admin"
-                  email: "admin@aksi.com"
-                  roles: ["ADMIN"]
-              manager:
-                summary: Менеджер
-                value:
-                  username: "manager"
-                  email: "manager@aksi.com"
-                  roles: ["MANAGER"]
+            example:
+              id: "123e4567-e89b-12d3-a456-426614174000"
+              username: "admin"
+              email: "admin@aksi.com"
+              firstName: "Олександр"
+              lastName: "Петренко"
+              roles: ["ADMIN"]
+              isActive: true
+              createdAt: "2024-01-15T10:30:00Z"
       "401":
         description: Невалідний або відсутній токен
         content:
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/ErrorResponse"
-            examples:
-              missing_token:
-                summary: Відсутній токен
-                value:
-                  message: "Токен автентифікації відсутній"
-                  code: "MISSING_TOKEN"
-                  timestamp: "2024-01-15T10:30:00Z"
-              invalid_token:
-                summary: Невалідний токен
-                value:
-                  message: "Токен автентифікації недійсний"
-                  code: "INVALID_TOKEN"
-                  timestamp: "2024-01-15T10:30:00Z"
-              expired_token:
-                summary: Токен закінчився
-                value:
-                  message: "Токен автентифікації закінчився"
-                  code: "EXPIRED_TOKEN"
-                  timestamp: "2024-01-15T10:30:00Z"
+            example:
+              message: "Токен автентифікації недійсний"
+              code: "INVALID_TOKEN"
+              timestamp: "2024-01-15T10:30:00Z"
       "403":
         description: Користувач заблокований або неактивний
         content:
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/ErrorResponse"
-            examples:
-              user_inactive:
-                summary: Користувач неактивний
-                value:
-                  message: "Користувач заблокований або неактивний"
-                  code: "USER_INACTIVE"
-                  timestamp: "2024-01-15T10:30:00Z"
+            example:
+              message: "Користувач заблокований або неактивний"
+              code: "USER_INACTIVE"
+              timestamp: "2024-01-15T10:30:00Z"
       "500":
         description: Внутрішня помилка сервера
         content:

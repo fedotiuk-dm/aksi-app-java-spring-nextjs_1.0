@@ -1,6 +1,7 @@
 # Response схеми для Item домену
 ServiceCategoryResponse:
   type: object
+  title: ServiceCategoryResponse
   required:
     - id
     - code
@@ -47,12 +48,13 @@ ServiceCategoryResponse:
 
 PriceListItemResponse:
   type: object
+  title: PriceListItemResponse
   required:
     - id
     - categoryId
-    - itemNumber
+    - catalogNumber
     - name
-    - unit
+    - unitOfMeasure
     - basePrice
     - isActive
   properties:
@@ -62,41 +64,42 @@ PriceListItemResponse:
       $ref: "../../common/schemas/base.yaml#/UUID"
     categoryInfo:
       $ref: "#/ServiceCategorySummary"
-    itemNumber:
+    catalogNumber:
       type: integer
-      description: Номер предмета в каталозі
-      example: 101
+      description: Каталоговий номер предмета
+      example: 8
     name:
       type: string
       description: Назва предмета
-      example: Костюм чоловічий
-    unit:
+      example: "Піджак, кітель"
+    unitOfMeasure:
       $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
       description: Одиниця виміру
+      example: "шт"
     basePrice:
       type: number
       format: double
       description: Базова ціна
-      example: 150.0
-    blackPrice:
+      example: 480.0
+    priceBlack:
       type: number
       format: double
-      description: Ціна для чорних речей
-      example: 180.0
-    lightPrice:
+      description: Ціна для чорних речей (може бути null)
+      example: null
+    priceColor:
       type: number
       format: double
-      description: Ціна для світлих речей
-      example: 150.0
+      description: Ціна для кольорових речей (може бути null)
+      example: 700.0
     isActive:
       type: boolean
       description: Чи активний предмет
-    notes:
-      type: string
-      description: Примітки до предмета
+  allOf:
+    - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
 
 PriceModifierResponse:
   type: object
+  title: PriceModifierResponse
   required:
     - id
     - code
@@ -137,6 +140,7 @@ PriceModifierResponse:
 
 ItemCalculationResponse:
   type: object
+  title: ItemCalculationResponse
   properties:
     priceListItemId:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -186,6 +190,7 @@ ItemCalculationResponse:
 
 PhotoResponse:
   type: object
+  title: PhotoResponse
   required:
     - id
     - itemId
@@ -227,6 +232,7 @@ PhotoResponse:
 
 PriceListPageResponse:
   type: object
+  title: PriceListPageResponse
   properties:
     content:
       type: array
@@ -237,6 +243,7 @@ PriceListPageResponse:
 
 ServiceCategorySummary:
   type: object
+  title: ServiceCategorySummary
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -249,6 +256,7 @@ ServiceCategorySummary:
 
 AppliedModifierResult:
   type: object
+  title: AppliedModifierResult
   properties:
     modifierId:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -267,6 +275,7 @@ AppliedModifierResult:
 
 CalculationStep:
   type: object
+  title: CalculationStep
   properties:
     step:
       type: string
@@ -282,3 +291,117 @@ CalculationStep:
       type: number
       format: double
       description: Накопичена сума
+
+# Price Preview Response
+ItemPricePreviewResponse:
+  type: object
+  title: ItemPricePreviewResponse
+  description: Попередній розрахунок ціни предмета
+  properties:
+    basePrice:
+      type: number
+      format: double
+      description: Базова ціна за одиницю
+      example: 480.00
+    totalBasePrice:
+      type: number
+      format: double
+      description: Базова ціна за кількість
+      example: 480.00
+    modifiersAmount:
+      type: number
+      format: double
+      description: Сума модифікаторів
+      example: 50.00
+    subtotal:
+      type: number
+      format: double
+      description: Проміжна сума (база + модифікатори)
+      example: 530.00
+    urgencyAmount:
+      type: number
+      format: double
+      description: Надбавка за терміновість
+      example: 100.00
+    finalPrice:
+      type: number
+      format: double
+      description: Фінальна ціна
+      example: 630.00
+
+# Order Summary Response
+OrderSummaryResponse:
+  type: object
+  title: OrderSummaryResponse
+  description: Підсумок розрахунку замовлення
+  properties:
+    itemsTotal:
+      type: number
+      format: double
+      description: Сума всіх предметів
+      example: 1530.00
+    urgencyCharge:
+      type: number
+      format: double
+      description: Надбавка за терміновість
+      example: 200.00
+    discountAmount:
+      type: number
+      format: double
+      description: Сума знижки
+      example: 50.00
+    subtotal:
+      type: number
+      format: double
+      description: Проміжна сума
+      example: 1680.00
+    finalTotal:
+      type: number
+      format: double
+      description: Фінальна сума до сплати
+      example: 1630.00
+    itemCalculations:
+      type: array
+      items:
+        $ref: "#/ItemCalculationResponse"
+      description: Розрахунки по кожному предмету
+    warnings:
+      type: array
+      items:
+        type: string
+      description: Попередження (наприклад, про незастосовані знижки)
+      example:
+        ["Модифікатор CHILDREN_ITEMS не застосовується до цієї категорії"]
+
+# Photo Download Response
+PhotoDownloadResponse:
+  type: object
+  title: PhotoDownloadResponse
+  description: Відповідь для завантаження фотографії
+  properties:
+    photoId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+      description: Ідентифікатор фотографії
+    filename:
+      type: string
+      description: Ім'я файлу
+      example: "item_photo_001.jpg"
+    contentType:
+      type: string
+      description: MIME тип файлу
+      example: "image/jpeg"
+    size:
+      type: integer
+      format: int64
+      description: Розмір файлу в байтах
+      example: 2048576
+    downloadUrl:
+      type: string
+      format: uri
+      description: URL для завантаження файлу
+      example: "/api/photos/550e8400-e29b-41d4-a716-446655440000/download"
+    thumbnailUrl:
+      type: string
+      format: uri
+      description: URL мініатюри
+      example: "/api/photos/550e8400-e29b-41d4-a716-446655440000/thumbnail"

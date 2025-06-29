@@ -1,5 +1,6 @@
 LoginRequest:
   type: object
+  title: LoginRequest
   description: Запит на автентифікацію користувача
   required:
     - username
@@ -18,11 +19,12 @@ LoginRequest:
       minLength: 6
       maxLength: 128
       format: password
-      example: "securePassword123!"
+      example: "password123"
   additionalProperties: false
 
 RefreshTokenRequest:
   type: object
+  title: RefreshTokenRequest
   description: Запит на оновлення access токену
   required:
     - refreshToken
@@ -31,5 +33,5 @@ RefreshTokenRequest:
       type: string
       description: Refresh токен для оновлення access токену
       minLength: 10
-      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      example: "jwt.refresh.token"
   additionalProperties: false

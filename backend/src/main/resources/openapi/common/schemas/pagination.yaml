@@ -1,6 +1,7 @@
 # Спільні схеми пагінації
 PageableInfo:
   type: object
+  title: PageableInfo
   required:
     - page
     - size
@@ -36,6 +37,8 @@ PageableInfo:
       description: Кількість елементів на поточній сторінці
     sort:
       type: object
+      title: SortInfo
+      description: Інформація про сортування
       properties:
         sorted:
           type: boolean

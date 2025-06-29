@@ -1,6 +1,7 @@
 # Response схеми для Client домену
 ClientResponse:
   type: object
+  title: ClientResponse
   required:
     - id
     - firstName
@@ -44,6 +45,7 @@ ClientResponse:
 
 ClientPageResponse:
   type: object
+  title: ClientPageResponse
   properties:
     content:
       type: array
@@ -70,6 +72,7 @@ ClientPageResponse:
 
 ClientSearchResponse:
   type: object
+  title: ClientSearchResponse
   properties:
     results:
       type: array
@@ -84,6 +87,7 @@ ClientSearchResponse:
 
 ClientSearchResult:
   type: object
+  title: ClientSearchResult
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -112,6 +116,7 @@ ClientSearchResult:
 
 ClientContactsResponse:
   type: object
+  title: ClientContactsResponse
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -130,6 +135,7 @@ ClientContactsResponse:
 
 ClientStatistics:
   type: object
+  title: ClientStatistics
   properties:
     totalOrders:
       type: integer

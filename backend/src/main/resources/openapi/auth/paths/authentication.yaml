@@ -12,17 +12,6 @@
         application/json:
           schema:
             $ref: "../../auth-api.yaml#/components/schemas/LoginRequest"
-          examples:
-            admin:
-              summary: Адміністратор
-              value:
-                username: "admin@aksi.com"
-                password: "admin123"
-            manager:
-              summary: Менеджер
-              value:
-                username: "manager@aksi.com"
-                password: "manager123"
     responses:
       "200":
         description: Успішна автентифікація
@@ -30,46 +19,38 @@
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/AuthResponse"
-            examples:
-              success:
-                summary: Успішний логін
-                value:
-                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                  refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                  tokenType: "Bearer"
-                  expiresIn: 3600
+            example:
+              accessToken: "jwt.access.token"
+              refreshToken: "jwt.refresh.token"
+              tokenType: "Bearer"
+              expiresIn: 3600
       "400":
         description: Невірний формат запиту
         content:
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/ValidationErrorResponse"
+
       "401":
         description: Невірні облікові дані
         content:
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/ErrorResponse"
-            examples:
-              invalid_credentials:
-                summary: Невірний логін або пароль
-                value:
-                  message: "Невірний логін або пароль"
-                  code: "INVALID_CREDENTIALS"
-                  timestamp: "2024-01-15T10:30:00Z"
+            example:
+              message: "Невірний логін або пароль"
+              code: "INVALID_CREDENTIALS"
+              timestamp: "2024-01-15T10:30:00Z"
       "403":
         description: Користувач заблокований
         content:
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/ErrorResponse"
-            examples:
-              user_blocked:
-                summary: Користувач неактивний
-                value:
-                  message: "Користувач заблокований або неактивний"
-                  code: "USER_BLOCKED"
-                  timestamp: "2024-01-15T10:30:00Z"
+            example:
+              message: "Користувач заблокований або неактивний"
+              code: "USER_BLOCKED"
+              timestamp: "2024-01-15T10:30:00Z"
       "500":
         description: Внутрішня помилка сервера
         content:
@@ -91,12 +72,9 @@
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/LogoutResponse"
-            examples:
-              success:
-                summary: Успішний логаут
-                value:
-                  success: true
-                  message: "Користувач успішно вийшов з системи"
+            example:
+              success: true
+              message: "Користувач успішно вийшов з системи"
       "401":
         description: Невалідний токен
         content:
@@ -124,11 +102,6 @@
         application/json:
           schema:
             $ref: "../../auth-api.yaml#/components/schemas/RefreshTokenRequest"
-          examples:
-            refresh:
-              summary: Оновлення токену
-              value:
-                refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     responses:
       "200":
         description: Успішне оновлення токену
@@ -136,33 +109,28 @@
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/AuthResponse"
-            examples:
-              success:
-                summary: Новий токен
-                value:
-                  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                  refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                  tokenType: "Bearer"
-                  expiresIn: 3600
+            example:
+              accessToken: "jwt.new.access.token"
+              refreshToken: "jwt.new.refresh.token"
+              tokenType: "Bearer"
+              expiresIn: 3600
       "400":
         description: Невірний формат запиту
         content:
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/ValidationErrorResponse"
+
       "401":
         description: Невалідний refresh токен
         content:
           application/json:
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/ErrorResponse"
-            examples:
-              invalid_token:
-                summary: Невалідний refresh токен
-                value:
-                  message: "Refresh токен недійсний або закінчився"
-                  code: "INVALID_REFRESH_TOKEN"
-                  timestamp: "2024-01-15T10:30:00Z"
+            example:
+              message: "Refresh токен недійсний або закінчився"
+              code: "INVALID_REFRESH_TOKEN"
+              timestamp: "2024-01-15T10:30:00Z"
       "500":
         description: Внутрішня помилка сервера
         content:

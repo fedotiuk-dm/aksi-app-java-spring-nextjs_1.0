@@ -52,43 +52,7 @@
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - categoryId
-              - itemNumber
-              - name
-              - unit
-              - basePrice
-            properties:
-              categoryId:
-                type: string
-                format: uuid
-                description: Ідентифікатор категорії
-              itemNumber:
-                type: integer
-                description: Номер предмета в каталозі
-              name:
-                type: string
-                description: Назва предмета
-              unit:
-                $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
-              basePrice:
-                type: number
-                format: double
-                minimum: 0
-              blackPrice:
-                type: number
-                format: double
-                minimum: 0
-              lightPrice:
-                type: number
-                format: double
-                minimum: 0
-              notes:
-                type: string
-              isActive:
-                type: boolean
-                default: true
+            $ref: "../schemas/item-requests.yaml#/CreatePriceListItemRequest"
     responses:
       201:
         description: Предмет створений
@@ -137,26 +101,7 @@
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              name:
-                type: string
-              basePrice:
-                type: number
-                format: double
-                minimum: 0
-              blackPrice:
-                type: number
-                format: double
-                minimum: 0
-              lightPrice:
-                type: number
-                format: double
-                minimum: 0
-              notes:
-                type: string
-              isActive:
-                type: boolean
+            $ref: "../schemas/item-requests.yaml#/UpdatePriceListItemRequest"
     responses:
       200:
         description: Предмет оновлений

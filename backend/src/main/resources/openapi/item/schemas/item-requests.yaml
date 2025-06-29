@@ -1,34 +1,8 @@
 # Request схеми для Item домену
-ItemCalculationRequest:
-  type: object
-  required:
-    - priceListItemId
-    - quantity
-    - characteristics
-  properties:
-    priceListItemId:
-      type: string
-      format: uuid
-      description: Ідентифікатор предмета з прайс-листа
-    quantity:
-      type: integer
-      minimum: 1
-      description: Кількість предметів
-    characteristics:
-      $ref: "#/ItemCharacteristicsRequest"
-    modifiers:
-      type: array
-      items:
-        type: string
-        format: uuid
-      description: Список ідентифікаторів застосованих модифікаторів
-    urgency:
-      $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
-      description: Терміновість виконання
-      default: NORMAL
 
 ItemCharacteristicsRequest:
   type: object
+  title: ItemCharacteristicsRequest
   required:
     - material
     - color
@@ -75,3 +49,346 @@ ItemCharacteristicsRequest:
       type: string
       maxLength: 500
       description: Опис ризиків
+
+# Service Category Requests
+CreateServiceCategoryRequest:
+  type: object
+  title: CreateServiceCategoryRequest
+  description: Запит на створення нової категорії послуг
+  required:
+    - code
+    - name
+    - standardDays
+  properties:
+    code:
+      type: string
+      maxLength: 20
+      description: Унікальний код категорії
+      example: "DRY_CLEANING"
+    name:
+      type: string
+      maxLength: 100
+      description: Назва категорії
+      example: "Хімчистка"
+    description:
+      type: string
+      maxLength: 500
+      description: Опис категорії
+      example: "Хімічне чищення одягу"
+    parentId:
+      type: string
+      format: uuid
+      description: Ідентифікатор батьківської категорії
+    standardDays:
+      type: integer
+      minimum: 1
+      maximum: 30
+      description: Стандартний термін виконання в днях
+      example: 3
+    isActive:
+      type: boolean
+      default: true
+      description: Чи активна категорія
+
+UpdateServiceCategoryRequest:
+  type: object
+  title: UpdateServiceCategoryRequest
+  description: Запит на оновлення категорії послуг
+  properties:
+    name:
+      type: string
+      maxLength: 100
+      description: Назва категорії
+      example: "Хімчистка"
+    description:
+      type: string
+      maxLength: 500
+      description: Опис категорії
+      example: "Хімічне чищення одягу"
+    standardDays:
+      type: integer
+      minimum: 1
+      maximum: 30
+      description: Стандартний термін виконання в днях
+      example: 3
+    isActive:
+      type: boolean
+      description: Чи активна категорія
+
+# Price List Item Requests
+CreatePriceListItemRequest:
+  type: object
+  title: CreatePriceListItemRequest
+  description: Запит на створення нового предмета в прайс-листі
+  required:
+    - categoryId
+    - catalogNumber
+    - name
+    - unitOfMeasure
+    - basePrice
+  properties:
+    categoryId:
+      type: string
+      format: uuid
+      description: Ідентифікатор категорії
+    catalogNumber:
+      type: integer
+      minimum: 1
+      description: Каталоговий номер предмета
+      example: 1
+    name:
+      type: string
+      maxLength: 255
+      description: Назва предмета
+      example: "Піджак, кітель"
+    unitOfMeasure:
+      $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
+      description: Одиниця виміру
+      example: "шт"
+    basePrice:
+      type: number
+      format: double
+      minimum: 0
+      description: Базова ціна
+      example: 480.00
+    priceBlack:
+      type: number
+      format: double
+      minimum: 0
+      description: Ціна для чорних речей (опціонально)
+      example: null
+    priceColor:
+      type: number
+      format: double
+      minimum: 0
+      description: Ціна для кольорових речей (опціонально)
+      example: 700.00
+    isActive:
+      type: boolean
+      default: true
+      description: Чи активний предмет
+
+UpdatePriceListItemRequest:
+  type: object
+  title: UpdatePriceListItemRequest
+  description: Запит на оновлення предмета в прайс-листі
+  properties:
+    name:
+      type: string
+      maxLength: 255
+      description: Назва предмета
+      example: "Піджак, кітель"
+    unitOfMeasure:
+      $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
+      description: Одиниця виміру
+      example: "шт"
+    basePrice:
+      type: number
+      format: double
+      minimum: 0
+      description: Базова ціна
+      example: 480.00
+    priceBlack:
+      type: number
+      format: double
+      minimum: 0
+      description: Ціна для чорних речей (опціонально)
+      example: null
+    priceColor:
+      type: number
+      format: double
+      minimum: 0
+      description: Ціна для кольорових речей (опціонально)
+      example: 700.00
+    isActive:
+      type: boolean
+      description: Чи активний предмет
+
+# Price Modifier Requests
+CreatePriceModifierRequest:
+  type: object
+  title: CreatePriceModifierRequest
+  description: Запит на створення нового модифікатора ціни
+  required:
+    - code
+    - name
+    - type
+    - value
+  properties:
+    code:
+      type: string
+      maxLength: 50
+      description: Унікальний код модифікатора
+      example: "CHILDREN_ITEMS"
+    name:
+      type: string
+      maxLength: 200
+      description: Назва модифікатора
+      example: "Дитячі речі (до 30 розміру)"
+    type:
+      $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
+      description: Тип модифікатора
+    value:
+      type: number
+      format: double
+      description: Значення модифікатора
+      example: 30.0
+    applicableTo:
+      type: array
+      items:
+        type: string
+        format: uuid
+      description: Категорії, до яких застосовується модифікатор
+    description:
+      type: string
+      maxLength: 500
+      description: Опис модифікатора
+      example: "Знижка для дитячих речей"
+    isActive:
+      type: boolean
+      default: true
+      description: Чи активний модифікатор
+
+UpdatePriceModifierRequest:
+  type: object
+  title: UpdatePriceModifierRequest
+  description: Запит на оновлення модифікатора ціни
+  properties:
+    name:
+      type: string
+      maxLength: 200
+      description: Назва модифікатора
+      example: "Дитячі речі (до 30 розміру)"
+    value:
+      type: number
+      format: double
+      description: Значення модифікатора
+      example: 30.0
+    applicableTo:
+      type: array
+      items:
+        type: string
+        format: uuid
+      description: Категорії, до яких застосовується модифікатор
+    description:
+      type: string
+      maxLength: 500
+      description: Опис модифікатора
+      example: "Знижка для дитячих речей"
+    isActive:
+      type: boolean
+      description: Чи активний модифікатор
+
+# Item Calculation Request for Order Summary
+ItemCalculationRequest:
+  type: object
+  title: ItemCalculationRequest
+  description: Предмет для розрахунку в замовленні
+  required:
+    - priceListItemId
+    - quantity
+  properties:
+    priceListItemId:
+      type: string
+      format: uuid
+      description: Ідентифікатор предмета з прайс-листа
+    quantity:
+      type: integer
+      minimum: 1
+      description: Кількість предметів
+      example: 2
+    appliedModifiers:
+      type: array
+      items:
+        type: string
+        format: uuid
+      description: Список модифікаторів для застосування
+      example: ["CHILDREN_ITEMS", "URGENT_SERVICE"]
+    urgency:
+      $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
+      description: Терміновість для конкретного предмета
+      default: NORMAL
+
+# Order Summary Calculation Requests
+CalculateOrderSummaryRequest:
+  type: object
+  title: CalculateOrderSummaryRequest
+  description: Запит на розрахунок загальної вартості замовлення
+  required:
+    - items
+  properties:
+    items:
+      type: array
+      items:
+        $ref: "#/ItemCalculationRequest"
+      minItems: 1
+      description: Список предметів для розрахунку
+    discount:
+      type: object
+      title: OrderDiscountInfo
+      description: Інформація про знижку
+      properties:
+        type:
+          $ref: "../../order/schemas/order-enums.yaml#/DiscountType"
+          description: Тип знижки
+        value:
+          type: number
+          format: double
+          minimum: 0
+          description: Значення знижки
+          example: 10.00
+    urgency:
+      $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
+      description: Загальна терміновість замовлення
+      default: NORMAL
+
+# Photo Upload Requests
+UploadItemPhotoRequest:
+  type: object
+  title: UploadItemPhotoRequest
+  description: Запит на завантаження фото предмета
+  required:
+    - file
+    - itemId
+  properties:
+    itemId:
+      type: string
+      format: uuid
+      description: Ідентифікатор предмета
+    file:
+      type: string
+      format: binary
+      description: Файл зображення
+    description:
+      type: string
+      maxLength: 500
+      description: Опис фотографії
+      example: "Фото дефекту на рукаві"
+    photoType:
+      type: string
+      enum: ["BEFORE", "AFTER", "DEFECT", "STAIN", "DETAIL"]
+      description: Тип фотографії
+      example: "BEFORE"
+    isMain:
+      type: boolean
+      default: false
+      description: Чи є це основна фотографія предмета
+
+UpdatePhotoMetadataRequest:
+  type: object
+  title: UpdatePhotoMetadataRequest
+  description: Запит на оновлення метаданих фотографії
+  properties:
+    description:
+      type: string
+      maxLength: 500
+      description: Опис фотографії
+      example: "Фото дефекту на рукаві"
+    photoType:
+      type: string
+      enum: ["BEFORE", "AFTER", "DEFECT", "STAIN", "DETAIL"]
+      description: Тип фотографії
+      example: "BEFORE"
+    isMain:
+      type: boolean
+      description: Чи є це основна фотографія предмета

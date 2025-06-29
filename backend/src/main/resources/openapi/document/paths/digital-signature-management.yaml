@@ -82,37 +82,7 @@
             example: "<svg><path d='M10,10 L20,20'></path></svg>"
           application/json:
             schema:
-              type: object
-              properties:
-                url:
-                  type: string
-                  format: uri
-                  description: URL для завантаження зображення підпису
-                format:
-                  type: string
-                  enum: [PNG, SVG]
-                  description: Формат зображення
-                filename:
-                  type: string
-                  description: Ім'я файлу для завантаження
-                size:
-                  type: integer
-                  description: Розмір файлу в байтах
-                dimensions:
-                  type: object
-                  properties:
-                    width:
-                      type: integer
-                    height:
-                      type: integer
-              example:
-                url: "http://localhost:8080/api/digital-signatures/550e8400-e29b-41d4-a716-446655440000/image?format=PNG"
-                format: "PNG"
-                filename: "signature-550e8400-e29b-41d4-a716-446655440000.png"
-                size: 5120
-                dimensions:
-                  width: 200
-                  height: 100
+              $ref: "../schemas/document-responses.yaml#/SignatureImageResponse"
         headers:
           Content-Disposition:
             description: Attachment filename
@@ -141,26 +111,7 @@
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                isValid:
-                  type: boolean
-                  description: Чи валідний підпис
-                validationDetails:
-                  type: object
-                  properties:
-                    signatureIntact:
-                      type: boolean
-                      description: Чи цілісний підпис
-                    documentMatches:
-                      type: boolean
-                      description: Чи відповідає документу
-                    notExpired:
-                      type: boolean
-                      description: Чи не прострочений
-                    signerVerified:
-                      type: boolean
-                      description: Чи підтверджений підписант
+              $ref: "../schemas/document-responses.yaml#/SignatureValidationResponse"
       404:
         description: Підпис не знайдений
         content:

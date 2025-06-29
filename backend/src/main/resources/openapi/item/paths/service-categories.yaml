@@ -39,26 +39,7 @@
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - code
-              - name
-              - standardDays
-            properties:
-              code:
-                type: string
-              name:
-                type: string
-              description:
-                type: string
-              parentId:
-                type: string
-                format: uuid
-              standardDays:
-                type: integer
-              isActive:
-                type: boolean
-                default: true
+            $ref: "../schemas/item-requests.yaml#/CreateServiceCategoryRequest"
     responses:
       201:
         description: Категорія створена
@@ -117,16 +98,7 @@
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              name:
-                type: string
-              description:
-                type: string
-              standardDays:
-                type: integer
-              isActive:
-                type: boolean
+            $ref: "../schemas/item-requests.yaml#/UpdateServiceCategoryRequest"
     responses:
       200:
         description: Категорія оновлена
