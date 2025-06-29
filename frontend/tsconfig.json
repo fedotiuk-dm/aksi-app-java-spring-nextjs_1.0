@@ -1,0 +1,114 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"],
+      "@/lib/api": ["./lib/api"],
+      "@/lib/api/*": ["./lib/api/*"],
+      "@features/order-wizard/*": ["./features/order-wizard/*"],
+
+      // 🌍 Загальний alias для всіх API модулів
+      "@/shared/api/generated": ["./shared/api/generated"],
+      "@/shared/api/generated/*": ["./shared/api/generated/*"],
+
+      // 🚀 API та Zod схеми alias'и для розділених етапів
+      "@api/auth": ["./shared/api/generated/auth"],
+      "@api/auth/*": ["./shared/api/generated/auth/*"],
+      "@api/auth/zod": ["./shared/api/generated/auth/zod"],
+      "@api/auth/types": ["./shared/api/generated/auth/authApi.schemas"],
+
+      "@api/stage1": ["./shared/api/generated/stage1"],
+      "@api/stage1/*": ["./shared/api/generated/stage1/*"],
+      "@api/stage1/zod": ["./shared/api/generated/stage1/zod"],
+      "@api/stage1/types": ["./shared/api/generated/stage1/aksiApi.schemas"],
+
+      "@api/stage2": ["./shared/api/generated/stage2"],
+      "@api/stage2/*": ["./shared/api/generated/stage2/*"],
+      "@api/stage2/zod": ["./shared/api/generated/stage2/zod"],
+      "@api/stage2/types": ["./shared/api/generated/stage2/aksiApi.schemas"],
+
+      "@api/substep1": ["./shared/api/generated/substep1"],
+      "@api/substep1/*": ["./shared/api/generated/substep1/*"],
+      "@api/substep1/zod": ["./shared/api/generated/substep1/zod"],
+      "@api/substep1/types": ["./shared/api/generated/substep1/aksiApi.schemas"],
+
+      "@api/substep2": ["./shared/api/generated/substep2"],
+      "@api/substep2/*": ["./shared/api/generated/substep2/*"],
+      "@api/substep2/zod": ["./shared/api/generated/substep2/zod"],
+      "@api/substep2/types": ["./shared/api/generated/substep2/aksiApi.schemas"],
+
+      "@api/substep3": ["./shared/api/generated/substep3"],
+      "@api/substep3/*": ["./shared/api/generated/substep3/*"],
+      "@api/substep3/zod": ["./shared/api/generated/substep3/zod"],
+      "@api/substep3/types": ["./shared/api/generated/substep3/aksiApi.schemas"],
+
+      "@api/substep4": ["./shared/api/generated/substep4"],
+      "@api/substep4/*": ["./shared/api/generated/substep4/*"],
+      "@api/substep4/zod": ["./shared/api/generated/substep4/zod"],
+      "@api/substep4/types": ["./shared/api/generated/substep4/aksiApi.schemas"],
+
+      "@api/substep5": ["./shared/api/generated/substep5"],
+      "@api/substep5/*": ["./shared/api/generated/substep5/*"],
+      "@api/substep5/zod": ["./shared/api/generated/substep5/zod"],
+      "@api/substep5/types": ["./shared/api/generated/substep5/aksiApi.schemas"],
+
+      "@api/stage3": ["./shared/api/generated/stage3"],
+      "@api/stage3/*": ["./shared/api/generated/stage3/*"],
+      "@api/stage3/zod": ["./shared/api/generated/stage3/zod"],
+      "@api/stage3/types": ["./shared/api/generated/stage3/aksiApi.schemas"],
+
+      "@api/stage4": ["./shared/api/generated/stage4"],
+      "@api/stage4/*": ["./shared/api/generated/stage4/*"],
+      "@api/stage4/zod": ["./shared/api/generated/stage4/zod"],
+      "@api/stage4/types": ["./shared/api/generated/stage4/aksiApi.schemas"],
+
+      "@api/main": ["./shared/api/generated/main"],
+      "@api/main/*": ["./shared/api/generated/main/*"],
+      "@api/main/zod": ["./shared/api/generated/main/zod"],
+      "@api/main/types": ["./shared/api/generated/main/aksiApi.schemas"],
+
+      "@api/shared": ["./shared/api/generated/shared"],
+      "@api/shared/*": ["./shared/api/generated/shared/*"],
+      "@api/shared/schemas": ["./shared/api/generated/shared/schemas"],
+
+      // 🎯 Доменні alias'и
+      "@domains/*": ["./domains/*"],
+      "@domains/wizard/*": ["./domains/wizard/*"],
+
+      // 🔧 Спільні компоненти
+      "@shared/*": ["./shared/*"],
+      "@shared/ui": ["./shared/ui"],
+      "@shared/lib": ["./shared/lib"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "types/**/*.ts",
+    "types/**/*.d.ts"
+  ],
+  "exclude": ["node_modules", ".next/**/*"]
+}

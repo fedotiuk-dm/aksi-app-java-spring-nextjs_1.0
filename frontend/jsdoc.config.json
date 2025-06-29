@@ -1,0 +1,28 @@
+{
+  "source": {
+    "include": ["./domain/", "./features/", "./shared/", "./lib/", "./README.md"],
+    "includePattern": "\\.(js|jsx|ts|tsx)$",
+    "exclude": ["node_modules/", ".next/", "docs/", "dist/", "build/", "coverage/"]
+  },
+  "opts": {
+    "destination": "./docs/jsdoc/",
+    "recurse": true,
+    "readme": "./README.md"
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  },
+  "markdown": {
+    "parser": "gfm"
+  },
+  "metadata": {
+    "title": "AKSI Frontend Documentation",
+    "description": "Документація фронтенд частини системи хімчистки AKSI з архітектурою DDD inside, FSD outside"
+  },
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc", "closure"]
+  }
+}

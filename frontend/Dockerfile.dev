@@ -1,0 +1,63 @@
+# Development Dockerfile for Next.js
+FROM node:lts-alpine3.21
+
+# Встановлюємо метадані
+LABEL version="2.0"
+LABEL description="AKSI Frontend Development Environment"
+LABEL maintainer="AKSI Development Team"
+
+# Встановлюємо базові залежності для Alpine
+RUN apk add --no-cache \
+    bash \
+    curl \
+    wget \
+    git \
+    ca-certificates \
+    dumb-init
+
+# Встановлюємо робочу директорію
+WORKDIR /app
+
+# Змінюємо власника директорії на node користувача (вже існує в Alpine)
+RUN chown node:node /app
+
+# Переключаємося на node користувача
+USER node
+
+# Встановлюємо environment variables для розробки
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+# API URL для browser requests - через Traefik
+ENV NEXT_PUBLIC_API_URL=http://localhost/api
+# API URL для SSR requests - прямо до backend контейнера
+ENV NEXT_SERVER_API_URL=http://backend:8080/api
+# Orval конфігурація для генерації API
+ENV ORVAL_API_URL=http://backend:8080/api/v3/api-docs
+# Next.js development settings
+ENV WATCHPACK_POLLING=true
+ENV CHOKIDAR_USEPOLLING=true
+
+# Копіюємо package.json та package-lock.json для кешування залежностей
+COPY --chown=node:node package*.json ./
+
+# Встановлюємо залежності (цей шар буде закешований)
+RUN npm ci --only=production=false && \
+    npm cache clean --force
+
+# Створюємо директорії для Next.js кешу
+RUN mkdir -p .next/cache && \
+    mkdir -p .next/static
+
+# Відкриваємо порт для розробки
+EXPOSE 3000
+
+# Додаємо healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:3000 || exit 1
+
+# Точка входу з використанням dumb-init для правильної обробки сигналів
+ENTRYPOINT ["dumb-init", "--"]
+
+# Команда для запуску в розробці з hot reload
+CMD ["sh", "-c", "npm install && npm run dev -- --turbo"]
+
