@@ -1,0 +1,549 @@
+databaseChangeLog:
+  # Вставка тестових філій
+  - changeSet:
+      id: 001-insert-test-branches
+      author: system
+      changes:
+        - insert:
+            tableName: branches
+            columns:
+              - column:
+                  name: uuid
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "AKSI-CENTER"
+              - column:
+                  name: name
+                  value: "AKSI Центральна філія"
+              - column:
+                  name: description
+                  value: "Головна філія хімчистки AKSI в центрі міста"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: country
+                  value: "Україна"
+              - column:
+                  name: region
+                  value: "Київська область"
+              - column:
+                  name: city
+                  value: "Київ"
+              - column:
+                  name: street
+                  value: "вул. Хрещатик"
+              - column:
+                  name: building_number
+                  value: "22"
+              - column:
+                  name: postal_code
+                  value: "01001"
+              - column:
+                  name: district
+                  value: "Шевченківський"
+              - column:
+                  name: latitude
+                  value: "50.4501"
+              - column:
+                  name: longitude
+                  value: "30.5234"
+              - column:
+                  name: map_url
+                  value: "https://maps.google.com/maps?q=50.4501,30.5234"
+              - column:
+                  name: phone
+                  value: "+380441234567"
+              - column:
+                  name: alternative_phone
+                  value: "+380671234567"
+              - column:
+                  name: email
+                  value: "center@aksi.com.ua"
+              - column:
+                  name: manager_name
+                  value: "Іванов Іван Іванович"
+              - column:
+                  name: receipt_counter
+                  value: "1000"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: branches
+            columns:
+              - column:
+                  name: uuid
+                  value: "550e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: code
+                  value: "AKSI-PODIL"
+              - column:
+                  name: name
+                  value: "AKSI Поділ"
+              - column:
+                  name: description
+                  value: "Філія на Подолі для зручності клієнтів"
+              - column:
+                  name: status
+                  value: "ACTIVE"
+              - column:
+                  name: country
+                  value: "Україна"
+              - column:
+                  name: region
+                  value: "Київська область"
+              - column:
+                  name: city
+                  value: "Київ"
+              - column:
+                  name: street
+                  value: "вул. Сагайдачного"
+              - column:
+                  name: building_number
+                  value: "15"
+              - column:
+                  name: apartment_office
+                  value: "офіс 101"
+              - column:
+                  name: postal_code
+                  value: "04070"
+              - column:
+                  name: district
+                  value: "Подільський"
+              - column:
+                  name: latitude
+                  value: "50.4851"
+              - column:
+                  name: longitude
+                  value: "30.5170"
+              - column:
+                  name: map_url
+                  value: "https://maps.google.com/maps?q=50.4851,30.5170"
+              - column:
+                  name: phone
+                  value: "+380442345678"
+              - column:
+                  name: email
+                  value: "podil@aksi.com.ua"
+              - column:
+                  name: manager_name
+                  value: "Петренко Марія Олександрівна"
+              - column:
+                  name: receipt_counter
+                  value: "500"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: branches
+            columns:
+              - column:
+                  name: uuid
+                  value: "550e8400-e29b-41d4-a716-446655440003"
+              - column:
+                  name: code
+                  value: "AKSI-OBOLON"
+              - column:
+                  name: name
+                  value: "AKSI Оболонь"
+              - column:
+                  name: description
+                  value: "Сучасна філія на Оболоні"
+              - column:
+                  name: status
+                  value: "TEMPORARILY_CLOSED"
+              - column:
+                  name: country
+                  value: "Україна"
+              - column:
+                  name: region
+                  value: "Київська область"
+              - column:
+                  name: city
+                  value: "Київ"
+              - column:
+                  name: street
+                  value: "просп. Оболонський"
+              - column:
+                  name: building_number
+                  value: "1"
+              - column:
+                  name: apartment_office
+                  value: "2А"
+              - column:
+                  name: postal_code
+                  value: "04210"
+              - column:
+                  name: district
+                  value: "Оболонський"
+              - column:
+                  name: latitude
+                  value: "50.5139"
+              - column:
+                  name: longitude
+                  value: "30.4982"
+              - column:
+                  name: map_url
+                  value: "https://maps.google.com/maps?q=50.5139,30.4982"
+              - column:
+                  name: phone
+                  value: "+380443456789"
+              - column:
+                  name: email
+                  value: "obolon@aksi.com.ua"
+              - column:
+                  name: manager_name
+                  value: "Сидоренко Олег Васильович"
+              - column:
+                  name: receipt_counter
+                  value: "250"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+  # Вставка графіків роботи для філій
+  - changeSet:
+      id: 002-insert-working-schedules
+      author: system
+      changes:
+        - insert:
+            tableName: working_schedules
+            columns:
+              - column:
+                  name: uuid
+                  value: "660e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: branch_id
+                  valueComputed: "(SELECT id FROM branches WHERE code = 'AKSI-CENTER')"
+              - column:
+                  name: timezone
+                  value: "Europe/Kiev"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: working_schedules
+            columns:
+              - column:
+                  name: uuid
+                  value: "660e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: branch_id
+                  valueComputed: "(SELECT id FROM branches WHERE code = 'AKSI-PODIL')"
+              - column:
+                  name: timezone
+                  value: "Europe/Kiev"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: working_schedules
+            columns:
+              - column:
+                  name: uuid
+                  value: "660e8400-e29b-41d4-a716-446655440003"
+              - column:
+                  name: branch_id
+                  valueComputed: "(SELECT id FROM branches WHERE code = 'AKSI-OBOLON')"
+              - column:
+                  name: timezone
+                  value: "Europe/Kiev"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+  # Вставка робочих днів для центральної філії (пн-пт 9-18, сб 10-16, вс вихідний)
+  - changeSet:
+      id: 003-insert-working-days-center
+      author: system
+      changes:
+        - insert:
+            tableName: working_days
+            columns:
+              - column:
+                  name: uuid
+                  value: "770e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: day_of_week
+                  value: "MONDAY"
+              - column:
+                  name: is_working_day
+                  valueBoolean: true
+              - column:
+                  name: open_time
+                  value: "09:00:00"
+              - column:
+                  name: close_time
+                  value: "18:00:00"
+              - column:
+                  name: lunch_break_start
+                  value: "13:00:00"
+              - column:
+                  name: lunch_break_end
+                  value: "14:00:00"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: working_days
+            columns:
+              - column:
+                  name: uuid
+                  value: "770e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: day_of_week
+                  value: "TUESDAY"
+              - column:
+                  name: is_working_day
+                  valueBoolean: true
+              - column:
+                  name: open_time
+                  value: "09:00:00"
+              - column:
+                  name: close_time
+                  value: "18:00:00"
+              - column:
+                  name: lunch_break_start
+                  value: "13:00:00"
+              - column:
+                  name: lunch_break_end
+                  value: "14:00:00"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: working_days
+            columns:
+              - column:
+                  name: uuid
+                  value: "770e8400-e29b-41d4-a716-446655440003"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: day_of_week
+                  value: "WEDNESDAY"
+              - column:
+                  name: is_working_day
+                  valueBoolean: true
+              - column:
+                  name: open_time
+                  value: "09:00:00"
+              - column:
+                  name: close_time
+                  value: "18:00:00"
+              - column:
+                  name: lunch_break_start
+                  value: "13:00:00"
+              - column:
+                  name: lunch_break_end
+                  value: "14:00:00"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: working_days
+            columns:
+              - column:
+                  name: uuid
+                  value: "770e8400-e29b-41d4-a716-446655440004"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: day_of_week
+                  value: "THURSDAY"
+              - column:
+                  name: is_working_day
+                  valueBoolean: true
+              - column:
+                  name: open_time
+                  value: "09:00:00"
+              - column:
+                  name: close_time
+                  value: "18:00:00"
+              - column:
+                  name: lunch_break_start
+                  value: "13:00:00"
+              - column:
+                  name: lunch_break_end
+                  value: "14:00:00"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: working_days
+            columns:
+              - column:
+                  name: uuid
+                  value: "770e8400-e29b-41d4-a716-446655440005"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: day_of_week
+                  value: "FRIDAY"
+              - column:
+                  name: is_working_day
+                  valueBoolean: true
+              - column:
+                  name: open_time
+                  value: "09:00:00"
+              - column:
+                  name: close_time
+                  value: "18:00:00"
+              - column:
+                  name: lunch_break_start
+                  value: "13:00:00"
+              - column:
+                  name: lunch_break_end
+                  value: "14:00:00"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: working_days
+            columns:
+              - column:
+                  name: uuid
+                  value: "770e8400-e29b-41d4-a716-446655440006"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: day_of_week
+                  value: "SATURDAY"
+              - column:
+                  name: is_working_day
+                  valueBoolean: true
+              - column:
+                  name: open_time
+                  value: "10:00:00"
+              - column:
+                  name: close_time
+                  value: "16:00:00"
+              - column:
+                  name: notes
+                  value: "Скорочений робочий день"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: working_days
+            columns:
+              - column:
+                  name: uuid
+                  value: "770e8400-e29b-41d4-a716-446655440007"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: day_of_week
+                  value: "SUNDAY"
+              - column:
+                  name: is_working_day
+                  valueBoolean: false
+              - column:
+                  name: notes
+                  value: "Вихідний день"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+  # Вставка святкових днів
+  - changeSet:
+      id: 004-insert-holidays
+      author: system
+      changes:
+        - insert:
+            tableName: holidays
+            columns:
+              - column:
+                  name: uuid
+                  value: "880e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: name
+                  value: "Новий рік"
+              - column:
+                  name: date
+                  value: "2024-01-01"
+              - column:
+                  name: is_recurring
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Святкування Нового року"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: holidays
+            columns:
+              - column:
+                  name: uuid
+                  value: "880e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: name
+                  value: "День Незалежності України"
+              - column:
+                  name: date
+                  value: "2024-08-24"
+              - column:
+                  name: is_recurring
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Національне свято України"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"
+
+        - insert:
+            tableName: holidays
+            columns:
+              - column:
+                  name: uuid
+                  value: "880e8400-e29b-41d4-a716-446655440003"
+              - column:
+                  name: working_schedule_id
+                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+              - column:
+                  name: name
+                  value: "Спеціальний вихідний"
+              - column:
+                  name: date
+                  value: "2024-12-31"
+              - column:
+                  name: is_recurring
+                  valueBoolean: false
+              - column:
+                  name: description
+                  value: "Одноразовий вихідний для підготовки до Нового року"
+              - column:
+                  name: created_at
+                  valueDate: "2024-01-01T00:00:00"

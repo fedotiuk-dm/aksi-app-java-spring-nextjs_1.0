@@ -17,9 +17,11 @@ databaseChangeLog:
   # - include:
   #     file: db/changelog/item/001-create-item-tables.yaml
 
-  # Branch Domain міграції (TODO)
-  # - include:
-  #     file: db/changelog/branch/001-create-branch-tables.yaml
+  # Branch Domain міграції
+  - include:
+      file: db/changelog/branch/001-create-branch-tables.yaml
+  - include:
+      file: db/changelog/branch/002-insert-branch-seed-data.yaml
 
   # Document Domain міграції (TODO)
   # - include:

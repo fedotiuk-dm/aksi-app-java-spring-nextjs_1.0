@@ -264,6 +264,7 @@
                     <!-- Auth API -->
                     <execution>
                         <id>generate-auth-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -290,6 +291,7 @@
                     <!-- Client API -->
                     <execution>
                         <id>generate-client-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -316,6 +318,7 @@
                     <!-- Order API -->
                     <execution>
                         <id>generate-order-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -342,6 +345,7 @@
                     <!-- Item API -->
                     <execution>
                         <id>generate-item-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -368,6 +372,7 @@
                     <!-- Branch API -->
                     <execution>
                         <id>generate-branch-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -394,6 +399,7 @@
                     <!-- Document API -->
                     <execution>
                         <id>generate-document-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -455,7 +461,7 @@
 
     <!-- Профілі для оптимізації збірки -->
     <profiles>
-        <!-- Швидкий профіль для розробки -->
+        <!-- Швидкий профіль для розробки (БЕЗ блокування OpenAPI, але з spotless для згенерованих файлів) -->
         <profile>
             <id>dev-fast</id>
             <activation>
@@ -467,12 +473,23 @@
                 <maven.test.skip>true</maven.test.skip>
                 <!-- Пропускаємо checkstyle -->
                 <checkstyle.skip>true</checkstyle.skip>
-                <!-- Пропускаємо spotless форматування -->
+                <!-- Залишаємо spotless для OpenAPI файлів -->
+                <spotless.skip>false</spotless.skip>
+            </properties>
+        </profile>
+
+        <!-- Окремий профіль для dev БЕЗ OpenAPI (якщо потрібно) -->
+        <profile>
+            <id>dev-no-api</id>
+            <properties>
+                <skipTests>true</skipTests>
+                <maven.test.skip>true</maven.test.skip>
+                <checkstyle.skip>true</checkstyle.skip>
                 <spotless.skip>true</spotless.skip>
             </properties>
             <build>
                 <plugins>
-                    <!-- Вимикаємо OpenAPI генерацію в dev режимі -->
+                    <!-- Вимикаємо OpenAPI генерацію -->
                     <plugin>
                         <groupId>org.openapitools</groupId>
                         <artifactId>openapi-generator-maven-plugin</artifactId>

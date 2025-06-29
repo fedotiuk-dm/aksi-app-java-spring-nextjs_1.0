@@ -1,164 +1,112 @@
-[INFO] writing file /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/target/generated-sources/openapi/src/main/java/com/aksi/api/auth/dto/AuthResponse.java
-[WARNING] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/resources/openapi/auth-api.yaml [0:0]: unexpected error in Open-API generation
-java.lang.RuntimeException: Could not generate model 'AuthResponse'
-    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:582)
-    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:443)
-    at org.openapitools.codegen.DefaultGenerator.generate (DefaultGenerator.java:1293)
-    at org.openapitools.codegen.plugin.CodeGenMojo.execute (CodeGenMojo.java:989)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
-    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
-    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
-    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
-    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
-    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
-    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
-    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
-    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
-Caused by: java.nio.file.NoSuchFileException: /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/target/generated-sources/openapi/src/main/java/com/aksi/api/auth/dto/AuthResponse.java
-    at sun.nio.fs.UnixException.translateToIOException (UnixException.java:92)
-    at sun.nio.fs.UnixException.rethrowAsIOException (UnixException.java:106)
-    at sun.nio.fs.UnixException.rethrowAsIOException (UnixException.java:111)
-    at sun.nio.fs.UnixFileSystemProvider.newByteChannel (UnixFileSystemProvider.java:261)
-    at java.nio.file.spi.FileSystemProvider.newOutputStream (FileSystemProvider.java:482)
-    at java.nio.file.Files.newOutputStream (Files.java:228)
-    at java.nio.file.Files.write (Files.java:3505)
-    at org.openapitools.codegen.TemplateManager.writeToFileRaw (TemplateManager.java:259)
-    at org.openapitools.codegen.TemplateManager.writeToFile (TemplateManager.java:241)
-    at org.openapitools.codegen.TemplateManager.writeToFile (TemplateManager.java:202)
-    at org.openapitools.codegen.TemplateManager.write (TemplateManager.java:168)
-    at org.openapitools.codegen.DefaultGenerator.processTemplateToFile (DefaultGenerator.java:1451)
-    at org.openapitools.codegen.DefaultGenerator.processTemplateToFile (DefaultGenerator.java:1431)
-    at org.openapitools.codegen.DefaultGenerator.generateModel (DefaultGenerator.java:431)
-    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:573)
-    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:443)
-    at org.openapitools.codegen.DefaultGenerator.generate (DefaultGenerator.java:1293)
-    at org.openapitools.codegen.plugin.CodeGenMojo.execute (CodeGenMojo.java:989)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
-    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
-    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
-    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
-    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
-    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
-    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
-    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
-    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
-[ERROR]
-java.lang.RuntimeException: Could not generate model 'AuthResponse'
-    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:582)
-    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:443)
-    at org.openapitools.codegen.DefaultGenerator.generate (DefaultGenerator.java:1293)
-    at org.openapitools.codegen.plugin.CodeGenMojo.execute (CodeGenMojo.java:989)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
-    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
-    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
-    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
-    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
-    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
-    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
-    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
-    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
-Caused by: java.nio.file.NoSuchFileException: /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/target/generated-sources/openapi/src/main/java/com/aksi/api/auth/dto/AuthResponse.java
-    at sun.nio.fs.UnixException.translateToIOException (UnixException.java:92)
-    at sun.nio.fs.UnixException.rethrowAsIOException (UnixException.java:106)
-    at sun.nio.fs.UnixException.rethrowAsIOException (UnixException.java:111)
-    at sun.nio.fs.UnixFileSystemProvider.newByteChannel (UnixFileSystemProvider.java:261)
-    at java.nio.file.spi.FileSystemProvider.newOutputStream (FileSystemProvider.java:482)
-    at java.nio.file.Files.newOutputStream (Files.java:228)
-    at java.nio.file.Files.write (Files.java:3505)
-    at org.openapitools.codegen.TemplateManager.writeToFileRaw (TemplateManager.java:259)
-    at org.openapitools.codegen.TemplateManager.writeToFile (TemplateManager.java:241)
-    at org.openapitools.codegen.TemplateManager.writeToFile (TemplateManager.java:202)
-    at org.openapitools.codegen.TemplateManager.write (TemplateManager.java:168)
-    at org.openapitools.codegen.DefaultGenerator.processTemplateToFile (DefaultGenerator.java:1451)
-    at org.openapitools.codegen.DefaultGenerator.processTemplateToFile (DefaultGenerator.java:1431)
-    at org.openapitools.codegen.DefaultGenerator.generateModel (DefaultGenerator.java:431)
-    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:573)
-    at org.openapitools.codegen.DefaultGenerator.generateModels (DefaultGenerator.java:443)
-    at org.openapitools.codegen.DefaultGenerator.generate (DefaultGenerator.java:1293)
-    at org.openapitools.codegen.plugin.CodeGenMojo.execute (CodeGenMojo.java:989)
-    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
-    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
-    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
-    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
-    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
-    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
-    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
-    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
-    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
-    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
-    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
-    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
-    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:103)
-    at java.lang.reflect.Method.invoke (Method.java:580)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
-    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  2.158 s
-[INFO] Finished at: 2025-06-29T13:39:08+02:00
-[INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.openapitools:openapi-generator-maven-plugin:7.13.0:generate (generate-auth-api) on project dry-cleaning-order-system: Code generation failed. See above for the full exception. -> [Help 1]
-[ERROR]
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
-[ERROR]
-[ERROR] For more information about the errors and possible solutions, please read the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+backend-dev       | 18:04:43.047 ERROR [restartedMain] o.s.boot.SpringApplication               : Application run failed
+backend-dev       | -
+backend-dev       | org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'workingScheduleApiController' defined in file [/app/target/classes/com/aksi/api/branch/WorkingScheduleApiController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'workingScheduleService' defined in file [/app/target/classes/com/aksi/domain/branch/service/WorkingScheduleService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'workingDayRepository' defined in com.aksi.domain.branch.repository.WorkingDayRepository defined in @EnableJpaRepositories declared on JpaConfig: Could not create query for public abstract long com.aksi.domain.branch.repository.WorkingDayRepository.countByStatus(com.aksi.domain.branch.enums.BranchOpenStatus); Reason: Failed to create query for method public abstract long com.aksi.domain.branch.repository.WorkingDayRepository.countByStatus(com.aksi.domain.branch.enums.BranchOpenStatus); No property 'status' found for type 'WorkingDayEntity'
+backend-dev       | 	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1381) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1218) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:347) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1155) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1121) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1056) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987) ~[spring-context-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.4.4.jar:3.4.4]
+backend-dev       | 	at com.aksi.DryCleaningOrderSystemApplication.main(DryCleaningOrderSystemApplication.java:18) ~[classes/:na]
+backend-dev       | 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+backend-dev       | 	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+backend-dev       | 	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.4.4.jar:3.4.4]
+backend-dev       | Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'workingScheduleService' defined in file [/app/target/classes/com/aksi/domain/branch/service/WorkingScheduleService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'workingDayRepository' defined in com.aksi.domain.branch.repository.WorkingDayRepository defined in @EnableJpaRepositories declared on JpaConfig: Could not create query for public abstract long com.aksi.domain.branch.repository.WorkingDayRepository.countByStatus(com.aksi.domain.branch.enums.BranchOpenStatus); Reason: Failed to create query for method public abstract long com.aksi.domain.branch.repository.WorkingDayRepository.countByStatus(com.aksi.domain.branch.enums.BranchOpenStatus); No property 'status' found for type 'WorkingDayEntity'
+backend-dev       | 	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1381) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1218) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:347) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1609) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1555) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	... 24 common frames omitted
+backend-dev       | Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'workingDayRepository' defined in com.aksi.domain.branch.repository.WorkingDayRepository defined in @EnableJpaRepositories declared on JpaConfig: Could not create query for public abstract long com.aksi.domain.branch.repository.WorkingDayRepository.countByStatus(com.aksi.domain.branch.enums.BranchOpenStatus); Reason: Failed to create query for method public abstract long com.aksi.domain.branch.repository.WorkingDayRepository.countByStatus(com.aksi.domain.branch.enums.BranchOpenStatus); No property 'status' found for type 'WorkingDayEntity'
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1812) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:347) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1609) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1555) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	... 37 common frames omitted
+backend-dev       | Caused by: org.springframework.data.repository.query.QueryCreationException: Could not create query for public abstract long com.aksi.domain.branch.repository.WorkingDayRepository.countByStatus(com.aksi.domain.branch.enums.BranchOpenStatus); Reason: Failed to create query for method public abstract long com.aksi.domain.branch.repository.WorkingDayRepository.countByStatus(com.aksi.domain.branch.enums.BranchOpenStatus); No property 'status' found for type 'WorkingDayEntity'
+backend-dev       | 	at org.springframework.data.repository.query.QueryCreationException.create(QueryCreationException.java:101) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.lookupQuery(QueryExecutorMethodInterceptor.java:120) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.mapMethodsToQuery(QueryExecutorMethodInterceptor.java:104) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.lambda$new$0(QueryExecutorMethodInterceptor.java:92) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at java.base/java.util.Optional.map(Optional.java:260) ~[na:na]
+backend-dev       | 	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.<init>(QueryExecutorMethodInterceptor.java:92) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.core.support.RepositoryFactorySupport.getRepository(RepositoryFactorySupport.java:431) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport.lambda$afterPropertiesSet$4(RepositoryFactoryBeanSupport.java:350) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.util.Lazy.getNullable(Lazy.java:135) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.util.Lazy.get(Lazy.java:113) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport.afterPropertiesSet(RepositoryFactoryBeanSupport.java:356) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean.afterPropertiesSet(JpaRepositoryFactoryBean.java:132) ~[spring-data-jpa-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1859) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1808) ~[spring-beans-6.2.5.jar:6.2.5]
+backend-dev       | 	... 47 common frames omitted
+backend-dev       | Caused by: java.lang.IllegalArgumentException: Failed to create query for method public abstract long com.aksi.domain.branch.repository.WorkingDayRepository.countByStatus(com.aksi.domain.branch.enums.BranchOpenStatus); No property 'status' found for type 'WorkingDayEntity'
+backend-dev       | 	at org.springframework.data.jpa.repository.query.PartTreeJpaQuery.<init>(PartTreeJpaQuery.java:107) ~[spring-data-jpa-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$CreateQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:128) ~[spring-data-jpa-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$CreateIfNotFoundQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:262) ~[spring-data-jpa-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.jpa.repository.query.JpaQueryLookupStrategy$AbstractQueryLookupStrategy.resolveQuery(JpaQueryLookupStrategy.java:99) ~[spring-data-jpa-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.lookupQuery(QueryExecutorMethodInterceptor.java:116) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	... 59 common frames omitted
+backend-dev       | Caused by: org.springframework.data.mapping.PropertyReferenceException: No property 'status' found for type 'WorkingDayEntity'
+backend-dev       | 	at org.springframework.data.mapping.PropertyPath.<init>(PropertyPath.java:94) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.mapping.PropertyPath.create(PropertyPath.java:455) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.mapping.PropertyPath.create(PropertyPath.java:431) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.mapping.PropertyPath.lambda$from$0(PropertyPath.java:384) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at java.base/java.util.concurrent.ConcurrentMap.computeIfAbsent(ConcurrentMap.java:330) ~[na:na]
+backend-dev       | 	at org.springframework.data.mapping.PropertyPath.from(PropertyPath.java:366) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.mapping.PropertyPath.from(PropertyPath.java:344) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.query.parser.Part.<init>(Part.java:81) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.query.parser.PartTree$OrPart.lambda$new$0(PartTree.java:259) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179) ~[na:na]
+backend-dev       | 	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1024) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682) ~[na:na]
+backend-dev       | 	at org.springframework.data.repository.query.parser.PartTree$OrPart.<init>(PartTree.java:260) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.query.parser.PartTree$Predicate.lambda$new$0(PartTree.java:389) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179) ~[na:na]
+backend-dev       | 	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1024) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234) ~[na:na]
+backend-dev       | 	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682) ~[na:na]
+backend-dev       | 	at org.springframework.data.repository.query.parser.PartTree$Predicate.<init>(PartTree.java:390) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.repository.query.parser.PartTree.<init>(PartTree.java:103) ~[spring-data-commons-3.4.4.jar:3.4.4]
+backend-dev       | 	at org.springframework.data.jpa.repository.query.PartTreeJpaQuery.<init>(PartTreeJpaQuery.java:101) ~[spring-data-jpa-3.4.4.jar:3.4.4]
+backend-dev       | 	... 63 common frames omitted
