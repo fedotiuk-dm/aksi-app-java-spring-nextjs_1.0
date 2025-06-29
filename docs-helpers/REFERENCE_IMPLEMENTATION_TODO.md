@@ -22,9 +22,16 @@ api/client/          # Контролери (окремо від domain)
 
 ### **Крок 1.1: Enums (`/enums/`)**
 
-- [ ] Скопіювати всі enum з OpenAPI до domain
-- [ ] Додати domain-specific методи якщо потрібно
-- [ ] Використовувати ці enum в Entity та Service
+- [ ] Проаналізувати всі enum з OpenAPI
+- [ ] **ПРАВИЛО ВИЗНАЧЕННЯ:**
+  - **Технічні enum БЕЗ бізнес-логіки** → НЕ створювати domain версію, використовувати згенеровані з API
+  - **Business enum З domain методами** → створити domain версію + маппінг до API
+- [ ] **Приклади:**
+  - **TokenType**: тільки `BEARER` → використовувати API версію
+  - **UserRole**: `isAdministrative()`, `canHandleCash()` → domain версія + маппінг
+  - **ClientSourceType**: `isOnlineSource()`, `isPersonalSource()` → domain версія + маппінг
+- [ ] Додати domain-specific business методи
+- [ ] Створити маппінг Domain ↔ API в MapStruct (якщо є domain версія)
 
 ### **Крок 1.2: Entity (`/entity/`)**
 
@@ -51,6 +58,7 @@ api/client/          # Контролери (окремо від domain)
 - [ ] Створити validator компоненти з @Component
 - [ ] Реалізувати business rules validation
 - [ ] Методи для validateForCreate, validateForUpdate
+- [ ] **ВАЖЛИВО: Дотримуватися принципів розділення валідації**
 
 ---
 
