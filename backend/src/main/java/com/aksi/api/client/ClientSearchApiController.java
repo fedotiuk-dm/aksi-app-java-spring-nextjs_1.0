@@ -1,9 +1,8 @@
-package com.aksi.domain.client.delegate;
+package com.aksi.api.client;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
-import com.aksi.api.client.ClientSearchApiDelegate;
 import com.aksi.api.client.dto.ClientPageResponse;
 import com.aksi.api.client.dto.ClientSearchRequest;
 import com.aksi.api.client.dto.ClientSearchResponse;
@@ -12,12 +11,12 @@ import com.aksi.domain.client.service.ClientService;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Delegate Implementation для Client Search API
- * Відповідає за HTTP запити для пошуку клієнтів
+ * HTTP Controller для ClientSearchApi
+ * Відповідальність: тільки HTTP делегація до ClientService
  */
-@Component
+@Controller
 @RequiredArgsConstructor
-public class ClientSearchApiDelegateImpl implements ClientSearchApiDelegate {
+public class ClientSearchApiController implements ClientSearchApi {
 
     private final ClientService clientService;
 

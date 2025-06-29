@@ -247,7 +247,7 @@
                             <apiPackage>com.aksi.api.client</apiPackage>
                             <modelPackage>com.aksi.api.client.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>false</interfaceOnly>
+                                <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -255,7 +255,7 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
-                                <delegatePattern>true</delegatePattern>
+                                <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
@@ -273,7 +273,7 @@
                             <apiPackage>com.aksi.api.order</apiPackage>
                             <modelPackage>com.aksi.api.order.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>false</interfaceOnly>
+                                <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -281,7 +281,7 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
-                                <delegatePattern>true</delegatePattern>
+                                <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
@@ -299,7 +299,7 @@
                             <apiPackage>com.aksi.api.item</apiPackage>
                             <modelPackage>com.aksi.api.item.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>false</interfaceOnly>
+                                <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -307,7 +307,7 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
-                                <delegatePattern>true</delegatePattern>
+                                <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
@@ -325,7 +325,7 @@
                             <apiPackage>com.aksi.api.branch</apiPackage>
                             <modelPackage>com.aksi.api.branch.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>false</interfaceOnly>
+                                <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -333,7 +333,7 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
-                                <delegatePattern>true</delegatePattern>
+                                <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
@@ -351,7 +351,7 @@
                             <apiPackage>com.aksi.api.document</apiPackage>
                             <modelPackage>com.aksi.api.document.dto</modelPackage>
                             <configOptions>
-                                <interfaceOnly>false</interfaceOnly>
+                                <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
                                 <java8>true</java8>
@@ -359,7 +359,7 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
                                 <serializableModel>true</serializableModel>
-                                <delegatePattern>true</delegatePattern>
+                                <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
