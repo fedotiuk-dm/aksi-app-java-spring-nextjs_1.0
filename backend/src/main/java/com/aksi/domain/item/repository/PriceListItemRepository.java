@@ -66,14 +66,34 @@ public interface PriceListItemRepository extends JpaRepository<PriceListItemEnti
     List<PriceListItemEntity> findByIsActiveTrue();
 
     /**
+     * Знайти всі активні предмети з пагінацією
+     */
+    Page<PriceListItemEntity> findByIsActiveTrue(Pageable pageable);
+
+    /**
      * Знайти предмети за активністю
      */
     List<PriceListItemEntity> findByIsActive(Boolean isActive);
 
     /**
+     * Знайти предмети за активністю з пагінацією
+     */
+    Page<PriceListItemEntity> findByIsActive(Boolean isActive, Pageable pageable);
+
+    /**
      * Знайти предмети за одиницею виміру
      */
     List<PriceListItemEntity> findByUnitOfMeasure(String unitOfMeasure);
+
+    /**
+     * Пошук предметів за назвою (регістронезалежний)
+     */
+    List<PriceListItemEntity> findByNameContainingIgnoreCase(String name);
+
+    /**
+     * Пошук предметів за назвою в межах категорії (регістронезалежний)
+     */
+    List<PriceListItemEntity> findByCategoryIdAndNameContainingIgnoreCase(UUID categoryId, String name);
 
     // СКЛАДНІ ЗАПИТИ ПЕРЕНЕСЕНІ В PriceListItemSpecification
     // Приклади використання:

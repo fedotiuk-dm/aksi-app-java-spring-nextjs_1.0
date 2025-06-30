@@ -76,6 +76,22 @@ public class PriceModifierEntity extends BaseEntity {
     @Builder.Default
     private Boolean isActive = true;
 
+    /**
+     * JEXL формула для розрахунку модифікатора
+     * Приклад: "currentPrice * (1 + modifierValue/100)"
+     */
+    @Size(max = 1000, message = "Формула не може бути довше 1000 символів")
+    @Column(name = "jexl_formula", length = 1000)
+    private String jexlFormula;
+
+    /**
+     * JEXL умова для застосування модифікатора
+     * Приклад: "category == 'LEATHER' && quantity > 1"
+     */
+    @Size(max = 500, message = "Умова не може бути довше 500 символів")
+    @Column(name = "jexl_condition", length = 500)
+    private String jexlCondition;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
         name = "modifier_applicable_categories",
@@ -229,5 +245,75 @@ public class PriceModifierEntity extends BaseEntity {
         }
 
         return result.toString();
+    }
+
+    // ===== JEXL МЕТОДИ =====
+
+    /**
+     * Перевірити, чи має модифікатор JEXL формулу
+     */
+    public boolean hasJexlFormula() {
+        return jexlFormula != null && !jexlFormula.trim().isEmpty();
+    }
+
+    /**
+     * Перевірити, чи має модифікатор JEXL умову
+     */
+    public boolean hasJexlCondition() {
+        return jexlCondition != null && !jexlCondition.trim().isEmpty();
+    }
+
+    /**
+     * Отримати JEXL формулу або фолбек до стандартної
+     */
+    public String getEffectiveFormula() {
+        if (hasJexlFormula()) {
+            return jexlFormula;
+        }
+
+        // Фолбек до стандартної формули
+        if (isPercentageModifier()) {
+            return "currentPrice * (1 + modifierValue/100)";
+        } else if (isFixedAmountModifier()) {
+            return "currentPrice + modifierValue";
+        }
+
+        return "currentPrice"; // без змін
+    }
+
+    /**
+     * Отримати JEXL умову або null якщо немає
+     */
+    public String getEffectiveCondition() {
+        return hasJexlCondition() ? jexlCondition : null;
+    }
+
+    /**
+     * Перевірити, чи є модифікатор JEXL-базованим
+     */
+    public boolean isJexlBased() {
+        return hasJexlFormula();
+    }
+
+    /**
+     * Встановити JEXL формулу
+     */
+    public void setJexlFormula(String formula) {
+        this.jexlFormula = formula != null ? formula.trim() : null;
+    }
+
+    /**
+     * Встановити JEXL умову
+     */
+    public void setJexlCondition(String condition) {
+        this.jexlCondition = condition != null ? condition.trim() : null;
+    }
+
+    /**
+     * Очистити JEXL налаштування
+     */
+    public void clearJexlSettings() {
+        this.jexlFormula = null;
+        this.jexlCondition = null;
     }
 }

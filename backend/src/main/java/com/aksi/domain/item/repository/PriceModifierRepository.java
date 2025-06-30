@@ -23,6 +23,8 @@ public interface PriceModifierRepository extends JpaRepository<PriceModifierEnti
     // Basic queries
     Optional<PriceModifierEntity> findByUuid(UUID uuid);
 
+    List<PriceModifierEntity> findByUuidIn(List<UUID> uuids);
+
     Optional<PriceModifierEntity> findByCode(String code);
 
     boolean existsByCode(String code);

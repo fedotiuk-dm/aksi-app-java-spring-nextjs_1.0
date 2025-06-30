@@ -116,6 +116,25 @@ jwt:
   refresh:
     expiration: 604800000 # 7 днів у мілісекундах
 
+# Pricing Configuration (використовується PricingConfiguration компонентом)
+pricing:
+  urgency-charges:
+    coefficients:
+      NORMAL: 0.0
+      URGENT_48H: 0.5
+      URGENT_24H: 1.0
+    descriptions:
+      NORMAL: "Стандартне виконання"
+      URGENT_48H: "Термінове виконання 48 годин (+50%)"
+      URGENT_24H: "Термінове виконання 24 години (+100%)"
+  modifier-rules:
+    max-modifiers-per-item: 10
+    max-total-modifier-increase: 5.0
+  discount-rules:
+    max-order-discount: 0.5
+    member-discount: 0.1
+    military-discount: 0.1
+
 ---
 # Development profile
 spring:

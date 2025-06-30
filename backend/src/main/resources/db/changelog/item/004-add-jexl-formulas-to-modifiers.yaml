@@ -1,0 +1,192 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-add-jexl-formulas-to-modifiers
+      author: system
+      comment: "Додання JEXL формул до існуючих модифікаторів згідно бізнес-правил OrderWizard"
+      changes:
+        # Дитячі речі (до 30 розміру) - 30% від вартості
+        - sql:
+            comment: "JEXL формула для дитячих речей"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 0.7',
+                  jexl_condition = 'size != null && size <= 30'
+              WHERE code = 'CHILDREN_ITEMS' OR name ILIKE '%дитяч%' OR name ILIKE '%30 розмір%';
+
+        # Ручна чистка +20% до вартості
+        - sql:
+            comment: "JEXL формула для ручної чистки"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.2',
+                  jexl_condition = 'serviceType == "MANUAL_CLEANING"'
+              WHERE code = 'MANUAL_CLEANING' OR name ILIKE '%ручна%';
+
+        # Дуже забруднені речі +20% до +100% до вартості (залежно від ступеня)
+        - sql:
+            comment: "JEXL формула для дуже забруднених речей"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * (1 + (stainLevel != null ? stainLevel * 0.2 : 0.2))',
+                  jexl_condition = 'hasStains == true && stainLevel != null'
+              WHERE code = 'HEAVILY_STAINED' OR name ILIKE '%забруднен%';
+
+        # Термінова чистка +50% до +100% до вартості
+        - sql:
+            comment: "JEXL формула для термінової чистки 48 годин"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.5',
+                  jexl_condition = 'urgency == "URGENT_48H"'
+              WHERE code = 'URGENT_48H' OR name ILIKE '%48%' OR name ILIKE '%терміново%';
+
+        - sql:
+            comment: "JEXL формула для термінової чистки 24 години"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 2.0',
+                  jexl_condition = 'urgency == "URGENT_24H"'
+              WHERE code = 'URGENT_24H' OR name ILIKE '%24%';
+
+        # Чистка виробів з хутряними комірами та манжетами +30%
+        - sql:
+            comment: "JEXL формула для виробів з хутром"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.3',
+                  jexl_condition = 'hasFurTrim == true'
+              WHERE code = 'FUR_TRIM' OR name ILIKE '%хутр%';
+
+        # Нанесення водовідштовхуючого покриття +30%
+        - sql:
+            comment: "JEXL формула для водовідштовхуючого покриття"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.3',
+                  jexl_condition = 'waterproofing == true'
+              WHERE code = 'WATERPROOFING' OR name ILIKE '%водовідштовх%';
+
+        # Чистка виробів із натурального шовку, атласу, шифону +50%
+        - sql:
+            comment: "JEXL формула для натуральних тканин"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.5',
+                  jexl_condition = 'material == "SILK" || material == "SATIN" || material == "CHIFFON"'
+              WHERE code = 'SILK_MATERIALS' OR name ILIKE '%шовк%' OR name ILIKE '%атлас%';
+
+        # Чистка комбінованих виробів (шкіра+текстиль) +100%
+        - sql:
+            comment: "JEXL формула для комбінованих виробів"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 2.0',
+                  jexl_condition = 'materialType == "COMBINED_LEATHER_TEXTILE"'
+              WHERE code = 'LEATHER_TEXTILE_COMBO' OR name ILIKE '%комбінован%';
+
+        # Ручна чистка великих м'яких іграшок +100%
+        - sql:
+            comment: "JEXL формула для великих іграшок"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 2.0',
+                  jexl_condition = 'itemType == "SOFT_TOY" && size == "LARGE"'
+              WHERE code = 'LARGE_SOFT_TOYS' OR name ILIKE '%іграшок%';
+
+        # Пришивання гудзиків (фіксована вартість за одиницю)
+        - sql:
+            comment: "JEXL формула для пришивання гудзиків"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice + (buttonCount != null ? buttonCount * 15.0 : 15.0)',
+                  jexl_condition = 'needButtonSewing == true'
+              WHERE code = 'BUTTON_SEWING' OR name ILIKE '%гудзик%';
+
+        # Чистка виробів чорного та світлих тонів +20%
+        - sql:
+            comment: "JEXL формула для кольорових виробів"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.2',
+                  jexl_condition = 'colorType == "COLORED" || colorType == "LIGHT_COLORS"'
+              WHERE code = 'COLOR_SURCHARGE' OR name ILIKE '%колір%';
+
+        # Чистка весільної сукні зі шлейфом +30%
+        - sql:
+            comment: "JEXL формула для весільної сукні"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.3',
+                  jexl_condition = 'itemName != null && itemName.toLowerCase().contains("весільна") && hasTrail == true'
+              WHERE code = 'WEDDING_DRESS_TRAIL' OR name ILIKE '%весільн%';
+
+        # Прасування шкіряних виробів 70% від вартості чистки
+        - sql:
+            comment: "JEXL формула для прасування шкіри"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 0.7',
+                  jexl_condition = 'serviceType == "IRONING" && material == "LEATHER"'
+              WHERE code = 'LEATHER_IRONING' OR name ILIKE '%прасуван%' AND name ILIKE '%шкір%';
+
+        # Фарбування (після нашої чистки) +50%
+        - sql:
+            comment: "JEXL формула для фарбування після чистки"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.5',
+                  jexl_condition = 'dyeing == true && cleanedByUs == true'
+              WHERE code = 'DYEING_AFTER_CLEANING' OR name ILIKE '%фарбуван%';
+
+        # Фарбування (після чистки деінде) 100% вартість чистки
+        - sql:
+            comment: "JEXL формула для фарбування після чужої чистки"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 2.0',
+                  jexl_condition = 'dyeing == true && cleanedByUs == false'
+              WHERE code = 'DYEING_AFTER_EXTERNAL' OR name ILIKE '%фарбуван%' AND name ILIKE '%деінде%';
+
+        # Чистка шкіряних виробів із вставками +30%
+        - sql:
+            comment: "JEXL формула для шкіряних виробів з вставками"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.3',
+                  jexl_condition = 'material == "LEATHER" && hasInserts == true'
+              WHERE code = 'LEATHER_WITH_INSERTS' OR name ILIKE '%вставк%';
+
+        # Нанесення перламутрового покриття +30%
+        - sql:
+            comment: "JEXL формула для перламутрового покриття"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.3',
+                  jexl_condition = 'pearlCoating == true'
+              WHERE code = 'PEARL_COATING' OR name ILIKE '%перламутр%';
+
+        # Чистка натуральних дублянок на штучному хутрі -20%
+        - sql:
+            comment: "JEXL формула для дублянок на штучному хутрі"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 0.8',
+                  jexl_condition = 'itemType == "SHEEPSKIN" && furType == "ARTIFICIAL"'
+              WHERE code = 'ARTIFICIAL_FUR_SHEEPSKIN' OR name ILIKE '%штучн%';
+
+        # Ручна чистка виробів зі шкіри +30%
+        - sql:
+            comment: "JEXL формула для ручної чистки шкіри"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * 1.3',
+                  jexl_condition = 'serviceType == "MANUAL_CLEANING" && material == "LEATHER"'
+              WHERE code = 'MANUAL_LEATHER_CLEANING' OR (name ILIKE '%ручна%' AND name ILIKE '%шкір%');
+
+      rollback:
+        - sql:
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = NULL,
+                  jexl_condition = NULL
+              WHERE jexl_formula IS NOT NULL;

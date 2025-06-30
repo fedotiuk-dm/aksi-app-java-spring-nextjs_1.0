@@ -1,0 +1,99 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-jexl-fields-to-price-modifiers
+      author: system
+      context: item-domain
+      comment: "Додавання JEXL полів для гнучких формул розрахунку цін"
+
+      changes:
+        - addColumn:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: jexl_formula
+                  type: VARCHAR(1000)
+                  constraints:
+                    nullable: true
+                  remarks: "JEXL формула для розрахунку модифікатора"
+              - column:
+                  name: jexl_condition
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+                  remarks: "JEXL умова для застосування модифікатора"
+
+        # Індекс для пошуку модифікаторів з JEXL формулами
+        - createIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifier_jexl_formula
+            columns:
+              - column:
+                  name: jexl_formula
+            where: "jexl_formula IS NOT NULL"
+
+        # Індекс для пошуку модифікаторів з JEXL умовами
+        - createIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifier_jexl_condition
+            columns:
+              - column:
+                  name: jexl_condition
+            where: "jexl_condition IS NOT NULL"
+
+      rollback:
+        - dropIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifier_jexl_condition
+        - dropIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifier_jexl_formula
+        - dropColumn:
+            tableName: price_modifiers
+            columnName: jexl_condition
+        - dropColumn:
+            tableName: price_modifiers
+            columnName: jexl_formula
+
+  - changeSet:
+      id: 002-seed-jexl-formulas-for-existing-modifiers
+      author: system
+      context: item-domain
+      comment: "Додавання початкових JEXL формул для існуючих модифікаторів"
+
+      changes:
+        # Модифікатори відсотків
+        - sql:
+            comment: "Встановити JEXL формули для відсоткових модифікаторів"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice * (1 + modifierValue/100)'
+              WHERE modifier_type = 'PERCENTAGE' AND jexl_formula IS NULL;
+
+        # Модифікатори фіксованих сум
+        - sql:
+            comment: "Встановити JEXL формули для фіксованих модифікаторів"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = 'currentPrice + modifierValue'
+              WHERE modifier_type = 'FIXED_AMOUNT' AND jexl_formula IS NULL;
+
+        # Приклади складних умов
+        - sql:
+            comment: "Встановити приклади JEXL умов для спеціальних модифікаторів"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_condition = 'category == "LEATHER"'
+              WHERE code LIKE '%LEATHER%' AND jexl_condition IS NULL;
+
+        - sql:
+            comment: "Встановити приклади JEXL умов для дитячих товарів"
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_condition = 'itemSize <= 30'
+              WHERE code LIKE '%CHILDREN%' AND jexl_condition IS NULL;
+
+      rollback:
+        - sql:
+            sql: >
+              UPDATE price_modifiers
+              SET jexl_formula = NULL, jexl_condition = NULL;

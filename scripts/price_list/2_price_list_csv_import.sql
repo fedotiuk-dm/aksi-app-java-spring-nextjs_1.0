@@ -13,10 +13,9 @@ CREATE TEMPORARY TABLE temp_price_list (
 -- Копіюємо дані з CSV файлу
 COPY temp_price_list FROM '/price_list.csv' DELIMITER ',' CSV HEADER;
 
--- Вставляємо дані з тимчасової таблиці у основну
-INSERT INTO price_list_items (id, category_id, catalog_number, name, unit_of_measure, base_price, price_black, price_color, active, created_at, updated_at)
-SELECT 
-    gen_random_uuid(),
+-- Вставляємо дані з тимчасової таблиці у основну (UUID генерується автоматично)
+INSERT INTO price_list_items (category_id, catalog_number, name, unit_of_measure, base_price, price_black, price_color, active)
+SELECT
     sc.id,
     tpl.catalog_number,
     tpl.name,
@@ -24,17 +23,15 @@ SELECT
     tpl.base_price,
     tpl.price_black,
     tpl.price_color,
-    TRUE, -- Завжди встановлюємо як активно
-    now(),
-    now()
-FROM 
+    tpl.active
+FROM
     temp_price_list tpl
-JOIN 
+JOIN
     service_categories sc ON tpl.category_code = sc.code
-WHERE 
+WHERE
     NOT EXISTS (
-        SELECT 1 
-        FROM price_list_items pli 
+        SELECT 1
+        FROM price_list_items pli
         WHERE pli.category_id = sc.id AND pli.catalog_number = tpl.catalog_number AND pli.name = tpl.name
     );
 

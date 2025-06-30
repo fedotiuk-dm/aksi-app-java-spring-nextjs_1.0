@@ -8,27 +8,25 @@ ItemCharacteristicsRequest:
     - color
   properties:
     material:
-      type: string
-      maxLength: 50
+      $ref: "../../order/schemas/price-modifiers.yaml#/MaterialType"
       description: Матеріал виробу
     color:
       type: string
       maxLength: 50
-      description: Колір виробу
+      description: Колір виробу (для різних цін чорного та інших кольорів)
+      example: "чорний"
     filling:
-      type: string
-      maxLength: 50
+      $ref: "../../order/schemas/price-modifiers.yaml#/FillingType"
       description: Наповнювач
     wearDegree:
-      type: integer
-      minimum: 10
-      maximum: 75
-      description: Ступінь зносу у відсотках
+      $ref: "../../order/schemas/order-enums.yaml#/WearDegreeType"
+      description: Ступінь зносу виробу
     stains:
       type: array
       items:
         $ref: "../../order/schemas/order-item-schemas.yaml#/StainType"
       description: Типи плям
+      maxItems: 10
     customStain:
       type: string
       maxLength: 100
@@ -38,6 +36,7 @@ ItemCharacteristicsRequest:
       items:
         $ref: "../../order/schemas/order-item-schemas.yaml#/DefectType"
       description: Дефекти та ризики
+      maxItems: 10
     defectNotes:
       type: string
       maxLength: 500
@@ -49,6 +48,13 @@ ItemCharacteristicsRequest:
       type: string
       maxLength: 500
       description: Опис ризиків
+    photos:
+      type: array
+      items:
+        type: string
+        format: uri
+      maxItems: 5
+      description: URL фотографій предмета (максимум 5 фото)
 
 # Service Category Requests
 CreateServiceCategoryRequest:
@@ -308,6 +314,9 @@ ItemCalculationRequest:
       $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
       description: Терміновість для конкретного предмета
       default: NORMAL
+    characteristics:
+      $ref: "#/ItemCharacteristicsRequest"
+      description: Характеристики предмета для розрахунку (матеріал, колір, плями, дефекти тощо)
 
 # Order Summary Calculation Requests
 CalculateOrderSummaryRequest:

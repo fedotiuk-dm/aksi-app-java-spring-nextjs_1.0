@@ -1,0 +1,67 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-add-color-pricing-support
+      author: system
+      comment: "Додання підтримки кольорових цін до прайс-листа"
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: price_list_items
+                columnName: price_black
+      changes:
+        - addColumn:
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: price_black
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+                  remarks: "Ціна для чорних виробів"
+              - column:
+                  name: price_color
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+                  remarks: "Ціна для кольорових виробів"
+
+        - sql:
+            sql: "ALTER TABLE price_list_items ADD CONSTRAINT chk_price_black_positive CHECK (price_black IS NULL OR price_black > 0)"
+
+        - sql:
+            sql: "ALTER TABLE price_list_items ADD CONSTRAINT chk_price_color_positive CHECK (price_color IS NULL OR price_color > 0)"
+
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_black_price
+            columns:
+              - column:
+                  name: price_black
+            where: "price_black IS NOT NULL"
+
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_color_price
+            columns:
+              - column:
+                  name: price_color
+            where: "price_color IS NOT NULL"
+
+      rollback:
+        - dropIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_color_price
+        - dropIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_black_price
+        - sql:
+            sql: "ALTER TABLE price_list_items DROP CONSTRAINT chk_price_color_positive"
+        - sql:
+            sql: "ALTER TABLE price_list_items DROP CONSTRAINT chk_price_black_positive"
+        - dropColumn:
+            tableName: price_list_items
+            columnName: price_color
+        - dropColumn:
+            tableName: price_list_items
+            columnName: price_black

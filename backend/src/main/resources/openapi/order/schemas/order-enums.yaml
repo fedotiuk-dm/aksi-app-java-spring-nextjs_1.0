@@ -90,3 +90,22 @@ ModifierType:
   x-enum-descriptions:
     - Відсотковий модифікатор
     - Фіксована сума
+
+WearDegreeType:
+  type: string
+  description: Ступінь зносу виробу
+  enum:
+    - WEAR_10
+    - WEAR_30
+    - WEAR_50
+    - WEAR_75
+  x-enum-varnames:
+    - WEAR_10
+    - WEAR_30
+    - WEAR_50
+    - WEAR_75
+  x-enum-descriptions:
+    - 10% зносу
+    - 30% зносу
+    - 50% зносу
+    - 75% зносу

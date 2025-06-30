@@ -380,12 +380,158 @@
 - Швидкі клавіатурні скорочення
 - Інтуїтивна навігація між полями
 
+## Технічна архітектура калькулятора
+
+### 1. SMART Engine архітектура
+
+**Двигун розрахунків використовує розумний вибір калькулятора:**
+
+- **90% випадків**: SimpleCalculator - обробляє PERCENTAGE та FIXED_AMOUNT модифікатори
+- **10% випадків**: JexlCalculator - обробляє складні JEXL правила для спеціальних бізнес-кейсів
+- **Автоматичний вибір**: система сама визначає який калькулятор використати
+- **Комбінування результатів**: при наявності обох типів модифікаторів
+
+### 2. Структура DTO для калькуляції
+
+#### ItemCalculationRequest (вхідні дані)
+
+```yaml
+priceListItemId: UUID # Ідентифікатор предмета з прайс-листа
+quantity: Integer # Кількість предметів (мін. 1)
+appliedModifiers: List<UUID> # Список модифікаторів для застосування
+urgency: UrgencyType # Тип терміновості (NORMAL, URGENT_48H, URGENT_24H)
+
+# МАЙБУТНІ РОЗШИРЕННЯ (для повної відповідності бізнес-логіці):
+material: MaterialType # Матеріал (бавовна, шерсть, шовк, шкіра)
+color: String # Колір (для різних цін чорного та інших кольорів)
+filling: FillingType # Наповнювач (пух, синтепон, збитий)
+wearDegree: WearDegreeType # Ступінь зносу (10%, 30%, 50%, 75%)
+stains: List<StainType> # Плями (жир, кров, вино, кава, тощо)
+defects: List<DefectType> # Дефекти (потертості, порване, фурнітура)
+defectNotes: String # Примітки щодо дефектів
+photos: List<PhotoUpload> # Фотодокументація (макс 5 фото по 5MB)
+```
+
+#### ItemCalculationResponse (результат розрахунку)
+
+```yaml
+priceListItemId: UUID # Ідентифікатор предмета
+itemName: String # Назва предмета
+quantity: Integer # Кількість
+basePrice: Double # Базова ціна за одиницю
+totalBasePrice: Double # Базова ціна за кількість
+appliedModifiers: List<AppliedModifierResult> # Застосовані модифікатори
+modifiersTotal: Double # Загальна сума модифікаторів
+subtotal: Double # Проміжна сума
+urgencyCharge: Double # Надбавка за терміновість
+finalPrice: Double # Фінальна ціна
+calculationSteps: List<CalculationStep> # Детальні кроки розрахунку
+warnings: List<String> # Попередження щодо розрахунку
+```
+
+#### CalculationStep (крок розрахунку)
+
+```yaml
+step: String # Назва кроку ("Базова ціна", "Модифікатор X")
+description: String # Опис кроку
+amount: Double # Сума на цьому кроці
+runningTotal: Double # Накопичена сума
+```
+
+### 3. Enum типи
+
+#### UrgencyType (терміновість)
+
+- **NORMAL**: Звичайне виконання (без націнки)
+- **URGENT_48H**: Термінове 48 годин (+50%)
+- **URGENT_24H**: Термінове 24 години (+100%)
+
+#### ModifierType (типи модифікаторів)
+
+- **PERCENTAGE**: Відсотковий модифікатор (наприклад, +30%)
+- **FIXED_AMOUNT**: Фіксована сума (наприклад, +50 грн)
+
+### 4. Алгоритм розрахунку (8 кроків)
+
+```java
+// 1. Базова ціна
+Double basePrice = priceListItem.getBasePrice() * quantity;
+
+// 2. Перевірка кольорових виробів (майбутнє розширення)
+basePrice = adjustForColor(basePrice, color, priceListItem);
+
+// 3-4. Застосування модифікаторів через SMART Engine
+List<PriceModifierEntity> simpleModifiers = filterSimpleModifiers(modifiers);
+List<PriceModifierEntity> jexlModifiers = filterJexlModifiers(modifiers);
+
+CalculationResult result = simpleCalculator.calculate(basePrice, simpleModifiers);
+if (!jexlModifiers.isEmpty()) {
+    result = jexlCalculator.calculate(result.getFinalPrice(), jexlModifiers);
+}
+
+// 5. Фіксовані послуги (включені в модифікатори)
+// 6. Терміновість
+Double urgencyCharge = calculateUrgencyCharge(result.getFinalPrice(), urgency);
+Double finalPrice = result.getFinalPrice() + urgencyCharge;
+
+// 7. Знижки (на рівні замовлення, не предмета)
+// 8. Округлення до копійок
+finalPrice = Math.round(finalPrice * 100.0) / 100.0;
+```
+
+### 5. Складні бізнес-правила через JEXL
+
+**Приклади JEXL формул для складних випадків:**
+
+```javascript
+// Комбіновані вироби (шкіра + текстиль)
+"categoryCode == 'LEATHER_TEXTILE_COMBO' ? basePrice * 2.0 : basePrice";
+
+// Весільна сукня зі шлейфом
+"itemName.contains('весільна') && hasTrail ? basePrice * 1.3 : basePrice";
+
+// Дитячі речі залежно від розміру
+"size <= 30 ? basePrice * 0.7 : basePrice";
+```
+
+### 6. Правила знижок (Order-level)
+
+**Типи знижок:**
+
+- Без знижки (0%)
+- Еверкард (10%)
+- Соцмережі (5%)
+- ЗСУ (10%)
+- Інше (кастомний відсоток)
+
+**ВАЖЛИВЕ ОБМЕЖЕННЯ:**
+Знижки НЕ поширюються на:
+
+- Прасування
+- Прання білизни
+- Фарбування текстилю
+
+### 7. Інтеграція з Frontend
+
+**API Endpoints:**
+
+- `POST /api/items/calculate` - розрахунок ціни предмета
+- `POST /api/items/preview` - попередній перегляд ціни
+- `POST /api/orders/calculate-summary` - розрахунок замовлення
+
+**Real-time розрахунки:**
+
+- Використання Orval-генерованих хуків
+- Автоматичне оновлення при зміні параметрів
+- Відображення проміжних кроків розрахунку
+
 ## Висновок
 
 Односторінкова система замовлень забезпечує:
 
 - **Швидкість роботи** - всі функції на одному екрані
-- **Прозорість розрахунків** - в реальному часі
-- **Повноту інформації** - детальна документація
+- **Прозорість розрахунків** - в реальному часі з детальною деталізацією
+- **Повноту інформації** - детальна документація кожного кроку
 - **Зручність використання** - оптимізована для операторів
-- **Гнучкість налаштувань** - широкі можливості кастомізації цін та послуг
+- **Гнучкість налаштувань** - SMART Engine + JEXL для складних правил
+- **Технічна надійність** - OpenAPI-first підхід з типобезпекою

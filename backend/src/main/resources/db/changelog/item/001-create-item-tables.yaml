@@ -1,0 +1,264 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-service-categories-table
+      author: system
+      comment: "Створення таблиці категорій послуг на основі реальних даних"
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: service_categories
+      changes:
+        - createTable:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: sort_order
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+                  defaultValue: "1"
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        - createIndex:
+            tableName: service_categories
+            indexName: idx_service_categories_code
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            tableName: service_categories
+            indexName: idx_service_categories_sort_order
+            columns:
+              - column:
+                  name: sort_order
+
+  - changeSet:
+      id: 001-create-price-list-items-table
+      author: system
+      comment: "Створення таблиці предметів прайс-листа з підтримкою кольорового ціноутворення"
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: price_list_items
+      changes:
+        - createTable:
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()
+              - column:
+                  name: category_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_price_list_items_category
+                    referencedTableName: service_categories
+                    referencedColumnNames: id
+              - column:
+                  name: catalog_number
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_of_measure
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: base_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValue: "true"
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_items_category
+            columns:
+              - column:
+                  name: category_id
+
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_items_catalog_number
+            columns:
+              - column:
+                  name: catalog_number
+
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_items_active
+            columns:
+              - column:
+                  name: active
+
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_items_name_search
+            columns:
+              - column:
+                  name: name
+
+        - addUniqueConstraint:
+            tableName: price_list_items
+            columnNames: category_id, catalog_number
+            constraintName: uk_price_list_items_category_catalog
+
+  - changeSet:
+      id: 001-create-price-modifiers-table
+      author: system
+      comment: "Створення таблиці модифікаторів цін"
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: price_modifiers
+      changes:
+        - createTable:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: modifier_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: applies_to_categories
+                  type: TEXT
+                  remarks: "JSON масив категорій до яких застосовується модифікатор"
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValue: "true"
+              - column:
+                  name: sort_order
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+                  defaultValue: "1"
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        - createIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifiers_code
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifiers_type
+            columns:
+              - column:
+                  name: modifier_type
+
+        - createIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifiers_active
+            columns:
+              - column:
+                  name: active
+
+        - sql:
+            sql: "ALTER TABLE price_modifiers ADD CONSTRAINT chk_modifier_type CHECK (modifier_type IN ('PERCENTAGE', 'FIXED_AMOUNT', 'JEXL'))"

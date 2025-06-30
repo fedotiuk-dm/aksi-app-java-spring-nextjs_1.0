@@ -46,7 +46,7 @@ services:
 
   # PgAdmin - зберігаємо однаковий з основним compose файлом
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4:9.5
     container_name: aksi-pgadmin-dev
     ports:
       - "5050:80"
@@ -164,10 +164,18 @@ services:
       NEXT_TELEMETRY_DISABLED: 1
       # Orval конфігурація для генерації API
       ORVAL_API_URL: http://backend:8080/api/v3/api-docs
+      # 🚀 NPM ОПТИМІЗАЦІЯ для прискорення
+      npm_config_audit: "false"
+      npm_config_fund: "false"
+      npm_config_progress: "false"
+      npm_config_cache_max: "86400000"
+      npm_config_maxsockets: "20"
+      npm_config_audit_level: "none"
     volumes:
       - ../frontend:/app # Монтуємо весь проект для автоматичного перезавантаження
       - frontend_node_modules:/app/node_modules # Зберігаємо node_modules у volume (користувач node)
       - frontend_next_cache:/app/.next # Зберігаємо .next кеш у volume
+      - frontend_npm_cache:/home/node/.npm # Зберігаємо npm кеш у volume
     depends_on:
       backend:
         condition: service_healthy
@@ -202,5 +210,6 @@ volumes:
   pgadmin_data_dev:
   frontend_node_modules:
   frontend_next_cache:
+  frontend_npm_cache:
   backend_m2_cache:
   portainer_data:
