@@ -26,6 +26,12 @@ databaseChangeLog:
       file: db/changelog/item/005-insert-service-categories.yaml
   - include:
       file: db/changelog/item/006-insert-price-list-items.yaml
+  - include:
+      file: db/changelog/item/007-insert-price-modifiers-compact.yaml
+  - include:
+      file: db/changelog/item/008-insert-category-materials-compact.yaml
+  - include:
+      file: db/changelog/item/009-insert-category-modifiers-compact.yaml
 
   # Branch Domain міграції
   - include:

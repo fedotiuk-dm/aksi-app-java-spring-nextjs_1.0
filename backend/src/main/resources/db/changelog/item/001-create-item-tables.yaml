@@ -262,3 +262,88 @@ databaseChangeLog:
 
         - sql:
             sql: "ALTER TABLE price_modifiers ADD CONSTRAINT chk_modifier_type CHECK (modifier_type IN ('PERCENTAGE', 'FIXED_AMOUNT', 'JEXL'))"
+
+  - changeSet:
+      id: 001-create-service-category-materials-table
+      author: system
+      comment: "Створення таблиці матеріалів категорій (ElementCollection)"
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: service_category_materials
+      changes:
+        - createTable:
+            tableName: service_category_materials
+            columns:
+              - column:
+                  name: category_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_service_category_materials_category
+                    referencedTableName: service_categories
+                    referencedColumnNames: id
+              - column:
+                  name: material_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: service_category_materials
+            indexName: idx_service_category_materials_category
+            columns:
+              - column:
+                  name: category_id
+
+        - createIndex:
+            tableName: service_category_materials
+            indexName: idx_service_category_materials_material
+            columns:
+              - column:
+                  name: material_type
+
+  - changeSet:
+      id: 001-create-service-category-modifiers-table
+      author: system
+      comment: "Створення таблиці модифікаторів категорій (ElementCollection)"
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: service_category_modifiers
+      changes:
+        - createTable:
+            tableName: service_category_modifiers
+            columns:
+              - column:
+                  name: category_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_service_category_modifiers_category
+                    referencedTableName: service_categories
+                    referencedColumnNames: id
+              - column:
+                  name: modifier_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_service_category_modifiers_modifier
+                    referencedTableName: price_modifiers
+                    referencedColumnNames: id
+
+        - createIndex:
+            tableName: service_category_modifiers
+            indexName: idx_service_category_modifiers_category
+            columns:
+              - column:
+                  name: category_id
+
+        - createIndex:
+            tableName: service_category_modifiers
+            indexName: idx_service_category_modifiers_modifier
+            columns:
+              - column:
+                  name: modifier_id
