@@ -432,25 +432,35 @@
                 </executions>
             </plugin>
 
-            <!-- Spotless - автоматичне форматування згенерованого коду -->
+                        <!-- Spotless - автоматичне форматування коду -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.44.5</version>
                 <configuration>
                     <java>
-                        <!-- Форматуємо тільки згенеровані OpenAPI файли -->
+                        <!-- Включаємо всі Java файли проекту + згенеровані OpenAPI -->
                         <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
                             <include>target/generated-sources/openapi/**/*.java</include>
                         </includes>
-                        <!-- Використовуємо Google Java Format -->
+                        <!-- Google Java Format -->
                         <googleJavaFormat>
                             <version>1.27.0</version>
                             <style>GOOGLE</style>
                         </googleJavaFormat>
-                        <!-- Виправляємо imports -->
-                        <importOrder/>
-                        <removeUnusedImports/>
+                        <!-- Порядок імпортів (має бути ПЕРЕД removeUnusedImports) -->
+                        <importOrder>
+                            <order>java|javax,org,com,com.aksi</order>
+                        </importOrder>
+                        <!-- Видалення невикористаних імпортів -->
+                        <removeUnusedImports>
+                            <engine>google-java-format</engine>
+                        </removeUnusedImports>
+                        <!-- Очистка whitespace -->
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
                     </java>
                 </configuration>
                 <executions>
@@ -460,6 +470,40 @@
                         </goals>
                         <!-- Запускаємо після генерації OpenAPI -->
                         <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Checkstyle для перевірки стилю коду + невикористані імпорти -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <violationSeverity>warning</violationSeverity>
+                    <consoleOutput>true</consoleOutput>
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <failsOnError>false</failsOnError>
+                    <maxAllowedViolations>2000</maxAllowedViolations>
+                    <skip>false</skip>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>10.26.1</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>checkstyle-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

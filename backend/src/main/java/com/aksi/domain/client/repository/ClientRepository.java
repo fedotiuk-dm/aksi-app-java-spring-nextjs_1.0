@@ -15,85 +15,64 @@ import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.client.enums.ClientSourceType;
 
 /**
- * Repository для роботи з клієнтами
- * Використовує JpaSpecificationExecutor для type-safe dynamic queries
+ * Repository для роботи з клієнтами Використовує JpaSpecificationExecutor для type-safe dynamic
+ * queries
  *
- * ПРИНЦИПИ:
- * 1. Складні динамічні запити → ClientSpecification
- * 2. Прості запити → derived methods (findBy*, countBy*, existsBy*)
- * 3. Специфічні запити → @Query (тільки коли необхідно, як quickSearch)
+ * <p>ПРИНЦИПИ: 1. Складні динамічні запити → ClientSpecification 2. Прості запити → derived methods
+ * (findBy*, countBy*, existsBy*) 3. Специфічні запити → @Query (тільки коли необхідно, як
+ * quickSearch)
  */
 @Repository
-public interface ClientRepository extends JpaRepository<ClientEntity, Long>, JpaSpecificationExecutor<ClientEntity> {
+public interface ClientRepository
+    extends JpaRepository<ClientEntity, Long>, JpaSpecificationExecutor<ClientEntity> {
 
-    // ==============================
-    // БАЗОВІ МЕТОДИ ПОШУКУ (Derived Methods)
-    // ==============================
+  // ==============================
+  // БАЗОВІ МЕТОДИ ПОШУКУ (Derived Methods)
+  // ==============================
 
-    /**
-     * Пошук клієнта за UUID (для API сумісності)
-     */
-    Optional<ClientEntity> findByUuid(UUID uuid);
+  /** Пошук клієнта за UUID (для API сумісності) */
+  Optional<ClientEntity> findByUuid(UUID uuid);
 
-    /**
-     * Перевірка існування клієнта за UUID
-     */
-    boolean existsByUuid(UUID uuid);
+  /** Перевірка існування клієнта за UUID */
+  boolean existsByUuid(UUID uuid);
 
-    /**
-     * Пошук клієнта за номером телефону
-     */
-    Optional<ClientEntity> findByPhone(String phone);
+  /** Пошук клієнта за номером телефону */
+  Optional<ClientEntity> findByPhone(String phone);
 
-    /**
-     * Перевірка існування клієнта з таким телефоном
-     */
-    boolean existsByPhone(String phone);
+  /** Перевірка існування клієнта з таким телефоном */
+  boolean existsByPhone(String phone);
 
-    /**
-     * Пошук клієнта за email
-     */
-    Optional<ClientEntity> findByEmail(String email);
+  /** Пошук клієнта за email */
+  Optional<ClientEntity> findByEmail(String email);
 
-    /**
-     * Перевірка існування клієнта з таким email
-     */
-    boolean existsByEmail(String email);
+  /** Перевірка існування клієнта з таким email */
+  boolean existsByEmail(String email);
 
-    /**
-     * Пошук клієнтів за ім'ям та прізвищем
-     */
-    List<ClientEntity> findByFirstNameAndLastName(String firstName, String lastName);
+  /** Пошук клієнтів за ім'ям та прізвищем */
+  List<ClientEntity> findByFirstNameAndLastName(String firstName, String lastName);
 
-    /**
-     * Пошук клієнтів за джерелом надходження
-     */
-    List<ClientEntity> findBySourceType(ClientSourceType sourceType);
+  /** Пошук клієнтів за джерелом надходження */
+  List<ClientEntity> findBySourceType(ClientSourceType sourceType);
 
-    // ==============================
-    // СТАТИСТИЧНІ МЕТОДИ (Derived Methods)
-    // ==============================
+  // ==============================
+  // СТАТИСТИЧНІ МЕТОДИ (Derived Methods)
+  // ==============================
 
-    /**
-     * Підрахунок VIP клієнтів (замість @Query)
-     */
-    long countByIsVipTrue();
+  /** Підрахунок VIP клієнтів (замість @Query) */
+  long countByIsVipTrue();
 
-    /**
-     * Підрахунок клієнтів за джерелом
-     */
-    long countBySourceType(ClientSourceType sourceType);
+  /** Підрахунок клієнтів за джерелом */
+  long countBySourceType(ClientSourceType sourceType);
 
-    /**
-     * Перевірка чи є VIP клієнти
-     */
-    boolean existsByIsVipTrue();
+  /** Перевірка чи є VIP клієнти */
+  boolean existsByIsVipTrue();
 
-    // ==============================
-    // СПЕЦІАЛЬНІ @QUERY МЕТОДИ
-    // ==============================
+  // ==============================
+  // СПЕЦІАЛЬНІ @QUERY МЕТОДИ
+  // ==============================
 
-    @Query("""
+  @Query(
+      """
         SELECT c FROM ClientEntity c
         WHERE :query IS NOT NULL AND :query != '' AND (
             LOWER(CONCAT(COALESCE(c.firstName, ''), ' ', COALESCE(c.lastName, ''))) LIKE LOWER(CONCAT('%', :query, '%'))
@@ -102,5 +81,5 @@ public interface ClientRepository extends JpaRepository<ClientEntity, Long>, Jpa
         )
         ORDER BY c.lastName, c.firstName
         """)
-    List<ClientEntity> quickSearch(@Param("query") String query, Pageable pageable);
+  List<ClientEntity> quickSearch(@Param("query") String query, Pageable pageable);
 }

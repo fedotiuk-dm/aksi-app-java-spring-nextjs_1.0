@@ -18,152 +18,134 @@ import com.aksi.domain.item.entity.PriceModifierEntity;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * JEXL калькулятор для складних правил (10% випадків)
- * Обробляє модифікатори з jexlFormula
+ * JEXL калькулятор для складних правил (10% випадків) Обробляє модифікатори з jexlFormula
  * ВИКОРИСТОВУЄ DTO CalculationStep (OpenAPI First!)
  */
 @Component
 @Slf4j
 public class JexlCalculator {
 
-    private final JexlEngine jexl;
+  private final JexlEngine jexl;
 
-    public JexlCalculator() {
-        this.jexl = new JexlBuilder()
-            .cache(512)
-            .strict(false)
-            .silent(false)
-            .create();
-    }
+  public JexlCalculator() {
+    this.jexl = new JexlBuilder().cache(512).strict(false).silent(false).create();
+  }
 
-    /**
-     * Розрахувати ціну з JEXL модифікаторами
-     */
-    public CalculationResult calculate(Double basePrice, List<PriceModifierEntity> modifiers, Map<String, Object> context) {
-        log.debug("JEXL calculation for base price: {} with {} modifiers", basePrice, modifiers.size());
+  /** Розрахувати ціну з JEXL модифікаторами */
+  public CalculationResult calculate(
+      Double basePrice, List<PriceModifierEntity> modifiers, Map<String, Object> context) {
+    log.debug("JEXL calculation for base price: {} with {} modifiers", basePrice, modifiers.size());
 
-        List<CalculationStep> steps = new ArrayList<>();
-        Double currentPrice = basePrice;
+    List<CalculationStep> steps = new ArrayList<>();
+    Double currentPrice = basePrice;
 
-        // Створити JEXL контекст
-        JexlContext jexlContext = createJexlContext(currentPrice, context);
+    // Створити JEXL контекст
+    JexlContext jexlContext = createJexlContext(currentPrice, context);
 
-        // Застосувати кожен модифікатор послідовно
-        for (PriceModifierEntity modifier : modifiers) {
-            try {
-                Double previousPrice = currentPrice;
-                currentPrice = applyJexlModifier(currentPrice, modifier, jexlContext);
+    // Застосувати кожен модифікатор послідовно
+    for (PriceModifierEntity modifier : modifiers) {
+      try {
+        Double previousPrice = currentPrice;
+        currentPrice = applyJexlModifier(currentPrice, modifier, jexlContext);
 
-                // Оновити контекст з новою ціною
-                jexlContext.set("currentPrice", currentPrice);
+        // Оновити контекст з новою ціною
+        jexlContext.set("currentPrice", currentPrice);
 
-                // Створити крок розрахунку (DTO!)
-                CalculationStep step = new CalculationStep();
-                step.setStep(modifier.getCode());
-                step.setDescription(formatDescription(modifier, currentPrice - previousPrice));
-                step.setAmount(currentPrice - previousPrice);
-                step.setRunningTotal(currentPrice);
+        // Створити крок розрахунку (DTO!)
+        CalculationStep step = new CalculationStep();
+        step.setStep(modifier.getCode());
+        step.setDescription(formatDescription(modifier, currentPrice - previousPrice));
+        step.setAmount(currentPrice - previousPrice);
+        step.setRunningTotal(currentPrice);
 
-                steps.add(step);
-                log.debug("Applied JEXL modifier {}: {} -> {}", modifier.getCode(), previousPrice, currentPrice);
+        steps.add(step);
+        log.debug(
+            "Applied JEXL modifier {}: {} -> {}", modifier.getCode(), previousPrice, currentPrice);
 
-            } catch (Exception e) {
-                log.error("Error applying JEXL modifier {}: {}", modifier.getCode(), e.getMessage());
-
-                return CalculationResult.builder()
-                    .basePrice(basePrice)
-                    .finalPrice(currentPrice)
-                    .totalModification(currentPrice - basePrice)
-                    .steps(steps)
-                    .success(false)
-                    .errorMessage("JEXL error: " + e.getMessage())
-                    .build();
-            }
-        }
+      } catch (Exception e) {
+        log.error("Error applying JEXL modifier {}: {}", modifier.getCode(), e.getMessage());
 
         return CalculationResult.builder()
             .basePrice(basePrice)
             .finalPrice(currentPrice)
             .totalModification(currentPrice - basePrice)
             .steps(steps)
-            .success(true)
+            .success(false)
+            .errorMessage("JEXL error: " + e.getMessage())
             .build();
+      }
     }
 
-    /**
-     * Застосувати один JEXL модифікатор
-     */
-    private Double applyJexlModifier(Double currentPrice, PriceModifierEntity modifier, JexlContext context) {
-        String formula = modifier.getJexlFormula();
-        if (formula == null || formula.trim().isEmpty()) {
-            log.warn("Empty JEXL formula for modifier {}, using entity method", modifier.getCode());
-            return modifier.applyToPrice(currentPrice);
-        }
+    return CalculationResult.builder()
+        .basePrice(basePrice)
+        .finalPrice(currentPrice)
+        .totalModification(currentPrice - basePrice)
+        .steps(steps)
+        .success(true)
+        .build();
+  }
 
-        // Парсити та виконати JEXL вираз
-        JexlExpression expression = jexl.createExpression(formula);
-        Object result = expression.evaluate(context);
-
-        if (result instanceof Number number) {
-            return number.doubleValue();
-        } else {
-            log.warn("JEXL result is not a number for modifier {}: {}", modifier.getCode(), result);
-            return currentPrice;
-        }
+  /** Застосувати один JEXL модифікатор */
+  private Double applyJexlModifier(
+      Double currentPrice, PriceModifierEntity modifier, JexlContext context) {
+    String formula = modifier.getJexlFormula();
+    if (formula == null || formula.trim().isEmpty()) {
+      log.warn("Empty JEXL formula for modifier {}, using entity method", modifier.getCode());
+      return modifier.applyToPrice(currentPrice);
     }
 
-    /**
-     * Створити JEXL контекст
-     */
-    private JexlContext createJexlContext(Double currentPrice, Map<String, Object> additionalContext) {
-        JexlContext context = new MapContext();
+    // Парсити та виконати JEXL вираз
+    JexlExpression expression = jexl.createExpression(formula);
+    Object result = expression.evaluate(context);
 
-        // Основні змінні
-        context.set("currentPrice", currentPrice);
-        context.set("basePrice", currentPrice);
+    if (result instanceof Number number) {
+      return number.doubleValue();
+    } else {
+      log.warn("JEXL result is not a number for modifier {}: {}", modifier.getCode(), result);
+      return currentPrice;
+    }
+  }
 
-        // Додаткові змінні з контексту
-        if (additionalContext != null) {
-            additionalContext.forEach(context::set);
-        }
+  /** Створити JEXL контекст */
+  private JexlContext createJexlContext(
+      Double currentPrice, Map<String, Object> additionalContext) {
+    JexlContext context = new MapContext();
 
-        // JEXL функції
-        context.set("math", Math.class);
-        context.set("min", (java.util.function.BinaryOperator<Double>) Math::min);
-        context.set("max", (java.util.function.BinaryOperator<Double>) Math::max);
+    // Основні змінні
+    context.set("currentPrice", currentPrice);
+    context.set("basePrice", currentPrice);
 
-        return context;
+    // Додаткові змінні з контексту
+    if (additionalContext != null) {
+      additionalContext.forEach(context::set);
     }
 
-    /**
-     * Сформатувати опис кроку
-     */
-    private String formatDescription(PriceModifierEntity modifier, Double changeAmount) {
-        String sign = changeAmount >= 0 ? "+" : "";
-        return String.format("%s: %s%.2f грн (JEXL)",
-            modifier.getName(),
-            sign,
-            changeAmount);
-    }
+    // JEXL функції
+    context.set("math", Math.class);
+    context.set("min", (java.util.function.BinaryOperator<Double>) Math::min);
+    context.set("max", (java.util.function.BinaryOperator<Double>) Math::max);
 
-    /**
-     * Перевірити чи може обробити модифікатор
-     */
-    public boolean canHandle(PriceModifierEntity modifier) {
-        return modifier.hasJexlFormula();
-    }
+    return context;
+  }
 
-    /**
-     * Перевірити чи може обробити всі модифікатори
-     */
-    public boolean canHandleAll(List<PriceModifierEntity> modifiers) {
-        return modifiers.stream().allMatch(this::canHandle);
-    }
+  /** Сформатувати опис кроку */
+  private String formatDescription(PriceModifierEntity modifier, Double changeAmount) {
+    String sign = changeAmount >= 0 ? "+" : "";
+    return String.format("%s: %s%.2f грн (JEXL)", modifier.getName(), sign, changeAmount);
+  }
 
-    /**
-     * Fallback розрахунок без додаткового контексту
-     */
-    public CalculationResult calculate(Double basePrice, List<PriceModifierEntity> modifiers) {
-        return calculate(basePrice, modifiers, new HashMap<>());
-    }
+  /** Перевірити чи може обробити модифікатор */
+  public boolean canHandle(PriceModifierEntity modifier) {
+    return modifier.hasJexlFormula();
+  }
+
+  /** Перевірити чи може обробити всі модифікатори */
+  public boolean canHandleAll(List<PriceModifierEntity> modifiers) {
+    return modifiers.stream().allMatch(this::canHandle);
+  }
+
+  /** Fallback розрахунок без додаткового контексту */
+  public CalculationResult calculate(Double basePrice, List<PriceModifierEntity> modifiers) {
+    return calculate(basePrice, modifiers, new HashMap<>());
+  }
 }

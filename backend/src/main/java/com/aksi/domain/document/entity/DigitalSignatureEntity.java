@@ -23,17 +23,19 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * JPA Entity для цифрових підписів з business методами.
- * Базується на OpenAPI схемі: DigitalSignatureResponse
+ * JPA Entity для цифрових підписів з business методами. Базується на OpenAPI схемі:
+ * DigitalSignatureResponse
  */
 @Entity
-@Table(name = "digital_signatures", indexes = {
-    @Index(name = "idx_signature_document_id", columnList = "documentId"),
-    @Index(name = "idx_signature_type", columnList = "type"),
-    @Index(name = "idx_signature_signer_name", columnList = "signerName"),
-    @Index(name = "idx_signature_signed_at", columnList = "signedAt"),
-    @Index(name = "idx_signature_valid", columnList = "isValid")
-})
+@Table(
+    name = "digital_signatures",
+    indexes = {
+      @Index(name = "idx_signature_document_id", columnList = "documentId"),
+      @Index(name = "idx_signature_type", columnList = "type"),
+      @Index(name = "idx_signature_signer_name", columnList = "signerName"),
+      @Index(name = "idx_signature_signed_at", columnList = "signedAt"),
+      @Index(name = "idx_signature_valid", columnList = "isValid")
+    })
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -42,108 +44,108 @@ import lombok.ToString;
 @AllArgsConstructor
 public class DigitalSignatureEntity extends BaseEntity {
 
-    @Column(name = "document_id")
-    private UUID documentId;
+  @Column(name = "document_id")
+  private UUID documentId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private SignatureType type;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "type", nullable = false)
+  private SignatureType type;
 
-    @Column(name = "signer_name", length = 200)
-    private String signerName;
+  @Column(name = "signer_name", length = 200)
+  private String signerName;
 
-    @Column(name = "signer_role", length = 100)
-    private String signerRole;
+  @Column(name = "signer_role", length = 100)
+  private String signerRole;
 
-    @Column(name = "signed_at")
-    private LocalDateTime signedAt;
+  @Column(name = "signed_at")
+  private LocalDateTime signedAt;
 
-    @Column(name = "ip_address", length = 45)
-    private String ipAddress;
+  @Column(name = "ip_address", length = 45)
+  private String ipAddress;
 
-    @Column(name = "image_url", length = 500)
-    private String imageUrl;
+  @Column(name = "image_url", length = 500)
+  private String imageUrl;
 
-    // Metadata as JSON column - буде мапитися через MapStruct
-    @Column(name = "metadata", columnDefinition = "JSON")
-    private String metadata;
+  // Metadata as JSON column - буде мапитися через MapStruct
+  @Column(name = "metadata", columnDefinition = "JSON")
+  private String metadata;
 
-    @Column(name = "is_valid")
-    @Builder.Default
-    private Boolean isValid = true;
+  @Column(name = "is_valid")
+  @Builder.Default
+  private Boolean isValid = true;
 
-    // Relationship with Receipt
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receipt_id")
-    private ReceiptEntity receipt;
+  // Relationship with Receipt
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "receipt_id")
+  private ReceiptEntity receipt;
 
-    // Business methods
-    public boolean isValid() {
-        return Boolean.TRUE.equals(isValid);
+  // Business methods
+  public boolean isValid() {
+    return Boolean.TRUE.equals(isValid);
+  }
+
+  public boolean isClientHandoverSignature() {
+    return type != null && type.isClientHandover();
+  }
+
+  public boolean isClientPickupSignature() {
+    return type != null && type.isClientPickup();
+  }
+
+  public boolean isOperatorSignature() {
+    return type != null && type.isOperatorSignature();
+  }
+
+  public boolean isDigitalSignature() {
+    return type != null && type.isDigital();
+  }
+
+  public boolean isClientSignature() {
+    return type != null && type.isClientSignature();
+  }
+
+  public boolean requiresPhysicalPresence() {
+    return type != null && type.requiresPhysicalPresence();
+  }
+
+  public boolean hasImage() {
+    return imageUrl != null && !imageUrl.trim().isEmpty();
+  }
+
+  public boolean hasMetadata() {
+    return metadata != null && !metadata.trim().isEmpty();
+  }
+
+  public boolean isTransactionRelated() {
+    return type != null && type.isTransactionRelated();
+  }
+
+  public boolean canBeStoredAsImage() {
+    return type != null && type.canBeStoredAsImage();
+  }
+
+  public boolean isSigned() {
+    return signedAt != null;
+  }
+
+  public boolean isExpired() {
+    // Business rule: підпис вважається протермінованим через 1 рік
+    return signedAt != null && signedAt.isBefore(LocalDateTime.now().minusYears(1));
+  }
+
+  public void invalidate(String reason) {
+    this.isValid = false;
+    // Можна додати reason до metadata
+  }
+
+  public void markAsSigned() {
+    if (this.signedAt == null) {
+      this.signedAt = LocalDateTime.now();
     }
+  }
 
-    public boolean isClientHandoverSignature() {
-        return type != null && type.isClientHandover();
-    }
-
-    public boolean isClientPickupSignature() {
-        return type != null && type.isClientPickup();
-    }
-
-    public boolean isOperatorSignature() {
-        return type != null && type.isOperatorSignature();
-    }
-
-    public boolean isDigitalSignature() {
-        return type != null && type.isDigital();
-    }
-
-    public boolean isClientSignature() {
-        return type != null && type.isClientSignature();
-    }
-
-    public boolean requiresPhysicalPresence() {
-        return type != null && type.requiresPhysicalPresence();
-    }
-
-    public boolean hasImage() {
-        return imageUrl != null && !imageUrl.trim().isEmpty();
-    }
-
-    public boolean hasMetadata() {
-        return metadata != null && !metadata.trim().isEmpty();
-    }
-
-    public boolean isTransactionRelated() {
-        return type != null && type.isTransactionRelated();
-    }
-
-    public boolean canBeStoredAsImage() {
-        return type != null && type.canBeStoredAsImage();
-    }
-
-    public boolean isSigned() {
-        return signedAt != null;
-    }
-
-    public boolean isExpired() {
-        // Business rule: підпис вважається протермінованим через 1 рік
-        return signedAt != null && signedAt.isBefore(LocalDateTime.now().minusYears(1));
-    }
-
-    public void invalidate(String reason) {
-        this.isValid = false;
-        // Можна додати reason до metadata
-    }
-
-    public void markAsSigned() {
-        if (this.signedAt == null) {
-            this.signedAt = LocalDateTime.now();
-        }
-    }
-
-    public void setSignerInfo(String name, String role) {
-        this.signerName = name;
-        this.signerRole = role;
-    }
+  public void setSignerInfo(String name, String role) {
+    this.signerName = name;
+    this.signerRole = role;
+  }
 }

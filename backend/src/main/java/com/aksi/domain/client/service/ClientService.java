@@ -35,149 +35,133 @@ import com.aksi.domain.client.validation.ClientValidator;
 import lombok.RequiredArgsConstructor;
 
 /**
- * API-First Client Service
- * Відповідальність: всі методи описані в OpenAPI (ClientsApi, ClientSearchApi, ClientContactsApi)
+ * API-First Client Service Відповідальність: всі методи описані в OpenAPI (ClientsApi,
+ * ClientSearchApi, ClientContactsApi)
  */
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ClientService {
 
-    private final ClientRepository clientRepository;
-    private final ClientValidator clientValidator;
-    private final ClientMapper clientMapper;
+  private final ClientRepository clientRepository;
+  private final ClientValidator clientValidator;
+  private final ClientMapper clientMapper;
 
-    // Константи для уникнення magic numbers
-    private static final int DEFAULT_PAGE_SIZE = 20;
-    private static final int DEFAULT_SEARCH_LIMIT = 10;
-    private static final int DEFAULT_TOP_LIMIT = 50;
-    private static final String DEFAULT_SORT_FIELD = "lastName";
+  // Константи для уникнення magic numbers
+  private static final int DEFAULT_PAGE_SIZE = 20;
+  private static final int DEFAULT_SEARCH_LIMIT = 10;
+  private static final int DEFAULT_TOP_LIMIT = 50;
+  private static final String DEFAULT_SORT_FIELD = "lastName";
 
-    // ==============================
-    // ClientsApi МЕТОДИ
-    // ==============================
+  // ==============================
+  // ClientsApi МЕТОДИ
+  // ==============================
 
-    /**
-     * POST /api/clients
-     */
-    public ClientResponse createClient(CreateClientRequest request) {
-        ClientEntity entity = clientMapper.toEntity(request);
-        clientValidator.validateUniqueness(entity);
-        clientValidator.validateContactInfo(entity);
-        ClientEntity savedEntity = clientRepository.save(entity);
-        return clientMapper.toResponse(savedEntity);
+  /** POST /api/clients */
+  public ClientResponse createClient(CreateClientRequest request) {
+    ClientEntity entity = clientMapper.toEntity(request);
+    clientValidator.validateUniqueness(entity);
+    clientValidator.validateContactInfo(entity);
+    ClientEntity savedEntity = clientRepository.save(entity);
+    return clientMapper.toResponse(savedEntity);
+  }
+
+  /** GET /api/clients/{id} */
+  @Transactional(readOnly = true)
+  public ClientResponse getClientById(UUID uuid) {
+    ClientEntity entity =
+        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+    return clientMapper.toResponse(entity);
+  }
+
+  /** PUT /api/clients/{id} */
+  public ClientResponse updateClient(UUID uuid, UpdateClientRequest request) {
+    ClientEntity existingEntity =
+        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+    clientMapper.updateEntityFromRequest(request, existingEntity);
+    clientValidator.validateUniquenessForUpdate(existingEntity);
+    clientValidator.validateContactInfo(existingEntity);
+    ClientEntity updatedEntity = clientRepository.save(existingEntity);
+    return clientMapper.toResponse(updatedEntity);
+  }
+
+  /** DELETE /api/clients/{id} */
+  public void deleteClient(UUID uuid) {
+    ClientEntity entity =
+        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+    clientValidator.validateForDeletion(entity);
+    clientRepository.delete(entity);
+  }
+
+  /** GET /api/clients */
+  @Transactional(readOnly = true)
+  public ClientPageResponse getClients(Integer page, Integer size, String sort) {
+    Pageable pageable = createPageable(page, size, sort);
+    Page<ClientEntity> entityPage = clientRepository.findAll(pageable);
+
+    List<ClientResponse> clients = clientMapper.toResponseList(entityPage.getContent());
+
+    PageableInfo pageableInfo = createPageableInfo(entityPage);
+
+    return new ClientPageResponse().content(clients).pageable(pageableInfo);
+  }
+
+  /** GET /api/clients/{id}/statistics */
+  @Transactional(readOnly = true)
+  public ClientStatistics getClientStatistics(UUID uuid) {
+    ClientEntity entity =
+        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+    return clientMapper.toStatistics(entity);
+  }
+
+  // ==============================
+  // ClientSearchApi МЕТОДИ
+  // ==============================
+
+  /** GET /api/clients/search */
+  @Transactional(readOnly = true)
+  public ClientSearchResponse searchClients(String query, Integer limit) {
+    // Валідація query (узгоджено з @Query логікою в quickSearch)
+    if (query == null || query.trim().isEmpty()) {
+      return new ClientSearchResponse().results(List.of()).totalFound(0).hasMore(false);
     }
 
-    /**
-     * GET /api/clients/{id}
-     */
-    @Transactional(readOnly = true)
-    public ClientResponse getClientById(UUID uuid) {
-        ClientEntity entity = clientRepository.findByUuid(uuid)
-            .orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
-        return clientMapper.toResponse(entity);
-    }
+    int searchLimit = limit != null ? limit : DEFAULT_SEARCH_LIMIT;
+    Pageable pageable = PageRequest.of(0, searchLimit);
+    List<ClientEntity> entities = clientRepository.quickSearch(query.trim(), pageable);
 
-    /**
-     * PUT /api/clients/{id}
-     */
-    public ClientResponse updateClient(UUID uuid, UpdateClientRequest request) {
-        ClientEntity existingEntity = clientRepository.findByUuid(uuid)
-            .orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
-        clientMapper.updateEntityFromRequest(request, existingEntity);
-        clientValidator.validateUniquenessForUpdate(existingEntity);
-        clientValidator.validateContactInfo(existingEntity);
-        ClientEntity updatedEntity = clientRepository.save(existingEntity);
-        return clientMapper.toResponse(updatedEntity);
-    }
+    return new ClientSearchResponse()
+        .results(clientMapper.toSearchResultList(entities))
+        .totalFound(entities.size())
+        .hasMore(entities.size() >= searchLimit);
+  }
 
-    /**
-     * DELETE /api/clients/{id}
-     */
-    public void deleteClient(UUID uuid) {
-        ClientEntity entity = clientRepository.findByUuid(uuid)
-            .orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
-        clientValidator.validateForDeletion(entity);
-        clientRepository.delete(entity);
-    }
-
-    /**
-     * GET /api/clients
-     */
-    @Transactional(readOnly = true)
-    public ClientPageResponse getClients(Integer page, Integer size, String sort) {
-        Pageable pageable = createPageable(page, size, sort);
-        Page<ClientEntity> entityPage = clientRepository.findAll(pageable);
-
-        List<ClientResponse> clients = clientMapper.toResponseList(entityPage.getContent());
-
-        PageableInfo pageableInfo = createPageableInfo(entityPage);
-
-        return new ClientPageResponse()
-            .content(clients)
-            .pageable(pageableInfo);
-    }
-
-    /**
-     * GET /api/clients/{id}/statistics
-     */
-    @Transactional(readOnly = true)
-    public ClientStatistics getClientStatistics(UUID uuid) {
-        ClientEntity entity = clientRepository.findByUuid(uuid)
-            .orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
-        return clientMapper.toStatistics(entity);
-    }
-
-    // ==============================
-    // ClientSearchApi МЕТОДИ
-    // ==============================
-
-    /**
-     * GET /api/clients/search
-     */
-    @Transactional(readOnly = true)
-    public ClientSearchResponse searchClients(String query, Integer limit) {
-        // Валідація query (узгоджено з @Query логікою в quickSearch)
-        if (query == null || query.trim().isEmpty()) {
-            return new ClientSearchResponse()
-                .results(List.of())
-                .totalFound(0)
-                .hasMore(false);
-        }
-
-        int searchLimit = limit != null ? limit : DEFAULT_SEARCH_LIMIT;
-        Pageable pageable = PageRequest.of(0, searchLimit);
-        List<ClientEntity> entities = clientRepository.quickSearch(query.trim(), pageable);
-
-        return new ClientSearchResponse()
-            .results(clientMapper.toSearchResultList(entities))
-            .totalFound(entities.size())
-            .hasMore(entities.size() >= searchLimit);
-    }
-
-    /**
-     * POST /api/clients/search/advanced
-     */
-    @Transactional(readOnly = true)
-    public ClientPageResponse advancedSearchClients(ClientSearchRequest request) {
-        Integer page = request.getPage();
-        Integer size = request.getSize();
-        Pageable pageable = PageRequest.of(
+  /** POST /api/clients/search/advanced */
+  @Transactional(readOnly = true)
+  public ClientPageResponse advancedSearchClients(ClientSearchRequest request) {
+    Integer page = request.getPage();
+    Integer size = request.getSize();
+    Pageable pageable =
+        PageRequest.of(
             page != null ? page : 0,
             size != null ? size : DEFAULT_PAGE_SIZE,
-            createSortFromRequest(request)
-        );
+            createSortFromRequest(request));
 
-        // Конвертуємо API DTO в domain типи
-        ClientSourceType sourceType = request.getSourceType() != null ?
-            ClientSourceType.valueOf(request.getSourceType().getValue()) : null;
+    // Конвертуємо API DTO в domain типи
+    ClientSourceType sourceType =
+        request.getSourceType() != null
+            ? ClientSourceType.valueOf(request.getSourceType().getValue())
+            : null;
 
-        List<CommunicationMethodType> communicationMethods = request.getCommunicationMethods() != null ?
-            request.getCommunicationMethods().stream()
+    List<CommunicationMethodType> communicationMethods =
+        request.getCommunicationMethods() != null
+            ? request.getCommunicationMethods().stream()
                 .map(method -> CommunicationMethodType.valueOf(method.getValue()))
-                .collect(Collectors.toList()) : null;
+                .collect(Collectors.toList())
+            : null;
 
-        Specification<ClientEntity> specification = ClientSpecification.buildAdvancedSearch(
+    Specification<ClientEntity> specification =
+        ClientSpecification.buildAdvancedSearch(
             request.getQuery(),
             request.getFirstName(),
             request.getLastName(),
@@ -188,181 +172,153 @@ public class ClientService {
             communicationMethods,
             request.getRegistrationDateFrom(),
             request.getRegistrationDateTo(),
-            request.getIsVip()
-        );
+            request.getIsVip());
 
-        Page<ClientEntity> entityPage = clientRepository.findAll(specification, pageable);
-        List<ClientResponse> clients = clientMapper.toResponseList(entityPage.getContent());
-        PageableInfo pageableInfo = createPageableInfo(entityPage);
+    Page<ClientEntity> entityPage = clientRepository.findAll(specification, pageable);
+    List<ClientResponse> clients = clientMapper.toResponseList(entityPage.getContent());
+    PageableInfo pageableInfo = createPageableInfo(entityPage);
 
-        return new ClientPageResponse()
-            .content(clients)
-            .pageable(pageableInfo);
+    return new ClientPageResponse().content(clients).pageable(pageableInfo);
+  }
+
+  /** Спрощений метод для створення Sort з ClientSearchRequest */
+  private Sort createSortFromRequest(ClientSearchRequest request) {
+    if (request.getSort() == null) {
+      return Sort.by(DEFAULT_SORT_FIELD);
+    }
+    return Sort.by(request.getSort().getValue());
+  }
+
+  // ==============================
+  // ClientContactsApi МЕТОДИ
+  // ==============================
+
+  /** GET /api/clients/{id}/contacts */
+  @Transactional(readOnly = true)
+  public ClientContactsResponse getClientContacts(UUID uuid) {
+    ClientEntity entity =
+        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+    return clientMapper.toContactsResponse(entity);
+  }
+
+  /** PUT /api/clients/{id}/contacts */
+  public ClientContactsResponse updateClientContacts(
+      UUID uuid, UpdateClientContactsRequest request) {
+    ClientEntity existingEntity =
+        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+    clientMapper.updateContactsFromRequest(request, existingEntity);
+    clientValidator.validateContactInfo(existingEntity);
+    ClientEntity updatedEntity = clientRepository.save(existingEntity);
+    return clientMapper.toContactsResponse(updatedEntity);
+  }
+
+  // ==============================
+  // UTILITY МЕТОДИ
+  // ==============================
+
+  private Pageable createPageable(Integer page, Integer size, String sort) {
+    int pageNumber = page != null ? page : 0;
+    int pageSize = size != null ? size : DEFAULT_PAGE_SIZE;
+    Sort sortObject = createSort(sort, DEFAULT_SORT_FIELD);
+    return PageRequest.of(pageNumber, pageSize, sortObject);
+  }
+
+  private Sort createSort(String sortString, String defaultField) {
+    if (sortString == null || sortString.trim().isEmpty()) {
+      return Sort.by(defaultField);
     }
 
-    /**
-     * Спрощений метод для створення Sort з ClientSearchRequest
-     */
-    private Sort createSortFromRequest(ClientSearchRequest request) {
-        if (request.getSort() == null) {
-            return Sort.by(DEFAULT_SORT_FIELD);
-        }
-        return Sort.by(request.getSort().getValue());
+    String[] sortParts = sortString.split(",");
+    String field = sortParts[0].trim();
+    Sort.Direction direction = Sort.Direction.ASC;
+
+    if (sortParts.length > 1 && "desc".equalsIgnoreCase(sortParts[1].trim())) {
+      direction = Sort.Direction.DESC;
     }
 
-    // ==============================
-    // ClientContactsApi МЕТОДИ
-    // ==============================
+    return Sort.by(direction, field);
+  }
 
-    /**
-     * GET /api/clients/{id}/contacts
-     */
-    @Transactional(readOnly = true)
-    public ClientContactsResponse getClientContacts(UUID uuid) {
-        ClientEntity entity = clientRepository.findByUuid(uuid)
-            .orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
-        return clientMapper.toContactsResponse(entity);
-    }
+  private PageableInfo createPageableInfo(Page<?> page) {
+    return new PageableInfo()
+        .page(page.getNumber())
+        .size(page.getSize())
+        .totalElements(page.getTotalElements())
+        .totalPages(page.getTotalPages())
+        .first(page.isFirst())
+        .last(page.isLast())
+        .numberOfElements(page.getNumberOfElements());
+  }
 
-    /**
-     * PUT /api/clients/{id}/contacts
-     */
-    public ClientContactsResponse updateClientContacts(UUID uuid, UpdateClientContactsRequest request) {
-        ClientEntity existingEntity = clientRepository.findByUuid(uuid)
-            .orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
-        clientMapper.updateContactsFromRequest(request, existingEntity);
-        clientValidator.validateContactInfo(existingEntity);
-        ClientEntity updatedEntity = clientRepository.save(existingEntity);
-        return clientMapper.toContactsResponse(updatedEntity);
-    }
+  // ==============================
+  // ДОДАТКОВІ МЕТОДИ З SPECIFICATION
+  // ==============================
 
-    // ==============================
-    // UTILITY МЕТОДИ
-    // ==============================
+  /** Топ клієнти за замовленнями (через Specification) */
+  @Transactional(readOnly = true)
+  public List<ClientResponse> getTopClientsByOrders(int limit) {
+    Specification<ClientEntity> spec = ClientSpecification.hasOrders();
+    Pageable pageable =
+        PageRequest.of(
+            0, limit, Sort.by("totalOrders").descending().and(Sort.by("totalSpent").descending()));
 
-    private Pageable createPageable(Integer page, Integer size, String sort) {
-        int pageNumber = page != null ? page : 0;
-        int pageSize = size != null ? size : DEFAULT_PAGE_SIZE;
-        Sort sortObject = createSort(sort, DEFAULT_SORT_FIELD);
-        return PageRequest.of(pageNumber, pageSize, sortObject);
-    }
+    List<ClientEntity> entities = clientRepository.findAll(spec, pageable).getContent();
+    return clientMapper.toResponseList(entities);
+  }
 
-    private Sort createSort(String sortString, String defaultField) {
-        if (sortString == null || sortString.trim().isEmpty()) {
-            return Sort.by(defaultField);
-        }
+  /** Топ клієнти за замовленнями з дефолтним лімітом */
+  @Transactional(readOnly = true)
+  public List<ClientResponse> getTopClientsByOrders() {
+    return getTopClientsByOrders(DEFAULT_TOP_LIMIT);
+  }
 
-        String[] sortParts = sortString.split(",");
-        String field = sortParts[0].trim();
-        Sort.Direction direction = Sort.Direction.ASC;
+  /** Неактивні клієнти з заданої дати (через Specification) */
+  @Transactional(readOnly = true)
+  public List<ClientResponse> getInactiveClientsSince(LocalDate cutoffDate, int limit) {
+    Specification<ClientEntity> spec = ClientSpecification.inactiveSince(cutoffDate);
+    Pageable pageable = PageRequest.of(0, limit, Sort.by("lastOrderDate").descending());
 
-        if (sortParts.length > 1 && "desc".equalsIgnoreCase(sortParts[1].trim())) {
-            direction = Sort.Direction.DESC;
-        }
+    List<ClientEntity> entities = clientRepository.findAll(spec, pageable).getContent();
+    return clientMapper.toResponseList(entities);
+  }
 
-        return Sort.by(direction, field);
-    }
+  /** Неактивні клієнти з заданої дати з дефолтним лімітом */
+  @Transactional(readOnly = true)
+  public List<ClientResponse> getInactiveClientsSince(LocalDate cutoffDate) {
+    return getInactiveClientsSince(cutoffDate, DEFAULT_TOP_LIMIT);
+  }
 
-    private PageableInfo createPageableInfo(Page<?> page) {
-        return new PageableInfo()
-            .page(page.getNumber())
-            .size(page.getSize())
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .first(page.isFirst())
-            .last(page.isLast())
-            .numberOfElements(page.getNumberOfElements());
-    }
+  /** Клієнти без замовлень (через Specification) */
+  @Transactional(readOnly = true)
+  public List<ClientResponse> getClientsWithoutOrders(int limit) {
+    Specification<ClientEntity> spec = ClientSpecification.hasNoOrders();
+    Pageable pageable = PageRequest.of(0, limit, Sort.by("createdAt").descending());
 
-    // ==============================
-    // ДОДАТКОВІ МЕТОДИ З SPECIFICATION
-    // ==============================
+    List<ClientEntity> entities = clientRepository.findAll(spec, pageable).getContent();
+    return clientMapper.toResponseList(entities);
+  }
 
-    /**
-     * Топ клієнти за замовленнями (через Specification)
-     */
-    @Transactional(readOnly = true)
-    public List<ClientResponse> getTopClientsByOrders(int limit) {
-        Specification<ClientEntity> spec = ClientSpecification.hasOrders();
-        Pageable pageable = PageRequest.of(0, limit,
-            Sort.by("totalOrders").descending()
-                .and(Sort.by("totalSpent").descending()));
+  /** Клієнти без замовлень з дефолтним лімітом */
+  @Transactional(readOnly = true)
+  public List<ClientResponse> getClientsWithoutOrders() {
+    return getClientsWithoutOrders(DEFAULT_TOP_LIMIT);
+  }
 
-        List<ClientEntity> entities = clientRepository.findAll(spec, pageable).getContent();
-        return clientMapper.toResponseList(entities);
-    }
+  /** Комбінований пошук VIP клієнтів з витратами (демонстрація композиції) */
+  @Transactional(readOnly = true)
+  public List<ClientResponse> getVipClientsWithSpending(int limit) {
+    Specification<ClientEntity> spec =
+        Specification.where(ClientSpecification.isVip(true)).and(ClientSpecification.hasSpending());
 
-    /**
-     * Топ клієнти за замовленнями з дефолтним лімітом
-     */
-    @Transactional(readOnly = true)
-    public List<ClientResponse> getTopClientsByOrders() {
-        return getTopClientsByOrders(DEFAULT_TOP_LIMIT);
-    }
+    Pageable pageable = PageRequest.of(0, limit, Sort.by("totalSpent").descending());
 
-    /**
-     * Неактивні клієнти з заданої дати (через Specification)
-     */
-    @Transactional(readOnly = true)
-    public List<ClientResponse> getInactiveClientsSince(LocalDate cutoffDate, int limit) {
-        Specification<ClientEntity> spec = ClientSpecification.inactiveSince(cutoffDate);
-        Pageable pageable = PageRequest.of(0, limit,
-            Sort.by("lastOrderDate").descending());
+    List<ClientEntity> entities = clientRepository.findAll(spec, pageable).getContent();
+    return clientMapper.toResponseList(entities);
+  }
 
-        List<ClientEntity> entities = clientRepository.findAll(spec, pageable).getContent();
-        return clientMapper.toResponseList(entities);
-    }
-
-    /**
-     * Неактивні клієнти з заданої дати з дефолтним лімітом
-     */
-    @Transactional(readOnly = true)
-    public List<ClientResponse> getInactiveClientsSince(LocalDate cutoffDate) {
-        return getInactiveClientsSince(cutoffDate, DEFAULT_TOP_LIMIT);
-    }
-
-    /**
-     * Клієнти без замовлень (через Specification)
-     */
-    @Transactional(readOnly = true)
-    public List<ClientResponse> getClientsWithoutOrders(int limit) {
-        Specification<ClientEntity> spec = ClientSpecification.hasNoOrders();
-        Pageable pageable = PageRequest.of(0, limit,
-            Sort.by("createdAt").descending());
-
-        List<ClientEntity> entities = clientRepository.findAll(spec, pageable).getContent();
-        return clientMapper.toResponseList(entities);
-    }
-
-    /**
-     * Клієнти без замовлень з дефолтним лімітом
-     */
-    @Transactional(readOnly = true)
-    public List<ClientResponse> getClientsWithoutOrders() {
-        return getClientsWithoutOrders(DEFAULT_TOP_LIMIT);
-    }
-
-    /**
-     * Комбінований пошук VIP клієнтів з витратами (демонстрація композиції)
-     */
-    @Transactional(readOnly = true)
-    public List<ClientResponse> getVipClientsWithSpending(int limit) {
-        Specification<ClientEntity> spec = Specification
-            .where(ClientSpecification.isVip(true))
-            .and(ClientSpecification.hasSpending());
-
-        Pageable pageable = PageRequest.of(0, limit,
-            Sort.by("totalSpent").descending());
-
-        List<ClientEntity> entities = clientRepository.findAll(spec, pageable).getContent();
-        return clientMapper.toResponseList(entities);
-    }
-
-    /**
-     * VIP клієнти з витратами з дефолтним лімітом
-     */
-    @Transactional(readOnly = true)
-    public List<ClientResponse> getVipClientsWithSpending() {
-        return getVipClientsWithSpending(DEFAULT_TOP_LIMIT);
-    }
+  /** VIP клієнти з витратами з дефолтним лімітом */
+  @Transactional(readOnly = true)
+  public List<ClientResponse> getVipClientsWithSpending() {
+    return getVipClientsWithSpending(DEFAULT_TOP_LIMIT);
+  }
 }

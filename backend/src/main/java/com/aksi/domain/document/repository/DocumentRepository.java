@@ -18,56 +18,57 @@ import com.aksi.domain.document.entity.DocumentEntity;
 import com.aksi.domain.document.enums.DocumentStatus;
 import com.aksi.domain.document.enums.DocumentType;
 
-/**
- * Repository для роботи з документами з JPA Specification підтримкою
- */
+/** Repository для роботи з документами з JPA Specification підтримкою */
 @Repository
-public interface DocumentRepository extends JpaRepository<DocumentEntity, Long>, JpaSpecificationExecutor<DocumentEntity> {
+public interface DocumentRepository
+    extends JpaRepository<DocumentEntity, Long>, JpaSpecificationExecutor<DocumentEntity> {
 
-    // Basic finders
-    Optional<DocumentEntity> findByDocumentNumber(String documentNumber);
+  // Basic finders
+  Optional<DocumentEntity> findByDocumentNumber(String documentNumber);
 
-    List<DocumentEntity> findByType(DocumentType type);
+  List<DocumentEntity> findByType(DocumentType type);
 
-    List<DocumentEntity> findByStatus(DocumentStatus status);
+  List<DocumentEntity> findByStatus(DocumentStatus status);
 
-    List<DocumentEntity> findByRelatedEntityId(UUID relatedEntityId);
+  List<DocumentEntity> findByRelatedEntityId(UUID relatedEntityId);
 
-    List<DocumentEntity> findByCreatedBy(String createdBy);
+  List<DocumentEntity> findByCreatedBy(String createdBy);
 
-    // Exists checks
-    boolean existsByDocumentNumber(String documentNumber);
+  // Exists checks
+  boolean existsByDocumentNumber(String documentNumber);
 
-    boolean existsByRelatedEntityId(UUID relatedEntityId);
+  boolean existsByRelatedEntityId(UUID relatedEntityId);
 
-    // Type-specific queries
-    List<DocumentEntity> findByTypeAndStatus(DocumentType type, DocumentStatus status);
+  // Type-specific queries
+  List<DocumentEntity> findByTypeAndStatus(DocumentType type, DocumentStatus status);
 
-    List<DocumentEntity> findByTypeAndRelatedEntityId(DocumentType type, UUID relatedEntityId);
+  List<DocumentEntity> findByTypeAndRelatedEntityId(DocumentType type, UUID relatedEntityId);
 
-    // Pagination queries
-    Page<DocumentEntity> findByType(DocumentType type, Pageable pageable);
+  // Pagination queries
+  Page<DocumentEntity> findByType(DocumentType type, Pageable pageable);
 
-    Page<DocumentEntity> findByStatus(DocumentStatus status, Pageable pageable);
+  Page<DocumentEntity> findByStatus(DocumentStatus status, Pageable pageable);
 
-    Page<DocumentEntity> findByRelatedEntityId(UUID relatedEntityId, Pageable pageable);
+  Page<DocumentEntity> findByRelatedEntityId(UUID relatedEntityId, Pageable pageable);
 
-    Page<DocumentEntity> findByCreatedBy(String createdBy, Pageable pageable);
+  Page<DocumentEntity> findByCreatedBy(String createdBy, Pageable pageable);
 
-    // Count queries
-    long countByType(DocumentType type);
+  // Count queries
+  long countByType(DocumentType type);
 
-    long countByStatus(DocumentStatus status);
+  long countByStatus(DocumentStatus status);
 
-    long countByTypeAndStatus(DocumentType type, DocumentStatus status);
+  long countByTypeAndStatus(DocumentType type, DocumentStatus status);
 
-    @Query("SELECT COUNT(d) FROM DocumentEntity d WHERE d.type = :type AND d.createdAt >= :from AND d.createdAt <= :to")
-    long countByTypeAndCreatedAtBetween(@Param("type") DocumentType type,
-                                       @Param("from") LocalDateTime from,
-                                       @Param("to") LocalDateTime to);
+  @Query(
+      "SELECT COUNT(d) FROM DocumentEntity d WHERE d.type = :type AND d.createdAt >= :from AND d.createdAt <= :to")
+  long countByTypeAndCreatedAtBetween(
+      @Param("type") DocumentType type,
+      @Param("from") LocalDateTime from,
+      @Param("to") LocalDateTime to);
 
-    // Maintenance queries
-    @Modifying
-    @Query("DELETE FROM DocumentEntity d WHERE d.status = 'DRAFT' AND d.createdAt < :cleanupDate")
-    void deleteDraftDocumentsOlderThan(@Param("cleanupDate") LocalDateTime cleanupDate);
+  // Maintenance queries
+  @Modifying
+  @Query("DELETE FROM DocumentEntity d WHERE d.status = 'DRAFT' AND d.createdAt < :cleanupDate")
+  void deleteDraftDocumentsOlderThan(@Param("cleanupDate") LocalDateTime cleanupDate);
 }

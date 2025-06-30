@@ -15,37 +15,40 @@ import com.aksi.domain.branch.service.WorkingScheduleService;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * HTTP контролер для управління графіком роботи
- * Відповідальність: тільки HTTP логіка
- */
+/** HTTP контролер для управління графіком роботи Відповідальність: тільки HTTP логіка */
 @RestController
 @RequiredArgsConstructor
 public class WorkingScheduleApiController implements WorkingScheduleApi {
 
-    private final WorkingScheduleService workingScheduleService;
+  private final WorkingScheduleService workingScheduleService;
 
-    @Override
-    public ResponseEntity<WorkingScheduleResponse> getBranchSchedule(UUID branchId) {
-        WorkingScheduleResponse response = workingScheduleService.getBranchSchedule(branchId);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<WorkingScheduleResponse> getBranchSchedule(UUID branchId) {
+    WorkingScheduleResponse response = workingScheduleService.getBranchSchedule(branchId);
+    return ResponseEntity.ok(response);
+  }
 
-    @Override
-    public ResponseEntity<WorkingScheduleResponse> updateBranchSchedule(UUID branchId, UpdateWorkingScheduleRequest updateWorkingScheduleRequest) {
-        WorkingScheduleResponse response = workingScheduleService.updateBranchSchedule(branchId, updateWorkingScheduleRequest);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<WorkingScheduleResponse> updateBranchSchedule(
+      UUID branchId, UpdateWorkingScheduleRequest updateWorkingScheduleRequest) {
+    WorkingScheduleResponse response =
+        workingScheduleService.updateBranchSchedule(branchId, updateWorkingScheduleRequest);
+    return ResponseEntity.ok(response);
+  }
 
-    @Override
-    public ResponseEntity<BranchOpenStatusResponse> getBranchOpenStatus(UUID branchId, OffsetDateTime dateTime) {
-        BranchOpenStatusResponse response = workingScheduleService.getBranchOpenStatus(branchId, dateTime);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<BranchOpenStatusResponse> getBranchOpenStatus(
+      UUID branchId, OffsetDateTime dateTime) {
+    BranchOpenStatusResponse response =
+        workingScheduleService.getBranchOpenStatus(branchId, dateTime);
+    return ResponseEntity.ok(response);
+  }
 
-    @Override
-    public ResponseEntity<NextWorkingDayResponse> getBranchNextWorkingDay(UUID branchId, LocalDate fromDate) {
-        NextWorkingDayResponse response = workingScheduleService.getBranchNextWorkingDay(branchId, fromDate);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<NextWorkingDayResponse> getBranchNextWorkingDay(
+      UUID branchId, LocalDate fromDate) {
+    NextWorkingDayResponse response =
+        workingScheduleService.getBranchNextWorkingDay(branchId, fromDate);
+    return ResponseEntity.ok(response);
+  }
 }

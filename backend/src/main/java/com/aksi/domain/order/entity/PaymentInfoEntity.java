@@ -13,9 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Embedded клас для інформації про оплату
- */
+/** Embedded клас для інформації про оплату */
 @Embeddable
 @Data
 @Builder
@@ -23,48 +21,40 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PaymentInfoEntity {
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method")
-    private PaymentMethod paymentMethod; // Використовуємо API enum
+  @Enumerated(EnumType.STRING)
+  @Column(name = "payment_method")
+  private PaymentMethod paymentMethod; // Використовуємо API enum
 
-    @Column(name = "paid_amount", precision = 10, scale = 2)
-    @Builder.Default
-    private BigDecimal paidAmount = BigDecimal.ZERO;
+  @Column(name = "paid_amount", precision = 10, scale = 2)
+  @Builder.Default
+  private BigDecimal paidAmount = BigDecimal.ZERO;
 
-    /**
-     * Перевіряє чи є часткова оплата
-     */
-    public boolean hasPartialPayment() {
-        return paidAmount != null && paidAmount.compareTo(BigDecimal.ZERO) > 0;
+  /** Перевіряє чи є часткова оплата */
+  public boolean hasPartialPayment() {
+    return paidAmount != null && paidAmount.compareTo(BigDecimal.ZERO) > 0;
+  }
+
+  /** Розраховує суму до доплати */
+  public BigDecimal calculateRemainingAmount(BigDecimal totalAmount) {
+    if (totalAmount == null || paidAmount == null) {
+      return totalAmount;
     }
+    return totalAmount.subtract(paidAmount);
+  }
 
-    /**
-     * Розраховує суму до доплати
-     */
-    public BigDecimal calculateRemainingAmount(BigDecimal totalAmount) {
-        if (totalAmount == null || paidAmount == null) {
-            return totalAmount;
-        }
-        return totalAmount.subtract(paidAmount);
+  /** Перевіряє чи повністю оплачено */
+  public boolean isFullyPaid(BigDecimal totalAmount) {
+    if (totalAmount == null || paidAmount == null) {
+      return false;
     }
+    return paidAmount.compareTo(totalAmount) >= 0;
+  }
 
-    /**
-     * Перевіряє чи повністю оплачено
-     */
-    public boolean isFullyPaid(BigDecimal totalAmount) {
-        if (totalAmount == null || paidAmount == null) {
-            return false;
-        }
-        return paidAmount.compareTo(totalAmount) >= 0;
+  /** Перевіряє чи є переплата */
+  public boolean hasOverpayment(BigDecimal totalAmount) {
+    if (totalAmount == null || paidAmount == null) {
+      return false;
     }
-
-    /**
-     * Перевіряє чи є переплата
-     */
-    public boolean hasOverpayment(BigDecimal totalAmount) {
-        if (totalAmount == null || paidAmount == null) {
-            return false;
-        }
-        return paidAmount.compareTo(totalAmount) > 0;
-    }
+    return paidAmount.compareTo(totalAmount) > 0;
+  }
 }

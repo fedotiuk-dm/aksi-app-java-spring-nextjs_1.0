@@ -6,25 +6,17 @@ import com.aksi.api.branch.dto.ContactInfoRequest;
 import com.aksi.api.branch.dto.ContactInfoResponse;
 import com.aksi.domain.branch.entity.ContactInfo;
 
-/**
- * Mapper для ContactInfo ↔ DTO конвертації
- * Відповідальність: тільки ContactInfo embedded object
- */
+/** Mapper для ContactInfo ↔ DTO конвертації Відповідальність: тільки ContactInfo embedded object */
 @Mapper(componentModel = "spring")
 public interface ContactInfoMapper {
 
-    // DTO → Entity mappings
+  // DTO → Entity mappings
 
-    /**
-     * ContactInfoRequest → ContactInfo
-     */
-    ContactInfo toEntity(ContactInfoRequest request);
+  /** ContactInfoRequest → ContactInfo */
+  ContactInfo toEntity(ContactInfoRequest request);
 
-    // Entity → DTO mappings
+  // Entity → DTO mappings
 
-    /**
-     * ContactInfo → ContactInfoResponse
-     */
-    ContactInfoResponse toResponse(ContactInfo entity);
-
+  /** ContactInfo → ContactInfoResponse */
+  ContactInfoResponse toResponse(ContactInfo entity);
 }

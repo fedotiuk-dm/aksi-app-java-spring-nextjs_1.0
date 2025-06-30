@@ -14,29 +14,29 @@ import com.aksi.domain.branch.service.BranchService;
 import lombok.RequiredArgsConstructor;
 
 /**
- * HTTP контролер для статистики філій
- * Відповідальність: тільки HTTP логіка
+ * HTTP контролер для статистики філій Відповідальність: тільки HTTP логіка
  *
- * НЕ РЕАЛІЗОВАНО: Branch Statistics поки що не потрібна
+ * <p>НЕ РЕАЛІЗОВАНО: Branch Statistics поки що не потрібна
  */
 @RestController
 @RequiredArgsConstructor
 public class BranchStatisticsApiController implements BranchStatisticsApi {
 
-    private final BranchService branchService;
+  private final BranchService branchService;
 
-    @Override
-    public ResponseEntity<BranchStatisticsResponse> getBranchStatistics(
-            UUID branchId, LocalDate startDate, LocalDate endDate) {
-        BranchStatisticsResponse response = branchService.getBranchStatistics(branchId, startDate, endDate);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<BranchStatisticsResponse> getBranchStatistics(
+      UUID branchId, LocalDate startDate, LocalDate endDate) {
+    BranchStatisticsResponse response =
+        branchService.getBranchStatistics(branchId, startDate, endDate);
+    return ResponseEntity.ok(response);
+  }
 
-    @Override
-    public ResponseEntity<List<BranchComparisonResponse>> compareBranchStatistics(
-            LocalDate startDate, LocalDate endDate, String city, String sortBy, String order) {
-        List<BranchComparisonResponse> response = branchService.compareBranchStatistics(
-            startDate, endDate, city, sortBy, order);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<List<BranchComparisonResponse>> compareBranchStatistics(
+      LocalDate startDate, LocalDate endDate, String city, String sortBy, String order) {
+    List<BranchComparisonResponse> response =
+        branchService.compareBranchStatistics(startDate, endDate, city, sortBy, order);
+    return ResponseEntity.ok(response);
+  }
 }

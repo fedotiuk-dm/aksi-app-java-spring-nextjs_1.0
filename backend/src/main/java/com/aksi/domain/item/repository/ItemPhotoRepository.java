@@ -16,47 +16,49 @@ import org.springframework.stereotype.Repository;
 import com.aksi.domain.item.entity.ItemPhotoEntity;
 
 /**
- * Repository для управління фотографіями предметів з JPA Specification підтримкою.
- * Складні запити винесені в ItemPhotoSpecification.
+ * Repository для управління фотографіями предметів з JPA Specification підтримкою. Складні запити
+ * винесені в ItemPhotoSpecification.
  */
 @Repository
-public interface ItemPhotoRepository extends JpaRepository<ItemPhotoEntity, Long>,
-                                           JpaSpecificationExecutor<ItemPhotoEntity> {
+public interface ItemPhotoRepository
+    extends JpaRepository<ItemPhotoEntity, Long>, JpaSpecificationExecutor<ItemPhotoEntity> {
 
-    // Basic queries
-    Optional<ItemPhotoEntity> findByUuid(UUID uuid);
+  // Basic queries
+  Optional<ItemPhotoEntity> findByUuid(UUID uuid);
 
-    List<ItemPhotoEntity> findByItemId(UUID itemId);
+  List<ItemPhotoEntity> findByItemId(UUID itemId);
 
-    Page<ItemPhotoEntity> findByItemId(UUID itemId, Pageable pageable);
+  Page<ItemPhotoEntity> findByItemId(UUID itemId, Pageable pageable);
 
-    // Primary photo queries
-    Optional<ItemPhotoEntity> findByItemIdAndIsPrimaryTrue(UUID itemId);
+  // Primary photo queries
+  Optional<ItemPhotoEntity> findByItemIdAndIsPrimaryTrue(UUID itemId);
 
-    List<ItemPhotoEntity> findByIsPrimaryTrue();
+  List<ItemPhotoEntity> findByIsPrimaryTrue();
 
-    // Photo type queries
-    List<ItemPhotoEntity> findByItemIdAndPhotoType(UUID itemId, String photoType);
+  // Photo type queries
+  List<ItemPhotoEntity> findByItemIdAndPhotoType(UUID itemId, String photoType);
 
-    // File management queries (прості методи залишаємо)
-    Optional<ItemPhotoEntity> findByFilePath(String filePath);
+  // File management queries (прості методи залишаємо)
+  Optional<ItemPhotoEntity> findByFilePath(String filePath);
 
-    boolean existsByFilePath(String filePath);
+  boolean existsByFilePath(String filePath);
 
-    // Utility methods (залишаємо для Service шару)
-    @Modifying
-    @Query("UPDATE ItemPhotoEntity ip SET ip.isPrimary = false WHERE ip.itemId = :itemId")
-    void resetPrimaryFlagForItem(@Param("itemId") UUID itemId);
+  // Utility methods (залишаємо для Service шару)
+  @Modifying
+  @Query("UPDATE ItemPhotoEntity ip SET ip.isPrimary = false WHERE ip.itemId = :itemId")
+  void resetPrimaryFlagForItem(@Param("itemId") UUID itemId);
 
-    @Modifying
-    @Query("UPDATE ItemPhotoEntity ip SET ip.displayOrder = ip.displayOrder - 1 WHERE ip.itemId = :itemId AND ip.displayOrder > :deletedOrder")
-    void adjustDisplayOrderAfterDeletion(@Param("itemId") UUID itemId, @Param("deletedOrder") Integer deletedOrder);
+  @Modifying
+  @Query(
+      "UPDATE ItemPhotoEntity ip SET ip.displayOrder = ip.displayOrder - 1 WHERE ip.itemId = :itemId AND ip.displayOrder > :deletedOrder")
+  void adjustDisplayOrderAfterDeletion(
+      @Param("itemId") UUID itemId, @Param("deletedOrder") Integer deletedOrder);
 
-    // СКЛАДНІ ЗАПИТИ ПЕРЕНЕСЕНІ В ItemPhotoSpecification
-    // Приклади використання:
-    // repository.findAll(ItemPhotoSpecification.belongsToItem(itemId))
-    // repository.findAll(ItemPhotoSpecification.isPrimary())
-    // repository.findAll(ItemPhotoSpecification.hasPhotoType("DEFECT"))
+  // СКЛАДНІ ЗАПИТИ ПЕРЕНЕСЕНІ В ItemPhotoSpecification
+  // Приклади використання:
+  // repository.findAll(ItemPhotoSpecification.belongsToItem(itemId))
+  // repository.findAll(ItemPhotoSpecification.isPrimary())
+  // repository.findAll(ItemPhotoSpecification.hasPhotoType("DEFECT"))
 
-    // Залишаємо тільки прості методи та utility операції
+  // Залишаємо тільки прості методи та utility операції
 }

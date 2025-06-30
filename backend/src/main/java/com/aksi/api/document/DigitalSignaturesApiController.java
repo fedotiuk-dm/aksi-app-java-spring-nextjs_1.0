@@ -13,25 +13,26 @@ import com.aksi.domain.document.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 
 /**
- * HTTP Controller для DigitalSignaturesApi
- * Відповідальність: тільки HTTP делегація до DocumentService
+ * HTTP Controller для DigitalSignaturesApi Відповідальність: тільки HTTP делегація до
+ * DocumentService
  */
 @Controller
 @RequiredArgsConstructor
 public class DigitalSignaturesApiController implements DigitalSignaturesApi {
 
-    private final DocumentService documentService;
+  private final DocumentService documentService;
 
-    @Override
-    public ResponseEntity<DigitalSignatureResponse> createDigitalSignature(
-            CreateDigitalSignatureRequest createDigitalSignatureRequest) {
-        DigitalSignatureResponse response = documentService.createDigitalSignature(createDigitalSignatureRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @Override
+  public ResponseEntity<DigitalSignatureResponse> createDigitalSignature(
+      CreateDigitalSignatureRequest createDigitalSignatureRequest) {
+    DigitalSignatureResponse response =
+        documentService.createDigitalSignature(createDigitalSignatureRequest);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-    @Override
-    public ResponseEntity<DigitalSignatureResponse> getDigitalSignatureById(UUID id) {
-        DigitalSignatureResponse response = documentService.getDigitalSignatureById(id);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<DigitalSignatureResponse> getDigitalSignatureById(UUID id) {
+    DigitalSignatureResponse response = documentService.getDigitalSignatureById(id);
+    return ResponseEntity.ok(response);
+  }
 }

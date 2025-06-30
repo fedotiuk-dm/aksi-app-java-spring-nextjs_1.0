@@ -22,110 +22,91 @@ import lombok.RequiredArgsConstructor;
 /**
  * Сервіс для управління модифікаторами цін.
  *
- * Архітектура:
- * - API методи (public) - працюють з DTO для контролерів
- * - Entity методи (package-private) - працюють з Entity для внутрішньої логіки
- * - Business logic + validation + transaction management
+ * <p>Архітектура: - API методи (public) - працюють з DTO для контролерів - Entity методи
+ * (package-private) - працюють з Entity для внутрішньої логіки - Business logic + validation +
+ * transaction management
  */
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class PriceModifierService {
 
-    private final PriceModifierRepository repository;
-    private final PriceModifierMapper mapper;
+  private final PriceModifierRepository repository;
+  private final PriceModifierMapper mapper;
 
-    // ========== API МЕТОДИ (для контролерів) - DTO ↔ DTO ==========
+  // ========== API МЕТОДИ (для контролерів) - DTO ↔ DTO ==========
 
-    /**
-     * Створити новий модифікатор ціни
-     */
-    public PriceModifierResponse createPriceModifier(CreatePriceModifierRequest request) {
-        validateUniqueCode(request.getCode());
+  /** Створити новий модифікатор ціни */
+  public PriceModifierResponse createPriceModifier(CreatePriceModifierRequest request) {
+    validateUniqueCode(request.getCode());
 
-        var entity = mapper.toEntity(request);
-        entity.setUuid(UUID.randomUUID());
+    var entity = mapper.toEntity(request);
+    entity.setUuid(UUID.randomUUID());
 
-        var savedEntity = repository.save(entity);
-        return mapper.toResponse(savedEntity);
+    var savedEntity = repository.save(entity);
+    return mapper.toResponse(savedEntity);
+  }
+
+  /** Отримати модифікатор за UUID */
+  @Transactional(readOnly = true)
+  public PriceModifierResponse getPriceModifierById(UUID uuid) {
+    var entity = findByUuid(uuid);
+    return mapper.toResponse(entity);
+  }
+
+  /** Оновити модифікатор ціни */
+  public PriceModifierResponse updatePriceModifier(UUID uuid, UpdatePriceModifierRequest request) {
+    var entity = findByUuid(uuid);
+
+    mapper.updateEntityFromRequest(request, entity);
+    var savedEntity = repository.save(entity);
+    return mapper.toResponse(savedEntity);
+  }
+
+  /** Видалити модифікатор ціни */
+  public void deletePriceModifier(UUID uuid) {
+    var entity = findByUuid(uuid);
+    repository.delete(entity);
+  }
+
+  /** Отримати всі модифікатори з пагінацією */
+  @Transactional(readOnly = true)
+  public Page<PriceModifierResponse> getPriceModifiers(Pageable pageable) {
+    var entityPage = repository.findAll(pageable);
+    return entityPage.map(mapper::toResponse);
+  }
+
+  /** Отримати активні модифікатори */
+  @Transactional(readOnly = true)
+  public List<PriceModifierResponse> getActivePriceModifiers() {
+    var entities = repository.findByIsActiveTrue();
+    return entities.stream().map(mapper::toResponse).toList();
+  }
+
+  /** Отримати модифікатор за кодом */
+  @Transactional(readOnly = true)
+  public PriceModifierResponse getPriceModifierByCode(String code) {
+    var entity =
+        repository
+            .findByCode(code)
+            .orElseThrow(
+                () ->
+                    new PriceModifierNotFoundException(
+                        "Модифікатор з кодом '" + code + "' не знайдений"));
+    return mapper.toResponse(entity);
+  }
+
+  // ========== HELPER МЕТОДИ ==========
+
+  /** Знайти модифікатор за UUID (internal helper) */
+  private PriceModifierEntity findByUuid(UUID uuid) {
+    return repository.findByUuid(uuid).orElseThrow(() -> new PriceModifierNotFoundException(uuid));
+  }
+
+  /** Валідація унікальності коду */
+  private void validateUniqueCode(String code) {
+    if (repository.existsByCode(code)) {
+      throw new PriceModifierAlreadyExistsException("Модифікатор з кодом '" + code + "' вже існує");
     }
-
-    /**
-     * Отримати модифікатор за UUID
-     */
-    @Transactional(readOnly = true)
-    public PriceModifierResponse getPriceModifierById(UUID uuid) {
-        var entity = findByUuid(uuid);
-        return mapper.toResponse(entity);
-    }
-
-    /**
-     * Оновити модифікатор ціни
-     */
-    public PriceModifierResponse updatePriceModifier(UUID uuid, UpdatePriceModifierRequest request) {
-        var entity = findByUuid(uuid);
-
-        mapper.updateEntityFromRequest(request, entity);
-        var savedEntity = repository.save(entity);
-        return mapper.toResponse(savedEntity);
-    }
-
-    /**
-     * Видалити модифікатор ціни
-     */
-    public void deletePriceModifier(UUID uuid) {
-        var entity = findByUuid(uuid);
-        repository.delete(entity);
-    }
-
-    /**
-     * Отримати всі модифікатори з пагінацією
-     */
-    @Transactional(readOnly = true)
-    public Page<PriceModifierResponse> getPriceModifiers(Pageable pageable) {
-        var entityPage = repository.findAll(pageable);
-        return entityPage.map(mapper::toResponse);
-    }
-
-    /**
-     * Отримати активні модифікатори
-     */
-    @Transactional(readOnly = true)
-    public List<PriceModifierResponse> getActivePriceModifiers() {
-        var entities = repository.findByIsActiveTrue();
-        return entities.stream()
-            .map(mapper::toResponse)
-            .toList();
-    }
-
-    /**
-     * Отримати модифікатор за кодом
-     */
-    @Transactional(readOnly = true)
-    public PriceModifierResponse getPriceModifierByCode(String code) {
-        var entity = repository.findByCode(code)
-            .orElseThrow(() -> new PriceModifierNotFoundException("Модифікатор з кодом '" + code + "' не знайдений"));
-        return mapper.toResponse(entity);
-    }
-
-
-
-    // ========== HELPER МЕТОДИ ==========
-
-    /**
-     * Знайти модифікатор за UUID (internal helper)
-     */
-    private PriceModifierEntity findByUuid(UUID uuid) {
-        return repository.findByUuid(uuid)
-            .orElseThrow(() -> new PriceModifierNotFoundException(uuid));
-    }
-
-    /**
-     * Валідація унікальності коду
-     */
-    private void validateUniqueCode(String code) {
-        if (repository.existsByCode(code)) {
-            throw new PriceModifierAlreadyExistsException("Модифікатор з кодом '" + code + "' вже існує");
-        }
-    }
+  }
 }

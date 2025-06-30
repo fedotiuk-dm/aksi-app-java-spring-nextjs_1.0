@@ -14,31 +14,34 @@ import com.aksi.domain.branch.service.ReceiptNumberService;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * HTTP контролер для управління номерами квитанцій
- * Відповідальність: тільки HTTP логіка
- */
+/** HTTP контролер для управління номерами квитанцій Відповідальність: тільки HTTP логіка */
 @RestController
 @RequiredArgsConstructor
 public class ReceiptNumbersApiController implements ReceiptNumbersApi {
 
-    private final ReceiptNumberService receiptNumberService;
+  private final ReceiptNumberService receiptNumberService;
 
-    @Override
-    public ResponseEntity<ReceiptNumberResponse> generateReceiptNumber(GenerateReceiptNumberRequest generateReceiptNumberRequest) {
-        ReceiptNumberResponse response = receiptNumberService.generateReceiptNumber(generateReceiptNumberRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @Override
+  public ResponseEntity<ReceiptNumberResponse> generateReceiptNumber(
+      GenerateReceiptNumberRequest generateReceiptNumberRequest) {
+    ReceiptNumberResponse response =
+        receiptNumberService.generateReceiptNumber(generateReceiptNumberRequest);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-    @Override
-    public ResponseEntity<ReceiptValidationResponse> validateReceiptNumber(ValidateReceiptNumberRequest validateReceiptNumberRequest) {
-        ReceiptValidationResponse response = receiptNumberService.validateReceiptNumber(validateReceiptNumberRequest);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<ReceiptValidationResponse> validateReceiptNumber(
+      ValidateReceiptNumberRequest validateReceiptNumberRequest) {
+    ReceiptValidationResponse response =
+        receiptNumberService.validateReceiptNumber(validateReceiptNumberRequest);
+    return ResponseEntity.ok(response);
+  }
 
-    @Override
-    public ResponseEntity<ReceiptNumberParseResponse> parseReceiptNumber(ParseReceiptNumberRequest parseReceiptNumberRequest) {
-        ReceiptNumberParseResponse response = receiptNumberService.parseReceiptNumber(parseReceiptNumberRequest);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<ReceiptNumberParseResponse> parseReceiptNumber(
+      ParseReceiptNumberRequest parseReceiptNumberRequest) {
+    ReceiptNumberParseResponse response =
+        receiptNumberService.parseReceiptNumber(parseReceiptNumberRequest);
+    return ResponseEntity.ok(response);
+  }
 }

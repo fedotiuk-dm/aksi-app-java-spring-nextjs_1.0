@@ -20,12 +20,9 @@ import jakarta.persistence.Version;
 /**
  * Базовий клас для всіх доменних сутностей.
  *
- * Забезпечує загальні поля та функціональність:
- * - Унікальний ідентифікатор (Long - внутрішньо)
- * - UUID для API сумісності (зовнішньо)
- * - Аудит дат створення та модифікації
- * - Helper методи для API конвертації
- * - Базові методи equals/hashCode/toString
+ * <p>Забезпечує загальні поля та функціональність: - Унікальний ідентифікатор (Long - внутрішньо) -
+ * UUID для API сумісності (зовнішньо) - Аудит дат створення та модифікації - Helper методи для API
+ * конвертації - Базові методи equals/hashCode/toString
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -88,37 +85,27 @@ public abstract class BaseEntity {
 
   // API Helper методи для MapStruct сумісності
 
-  /**
-   * Конвертація createdAt в OffsetDateTime для API
-   */
+  /** Конвертація createdAt в OffsetDateTime для API */
   public OffsetDateTime getCreatedAtAsOffsetDateTime() {
     return createdAt != null ? createdAt.atOffset(ZoneOffset.UTC) : null;
   }
 
-  /**
-   * Конвертація updatedAt в OffsetDateTime для API
-   */
+  /** Конвертація updatedAt в OffsetDateTime для API */
   public OffsetDateTime getUpdatedAtAsOffsetDateTime() {
     return updatedAt != null ? updatedAt.atOffset(ZoneOffset.UTC) : null;
   }
 
-  /**
-   * Конвертація createdAt в LocalDate для API
-   */
+  /** Конвертація createdAt в LocalDate для API */
   public java.time.LocalDate getCreatedAtAsLocalDate() {
     return createdAt != null ? createdAt.toLocalDate() : null;
   }
 
-  /**
-   * Статичний helper для конвертації LocalDateTime → OffsetDateTime
-   */
+  /** Статичний helper для конвертації LocalDateTime → OffsetDateTime */
   public static OffsetDateTime toOffsetDateTime(LocalDateTime localDateTime) {
     return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
   }
 
-  /**
-   * Статичний helper для конвертації OffsetDateTime → LocalDateTime
-   */
+  /** Статичний helper для конвертації OffsetDateTime → LocalDateTime */
   public static LocalDateTime toLocalDateTime(OffsetDateTime offsetDateTime) {
     return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
   }

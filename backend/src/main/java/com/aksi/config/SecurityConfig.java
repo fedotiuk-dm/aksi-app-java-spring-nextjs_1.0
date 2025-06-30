@@ -22,11 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Конфігурація Spring Security для AKSI Dry Cleaning Order System.
  *
- * Особливості:
- * - OpenAPI документація доступна без авторизації
- * - CORS налаштований для frontend
- * - Профіль розробки (dev) має мінімальну безпеку
- * - Production використовує JWT авторизацію
+ * <p>Особливості: - OpenAPI документація доступна без авторизації - CORS налаштований для frontend
+ * - Профіль розробки (dev) має мінімальну безпеку - Production використовує JWT авторизацію
  */
 @Slf4j
 @Configuration
@@ -34,111 +31,108 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final Environment environment;
+  private final Environment environment;
 
-    /**
-     * Password encoder для хешування паролів
-     * Використовує BCrypt algorithm з силою 12
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        log.info("🔐 Configuring BCrypt PasswordEncoder with strength 12");
-        return new BCryptPasswordEncoder(12);
-    }
+  /** Password encoder для хешування паролів Використовує BCrypt algorithm з силою 12 */
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    log.info("🔐 Configuring BCrypt PasswordEncoder with strength 12");
+    return new BCryptPasswordEncoder(12);
+  }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Перевіряємо чи це dev профіль
-        boolean isDevProfile = Arrays.asList(environment.getActiveProfiles()).contains("dev");
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    // Перевіряємо чи це dev профіль
+    boolean isDevProfile = Arrays.asList(environment.getActiveProfiles()).contains("dev");
 
-        log.info("🔒 Configuring Security for profiles: {}",
-                 Arrays.toString(environment.getActiveProfiles()));
+    log.info(
+        "🔒 Configuring Security for profiles: {}",
+        Arrays.toString(environment.getActiveProfiles()));
 
-        http
-            // CORS конфігурація
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    http
+        // CORS конфігурація
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-            // CSRF відключено для REST API
-            .csrf(csrf -> csrf.disable())
+        // CSRF відключено для REST API
+        .csrf(csrf -> csrf.disable())
 
-            // Session management - stateless для REST API
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        // Session management - stateless для REST API
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            // Авторизація запитів
-            .authorizeHttpRequests(authz -> {
-                if (isDevProfile) {
-                    // DEV профіль - дозволяємо все для розробки
-                    log.info("🔓 DEV mode: allowing all requests");
-                    authz.anyRequest().permitAll();
-                } else {
-                    // PRODUCTION профіль - налаштована безпека
-                    authz
-                        // Публічні endpoints (без авторизації)
-                        .requestMatchers(
-                            // OpenAPI документація
-                            "/v3/api-docs/**",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/swagger-resources/**",
-                            "/webjars/**",
+        // Авторизація запитів
+        .authorizeHttpRequests(
+            authz -> {
+              if (isDevProfile) {
+                // DEV профіль - дозволяємо все для розробки
+                log.info("🔓 DEV mode: allowing all requests");
+                authz.anyRequest().permitAll();
+              } else {
+                // PRODUCTION профіль - налаштована безпека
+                authz
+                    // Публічні endpoints (без авторизації)
+                    .requestMatchers(
+                        // OpenAPI документація
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/webjars/**",
 
-                            // Health checks
-                            "/actuator/health/**",
-                            "/actuator/info",
+                        // Health checks
+                        "/actuator/health/**",
+                        "/actuator/info",
 
-                            // Статичні ресурси
-                            "/favicon.ico",
-                            "/error"
-                        ).permitAll()
+                        // Статичні ресурси
+                        "/favicon.ico",
+                        "/error")
+                    .permitAll()
 
-                        // Всі інші requests потребують авторизації
-                        .anyRequest().authenticated();
-                }
+                    // Всі інші requests потребують авторизації
+                    .anyRequest()
+                    .authenticated();
+              }
             });
 
-        // HTTP Basic для development (тимчасово)
-        if (!isDevProfile) {
-            http.httpBasic(basic -> {});
-        }
-
-        return http.build();
+    // HTTP Basic для development (тимчасово)
+    if (!isDevProfile) {
+      http.httpBasic(basic -> {});
     }
 
-    /**
-     * CORS конфігурація для роботи з frontend
-     */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+    return http.build();
+  }
 
-        // Дозволені origins (frontend URLs)
-        configuration.setAllowedOriginPatterns(List.of(
-            "http://localhost:3000",     // Next.js dev server
-            "http://localhost",          // Traefik frontend
-            "https://aksi.com.ua",       // Production frontend
-            "https://*.aksi.com.ua"      // Production subdomains
-        ));
+  /** CORS конфігурація для роботи з frontend */
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
 
-        // Дозволені HTTP методи
-        configuration.setAllowedMethods(List.of(
-            "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
-        ));
+    // Дозволені origins (frontend URLs)
+    configuration.setAllowedOriginPatterns(
+        List.of(
+            "http://localhost:3000", // Next.js dev server
+            "http://localhost", // Traefik frontend
+            "https://aksi.com.ua", // Production frontend
+            "https://*.aksi.com.ua" // Production subdomains
+            ));
 
-        // Дозволені headers
-        configuration.setAllowedHeaders(List.of("*"));
+    // Дозволені HTTP методи
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
-        // Дозволяємо credentials (cookies, authorization headers)
-        configuration.setAllowCredentials(true);
+    // Дозволені headers
+    configuration.setAllowedHeaders(List.of("*"));
 
-        // Кешування preflight запитів
-        configuration.setMaxAge(3600L);
+    // Дозволяємо credentials (cookies, authorization headers)
+    configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+    // Кешування preflight запитів
+    configuration.setMaxAge(3600L);
 
-        log.info("🌐 CORS configured for origins: {}", configuration.getAllowedOriginPatterns());
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
 
-        return source;
-    }
+    log.info("🌐 CORS configured for origins: {}", configuration.getAllowedOriginPatterns());
+
+    return source;
+  }
 }

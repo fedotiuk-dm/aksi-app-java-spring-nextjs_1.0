@@ -8,19 +8,16 @@ import com.aksi.domain.auth.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
-/**
- * HTTP Controller для AuthorizationApi
- * Відповідальність: тільки HTTP делегація до AuthService
- */
+/** HTTP Controller для AuthorizationApi Відповідальність: тільки HTTP делегація до AuthService */
 @Controller
 @RequiredArgsConstructor
 public class AuthorizationApiController implements AuthorizationApi {
 
-    private final AuthService authService;
+  private final AuthService authService;
 
-    @Override
-    public ResponseEntity<UserResponse> getCurrentUser() {
-        UserResponse response = authService.getCurrentUserFromToken(null);
-        return ResponseEntity.ok(response);
-    }
+  @Override
+  public ResponseEntity<UserResponse> getCurrentUser() {
+    UserResponse response = authService.getCurrentUserFromToken(null);
+    return ResponseEntity.ok(response);
+  }
 }
