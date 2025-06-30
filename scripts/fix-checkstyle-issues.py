@@ -181,22 +181,6 @@ def process_java_file(file_path: Path) -> dict:
         content, html_fixes = fix_html_in_javadoc(content)
         fixes['html_fixes'] = html_fixes
 
-        # Нові виправлення
-        content, url_fixes = fix_hardcoded_urls(content)
-        fixes['hardcoded_urls'] = url_fixes
-
-        content, line_fixes = fix_long_lines(content)
-        fixes['long_lines'] = line_fixes
-
-        content, prefix_fixes = fix_is_prefix_warnings(content)
-        fixes['is_prefix'] = prefix_fixes
-
-        content, javadoc_html_fixes = fix_javadoc_html_errors(content)
-        fixes['javadoc_html'] = javadoc_html_fixes
-
-        content, suppress_fixes = fix_suppress_warnings_location(content)
-        fixes['suppress_warnings'] = suppress_fixes
-
         # Записуємо файл тільки якщо є зміни
         if content != original_content:
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -210,129 +194,6 @@ def process_java_file(file_path: Path) -> dict:
     except Exception as e:
         print_colored(f"❌ Помилка обробки {file_path}: {e}", "red")
         return {'error': str(e)}
-
-def fix_hardcoded_urls(content: str) -> Tuple[str, int]:
-    """
-    Виправляє хардкодовані URL замінюючи їх на конфігураційні змінні
-    """
-    fixed_count = 0
-
-    # Шукаємо хардкодовані URL і замінюємо на плейсхолдери
-    url_patterns = [
-        (r'"http://localhost:\d+"', '"${app.frontend.url}"'),
-        (r'"https?://[^"]*"', '"${app.external.url}"'),
-    ]
-
-    fixed_content = content
-    for pattern, replacement in url_patterns:
-        matches = re.findall(pattern, content)
-        if matches:
-            fixed_count += len(matches)
-            fixed_content = re.sub(pattern, replacement, fixed_content)
-
-    return fixed_content, fixed_count
-
-def fix_long_lines(content: str) -> Tuple[str, int]:
-    """
-    Розбиває довгі рядки (більше 120 символів)
-    """
-    fixed_count = 0
-    lines = content.split('\n')
-
-    for i, line in enumerate(lines):
-        if len(line) > 120 and '(' in line and ')' in line:
-            # Знаходимо відступ
-            indent = len(line) - len(line.lstrip())
-            base_indent = ' ' * indent
-            param_indent = ' ' * (indent + 8)
-
-            # Спробуємо розбити по параметрах методу або аннотацій
-            if ', ' in line and line.count(',') >= 2:
-                # Розбиваємо довгий рядок
-                parts = line.split(', ')
-                if len(parts) > 2:
-                    lines[i] = parts[0] + ','
-                    for j, part in enumerate(parts[1:], 1):
-                        if j == len(parts) - 1:
-                            lines.insert(i + j, param_indent + part)
-                        else:
-                            lines.insert(i + j, param_indent + part + ',')
-                    fixed_count += 1
-
-    return '\n'.join(lines), fixed_count
-
-def fix_is_prefix_warnings(content: str) -> Tuple[str, int]:
-    """
-    Виправляє warnings про is prefix в boolean полях
-    """
-    fixed_count = 0
-
-    # Замінюємо isXxx на hasXxx або shouldXxx
-    patterns = [
-        (r'\bisValid\b', 'hasValidState'),
-        (r'\bisActive\b', 'hasActiveStatus'),
-        (r'\bisComplete\b', 'hasCompleteStatus'),
-        (r'\bisEnabled\b', 'hasEnabledState'),
-    ]
-
-    fixed_content = content
-    for pattern, replacement in patterns:
-        new_content = re.sub(pattern, replacement, fixed_content)
-        if new_content != fixed_content:
-            fixed_count += len(re.findall(pattern, fixed_content))
-            fixed_content = new_content
-
-    return fixed_content, fixed_count
-
-def fix_javadoc_html_errors(content: str) -> Tuple[str, int]:
-    """
-    Виправляє HTML помилки в Javadoc коментарях
-    """
-    fixed_count = 0
-
-    # Замінюємо неправильні HTML теги на правильні
-    patterns = [
-        (r'<UserResponse>', '{@code UserResponse}'),
-        (r'<Domain UserRole>', '{@code Domain UserRole}'),
-        (r'<API UserRole>', '{@code API UserRole}'),
-        (r'<BranchResponse>', '{@code BranchResponse}'),
-        (r'<BranchSummaryResponse>', '{@code BranchSummaryResponse}'),
-        (r'<WorkingDayResponse>', '{@code WorkingDayResponse}'),
-        (r'<HolidayResponse>', '{@code HolidayResponse}'),
-        (r'<WorkingScheduleResponse>', '{@code WorkingScheduleResponse}'),
-        (r'<([A-Z][a-zA-Z]+)>', r'{@code \1}'),  # Загальний патерн для типів
-    ]
-
-    fixed_content = content
-    for pattern, replacement in patterns:
-        new_content = re.sub(pattern, replacement, fixed_content)
-        if new_content != fixed_content:
-            fixed_count += len(re.findall(pattern, fixed_content))
-            fixed_content = new_content
-
-    return fixed_content, fixed_count
-
-def fix_suppress_warnings_location(content: str) -> Tuple[str, int]:
-    """
-    Виправляє неправильне розташування @SuppressWarnings
-    """
-    fixed_count = 0
-
-    # Знаходимо @SuppressWarnings в неправильних місцях і переносимо
-    pattern = r'(\s*)@SuppressWarnings\("unchecked"\)\s*\n(\s*)(.*?)\s*='
-
-    def replacer(match):
-        nonlocal fixed_count
-        indent = match.group(1)
-        code_indent = match.group(2)
-        code = match.group(3)
-
-        # Переносимо анотацію безпосередньо перед змінною
-        fixed_count += 1
-        return f"{code_indent}@SuppressWarnings(\"unchecked\")\n{code_indent}{code} ="
-
-    fixed_content = re.sub(pattern, replacer, content, flags=re.MULTILINE)
-    return fixed_content, fixed_count
 
 def main():
     """Основна функція"""
@@ -358,11 +219,6 @@ def main():
         'missing_throws': 0,
         'missing_params': 0,
         'html_fixes': 0,
-        'hardcoded_urls': 0,
-        'long_lines': 0,
-        'is_prefix': 0,
-        'javadoc_html': 0,
-        'suppress_warnings': 0,
         'files_changed': 0
     }
 
@@ -379,10 +235,7 @@ def main():
         if fixes['file_changed']:
             total_fixes['files_changed'] += 1
             file_total = (fixes['javadoc_periods'] + fixes['missing_throws'] +
-                         fixes['missing_params'] + fixes['html_fixes'] +
-                         fixes['hardcoded_urls'] + fixes['long_lines'] +
-                         fixes['is_prefix'] + fixes['javadoc_html'] +
-                         fixes['suppress_warnings'])
+                         fixes['missing_params'] + fixes['html_fixes'])
             print_colored(f"  ✅ Виправлено {file_total} проблем", "green")
         else:
             print_colored(f"  ℹ️  Проблем не знайдено", "yellow")
@@ -392,11 +245,6 @@ def main():
         total_fixes['missing_throws'] += fixes['missing_throws']
         total_fixes['missing_params'] += fixes['missing_params']
         total_fixes['html_fixes'] += fixes['html_fixes']
-        total_fixes['hardcoded_urls'] += fixes['hardcoded_urls']
-        total_fixes['long_lines'] += fixes['long_lines']
-        total_fixes['is_prefix'] += fixes['is_prefix']
-        total_fixes['javadoc_html'] += fixes['javadoc_html']
-        total_fixes['suppress_warnings'] += fixes['suppress_warnings']
 
     # Підсумок
     print_colored("", "white")
@@ -405,18 +253,10 @@ def main():
     print_colored(f"   • @throws теги: {total_fixes['missing_throws']}", "green")
     print_colored(f"   • @param теги: {total_fixes['missing_params']}", "green")
     print_colored(f"   • HTML помилки: {total_fixes['html_fixes']}", "green")
-    print_colored(f"   • Хардкодовані URL: {total_fixes['hardcoded_urls']}", "green")
-    print_colored(f"   • Довгі рядки: {total_fixes['long_lines']}", "green")
-    print_colored(f"   • is prefix: {total_fixes['is_prefix']}", "green")
-    print_colored(f"   • Javadoc HTML: {total_fixes['javadoc_html']}", "green")
-    print_colored(f"   • @SuppressWarnings: {total_fixes['suppress_warnings']}", "green")
     print_colored(f"   • Файлів змінено: {total_fixes['files_changed']}", "green")
 
     total_issues = (total_fixes['javadoc_periods'] + total_fixes['missing_throws'] +
-                   total_fixes['missing_params'] + total_fixes['html_fixes'] +
-                   total_fixes['hardcoded_urls'] + total_fixes['long_lines'] +
-                   total_fixes['is_prefix'] + total_fixes['javadoc_html'] +
-                   total_fixes['suppress_warnings'])
+                   total_fixes['missing_params'] + total_fixes['html_fixes'])
     print_colored(f"   🎯 Загалом виправлено: {total_issues} проблем", "green")
 
     if total_issues > 0:
