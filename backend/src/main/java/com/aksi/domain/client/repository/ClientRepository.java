@@ -58,7 +58,7 @@ public interface ClientRepository
   // СТАТИСТИЧНІ МЕТОДИ (Derived Methods)
   // ==============================
 
-  /** Підрахунок VIP клієнтів (замість @Query) */
+  /** Підрахунок VIP клієнтів (замість @Query). */
   long countByIsVipTrue();
 
   /** Підрахунок клієнтів за джерелом. */

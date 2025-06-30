@@ -57,7 +57,7 @@ public class ClientService {
   // ClientsApi МЕТОДИ
   // ==============================
 
-  /** POST /api/clients */
+  /** POST /api/clients. */
   public ClientResponse createClient(CreateClientRequest request) {
     ClientEntity entity = clientMapper.toEntity(request);
     clientValidator.validateUniqueness(entity);
@@ -66,7 +66,7 @@ public class ClientService {
     return clientMapper.toResponse(savedEntity);
   }
 
-  /** GET /api/clients/{id} */
+  /** GET /api/clients/{id}. */
   @Transactional(readOnly = true)
   public ClientResponse getClientById(UUID uuid) {
     ClientEntity entity =
@@ -74,7 +74,7 @@ public class ClientService {
     return clientMapper.toResponse(entity);
   }
 
-  /** PUT /api/clients/{id} */
+  /** PUT /api/clients/{id}. */
   public ClientResponse updateClient(UUID uuid, UpdateClientRequest request) {
     ClientEntity existingEntity =
         clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
@@ -85,7 +85,7 @@ public class ClientService {
     return clientMapper.toResponse(updatedEntity);
   }
 
-  /** DELETE /api/clients/{id} */
+  /** DELETE /api/clients/{id}. */
   public void deleteClient(UUID uuid) {
     ClientEntity entity =
         clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
@@ -93,7 +93,7 @@ public class ClientService {
     clientRepository.delete(entity);
   }
 
-  /** GET /api/clients */
+  /** GET /api/clients. */
   @Transactional(readOnly = true)
   public ClientPageResponse getClients(Integer page, Integer size, String sort) {
     Pageable pageable = createPageable(page, size, sort);
@@ -106,7 +106,7 @@ public class ClientService {
     return new ClientPageResponse().content(clients).pageable(pageableInfo);
   }
 
-  /** GET /api/clients/{id}/statistics */
+  /** GET /api/clients/{id}/statistics. */
   @Transactional(readOnly = true)
   public ClientStatistics getClientStatistics(UUID uuid) {
     ClientEntity entity =
@@ -118,7 +118,7 @@ public class ClientService {
   // ClientSearchApi МЕТОДИ
   // ==============================
 
-  /** GET /api/clients/search */
+  /** GET /api/clients/search. */
   @Transactional(readOnly = true)
   public ClientSearchResponse searchClients(String query, Integer limit) {
     // Валідація query (узгоджено з @Query логікою в quickSearch)
@@ -136,7 +136,7 @@ public class ClientService {
         .hasMore(entities.size() >= searchLimit);
   }
 
-  /** POST /api/clients/search/advanced */
+  /** POST /api/clients/search/advanced. */
   @Transactional(readOnly = true)
   public ClientPageResponse advancedSearchClients(ClientSearchRequest request) {
     Integer page = request.getPage();
@@ -193,7 +193,7 @@ public class ClientService {
   // ClientContactsApi МЕТОДИ
   // ==============================
 
-  /** GET /api/clients/{id}/contacts */
+  /** GET /api/clients/{id}/contacts. */
   @Transactional(readOnly = true)
   public ClientContactsResponse getClientContacts(UUID uuid) {
     ClientEntity entity =
@@ -201,7 +201,7 @@ public class ClientService {
     return clientMapper.toContactsResponse(entity);
   }
 
-  /** PUT /api/clients/{id}/contacts */
+  /** PUT /api/clients/{id}/contacts. */
   public ClientContactsResponse updateClientContacts(
       UUID uuid, UpdateClientContactsRequest request) {
     ClientEntity existingEntity =

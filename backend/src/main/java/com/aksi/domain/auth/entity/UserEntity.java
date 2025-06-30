@@ -143,7 +143,7 @@ public class UserEntity extends BaseEntity {
     this.failedLoginAttempts = 0;
   }
 
-  /** Активація/деактивація користувача */
+  /** Активація/деактивація користувача. */
   public void setActiveStatus(boolean active) {
     this.isActive = active;
     if (active) {

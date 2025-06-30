@@ -31,7 +31,7 @@ public enum OrderStatus {
     return this == COMPLETED || this == CANCELLED;
   }
 
-  /** Перевіряє чи можна додавати/видаляти предмети */
+  /** Перевіряє чи можна додавати/видаляти предмети. */
   public boolean canModifyItems() {
     return this == DRAFT || this == NEW;
   }

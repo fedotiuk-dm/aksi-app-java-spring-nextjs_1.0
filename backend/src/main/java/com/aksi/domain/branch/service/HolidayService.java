@@ -154,7 +154,7 @@ public class HolidayService {
 
   // Helper методи
 
-  /** Перевірити чи є дата вихідним днем (субота/неділя) */
+  /** Перевірити чи є дата вихідним днем (субота/неділя). */
   private boolean isWeekend(LocalDate date) {
     return date.getDayOfWeek().getValue() >= 6; // 6=Saturday, 7=Sunday
   }
