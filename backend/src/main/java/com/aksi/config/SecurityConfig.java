@@ -3,6 +3,7 @@ package com.aksi.config;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -32,6 +33,9 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
 
   private final Environment environment;
+
+  @Value("${cors.allowed-origins:http://localhost:3000,http://localhost")
+  private String corsAllowedOrigins;
 
   /** Password encoder для хешування паролів Використовує BCrypt algorithm з силою 12. */
   @Bean
@@ -107,14 +111,8 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    // Дозволені origins (frontend URLs)
-    configuration.setAllowedOriginPatterns(
-        List.of(
-            "http://localhost:3000", // Next.js dev server
-            "http://localhost", // Traefik frontend
-            "https://aksi.com.ua", // Production frontend
-            "https://*.aksi.com.ua" // Production subdomains
-            ));
+    // Дозволені origins (frontend URLs) - винесено в окремий метод
+    configuration.setAllowedOriginPatterns(getAllowedOrigins());
 
     // Дозволені HTTP методи
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
@@ -134,5 +132,10 @@ public class SecurityConfig {
     log.info("🌐 CORS configured for origins: {}", configuration.getAllowedOriginPatterns());
 
     return source;
+  }
+
+  /** Отримання дозволених origins для CORS. */
+  private List<String> getAllowedOrigins() {
+    return List.of(corsAllowedOrigins.split(","));
   }
 }

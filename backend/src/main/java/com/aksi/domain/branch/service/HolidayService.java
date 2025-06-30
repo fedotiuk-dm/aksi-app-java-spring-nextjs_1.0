@@ -111,7 +111,7 @@ public class HolidayService {
 
     // Перевіряємо до 30 днів вперед
     for (int i = 0; i < 30; i++) {
-      if (!isHoliday(nextDate) && !isWeekend(nextDate)) {
+      if (!isHoliday(nextDate) && !checkIfWeekend(nextDate)) {
         return nextDate;
       }
       nextDate = nextDate.plusDays(1);
@@ -155,7 +155,7 @@ public class HolidayService {
   // Helper методи
 
   /** Перевірити чи є дата вихідним днем (субота/неділя). */
-  private boolean isWeekend(LocalDate date) {
+  private boolean checkIfWeekend(LocalDate date) {
     return date.getDayOfWeek().getValue() >= 6; // 6=Saturday, 7=Sunday
   }
 }

@@ -65,7 +65,7 @@ public interface BranchMapper {
 
   // Entity → DTO mappings (для response)
 
-  /** BranchEntity → BranchResponse. */
+  /** {@code BranchEntity} → {@code BranchResponse}. */
   @Mapping(target = "id", source = "uuid")
   @Mapping(
       target = "createdAt",
@@ -80,7 +80,7 @@ public interface BranchMapper {
   @Mapping(target = "workingSchedule", ignore = true) // окремий mapper для WorkingSchedule
   BranchResponse toBranchResponse(BranchEntity entity);
 
-  /** BranchEntity → BranchSummaryResponse. */
+  /** {@code BranchEntity} → {@code BranchSummaryResponse}. */
   @Mapping(target = "id", source = "uuid")
   BranchSummaryResponse toBranchSummaryResponse(BranchEntity entity);
 

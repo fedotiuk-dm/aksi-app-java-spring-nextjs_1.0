@@ -1,325 +1,315 @@
-iddqd at dima1911 in ~/I/J/J/backend
-↪ mvn checkstyle:check
-[INFO] Scanning for projects...
-[INFO]
-[INFO] -----------------< com.aksi:dry-cleaning-order-system >-----------------
-[INFO] Building AKSI Dry Cleaning Order System 1.0.0
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO]
-[INFO] --- checkstyle:3.6.0:check (default-cli) @ dry-cleaning-order-system ---
-[INFO] Starting audit...
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/SecurityConfig.java:113: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/SecurityConfig.java:114: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/SecurityConfig.java:115: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/SecurityConfig.java:116: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/OpenApiConfig.java:36: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/OpenApiConfig.java:39: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/config/OpenApiConfig.java:40: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/api/document/DocumentsApiController.java:33:47: More than 7 parameters (found 8). [ParameterNumber]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/shared/validation/Validator.java:13:1: Type Javadoc comment is missing @param <T> tag. [JavadocType]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/repository/ClientRepository.java:26:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/repository/ClientRepository.java:61: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/repository/ClientSpecification.java:172:45: More than 7 parameters (found 11). [ParameterNumber]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:60: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:69: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:77: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:88: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:96: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:109: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:121: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:139: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:196: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java:204: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/validation/ClientValidator.java:62:17: Expected @throws tag for 'ClientValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/validation/ClientValidator.java:76:17: Expected @throws tag for 'ClientValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/validation/ClientValidator.java:91:19: Expected @throws tag for 'ClientValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/entity/UserEntity.java:146: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/enums/UserRole.java:29:15: Expected @throws tag for 'IllegalArgumentException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/repository/RefreshTokenRepository.java:17:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/repository/RefreshTokenRepository.java:39: Line is longer than 120 characters (found 127). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/repository/RefreshTokenRepository.java:75: Line is longer than 120 characters (found 125). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/repository/UserRepository.java:17:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/AuthService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/AuthService.java:66:17: Expected @throws tag for 'InvalidCredentialsException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/AuthService.java:203:17: Expected @throws tag for 'com.aksi.domain.auth.exception.UserAlreadyExistsException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:26: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:99:21: The warning 'unchecked' cannot be suppressed at this location. [SuppressWarnings]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:150:17: Expected @throws tag for 'InvalidTokenException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:178:21: The warning 'unchecked' cannot be suppressed at this location. [SuppressWarnings]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/validation/UserValidator.java:28:17: Expected @throws tag for 'AuthValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/validation/UserValidator.java:39:17: Expected @throws tag for 'AuthValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:37: Javadoc comment at column 25 has parse error. Missed HTML close tag 'UserResponse'. Sometimes it means that close tag missed for one of previous tags. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:37: Javadoc comment at column 25 has parse error. Missed HTML close tag 'UserResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:37: Javadoc comment at column 25 has parse error. Missed HTML close tag 'UserResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:37: Javadoc comment at column 25 has parse error. Missed HTML close tag 'UserResponse'. Sometimes it means that close tag missed for one of previous tags. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:102: Javadoc comment at column 21 has parse error. Details: no viable alternative at input '<Domain UserRole>' while parsing HTML_ELEMENT [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:102: Javadoc comment at column 21 has parse error. Details: no viable alternative at input '<Domain UserRole>' while parsing HTML_ELEMENT [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:102: Javadoc comment at column 21 has parse error. Details: no viable alternative at input '<Domain UserRole>' while parsing HTML_ELEMENT [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:102: Javadoc comment at column 21 has parse error. Details: no viable alternative at input '<Domain UserRole>' while parsing HTML_ELEMENT [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:108: Javadoc comment at column 18 has parse error. Details: no viable alternative at input '<API UserRole>' while parsing HTML_ELEMENT [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:108: Javadoc comment at column 18 has parse error. Details: no viable alternative at input '<API UserRole>' while parsing HTML_ELEMENT [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:108: Javadoc comment at column 18 has parse error. Details: no viable alternative at input '<API UserRole>' while parsing HTML_ELEMENT [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:108: Javadoc comment at column 18 has parse error. Details: no viable alternative at input '<API UserRole>' while parsing HTML_ELEMENT [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/ReceiptRepository.java:21:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/ReceiptRepository.java:102:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '39'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/ReceiptRepository.java:104:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '29'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/ReceiptRepository.java:106:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '92'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DigitalSignatureRepository.java:23:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DigitalSignatureRepository.java:54:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '28'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DigitalSignatureRepository.java:56:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '32'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DigitalSignatureRepository.java:58:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '46'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:23:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:48:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '29'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:50:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '31'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:52:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '33'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:54:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '35'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/DocumentService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/DocumentService.java:130:17: Expected @throws tag for 'DocumentValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/DocumentService.java:185:17: Expected @throws tag for 'DocumentValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/DocumentService.java:284:17: Expected @throws tag for 'DocumentValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/QrCodeService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/QrCodeService.java:3:1: Illegal import - java.awt.image.BufferedImage. [IllegalImport]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/QrCodeService.java:57:17: Expected @throws tag for 'RuntimeException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/QrCodeService.java:85: Хардкодовані URL мають бути винесені в конфігурацію [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/PdfService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/PdfService.java:40:15: Expected @throws tag for 'UnsupportedOperationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/PdfService.java:52:15: Expected @throws tag for 'UnsupportedOperationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java:36:17: Expected @throws tag for 'SignatureValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java:114:17: Expected @throws tag for 'SignatureValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java:148:17: Expected @throws tag for 'SignatureValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java:193:17: Expected @throws tag for 'SignatureValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/validation/DocumentValidator.java:90:17: Expected @throws tag for 'DocumentValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/validation/DocumentValidator.java:114:17: Expected @throws tag for 'DocumentValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/validation/DocumentValidator.java:129:17: Expected @throws tag for 'DocumentValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java:144:17: Expected @throws tag for 'IllegalStateException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java:155:17: Expected @throws tag for 'IllegalStateException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java:166:17: Expected @throws tag for 'IllegalStateException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderItemEntity.java:328:17: Expected @throws tag for 'IllegalStateException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderItemEntity.java:340:17: Expected @throws tag for 'IllegalStateException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/enums/DiscountType.java:94:17: Expected @throws tag for 'IllegalArgumentException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/enums/OrderStatus.java:34: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/repository/OrderRepository.java:20:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/repository/OrderItemRepository.java:21:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/validation/OrderItemValidator.java:154: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/validation/OrderItemValidator.java:159: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/exception/OrderValidationException.java:95:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '36'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/BranchRepository.java:21:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidayRepository.java:19:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingScheduleRepository.java:18:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingDayRepository.java:19:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/ReceiptNumberService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/ReceiptNumberService.java:138:17: Expected @throws tag for 'IllegalArgumentException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/BranchService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/WorkingScheduleService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/HolidayService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/HolidayService.java:157: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/HolidayService.java:158: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization. [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/BranchLocationService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/validation/BranchValidator.java:56:17: Expected @throws tag for 'BranchValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/validation/BranchValidator.java:69:17: Expected @throws tag for 'BranchValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/validation/BranchValidator.java:89:17: Expected @throws tag for 'BranchValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/validation/BranchValidator.java:110:17: Expected @throws tag for 'BranchValidationException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java:36: Javadoc comment at column 31 has parse error. Missed HTML close tag 'WorkingDayResponse'. Sometimes it means that close tag missed for one of previous tags. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java:36: Javadoc comment at column 31 has parse error. Missed HTML close tag 'WorkingDayResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java:36: Javadoc comment at column 31 has parse error. Missed HTML close tag 'WorkingDayResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java:36: Javadoc comment at column 31 has parse error. Missed HTML close tag 'WorkingDayResponse'. Sometimes it means that close tag missed for one of previous tags. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java:35: Javadoc comment at column 28 has parse error. Missed HTML close tag 'HolidayResponse'. Sometimes it means that close tag missed for one of previous tags. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java:35: Javadoc comment at column 28 has parse error. Missed HTML close tag 'HolidayResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java:35: Javadoc comment at column 28 has parse error. Missed HTML close tag 'HolidayResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java:35: Javadoc comment at column 28 has parse error. Missed HTML close tag 'HolidayResponse'. Sometimes it means that close tag missed for one of previous tags. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java:53: Javadoc comment at column 36 has parse error. Missed HTML close tag 'WorkingScheduleResponse'. Sometimes it means that close tag missed for one of previous tags. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java:53: Javadoc comment at column 36 has parse error. Missed HTML close tag 'WorkingScheduleResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java:53: Javadoc comment at column 36 has parse error. Missed HTML close tag 'WorkingScheduleResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java:53: Javadoc comment at column 36 has parse error. Missed HTML close tag 'WorkingScheduleResponse'. Sometimes it means that close tag missed for one of previous tags. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java:48:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '28'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:95: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchResponse'. Sometimes it means that close tag missed for one of previous tags. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:95: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:95: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:95: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchResponse'. Sometimes it means that close tag missed for one of previous tags. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:98: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchSummaryResponse'. Sometimes it means that close tag missed for one of previous tags. [AtclauseOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:98: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchSummaryResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocParagraph]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:98: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchSummaryResponse'. Sometimes it means that close tag missed for one of previous tags. [JavadocTagContinuationIndentation]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:98: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchSummaryResponse'. Sometimes it means that close tag missed for one of previous tags. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/entity/PriceModifierEntity.java:79: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/enums/StainType.java:3: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/enums/MaterialType.java:3: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/enums/DefectType.java:3: First sentence of Javadoc is missing an ending period. [SummaryJavadoc]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemRepository.java:20:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemRepository.java:34:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '28'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemRepository.java:37:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '31'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ItemPhotoRepository.java:23:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ItemPhotoRepository.java:53: Line is longer than 120 characters (found 138). [LineLength]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierRepository.java:20:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategoryRepository.java:18:18: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl [TypeName]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/calculator/JexlCalculator.java:148:3: All overloaded methods should be placed next to each other. Previous overloaded method located at line '35'. [OverloadMethodsDeclarationOrder]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceListItemService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceModifierService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ServiceCategoryService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ServiceCategoryService.java:74:17: Expected @throws tag for 'IllegalStateException'. [JavadocMethod]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ItemCalculationService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-[WARN] /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ItemPhotoService.java:1: Сервіси повинні бути в пакеті domain.[domainName].service [RegexpSingleline]
-Audit done.
-[WARNING] src/main/java/com/aksi/config/SecurityConfig.java:[113] (regexp) RegexpSingleline: Хардкодовані URL мають бути винесені в конфігурацію
-[WARNING] src/main/java/com/aksi/config/SecurityConfig.java:[114] (regexp) RegexpSingleline: Хардкодовані URL мають бути винесені в конфігурацію
-[WARNING] src/main/java/com/aksi/config/SecurityConfig.java:[115] (regexp) RegexpSingleline: Хардкодовані URL мають бути винесені в конфігурацію
-[WARNING] src/main/java/com/aksi/config/SecurityConfig.java:[116] (regexp) RegexpSingleline: Хардкодовані URL мають бути винесені в конфігурацію
-[WARNING] src/main/java/com/aksi/config/OpenApiConfig.java:[36] (regexp) RegexpSingleline: Хардкодовані URL мають бути винесені в конфігурацію
-[WARNING] src/main/java/com/aksi/config/OpenApiConfig.java:[39] (regexp) RegexpSingleline: Хардкодовані URL мають бути винесені в конфігурацію
-[WARNING] src/main/java/com/aksi/config/OpenApiConfig.java:[40] (regexp) RegexpSingleline: Хардкодовані URL мають бути винесені в конфігурацію
-[WARNING] src/main/java/com/aksi/api/document/DocumentsApiController.java:[33,47] (sizes) ParameterNumber: More than 7 parameters (found 8).
-[WARNING] src/main/java/com/aksi/shared/validation/Validator.java:[13,1] (javadoc) JavadocType: Type Javadoc comment is missing @param <T> tag.
-[WARNING] src/main/java/com/aksi/domain/client/repository/ClientRepository.java:[26,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/client/repository/ClientRepository.java:[61] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/repository/ClientSpecification.java:[172,45] (sizes) ParameterNumber: More than 7 parameters (found 11).
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[60] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[69] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[77] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[88] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[96] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[109] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[121] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[139] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[196] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/service/ClientService.java:[204] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/client/validation/ClientValidator.java:[62,17] (javadoc) JavadocMethod: Expected @throws tag for 'ClientValidationException'.
-[WARNING] src/main/java/com/aksi/domain/client/validation/ClientValidator.java:[76,17] (javadoc) JavadocMethod: Expected @throws tag for 'ClientValidationException'.
-[WARNING] src/main/java/com/aksi/domain/client/validation/ClientValidator.java:[91,19] (javadoc) JavadocMethod: Expected @throws tag for 'ClientValidationException'.
-[WARNING] src/main/java/com/aksi/domain/auth/entity/UserEntity.java:[146] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/auth/enums/UserRole.java:[29,15] (javadoc) JavadocMethod: Expected @throws tag for 'IllegalArgumentException'.
-[WARNING] src/main/java/com/aksi/domain/auth/repository/RefreshTokenRepository.java:[17,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/auth/repository/RefreshTokenRepository.java:[39] (sizes) LineLength: Line is longer than 120 characters (found 127).
-[WARNING] src/main/java/com/aksi/domain/auth/repository/RefreshTokenRepository.java:[75] (sizes) LineLength: Line is longer than 120 characters (found 125).
-[WARNING] src/main/java/com/aksi/domain/auth/repository/UserRepository.java:[17,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/auth/service/AuthService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/auth/service/AuthService.java:[66,17] (javadoc) JavadocMethod: Expected @throws tag for 'InvalidCredentialsException'.
-[WARNING] src/main/java/com/aksi/domain/auth/service/AuthService.java:[203,17] (javadoc) JavadocMethod: Expected @throws tag for 'com.aksi.domain.auth.exception.UserAlreadyExistsException'.
-[WARNING] src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:[26] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:[99,21] (annotation) SuppressWarnings: The warning 'unchecked' cannot be suppressed at this location.
-[WARNING] src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:[150,17] (javadoc) JavadocMethod: Expected @throws tag for 'InvalidTokenException'.
-[WARNING] src/main/java/com/aksi/domain/auth/service/JwtTokenService.java:[178,21] (annotation) SuppressWarnings: The warning 'unchecked' cannot be suppressed at this location.
-[WARNING] src/main/java/com/aksi/domain/auth/validation/UserValidator.java:[28,17] (javadoc) JavadocMethod: Expected @throws tag for 'AuthValidationException'.
-[WARNING] src/main/java/com/aksi/domain/auth/validation/UserValidator.java:[39,17] (javadoc) JavadocMethod: Expected @throws tag for 'AuthValidationException'.
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[37] (javadoc) AtclauseOrder: Javadoc comment at column 25 has parse error. Missed HTML close tag 'UserResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[37] (javadoc) JavadocParagraph: Javadoc comment at column 25 has parse error. Missed HTML close tag 'UserResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[37] (javadoc) JavadocTagContinuationIndentation: Javadoc comment at column 25 has parse error. Missed HTML close tag 'UserResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[37] (javadoc) SummaryJavadoc: Javadoc comment at column 25 has parse error. Missed HTML close tag 'UserResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[102] (javadoc) AtclauseOrder: Javadoc comment at column 21 has parse error. Details: no viable alternative at input '<Domain UserRole>' while parsing HTML_ELEMENT
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[102] (javadoc) JavadocParagraph: Javadoc comment at column 21 has parse error. Details: no viable alternative at input '<Domain UserRole>' while parsing HTML_ELEMENT
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[102] (javadoc) JavadocTagContinuationIndentation: Javadoc comment at column 21 has parse error. Details: no viable alternative at input '<Domain UserRole>' while parsing HTML_ELEMENT
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[102] (javadoc) SummaryJavadoc: Javadoc comment at column 21 has parse error. Details: no viable alternative at input '<Domain UserRole>' while parsing HTML_ELEMENT
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[108] (javadoc) AtclauseOrder: Javadoc comment at column 18 has parse error. Details: no viable alternative at input '<API UserRole>' while parsing HTML_ELEMENT
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[108] (javadoc) JavadocParagraph: Javadoc comment at column 18 has parse error. Details: no viable alternative at input '<API UserRole>' while parsing HTML_ELEMENT
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[108] (javadoc) JavadocTagContinuationIndentation: Javadoc comment at column 18 has parse error. Details: no viable alternative at input '<API UserRole>' while parsing HTML_ELEMENT
-[WARNING] src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java:[108] (javadoc) SummaryJavadoc: Javadoc comment at column 18 has parse error. Details: no viable alternative at input '<API UserRole>' while parsing HTML_ELEMENT
-[WARNING] src/main/java/com/aksi/domain/document/repository/ReceiptRepository.java:[21,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/document/repository/ReceiptRepository.java:[102,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '39'.
-[WARNING] src/main/java/com/aksi/domain/document/repository/ReceiptRepository.java:[104,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '29'.
-[WARNING] src/main/java/com/aksi/domain/document/repository/ReceiptRepository.java:[106,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '92'.
-[WARNING] src/main/java/com/aksi/domain/document/repository/DigitalSignatureRepository.java:[23,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/document/repository/DigitalSignatureRepository.java:[54,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '28'.
-[WARNING] src/main/java/com/aksi/domain/document/repository/DigitalSignatureRepository.java:[56,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '32'.
-[WARNING] src/main/java/com/aksi/domain/document/repository/DigitalSignatureRepository.java:[58,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '46'.
-[WARNING] src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:[23,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:[48,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '29'.
-[WARNING] src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:[50,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '31'.
-[WARNING] src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:[52,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '33'.
-[WARNING] src/main/java/com/aksi/domain/document/repository/DocumentRepository.java:[54,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '35'.
-[WARNING] src/main/java/com/aksi/domain/document/service/DocumentService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/document/service/DocumentService.java:[130,17] (javadoc) JavadocMethod: Expected @throws tag for 'DocumentValidationException'.
-[WARNING] src/main/java/com/aksi/domain/document/service/DocumentService.java:[185,17] (javadoc) JavadocMethod: Expected @throws tag for 'DocumentValidationException'.
-[WARNING] src/main/java/com/aksi/domain/document/service/DocumentService.java:[284,17] (javadoc) JavadocMethod: Expected @throws tag for 'DocumentValidationException'.
-[WARNING] src/main/java/com/aksi/domain/document/service/QrCodeService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/document/service/QrCodeService.java:[3,1] (imports) IllegalImport: Illegal import - java.awt.image.BufferedImage.
-[WARNING] src/main/java/com/aksi/domain/document/service/QrCodeService.java:[57,17] (javadoc) JavadocMethod: Expected @throws tag for 'RuntimeException'.
-[WARNING] src/main/java/com/aksi/domain/document/service/QrCodeService.java:[85] (regexp) RegexpSingleline: Хардкодовані URL мають бути винесені в конфігурацію
-[WARNING] src/main/java/com/aksi/domain/document/service/PdfService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/document/service/PdfService.java:[40,15] (javadoc) JavadocMethod: Expected @throws tag for 'UnsupportedOperationException'.
-[WARNING] src/main/java/com/aksi/domain/document/service/PdfService.java:[52,15] (javadoc) JavadocMethod: Expected @throws tag for 'UnsupportedOperationException'.
-[WARNING] src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java:[36,17] (javadoc) JavadocMethod: Expected @throws tag for 'SignatureValidationException'.
-[WARNING] src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java:[114,17] (javadoc) JavadocMethod: Expected @throws tag for 'SignatureValidationException'.
-[WARNING] src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java:[148,17] (javadoc) JavadocMethod: Expected @throws tag for 'SignatureValidationException'.
-[WARNING] src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java:[193,17] (javadoc) JavadocMethod: Expected @throws tag for 'SignatureValidationException'.
-[WARNING] src/main/java/com/aksi/domain/document/validation/DocumentValidator.java:[90,17] (javadoc) JavadocMethod: Expected @throws tag for 'DocumentValidationException'.
-[WARNING] src/main/java/com/aksi/domain/document/validation/DocumentValidator.java:[114,17] (javadoc) JavadocMethod: Expected @throws tag for 'DocumentValidationException'.
-[WARNING] src/main/java/com/aksi/domain/document/validation/DocumentValidator.java:[129,17] (javadoc) JavadocMethod: Expected @throws tag for 'DocumentValidationException'.
-[WARNING] src/main/java/com/aksi/domain/order/entity/OrderEntity.java:[144,17] (javadoc) JavadocMethod: Expected @throws tag for 'IllegalStateException'.
-[WARNING] src/main/java/com/aksi/domain/order/entity/OrderEntity.java:[155,17] (javadoc) JavadocMethod: Expected @throws tag for 'IllegalStateException'.
-[WARNING] src/main/java/com/aksi/domain/order/entity/OrderEntity.java:[166,17] (javadoc) JavadocMethod: Expected @throws tag for 'IllegalStateException'.
-[WARNING] src/main/java/com/aksi/domain/order/entity/OrderItemEntity.java:[328,17] (javadoc) JavadocMethod: Expected @throws tag for 'IllegalStateException'.
-[WARNING] src/main/java/com/aksi/domain/order/entity/OrderItemEntity.java:[340,17] (javadoc) JavadocMethod: Expected @throws tag for 'IllegalStateException'.
-[WARNING] src/main/java/com/aksi/domain/order/enums/DiscountType.java:[94,17] (javadoc) JavadocMethod: Expected @throws tag for 'IllegalArgumentException'.
-[WARNING] src/main/java/com/aksi/domain/order/enums/OrderStatus.java:[34] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/order/repository/OrderRepository.java:[20,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/order/repository/OrderItemRepository.java:[21,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/order/validation/OrderItemValidator.java:[154] (regexp) RegexpSingleline: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization.
-[WARNING] src/main/java/com/aksi/domain/order/validation/OrderItemValidator.java:[159] (regexp) RegexpSingleline: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization.
-[WARNING] src/main/java/com/aksi/domain/order/exception/OrderValidationException.java:[95,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '36'.
-[WARNING] src/main/java/com/aksi/domain/branch/repository/BranchRepository.java:[21,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/branch/repository/HolidayRepository.java:[19,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/branch/repository/WorkingScheduleRepository.java:[18,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/branch/repository/WorkingDayRepository.java:[19,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/branch/service/ReceiptNumberService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/branch/service/ReceiptNumberService.java:[138,17] (javadoc) JavadocMethod: Expected @throws tag for 'IllegalArgumentException'.
-[WARNING] src/main/java/com/aksi/domain/branch/service/BranchService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/branch/service/WorkingScheduleService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/branch/service/HolidayService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/branch/service/HolidayService.java:[157] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/branch/service/HolidayService.java:[158] (regexp) RegexpSingleline: Avoid using is prefix for boolean fields to prevent issues with OpenAPI and JSON serialization.
-[WARNING] src/main/java/com/aksi/domain/branch/service/BranchLocationService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/branch/validation/BranchValidator.java:[56,17] (javadoc) JavadocMethod: Expected @throws tag for 'BranchValidationException'.
-[WARNING] src/main/java/com/aksi/domain/branch/validation/BranchValidator.java:[69,17] (javadoc) JavadocMethod: Expected @throws tag for 'BranchValidationException'.
-[WARNING] src/main/java/com/aksi/domain/branch/validation/BranchValidator.java:[89,17] (javadoc) JavadocMethod: Expected @throws tag for 'BranchValidationException'.
-[WARNING] src/main/java/com/aksi/domain/branch/validation/BranchValidator.java:[110,17] (javadoc) JavadocMethod: Expected @throws tag for 'BranchValidationException'.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java:[36] (javadoc) AtclauseOrder: Javadoc comment at column 31 has parse error. Missed HTML close tag 'WorkingDayResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java:[36] (javadoc) JavadocParagraph: Javadoc comment at column 31 has parse error. Missed HTML close tag 'WorkingDayResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java:[36] (javadoc) JavadocTagContinuationIndentation: Javadoc comment at column 31 has parse error. Missed HTML close tag 'WorkingDayResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java:[36] (javadoc) SummaryJavadoc: Javadoc comment at column 31 has parse error. Missed HTML close tag 'WorkingDayResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java:[35] (javadoc) AtclauseOrder: Javadoc comment at column 28 has parse error. Missed HTML close tag 'HolidayResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java:[35] (javadoc) JavadocParagraph: Javadoc comment at column 28 has parse error. Missed HTML close tag 'HolidayResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java:[35] (javadoc) JavadocTagContinuationIndentation: Javadoc comment at column 28 has parse error. Missed HTML close tag 'HolidayResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java:[35] (javadoc) SummaryJavadoc: Javadoc comment at column 28 has parse error. Missed HTML close tag 'HolidayResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java:[53] (javadoc) AtclauseOrder: Javadoc comment at column 36 has parse error. Missed HTML close tag 'WorkingScheduleResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java:[53] (javadoc) JavadocParagraph: Javadoc comment at column 36 has parse error. Missed HTML close tag 'WorkingScheduleResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java:[53] (javadoc) JavadocTagContinuationIndentation: Javadoc comment at column 36 has parse error. Missed HTML close tag 'WorkingScheduleResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java:[53] (javadoc) SummaryJavadoc: Javadoc comment at column 36 has parse error. Missed HTML close tag 'WorkingScheduleResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java:[48,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '28'.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:[95] (javadoc) AtclauseOrder: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:[95] (javadoc) JavadocParagraph: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:[95] (javadoc) JavadocTagContinuationIndentation: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:[95] (javadoc) SummaryJavadoc: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:[98] (javadoc) AtclauseOrder: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchSummaryResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:[98] (javadoc) JavadocParagraph: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchSummaryResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:[98] (javadoc) JavadocTagContinuationIndentation: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchSummaryResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java:[98] (javadoc) SummaryJavadoc: Javadoc comment at column 27 has parse error. Missed HTML close tag 'BranchSummaryResponse'. Sometimes it means that close tag missed for one of previous tags.
-[WARNING] src/main/java/com/aksi/domain/item/entity/PriceModifierEntity.java:[79] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/item/enums/StainType.java:[3] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/item/enums/MaterialType.java:[3] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/item/enums/DefectType.java:[3] (javadoc) SummaryJavadoc: First sentence of Javadoc is missing an ending period.
-[WARNING] src/main/java/com/aksi/domain/item/repository/PriceListItemRepository.java:[20,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/item/repository/PriceListItemRepository.java:[34,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '28'.
-[WARNING] src/main/java/com/aksi/domain/item/repository/PriceListItemRepository.java:[37,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '31'.
-[WARNING] src/main/java/com/aksi/domain/item/repository/ItemPhotoRepository.java:[23,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/item/repository/ItemPhotoRepository.java:[53] (sizes) LineLength: Line is longer than 120 characters (found 138).
-[WARNING] src/main/java/com/aksi/domain/item/repository/PriceModifierRepository.java:[20,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/item/repository/ServiceCategoryRepository.java:[18,18] (naming) TypeName: Репозиторії повинні закінчуватися на Repository, а реалізація сервісів - на ServiceImpl
-[WARNING] src/main/java/com/aksi/domain/item/calculator/JexlCalculator.java:[148,3] (coding) OverloadMethodsDeclarationOrder: All overloaded methods should be placed next to each other. Previous overloaded method located at line '35'.
-[WARNING] src/main/java/com/aksi/domain/item/service/PriceListItemService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/item/service/PriceModifierService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/item/service/ServiceCategoryService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/item/service/ServiceCategoryService.java:[74,17] (javadoc) JavadocMethod: Expected @throws tag for 'IllegalStateException'.
-[WARNING] src/main/java/com/aksi/domain/item/service/ItemCalculationService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[WARNING] src/main/java/com/aksi/domain/item/service/ItemPhotoService.java:[1] (regexp) RegexpSingleline: Сервіси повинні бути в пакеті domain.[domainName].service
-[INFO] You have 152 Checkstyle violations. The maximum number of allowed violations is 2000.
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  2.871 s
-[INFO] Finished at: 2025-07-01T00:36:56+02:00
-[INFO] ------------------------------------------------------------------------
-iddqd at dima1911 in ~/I/J/J/backend
-↪
+[WARNING] CPD Failure: Found 22 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java line 68
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/mapper/DocumentMapper.java line 34
+[WARNING] CPD Failure: Found 12 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java line 38
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java line 53
+[WARNING] CPD Failure: Found 14 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/JwtTokenService.java line 147
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/JwtTokenService.java line 254
+[WARNING] CPD Failure: Found 16 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java line 36
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java line 37
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java line 54
+[WARNING] CPD Failure: Found 12 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 29
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 28
+[WARNING] CPD Failure: Found 12 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 40
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 39
+[WARNING] CPD Failure: Found 12 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 87
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 40
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 39
+[WARNING] CPD Failure: Found 11 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/ItemPhotoMapper.java line 47
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/PriceListItemMapper.java line 61
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/PriceModifierMapper.java line 43
+[WARNING] CPD Failure: Found 9 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/ItemPhotoMapper.java line 27
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/PriceModifierMapper.java line 30
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/ServiceCategoryMapper.java line 32
+[WARNING] CPD Failure: Found 19 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java line 76
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java line 110
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/ItemPhotoMapper.java line 30
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/PriceListItemMapper.java line 53
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/PriceModifierMapper.java line 33
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/ServiceCategoryMapper.java line 35
+[WARNING] CPD Failure: Found 14 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java line 110
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/mapper/DocumentMapper.java line 42
+[WARNING] CPD Failure: Found 13 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/mapper/DocumentMapper.java line 46
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/shared/mapper/BaseMapperConfig.java line 19
+[WARNING] CPD Failure: Found 11 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 77
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingDaySpecification.java line 38
+[WARNING] CPD Failure: Found 10 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/mapper/AuthMapper.java line 80
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/shared/mapper/BaseMapperConfig.java line 19
+[WARNING] CPD Failure: Found 9 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/JwtTokenService.java line 53
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/service/JwtTokenService.java line 73
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java line 28
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java line 48
+[WARNING] CPD Failure: Found 11 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java line 35
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java line 45
+[WARNING] CPD Failure: Found 10 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java line 114
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/shared/mapper/BaseMapperConfig.java line 19
+[WARNING] CPD Failure: Found 11 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/calculator/JexlCalculator.java line 52
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/calculator/SimpleCalculator.java line 32
+[WARNING] CPD Failure: Found 13 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceModifierService.java line 40
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ServiceCategoryService.java line 40
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java line 28
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java line 38
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/BranchSpecification.java line 39
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingScheduleSpecification.java line 54
+[WARNING] CPD Failure: Found 11 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 147
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 166
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 154
+[WARNING] CPD Failure: Found 15 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java line 58
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java line 65
+[WARNING] CPD Failure: Found 12 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/shared/validation/ValidationResult.java line 28
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/shared/validation/ValidationResult.java line 40
+[WARNING] CPD Failure: Found 11 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/BranchSpecification.java line 15
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingDaySpecification.java line 62
+[WARNING] CPD Failure: Found 9 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 130
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingDaySpecification.java line 144
+[WARNING] CPD Failure: Found 11 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java line 53
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java line 59
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java line 66
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java line 104
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/HolidayMapper.java line 56
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingDayMapper.java line 62
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java line 69
+[WARNING] CPD Failure: Found 5 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java line 32
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/WorkingScheduleMapper.java line 39
+[WARNING] CPD Failure: Found 5 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DigitalSignatureSpecification.java line 82
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DocumentSpecification.java line 95
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/ReceiptSpecification.java line 67
+[WARNING] CPD Failure: Found 9 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 279
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 295
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 313
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java line 126
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/CoordinatesMapper.java line 30
+[WARNING] CPD Failure: Found 14 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/PriceModifierValidator.java line 31
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/PriceModifierValidator.java line 46
+[WARNING] CPD Failure: Found 7 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/validation/UserValidator.java line 22
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/validation/UserValidator.java line 33
+[WARNING] CPD Failure: Found 17 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/DocumentService.java line 126
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/service/DocumentService.java line 280
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/repository/ClientSpecification.java line 38
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/repository/ClientSpecification.java line 49
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 100
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 177
+[WARNING] CPD Failure: Found 13 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/calculator/JexlCalculator.java line 77
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/calculator/SimpleCalculator.java line 43
+[WARNING] CPD Failure: Found 11 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/entity/BranchEntity.java line 38
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/ClientEntity.java line 46
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 138
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingScheduleSpecification.java line 65
+[WARNING] CPD Failure: Found 9 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 263
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 279
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 295
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 313
+[WARNING] CPD Failure: Found 5 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/BranchSpecification.java line 49
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ItemPhotoSpecification.java line 148
+[WARNING] CPD Failure: Found 7 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingScheduleSpecification.java line 75
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingScheduleSpecification.java line 94
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 108
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 134
+[WARNING] CPD Failure: Found 5 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 36
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 143
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 50
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/BranchSpecification.java line 15
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingScheduleSpecification.java line 25
+[WARNING] CPD Failure: Found 4 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/ServiceCategoryMapper.java line 20
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/mapper/ServiceCategoryMapper.java line 40
+[WARNING] CPD Failure: Found 7 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/auth/entity/UserEntity.java line 52
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/ClientEntity.java line 57
+[WARNING] CPD Failure: Found 10 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceModifierService.java line 58
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ServiceCategoryService.java line 59
+[WARNING] CPD Failure: Found 15 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/PriceListItemValidator.java line 55
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/PriceModifierValidator.java line 59
+[WARNING] CPD Failure: Found 11 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/entity/BranchEntity.java line 38
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/entity/HolidayEntity.java line 38
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/entity/WorkingDayEntity.java line 39
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/entity/WorkingScheduleEntity.java line 44
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/ClientEntity.java line 46
+[WARNING] CPD Failure: Found 7 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java line 74
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/AddressMapper.java line 92
+[WARNING] CPD Failure: Found 10 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/BranchMapper.java line 69
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/mapper/ClientMapper.java line 57
+[WARNING] CPD Failure: Found 5 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 89
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 38
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingDaySpecification.java line 62
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/WorkingScheduleSpecification.java line 25
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/ReceiptNumberService.java line 46
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/ReceiptNumberService.java line 164
+[WARNING] CPD Failure: Found 9 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/entity/HolidayEntity.java line 30
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/entity/WorkingDayEntity.java line 31
+[WARNING] CPD Failure: Found 10 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ItemPhotoService.java line 45
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceListItemService.java line 63
+[WARNING] CPD Failure: Found 10 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/ItemPhotoValidator.java line 63
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/PriceListItemValidator.java line 60
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/PriceModifierValidator.java line 64
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/ServiceCategoryValidator.java line 56
+[WARNING] CPD Failure: Found 9 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/BranchLocationService.java line 56
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/service/BranchLocationService.java line 150
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ItemPhotoService.java line 61
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceListItemService.java line 79
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceModifierService.java line 74
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ServiceCategoryService.java line 89
+[WARNING] CPD Failure: Found 13 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/PriceListItemValidator.java line 29
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/PriceListItemValidator.java line 43
+[WARNING] CPD Failure: Found 5 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/validation/ClientValidator.java line 39
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/validation/ClientValidator.java line 49
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/ItemPhotoValidator.java line 25
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/ItemPhotoValidator.java line 37
+[WARNING] CPD Failure: Found 3 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/entity/OrderEntity.java line 136
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/order/validation/OrderItemValidator.java line 180
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 15
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 42
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 52
+[WARNING] CPD Failure: Found 5 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/Address.java line 42
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/Address.java line 49
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/Address.java line 56
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/entity/Address.java line 63
+[WARNING] CPD Failure: Found 4 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/entity/ReceiptEntity.java line 101
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/entity/ReceiptEntity.java line 107
+[WARNING] CPD Failure: Found 7 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/entity/PriceModifierEntity.java line 44
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/entity/ServiceCategoryEntity.java line 45
+[WARNING] CPD Failure: Found 4 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ItemPhotoSpecification.java line 205
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ItemPhotoSpecification.java line 235
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 147
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 157
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 167
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 156
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 166
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 176
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 196
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 154
+[WARNING] CPD Failure: Found 4 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ItemPhotoSpecification.java line 215
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ItemPhotoSpecification.java line 225
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 177
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 186
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 26
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 97
+[WARNING] CPD Failure: Found 7 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceListItemService.java line 46
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceModifierService.java line 41
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/ServiceCategoryService.java line 41
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/entity/HolidayEntity.java line 30
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/entity/WorkingScheduleEntity.java line 34
+[WARNING] CPD Failure: Found 7 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java line 70
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/validation/DigitalSignatureValidator.java line 81
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/calculator/JexlCalculator.java line 68
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/calculator/JexlCalculator.java line 79
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/calculator/SimpleCalculator.java line 45
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/entity/PriceListItemEntity.java line 55
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/entity/PriceModifierEntity.java line 55
+[WARNING] CPD Failure: Found 7 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceListItemService.java line 87
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/service/PriceListItemService.java line 102
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/ItemValidationRules.java line 124
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/ItemValidationRules.java line 142
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/ItemValidationRules.java line 204
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/validation/ItemValidationRules.java line 214
+[WARNING] CPD Failure: Found 5 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/ReceiptNumberMapper.java line 73
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/mapper/ReceiptNumberMapper.java line 87
+[WARNING] CPD Failure: Found 5 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 89
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/branch/repository/HolidaySpecification.java line 121
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ItemPhotoSpecification.java line 150
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ItemPhotoSpecification.java line 161
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 38
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 31
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 42
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 30
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 41
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/mapper/ClientMapper.java line 50
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/mapper/ClientMapper.java line 72
+[WARNING] CPD Failure: Found 4 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 71
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 111
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/client/service/ClientService.java line 198
+[WARNING] CPD Failure: Found 8 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DigitalSignatureSpecification.java line 43
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/document/repository/DigitalSignatureSpecification.java line 158
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 16
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 19
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 18
+[WARNING] CPD Failure: Found 6 lines of duplicated code at locations:
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceListItemSpecification.java line 21
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/PriceModifierSpecification.java line 24
+[WARNING]     /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/src/main/java/com/aksi/domain/item/repository/ServiceCategorySpecification.java line 23
+[WARNING] CPD 7.14.0 has found 89 duplications. For more details see: /home/iddqd/IdeaProjects/Java_Spring_Nextjs_aksi-app/Java_Nextjs_1.0/backend/target/cpd.xml

@@ -50,7 +50,8 @@ public interface ItemPhotoRepository
 
   @Modifying
   @Query(
-      "UPDATE ItemPhotoEntity ip SET ip.displayOrder = ip.displayOrder - 1 WHERE ip.itemId = :itemId AND ip.displayOrder > :deletedOrder")
+      "UPDATE ItemPhotoEntity ip SET ip.displayOrder = ip.displayOrder - 1 "
+          + "WHERE ip.itemId = :itemId AND ip.displayOrder > :deletedOrder")
   void adjustDisplayOrderAfterDeletion(
       @Param("itemId") UUID itemId, @Param("deletedOrder") Integer deletedOrder);
 

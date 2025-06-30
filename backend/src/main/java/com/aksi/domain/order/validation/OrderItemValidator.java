@@ -61,13 +61,13 @@ public class OrderItemValidator {
 
     for (StainType stain : item.getStains()) {
       // БІЗНЕС-ПРАВИЛО: Деякі забруднення несумісні з певними матеріалами
-      if (!isStainCompatibleWithMaterial(stain, item.getMaterial())) {
+      if (!checkStainMaterialCompatibility(stain, item.getMaterial())) {
         throw OrderItemValidationException.incompatibleStainWithMaterial(
             stain.name(), item.getMaterial());
       }
 
       // БІЗНЕС-ПРАВИЛО: Деякі забруднення несумісні з категорією обробки
-      if (!isStainCompatibleWithCategory(stain, item.getCategory())) {
+      if (!checkStainCategoryCompatibility(stain, item.getCategory())) {
         throw OrderItemValidationException.incompatibleDefectWithCategory(
             stain.name(), item.getCategory().name());
       }
@@ -151,12 +151,12 @@ public class OrderItemValidator {
 
   // === HELPER МЕТОДИ ДЛЯ БІЗНЕС-ЛОГІКИ ===
 
-  private boolean isStainCompatibleWithMaterial(StainType stain, String material) {
+  private boolean checkStainMaterialCompatibility(StainType stain, String material) {
     // БІЗНЕС-ЛОГІКА: наприклад, масляні плями важко виводяти з деякими матеріалами
     return !(stain.name().contains("OIL") && "SILK".equals(material));
   }
 
-  private boolean isStainCompatibleWithCategory(StainType stain, ServiceCategory category) {
+  private boolean checkStainCategoryCompatibility(StainType stain, ServiceCategory category) {
     // БІЗНЕС-ЛОГІКА: не всі категорії можуть обробляти всі види забруднень
     return !(stain.name().contains("PAINT") && category.name().contains("DRY_CLEANING_ONLY"));
   }

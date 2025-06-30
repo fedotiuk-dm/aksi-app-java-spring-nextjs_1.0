@@ -26,6 +26,7 @@
         <springdoc.version>2.8.9</springdoc.version>
         <lombok.version>1.18.38</lombok.version>
         <jjwt.version>0.12.6</jjwt.version>
+        <maven-pmd-plugin.version>3.27.0</maven-pmd-plugin.version>
     </properties>
 
     <dependencies>
@@ -474,6 +475,35 @@
                 </executions>
             </plugin>
 
+            <!-- PMD для пошуку дублювання коду (CPD) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${maven-pmd-plugin.version}</version>
+                <configuration>
+                    <minimumTokens>30</minimumTokens>
+                    <skipEmptyReport>false</skipEmptyReport>
+                    <analysisCache>true</analysisCache>
+                    <printFailingErrors>true</printFailingErrors>
+                    <linkXRef>false</linkXRef>
+                    <failOnViolation>false</failOnViolation>
+                    <!-- Виключення контролерів з CPD -->
+                    <excludes>
+                        <exclude>**/api/**/*Controller.java</exclude>
+                        <exclude>**/util/ApiResponseUtils.java</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>cpd-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>cpd-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Checkstyle для перевірки стилю коду + невикористані імпорти -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -524,6 +554,8 @@
                 <maven.test.skip>true</maven.test.skip>
                 <!-- Пропускаємо checkstyle -->
                 <checkstyle.skip>true</checkstyle.skip>
+                <!-- Пропускаємо PMD -->
+                <pmd.skip>true</pmd.skip>
                 <!-- Залишаємо spotless для OpenAPI файлів -->
                 <spotless.skip>false</spotless.skip>
             </properties>
@@ -536,6 +568,7 @@
                 <skipTests>true</skipTests>
                 <maven.test.skip>true</maven.test.skip>
                 <checkstyle.skip>true</checkstyle.skip>
+                <pmd.skip>true</pmd.skip>
                 <spotless.skip>true</spotless.skip>
             </properties>
             <build>
@@ -581,6 +614,7 @@
             <properties>
                 <skipTests>false</skipTests>
                 <checkstyle.skip>false</checkstyle.skip>
+                <pmd.skip>false</pmd.skip>
                 <spotless.skip>false</spotless.skip>
             </properties>
         </profile>

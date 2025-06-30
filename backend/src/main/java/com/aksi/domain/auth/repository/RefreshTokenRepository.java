@@ -30,13 +30,15 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
 
   /** Пошук активних токенів користувача. */
   @Query(
-      "SELECT rt FROM RefreshTokenEntity rt WHERE rt.userId = :userId AND rt.isActive = true AND rt.expiresAt > :now")
+      "SELECT rt FROM RefreshTokenEntity rt "
+          + "WHERE rt.userId = :userId AND rt.isActive = true AND rt.expiresAt > :now")
   List<RefreshTokenEntity> findActiveTokensByUserId(
       @Param("userId") Long userId, @Param("now") LocalDateTime now);
 
   /** Перевірка чи існує активний токен. */
   @Query(
-      "SELECT COUNT(rt) > 0 FROM RefreshTokenEntity rt WHERE rt.token = :token AND rt.isActive = true AND rt.expiresAt > :now")
+      "SELECT COUNT(rt) > 0 FROM RefreshTokenEntity rt "
+          + "WHERE rt.token = :token AND rt.isActive = true AND rt.expiresAt > :now")
   boolean existsValidToken(@Param("token") String token, @Param("now") LocalDateTime now);
 
   /** Інвалідація токену. */
@@ -72,7 +74,8 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
 
   /** Підрахунок активних сесій користувача. */
   @Query(
-      "SELECT COUNT(rt) FROM RefreshTokenEntity rt WHERE rt.userId = :userId AND rt.isActive = true AND rt.expiresAt > :now")
+      "SELECT COUNT(rt) FROM RefreshTokenEntity rt "
+          + "WHERE rt.userId = :userId AND rt.isActive = true AND rt.expiresAt > :now")
   long countActiveSessionsByUserId(@Param("userId") Long userId, @Param("now") LocalDateTime now);
 
   /** Статистика токенів по користувачах. */

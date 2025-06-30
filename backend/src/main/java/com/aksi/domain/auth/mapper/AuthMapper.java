@@ -25,7 +25,10 @@ public interface AuthMapper {
 
   // Entity → DTO mappings
 
-  /** UserEntity → UserResponse Головний маппінг для публічної інформації користувача. */
+  /**
+   * {@code UserEntity} → {@code UserResponse} Головний маппінг для публічної інформації
+   * користувача.
+   */
   @Mapping(target = "id", source = "id", qualifiedByName = "longToUuid")
   @Mapping(
       target = "createdAt",
@@ -34,7 +37,7 @@ public interface AuthMapper {
   @Mapping(target = "roles", source = "roles", qualifiedByName = "domainRolesToApiRoles")
   UserResponse toUserResponse(UserEntity user);
 
-  /** List<UserEntity> → List<UserResponse>. */
+  /** {@code List<UserEntity>} → {@code List<UserResponse>}. */
   List<UserResponse> toUserResponseList(List<UserEntity> users);
 
   // DTO → Entity mappings (простіші, без складних ignore)
@@ -87,25 +90,25 @@ public interface AuthMapper {
 
   // UserRole mappings (Domain ↔ API)
 
-  /** Domain UserRole → API UserRole. */
+  /** Domain {@code UserRole} → API {@code UserRole}. */
   default com.aksi.api.auth.dto.UserRole toApiUserRole(UserRole domainRole) {
     return domainRole != null
         ? com.aksi.api.auth.dto.UserRole.fromValue(domainRole.toApiValue())
         : null;
   }
 
-  /** API UserRole → Domain UserRole. */
+  /** API {@code UserRole} → Domain {@code UserRole}. */
   default UserRole fromApiUserRole(com.aksi.api.auth.dto.UserRole apiRole) {
     return apiRole != null ? UserRole.fromApiValue(apiRole.getValue()) : null;
   }
 
-  /** List<Domain UserRole> → List<API UserRole>. */
+  /** {@code List<Domain UserRole>} → {@code List<API UserRole>}. */
   @Named("domainRolesToApiRoles")
   default List<com.aksi.api.auth.dto.UserRole> domainRolesToApiRoles(List<UserRole> domainRoles) {
     return domainRoles != null ? domainRoles.stream().map(this::toApiUserRole).toList() : null;
   }
 
-  /** List<API UserRole> → List<Domain UserRole>. */
+  /** {@code List<API UserRole>} → {@code List<Domain UserRole>}. */
   @Named("apiRolesToDomainRoles")
   default List<UserRole> apiRolesToDomainRoles(List<com.aksi.api.auth.dto.UserRole> apiRoles) {
     return apiRoles != null ? apiRoles.stream().map(this::fromApiUserRole).toList() : null;

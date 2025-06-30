@@ -2,6 +2,7 @@ package com.aksi.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +21,15 @@ import io.swagger.v3.oas.models.servers.Server;
 @Configuration
 public class OpenApiConfig {
 
+  @Value("${app.contact-url:https://aksi.vn.ua}")
+  private String contactUrl;
+
+  @Value("${app.dev-server-url:http://localhost:8080/api}")
+  private String devServerUrl;
+
+  @Value("${app.prod-server-url:https://api.aksi.vn.ua}")
+  private String prodServerUrl;
+
   @Bean
   public OpenAPI customOpenAPI() {
     return new OpenAPI()
@@ -33,10 +43,10 @@ public class OpenApiConfig {
                     new Contact()
                         .name("AKSI Development Team")
                         .email("dev@aksi.com.ua")
-                        .url("https://aksi.com.ua")))
+                        .url(contactUrl)))
         .servers(
             List.of(
-                new Server().url("http://localhost:8080/api").description("Development server"),
-                new Server().url("https://api.aksi.com.ua").description("Production server")));
+                new Server().url(devServerUrl).description("Development server"),
+                new Server().url(prodServerUrl).description("Production server")));
   }
 }

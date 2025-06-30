@@ -9,6 +9,8 @@ import java.util.function.Predicate;
  * if-нагромаджень.
  *
  * <p>Використовується всіма доменами для консистентної валідації.
+ *
+ * @param <T> тип об'єкта для валідації
  */
 @FunctionalInterface
 public interface Validator<T> {
