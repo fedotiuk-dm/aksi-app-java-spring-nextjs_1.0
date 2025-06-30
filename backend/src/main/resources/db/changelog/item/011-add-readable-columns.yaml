@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-add-readable-columns
+      author: system
+      comment: Add readable columns to service_category_modifiers for better understanding
+
+      changes:
+        # Add readable columns to service_category_modifiers
+        - addColumn:
+            tableName: service_category_modifiers
+            columns:
+              - column:
+                  name: category_code
+                  type: varchar(50)
+                  remarks: "Category code for readability (e.g., CLOTHING, LEATHER)"
+              - column:
+                  name: category_name
+                  type: varchar(255)
+                  remarks: "Category name for readability (e.g., Чистка одягу та текстилю)"
+              - column:
+                  name: modifier_code
+                  type: varchar(100)
+                  remarks: "Modifier code for readability (e.g., CHILDREN_ITEMS)"
+              - column:
+                  name: modifier_name
+                  type: varchar(255)
+                  remarks: "Modifier name for readability (e.g., Дитячі речі)"
+
+        # Update existing data with readable values
+        - sql:
+            sql: |
+              UPDATE service_category_modifiers scm
+              SET
+                  category_code = sc.code,
+                  category_name = sc.name,
+                  modifier_code = pm.code,
+                  modifier_name = pm.name
+              FROM service_categories sc, price_modifiers pm
+              WHERE scm.category_id = sc.id
+                AND scm.modifier_id = pm.id;
+
+      rollback:
+        - dropColumn:
+            tableName: service_category_modifiers
+            columns:
+              - column:
+                  name: category_code
+              - column:
+                  name: category_name
+              - column:
+                  name: modifier_code
+              - column:
+                  name: modifier_name

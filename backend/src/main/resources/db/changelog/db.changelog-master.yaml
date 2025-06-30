@@ -32,6 +32,10 @@ databaseChangeLog:
       file: db/changelog/item/008-insert-category-materials-compact.yaml
   - include:
       file: db/changelog/item/009-insert-category-modifiers-compact.yaml
+  - include:
+      file: db/changelog/item/011-add-readable-columns.yaml
+  - include:
+      file: db/changelog/item/012-add-readable-columns-materials.yaml
 
   # Branch Domain міграції
   - include:

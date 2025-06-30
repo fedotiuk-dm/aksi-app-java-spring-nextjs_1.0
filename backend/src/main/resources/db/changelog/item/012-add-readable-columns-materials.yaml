@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-add-readable-columns-materials
+      author: system
+      comment: Add readable columns to service_category_materials for better understanding
+
+      changes:
+        # Add readable columns to service_category_materials
+        - addColumn:
+            tableName: service_category_materials
+            columns:
+              - column:
+                  name: category_code
+                  type: varchar(50)
+                  remarks: "Category code for readability (e.g., CLOTHING, LEATHER)"
+              - column:
+                  name: category_name
+                  type: varchar(255)
+                  remarks: "Category name for readability (e.g., Чистка одягу та текстилю)"
+
+        # Update existing data with readable values
+        - sql:
+            sql: |
+              UPDATE service_category_materials scm
+              SET
+                  category_code = sc.code,
+                  category_name = sc.name
+              FROM service_categories sc
+              WHERE scm.category_id = sc.id;
+
+      rollback:
+        - dropColumn:
+            tableName: service_category_materials
+            columns:
+              - column:
+                  name: category_code
+              - column:
+                  name: category_name
