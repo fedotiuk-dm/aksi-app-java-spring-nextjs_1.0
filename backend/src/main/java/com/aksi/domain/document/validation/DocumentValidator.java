@@ -99,7 +99,7 @@ public class DocumentValidator {
     /**
      * Валідація переходу статусів
      */
-    private void validateStatusTransition(DocumentStatus from, DocumentStatus to) {
+    public void validateStatusTransition(DocumentStatus from, DocumentStatus to) {
         if (from == to) return;
 
         var allowedTransitions = getAllowedTransitions(from);

@@ -23,6 +23,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/branch/002-insert-branch-seed-data.yaml
 
-  # Document Domain міграції (TODO)
-  # - include:
-  #     file: db/changelog/document/001-create-document-tables.yaml
+  # Document Domain міграції
+  - include:
+      file: db/changelog/document/001-create-document-tables.yaml
