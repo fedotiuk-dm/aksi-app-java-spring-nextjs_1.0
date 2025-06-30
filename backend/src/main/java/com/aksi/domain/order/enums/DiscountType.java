@@ -3,7 +3,7 @@ package com.aksi.domain.order.enums;
 import java.math.BigDecimal;
 import java.util.Set;
 
-/** Domain enum для типу знижки з business логікою розрахунків */
+/** Domain enum для типу знижки з business логікою розрахунків. */
 public enum DiscountType {
   NONE("Без знижки", BigDecimal.ZERO, false),
   EVERCARD("Еверкард", BigDecimal.valueOf(0.10), false),
@@ -25,43 +25,43 @@ public enum DiscountType {
     return description;
   }
 
-  /** Отримує стандартний відсоток знижки (0.10 = 10%) */
+  /** Отримує стандартний відсоток знижки (0.10 = 10%). */
   public BigDecimal getDefaultPercentage() {
     return defaultPercentage;
   }
 
-  /** Отримує відсоток для відображення */
+  /** Отримує відсоток для відображення. */
   public int getDisplayPercentage() {
     return defaultPercentage.multiply(BigDecimal.valueOf(100)).intValue();
   }
 
-  /** Перевіряє чи дозволений кастомний відсоток */
+  /** Перевіряє чи дозволений кастомний відсоток. */
   public boolean allowsCustomPercentage() {
     return allowsCustomPercentage;
   }
 
-  /** Перевіряє чи є знижка */
+  /** Перевіряє чи є знижка. */
   public boolean hasDiscount() {
     return this != NONE;
   }
 
-  /** Перевіряє чи потрібна документація для знижки */
+  /** Перевіряє чи потрібна документація для знижки. */
   public boolean requiresDocumentation() {
     return this == MILITARY;
   }
 
-  /** Перевіряє чи можна комбінувати з іншими знижками */
+  /** Перевіряє чи можна комбінувати з іншими знижками. */
   public boolean canCombineWith(DiscountType other) {
     // Зазвичай знижки не комбінуються, але можна додати логіку
     return false;
   }
 
-  /** Отримує типи знижок які потребують верифікації */
+  /** Отримує типи знижок які потребують верифікації. */
   public static Set<DiscountType> getTypesRequiringVerification() {
     return Set.of(EVERCARD, MILITARY);
   }
 
-  /** Отримує максимально дозволений відсоток для типу */
+  /** Отримує максимально дозволений відсоток для типу. */
   public BigDecimal getMaxAllowedPercentage() {
     return switch (this) {
       case NONE -> BigDecimal.ZERO;
@@ -72,7 +72,7 @@ public enum DiscountType {
     };
   }
 
-  /** Валідує відсоток знижки для даного типу */
+  /** Валідує відсоток знижки для даного типу. */
   public boolean isValidPercentage(BigDecimal percentage) {
     if (percentage.compareTo(BigDecimal.ZERO) < 0) {
       return false;
@@ -85,7 +85,7 @@ public enum DiscountType {
     return percentage.compareTo(getMaxAllowedPercentage()) <= 0;
   }
 
-  /** Розраховує суму знижки */
+  /** Розраховує суму знижки. */
   public BigDecimal calculateDiscountAmount(BigDecimal totalAmount, BigDecimal customPercentage) {
     BigDecimal percentage =
         allowsCustomPercentage && customPercentage != null ? customPercentage : defaultPercentage;
@@ -97,7 +97,7 @@ public enum DiscountType {
     return totalAmount.multiply(percentage);
   }
 
-  /** Розраховує фінальну суму після знижки */
+  /** Розраховує фінальну суму після знижки. */
   public BigDecimal calculateFinalAmount(BigDecimal totalAmount, BigDecimal customPercentage) {
     BigDecimal discountAmount = calculateDiscountAmount(totalAmount, customPercentage);
     return totalAmount.subtract(discountAmount);

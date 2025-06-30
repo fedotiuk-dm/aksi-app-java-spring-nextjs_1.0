@@ -36,7 +36,7 @@ public class PriceModifierService {
 
   // ========== API МЕТОДИ (для контролерів) - DTO ↔ DTO ==========
 
-  /** Створити новий модифікатор ціни */
+  /** Створити новий модифікатор ціни. */
   public PriceModifierResponse createPriceModifier(CreatePriceModifierRequest request) {
     validateUniqueCode(request.getCode());
 
@@ -47,14 +47,14 @@ public class PriceModifierService {
     return mapper.toResponse(savedEntity);
   }
 
-  /** Отримати модифікатор за UUID */
+  /** Отримати модифікатор за UUID. */
   @Transactional(readOnly = true)
   public PriceModifierResponse getPriceModifierById(UUID uuid) {
     var entity = findByUuid(uuid);
     return mapper.toResponse(entity);
   }
 
-  /** Оновити модифікатор ціни */
+  /** Оновити модифікатор ціни. */
   public PriceModifierResponse updatePriceModifier(UUID uuid, UpdatePriceModifierRequest request) {
     var entity = findByUuid(uuid);
 
@@ -63,27 +63,27 @@ public class PriceModifierService {
     return mapper.toResponse(savedEntity);
   }
 
-  /** Видалити модифікатор ціни */
+  /** Видалити модифікатор ціни. */
   public void deletePriceModifier(UUID uuid) {
     var entity = findByUuid(uuid);
     repository.delete(entity);
   }
 
-  /** Отримати всі модифікатори з пагінацією */
+  /** Отримати всі модифікатори з пагінацією. */
   @Transactional(readOnly = true)
   public Page<PriceModifierResponse> getPriceModifiers(Pageable pageable) {
     var entityPage = repository.findAll(pageable);
     return entityPage.map(mapper::toResponse);
   }
 
-  /** Отримати активні модифікатори */
+  /** Отримати активні модифікатори. */
   @Transactional(readOnly = true)
   public List<PriceModifierResponse> getActivePriceModifiers() {
     var entities = repository.findByIsActiveTrue();
     return entities.stream().map(mapper::toResponse).toList();
   }
 
-  /** Отримати модифікатор за кодом */
+  /** Отримати модифікатор за кодом. */
   @Transactional(readOnly = true)
   public PriceModifierResponse getPriceModifierByCode(String code) {
     var entity =
@@ -98,12 +98,12 @@ public class PriceModifierService {
 
   // ========== HELPER МЕТОДИ ==========
 
-  /** Знайти модифікатор за UUID (internal helper) */
+  /** Знайти модифікатор за UUID (internal helper). */
   private PriceModifierEntity findByUuid(UUID uuid) {
     return repository.findByUuid(uuid).orElseThrow(() -> new PriceModifierNotFoundException(uuid));
   }
 
-  /** Валідація унікальності коду */
+  /** Валідація унікальності коду. */
   private void validateUniqueCode(String code) {
     if (repository.existsByCode(code)) {
       throw new PriceModifierAlreadyExistsException("Модифікатор з кодом '" + code + "' вже існує");

@@ -2,7 +2,7 @@ package com.aksi.domain.document.exception;
 
 import java.util.UUID;
 
-/** Exception що викидається коли документ не знайдений */
+/** Exception що викидається коли документ не знайдений. */
 public class DocumentNotFoundException extends RuntimeException {
 
   public DocumentNotFoundException(String message) {

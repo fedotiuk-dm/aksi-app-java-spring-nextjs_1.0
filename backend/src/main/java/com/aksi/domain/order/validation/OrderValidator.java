@@ -26,7 +26,7 @@ public class OrderValidator {
 
   private final OrderRepository orderRepository;
 
-  /** Валідація бізнес-правил при створенні нового замовлення */
+  /** Валідація бізнес-правил при створенні нового замовлення. */
   public void validateForCreate(OrderEntity order) {
     log.debug("Валідація бізнес-правил для створення замовлення: {}", order.getReceiptNumber());
 
@@ -36,7 +36,7 @@ public class OrderValidator {
     validateDiscountBusinessRules(order);
   }
 
-  /** Валідація бізнес-правил при оновленні існуючого замовлення */
+  /** Валідація бізнес-правил при оновленні існуючого замовлення. */
   public void validateForUpdate(OrderEntity existingOrder, OrderEntity updatedOrder) {
     log.debug("Валідація бізнес-правил для оновлення замовлення: {}", existingOrder.getId());
 
@@ -46,7 +46,7 @@ public class OrderValidator {
     validateDiscountBusinessRules(updatedOrder);
   }
 
-  /** Валідація переходів між статусами замовлення */
+  /** Валідація переходів між статусами замовлення. */
   public void validateStatusTransition(OrderStatus currentStatus, OrderStatus newStatus) {
     if (Objects.equals(currentStatus, newStatus)) {
       return; // Без змін
@@ -57,7 +57,7 @@ public class OrderValidator {
     }
   }
 
-  /** Валідація можливості видалення замовлення */
+  /** Валідація можливості видалення замовлення. */
   public void validateForDeletion(OrderEntity order) {
     // Видаляти можна тільки DRAFT замовлення
     if (order.getStatus() != OrderStatus.DRAFT) {
@@ -65,7 +65,7 @@ public class OrderValidator {
     }
   }
 
-  /** Валідація можливості модифікації замовлення */
+  /** Валідація можливості модифікації замовлення. */
   public void validateForModification(OrderEntity order) {
     if (!order.getStatus().canModifyOrder()) {
       throw OrderValidationException.cannotModifyOrder(order.getId(), order.getStatus());

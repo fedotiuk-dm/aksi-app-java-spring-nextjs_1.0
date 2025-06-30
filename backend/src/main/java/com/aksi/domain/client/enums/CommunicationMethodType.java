@@ -1,21 +1,21 @@
 package com.aksi.domain.client.enums;
 
-/** Способи зв'язку з клієнтом Синхронізовано з OpenAPI enum CommunicationMethod */
+/** Способи зв'язку з клієнтом Синхронізовано з OpenAPI enum CommunicationMethod. */
 public enum CommunicationMethodType {
 
-  /** Телефонний дзвінок */
+  /** Телефонний дзвінок. */
   PHONE("Телефонний дзвінок"),
 
-  /** SMS повідомлення */
+  /** SMS повідомлення. */
   SMS("SMS повідомлення"),
 
-  /** Viber месенджер */
+  /** Viber месенджер. */
   VIBER("Viber месенджер"),
 
-  /** Telegram месенджер */
+  /** Telegram месенджер. */
   TELEGRAM("Telegram месенджер"),
 
-  /** Електронна пошта */
+  /** Електронна пошта. */
   EMAIL("Електронна пошта");
 
   private final String description;
@@ -28,12 +28,12 @@ public enum CommunicationMethodType {
     return description;
   }
 
-  /** Domain-specific метод для перевірки чи є метод електронним */
+  /** Domain-specific метод для перевірки чи є метод електронним. */
   public boolean isElectronic() {
     return this == EMAIL || this == VIBER || this == TELEGRAM;
   }
 
-  /** Domain-specific метод для перевірки чи є метод миттєвим месенджером */
+  /** Domain-specific метод для перевірки чи є метод миттєвим месенджером. */
   public boolean isInstantMessaging() {
     return this == VIBER || this == TELEGRAM || this == SMS;
   }

@@ -2,7 +2,7 @@ package com.aksi.domain.order.exception;
 
 import java.util.UUID;
 
-/** Exception який кидається коли замовлення не знайдено */
+/** Exception який кидається коли замовлення не знайдено. */
 public class OrderNotFoundException extends RuntimeException {
 
   private OrderNotFoundException(String message) {

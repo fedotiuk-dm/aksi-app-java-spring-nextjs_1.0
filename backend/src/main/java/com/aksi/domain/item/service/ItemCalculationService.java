@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
  * CLEAN ARCHITECTURE - Сервіс розрахунку цін з новою calculator архітектурою
  *
  * <p>SMART ENGINE: - 90% випадків: SimpleCalculator (% та фіксовані суми) - 10% випадків:
- * JexlCalculator (складні JEXL правила)
+ * JexlCalculator (складні JEXL правила).
  */
 @Service
 @Transactional
@@ -138,7 +138,7 @@ public class ItemCalculationService {
 
   // ===== SMART ENGINE ЛОГІКА =====
 
-  /** SMART ENGINE - розумний вибір калькулятора */
+  /** SMART ENGINE - розумний вибір калькулятора. */
   private CalculationResult calculateSmart(Double basePrice, List<PriceModifierEntity> modifiers) {
 
     // Розділити модифікатори на прості та складні
@@ -234,7 +234,7 @@ public class ItemCalculationService {
     return response;
   }
 
-  /** Отримати фактичну базову ціну для відображення в response */
+  /** Отримати фактичну базову ціну для відображення в response. */
   private Double getActualBasePriceForResponse(
       PriceListItemEntity priceListItem, ItemCalculationRequest request) {
     String color = request.getCharacteristics().getColor().toLowerCase().trim();
@@ -242,7 +242,7 @@ public class ItemCalculationService {
     return priceListItem.getPriceByColor(isBlack);
   }
 
-  /** Додати попередження щодо кольорового ціноутворення */
+  /** Додати попередження щодо кольорового ціноутворення. */
   private void addColorPricingWarnings(
       ItemCalculationResponse response,
       PriceListItemEntity priceListItem,
@@ -304,7 +304,7 @@ public class ItemCalculationService {
     };
   }
 
-  /** Округлення ціни до 2 знаків після коми */
+  /** Округлення ціни до 2 знаків після коми. */
   private Double roundPrice(Double price) {
     if (price == null) {
       return 0.0;
@@ -312,7 +312,7 @@ public class ItemCalculationService {
     return BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_UP).doubleValue();
   }
 
-  /** Розрахувати базову ціну з урахуванням кольору та кількості */
+  /** Розрахувати базову ціну з урахуванням кольору та кількості. */
   private Double calculateBasePriceWithColor(
       PriceListItemEntity priceListItem, ItemCalculationRequest request) {
     Integer quantity = request.getQuantity();

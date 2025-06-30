@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Embedded клас для розрахунків замовлення */
+/** Embedded клас для розрахунків замовлення. */
 @Embeddable
 @Data
 @Builder
@@ -33,17 +33,17 @@ public class OrderCalculationEntity {
   @Builder.Default
   private BigDecimal totalAmount = BigDecimal.ZERO;
 
-  /** Перевіряє чи є розрахунки */
+  /** Перевіряє чи є розрахунки. */
   public boolean hasCalculations() {
     return itemsTotal != null && itemsTotal.compareTo(BigDecimal.ZERO) > 0;
   }
 
-  /** Отримує суму без знижки */
+  /** Отримує суму без знижки. */
   public BigDecimal getAmountBeforeDiscount() {
     return itemsTotal.add(urgencyCharge);
   }
 
-  /** Розраховує відсоток знижки */
+  /** Розраховує відсоток знижки. */
   public BigDecimal getDiscountPercentage() {
     BigDecimal beforeDiscount = getAmountBeforeDiscount();
     if (beforeDiscount.compareTo(BigDecimal.ZERO) == 0) {

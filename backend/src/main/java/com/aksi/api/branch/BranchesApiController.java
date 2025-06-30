@@ -16,7 +16,7 @@ import com.aksi.domain.branch.service.BranchService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP контролер для управління філіями Відповідальність: тільки HTTP логіка */
+/** HTTP контролер для управління філіями Відповідальність: тільки HTTP логіка. */
 @RestController
 @RequiredArgsConstructor
 public class BranchesApiController implements BranchesApi {

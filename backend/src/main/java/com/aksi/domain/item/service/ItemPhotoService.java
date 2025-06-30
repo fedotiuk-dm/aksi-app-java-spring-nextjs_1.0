@@ -34,14 +34,14 @@ public class ItemPhotoService {
 
   // ========== API МЕТОДИ (для контролерів) - DTO ↔ DTO ==========
 
-  /** Отримати фото за UUID */
+  /** Отримати фото за UUID. */
   @Transactional(readOnly = true)
   public PhotoResponse getPhotoById(UUID uuid) {
     var entity = findByUuid(uuid);
     return enrichAndMapToResponse(entity);
   }
 
-  /** Оновити метадані фото */
+  /** Оновити метадані фото. */
   public PhotoResponse updatePhotoMetadata(UUID uuid, UpdatePhotoMetadataRequest request) {
     var entity = findByUuid(uuid);
 
@@ -50,34 +50,34 @@ public class ItemPhotoService {
     return enrichAndMapToResponse(savedEntity);
   }
 
-  /** Видалити фото */
+  /** Видалити фото. */
   public void deletePhoto(UUID uuid) {
     var entity = findByUuid(uuid);
     repository.delete(entity);
   }
 
-  /** Отримати всі фото з пагінацією */
+  /** Отримати всі фото з пагінацією. */
   @Transactional(readOnly = true)
   public Page<PhotoResponse> getPhotos(Pageable pageable) {
     var entityPage = repository.findAll(pageable);
     return entityPage.map(this::enrichAndMapToResponse);
   }
 
-  /** Отримати фото для конкретного предмета */
+  /** Отримати фото для конкретного предмета. */
   @Transactional(readOnly = true)
   public List<PhotoResponse> getPhotosForItem(UUID itemId) {
     var entities = repository.findByItemId(itemId);
     return entities.stream().map(this::enrichAndMapToResponse).toList();
   }
 
-  /** Отримати головне фото предмета */
+  /** Отримати головне фото предмета. */
   @Transactional(readOnly = true)
   public PhotoResponse getPrimaryPhotoForItem(UUID itemId) {
     var entity = repository.findByItemIdAndIsPrimaryTrue(itemId);
     return entity.map(this::enrichAndMapToResponse).orElse(null);
   }
 
-  /** Встановити фото як головне */
+  /** Встановити фото як головне. */
   public PhotoResponse setPrimaryPhoto(UUID uuid) {
     var entity = findByUuid(uuid);
 
@@ -97,12 +97,12 @@ public class ItemPhotoService {
 
   // ========== HELPER МЕТОДИ ==========
 
-  /** Знайти фото за UUID (internal helper) */
+  /** Знайти фото за UUID (internal helper). */
   private ItemPhotoEntity findByUuid(UUID uuid) {
     return repository.findByUuid(uuid).orElseThrow(() -> new ItemPhotoNotFoundException(uuid));
   }
 
-  /** Збагатити entity додатковими даними та змапити до Response */
+  /** Збагатити entity додатковими даними та змапити до Response. */
   private PhotoResponse enrichAndMapToResponse(ItemPhotoEntity entity) {
     return mapper.toResponse(entity);
   }

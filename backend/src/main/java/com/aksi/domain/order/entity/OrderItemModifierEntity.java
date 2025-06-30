@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Embedded клас для модифікаторів ціни позиції замовлення */
+/** Embedded клас для модифікаторів ціни позиції замовлення. */
 @Embeddable
 @Data
 @Builder
@@ -37,7 +37,7 @@ public class OrderItemModifierEntity {
   @Column(name = "modifier_description", length = 200)
   private String description;
 
-  /** Розраховує суму модифікатора для базової ціни */
+  /** Розраховує суму модифікатора для базової ціни. */
   public BigDecimal calculateModifierAmount(BigDecimal basePrice) {
     return switch (type) {
       case PERCENTAGE -> basePrice.multiply(value).divide(BigDecimal.valueOf(100));
@@ -45,17 +45,17 @@ public class OrderItemModifierEntity {
     };
   }
 
-  /** Перевіряє чи це відсотковий модифікатор */
+  /** Перевіряє чи це відсотковий модифікатор. */
   public boolean isPercentage() {
     return type == ModifierType.PERCENTAGE;
   }
 
-  /** Перевіряє чи це фіксований модифікатор */
+  /** Перевіряє чи це фіксований модифікатор. */
   public boolean isFixedAmount() {
     return type == ModifierType.FIXED_AMOUNT;
   }
 
-  /** Отримує відсоток для відображення (тільки для PERCENTAGE) */
+  /** Отримує відсоток для відображення (тільки для PERCENTAGE). */
   public int getPercentageValue() {
     if (type != ModifierType.PERCENTAGE) {
       return 0;
@@ -63,17 +63,17 @@ public class OrderItemModifierEntity {
     return value.intValue();
   }
 
-  /** Перевіряє чи модифікатор має позитивний вплив на ціну */
+  /** Перевіряє чи модифікатор має позитивний вплив на ціну. */
   public boolean isPositiveModifier() {
     return calculatedAmount.compareTo(BigDecimal.ZERO) > 0;
   }
 
-  /** Перевіряє чи модифікатор має негативний вплив на ціну (знижка) */
+  /** Перевіряє чи модифікатор має негативний вплив на ціну (знижка). */
   public boolean isNegativeModifier() {
     return calculatedAmount.compareTo(BigDecimal.ZERO) < 0;
   }
 
-  /** Створює модифікатор для текстильних послуг */
+  /** Створює модифікатор для текстильних послуг. */
   public static OrderItemModifierEntity createTextileModifier(
       String name, int percentage, String description) {
     BigDecimal percentageValue = BigDecimal.valueOf(percentage);
@@ -86,13 +86,13 @@ public class OrderItemModifierEntity {
         .build();
   }
 
-  /** Створює модифікатор для шкіряних послуг */
+  /** Створює модифікатор для шкіряних послуг. */
   public static OrderItemModifierEntity createLeatherModifier(
       String name, int percentage, String description) {
     return createTextileModifier(name, percentage, description);
   }
 
-  /** Створює фіксований модифікатор */
+  /** Створює фіксований модифікатор. */
   public static OrderItemModifierEntity createFixedModifier(
       String name, BigDecimal amount, String description) {
     return OrderItemModifierEntity.builder()
@@ -104,7 +104,7 @@ public class OrderItemModifierEntity {
         .build();
   }
 
-  /** Оновлює розраховану суму для базової ціни */
+  /** Оновлює розраховану суму для базової ціни. */
   public void updateCalculatedAmount(BigDecimal basePrice) {
     this.calculatedAmount = calculateModifierAmount(basePrice);
   }

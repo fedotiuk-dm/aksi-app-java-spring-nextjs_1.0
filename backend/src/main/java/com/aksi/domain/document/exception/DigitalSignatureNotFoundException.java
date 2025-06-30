@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.aksi.domain.document.enums.SignatureType;
 
-/** Exception що викидається коли цифровий підпис не знайдений */
+/** Exception що викидається коли цифровий підпис не знайдений. */
 public class DigitalSignatureNotFoundException extends RuntimeException {
 
   public DigitalSignatureNotFoundException(String message) {

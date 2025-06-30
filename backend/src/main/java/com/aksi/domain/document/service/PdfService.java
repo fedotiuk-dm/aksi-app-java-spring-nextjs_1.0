@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Сервіс для роботи з PDF документами Відповідальність: генерація, обробка та управління PDF
- * файлами
+ * файлами.
  */
 @Service
 @Transactional
@@ -26,7 +26,7 @@ public class PdfService {
   // private final ReceiptPdfRenderer receiptPdfRenderer;
   // private final FileStorageService fileStorageService;
 
-  /** Згенерувати PDF квитанції */
+  /** Згенерувати PDF квитанції. */
   public DocumentResponse generateReceiptPdf(UUID receiptId, GeneratePdfRequest request) {
     log.info("Generating PDF for receipt: {}", receiptId);
 
@@ -40,7 +40,7 @@ public class PdfService {
     throw new UnsupportedOperationException("PDF generation not yet implemented");
   }
 
-  /** Отримати PDF квитанції */
+  /** Отримати PDF квитанції. */
   public byte[] getReceiptPdf(UUID receiptId, ReceiptTemplate template) {
     log.info("Getting PDF for receipt: {} with template: {}", receiptId, template);
 
@@ -52,14 +52,14 @@ public class PdfService {
     throw new UnsupportedOperationException("PDF retrieval not yet implemented");
   }
 
-  /** Перевірити чи існує PDF для квитанції */
+  /** Перевірити чи існує PDF для квитанції. */
   @Transactional(readOnly = true)
   public boolean doesPdfExist(UUID receiptId) {
     // TODO: Перевірка існування PDF документа
     return false;
   }
 
-  /** Видалити PDF документ */
+  /** Видалити PDF документ. */
   public void deletePdf(UUID receiptId) {
     log.info("Deleting PDF for receipt: {}", receiptId);
 

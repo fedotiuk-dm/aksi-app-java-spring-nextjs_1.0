@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import com.aksi.domain.order.enums.OrderStatus;
 import com.aksi.domain.order.enums.UrgencyType;
 
-/** Exception який кидається при порушенні business rules замовлення */
+/** Exception який кидається при порушенні business rules замовлення. */
 public class OrderValidationException extends RuntimeException {
 
   public OrderValidationException(String message) {
@@ -17,7 +17,7 @@ public class OrderValidationException extends RuntimeException {
     super(message, cause);
   }
 
-  /** Для помилок статусу замовлення */
+  /** Для помилок статусу замовлення. */
   public static OrderValidationException invalidStatusTransition(
       String fromStatus, String toStatus) {
     return new OrderValidationException(
@@ -32,30 +32,30 @@ public class OrderValidationException extends RuntimeException {
             fromStatus.getDescription(), toStatus.getDescription()));
   }
 
-  /** Для помилок модифікації замовлення */
+  /** Для помилок модифікації замовлення. */
   public static OrderValidationException cannotModifyOrder(String currentStatus) {
     return new OrderValidationException("Неможливо змінити замовлення в статусі: " + currentStatus);
   }
 
-  /** Для помилок з предметами */
+  /** Для помилок з предметами. */
   public static OrderValidationException cannotModifyItems(String currentStatus) {
     return new OrderValidationException(
         "Неможливо змінити предмети замовлення в статусі: " + currentStatus);
   }
 
-  /** Для помилок унікальності */
+  /** Для помилок унікальності. */
   public static OrderValidationException duplicateReceiptNumber(String receiptNumber) {
     return new OrderValidationException(
         "Замовлення з номером квитанції " + receiptNumber + " вже існує");
   }
 
-  /** Для помилок унікальної мітки */
+  /** Для помилок унікальної мітки. */
   public static OrderValidationException duplicateUniqueTag(String uniqueTag) {
     return new OrderValidationException(
         "Замовлення з унікальною міткою " + uniqueTag + " вже існує");
   }
 
-  /** Для помилок завершення замовлення */
+  /** Для помилок завершення замовлення. */
   public static OrderValidationException cannotCompleteOrder(String reason) {
     return new OrderValidationException("Неможливо завершити замовлення: " + reason);
   }

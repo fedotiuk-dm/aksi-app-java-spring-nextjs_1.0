@@ -14,7 +14,7 @@ import com.aksi.domain.branch.service.ReceiptNumberService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP контролер для управління номерами квитанцій Відповідальність: тільки HTTP логіка */
+/** HTTP контролер для управління номерами квитанцій Відповідальність: тільки HTTP логіка. */
 @RestController
 @RequiredArgsConstructor
 public class ReceiptNumbersApiController implements ReceiptNumbersApi {

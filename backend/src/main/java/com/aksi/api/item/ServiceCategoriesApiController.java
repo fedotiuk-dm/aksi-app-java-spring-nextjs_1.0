@@ -16,7 +16,7 @@ import com.aksi.domain.item.service.ServiceCategoryService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP контролер для управління категоріями послуг */
+/** HTTP контролер для управління категоріями послуг. */
 @Controller
 @RequiredArgsConstructor
 public class ServiceCategoriesApiController implements ServiceCategoriesApi {

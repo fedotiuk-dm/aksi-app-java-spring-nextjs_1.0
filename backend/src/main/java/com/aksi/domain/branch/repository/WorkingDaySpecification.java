@@ -14,7 +14,7 @@ import com.aksi.domain.branch.enums.BranchStatus;
 /** JPA Specifications для композиційних запитів до WorkingDayEntity. */
 public class WorkingDaySpecification {
 
-  /** Робочі дні за днем тижня */
+  /** Робочі дні за днем тижня. */
   public static Specification<WorkingDayEntity> forDayOfWeek(DayOfWeek dayOfWeek) {
     return (root, query, criteriaBuilder) -> {
       if (dayOfWeek == null) {
@@ -24,7 +24,7 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Робочі дні за кількома днями тижня */
+  /** Робочі дні за кількома днями тижня. */
   public static Specification<WorkingDayEntity> forDaysOfWeek(List<DayOfWeek> daysOfWeek) {
     return (root, query, criteriaBuilder) -> {
       if (daysOfWeek == null || daysOfWeek.isEmpty()) {
@@ -34,7 +34,7 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Робочі дні за розкладом */
+  /** Робочі дні за розкладом. */
   public static Specification<WorkingDayEntity> forSchedule(UUID scheduleId) {
     return (root, query, criteriaBuilder) -> {
       if (scheduleId == null) {
@@ -44,21 +44,21 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Тільки робочі дні (не вихідні) */
+  /** Тільки робочі дні (не вихідні). */
   public static Specification<WorkingDayEntity> isWorkingDay() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.isTrue(root.get("isWorkingDay"));
     };
   }
 
-  /** Тільки вихідні дні */
+  /** Тільки вихідні дні. */
   public static Specification<WorkingDayEntity> isNonWorkingDay() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.isFalse(root.get("isWorkingDay"));
     };
   }
 
-  /** Робочі дні зі статусом */
+  /** Робочі дні зі статусом. */
   public static Specification<WorkingDayEntity> hasStatus(BranchOpenStatus status) {
     return (root, query, criteriaBuilder) -> {
       if (status == null) {
@@ -68,22 +68,22 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Відкриті дні */
+  /** Відкриті дні. */
   public static Specification<WorkingDayEntity> isOpen() {
     return hasStatus(BranchOpenStatus.OPEN);
   }
 
-  /** Закриті дні */
+  /** Закриті дні. */
   public static Specification<WorkingDayEntity> isClosed() {
     return hasStatus(BranchOpenStatus.CLOSED);
   }
 
-  /** Святкові дні */
+  /** Святкові дні. */
   public static Specification<WorkingDayEntity> isHoliday() {
     return hasStatus(BranchOpenStatus.HOLIDAY);
   }
 
-  /** Робочі дні з певним часом відкриття */
+  /** Робочі дні з певним часом відкриття. */
   public static Specification<WorkingDayEntity> opensAt(LocalTime openTime) {
     return (root, query, criteriaBuilder) -> {
       if (openTime == null) {
@@ -93,7 +93,7 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Робочі дні з певним часом закриття */
+  /** Робочі дні з певним часом закриття. */
   public static Specification<WorkingDayEntity> closesAt(LocalTime closeTime) {
     return (root, query, criteriaBuilder) -> {
       if (closeTime == null) {
@@ -103,13 +103,13 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Робочі дні з певним діапазоном часу роботи */
+  /** Робочі дні з певним діапазоном часу роботи. */
   public static Specification<WorkingDayEntity> workingHours(
       LocalTime openTime, LocalTime closeTime) {
     return Specification.where(opensAt(openTime)).and(closesAt(closeTime));
   }
 
-  /** Робочі дні з перервою на обід */
+  /** Робочі дні з перервою на обід. */
   public static Specification<WorkingDayEntity> hasLunchBreak() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.and(
@@ -118,7 +118,7 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Робочі дні без перерви на обід */
+  /** Робочі дні без перерви на обід. */
   public static Specification<WorkingDayEntity> hasNoLunchBreak() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.or(
@@ -127,7 +127,7 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Робочі дні з перервою на обід в певний час */
+  /** Робочі дні з перервою на обід в певний час. */
   public static Specification<WorkingDayEntity> lunchBreakAt(
       LocalTime lunchStart, LocalTime lunchEnd) {
     return (root, query, criteriaBuilder) -> {
@@ -140,7 +140,7 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Дні для активних філій */
+  /** Дні для активних філій. */
   public static Specification<WorkingDayEntity> forActiveBranches() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.equal(
@@ -148,7 +148,7 @@ public class WorkingDaySpecification {
     };
   }
 
-  /** Будні (понеділок-п'ятниця) */
+  /** Будні (понеділок-п'ятниця). */
   public static Specification<WorkingDayEntity> isWeekday() {
     return forDaysOfWeek(
         List.of(
@@ -159,12 +159,12 @@ public class WorkingDaySpecification {
             DayOfWeek.FRIDAY));
   }
 
-  /** Вихідні (субота-неділя) */
+  /** Вихідні (субота-неділя). */
   public static Specification<WorkingDayEntity> isWeekend() {
     return forDaysOfWeek(List.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
   }
 
-  /** Комплексний пошук робочих днів */
+  /** Комплексний пошук робочих днів. */
   public static Specification<WorkingDayEntity> searchWorkingDays(
       UUID scheduleId, List<DayOfWeek> daysOfWeek, BranchOpenStatus status, boolean hasLunchBreak) {
     Specification<WorkingDayEntity> spec =

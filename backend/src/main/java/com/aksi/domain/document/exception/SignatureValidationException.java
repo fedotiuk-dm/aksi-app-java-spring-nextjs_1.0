@@ -2,7 +2,7 @@ package com.aksi.domain.document.exception;
 
 import com.aksi.domain.document.enums.SignatureType;
 
-/** Exception що викидається при помилках валідації підписів */
+/** Exception що викидається при помилках валідації підписів. */
 public class SignatureValidationException extends RuntimeException {
 
   public SignatureValidationException(String message) {

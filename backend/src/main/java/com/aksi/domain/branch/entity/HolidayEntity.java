@@ -39,7 +39,7 @@ public class HolidayEntity extends BaseEntity {
 
   /**
    * UUID для API сумісності (зовнішній ідентифікатор) Внутрішньо використовуємо Long id з
-   * BaseEntity
+   * BaseEntity.
    */
   @Column(name = "uuid", nullable = false, unique = true, updatable = false)
   @Builder.Default
@@ -61,7 +61,7 @@ public class HolidayEntity extends BaseEntity {
 
   // Business methods
 
-  /** Перевіряє чи заданий день є цим святковим днем */
+  /** Перевіряє чи заданий день є цим святковим днем. */
   public boolean isHolidayOn(LocalDate checkDate) {
     if (isRecurring()) {
       // Для щорічних свят порівнюємо тільки місяць і день
@@ -74,12 +74,12 @@ public class HolidayEntity extends BaseEntity {
     }
   }
 
-  /** Перевіряє чи свято повторюється щороку */
+  /** Перевіряє чи свято повторюється щороку. */
   public boolean isRecurring() {
     return Boolean.TRUE.equals(isRecurring);
   }
 
-  /** Отримує наступну дату цього свята */
+  /** Отримує наступну дату цього свята. */
   public LocalDate getNextOccurrence(LocalDate fromDate) {
     if (!isRecurring()) {
       // Для одноразових свят повертаємо дату тільки якщо вона в майбутньому
@@ -97,18 +97,18 @@ public class HolidayEntity extends BaseEntity {
     }
   }
 
-  /** Отримує опис свята з типом повторення */
+  /** Отримує опис свята з типом повторення. */
   public String getHolidayDescription() {
     String type = isRecurring() ? "щорічне" : "одноразове";
     return String.format("%s (%s)", name, type);
   }
 
-  /** Перевіряє чи дата свята валідна */
+  /** Перевіряє чи дата свята валідна. */
   public boolean hasValidDate() {
     return date != null;
   }
 
-  /** Перевіряє чи свято вже минуло (тільки для одноразових) */
+  /** Перевіряє чи свято вже минуло (тільки для одноразових). */
   public boolean isPast(LocalDate currentDate) {
     if (isRecurring()) {
       return false; // Щорічні свята ніколи не минають

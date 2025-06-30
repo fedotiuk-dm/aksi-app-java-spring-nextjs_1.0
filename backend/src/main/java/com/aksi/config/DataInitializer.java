@@ -14,7 +14,7 @@ import com.aksi.domain.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** Ініціалізація початкових даних при старті додатку Створює адміна якщо його немає */
+/** Ініціалізація початкових даних при старті додатку Створює адміна якщо його немає. */
 @Component
 @RequiredArgsConstructor
 @Slf4j

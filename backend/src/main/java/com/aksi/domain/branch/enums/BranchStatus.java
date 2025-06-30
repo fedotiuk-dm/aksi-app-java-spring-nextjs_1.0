@@ -17,27 +17,27 @@ public enum BranchStatus {
     return displayName;
   }
 
-  /** Перевіряє чи філія активна та приймає замовлення */
+  /** Перевіряє чи філія активна та приймає замовлення. */
   public boolean isActive() {
     return this == ACTIVE;
   }
 
-  /** Перевіряє чи філія доступна для клієнтів (не на ремонті та не неактивна) */
+  /** Перевіряє чи філія доступна для клієнтів (не на ремонті та не неактивна). */
   public boolean isAvailableForCustomers() {
     return this == ACTIVE || this == TEMPORARILY_CLOSED;
   }
 
-  /** Перевіряє чи філія може приймати нові замовлення */
+  /** Перевіряє чи філія може приймати нові замовлення. */
   public boolean canAcceptOrders() {
     return this == ACTIVE;
   }
 
-  /** Перевіряє чи філія потребує обслуговування */
+  /** Перевіряє чи філія потребує обслуговування. */
   public boolean requiresMaintenance() {
     return this == UNDER_RENOVATION;
   }
 
-  /** Перевіряє чи статус тимчасовий */
+  /** Перевіряє чи статус тимчасовий. */
   public boolean isTemporary() {
     return this == TEMPORARILY_CLOSED || this == UNDER_RENOVATION;
   }

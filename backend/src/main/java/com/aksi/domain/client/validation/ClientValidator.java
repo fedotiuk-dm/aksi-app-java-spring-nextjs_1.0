@@ -11,14 +11,14 @@ import com.aksi.domain.client.repository.ClientRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/** Validator для бізнес-правил клієнтів Тільки те що неможливо зробити через Bean Validation */
+/** Validator для бізнес-правил клієнтів Тільки те що неможливо зробити через Bean Validation. */
 @Component
 @RequiredArgsConstructor
 public class ClientValidator {
 
   private final ClientRepository clientRepository;
 
-  /** Валідація унікальності для нового клієнта */
+  /** Валідація унікальності для нового клієнта. */
   public void validateUniqueness(ClientEntity client) {
     // Перевірка унікальності телефону
     if (clientRepository.existsByPhone(client.getPhone())) {
@@ -32,7 +32,7 @@ public class ClientValidator {
     }
   }
 
-  /** Валідація унікальності для оновлення клієнта */
+  /** Валідація унікальності для оновлення клієнта. */
   public void validateUniquenessForUpdate(ClientEntity client) {
     // Перевірка унікальності телефону (виключаючи поточного клієнта)
     clientRepository
@@ -55,7 +55,7 @@ public class ClientValidator {
     }
   }
 
-  /** Бізнес-правило: Валідація можливості видалення клієнта */
+  /** Бізнес-правило: Валідація можливості видалення клієнта. */
   public void validateForDeletion(ClientEntity client) {
     // Перевірка чи має клієнт активні замовлення
     if (client.getTotalOrders() != null && client.getTotalOrders() > 0) {
@@ -67,7 +67,7 @@ public class ClientValidator {
     }
   }
 
-  /** Бізнес-правило: Валідація контактної інформації */
+  /** Бізнес-правило: Валідація контактної інформації. */
   public void validateContactInfo(ClientEntity client) {
     // Якщо вибрано EMAIL як спосіб зв'язку, email має бути вказаний
     if (client.getCommunicationMethods() != null
@@ -78,7 +78,7 @@ public class ClientValidator {
     }
   }
 
-  /** Бізнес-правило: Валідація VIP статусу */
+  /** Бізнес-правило: Валідація VIP статусу. */
   public void validateVipStatus(ClientEntity client) {
     if (client.getIsVip() != null && client.getIsVip()) {
       // VIP клієнт повинен мати принаймні одне замовлення або значну суму витрат

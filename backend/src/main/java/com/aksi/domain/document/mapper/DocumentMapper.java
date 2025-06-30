@@ -23,38 +23,38 @@ import com.aksi.domain.document.enums.SignatureType;
 
 /**
  * MapStruct Mapper для Document Domain Entity↔DTO конвертації Спрощена версія за еталоном
- * AuthMapper
+ * AuthMapper.
  */
 @Mapper(componentModel = "spring")
 public interface DocumentMapper {
 
   // ===== BASIC UTILITY MAPPINGS =====
 
-  /** Long (Entity) → UUID (DTO) Аналог з AuthMapper */
+  /** Long (Entity) → UUID (DTO) Аналог з AuthMapper. */
   @Named("longToUuid")
   default UUID longToUuid(Long id) {
     return id != null ? UUID.nameUUIDFromBytes(id.toString().getBytes()) : null;
   }
 
-  /** UUID (DTO) → Long (Entity) */
+  /** UUID (DTO) → Long (Entity). */
   @Named("uuidToLong")
   default Long uuidToLong(UUID uuid) {
     return uuid != null ? (long) Math.abs(uuid.hashCode()) : null;
   }
 
-  /** LocalDateTime (Entity) → OffsetDateTime (DTO) Аналог з AuthMapper */
+  /** LocalDateTime (Entity) → OffsetDateTime (DTO) Аналог з AuthMapper. */
   @Named("localDateTimeToOffsetDateTime")
   default OffsetDateTime localDateTimeToOffsetDateTime(LocalDateTime localDateTime) {
     return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
   }
 
-  /** OffsetDateTime (DTO) → LocalDateTime (Entity) */
+  /** OffsetDateTime (DTO) → LocalDateTime (Entity). */
   @Named("offsetDateTimeToLocalDateTime")
   default LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
     return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
   }
 
-  /** String → URI conversion */
+  /** String → URI conversion. */
   @Named("stringToUri")
   default URI stringToUri(String url) {
     if (url == null || url.trim().isEmpty()) return null;
@@ -65,7 +65,7 @@ public interface DocumentMapper {
     }
   }
 
-  /** URI → String conversion */
+  /** URI → String conversion. */
   @Named("uriToString")
   default String uriToString(URI uri) {
     return uri != null ? uri.toString() : null;
@@ -73,7 +73,7 @@ public interface DocumentMapper {
 
   // ===== ENUM MAPPINGS =====
 
-  /** Domain DocumentType → API DocumentType */
+  /** Domain DocumentType → API DocumentType. */
   @Named("domainToApiDocumentType")
   default com.aksi.api.document.dto.DocumentType domainToApiDocumentType(DocumentType domainType) {
     return domainType != null
@@ -81,13 +81,13 @@ public interface DocumentMapper {
         : null;
   }
 
-  /** API DocumentType → Domain DocumentType */
+  /** API DocumentType → Domain DocumentType. */
   @Named("apiToDomainDocumentType")
   default DocumentType apiToDomainDocumentType(com.aksi.api.document.dto.DocumentType apiType) {
     return apiType != null ? DocumentType.valueOf(apiType.getValue()) : null;
   }
 
-  /** Domain DocumentStatus → API DocumentStatus */
+  /** Domain DocumentStatus → API DocumentStatus. */
   @Named("domainToApiDocumentStatus")
   default com.aksi.api.document.dto.DocumentStatus domainToApiDocumentStatus(
       DocumentStatus domainStatus) {
@@ -96,14 +96,14 @@ public interface DocumentMapper {
         : null;
   }
 
-  /** API DocumentStatus → Domain DocumentStatus */
+  /** API DocumentStatus → Domain DocumentStatus. */
   @Named("apiToDomainDocumentStatus")
   default DocumentStatus apiToDomainDocumentStatus(
       com.aksi.api.document.dto.DocumentStatus apiStatus) {
     return apiStatus != null ? DocumentStatus.valueOf(apiStatus.getValue()) : null;
   }
 
-  /** Domain SignatureType → API SignatureType */
+  /** Domain SignatureType → API SignatureType. */
   @Named("domainToApiSignatureType")
   default com.aksi.api.document.dto.SignatureType domainToApiSignatureType(
       SignatureType domainType) {
@@ -112,7 +112,7 @@ public interface DocumentMapper {
         : null;
   }
 
-  /** API SignatureType → Domain SignatureType */
+  /** API SignatureType → Domain SignatureType. */
   @Named("apiToDomainSignatureType")
   default SignatureType apiToDomainSignatureType(com.aksi.api.document.dto.SignatureType apiType) {
     return apiType != null ? SignatureType.valueOf(apiType.getValue()) : null;
@@ -120,7 +120,7 @@ public interface DocumentMapper {
 
   // ===== SIMPLE ENTITY MAPPINGS =====
 
-  /** DocumentEntity → DocumentResponse (базові поля) */
+  /** DocumentEntity → DocumentResponse (базові поля). */
   default DocumentResponse toDocumentResponse(DocumentEntity entity) {
     if (entity == null) return null;
 
@@ -142,7 +142,7 @@ public interface DocumentMapper {
     return response;
   }
 
-  /** ReceiptEntity → ReceiptResponse (базові поля) */
+  /** ReceiptEntity → ReceiptResponse (базові поля). */
   default ReceiptResponse toReceiptResponse(ReceiptEntity entity) {
     if (entity == null) return null;
 
@@ -158,7 +158,7 @@ public interface DocumentMapper {
     return response;
   }
 
-  /** DigitalSignatureEntity → DigitalSignatureResponse (базові поля) */
+  /** DigitalSignatureEntity → DigitalSignatureResponse (базові поля). */
   default DigitalSignatureResponse toDigitalSignatureResponse(DigitalSignatureEntity entity) {
     if (entity == null) return null;
 
@@ -176,7 +176,7 @@ public interface DocumentMapper {
     return response;
   }
 
-  /** CreateDigitalSignatureRequest → DigitalSignatureEntity (базові поля) */
+  /** CreateDigitalSignatureRequest → DigitalSignatureEntity (базові поля). */
   default DigitalSignatureEntity fromCreateDigitalSignatureRequest(
       CreateDigitalSignatureRequest request) {
     if (request == null) return null;
@@ -191,7 +191,7 @@ public interface DocumentMapper {
         .build();
   }
 
-  /** List mappings */
+  /** List mappings. */
   List<DocumentResponse> toDocumentResponseList(List<DocumentEntity> entities);
 
   List<ReceiptResponse> toReceiptResponseList(List<ReceiptEntity> entities);

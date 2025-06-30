@@ -2,7 +2,7 @@ package com.aksi.domain.client.exception;
 
 import java.util.UUID;
 
-/** Виняток, що виникає коли клієнт не знайдений */
+/** Виняток, що виникає коли клієнт не знайдений. */
 public class ClientNotFoundException extends RuntimeException {
 
   public ClientNotFoundException(String message) {

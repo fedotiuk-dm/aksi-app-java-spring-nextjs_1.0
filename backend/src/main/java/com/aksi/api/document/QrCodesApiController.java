@@ -12,7 +12,7 @@ import com.aksi.domain.document.service.QrCodeService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP Controller для QrCodesApi Відповідальність: тільки HTTP делегація до QrCodeService */
+/** HTTP Controller для QrCodesApi Відповідальність: тільки HTTP делегація до QrCodeService. */
 @Controller
 @RequiredArgsConstructor
 public class QrCodesApiController implements QrCodesApi {

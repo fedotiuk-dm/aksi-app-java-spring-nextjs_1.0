@@ -15,7 +15,7 @@ import jakarta.persistence.criteria.Predicate;
  */
 public class ItemPhotoSpecification {
 
-  /** Фотографії певного предмета */
+  /** Фотографії певного предмета. */
   public static Specification<ItemPhotoEntity> belongsToItem(UUID itemId) {
     return (root, query, criteriaBuilder) -> {
       if (itemId == null) {
@@ -25,17 +25,17 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Основні фотографії */
+  /** Основні фотографії. */
   public static Specification<ItemPhotoEntity> isPrimary() {
     return (root, query, criteriaBuilder) -> criteriaBuilder.isTrue(root.get("isPrimary"));
   }
 
-  /** Не основні фотографії */
+  /** Не основні фотографії. */
   public static Specification<ItemPhotoEntity> isNotPrimary() {
     return (root, query, criteriaBuilder) -> criteriaBuilder.isFalse(root.get("isPrimary"));
   }
 
-  /** Фотографії за типом */
+  /** Фотографії за типом. */
   public static Specification<ItemPhotoEntity> hasPhotoType(String photoType) {
     return (root, query, criteriaBuilder) -> {
       if (photoType == null || photoType.trim().isEmpty()) {
@@ -45,7 +45,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Фотографії за типами (список) */
+  /** Фотографії за типами (список). */
   public static Specification<ItemPhotoEntity> hasPhotoTypeIn(List<String> photoTypes) {
     return (root, query, criteriaBuilder) -> {
       if (photoTypes == null || photoTypes.isEmpty()) {
@@ -55,32 +55,32 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Фотографії дефектів */
+  /** Фотографії дефектів. */
   public static Specification<ItemPhotoEntity> isDefectPhoto() {
     return hasPhotoType("DEFECT");
   }
 
-  /** Фотографії плям */
+  /** Фотографії плям. */
   public static Specification<ItemPhotoEntity> isStainPhoto() {
     return hasPhotoType("STAIN");
   }
 
-  /** Фотографії до обробки */
+  /** Фотографії до обробки. */
   public static Specification<ItemPhotoEntity> isBeforePhoto() {
     return hasPhotoType("BEFORE_PROCESSING");
   }
 
-  /** Фотографії після обробки */
+  /** Фотографії після обробки. */
   public static Specification<ItemPhotoEntity> isAfterPhoto() {
     return hasPhotoType("AFTER_PROCESSING");
   }
 
-  /** Фінальні фотографії результату */
+  /** Фінальні фотографії результату. */
   public static Specification<ItemPhotoEntity> isFinalResultPhoto() {
     return hasPhotoType("FINAL_RESULT");
   }
 
-  /** Фотографії за розміром файлу (діапазон) */
+  /** Фотографії за розміром файлу (діапазон). */
   public static Specification<ItemPhotoEntity> fileSizeBetween(Long minSize, Long maxSize) {
     return (root, query, criteriaBuilder) -> {
       if (minSize == null && maxSize == null) {
@@ -96,7 +96,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Фотографії з великим розміром файлу (більше порогу) */
+  /** Фотографії з великим розміром файлу (більше порогу). */
   public static Specification<ItemPhotoEntity> isLargeFile(Long sizeThreshold) {
     return (root, query, criteriaBuilder) -> {
       if (sizeThreshold == null) {
@@ -106,7 +106,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Фотографії за типом контенту */
+  /** Фотографії за типом контенту. */
   public static Specification<ItemPhotoEntity> hasContentType(String contentType) {
     return (root, query, criteriaBuilder) -> {
       if (contentType == null || contentType.trim().isEmpty()) {
@@ -116,7 +116,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Фотографії за типами контенту (список) */
+  /** Фотографії за типами контенту (список). */
   public static Specification<ItemPhotoEntity> hasContentTypeIn(List<String> contentTypes) {
     return (root, query, criteriaBuilder) -> {
       if (contentTypes == null || contentTypes.isEmpty()) {
@@ -126,7 +126,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** JPEG фотографії */
+  /** JPEG фотографії. */
   public static Specification<ItemPhotoEntity> isJpegPhoto() {
     return (root, query, criteriaBuilder) ->
         criteriaBuilder.or(
@@ -134,17 +134,17 @@ public class ItemPhotoSpecification {
             criteriaBuilder.equal(root.get("contentType"), "image/jpg"));
   }
 
-  /** PNG фотографії */
+  /** PNG фотографії. */
   public static Specification<ItemPhotoEntity> isPngPhoto() {
     return hasContentType("image/png");
   }
 
-  /** WebP фотографії */
+  /** WebP фотографії. */
   public static Specification<ItemPhotoEntity> isWebpPhoto() {
     return hasContentType("image/webp");
   }
 
-  /** Фотографії з описом (містить текст) */
+  /** Фотографії з описом (містить текст). */
   public static Specification<ItemPhotoEntity> descriptionContains(String searchText) {
     return (root, query, criteriaBuilder) -> {
       if (searchText == null || searchText.trim().isEmpty()) {
@@ -155,7 +155,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Фотографії з оригінальним іменем файлу (містить) */
+  /** Фотографії з оригінальним іменем файлу (містить). */
   public static Specification<ItemPhotoEntity> originalNameContains(String nameFragment) {
     return (root, query, criteriaBuilder) -> {
       if (nameFragment == null || nameFragment.trim().isEmpty()) {
@@ -166,17 +166,17 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Фотографії з мініатюрами */
+  /** Фотографії з мініатюрами. */
   public static Specification<ItemPhotoEntity> hasThumbnail() {
     return (root, query, criteriaBuilder) -> criteriaBuilder.isNotNull(root.get("thumbnailPath"));
   }
 
-  /** Фотографії без мініатюр */
+  /** Фотографії без мініатюр. */
   public static Specification<ItemPhotoEntity> hasNoThumbnail() {
     return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("thumbnailPath"));
   }
 
-  /** Фотографії з розмірами зображення */
+  /** Фотографії з розмірами зображення. */
   public static Specification<ItemPhotoEntity> hasImageDimensions() {
     return (root, query, criteriaBuilder) ->
         criteriaBuilder.and(
@@ -184,7 +184,7 @@ public class ItemPhotoSpecification {
             criteriaBuilder.isNotNull(root.get("imageHeight")));
   }
 
-  /** Фотографії з високою роздільністю */
+  /** Фотографії з високою роздільністю. */
   public static Specification<ItemPhotoEntity> isHighResolution(
       Integer minWidth, Integer minHeight) {
     return (root, query, criteriaBuilder) -> {
@@ -201,7 +201,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Сортування за порядком відображення */
+  /** Сортування за порядком відображення. */
   public static Specification<ItemPhotoEntity> orderByDisplayOrder() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -211,7 +211,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Сортування за датою створення (нові першими) */
+  /** Сортування за датою створення (нові першими). */
   public static Specification<ItemPhotoEntity> orderByCreatedAtDesc() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -221,7 +221,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Сортування за розміром файлу (найбільші першими) */
+  /** Сортування за розміром файлу (найбільші першими). */
   public static Specification<ItemPhotoEntity> orderByFileSizeDesc() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -231,7 +231,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Сортування за типом фотографії та порядком відображення */
+  /** Сортування за типом фотографії та порядком відображення. */
   public static Specification<ItemPhotoEntity> orderByTypeAndDisplayOrder() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -243,7 +243,7 @@ public class ItemPhotoSpecification {
     };
   }
 
-  /** Підрахунок фотографій за предметом та типом */
+  /** Підрахунок фотографій за предметом та типом. */
   public static Specification<ItemPhotoEntity> countByItemAndType(UUID itemId, String photoType) {
     return belongsToItem(itemId).and(hasPhotoType(photoType));
   }

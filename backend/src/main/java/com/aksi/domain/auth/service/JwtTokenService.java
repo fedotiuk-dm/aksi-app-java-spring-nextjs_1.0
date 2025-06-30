@@ -44,7 +44,7 @@ public class JwtTokenService {
     this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
   }
 
-  /** Генерація JWT access токену */
+  /** Генерація JWT access токену. */
   public String generateAccessToken(UserEntity user) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
@@ -67,7 +67,7 @@ public class JwtTokenService {
         .compact();
   }
 
-  /** Генерація JWT refresh токену */
+  /** Генерація JWT refresh токену. */
   public String generateRefreshToken(UserEntity user) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + refreshTokenExpirationInMs);
@@ -83,26 +83,26 @@ public class JwtTokenService {
         .compact();
   }
 
-  /** Отримання користувача ID з токену */
+  /** Отримання користувача ID з токену. */
   public Long getUserIdFromToken(String token) {
     Claims claims = getClaimsFromToken(token);
     return Long.valueOf(claims.getSubject());
   }
 
-  /** Отримання username з токену */
+  /** Отримання username з токену. */
   public String getUsernameFromToken(String token) {
     Claims claims = getClaimsFromToken(token);
     return claims.get("username", String.class);
   }
 
-  /** Отримання ролей з токену */
+  /** Отримання ролей з токену. */
   @SuppressWarnings("unchecked")
   public List<String> getRolesFromToken(String token) {
     Claims claims = getClaimsFromToken(token);
     return (List<String>) claims.get("roles");
   }
 
-  /** Перевірка валідності токену */
+  /** Перевірка валідності токену. */
   public boolean isTokenValid(String token) {
     try {
       getClaimsFromToken(token);
@@ -113,7 +113,7 @@ public class JwtTokenService {
     }
   }
 
-  /** Перевірка чи токен прострочений */
+  /** Перевірка чи токен прострочений. */
   public boolean isTokenExpired(String token) {
     try {
       Claims claims = getClaimsFromToken(token);
@@ -123,13 +123,13 @@ public class JwtTokenService {
     }
   }
 
-  /** Отримання дати експірації токену */
+  /** Отримання дати експірації токену. */
   public LocalDateTime getExpirationDateFromToken(String token) {
     Claims claims = getClaimsFromToken(token);
     return claims.getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
   }
 
-  /** Валідація токену з детальною перевіркою */
+  /** Валідація токену з детальною перевіркою. */
   public void validateToken(String token) {
     try {
       Claims claims = getClaimsFromToken(token);
@@ -159,12 +159,12 @@ public class JwtTokenService {
     }
   }
 
-  /** Отримання експірації в секундах (для API response) */
+  /** Отримання експірації в секундах (для API response). */
   public long getExpirationInSeconds() {
     return jwtExpirationInMs / 1000;
   }
 
-  /** Перевірка чи токен є refresh токеном */
+  /** Перевірка чи токен є refresh токеном. */
   public boolean isRefreshToken(String token) {
     try {
       Claims claims = getClaimsFromToken(token);
@@ -174,7 +174,7 @@ public class JwtTokenService {
     }
   }
 
-  /** Отримання всіх даних користувача з токену */
+  /** Отримання всіх даних користувача з токену. */
   @SuppressWarnings("unchecked")
   public UserTokenData getUserDataFromToken(String token) {
     Claims claims = getClaimsFromToken(token);
@@ -191,7 +191,7 @@ public class JwtTokenService {
         roles);
   }
 
-  /** DTO для даних користувача з токену */
+  /** DTO для даних користувача з токену. */
   public static class UserTokenData {
     private final Long userId;
     private final String username;
@@ -248,7 +248,7 @@ public class JwtTokenService {
     }
   }
 
-  /** Отримання Claims з токену */
+  /** Отримання Claims з токену. */
   private Claims getClaimsFromToken(String token) {
     try {
       return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();

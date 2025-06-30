@@ -16,22 +16,22 @@ public enum BranchOpenStatus {
     return displayName;
   }
 
-  /** Перевіряє чи філія відкрита для обслуговування */
+  /** Перевіряє чи філія відкрита для обслуговування. */
   public boolean isOpen() {
     return this == OPEN;
   }
 
-  /** Перевіряє чи філія закрита */
+  /** Перевіряє чи філія закрита. */
   public boolean isClosed() {
     return this == CLOSED || this == HOLIDAY;
   }
 
-  /** Перевіряє чи зараз вихідний день */
+  /** Перевіряє чи зараз вихідний день. */
   public boolean isHoliday() {
     return this == HOLIDAY;
   }
 
-  /** Перевіряє чи клієнти можуть відвідувати філію */
+  /** Перевіряє чи клієнти можуть відвідувати філію. */
   public boolean isAccessibleToCustomers() {
     return this == OPEN;
   }

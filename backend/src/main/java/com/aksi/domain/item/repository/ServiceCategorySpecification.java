@@ -14,17 +14,17 @@ import jakarta.persistence.criteria.JoinType;
  */
 public class ServiceCategorySpecification {
 
-  /** Активні категорії */
+  /** Активні категорії. */
   public static Specification<ServiceCategoryEntity> isActive() {
     return (root, query, criteriaBuilder) -> criteriaBuilder.isTrue(root.get("isActive"));
   }
 
-  /** Неактивні категорії */
+  /** Неактивні категорії. */
   public static Specification<ServiceCategoryEntity> isInactive() {
     return (root, query, criteriaBuilder) -> criteriaBuilder.isFalse(root.get("isActive"));
   }
 
-  /** Категорії за кодом (містить) */
+  /** Категорії за кодом (містить). */
   public static Specification<ServiceCategoryEntity> codeContains(String code) {
     return (root, query, criteriaBuilder) -> {
       if (code == null || code.trim().isEmpty()) {
@@ -35,7 +35,7 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Категорії за назвою (містить) */
+  /** Категорії за назвою (містить). */
   public static Specification<ServiceCategoryEntity> nameContains(String name) {
     return (root, query, criteriaBuilder) -> {
       if (name == null || name.trim().isEmpty()) {
@@ -46,7 +46,7 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Пошук за назвою або кодом */
+  /** Пошук за назвою або кодом. */
   public static Specification<ServiceCategoryEntity> nameOrCodeContains(String searchTerm) {
     return (root, query, criteriaBuilder) -> {
       if (searchTerm == null || searchTerm.trim().isEmpty()) {
@@ -59,12 +59,12 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Батьківські категорії (без parentId) */
+  /** Батьківські категорії (без parentId). */
   public static Specification<ServiceCategoryEntity> isParentCategory() {
     return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("parentId"));
   }
 
-  /** Дочірні категорії за parentId */
+  /** Дочірні категорії за parentId. */
   public static Specification<ServiceCategoryEntity> hasParent(UUID parentId) {
     return (root, query, criteriaBuilder) -> {
       if (parentId == null) {
@@ -74,7 +74,7 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Категорії з терміном виконання менше або рівно вказаному */
+  /** Категорії з терміном виконання менше або рівно вказаному. */
   public static Specification<ServiceCategoryEntity> standardDaysLessThanOrEqual(Integer maxDays) {
     return (root, query, criteriaBuilder) -> {
       if (maxDays == null) {
@@ -84,7 +84,7 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Категорії що підтримують певний матеріал */
+  /** Категорії що підтримують певний матеріал. */
   public static Specification<ServiceCategoryEntity> supportsMaterial(String materialType) {
     return (root, query, criteriaBuilder) -> {
       if (materialType == null || materialType.trim().isEmpty()) {
@@ -94,7 +94,7 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Категорії що підтримують певний модифікатор */
+  /** Категорії що підтримують певний модифікатор. */
   public static Specification<ServiceCategoryEntity> supportsModifier(UUID modifierId) {
     return (root, query, criteriaBuilder) -> {
       if (modifierId == null) {
@@ -104,7 +104,7 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Категорії з активними предметами */
+  /** Категорії з активними предметами. */
   public static Specification<ServiceCategoryEntity> hasActiveItems() {
     return (root, query, criteriaBuilder) -> {
       if (query == null) {
@@ -125,12 +125,12 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Категорії без активних предметів (можна видаляти) */
+  /** Категорії без активних предметів (можна видаляти). */
   public static Specification<ServiceCategoryEntity> isDeletable() {
     return isInactive().and(hasNoActiveItems());
   }
 
-  /** Категорії без активних предметів */
+  /** Категорії без активних предметів. */
   public static Specification<ServiceCategoryEntity> hasNoActiveItems() {
     return (root, query, criteriaBuilder) -> {
       if (query == null) {
@@ -150,7 +150,7 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Сортування за назвою (A-Z) */
+  /** Сортування за назвою (A-Z). */
   public static Specification<ServiceCategoryEntity> orderByName() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -160,7 +160,7 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Сортування за ієрархією (батьки першими, потім діти) */
+  /** Сортування за ієрархією (батьки першими, потім діти). */
   public static Specification<ServiceCategoryEntity> orderByHierarchy() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -176,7 +176,7 @@ public class ServiceCategorySpecification {
     };
   }
 
-  /** Сортування за популярністю (кількістю предметів) */
+  /** Сортування за популярністю (кількістю предметів). */
   public static Specification<ServiceCategoryEntity> orderByPopularity() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {

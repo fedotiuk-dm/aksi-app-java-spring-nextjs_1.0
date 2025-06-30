@@ -1,27 +1,27 @@
 package com.aksi.domain.client.enums;
 
-/** Джерело надходження клієнта Синхронізовано з OpenAPI enum ClientSourceType */
+/** Джерело надходження клієнта Синхронізовано з OpenAPI enum ClientSourceType. */
 public enum ClientSourceType {
 
-  /** Рекомендація */
+  /** Рекомендація. */
   REFERRAL("Рекомендація"),
 
-  /** Реклама */
+  /** Реклама. */
   ADVERTISING("Реклама"),
 
-  /** Соціальні мережі */
+  /** Соціальні мережі. */
   SOCIAL_MEDIA("Соціальні мережі"),
 
-  /** Веб-сайт */
+  /** Веб-сайт. */
   WEBSITE("Веб-сайт"),
 
-  /** Проходив повз */
+  /** Проходив повз. */
   WALKING_BY("Проходив повз"),
 
-  /** Постійний клієнт */
+  /** Постійний клієнт. */
   REPEAT_CUSTOMER("Постійний клієнт"),
 
-  /** Інше */
+  /** Інше. */
   OTHER("Інше");
 
   private final String description;
@@ -34,17 +34,17 @@ public enum ClientSourceType {
     return description;
   }
 
-  /** Domain-specific метод для перевірки чи є джерело онлайн */
+  /** Domain-specific метод для перевірки чи є джерело онлайн. */
   public boolean isOnlineSource() {
     return this == SOCIAL_MEDIA || this == WEBSITE;
   }
 
-  /** Domain-specific метод для перевірки чи є джерело персональним */
+  /** Domain-specific метод для перевірки чи є джерело персональним. */
   public boolean isPersonalSource() {
     return this == REFERRAL || this == REPEAT_CUSTOMER;
   }
 
-  /** Domain-specific метод для перевірки чи є джерело випадковим */
+  /** Domain-specific метод для перевірки чи є джерело випадковим. */
   public boolean isRandomSource() {
     return this == WALKING_BY || this == OTHER;
   }

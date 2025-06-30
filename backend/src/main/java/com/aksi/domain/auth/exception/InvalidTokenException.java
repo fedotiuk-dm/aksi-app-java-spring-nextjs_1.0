@@ -1,6 +1,6 @@
 package com.aksi.domain.auth.exception;
 
-/** Виняток для невалідних токенів Domain-specific RuntimeException */
+/** Виняток для невалідних токенів Domain-specific RuntimeException. */
 public class InvalidTokenException extends RuntimeException {
 
   public InvalidTokenException() {

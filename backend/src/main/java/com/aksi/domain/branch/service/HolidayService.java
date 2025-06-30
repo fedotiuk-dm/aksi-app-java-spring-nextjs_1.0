@@ -16,7 +16,7 @@ import com.aksi.domain.branch.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** Сервіс для управління святковими днями Відповідальність: HolidayEntity */
+/** Сервіс для управління святковими днями Відповідальність: HolidayEntity. */
 @Slf4j
 @Service
 @Transactional
@@ -28,7 +28,7 @@ public class HolidayService {
 
   // API методи (для контролерів) - працюють з DTO
 
-  /** Створити новий святковий день */
+  /** Створити новий святковий день. */
   public HolidayResponse createHoliday(HolidayRequest request) {
     log.debug("Creating holiday: {}", request.getName());
 
@@ -37,7 +37,7 @@ public class HolidayService {
     return holidayMapper.toResponse(savedEntity);
   }
 
-  /** Отримати святковий день за UUID */
+  /** Отримати святковий день за UUID. */
   @Transactional(readOnly = true)
   public HolidayResponse getHolidayById(UUID uuid) {
     log.debug("Getting holiday by UUID: {}", uuid);
@@ -46,7 +46,7 @@ public class HolidayService {
     return holidayMapper.toResponse(entity);
   }
 
-  /** Оновити святковий день */
+  /** Оновити святковий день. */
   public HolidayResponse updateHoliday(UUID uuid, HolidayRequest request) {
     log.debug("Updating holiday: {}", uuid);
 
@@ -59,7 +59,7 @@ public class HolidayService {
     return holidayMapper.toResponse(savedEntity);
   }
 
-  /** Видалити святковий день */
+  /** Видалити святковий день. */
   public void deleteHoliday(UUID uuid) {
     log.debug("Deleting holiday: {}", uuid);
 
@@ -67,7 +67,7 @@ public class HolidayService {
     holidayRepository.deleteById(entity.getId());
   }
 
-  /** Отримати всі святкові дні */
+  /** Отримати всі святкові дні. */
   @Transactional(readOnly = true)
   public List<HolidayResponse> getAllHolidays() {
     log.debug("Getting all holidays");
@@ -76,7 +76,7 @@ public class HolidayService {
     return holidayMapper.toResponseList(entities);
   }
 
-  /** Отримати святкові дні за конкретною датою */
+  /** Отримати святкові дні за конкретною датою. */
   @Transactional(readOnly = true)
   public List<HolidayResponse> getHolidaysByDate(LocalDate date) {
     log.debug("Getting holidays for date: {}", date);
@@ -85,7 +85,7 @@ public class HolidayService {
     return holidayMapper.toResponseList(entities);
   }
 
-  /** Отримати щорічні святкові дні */
+  /** Отримати щорічні святкові дні. */
   @Transactional(readOnly = true)
   public List<HolidayResponse> getRecurringHolidays() {
     log.debug("Getting recurring holidays");
@@ -94,7 +94,7 @@ public class HolidayService {
     return holidayMapper.toResponseList(entities);
   }
 
-  /** Перевірити чи є конкретна дата святковим днем */
+  /** Перевірити чи є конкретна дата святковим днем. */
   @Transactional(readOnly = true)
   public boolean isHoliday(LocalDate date) {
     log.debug("Checking if {} is a holiday", date);
@@ -102,7 +102,7 @@ public class HolidayService {
     return !holidayRepository.findByDate(date).isEmpty();
   }
 
-  /** Знайти наступний робочий день після святкового */
+  /** Знайти наступний робочий день після святкового. */
   @Transactional(readOnly = true)
   public LocalDate getNextWorkingDate(LocalDate currentDate) {
     log.debug("Finding next working date after: {}", currentDate);
@@ -122,12 +122,12 @@ public class HolidayService {
 
   // Entity методи (для внутрішньої логіки)
 
-  /** Створити entity */
+  /** Створити entity. */
   public HolidayEntity create(HolidayEntity entity) {
     return holidayRepository.save(entity);
   }
 
-  /** Знайти entity за UUID */
+  /** Знайти entity за UUID. */
   @Transactional(readOnly = true)
   private HolidayEntity findEntityById(UUID uuid) {
     return holidayRepository
@@ -135,18 +135,18 @@ public class HolidayService {
         .orElseThrow(() -> new RuntimeException("Holiday not found: " + uuid));
   }
 
-  /** Знайти entity за датою */
+  /** Знайти entity за датою. */
   @Transactional(readOnly = true)
   public List<HolidayEntity> findByDate(LocalDate date) {
     return holidayRepository.findByDate(date);
   }
 
-  /** Оновити entity */
+  /** Оновити entity. */
   public HolidayEntity update(HolidayEntity entity) {
     return holidayRepository.save(entity);
   }
 
-  /** Отримати всі entities */
+  /** Отримати всі entities. */
   @Transactional(readOnly = true)
   public List<HolidayEntity> findAll() {
     return holidayRepository.findAll();

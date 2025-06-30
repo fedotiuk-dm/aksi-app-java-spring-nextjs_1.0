@@ -13,11 +13,11 @@ import com.aksi.api.branch.dto.ReceiptNumberResponse;
 import com.aksi.api.branch.dto.ReceiptValidationResponse;
 import com.aksi.domain.branch.entity.BranchEntity;
 
-/** MapStruct маппер для конвертації Receipt Number типів */
+/** MapStruct маппер для конвертації Receipt Number типів. */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ReceiptNumberMapper {
 
-  /** Створити ReceiptNumberResponse з даних філії та згенерованого номера */
+  /** Створити ReceiptNumberResponse з даних філії та згенерованого номера. */
   @Mapping(target = "receiptNumber", source = "receiptNumber")
   @Mapping(target = "branchId", source = "branch.uuid")
   @Mapping(target = "branchCode", source = "branch.code")
@@ -28,7 +28,7 @@ public interface ReceiptNumberMapper {
       expression = "java(convertToOffsetDateTime(java.time.LocalDateTime.now()))")
   ReceiptNumberResponse toReceiptNumberResponse(BranchEntity branch, String receiptNumber);
 
-  /** Створити ReceiptValidationResponse для валідації */
+  /** Створити ReceiptValidationResponse для валідації. */
   @Mapping(target = "receiptNumber", source = "receiptNumber")
   @Mapping(target = "isValid", source = "isValid")
   @Mapping(target = "errors", source = "errors")
@@ -36,7 +36,7 @@ public interface ReceiptNumberMapper {
   ReceiptValidationResponse toReceiptValidationResponse(
       String receiptNumber, boolean isValid, java.util.List<String> errors, String branchCode);
 
-  /** Створити ReceiptNumberParseResponse з розбором номера */
+  /** Створити ReceiptNumberParseResponse з розбором номера. */
   @Mapping(target = "receiptNumber", source = "receiptNumber")
   @Mapping(target = "branchCode", source = "branchCode")
   @Mapping(target = "year", source = "year")
@@ -49,7 +49,7 @@ public interface ReceiptNumberMapper {
       Integer sequenceNumber,
       BranchEntity branch);
 
-  /** Конвертація BranchEntity → BranchSummaryResponse для ParseResponse */
+  /** Конвертація BranchEntity → BranchSummaryResponse для ParseResponse. */
   @Mapping(target = "id", source = "uuid")
   @Mapping(target = "code", source = "code")
   @Mapping(target = "name", source = "name")
@@ -58,18 +58,18 @@ public interface ReceiptNumberMapper {
 
   // Utility методи
 
-  /** Конвертація LocalDateTime → OffsetDateTime */
+  /** Конвертація LocalDateTime → OffsetDateTime. */
   default OffsetDateTime convertToOffsetDateTime(LocalDateTime localDateTime) {
     return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
   }
 
-  /** Витягти код філії з номера квитанції (формат: BRANCH_CODE-YEAR-SEQUENCE) */
+  /** Витягти код філії з номера квитанції (формат: BRANCH_CODE-YEAR-SEQUENCE). */
   default String extractBranchCodeFromReceiptNumber(String receiptNumber) {
     if (receiptNumber == null || !receiptNumber.contains("-")) return null;
     return receiptNumber.split("-")[0];
   }
 
-  /** Витягти рік з номера квитанції */
+  /** Витягти рік з номера квитанції. */
   default Integer extractYearFromReceiptNumber(String receiptNumber) {
     if (receiptNumber == null) return null;
 
@@ -83,7 +83,7 @@ public interface ReceiptNumberMapper {
     }
   }
 
-  /** Витягти порядковий номер з номера квитанції */
+  /** Витягти порядковий номер з номера квитанції. */
   default Integer extractSequenceFromReceiptNumber(String receiptNumber) {
     if (receiptNumber == null) return null;
 
@@ -97,7 +97,7 @@ public interface ReceiptNumberMapper {
     }
   }
 
-  /** Валідувати формат номера квитанції */
+  /** Валідувати формат номера квитанції. */
   default boolean isValidReceiptNumberFormat(String receiptNumber) {
     if (receiptNumber == null || receiptNumber.trim().isEmpty()) return false;
 

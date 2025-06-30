@@ -11,7 +11,7 @@ import com.aksi.domain.branch.enums.BranchStatus;
  */
 public class BranchSpecification {
 
-  /** Філії за статусом */
+  /** Філії за статусом. */
   public static Specification<BranchEntity> hasStatus(BranchStatus status) {
     return (root, query, criteriaBuilder) -> {
       if (status == null) {
@@ -21,12 +21,12 @@ public class BranchSpecification {
     };
   }
 
-  /** Активні філії */
+  /** Активні філії. */
   public static Specification<BranchEntity> isActive() {
     return hasStatus(BranchStatus.ACTIVE);
   }
 
-  /** Філії доступні для клієнтів (активні або тимчасово закриті) */
+  /** Філії доступні для клієнтів (активні або тимчасово закриті). */
   public static Specification<BranchEntity> isAvailableForCustomers() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.or(
@@ -35,7 +35,7 @@ public class BranchSpecification {
     };
   }
 
-  /** Філії в конкретному місті */
+  /** Філії в конкретному місті. */
   public static Specification<BranchEntity> inCity(String city) {
     return (root, query, criteriaBuilder) -> {
       if (city == null || city.trim().isEmpty()) {
@@ -45,7 +45,7 @@ public class BranchSpecification {
     };
   }
 
-  /** Пошук за текстом (назва, код, місто) */
+  /** Пошук за текстом (назва, код, місто). */
   public static Specification<BranchEntity> containsText(String searchText) {
     return (root, query, criteriaBuilder) -> {
       if (searchText == null || searchText.trim().isEmpty()) {
@@ -62,7 +62,7 @@ public class BranchSpecification {
     };
   }
 
-  /** Філії з координатами */
+  /** Філії з координатами. */
   public static Specification<BranchEntity> hasCoordinates() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.and(
@@ -71,7 +71,7 @@ public class BranchSpecification {
     };
   }
 
-  /** Філії в радіусі від координат (формула Гаверсіна) */
+  /** Філії в радіусі від координат (формула Гаверсіна). */
   public static Specification<BranchEntity> withinRadius(
       double latitude, double longitude, double radiusKm) {
     return (root, query, criteriaBuilder) -> {
@@ -111,7 +111,7 @@ public class BranchSpecification {
     };
   }
 
-  /** Філії з контактною інформацією */
+  /** Філії з контактною інформацією. */
   public static Specification<BranchEntity> hasContactInfo() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.or(
@@ -120,33 +120,33 @@ public class BranchSpecification {
     };
   }
 
-  /** Філії з email */
+  /** Філії з email. */
   public static Specification<BranchEntity> hasEmail() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.isNotNull(root.get("contactInfo").get("email"));
     };
   }
 
-  /** Філії з телефоном */
+  /** Філії з телефоном. */
   public static Specification<BranchEntity> hasPhone() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.isNotNull(root.get("contactInfo").get("phone"));
     };
   }
 
-  /** Комплексний пошук з фільтрами */
+  /** Комплексний пошук з фільтрами. */
   public static Specification<BranchEntity> searchWithFilters(
       String query, BranchStatus status, String city) {
     return Specification.where(containsText(query)).and(hasStatus(status)).and(inCity(city));
   }
 
-  /** Філії поблизу з фільтрами */
+  /** Філії поблизу з фільтрами. */
   public static Specification<BranchEntity> nearbyWithFilters(
       double latitude, double longitude, double radiusKm, BranchStatus status) {
     return Specification.where(withinRadius(latitude, longitude, radiusKm)).and(hasStatus(status));
   }
 
-  /** Готові для роботи філії (активні з контактами) */
+  /** Готові для роботи філії (активні з контактами). */
   public static Specification<BranchEntity> readyForBusiness() {
     return Specification.where(isActive()).and(hasContactInfo());
   }

@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Embedded клас для інформації про оплату */
+/** Embedded клас для інформації про оплату. */
 @Embeddable
 @Data
 @Builder
@@ -29,12 +29,12 @@ public class PaymentInfoEntity {
   @Builder.Default
   private BigDecimal paidAmount = BigDecimal.ZERO;
 
-  /** Перевіряє чи є часткова оплата */
+  /** Перевіряє чи є часткова оплата. */
   public boolean hasPartialPayment() {
     return paidAmount != null && paidAmount.compareTo(BigDecimal.ZERO) > 0;
   }
 
-  /** Розраховує суму до доплати */
+  /** Розраховує суму до доплати. */
   public BigDecimal calculateRemainingAmount(BigDecimal totalAmount) {
     if (totalAmount == null || paidAmount == null) {
       return totalAmount;
@@ -42,7 +42,7 @@ public class PaymentInfoEntity {
     return totalAmount.subtract(paidAmount);
   }
 
-  /** Перевіряє чи повністю оплачено */
+  /** Перевіряє чи повністю оплачено. */
   public boolean isFullyPaid(BigDecimal totalAmount) {
     if (totalAmount == null || paidAmount == null) {
       return false;
@@ -50,7 +50,7 @@ public class PaymentInfoEntity {
     return paidAmount.compareTo(totalAmount) >= 0;
   }
 
-  /** Перевіряє чи є переплата */
+  /** Перевіряє чи є переплата. */
   public boolean hasOverpayment(BigDecimal totalAmount) {
     if (totalAmount == null || paidAmount == null) {
       return false;

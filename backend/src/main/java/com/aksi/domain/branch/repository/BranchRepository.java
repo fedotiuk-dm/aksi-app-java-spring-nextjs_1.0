@@ -23,44 +23,44 @@ public interface BranchRepository
 
   // Основні пошукові методи (прості Spring Data методи)
 
-  /** Знаходить філію за кодом */
+  /** Знаходить філію за кодом. */
   Optional<BranchEntity> findByCode(String code);
 
-  /** Перевіряє чи існує філія з таким кодом */
+  /** Перевіряє чи існує філія з таким кодом. */
   boolean existsByCode(String code);
 
-  /** Знаходить всі філії за статусом */
+  /** Знаходить всі філії за статусом. */
   List<BranchEntity> findByStatus(BranchStatus status);
 
-  /** Знаходить філії в конкретному місті */
+  /** Знаходить філії в конкретному місті. */
   List<BranchEntity> findByCityIgnoreCase(String city);
 
   // Статистичні методи (залишаємо прості @Query)
 
-  /** Підраховує кількість філій за статусом */
+  /** Підраховує кількість філій за статусом. */
   long countByStatus(BranchStatus status);
 
-  /** Підраховує активні філії */
+  /** Підраховує активні філії. */
   @Query("SELECT COUNT(b) FROM BranchEntity b WHERE b.status = 'ACTIVE'")
   long countActive();
 
-  /** Знаходить міста з філіями */
+  /** Знаходить міста з філіями. */
   @Query("SELECT DISTINCT b.city FROM BranchEntity b WHERE b.city IS NOT NULL ORDER BY b.city")
   List<String> findAllCities();
 
   // Операції з лічильником квитанцій
 
-  /** Оновлює лічильник квитанцій для філії */
+  /** Оновлює лічильник квитанцій для філії. */
   @Modifying
   @Query("UPDATE BranchEntity b SET b.receiptCounter = :counter WHERE b.id = :branchId")
   void updateReceiptCounter(@Param("branchId") UUID branchId, @Param("counter") Long counter);
 
-  /** Інкрементує лічильник квитанцій */
+  /** Інкрементує лічильник квитанцій. */
   @Modifying
   @Query("UPDATE BranchEntity b SET b.receiptCounter = b.receiptCounter + 1 WHERE b.id = :branchId")
   void incrementReceiptCounter(@Param("branchId") UUID branchId);
 
-  /** Отримує поточний лічильник квитанцій */
+  /** Отримує поточний лічильник квитанцій. */
   @Query("SELECT b.receiptCounter FROM BranchEntity b WHERE b.id = :branchId")
   Optional<Long> getReceiptCounter(@Param("branchId") UUID branchId);
 

@@ -10,7 +10,7 @@ import com.aksi.api.item.dto.PriceModifierResponse;
 import com.aksi.api.item.dto.UpdatePriceModifierRequest;
 import com.aksi.domain.item.entity.PriceModifierEntity;
 
-/** MapStruct mapper для PriceModifier - Entity ↔ DTO конвертація */
+/** MapStruct mapper для PriceModifier - Entity ↔ DTO конвертація. */
 @Mapper(componentModel = "spring")
 public interface PriceModifierMapper {
 

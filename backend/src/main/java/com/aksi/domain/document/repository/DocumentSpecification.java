@@ -10,7 +10,7 @@ import com.aksi.domain.document.entity.DocumentEntity;
 import com.aksi.domain.document.enums.DocumentStatus;
 import com.aksi.domain.document.enums.DocumentType;
 
-/** JPA Specifications для DocumentEntity - type-safe dynamic queries */
+/** JPA Specifications для DocumentEntity - type-safe dynamic queries. */
 public class DocumentSpecification {
 
   // Type specifications

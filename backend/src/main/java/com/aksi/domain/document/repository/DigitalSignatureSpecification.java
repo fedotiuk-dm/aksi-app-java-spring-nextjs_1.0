@@ -8,7 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import com.aksi.domain.document.entity.DigitalSignatureEntity;
 import com.aksi.domain.document.enums.SignatureType;
 
-/** JPA Specifications для DigitalSignatureEntity - type-safe dynamic queries */
+/** JPA Specifications для DigitalSignatureEntity - type-safe dynamic queries. */
 public class DigitalSignatureSpecification {
 
   // Type specifications

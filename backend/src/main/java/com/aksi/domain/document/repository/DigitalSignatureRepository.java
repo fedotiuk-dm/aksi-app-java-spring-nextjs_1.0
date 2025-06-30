@@ -18,7 +18,7 @@ import com.aksi.domain.document.entity.DigitalSignatureEntity;
 import com.aksi.domain.document.entity.ReceiptEntity;
 import com.aksi.domain.document.enums.SignatureType;
 
-/** Repository для роботи з цифровими підписами з JPA Specification підтримкою */
+/** Repository для роботи з цифровими підписами з JPA Specification підтримкою. */
 @Repository
 public interface DigitalSignatureRepository
     extends JpaRepository<DigitalSignatureEntity, Long>,

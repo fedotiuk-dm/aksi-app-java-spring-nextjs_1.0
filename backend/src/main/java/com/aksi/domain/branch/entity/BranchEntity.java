@@ -39,7 +39,7 @@ public class BranchEntity extends BaseEntity {
 
   /**
    * UUID для API сумісності (зовнішній ідентифікатор) Внутрішньо використовуємо Long id з
-   * BaseEntity
+   * BaseEntity.
    */
   @Column(name = "uuid", nullable = false, unique = true, updatable = false)
   @Builder.Default
@@ -96,34 +96,34 @@ public class BranchEntity extends BaseEntity {
 
   // Business methods
 
-  /** Перевіряє чи філія може приймати нові замовлення */
+  /** Перевіряє чи філія може приймати нові замовлення. */
   public boolean canAcceptOrders() {
     return status.canAcceptOrders();
   }
 
-  /** Перевіряє чи філія активна */
+  /** Перевіряє чи філія активна. */
   public boolean isActive() {
     return status.isActive();
   }
 
-  /** Перевіряє чи філія доступна для клієнтів */
+  /** Перевіряє чи філія доступна для клієнтів. */
   public boolean isAvailableForCustomers() {
     return status.isAvailableForCustomers();
   }
 
-  /** Деактивує філію */
+  /** Деактивує філію. */
   public void deactivate() {
     this.status = BranchStatus.INACTIVE;
   }
 
-  /** Генерує наступний номер квитанції */
+  /** Генерує наступний номер квитанції. */
   public synchronized String generateNextReceiptNumber() {
     this.receiptCounter++;
     return String.format(
         "%s-%d-%06d", this.code, java.time.Year.now().getValue(), this.receiptCounter);
   }
 
-  /** Перевіряє чи філія в межах радіусу від координат */
+  /** Перевіряє чи філія в межах радіусу від координат. */
   public boolean isWithinRadius(double latitude, double longitude, double radiusKm) {
     if (coordinates == null) {
       return false;
@@ -131,7 +131,7 @@ public class BranchEntity extends BaseEntity {
     return coordinates.calculateDistanceKm(latitude, longitude) <= radiusKm;
   }
 
-  /** Отримує повну адресу як рядок */
+  /** Отримує повну адресу як рядок. */
   public String getFullAddress() {
     StringBuilder address = new StringBuilder();
 
@@ -146,12 +146,12 @@ public class BranchEntity extends BaseEntity {
     return address.toString().replaceAll(", $", "");
   }
 
-  /** Перевіряє чи філія має контактну інформацію */
+  /** Перевіряє чи філія має контактну інформацію. */
   public boolean hasContactInfo() {
     return contactInfo != null && contactInfo.hasValidInfo();
   }
 
-  /** Перевіряє чи філія має координати */
+  /** Перевіряє чи філія має координати. */
   public boolean hasCoordinates() {
     return coordinates != null && coordinates.isValid();
   }

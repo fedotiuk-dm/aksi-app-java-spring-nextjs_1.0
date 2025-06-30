@@ -22,7 +22,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/** Entity для предметів прайс-листа */
+/** Entity для предметів прайс-листа. */
 @Entity
 @Table(
     name = "price_list_items",
@@ -81,12 +81,12 @@ public class PriceListItemEntity extends BaseEntity {
 
   // ===== BUSINESS МЕТОДИ =====
 
-  /** Перевірити, чи є предмет активним */
+  /** Перевірити, чи є предмет активним. */
   public boolean isActiveItem() {
     return Boolean.TRUE.equals(isActive);
   }
 
-  /** Отримати ціну залежно від кольору */
+  /** Отримати ціну залежно від кольору. */
   public Double getPriceByColor(boolean isBlack) {
     if (isBlack && priceBlack != null) {
       return priceBlack;
@@ -97,12 +97,12 @@ public class PriceListItemEntity extends BaseEntity {
     return basePrice;
   }
 
-  /** Перевірити, чи має різні ціни для кольорів */
+  /** Перевірити, чи має різні ціни для кольорів. */
   public boolean hasColorSpecificPricing() {
     return priceBlack != null || priceColor != null;
   }
 
-  /** Отримати найвищу ціну */
+  /** Отримати найвищу ціну. */
   public Double getMaxPrice() {
     double max = basePrice;
     if (priceBlack != null) {
@@ -114,7 +114,7 @@ public class PriceListItemEntity extends BaseEntity {
     return max;
   }
 
-  /** Отримати найнижчу ціну */
+  /** Отримати найнижчу ціну. */
   public Double getMinPrice() {
     double min = basePrice;
     if (priceBlack != null) {
@@ -126,37 +126,37 @@ public class PriceListItemEntity extends BaseEntity {
     return min;
   }
 
-  /** Перевірити, чи предмет вимірюється в штуках */
+  /** Перевірити, чи предмет вимірюється в штуках. */
   public boolean isMeasuredInPieces() {
     return "шт".equals(unitOfMeasure) || "пара".equals(unitOfMeasure);
   }
 
-  /** Перевірити, чи предмет вимірюється вагою */
+  /** Перевірити, чи предмет вимірюється вагою. */
   public boolean isMeasuredByWeight() {
     return "кг".equals(unitOfMeasure);
   }
 
-  /** Перевірити, чи предмет вимірюється площею */
+  /** Перевірити, чи предмет вимірюється площею. */
   public boolean isMeasuredByArea() {
     return "кв.м".equals(unitOfMeasure);
   }
 
-  /** Активувати предмет */
+  /** Активувати предмет. */
   public void activate() {
     this.isActive = true;
   }
 
-  /** Деактивувати предмет */
+  /** Деактивувати предмет. */
   public void deactivate() {
     this.isActive = false;
   }
 
-  /** Перевірити валідність цін */
+  /** Перевірити валідність цін. */
   public boolean hasValidPricing() {
     return basePrice != null && basePrice > 0;
   }
 
-  /** Розрахувати рекомендовану ціну з урахуванням кольору */
+  /** Розрахувати рекомендовану ціну з урахуванням кольору. */
   public Double calculateRecommendedPrice(boolean isBlack, boolean isColored) {
     if (isBlack) {
       return priceBlack != null ? priceBlack : basePrice;

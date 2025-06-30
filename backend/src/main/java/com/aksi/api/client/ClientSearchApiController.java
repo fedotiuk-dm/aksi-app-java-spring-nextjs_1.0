@@ -10,7 +10,7 @@ import com.aksi.domain.client.service.ClientService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP Controller для ClientSearchApi Відповідальність: тільки HTTP делегація до ClientService */
+/** HTTP Controller для ClientSearchApi Відповідальність: тільки HTTP делегація до ClientService. */
 @Controller
 @RequiredArgsConstructor
 public class ClientSearchApiController implements ClientSearchApi {

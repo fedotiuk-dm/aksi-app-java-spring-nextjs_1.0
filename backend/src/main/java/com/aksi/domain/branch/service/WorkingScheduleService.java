@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Сервіс для управління розкладом роботи філій Відповідальність: WorkingScheduleEntity +
- * WorkingDayEntity
+ * WorkingDayEntity.
  */
 @Slf4j
 @Service
@@ -48,7 +48,7 @@ public class WorkingScheduleService {
 
   // API методи (для контролерів) - працюють з DTO
 
-  /** Створити розклад роботи для філії */
+  /** Створити розклад роботи для філії. */
   public WorkingScheduleResponse createWorkingSchedule(
       UUID branchId, WorkingScheduleRequest request) {
     log.debug("Creating working schedule for branch: {}", branchId);
@@ -63,7 +63,7 @@ public class WorkingScheduleService {
     return workingScheduleMapper.toResponse(savedEntity);
   }
 
-  /** Отримати розклад роботи філії */
+  /** Отримати розклад роботи філії. */
   @Transactional(readOnly = true)
   public Optional<WorkingScheduleResponse> getWorkingScheduleByBranchId(UUID branchId) {
     log.debug("Getting working schedule for branch: {}", branchId);
@@ -71,7 +71,7 @@ public class WorkingScheduleService {
     return findByBranchId(branchId).map(workingScheduleMapper::toResponse);
   }
 
-  /** Оновити розклад роботи */
+  /** Оновити розклад роботи. */
   public WorkingScheduleResponse updateWorkingSchedule(
       UUID scheduleId, UpdateWorkingScheduleRequest request) {
     log.debug("Updating working schedule: {}", scheduleId);
@@ -86,7 +86,7 @@ public class WorkingScheduleService {
     return workingScheduleMapper.toResponse(savedEntity);
   }
 
-  /** Видалити розклад роботи */
+  /** Видалити розклад роботи. */
   public void deleteWorkingSchedule(UUID scheduleId) {
     log.debug("Deleting working schedule: {}", scheduleId);
 
@@ -94,7 +94,7 @@ public class WorkingScheduleService {
     workingScheduleRepository.deleteById(entity.getId());
   }
 
-  /** Додати робочий день до розкладу */
+  /** Додати робочий день до розкладу. */
   public WorkingDayResponse addWorkingDay(UUID scheduleId, WorkingDayRequest request) {
     log.debug("Adding working day to schedule: {}", scheduleId);
 
@@ -107,7 +107,7 @@ public class WorkingScheduleService {
     return workingDayMapper.toResponse(savedEntity);
   }
 
-  /** Оновити робочий день */
+  /** Оновити робочий день. */
   public WorkingDayResponse updateWorkingDay(UUID workingDayId, WorkingDayRequest request) {
     log.debug("Updating working day: {}", workingDayId);
 
@@ -121,7 +121,7 @@ public class WorkingScheduleService {
     return workingDayMapper.toResponse(savedEntity);
   }
 
-  /** Видалити робочий день */
+  /** Видалити робочий день. */
   public void deleteWorkingDay(UUID workingDayId) {
     log.debug("Deleting working day: {}", workingDayId);
 
@@ -129,7 +129,7 @@ public class WorkingScheduleService {
     workingDayRepository.deleteById(entity.getId());
   }
 
-  /** Отримати робочі дні для розкладу */
+  /** Отримати робочі дні для розкладу. */
   @Transactional(readOnly = true)
   public List<WorkingDayResponse> getWorkingDaysForSchedule(UUID scheduleId) {
     log.debug("Getting working days for schedule: {}", scheduleId);
@@ -140,7 +140,7 @@ public class WorkingScheduleService {
     return workingDayMapper.toResponseList(entities);
   }
 
-  /** Перевірити чи відкрита філія в конкретний час */
+  /** Перевірити чи відкрита філія в конкретний час. */
   @Transactional(readOnly = true)
   public boolean isBranchOpenAt(UUID branchId, LocalDateTime dateTime) {
     log.debug("Checking if branch {} is open at: {}", branchId, dateTime);
@@ -150,7 +150,7 @@ public class WorkingScheduleService {
         .orElse(false);
   }
 
-  /** Отримати розклад роботи філії (для API контролера) */
+  /** Отримати розклад роботи філії (для API контролера). */
   @Transactional(readOnly = true)
   public WorkingScheduleResponse getBranchSchedule(UUID branchId) {
     log.debug("Getting branch schedule for: {}", branchId);
@@ -161,7 +161,7 @@ public class WorkingScheduleService {
             () -> new RuntimeException("Working schedule not found for branch: " + branchId));
   }
 
-  /** Оновити розклад роботи філії (для API контролера) */
+  /** Оновити розклад роботи філії (для API контролера). */
   public WorkingScheduleResponse updateBranchSchedule(
       UUID branchId, UpdateWorkingScheduleRequest request) {
     log.debug("Updating branch schedule for: {}", branchId);
@@ -180,7 +180,7 @@ public class WorkingScheduleService {
     return workingScheduleMapper.toResponse(savedEntity);
   }
 
-  /** Отримати статус відкриття філії (для API контролера) */
+  /** Отримати статус відкриття філії (для API контролера). */
   @Transactional(readOnly = true)
   public BranchOpenStatusResponse getBranchOpenStatus(UUID branchId, OffsetDateTime dateTime) {
     log.debug("Getting branch open status for: {} at: {}", branchId, dateTime);
@@ -196,7 +196,7 @@ public class WorkingScheduleService {
     return workingScheduleMapper.toBranchOpenStatusResponse(branchId, isOpen, checkDateTime);
   }
 
-  /** Отримати наступний робочий день філії (для API контролера) */
+  /** Отримати наступний робочий день філії (для API контролера). */
   @Transactional(readOnly = true)
   public NextWorkingDayResponse getBranchNextWorkingDay(UUID branchId, LocalDate fromDate) {
     log.debug("Getting next working day for: {} from: {}", branchId, fromDate);
@@ -213,12 +213,12 @@ public class WorkingScheduleService {
 
   // Entity методи (для внутрішньої логіки)
 
-  /** Створити entity */
+  /** Створити entity. */
   public WorkingScheduleEntity create(WorkingScheduleEntity entity) {
     return workingScheduleRepository.save(entity);
   }
 
-  /** Знайти entity за UUID */
+  /** Знайти entity за UUID. */
   @Transactional(readOnly = true)
   private WorkingScheduleEntity findEntityById(UUID uuid) {
     return workingScheduleRepository
@@ -226,13 +226,13 @@ public class WorkingScheduleService {
         .orElseThrow(() -> WorkingScheduleException.notFound(uuid));
   }
 
-  /** Знайти entity за ID філії */
+  /** Знайти entity за ID філії. */
   @Transactional(readOnly = true)
   public Optional<WorkingScheduleEntity> findByBranchId(UUID branchId) {
     return workingScheduleRepository.findByBranchUuid(branchId);
   }
 
-  /** Знайти робочий день за UUID */
+  /** Знайти робочий день за UUID. */
   @Transactional(readOnly = true)
   private WorkingDayEntity findWorkingDayById(UUID uuid) {
     return workingDayRepository
@@ -240,12 +240,12 @@ public class WorkingScheduleService {
         .orElseThrow(() -> new RuntimeException("Working day not found: " + uuid));
   }
 
-  /** Оновити entity */
+  /** Оновити entity. */
   public WorkingScheduleEntity update(WorkingScheduleEntity entity) {
     return workingScheduleRepository.save(entity);
   }
 
-  /** Знайти всі робочі дні філії */
+  /** Знайти всі робочі дні філії. */
   @Transactional(readOnly = true)
   public List<WorkingDayEntity> findWorkingDaysByBranch(UUID branchId) {
     // Спочатку знаходимо розклад філії, потім робочі дні цього розкладу

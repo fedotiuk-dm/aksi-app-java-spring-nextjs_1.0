@@ -11,7 +11,7 @@ import com.aksi.domain.branch.enums.BranchStatus;
 /** JPA Specifications для композиційних запитів до WorkingScheduleEntity. */
 public class WorkingScheduleSpecification {
 
-  /** Розклади за часовим поясом */
+  /** Розклади за часовим поясом. */
   public static Specification<WorkingScheduleEntity> hasTimezone(String timezone) {
     return (root, query, criteriaBuilder) -> {
       if (timezone == null || timezone.trim().isEmpty()) {
@@ -21,7 +21,7 @@ public class WorkingScheduleSpecification {
     };
   }
 
-  /** Розклади філій з певним статусом */
+  /** Розклади філій з певним статусом. */
   public static Specification<WorkingScheduleEntity> branchHasStatus(BranchStatus status) {
     return (root, query, criteriaBuilder) -> {
       if (status == null) {
@@ -31,12 +31,12 @@ public class WorkingScheduleSpecification {
     };
   }
 
-  /** Розклади активних філій */
+  /** Розклади активних філій. */
   public static Specification<WorkingScheduleEntity> forActiveBranches() {
     return branchHasStatus(BranchStatus.ACTIVE);
   }
 
-  /** Розклади філій в певних містах */
+  /** Розклади філій в певних містах. */
   public static Specification<WorkingScheduleEntity> branchInCities(List<String> cities) {
     return (root, query, criteriaBuilder) -> {
       if (cities == null || cities.isEmpty()) {
@@ -50,7 +50,7 @@ public class WorkingScheduleSpecification {
     };
   }
 
-  /** Розклади філій в конкретному місті */
+  /** Розклади філій в конкретному місті. */
   public static Specification<WorkingScheduleEntity> branchInCity(String city) {
     return (root, query, criteriaBuilder) -> {
       if (city == null || city.trim().isEmpty()) {
@@ -61,7 +61,7 @@ public class WorkingScheduleSpecification {
     };
   }
 
-  /** Розклади за ID філії */
+  /** Розклади за ID філії. */
   public static Specification<WorkingScheduleEntity> forBranch(UUID branchId) {
     return (root, query, criteriaBuilder) -> {
       if (branchId == null) {
@@ -71,7 +71,7 @@ public class WorkingScheduleSpecification {
     };
   }
 
-  /** Розклади з робочими днями */
+  /** Розклади з робочими днями. */
   public static Specification<WorkingScheduleEntity> hasWorkingDays() {
     return (root, query, criteriaBuilder) -> {
       if (query == null) {
@@ -90,7 +90,7 @@ public class WorkingScheduleSpecification {
     };
   }
 
-  /** Розклади зі святковими днями */
+  /** Розклади зі святковими днями. */
   public static Specification<WorkingScheduleEntity> hasHolidays() {
     return (root, query, criteriaBuilder) -> {
       if (query == null) {
@@ -107,17 +107,17 @@ public class WorkingScheduleSpecification {
     };
   }
 
-  /** Повні розклади (з робочими днями та святковими днями) */
+  /** Повні розклади (з робочими днями та святковими днями). */
   public static Specification<WorkingScheduleEntity> isComplete() {
     return Specification.where(hasWorkingDays()).and(hasHolidays());
   }
 
-  /** Базові розклади (тільки з робочими днями) */
+  /** Базові розклади (тільки з робочими днями). */
   public static Specification<WorkingScheduleEntity> isBasic() {
     return Specification.where(hasWorkingDays()).and(Specification.not(hasHolidays()));
   }
 
-  /** Пошук з фільтрами */
+  /** Пошук з фільтрами. */
   public static Specification<WorkingScheduleEntity> searchWithFilters(
       String timezone, BranchStatus branchStatus, String city) {
     return Specification.where(hasTimezone(timezone))

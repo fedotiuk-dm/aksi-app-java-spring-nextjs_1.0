@@ -14,7 +14,7 @@ import com.aksi.domain.item.service.PriceModifierService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP контролер для управління модифікаторами цін */
+/** HTTP контролер для управління модифікаторами цін. */
 @Controller
 @RequiredArgsConstructor
 public class PriceModifiersApiController implements PriceModifiersApi {

@@ -12,14 +12,14 @@ import com.aksi.domain.document.repository.DocumentRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/** Validator для business rules документів */
+/** Validator для business rules документів. */
 @Component
 @RequiredArgsConstructor
 public class DocumentValidator {
 
   private final DocumentRepository documentRepository;
 
-  /** Валідація для створення документа */
+  /** Валідація для створення документа. */
   public void validateForCreate(DocumentEntity document) {
     validateType(document.getType());
     validateDocumentNumber(document.getDocumentNumber());
@@ -27,7 +27,7 @@ public class DocumentValidator {
     validateCreatedBy(document.getCreatedBy());
   }
 
-  /** Валідація для оновлення документа */
+  /** Валідація для оновлення документа. */
   public void validateForUpdate(DocumentEntity existing, DocumentEntity updated) {
     validateCanBeModified(existing);
 
@@ -44,21 +44,21 @@ public class DocumentValidator {
     validateStatusTransition(existing.getStatus(), updated.getStatus());
   }
 
-  /** Валідація типу документа */
+  /** Валідація типу документа. */
   private void validateType(DocumentType type) {
     if (type == null) {
       throw new DocumentValidationException("Тип документа є обов'язковим");
     }
   }
 
-  /** Валідація номера документа */
+  /** Валідація номера документа. */
   private void validateDocumentNumber(String documentNumber) {
     if (documentNumber != null && documentRepository.existsByDocumentNumber(documentNumber)) {
       throw DocumentValidationException.duplicateDocumentNumber(documentNumber);
     }
   }
 
-  /** Валідація пов'язаної сутності */
+  /** Валідація пов'язаної сутності. */
   private void validateRelatedEntity(UUID relatedEntityId, DocumentType type) {
     if (relatedEntityId == null && requiresRelatedEntity(type)) {
       throw new DocumentValidationException(
@@ -66,21 +66,21 @@ public class DocumentValidator {
     }
   }
 
-  /** Валідація створювача */
+  /** Валідація створювача. */
   private void validateCreatedBy(String createdBy) {
     if (createdBy == null || createdBy.trim().isEmpty()) {
       throw new DocumentValidationException("Поле 'createdBy' є обов'язковим");
     }
   }
 
-  /** Валідація можливості модифікації */
+  /** Валідація можливості модифікації. */
   private void validateCanBeModified(DocumentEntity document) {
     if (!document.canBeModified()) {
       throw DocumentValidationException.invalidStatus(document.getStatus(), "модифікація");
     }
   }
 
-  /** Валідація переходу статусів */
+  /** Валідація переходу статусів. */
   public void validateStatusTransition(DocumentStatus from, DocumentStatus to) {
     if (from == to) return;
 
@@ -104,7 +104,7 @@ public class DocumentValidator {
     };
   }
 
-  /** Валідація файлу документа */
+  /** Валідація файлу документа. */
   public void validateFile(DocumentEntity document, String operation) {
     if (!document.hasFile()) {
       throw DocumentValidationException.missingFile(operation);
@@ -119,7 +119,7 @@ public class DocumentValidator {
     }
   }
 
-  /** Валідація можливості підпису */
+  /** Валідація можливості підпису. */
   public void validateCanBeSigned(DocumentEntity document) {
     if (!document.canBeSigned()) {
       throw DocumentValidationException.invalidStatus(document.getStatus(), "підпис");
@@ -131,7 +131,7 @@ public class DocumentValidator {
     }
   }
 
-  /** Валідація можливості друку */
+  /** Валідація можливості друку. */
   public void validateCanBePrinted(DocumentEntity document) {
     if (!document.canBePrinted()) {
       throw DocumentValidationException.invalidStatus(document.getStatus(), "друк");
@@ -140,7 +140,7 @@ public class DocumentValidator {
     validateFile(document, "друк");
   }
 
-  /** Валідація можливості архівування */
+  /** Валідація можливості архівування. */
   public void validateCanBeArchived(DocumentEntity document) {
     if (!document.canBeArchived()) {
       throw DocumentValidationException.invalidStatus(document.getStatus(), "архівування");

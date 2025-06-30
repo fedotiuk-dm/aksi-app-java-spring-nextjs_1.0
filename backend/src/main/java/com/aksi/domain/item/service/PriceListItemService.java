@@ -40,7 +40,7 @@ public class PriceListItemService {
 
   // ========== API МЕТОДИ (для контролерів) - DTO ↔ DTO ==========
 
-  /** Створити нову позицію прайс-листа */
+  /** Створити нову позицію прайс-листа. */
   public PriceListItemResponse createPriceListItem(CreatePriceListItemRequest request) {
     validateUniqueCatalogNumber(request.getCatalogNumber());
     validateCategoryExists(request.getCategoryId());
@@ -52,14 +52,14 @@ public class PriceListItemService {
     return enrichAndMapToResponse(savedEntity);
   }
 
-  /** Отримати позицію за UUID */
+  /** Отримати позицію за UUID. */
   @Transactional(readOnly = true)
   public PriceListItemResponse getPriceListItemById(UUID uuid) {
     var entity = findByUuid(uuid);
     return enrichAndMapToResponse(entity);
   }
 
-  /** Оновити позицію прайс-листа */
+  /** Оновити позицію прайс-листа. */
   public PriceListItemResponse updatePriceListItem(UUID uuid, UpdatePriceListItemRequest request) {
     var entity = findByUuid(uuid);
 
@@ -68,27 +68,27 @@ public class PriceListItemService {
     return enrichAndMapToResponse(savedEntity);
   }
 
-  /** Видалити позицію прайс-листа */
+  /** Видалити позицію прайс-листа. */
   public void deletePriceListItem(UUID uuid) {
     var entity = findByUuid(uuid);
     repository.delete(entity);
   }
 
-  /** Отримати всі позиції з пагінацією */
+  /** Отримати всі позиції з пагінацією. */
   @Transactional(readOnly = true)
   public Page<PriceListItemResponse> getPriceListItems(Pageable pageable) {
     var entityPage = repository.findAll(pageable);
     return entityPage.map(this::enrichAndMapToResponse);
   }
 
-  /** Отримати позиції за категорією */
+  /** Отримати позиції за категорією. */
   @Transactional(readOnly = true)
   public List<PriceListItemResponse> getPriceListItemsByCategory(UUID categoryUuid) {
     var entities = repository.findByCategoryId(categoryUuid);
     return entities.stream().map(this::enrichAndMapToResponse).toList();
   }
 
-  /** Отримати позиції за категорією з пагінацією */
+  /** Отримати позиції за категорією з пагінацією. */
   @Transactional(readOnly = true)
   public Page<PriceListItemResponse> getPriceListItemsByCategory(
       UUID categoryUuid, Pageable pageable) {
@@ -96,21 +96,21 @@ public class PriceListItemService {
     return entityPage.map(this::enrichAndMapToResponse);
   }
 
-  /** Отримати активні позиції */
+  /** Отримати активні позиції. */
   @Transactional(readOnly = true)
   public List<PriceListItemResponse> getActivePriceListItems() {
     var entities = repository.findByIsActiveTrue();
     return entities.stream().map(this::enrichAndMapToResponse).toList();
   }
 
-  /** Отримати активні позиції з пагінацією */
+  /** Отримати активні позиції з пагінацією. */
   @Transactional(readOnly = true)
   public Page<PriceListItemResponse> getActivePriceListItems(Pageable pageable) {
     var entityPage = repository.findByIsActiveTrue(pageable);
     return entityPage.map(this::enrichAndMapToResponse);
   }
 
-  /** Пошук позицій прайс-листа */
+  /** Пошук позицій прайс-листа. */
   @Transactional(readOnly = true)
   public List<PriceListItemResponse> searchPriceListItems(
       String query, UUID categoryId, Integer limit) {
@@ -132,7 +132,7 @@ public class PriceListItemService {
     return entities.stream().map(this::enrichAndMapToResponse).toList();
   }
 
-  /** Отримати прайс-лист з пагінацією та фільтрацією (для API) */
+  /** Отримати прайс-лист з пагінацією та фільтрацією (для API). */
   @Transactional(readOnly = true)
   public com.aksi.api.item.dto.PriceListPageResponse getPriceListWithPagination(
       Integer page, Integer size, String sort, UUID categoryId, String search, Boolean active) {
@@ -158,12 +158,12 @@ public class PriceListItemService {
 
   // ========== HELPER МЕТОДИ ==========
 
-  /** Знайти позицію за UUID (internal helper) */
+  /** Знайти позицію за UUID (internal helper). */
   private PriceListItemEntity findByUuid(UUID uuid) {
     return repository.findByUuid(uuid).orElseThrow(() -> new PriceListItemNotFoundException(uuid));
   }
 
-  /** Валідація унікальності каталогового номера */
+  /** Валідація унікальності каталогового номера. */
   private void validateUniqueCatalogNumber(Integer catalogNumber) {
     if (repository.existsByCatalogNumber(catalogNumber)) {
       throw new PriceListItemAlreadyExistsException(
@@ -171,14 +171,14 @@ public class PriceListItemService {
     }
   }
 
-  /** Валідація існування категорії */
+  /** Валідація існування категорії. */
   private void validateCategoryExists(UUID categoryUuid) {
     if (categoryRepository.findByUuid(categoryUuid).isEmpty()) {
       throw new IllegalArgumentException("Категорія з UUID " + categoryUuid + " не існує");
     }
   }
 
-  /** Збагатити entity додатковими даними та змапити до Response */
+  /** Збагатити entity додатковими даними та змапити до Response. */
   private PriceListItemResponse enrichAndMapToResponse(PriceListItemEntity entity) {
     var response = mapper.toResponse(entity);
 

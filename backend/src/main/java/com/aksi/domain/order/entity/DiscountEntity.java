@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Embedded клас для інформації про знижку */
+/** Embedded клас для інформації про знижку. */
 @Embeddable
 @Data
 @Builder
@@ -31,7 +31,7 @@ public class DiscountEntity {
   @Column(name = "discount_description", length = 200)
   private String description;
 
-  /** Розраховує суму знижки */
+  /** Розраховує суму знижки. */
   public BigDecimal calculateDiscountAmount(BigDecimal totalAmount) {
     if (type == null || type == DiscountType.NONE) {
       return BigDecimal.ZERO;
@@ -39,12 +39,12 @@ public class DiscountEntity {
     return type.calculateDiscountAmount(totalAmount, percentage);
   }
 
-  /** Перевіряє чи застосована знижка */
+  /** Перевіряє чи застосована знижка. */
   public boolean hasDiscount() {
     return type != null && type != DiscountType.NONE;
   }
 
-  /** Отримує відсоток для відображення */
+  /** Отримує відсоток для відображення. */
   public int getDisplayPercentage() {
     if (type == null) return 0;
 

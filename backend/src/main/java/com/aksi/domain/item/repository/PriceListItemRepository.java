@@ -21,49 +21,49 @@ public interface PriceListItemRepository
     extends JpaRepository<PriceListItemEntity, Long>,
         JpaSpecificationExecutor<PriceListItemEntity> {
 
-  /** Знайти предмет за UUID */
+  /** Знайти предмет за UUID. */
   Optional<PriceListItemEntity> findByUuid(UUID uuid);
 
-  /** Знайти предмети за категорією */
+  /** Знайти предмети за категорією. */
   List<PriceListItemEntity> findByCategoryId(UUID categoryId);
 
-  /** Знайти активні предмети за категорією */
+  /** Знайти активні предмети за категорією. */
   List<PriceListItemEntity> findByCategoryIdAndIsActiveTrue(UUID categoryId);
 
-  /** Знайти предмети за категорією з пагінацією */
+  /** Знайти предмети за категорією з пагінацією. */
   Page<PriceListItemEntity> findByCategoryId(UUID categoryId, Pageable pageable);
 
-  /** Знайти активні предмети за категорією з пагінацією */
+  /** Знайти активні предмети за категорією з пагінацією. */
   Page<PriceListItemEntity> findByCategoryIdAndIsActiveTrue(UUID categoryId, Pageable pageable);
 
-  /** Знайти предмет за каталоговим номером */
+  /** Знайти предмет за каталоговим номером. */
   Optional<PriceListItemEntity> findByCatalogNumber(Integer catalogNumber);
 
-  /** Перевірити існування предмета за каталоговим номером */
+  /** Перевірити існування предмета за каталоговим номером. */
   boolean existsByCatalogNumber(Integer catalogNumber);
 
-  /** Перевірити існування предмета за каталоговим номером (виключаючи вказаний) */
+  /** Перевірити існування предмета за каталоговим номером (виключаючи вказаний). */
   boolean existsByCatalogNumberAndUuidNot(Integer catalogNumber, UUID uuid);
 
-  /** Знайти всі активні предмети */
+  /** Знайти всі активні предмети. */
   List<PriceListItemEntity> findByIsActiveTrue();
 
-  /** Знайти всі активні предмети з пагінацією */
+  /** Знайти всі активні предмети з пагінацією. */
   Page<PriceListItemEntity> findByIsActiveTrue(Pageable pageable);
 
-  /** Знайти предмети за активністю */
+  /** Знайти предмети за активністю. */
   List<PriceListItemEntity> findByIsActive(Boolean isActive);
 
-  /** Знайти предмети за активністю з пагінацією */
+  /** Знайти предмети за активністю з пагінацією. */
   Page<PriceListItemEntity> findByIsActive(Boolean isActive, Pageable pageable);
 
-  /** Знайти предмети за одиницею виміру */
+  /** Знайти предмети за одиницею виміру. */
   List<PriceListItemEntity> findByUnitOfMeasure(String unitOfMeasure);
 
-  /** Пошук предметів за назвою (регістронезалежний) */
+  /** Пошук предметів за назвою (регістронезалежний). */
   List<PriceListItemEntity> findByNameContainingIgnoreCase(String name);
 
-  /** Пошук предметів за назвою в межах категорії (регістронезалежний) */
+  /** Пошук предметів за назвою в межах категорії (регістронезалежний). */
   List<PriceListItemEntity> findByCategoryIdAndNameContainingIgnoreCase(
       UUID categoryId, String name);
 

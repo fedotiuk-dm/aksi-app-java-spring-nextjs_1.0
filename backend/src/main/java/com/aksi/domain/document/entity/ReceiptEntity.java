@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/** JPA Entity для квитанцій з business методами. Базується на OpenAPI схемі: ReceiptResponse */
+/** JPA Entity для квитанцій з business методами. Базується на OpenAPI схемі: ReceiptResponse. */
 @Entity
 @Table(
     name = "receipts",

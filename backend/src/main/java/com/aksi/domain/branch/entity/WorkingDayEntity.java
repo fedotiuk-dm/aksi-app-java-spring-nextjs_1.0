@@ -40,7 +40,7 @@ public class WorkingDayEntity extends BaseEntity {
 
   /**
    * UUID для API сумісності (зовнішній ідентифікатор) Внутрішньо використовуємо Long id з
-   * BaseEntity
+   * BaseEntity.
    */
   @Column(name = "uuid", nullable = false, unique = true, updatable = false)
   @Builder.Default
@@ -69,7 +69,7 @@ public class WorkingDayEntity extends BaseEntity {
 
   // Business methods
 
-  /** Перевіряє чи філія відкрита в заданий час */
+  /** Перевіряє чи філія відкрита в заданий час. */
   public boolean isOpenAt(LocalTime time) {
     if (!isWorkingDay || openTime == null || closeTime == null) {
       return false;
@@ -83,12 +83,12 @@ public class WorkingDayEntity extends BaseEntity {
     }
   }
 
-  /** Перевіряє чи день робочий */
+  /** Перевіряє чи день робочий. */
   public boolean isWorkingDay() {
     return Boolean.TRUE.equals(isWorkingDay);
   }
 
-  /** Отримує тривалість робочого дня в годинах */
+  /** Отримує тривалість робочого дня в годинах. */
   public double getWorkingHours() {
     if (!isWorkingDay() || openTime == null || closeTime == null) {
       return 0.0;
@@ -105,7 +105,7 @@ public class WorkingDayEntity extends BaseEntity {
     return minutes / 60.0;
   }
 
-  /** Отримує час роботи як рядок */
+  /** Отримує час роботи як рядок. */
   public String getWorkingHoursDisplay() {
     if (!isWorkingDay()) {
       return "Вихідний";
@@ -118,12 +118,12 @@ public class WorkingDayEntity extends BaseEntity {
     return String.format("%s - %s", openTime, closeTime);
   }
 
-  /** Перевіряє чи час роботи валідний */
+  /** Перевіряє чи час роботи валідний. */
   public boolean hasValidWorkingHours() {
     return isWorkingDay() && openTime != null && closeTime != null;
   }
 
-  /** Отримує назву дня тижня українською */
+  /** Отримує назву дня тижня українською. */
   public String getDayDisplayName() {
     return switch (dayOfWeek) {
       case MONDAY -> "Понеділок";

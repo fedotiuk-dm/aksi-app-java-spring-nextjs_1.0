@@ -24,7 +24,7 @@ public class Coordinates {
   @Column(name = "map_url", length = 500)
   private String mapUrl;
 
-  /** Перевіряє чи координати валідні */
+  /** Перевіряє чи координати валідні. */
   public boolean isValid() {
     return latitude != null
         && longitude != null
@@ -34,7 +34,7 @@ public class Coordinates {
         && longitude <= 180;
   }
 
-  /** Розраховує відстань в кілометрах до інших координат за формулою Гаверсіна */
+  /** Розраховує відстань в кілометрах до інших координат за формулою Гаверсіна. */
   public double calculateDistanceKm(double targetLatitude, double targetLongitude) {
     if (!isValid()) {
       return Double.MAX_VALUE;
@@ -57,12 +57,12 @@ public class Coordinates {
     return EARTH_RADIUS_KM * c;
   }
 
-  /** Перевіряє чи є URL карти */
+  /** Перевіряє чи є URL карти. */
   public boolean hasMapUrl() {
     return mapUrl != null && !mapUrl.trim().isEmpty();
   }
 
-  /** Отримує координати як рядок для відображення */
+  /** Отримує координати як рядок для відображення. */
   public String getDisplayCoordinates() {
     if (!isValid()) {
       return "Координати не задані";

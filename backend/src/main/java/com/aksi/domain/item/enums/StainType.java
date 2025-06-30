@@ -43,42 +43,42 @@ public enum StainType {
 
   // ===== BUSINESS МЕТОДИ =====
 
-  /** Чи можна видалити забруднення */
+  /** Чи можна видалити забруднення. */
   public boolean isRemovable() {
     return isRemovable;
   }
 
-  /** Чи потребує спеціальної обробки */
+  /** Чи потребує спеціальної обробки. */
   public boolean requiresSpecialTreatment() {
     return requiresSpecialTreatment;
   }
 
-  /** Отримати коефіцієнт складності видалення */
+  /** Отримати коефіцієнт складності видалення. */
   public double getDifficultyMultiplier() {
     return difficultyMultiplier;
   }
 
-  /** Чи є забруднення водорозчинним */
+  /** Чи є забруднення водорозчинним. */
   public boolean isWaterSoluble() {
     return this == BLOOD || this == PROTEIN || this == WINE || this == COFFEE;
   }
 
-  /** Чи є забруднення жировим */
+  /** Чи є забруднення жировим. */
   public boolean isOilBased() {
     return this == FAT || this == COSMETICS;
   }
 
-  /** Чи потребує попередньої обробки */
+  /** Чи потребує попередньої обробки. */
   public boolean needsPreTreatment() {
     return requiresSpecialTreatment || this == BLOOD || this == WINE || this == INK;
   }
 
-  /** Чи може залишити постійний слід */
+  /** Чи може залишити постійний слід. */
   public boolean canLeavePermanentMark() {
     return this == INK || this == WINE || (!isRemovable && this != OTHER);
   }
 
-  /** Отримати рекомендований час обробки (в хвилинах) */
+  /** Отримати рекомендований час обробки (в хвилинах). */
   public int getRecommendedTreatmentTime() {
     return switch (this) {
       case BLOOD, INK -> 60;
@@ -89,7 +89,7 @@ public enum StainType {
     };
   }
 
-  /** Чи підходить для експрес-обробки */
+  /** Чи підходить для експрес-обробки. */
   public boolean isExpressProcessingCompatible() {
     return !requiresSpecialTreatment && isRemovable;
   }

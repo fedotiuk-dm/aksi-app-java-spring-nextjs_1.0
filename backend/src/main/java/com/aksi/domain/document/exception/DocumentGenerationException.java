@@ -2,7 +2,7 @@ package com.aksi.domain.document.exception;
 
 import com.aksi.domain.document.enums.DocumentType;
 
-/** Exception що викидається при помилках генерації документів */
+/** Exception що викидається при помилках генерації документів. */
 public class DocumentGenerationException extends RuntimeException {
 
   public DocumentGenerationException(String message) {

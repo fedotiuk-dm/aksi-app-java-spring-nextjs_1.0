@@ -15,7 +15,7 @@ import com.aksi.domain.branch.service.WorkingScheduleService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP контролер для управління графіком роботи Відповідальність: тільки HTTP логіка */
+/** HTTP контролер для управління графіком роботи Відповідальність: тільки HTTP логіка. */
 @RestController
 @RequiredArgsConstructor
 public class WorkingScheduleApiController implements WorkingScheduleApi {

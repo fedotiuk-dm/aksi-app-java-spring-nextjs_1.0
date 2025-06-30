@@ -12,17 +12,17 @@ import com.aksi.domain.item.entity.PriceListItemEntity;
  */
 public class PriceListItemSpecification {
 
-  /** Активні предмети */
+  /** Активні предмети. */
   public static Specification<PriceListItemEntity> isActive() {
     return (root, query, criteriaBuilder) -> criteriaBuilder.isTrue(root.get("isActive"));
   }
 
-  /** Неактивні предмети */
+  /** Неактивні предмети. */
   public static Specification<PriceListItemEntity> isInactive() {
     return (root, query, criteriaBuilder) -> criteriaBuilder.isFalse(root.get("isActive"));
   }
 
-  /** Предмети за категорією */
+  /** Предмети за категорією. */
   public static Specification<PriceListItemEntity> belongsToCategory(UUID categoryId) {
     return (root, query, criteriaBuilder) -> {
       if (categoryId == null) {
@@ -32,7 +32,7 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Предмети за назвою (містить) */
+  /** Предмети за назвою (містить). */
   public static Specification<PriceListItemEntity> nameContains(String searchTerm) {
     return (root, query, criteriaBuilder) -> {
       if (searchTerm == null || searchTerm.trim().isEmpty()) {
@@ -43,7 +43,7 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Предмети за одиницею виміру */
+  /** Предмети за одиницею виміру. */
   public static Specification<PriceListItemEntity> hasUnitOfMeasure(String unitOfMeasure) {
     return (root, query, criteriaBuilder) -> {
       if (unitOfMeasure == null || unitOfMeasure.trim().isEmpty()) {
@@ -53,7 +53,7 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Предмети в діапазоні базової ціни */
+  /** Предмети в діапазоні базової ціни. */
   public static Specification<PriceListItemEntity> basePriceBetween(
       Double minPrice, Double maxPrice) {
     return (root, query, criteriaBuilder) -> {
@@ -70,7 +70,7 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Предмети з кольоровим-специфічними цінами */
+  /** Предмети з кольоровим-специфічними цінами. */
   public static Specification<PriceListItemEntity> hasColorSpecificPricing() {
     return (root, query, criteriaBuilder) ->
         criteriaBuilder.or(
@@ -78,7 +78,7 @@ public class PriceListItemSpecification {
             criteriaBuilder.isNotNull(root.get("priceColor")));
   }
 
-  /** Предмети без кольорових цін */
+  /** Предмети без кольорових цін. */
   public static Specification<PriceListItemEntity> hasNoColorPricing() {
     return (root, query, criteriaBuilder) ->
         criteriaBuilder.and(
@@ -86,24 +86,24 @@ public class PriceListItemSpecification {
             criteriaBuilder.isNull(root.get("priceColor")));
   }
 
-  /** Предмети з ціною чорного більше базової */
+  /** Предмети з ціною чорного більше базової. */
   public static Specification<PriceListItemEntity> blackPriceHigherThanBase() {
     return (root, query, criteriaBuilder) ->
         criteriaBuilder.greaterThan(root.get("priceBlack"), root.get("basePrice"));
   }
 
-  /** Предмети з ціною кольорового більше базової */
+  /** Предмети з ціною кольорового більше базової. */
   public static Specification<PriceListItemEntity> colorPriceHigherThanBase() {
     return (root, query, criteriaBuilder) ->
         criteriaBuilder.greaterThan(root.get("priceColor"), root.get("basePrice"));
   }
 
-  /** Швидкий пошук для Order Wizard */
+  /** Швидкий пошук для Order Wizard. */
   public static Specification<PriceListItemEntity> quickSearch(UUID categoryId, String searchTerm) {
     return isActive().and(belongsToCategory(categoryId)).and(nameContains(searchTerm));
   }
 
-  /** Предмети з каталоговим номером в діапазоні */
+  /** Предмети з каталоговим номером в діапазоні. */
   public static Specification<PriceListItemEntity> catalogNumberBetween(
       Integer minNumber, Integer maxNumber) {
     return (root, query, criteriaBuilder) -> {
@@ -120,7 +120,7 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Дублікати за назвою в межах категорії */
+  /** Дублікати за назвою в межах категорії. */
   public static Specification<PriceListItemEntity> duplicateNamesInCategory(UUID categoryId) {
     return (root, query, criteriaBuilder) -> {
       if (categoryId == null || query == null) {
@@ -143,7 +143,7 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Сортування за назвою (A-Z) */
+  /** Сортування за назвою (A-Z). */
   public static Specification<PriceListItemEntity> orderByName() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -153,7 +153,7 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Сортування за каталоговим номером */
+  /** Сортування за каталоговим номером. */
   public static Specification<PriceListItemEntity> orderByCatalogNumber() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -163,7 +163,7 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Сортування за базовою ціною (зростання) */
+  /** Сортування за базовою ціною (зростання). */
   public static Specification<PriceListItemEntity> orderByPriceAsc() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -173,7 +173,7 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Сортування за базовою ціною (спадання) */
+  /** Сортування за базовою ціною (спадання). */
   public static Specification<PriceListItemEntity> orderByPriceDesc() {
     return (root, query, criteriaBuilder) -> {
       if (query != null) {
@@ -183,22 +183,22 @@ public class PriceListItemSpecification {
     };
   }
 
-  /** Предмети що вимірюються в штуках */
+  /** Предмети що вимірюються в штуках. */
   public static Specification<PriceListItemEntity> measuredInPieces() {
     return hasUnitOfMeasure("шт");
   }
 
-  /** Предмети що вимірюються в кілограмах */
+  /** Предмети що вимірюються в кілограмах. */
   public static Specification<PriceListItemEntity> measuredInKilograms() {
     return hasUnitOfMeasure("кг");
   }
 
-  /** Предмети що вимірюються в парах */
+  /** Предмети що вимірюються в парах. */
   public static Specification<PriceListItemEntity> measuredInPairs() {
     return hasUnitOfMeasure("пара");
   }
 
-  /** Предмети що вимірюються в квадратних метрах */
+  /** Предмети що вимірюються в квадратних метрах. */
   public static Specification<PriceListItemEntity> measuredInSquareMeters() {
     return hasUnitOfMeasure("кв.м");
   }

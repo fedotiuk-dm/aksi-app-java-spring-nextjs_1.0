@@ -3,7 +3,7 @@ package com.aksi.domain.order.enums;
 import java.math.BigDecimal;
 import java.util.Set;
 
-/** Domain enum для типів дефектів з business логікою ризиків */
+/** Domain enum для типів дефектів з business логікою ризиків. */
 public enum DefectType {
   WEAR("Потертості", 1, BigDecimal.valueOf(0.05)),
   TORN("Порване", 4, BigDecimal.valueOf(0.30)),
@@ -27,52 +27,52 @@ public enum DefectType {
     return description;
   }
 
-  /** Рівень ризику від 1 до 5 (1 - мінімальний, 5 - максимальний) */
+  /** Рівень ризику від 1 до 5 (1 - мінімальний, 5 - максимальний). */
   public int getRiskLevel() {
     return riskLevel;
   }
 
-  /** Відсоток знижки через дефект */
+  /** Відсоток знижки через дефект. */
   public BigDecimal getDiscountPercentage() {
     return discountPercentage;
   }
 
-  /** Перевіряє чи дефект критичний (високий ризик) */
+  /** Перевіряє чи дефект критичний (високий ризик). */
   public boolean isCritical() {
     return riskLevel >= 4;
   }
 
-  /** Перевіряє чи дефект потребує особливої уваги */
+  /** Перевіряє чи дефект потребує особливої уваги. */
   public boolean requiresSpecialAttention() {
     return this == COLOR_CHANGE_RISK || this == DEFORMATION_RISK || this == NO_WARRANTY;
   }
 
-  /** Перевіряє чи дефект може бути виправлений */
+  /** Перевіряє чи дефект може бути виправлений. */
   public boolean isRepairable() {
     return this == MISSING_HARDWARE || this == DAMAGED_HARDWARE;
   }
 
-  /** Перевіряє чи потрібна попередня згода клієнта */
+  /** Перевіряє чи потрібна попередня згода клієнта. */
   public boolean requiresClientConsent() {
     return isCritical() || this == NO_WARRANTY;
   }
 
-  /** Перевіряє чи дефект впливає на вартість послуги */
+  /** Перевіряє чи дефект впливає на вартість послуги. */
   public boolean affectsPrice() {
     return discountPercentage.compareTo(BigDecimal.ZERO) > 0;
   }
 
-  /** Отримує дефекти що потребують документування */
+  /** Отримує дефекти що потребують документування. */
   public static Set<DefectType> getDefectsRequiringDocumentation() {
     return Set.of(TORN, COLOR_CHANGE_RISK, DEFORMATION_RISK, NO_WARRANTY);
   }
 
-  /** Отримує критичні дефекти */
+  /** Отримує критичні дефекти. */
   public static Set<DefectType> getCriticalDefects() {
     return Set.of(TORN, COLOR_CHANGE_RISK, DEFORMATION_RISK, NO_WARRANTY);
   }
 
-  /** Перевіряє сумісність з типом послуги */
+  /** Перевіряє сумісність з типом послуги. */
   public boolean isCompatibleWithService(ServiceCategory category) {
     return switch (this) {
       case MISSING_HARDWARE, DAMAGED_HARDWARE ->
@@ -87,17 +87,17 @@ public enum DefectType {
     };
   }
 
-  /** Розраховує знижку з урахуванням дефекту */
+  /** Розраховує знижку з урахуванням дефекту. */
   public BigDecimal calculateDiscountAmount(BigDecimal basePrice) {
     return basePrice.multiply(discountPercentage);
   }
 
-  /** Розраховує фінальну ціну з урахуванням дефекту */
+  /** Розраховує фінальну ціну з урахуванням дефекту. */
   public BigDecimal calculatePriceWithDefect(BigDecimal basePrice) {
     return basePrice.subtract(calculateDiscountAmount(basePrice));
   }
 
-  /** Перевіряє чи дефекти можуть впливати один на одного */
+  /** Перевіряє чи дефекти можуть впливати один на одного. */
   public boolean canInteractWith(DefectType other) {
     if (this == other) return false;
 
@@ -112,7 +112,7 @@ public enum DefectType {
         || (this == DEFORMATION_RISK && other == COLOR_CHANGE_RISK);
   }
 
-  /** Отримує комбінований рівень ризику для множинних дефектів */
+  /** Отримує комбінований рівень ризику для множинних дефектів. */
   public static int getCombinedRiskLevel(Set<DefectType> defects) {
     if (defects.isEmpty()) return 0;
 

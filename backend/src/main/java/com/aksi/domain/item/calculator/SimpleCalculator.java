@@ -12,13 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Простий калькулятор для 90% випадків використання Обробляє PERCENTAGE та FIXED_AMOUNT
- * модифікатори ВИКОРИСТОВУЄ DTO CalculationStep (OpenAPI First!)
+ * модифікатори ВИКОРИСТОВУЄ DTO CalculationStep (OpenAPI First!).
  */
 @Component
 @Slf4j
 public class SimpleCalculator {
 
-  /** Розрахувати ціну з простими модифікаторами */
+  /** Розрахувати ціну з простими модифікаторами. */
   public CalculationResult calculate(Double basePrice, List<PriceModifierEntity> modifiers) {
     log.debug(
         "Simple calculation for base price: {} with {} modifiers", basePrice, modifiers.size());
@@ -51,24 +51,24 @@ public class SimpleCalculator {
         .build();
   }
 
-  /** Застосувати один модифікатор */
+  /** Застосувати один модифікатор. */
   private Double applyModifier(Double currentPrice, PriceModifierEntity modifier) {
     // Використовуємо готовий метод з Entity
     return modifier.applyToPrice(currentPrice);
   }
 
-  /** Сформатувати опис кроку */
+  /** Сформатувати опис кроку. */
   private String formatDescription(PriceModifierEntity modifier, Double changeAmount) {
     String sign = changeAmount >= 0 ? "+" : "";
     return String.format("%s: %s%.2f грн", modifier.getName(), sign, changeAmount);
   }
 
-  /** Перевірити чи може обробити модифікатор */
+  /** Перевірити чи може обробити модифікатор. */
   public boolean canHandle(PriceModifierEntity modifier) {
     return modifier.isPercentageModifier() || modifier.isFixedAmountModifier();
   }
 
-  /** Перевірити чи може обробити всі модифікатори */
+  /** Перевірити чи може обробити всі модифікатори. */
   public boolean canHandleAll(List<PriceModifierEntity> modifiers) {
     return modifiers.stream().allMatch(this::canHandle);
   }

@@ -24,7 +24,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/** Сутність користувача системи Entity незалежна від API DTO */
+/** Сутність користувача системи Entity незалежна від API DTO. */
 @Entity
 @Table(
     name = "users",
@@ -78,56 +78,56 @@ public class UserEntity extends BaseEntity {
 
   // Business Methods
 
-  /** Повне ім'я користувача */
+  /** Повне ім'я користувача. */
   public String getFullName() {
     return firstName + " " + lastName;
   }
 
-  /** Перевірка чи користувач активний та не заблокований */
+  /** Перевірка чи користувач активний та не заблокований. */
   public boolean isActiveAndNotLocked() {
     return Boolean.TRUE.equals(isActive)
         && (lockedUntil == null || lockedUntil.isBefore(LocalDateTime.now()));
   }
 
-  /** Перевірка чи користувач має конкретну роль */
+  /** Перевірка чи користувач має конкретну роль. */
   public boolean hasRole(UserRole role) {
     return roles.contains(role);
   }
 
-  /** Перевірка чи користувач може виконувати адміністративні дії */
+  /** Перевірка чи користувач може виконувати адміністративні дії. */
   public boolean canAdministrate() {
     return roles.stream().anyMatch(UserRole::isAdministrative);
   }
 
-  /** Перевірка чи користувач може працювати з касою */
+  /** Перевірка чи користувач може працювати з касою. */
   public boolean canHandleCash() {
     return roles.stream().anyMatch(UserRole::canHandleCash);
   }
 
-  /** Перевірка чи користувач може приймати замовлення */
+  /** Перевірка чи користувач може приймати замовлення. */
   public boolean canTakeOrders() {
     return roles.stream().anyMatch(UserRole::canTakeOrders);
   }
 
-  /** Додавання ролі користувачу */
+  /** Додавання ролі користувачу. */
   public void addRole(UserRole role) {
     if (!roles.contains(role)) {
       roles.add(role);
     }
   }
 
-  /** Видалення ролі користувача */
+  /** Видалення ролі користувача. */
   public void removeRole(UserRole role) {
     roles.remove(role);
   }
 
-  /** Оновлення останнього входу */
+  /** Оновлення останнього входу. */
   public void updateLastLogin() {
     this.lastLoginAt = LocalDateTime.now();
     this.failedLoginAttempts = 0; // скидаємо лічильник невдалих спроб
   }
 
-  /** Збільшення лічильника невдалих спроб входу */
+  /** Збільшення лічильника невдалих спроб входу. */
   public void incrementFailedLoginAttempts() {
     this.failedLoginAttempts = Optional.ofNullable(this.failedLoginAttempts).orElse(0) + 1;
 
@@ -137,7 +137,7 @@ public class UserEntity extends BaseEntity {
     }
   }
 
-  /** Скидання блокування */
+  /** Скидання блокування. */
   public void unlockAccount() {
     this.lockedUntil = null;
     this.failedLoginAttempts = 0;

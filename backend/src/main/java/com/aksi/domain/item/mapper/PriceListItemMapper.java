@@ -13,7 +13,7 @@ import com.aksi.api.item.dto.PriceListPageResponse;
 import com.aksi.api.item.dto.UpdatePriceListItemRequest;
 import com.aksi.domain.item.entity.PriceListItemEntity;
 
-/** MapStruct mapper для PriceListItem - Entity ↔ DTO конвертація */
+/** MapStruct mapper для PriceListItem - Entity ↔ DTO конвертація. */
 @Mapper(componentModel = "spring")
 public interface PriceListItemMapper {
 

@@ -37,37 +37,37 @@ public enum MaterialType {
 
   // ===== BUSINESS МЕТОДИ =====
 
-  /** Чи є матеріал текстильним */
+  /** Чи є матеріал текстильним. */
   public boolean isTextile() {
     return isTextile;
   }
 
-  /** Чи є матеріал шкіряним */
+  /** Чи є матеріал шкіряним. */
   public boolean isLeather() {
     return isLeather;
   }
 
-  /** Чи потребує спеціального догляду */
+  /** Чи потребує спеціального догляду. */
   public boolean requiresSpecialCare() {
     return this == SILK || this == WOOL || isLeather();
   }
 
-  /** Чи можна прасувати при високій температурі */
+  /** Чи можна прасувати при високій температурі. */
   public boolean canHighTemperatureIron() {
     return this == COTTON || this == SYNTHETIC;
   }
 
-  /** Чи підходить для машинного прання */
+  /** Чи підходить для машинного прання. */
   public boolean isMachineWashable() {
     return isTextile() && this != SILK && this != WOOL;
   }
 
-  /** Чи потребує водовідштовхуючого покриття */
+  /** Чи потребує водовідштовхуючого покриття. */
   public boolean needsWaterRepellentTreatment() {
     return isLeather() || this == WOOL;
   }
 
-  /** Отримати коефіцієнт складності обробки */
+  /** Отримати коефіцієнт складності обробки. */
   public double getComplexityMultiplier() {
     return switch (this) {
       case SILK -> 1.5;
@@ -78,7 +78,7 @@ public enum MaterialType {
     };
   }
 
-  /** Чи підходить матеріал для експрес-обробки */
+  /** Чи підходить матеріал для експрес-обробки. */
   public boolean isExpressProcessingCompatible() {
     return this == COTTON || this == SYNTHETIC;
   }

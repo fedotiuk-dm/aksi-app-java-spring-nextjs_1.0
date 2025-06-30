@@ -33,7 +33,7 @@ public class SecurityConfig {
 
   private final Environment environment;
 
-  /** Password encoder для хешування паролів Використовує BCrypt algorithm з силою 12 */
+  /** Password encoder для хешування паролів Використовує BCrypt algorithm з силою 12. */
   @Bean
   public PasswordEncoder passwordEncoder() {
     log.info("🔐 Configuring BCrypt PasswordEncoder with strength 12");
@@ -102,7 +102,7 @@ public class SecurityConfig {
     return http.build();
   }
 
-  /** CORS конфігурація для роботи з frontend */
+  /** CORS конфігурація для роботи з frontend. */
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();

@@ -15,7 +15,7 @@ import com.aksi.domain.document.service.DocumentService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP Controller для ReceiptsApi Відповідальність: тільки HTTP делегація до DocumentService */
+/** HTTP Controller для ReceiptsApi Відповідальність: тільки HTTP делегація до DocumentService. */
 @Controller
 @RequiredArgsConstructor
 public class ReceiptsApiController implements ReceiptsApi {

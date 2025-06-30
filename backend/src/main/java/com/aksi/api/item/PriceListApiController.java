@@ -15,7 +15,7 @@ import com.aksi.domain.item.service.PriceListItemService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP контролер для управління прайс-листом */
+/** HTTP контролер для управління прайс-листом. */
 @Controller
 @RequiredArgsConstructor
 public class PriceListApiController implements PriceListApi {

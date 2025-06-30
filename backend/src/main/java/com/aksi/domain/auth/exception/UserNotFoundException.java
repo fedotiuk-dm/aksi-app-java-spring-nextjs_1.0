@@ -1,6 +1,6 @@
 package com.aksi.domain.auth.exception;
 
-/** Виняток коли користувач не знайдений Domain-specific RuntimeException */
+/** Виняток коли користувач не знайдений Domain-specific RuntimeException. */
 public class UserNotFoundException extends RuntimeException {
 
   public UserNotFoundException(String message) {

@@ -21,21 +21,21 @@ import com.aksi.domain.branch.entity.WorkingScheduleEntity;
 
 /**
  * Mapper для WorkingScheduleEntity з правильними маппінгами Відповідальність: тільки
- * WorkingSchedule entity
+ * WorkingSchedule entity.
  */
 @Mapper(componentModel = "spring")
 public interface WorkingScheduleMapper {
 
   // DTO → Entity mappings
 
-  /** WorkingScheduleRequest → WorkingScheduleEntity */
+  /** WorkingScheduleRequest → WorkingScheduleEntity. */
   @Mapping(target = "uuid", ignore = true) // автоматично генерується
   @Mapping(target = "branch", ignore = true) // встановлюється в Service
   @Mapping(target = "workingDays", ignore = true) // окремий mapper
   @Mapping(target = "holidays", ignore = true) // окремий mapper
   WorkingScheduleEntity toEntity(WorkingScheduleRequest request);
 
-  /** UpdateWorkingScheduleRequest → WorkingScheduleEntity (для оновлення) */
+  /** UpdateWorkingScheduleRequest → WorkingScheduleEntity (для оновлення). */
   @Mapping(target = "uuid", ignore = true) // зберігається з існуючого entity
   @Mapping(target = "branch", ignore = true)
   @Mapping(target = "workingDays", ignore = true)
@@ -44,38 +44,38 @@ public interface WorkingScheduleMapper {
 
   // Entity → DTO mappings
 
-  /** WorkingScheduleEntity → WorkingScheduleResponse */
+  /** WorkingScheduleEntity → WorkingScheduleResponse. */
   @Mapping(target = "workingDays", ignore = true) // окремий mapper
   @Mapping(target = "holidays", ignore = true) // окремий mapper
   @Mapping(target = "branchId", source = "branch.uuid")
   WorkingScheduleResponse toResponse(WorkingScheduleEntity entity);
 
-  /** List<WorkingScheduleEntity> → List<WorkingScheduleResponse> */
+  /** List<WorkingScheduleEntity> → List<WorkingScheduleResponse>. */
   List<WorkingScheduleResponse> toResponseList(List<WorkingScheduleEntity> entities);
 
   // Utility mappings
 
-  /** Long (Entity) → UUID (DTO) - auto mapping */
+  /** Long (Entity) → UUID (DTO) - auto mapping. */
   default java.util.UUID map(Long id) {
     return id != null ? java.util.UUID.nameUUIDFromBytes(id.toString().getBytes()) : null;
   }
 
-  /** UUID (DTO) → Long (Entity) - auto mapping */
+  /** UUID (DTO) → Long (Entity) - auto mapping. */
   default Long map(java.util.UUID uuid) {
     return uuid != null ? (long) Math.abs(uuid.hashCode()) : null;
   }
 
-  /** LocalDateTime (Entity) → OffsetDateTime (DTO) - auto mapping */
+  /** LocalDateTime (Entity) → OffsetDateTime (DTO) - auto mapping. */
   default OffsetDateTime map(LocalDateTime localDateTime) {
     return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
   }
 
-  /** OffsetDateTime (DTO) → LocalDateTime (Entity) - auto mapping */
+  /** OffsetDateTime (DTO) → LocalDateTime (Entity) - auto mapping. */
   default LocalDateTime map(OffsetDateTime offsetDateTime) {
     return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
   }
 
-  /** Створити BranchOpenStatusResponse на основі статусу */
+  /** Створити BranchOpenStatusResponse на основі статусу. */
   default BranchOpenStatusResponse toBranchOpenStatusResponse(
       UUID branchId, boolean isOpen, LocalDateTime checkDateTime) {
     BranchOpenStatusResponse response = new BranchOpenStatusResponse();
@@ -89,7 +89,7 @@ public interface WorkingScheduleMapper {
     return response;
   }
 
-  /** Створити NextWorkingDayResponse на основі дати */
+  /** Створити NextWorkingDayResponse на основі дати. */
   default NextWorkingDayResponse toNextWorkingDayResponse(
       UUID branchId, LocalDate nextWorkingDate) {
     NextWorkingDayResponse response = new NextWorkingDayResponse();

@@ -12,7 +12,7 @@ import com.aksi.domain.client.service.ClientService;
 import lombok.RequiredArgsConstructor;
 
 /**
- * HTTP Controller для ClientContactsApi Відповідальність: тільки HTTP делегація до ClientService
+ * HTTP Controller для ClientContactsApi Відповідальність: тільки HTTP делегація до ClientService.
  */
 @Controller
 @RequiredArgsConstructor

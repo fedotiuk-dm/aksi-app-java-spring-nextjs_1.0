@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service для Document Domain з API методами (DTO↔DTO) та Entity методами Базова версія за
- * еталонним принципом з AuthService
+ * еталонним принципом з AuthService.
  */
 @Service
 @Transactional
@@ -60,14 +60,14 @@ public class DocumentService {
 
   // ===== API МЕТОДИ (для контролерів) - працюють з DTO =====
 
-  /** Отримати документ за ID */
+  /** Отримати документ за ID. */
   @Transactional(readOnly = true)
   public DocumentResponse getDocumentById(UUID documentId) {
     DocumentEntity entity = findEntityByIdOrThrow(documentMapper.uuidToLong(documentId));
     return documentMapper.toDocumentResponse(entity);
   }
 
-  /** Отримати всі документи з пагінацією */
+  /** Отримати всі документи з пагінацією. */
   @Transactional(readOnly = true)
   public DocumentPageResponse getDocuments(Integer page, Integer size, String sort) {
     Pageable pageable = createPageable(page, size, sort);
@@ -98,14 +98,14 @@ public class DocumentService {
     return response;
   }
 
-  /** Пошук документів за типом та статусом */
+  /** Пошук документів за типом та статусом. */
   @Transactional(readOnly = true)
   public List<DocumentResponse> searchDocuments(DocumentType type, DocumentStatus status) {
     List<DocumentEntity> entities = documentRepository.findByTypeAndStatus(type, status);
     return documentMapper.toDocumentResponseList(entities);
   }
 
-  /** Оновити статус документа */
+  /** Оновити статус документа. */
   public DocumentResponse updateDocumentStatus(
       UUID documentId, UpdateDocumentStatusRequest request) {
     DocumentEntity entity = findEntityByIdOrThrow(documentMapper.uuidToLong(documentId));
@@ -121,7 +121,7 @@ public class DocumentService {
     return documentMapper.toDocumentResponse(updatedEntity);
   }
 
-  /** Видалити документ */
+  /** Видалити документ. */
   public void deleteDocument(UUID documentId) {
     DocumentEntity entity = findEntityByIdOrThrow(documentMapper.uuidToLong(documentId));
 
@@ -137,14 +137,14 @@ public class DocumentService {
 
   // ===== RECEIPT API МЕТОДИ =====
 
-  /** Отримати квитанцію за ID */
+  /** Отримати квитанцію за ID. */
   @Transactional(readOnly = true)
   public ReceiptResponse getReceiptById(UUID receiptId) {
     ReceiptEntity entity = findReceiptEntityByIdOrThrow(documentMapper.uuidToLong(receiptId));
     return documentMapper.toReceiptResponse(entity);
   }
 
-  /** Отримати квитанцію за номером замовлення */
+  /** Отримати квитанцію за номером замовлення. */
   @Transactional(readOnly = true)
   public ReceiptResponse getReceiptByOrderId(UUID orderId) {
     ReceiptEntity entity =
@@ -155,7 +155,7 @@ public class DocumentService {
     return documentMapper.toReceiptResponse(entity);
   }
 
-  /** Створити квитанцію - базова версія */
+  /** Створити квитанцію - базова версія. */
   public ReceiptResponse createReceipt(UUID orderId, String receiptNumber) {
     ReceiptEntity entity =
         ReceiptEntity.builder()
@@ -170,14 +170,14 @@ public class DocumentService {
     return documentMapper.toReceiptResponse(savedEntity);
   }
 
-  /** Згенерувати квитанцію за запитом */
+  /** Згенерувати квитанцію за запитом. */
   public ReceiptResponse generateReceipt(GenerateReceiptRequest request) {
     // TODO: Повна реалізація з обробкою всіх параметрів запиту
     String receiptNumber = "AKSI-" + System.currentTimeMillis();
     return createReceipt(request.getOrderId(), receiptNumber);
   }
 
-  /** Позначити квитанцію як роздруковану */
+  /** Позначити квитанцію як роздруковану. */
   public ReceiptResponse markReceiptAsPrinted(UUID receiptId) {
     ReceiptEntity entity = findReceiptEntityByIdOrThrow(documentMapper.uuidToLong(receiptId));
 
@@ -194,7 +194,7 @@ public class DocumentService {
 
   // ===== DIGITAL SIGNATURE API МЕТОДИ =====
 
-  /** Створити цифровий підпис - базова версія */
+  /** Створити цифровий підпис - базова версія. */
   public DigitalSignatureResponse createDigitalSignature(CreateDigitalSignatureRequest request) {
     DigitalSignatureEntity entity = documentMapper.fromCreateDigitalSignatureRequest(request);
     entity.setSignedAt(LocalDateTime.now());
@@ -210,7 +210,7 @@ public class DocumentService {
     return documentMapper.toDigitalSignatureResponse(savedEntity);
   }
 
-  /** Отримати підпис за ID */
+  /** Отримати підпис за ID. */
   @Transactional(readOnly = true)
   public DigitalSignatureResponse getDigitalSignatureById(UUID signatureId) {
     DigitalSignatureEntity entity =
@@ -220,39 +220,39 @@ public class DocumentService {
 
   // ===== ENTITY МЕТОДИ (для внутрішньої логіки) =====
 
-  /** Знайти DocumentEntity за ID */
+  /** Знайти DocumentEntity за ID. */
   @Transactional(readOnly = true)
   public Optional<DocumentEntity> findEntityById(Long id) {
     return documentRepository.findById(id);
   }
 
-  /** Знайти DocumentEntity за ID або викинути exception */
+  /** Знайти DocumentEntity за ID або викинути exception. */
   @Transactional(readOnly = true)
   public DocumentEntity findEntityByIdOrThrow(Long id) {
     return findEntityById(id)
         .orElseThrow(() -> new DocumentNotFoundException("Document not found with id: " + id));
   }
 
-  /** Знайти ReceiptEntity за ID */
+  /** Знайти ReceiptEntity за ID. */
   @Transactional(readOnly = true)
   public Optional<ReceiptEntity> findReceiptEntityById(Long id) {
     return receiptRepository.findById(id);
   }
 
-  /** Знайти ReceiptEntity за ID або викинути exception */
+  /** Знайти ReceiptEntity за ID або викинути exception. */
   @Transactional(readOnly = true)
   public ReceiptEntity findReceiptEntityByIdOrThrow(Long id) {
     return findReceiptEntityById(id)
         .orElseThrow(() -> new ReceiptNotFoundException("Receipt not found with id: " + id));
   }
 
-  /** Знайти DigitalSignatureEntity за ID */
+  /** Знайти DigitalSignatureEntity за ID. */
   @Transactional(readOnly = true)
   public Optional<DigitalSignatureEntity> findDigitalSignatureEntityById(Long id) {
     return digitalSignatureRepository.findById(id);
   }
 
-  /** Знайти DigitalSignatureEntity за ID або викинути exception */
+  /** Знайти DigitalSignatureEntity за ID або викинути exception. */
   @Transactional(readOnly = true)
   public DigitalSignatureEntity findDigitalSignatureEntityByIdOrThrow(Long id) {
     return findDigitalSignatureEntityById(id)
@@ -262,20 +262,20 @@ public class DocumentService {
                     "Digital signature not found with id: " + id));
   }
 
-  /** Створити DocumentEntity */
+  /** Створити DocumentEntity. */
   public DocumentEntity createEntity(DocumentEntity entity) {
     documentValidator.validateForCreate(entity);
     return documentRepository.save(entity);
   }
 
-  /** Оновити DocumentEntity */
+  /** Оновити DocumentEntity. */
   public DocumentEntity updateEntity(DocumentEntity entity) {
     DocumentEntity existing = findEntityByIdOrThrow(entity.getId());
     documentValidator.validateForUpdate(existing, entity);
     return documentRepository.save(entity);
   }
 
-  /** Видалити DocumentEntity за ID */
+  /** Видалити DocumentEntity за ID. */
   public void deleteEntity(Long id) {
     DocumentEntity entity = findEntityByIdOrThrow(id);
 
@@ -291,7 +291,7 @@ public class DocumentService {
 
   // ===== BUSINESS LOGIC METHODS =====
 
-  /** Перевірити чи документ готовий для завантаження */
+  /** Перевірити чи документ готовий для завантаження. */
   @Transactional(readOnly = true)
   public boolean isDocumentReadyForDownload(UUID documentId) {
     return findEntityById(documentMapper.uuidToLong(documentId))
@@ -299,13 +299,13 @@ public class DocumentService {
         .orElse(false);
   }
 
-  /** Отримати кількість документів за статусом */
+  /** Отримати кількість документів за статусом. */
   @Transactional(readOnly = true)
   public long countDocumentsByStatus(DocumentStatus status) {
     return documentRepository.countByStatus(status);
   }
 
-  /** Перевірити чи квитанція готова для друку */
+  /** Перевірити чи квитанція готова для друку. */
   @Transactional(readOnly = true)
   public boolean isReceiptReadyForPrint(UUID receiptId) {
     return findReceiptEntityById(documentMapper.uuidToLong(receiptId))
@@ -315,7 +315,7 @@ public class DocumentService {
 
   // ===== HELPER МЕТОДИ =====
 
-  /** Отримати поточного користувача з Security Context */
+  /** Отримати поточного користувача з Security Context. */
   private String getCurrentUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null
@@ -328,7 +328,7 @@ public class DocumentService {
 
   /**
    * Обробити дані підпису та створити URL зображення TODO: Реалізувати збереження зображення
-   * підпису у файловій системі або хмарному сховищі
+   * підпису у файловій системі або хмарному сховищі.
    */
   private String processSignatureData(String signatureData) {
     if (signatureData == null || signatureData.trim().isEmpty()) {
@@ -341,7 +341,7 @@ public class DocumentService {
     return "/api/signatures/images/" + timestamp + ".png";
   }
 
-  /** Створити Pageable з параметрів запиту */
+  /** Створити Pageable з параметрів запиту. */
   private Pageable createPageable(Integer page, Integer size, String sort) {
     if (sort != null && !sort.trim().isEmpty()) {
       String[] sortParts = sort.split(",");

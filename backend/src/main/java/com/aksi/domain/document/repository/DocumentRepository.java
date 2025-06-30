@@ -18,7 +18,7 @@ import com.aksi.domain.document.entity.DocumentEntity;
 import com.aksi.domain.document.enums.DocumentStatus;
 import com.aksi.domain.document.enums.DocumentType;
 
-/** Repository для роботи з документами з JPA Specification підтримкою */
+/** Repository для роботи з документами з JPA Specification підтримкою. */
 @Repository
 public interface DocumentRepository
     extends JpaRepository<DocumentEntity, Long>, JpaSpecificationExecutor<DocumentEntity> {

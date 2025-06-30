@@ -13,12 +13,12 @@ import com.aksi.domain.auth.exception.AuthValidationException;
 
 /**
  * Валідатор для бізнес-правил користувачів Тільки бізнес-логіка, Bean Validation
- * (@NotNull, @Size, @Pattern, @Email) в OpenAPI
+ * (@NotNull, @Size, @Pattern, @Email) в OpenAPI.
  */
 @Component
 public class UserValidator {
 
-  /** Валідація користувача для створення Тільки бізнес-правила */
+  /** Валідація користувача для створення Тільки бізнес-правила. */
   public void validateForCreation(UserEntity user) {
     Map<String, List<String>> errors = new HashMap<>();
 
@@ -29,7 +29,7 @@ public class UserValidator {
     }
   }
 
-  /** Валідація користувача для оновлення Тільки бізнес-правила */
+  /** Валідація користувача для оновлення Тільки бізнес-правила. */
   public void validateForUpdate(UserEntity user) {
     Map<String, List<String>> errors = new HashMap<>();
 
@@ -41,18 +41,18 @@ public class UserValidator {
   }
 
   /**
-   * Нормалізація email (приведення до нижнього регістру) Аналог normalizePhone в ClientValidator
+   * Нормалізація email (приведення до нижнього регістру) Аналог normalizePhone в ClientValidator.
    */
   public String normalizeEmail(String email) {
     return email != null ? email.trim().toLowerCase() : null;
   }
 
-  /** Нормалізація username (приведення до нижнього регістру) */
+  /** Нормалізація username (приведення до нижнього регістру). */
   public String normalizeUsername(String username) {
     return username != null ? username.trim().toLowerCase() : null;
   }
 
-  /** Нормалізація імені та прізвища */
+  /** Нормалізація імені та прізвища. */
   public String normalizeName(String name) {
     if (name == null) return null;
 

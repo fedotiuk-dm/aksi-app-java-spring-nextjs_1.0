@@ -31,7 +31,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/** JPA Entity для предметів замовлення */
+/** JPA Entity для предметів замовлення. */
 @Entity
 @Table(
     name = "order_items",
@@ -124,32 +124,32 @@ public class OrderItemEntity extends BaseEntity {
 
   // Business методи
 
-  /** Перевіряє чи предмет має плями */
+  /** Перевіряє чи предмет має плями. */
   public boolean hasStains() {
     return stains != null && !stains.isEmpty();
   }
 
-  /** Перевіряє чи предмет має дефекти */
+  /** Перевіряє чи предмет має дефекти. */
   public boolean hasDefects() {
     return defects != null && !defects.isEmpty();
   }
 
-  /** Перевіряє чи предмет потребує спеціальної обробки */
+  /** Перевіряє чи предмет потребує спеціальної обробки. */
   public boolean requiresSpecialTreatment() {
     return hasStains() && stains.stream().anyMatch(StainType::requiresSpecialTreatment);
   }
 
-  /** Перевіряє чи предмет має критичні дефекти */
+  /** Перевіряє чи предмет має критичні дефекти. */
   public boolean hasCriticalDefects() {
     return hasDefects() && defects.stream().anyMatch(DefectType::isCritical);
   }
 
-  /** Отримує комбінований рівень ризику */
+  /** Отримує комбінований рівень ризику. */
   public int getCombinedRiskLevel() {
     return DefectType.getCombinedRiskLevel(defects);
   }
 
-  /** Перевіряє сумісність плям з матеріалом */
+  /** Перевіряє сумісність плям з матеріалом. */
   public boolean areStainsCompatibleWithMaterial() {
     if (!hasStains() || material == null) {
       return true;
@@ -157,7 +157,7 @@ public class OrderItemEntity extends BaseEntity {
     return stains.stream().allMatch(stain -> stain.isCompatibleWithMaterial(material));
   }
 
-  /** Перевіряє сумісність дефектів з категорією послуги */
+  /** Перевіряє сумісність дефектів з категорією послуги. */
   public boolean areDefectsCompatibleWithService() {
     if (!hasDefects() || category == null) {
       return true;
@@ -165,7 +165,7 @@ public class OrderItemEntity extends BaseEntity {
     return defects.stream().allMatch(defect -> defect.isCompatibleWithService(category));
   }
 
-  /** Розраховує знижку через дефекти */
+  /** Розраховує знижку через дефекти. */
   public BigDecimal calculateDefectDiscount() {
     if (!hasDefects()) {
       return BigDecimal.ZERO;
@@ -176,18 +176,18 @@ public class OrderItemEntity extends BaseEntity {
         .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
-  /** Розраховує фінальну ціну з урахуванням дефектів */
+  /** Розраховує фінальну ціну з урахуванням дефектів. */
   public BigDecimal calculateFinalPrice() {
     BigDecimal defectDiscount = calculateDefectDiscount();
     return basePrice.subtract(defectDiscount);
   }
 
-  /** Оновлює фінальну ціну */
+  /** Оновлює фінальну ціну. */
   public void updateFinalPrice() {
     this.finalPrice = calculateFinalPrice();
   }
 
-  /** Додає пляму */
+  /** Додає пляму. */
   public void addStain(StainType stain) {
     if (stains == null) {
       stains = new HashSet<>();
@@ -195,7 +195,7 @@ public class OrderItemEntity extends BaseEntity {
     stains.add(stain);
   }
 
-  /** Додає дефект */
+  /** Додає дефект. */
   public void addDefect(DefectType defect) {
     if (defects == null) {
       defects = new HashSet<>();
@@ -204,7 +204,7 @@ public class OrderItemEntity extends BaseEntity {
     updateFinalPrice(); // Перерахунок після додавання дефекту
   }
 
-  /** Додає фото */
+  /** Додає фото. */
   public void addPhoto(String photoUrl) {
     if (photos == null) {
       photos = new ArrayList<>();
@@ -212,18 +212,18 @@ public class OrderItemEntity extends BaseEntity {
     photos.add(photoUrl);
   }
 
-  /** Перевіряє чи потрібне підтвердження клієнта */
+  /** Перевіряє чи потрібне підтвердження клієнта. */
   public boolean requiresClientConsent() {
     return hasCriticalDefects()
         || (hasDefects() && defects.stream().anyMatch(DefectType::requiresClientConsent));
   }
 
-  /** Отримує загальну вартість для кількості */
+  /** Отримує загальну вартість для кількості. */
   public BigDecimal getTotalPrice() {
     return finalPrice.multiply(BigDecimal.valueOf(quantity));
   }
 
-  /** Перевіряє чи матеріал сумісний з категорією */
+  /** Перевіряє чи матеріал сумісний з категорією. */
   public boolean isMaterialCompatibleWithCategory() {
     if (category == null || material == null) {
       return true;
@@ -231,7 +231,7 @@ public class OrderItemEntity extends BaseEntity {
     return category.isCompatibleWithMaterial(material);
   }
 
-  /** Отримує максимальну рекомендовану температуру обробки */
+  /** Отримує максимальну рекомендовану температуру обробки. */
   public int getMaxRecommendedTemperature() {
     if (!hasStains()) {
       return 60; // Стандартна температура
@@ -245,12 +245,12 @@ public class OrderItemEntity extends BaseEntity {
 
   // === МЕТОДИ ДЛЯ РОБОТИ З МОДИФІКАТОРАМИ ===
 
-  /** Перевіряє чи предмет має модифікатори */
+  /** Перевіряє чи предмет має модифікатори. */
   public boolean hasModifiers() {
     return modifiers != null && !modifiers.isEmpty();
   }
 
-  /** Додає модифікатор */
+  /** Додає модифікатор. */
   public void addModifier(OrderItemModifierEntity modifier) {
     if (modifiers == null) {
       modifiers = new ArrayList<>();
@@ -260,7 +260,7 @@ public class OrderItemEntity extends BaseEntity {
     updateFinalPriceWithModifiers();
   }
 
-  /** Видаляє модифікатор за назвою */
+  /** Видаляє модифікатор за назвою. */
   public void removeModifier(String modifierName) {
     if (modifiers != null) {
       modifiers.removeIf(modifier -> modifier.getName().equals(modifierName));
@@ -268,7 +268,7 @@ public class OrderItemEntity extends BaseEntity {
     }
   }
 
-  /** Розраховує загальну суму всіх модифікаторів */
+  /** Розраховує загальну суму всіх модифікаторів. */
   public BigDecimal calculateModifiersTotal() {
     if (!hasModifiers()) {
       return BigDecimal.ZERO;
@@ -279,7 +279,7 @@ public class OrderItemEntity extends BaseEntity {
         .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
-  /** Розраховує фінальну ціну з урахуванням дефектів ТА модифікаторів */
+  /** Розраховує фінальну ціну з урахуванням дефектів ТА модифікаторів. */
   public BigDecimal calculateFinalPriceWithModifiers() {
     BigDecimal baseAmount = basePrice;
     BigDecimal modifiersTotal = calculateModifiersTotal();
@@ -288,12 +288,12 @@ public class OrderItemEntity extends BaseEntity {
     return baseAmount.add(modifiersTotal).subtract(defectDiscount);
   }
 
-  /** Оновлює фінальну ціну з урахуванням модифікаторів */
+  /** Оновлює фінальну ціну з урахуванням модифікаторів. */
   public void updateFinalPriceWithModifiers() {
     this.finalPrice = calculateFinalPriceWithModifiers();
   }
 
-  /** Оновлює всі модифікатори з новою базовою ціною */
+  /** Оновлює всі модифікатори з новою базовою ціною. */
   public void recalculateModifiers() {
     if (hasModifiers()) {
       modifiers.forEach(modifier -> modifier.updateCalculatedAmount(basePrice));
@@ -301,7 +301,7 @@ public class OrderItemEntity extends BaseEntity {
     }
   }
 
-  /** Отримує модифікатор за назвою */
+  /** Отримує модифікатор за назвою. */
   public OrderItemModifierEntity getModifierByName(String name) {
     if (!hasModifiers()) {
       return null;
@@ -312,17 +312,17 @@ public class OrderItemEntity extends BaseEntity {
         .orElse(null);
   }
 
-  /** Перевіряє чи є модифікатор з назвою */
+  /** Перевіряє чи є модифікатор з назвою. */
   public boolean hasModifier(String name) {
     return getModifierByName(name) != null;
   }
 
-  /** Отримує кількість модифікаторів */
+  /** Отримує кількість модифікаторів. */
   public int getModifiersCount() {
     return hasModifiers() ? modifiers.size() : 0;
   }
 
-  /** Застосовує текстильний модифікатор */
+  /** Застосовує текстильний модифікатор. */
   public void applyTextileModifier(String name, int percentage, String description) {
     if (!category.allowsTextileModifiers()) {
       throw new IllegalStateException(
@@ -334,7 +334,7 @@ public class OrderItemEntity extends BaseEntity {
     addModifier(modifier);
   }
 
-  /** Застосовує шкіряний модифікатор */
+  /** Застосовує шкіряний модифікатор. */
   public void applyLeatherModifier(String name, int percentage, String description) {
     if (!category.allowsLeatherModifiers()) {
       throw new IllegalStateException(
@@ -346,7 +346,7 @@ public class OrderItemEntity extends BaseEntity {
     addModifier(modifier);
   }
 
-  /** Застосовує фіксований модифікатор */
+  /** Застосовує фіксований модифікатор. */
   public void applyFixedModifier(String name, BigDecimal amount, String description) {
     OrderItemModifierEntity modifier =
         OrderItemModifierEntity.createFixedModifier(name, amount, description);

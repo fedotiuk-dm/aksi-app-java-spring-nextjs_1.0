@@ -27,7 +27,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/** Entity для модифікаторів цін */
+/** Entity для модифікаторів цін. */
 @Entity
 @Table(
     name = "price_modifiers",
@@ -81,7 +81,7 @@ public class PriceModifierEntity extends BaseEntity {
   @Column(name = "jexl_formula", length = 1000)
   private String jexlFormula;
 
-  /** JEXL умова для застосування модифікатора Приклад: "category == 'LEATHER' && quantity > 1" */
+  /** JEXL умова для застосування модифікатора Приклад: "category == 'LEATHER' && quantity > 1". */
   @Size(max = 500, message = "Умова не може бути довше 500 символів")
   @Column(name = "jexl_condition", length = 500)
   private String jexlCondition;
@@ -96,22 +96,22 @@ public class PriceModifierEntity extends BaseEntity {
 
   // ===== BUSINESS МЕТОДИ =====
 
-  /** Перевірити, чи є модифікатор активним */
+  /** Перевірити, чи є модифікатор активним. */
   public boolean isActiveModifier() {
     return Boolean.TRUE.equals(isActive);
   }
 
-  /** Перевірити, чи є модифікатор відсотковим */
+  /** Перевірити, чи є модифікатор відсотковим. */
   public boolean isPercentageModifier() {
     return "PERCENTAGE".equals(modifierType);
   }
 
-  /** Перевірити, чи є модифікатор фіксованою сумою */
+  /** Перевірити, чи є модифікатор фіксованою сумою. */
   public boolean isFixedAmountModifier() {
     return "FIXED_AMOUNT".equals(modifierType);
   }
 
-  /** Застосувати модифікатор до ціни */
+  /** Застосувати модифікатор до ціни. */
   public Double applyToPrice(Double basePrice) {
     if (basePrice == null || !isActiveModifier()) {
       return basePrice;
@@ -126,7 +126,7 @@ public class PriceModifierEntity extends BaseEntity {
     return basePrice;
   }
 
-  /** Розрахувати суму модифікації */
+  /** Розрахувати суму модифікації. */
   public Double calculateModificationAmount(Double basePrice) {
     if (basePrice == null || !isActiveModifier()) {
       return 0.0;
@@ -141,44 +141,44 @@ public class PriceModifierEntity extends BaseEntity {
     return 0.0;
   }
 
-  /** Перевірити, чи застосовується до категорії */
+  /** Перевірити, чи застосовується до категорії. */
   public boolean isApplicableToCategory(UUID categoryId) {
     return applicableTo.isEmpty() || applicableTo.contains(categoryId);
   }
 
-  /** Додати категорію застосування */
+  /** Додати категорію застосування. */
   public void addApplicableCategory(UUID categoryId) {
     if (!applicableTo.contains(categoryId)) {
       applicableTo.add(categoryId);
     }
   }
 
-  /** Видалити категорію застосування */
+  /** Видалити категорію застосування. */
   public void removeApplicableCategory(UUID categoryId) {
     applicableTo.remove(categoryId);
   }
 
-  /** Очистити всі категорії (застосовується до всіх) */
+  /** Очистити всі категорії (застосовується до всіх). */
   public void clearApplicableCategories() {
     applicableTo.clear();
   }
 
-  /** Перевірити, чи застосовується до всіх категорій */
+  /** Перевірити, чи застосовується до всіх категорій. */
   public boolean isApplicableToAllCategories() {
     return applicableTo.isEmpty();
   }
 
-  /** Активувати модифікатор */
+  /** Активувати модифікатор. */
   public void activate() {
     this.isActive = true;
   }
 
-  /** Деактивувати модифікатор */
+  /** Деактивувати модифікатор. */
   public void deactivate() {
     this.isActive = false;
   }
 
-  /** Перевірити валідність значення */
+  /** Перевірити валідність значення. */
   public boolean hasValidValue() {
     if (value == null) return false;
 
@@ -191,7 +191,7 @@ public class PriceModifierEntity extends BaseEntity {
     return false;
   }
 
-  /** Отримати форматований опис модифікатора */
+  /** Отримати форматований опис модифікатора. */
   public String getFormattedDescription() {
     StringBuilder result = new StringBuilder();
 
@@ -214,17 +214,17 @@ public class PriceModifierEntity extends BaseEntity {
 
   // ===== JEXL МЕТОДИ =====
 
-  /** Перевірити, чи має модифікатор JEXL формулу */
+  /** Перевірити, чи має модифікатор JEXL формулу. */
   public boolean hasJexlFormula() {
     return jexlFormula != null && !jexlFormula.trim().isEmpty();
   }
 
-  /** Перевірити, чи має модифікатор JEXL умову */
+  /** Перевірити, чи має модифікатор JEXL умову. */
   public boolean hasJexlCondition() {
     return jexlCondition != null && !jexlCondition.trim().isEmpty();
   }
 
-  /** Отримати JEXL формулу або фолбек до стандартної */
+  /** Отримати JEXL формулу або фолбек до стандартної. */
   public String getEffectiveFormula() {
     if (hasJexlFormula()) {
       return jexlFormula;
@@ -240,27 +240,27 @@ public class PriceModifierEntity extends BaseEntity {
     return "currentPrice"; // без змін
   }
 
-  /** Отримати JEXL умову або null якщо немає */
+  /** Отримати JEXL умову або null якщо немає. */
   public String getEffectiveCondition() {
     return hasJexlCondition() ? jexlCondition : null;
   }
 
-  /** Перевірити, чи є модифікатор JEXL-базованим */
+  /** Перевірити, чи є модифікатор JEXL-базованим. */
   public boolean isJexlBased() {
     return hasJexlFormula();
   }
 
-  /** Встановити JEXL формулу */
+  /** Встановити JEXL формулу. */
   public void setJexlFormula(String formula) {
     this.jexlFormula = formula != null ? formula.trim() : null;
   }
 
-  /** Встановити JEXL умову */
+  /** Встановити JEXL умову. */
   public void setJexlCondition(String condition) {
     this.jexlCondition = condition != null ? condition.trim() : null;
   }
 
-  /** Очистити JEXL налаштування */
+  /** Очистити JEXL налаштування. */
   public void clearJexlSettings() {
     this.jexlFormula = null;
     this.jexlCondition = null;

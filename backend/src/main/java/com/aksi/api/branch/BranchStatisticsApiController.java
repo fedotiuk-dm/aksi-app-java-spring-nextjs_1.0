@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * HTTP контролер для статистики філій Відповідальність: тільки HTTP логіка
  *
- * <p>НЕ РЕАЛІЗОВАНО: Branch Statistics поки що не потрібна
+ * <p>НЕ РЕАЛІЗОВАНО: Branch Statistics поки що не потрібна.
  */
 @RestController
 @RequiredArgsConstructor

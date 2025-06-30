@@ -18,26 +18,26 @@ public class BranchValidator {
 
   private final BranchRepository branchRepository;
 
-  /** Валідація для створення нової філії */
+  /** Валідація для створення нової філії. */
   public void validateForCreate(BranchEntity branch) {
     validateUniqueness(branch);
     // Додаткові бізнес-правила для створення
   }
 
-  /** Валідація для оновлення філії */
+  /** Валідація для оновлення філії. */
   public void validateForUpdate(BranchEntity branch) {
     validateUniquenessForUpdate(branch);
     // Додаткові бізнес-правила для оновлення
   }
 
-  /** Валідація унікальності для нової філії */
+  /** Валідація унікальності для нової філії. */
   public void validateUniqueness(BranchEntity branch) {
     if (branchRepository.existsByCode(branch.getCode())) {
       throw BranchAlreadyExistsException.forCode(branch.getCode());
     }
   }
 
-  /** Валідація унікальності для оновлення філії */
+  /** Валідація унікальності для оновлення філії. */
   public void validateUniquenessForUpdate(BranchEntity branch) {
     // Перевірка унікальності коду (виключаючи поточну філію)
     branchRepository
@@ -49,7 +49,7 @@ public class BranchValidator {
             });
   }
 
-  /** Бізнес-правило: Валідація можливості видалення філії */
+  /** Бізнес-правило: Валідація можливості видалення філії. */
   public void validateForDeletion(BranchEntity branch) {
     // Тільки неактивні філії можна видалити
     if (branch.isActive()) {
@@ -63,7 +63,7 @@ public class BranchValidator {
     // }
   }
 
-  /** Бізнес-правило: Валідація можливості приймати замовлення */
+  /** Бізнес-правило: Валідація можливості приймати замовлення. */
   public void validateCanAcceptOrders(BranchEntity branch) {
     if (!branch.canAcceptOrders()) {
       throw new BranchValidationException(
@@ -83,7 +83,7 @@ public class BranchValidator {
     // }
   }
 
-  /** Бізнес-правило: Валідація генерації номера квитанції */
+  /** Бізнес-правило: Валідація генерації номера квитанції. */
   public void validateReceiptNumberGeneration(BranchEntity branch) {
     if (!branch.isActive()) {
       throw new BranchValidationException(
@@ -96,7 +96,7 @@ public class BranchValidator {
     }
   }
 
-  /** Бізнес-правило: Валідація оновлення лічильника квитанцій */
+  /** Бізнес-правило: Валідація оновлення лічильника квитанцій. */
   public void validateReceiptCounterUpdate(UUID branchId, Long newCounter) {
     branchRepository
         .findById(branchId)

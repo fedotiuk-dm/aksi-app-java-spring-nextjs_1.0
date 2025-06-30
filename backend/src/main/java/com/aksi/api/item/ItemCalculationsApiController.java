@@ -12,7 +12,7 @@ import com.aksi.domain.item.service.ItemCalculationService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP контролер для розрахунків цін предметів */
+/** HTTP контролер для розрахунків цін предметів. */
 @Controller
 @RequiredArgsConstructor
 public class ItemCalculationsApiController implements ItemCalculationsApi {

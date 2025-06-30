@@ -2,7 +2,7 @@ package com.aksi.domain.auth.exception;
 
 import java.time.LocalDateTime;
 
-/** Виняток для заблокованих користувачів Domain-specific RuntimeException */
+/** Виняток для заблокованих користувачів Domain-specific RuntimeException. */
 public class UserBlockedException extends RuntimeException {
 
   private final LocalDateTime lockedUntil;

@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * API-First Client Service Відповідальність: всі методи описані в OpenAPI (ClientsApi,
- * ClientSearchApi, ClientContactsApi)
+ * ClientSearchApi, ClientContactsApi).
  */
 @Service
 @Transactional
@@ -181,7 +181,7 @@ public class ClientService {
     return new ClientPageResponse().content(clients).pageable(pageableInfo);
   }
 
-  /** Спрощений метод для створення Sort з ClientSearchRequest */
+  /** Спрощений метод для створення Sort з ClientSearchRequest. */
   private Sort createSortFromRequest(ClientSearchRequest request) {
     if (request.getSort() == null) {
       return Sort.by(DEFAULT_SORT_FIELD);
@@ -254,7 +254,7 @@ public class ClientService {
   // ДОДАТКОВІ МЕТОДИ З SPECIFICATION
   // ==============================
 
-  /** Топ клієнти за замовленнями (через Specification) */
+  /** Топ клієнти за замовленнями (через Specification). */
   @Transactional(readOnly = true)
   public List<ClientResponse> getTopClientsByOrders(int limit) {
     Specification<ClientEntity> spec = ClientSpecification.hasOrders();
@@ -266,13 +266,13 @@ public class ClientService {
     return clientMapper.toResponseList(entities);
   }
 
-  /** Топ клієнти за замовленнями з дефолтним лімітом */
+  /** Топ клієнти за замовленнями з дефолтним лімітом. */
   @Transactional(readOnly = true)
   public List<ClientResponse> getTopClientsByOrders() {
     return getTopClientsByOrders(DEFAULT_TOP_LIMIT);
   }
 
-  /** Неактивні клієнти з заданої дати (через Specification) */
+  /** Неактивні клієнти з заданої дати (через Specification). */
   @Transactional(readOnly = true)
   public List<ClientResponse> getInactiveClientsSince(LocalDate cutoffDate, int limit) {
     Specification<ClientEntity> spec = ClientSpecification.inactiveSince(cutoffDate);
@@ -282,13 +282,13 @@ public class ClientService {
     return clientMapper.toResponseList(entities);
   }
 
-  /** Неактивні клієнти з заданої дати з дефолтним лімітом */
+  /** Неактивні клієнти з заданої дати з дефолтним лімітом. */
   @Transactional(readOnly = true)
   public List<ClientResponse> getInactiveClientsSince(LocalDate cutoffDate) {
     return getInactiveClientsSince(cutoffDate, DEFAULT_TOP_LIMIT);
   }
 
-  /** Клієнти без замовлень (через Specification) */
+  /** Клієнти без замовлень (через Specification). */
   @Transactional(readOnly = true)
   public List<ClientResponse> getClientsWithoutOrders(int limit) {
     Specification<ClientEntity> spec = ClientSpecification.hasNoOrders();
@@ -298,13 +298,13 @@ public class ClientService {
     return clientMapper.toResponseList(entities);
   }
 
-  /** Клієнти без замовлень з дефолтним лімітом */
+  /** Клієнти без замовлень з дефолтним лімітом. */
   @Transactional(readOnly = true)
   public List<ClientResponse> getClientsWithoutOrders() {
     return getClientsWithoutOrders(DEFAULT_TOP_LIMIT);
   }
 
-  /** Комбінований пошук VIP клієнтів з витратами (демонстрація композиції) */
+  /** Комбінований пошук VIP клієнтів з витратами (демонстрація композиції). */
   @Transactional(readOnly = true)
   public List<ClientResponse> getVipClientsWithSpending(int limit) {
     Specification<ClientEntity> spec =
@@ -316,7 +316,7 @@ public class ClientService {
     return clientMapper.toResponseList(entities);
   }
 
-  /** VIP клієнти з витратами з дефолтним лімітом */
+  /** VIP клієнти з витратами з дефолтним лімітом. */
   @Transactional(readOnly = true)
   public List<ClientResponse> getVipClientsWithSpending() {
     return getVipClientsWithSpending(DEFAULT_TOP_LIMIT);

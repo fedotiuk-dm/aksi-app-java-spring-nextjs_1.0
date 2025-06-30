@@ -26,7 +26,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/** JPA Entity для замовлення */
+/** JPA Entity для замовлення. */
 @Entity
 @Table(
     name = "orders",
@@ -105,17 +105,17 @@ public class OrderEntity extends BaseEntity {
 
   // Business методи
 
-  /** Перевіряє чи можна змінювати замовлення */
+  /** Перевіряє чи можна змінювати замовлення. */
   public boolean canBeModified() {
     return status != null && status.canModifyOrder();
   }
 
-  /** Перевіряє чи можна додавати предмети */
+  /** Перевіряє чи можна додавати предмети. */
   public boolean canAddItems() {
     return status != null && status.canModifyItems();
   }
 
-  /** Перевіряє чи готове до завершення */
+  /** Перевіряє чи готове до завершення. */
   public boolean isReadyForCompletion() {
     return status == OrderStatus.READY
         && clientSignature != null
@@ -123,12 +123,12 @@ public class OrderEntity extends BaseEntity {
         && legalAcceptance;
   }
 
-  /** Перевіряє чи є згода клієнта на обробку критичних дефектів */
+  /** Перевіряє чи є згода клієнта на обробку критичних дефектів. */
   public boolean hasConsentForCriticalDefects() {
     return criticalDefectsConsent != null && criticalDefectsConsent;
   }
 
-  /** Перевіряє чи замовлення містить предмети з критичними дефектами */
+  /** Перевіряє чи замовлення містить предмети з критичними дефектами. */
   public boolean hasCriticalDefects() {
     return items.stream()
         .anyMatch(
@@ -138,7 +138,7 @@ public class OrderEntity extends BaseEntity {
                         .anyMatch(defect -> defect.name().contains("CRITICAL")));
   }
 
-  /** Додає предмет до замовлення */
+  /** Додає предмет до замовлення. */
   public void addItem(OrderItemEntity item) {
     if (!canAddItems()) {
       throw new IllegalStateException(
@@ -149,7 +149,7 @@ public class OrderEntity extends BaseEntity {
     recalculateTotal();
   }
 
-  /** Видаляє предмет з замовлення */
+  /** Видаляє предмет з замовлення. */
   public void removeItem(OrderItemEntity item) {
     if (!canAddItems()) {
       throw new IllegalStateException(
@@ -160,7 +160,7 @@ public class OrderEntity extends BaseEntity {
     recalculateTotal();
   }
 
-  /** Змінює статус замовлення з валідацією */
+  /** Змінює статус замовлення з валідацією. */
   public void changeStatus(OrderStatus newStatus) {
     if (status == null || !status.canTransitionTo(newStatus)) {
       throw new IllegalStateException(
@@ -169,19 +169,19 @@ public class OrderEntity extends BaseEntity {
     this.status = newStatus;
   }
 
-  /** Отримує загальну кількість предметів */
+  /** Отримує загальну кількість предметів. */
   public int getTotalItemsCount() {
     return items.stream().mapToInt(OrderItemEntity::getQuantity).sum();
   }
 
-  /** Отримує загальну базову вартість без надбавок та знижок */
+  /** Отримує загальну базову вартість без надбавок та знижок. */
   public BigDecimal getBaseTotal() {
     return items.stream()
         .map(OrderItemEntity::getFinalPrice)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
-  /** Розраховує надбавку за терміновість */
+  /** Розраховує надбавку за терміновість. */
   public BigDecimal calculateUrgencyCharge() {
     if (urgency == null || urgency == UrgencyType.NORMAL) {
       return BigDecimal.ZERO;
@@ -189,7 +189,7 @@ public class OrderEntity extends BaseEntity {
     return urgency.calculateUrgencyCharge(getBaseTotal());
   }
 
-  /** Розраховує суму знижки */
+  /** Розраховує суму знижки. */
   public BigDecimal calculateDiscountAmount() {
     if (discount == null || discount.getType() == null) {
       return BigDecimal.ZERO;
@@ -198,7 +198,7 @@ public class OrderEntity extends BaseEntity {
     return discount.calculateDiscountAmount(baseWithUrgency);
   }
 
-  /** Розраховує фінальну суму замовлення */
+  /** Розраховує фінальну суму замовлення. */
   public BigDecimal calculateFinalTotal() {
     BigDecimal base = getBaseTotal();
     BigDecimal urgencyCharge = calculateUrgencyCharge();
@@ -207,7 +207,7 @@ public class OrderEntity extends BaseEntity {
     return base.add(urgencyCharge).subtract(discountAmount);
   }
 
-  /** Перерахунок загальної вартості та оновлення calculation */
+  /** Перерахунок загальної вартості та оновлення calculation. */
   public void recalculateTotal() {
     if (calculation == null) {
       calculation = new OrderCalculationEntity();
@@ -219,17 +219,17 @@ public class OrderEntity extends BaseEntity {
     calculation.setTotalAmount(calculateFinalTotal());
   }
 
-  /** Перевіряє чи потрібна оплата */
+  /** Перевіряє чи потрібна оплата. */
   public boolean requiresPayment() {
     return status != null && status.requiresPayment();
   }
 
-  /** Перевіряє чи термінове замовлення */
+  /** Перевіряє чи термінове замовлення. */
   public boolean isUrgent() {
     return urgency != null && urgency.isUrgent();
   }
 
-  /** Розраховує очікувану дату готовності */
+  /** Розраховує очікувану дату готовності. */
   public LocalDateTime calculateExpectedReadyDate() {
     if (urgency == null || getCreatedAt() == null) {
       return null;

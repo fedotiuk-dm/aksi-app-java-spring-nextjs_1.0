@@ -19,29 +19,29 @@ import com.aksi.domain.branch.entity.WorkingDayEntity;
 public interface WorkingDayRepository
     extends JpaRepository<WorkingDayEntity, Long>, JpaSpecificationExecutor<WorkingDayEntity> {
 
-  /** Знаходить робочий день за UUID */
+  /** Знаходить робочий день за UUID. */
   Optional<WorkingDayEntity> findByUuid(UUID uuid);
 
-  /** Знаходить робочий день за розкладом та днем тижня */
+  /** Знаходить робочий день за розкладом та днем тижня. */
   Optional<WorkingDayEntity> findByWorkingSchedule_IdAndDayOfWeek(
       Long workingScheduleId, DayOfWeek dayOfWeek);
 
-  /** Знаходить всі робочі дні за розкладом */
+  /** Знаходить всі робочі дні за розкладом. */
   List<WorkingDayEntity> findByWorkingSchedule_Id(Long workingScheduleId);
 
-  /** Підраховує кількість робочих днів за розкладом */
+  /** Підраховує кількість робочих днів за розкладом. */
   long countByWorkingSchedule_Id(Long workingScheduleId);
 
-  /** Знаходить дні за статусом робочого дня */
+  /** Знаходить дні за статусом робочого дня. */
   List<WorkingDayEntity> findByIsWorkingDay(Boolean isWorkingDay);
 
-  /** Підраховує кількість днів за статусом робочого дня */
+  /** Підраховує кількість днів за статусом робочого дня. */
   long countByIsWorkingDay(Boolean isWorkingDay);
 
-  /** Знаходить дні за днем тижня */
+  /** Знаходить дні за днем тижня. */
   List<WorkingDayEntity> findByDayOfWeek(DayOfWeek dayOfWeek);
 
-  /** Підраховує кількість днів за днем тижня */
+  /** Підраховує кількість днів за днем тижня. */
   long countByDayOfWeek(DayOfWeek dayOfWeek);
 
   // СКЛАДНІ ЗАПИТИ ПЕРЕНЕСЕНІ У WorkingDaySpecification:

@@ -3,7 +3,7 @@ package com.aksi.domain.document.exception;
 import com.aksi.domain.document.enums.DocumentStatus;
 import com.aksi.domain.document.enums.DocumentType;
 
-/** Exception що викидається при порушенні бізнес-правил документів */
+/** Exception що викидається при порушенні бізнес-правил документів. */
 public class DocumentValidationException extends RuntimeException {
 
   public DocumentValidationException(String message) {

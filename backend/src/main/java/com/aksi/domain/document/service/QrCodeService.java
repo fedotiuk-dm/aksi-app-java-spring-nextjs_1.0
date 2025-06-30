@@ -16,7 +16,7 @@ import com.aksi.api.document.dto.QRCodeResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** Сервіс для роботи з QR кодами Відповідальність: генерація, обробка та управління QR кодами */
+/** Сервіс для роботи з QR кодами Відповідальність: генерація, обробка та управління QR кодами. */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class QrCodeService {
   // private final QRCodeGenerator qrCodeGenerator;
   // private final FileStorageService fileStorageService;
 
-  /** Згенерувати QR код */
+  /** Згенерувати QR код. */
   public QRCodeResponse generateQRCode(GenerateQRCodeRequest request) {
     log.info(
         "Generating QR code with data: {}, format: {}", request.getData(), request.getFormat());
@@ -58,7 +58,7 @@ public class QrCodeService {
     }
   }
 
-  /** Отримати QR код для замовлення */
+  /** Отримати QR код для замовлення. */
   @Transactional(readOnly = true)
   public QRCodeResponse getQRCodeForOrder(UUID orderId, QRCodeFormat format, Integer size) {
     log.info("Getting QR code for order: {}", orderId);
@@ -79,14 +79,14 @@ public class QrCodeService {
     return generateQRCode(request);
   }
 
-  /** Побудувати URL для відстеження замовлення */
+  /** Побудувати URL для відстеження замовлення. */
   private String buildTrackingUrl(UUID orderId) {
     // TODO: Отримати base URL з конфігурації
     String baseUrl = "https://aksi.com.ua";
     return String.format("%s/track/%s", baseUrl, orderId);
   }
 
-  /** Згенерувати байти QR коду */
+  /** Згенерувати байти QR коду. */
   private byte[] generateQrCodeBytes(String content, QRCodeFormat format) throws IOException {
     // TODO: Тимчасова заглушка - створити простий білий квадрат
     BufferedImage image = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
@@ -103,7 +103,7 @@ public class QrCodeService {
     return baos.toByteArray();
   }
 
-  /** Видалити QR код для замовлення */
+  /** Видалити QR код для замовлення. */
   public void deleteQRCode(UUID orderId) {
     log.info("Deleting QR code for order: {}", orderId);
 

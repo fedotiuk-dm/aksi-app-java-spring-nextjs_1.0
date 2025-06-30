@@ -24,7 +24,7 @@ import com.aksi.domain.branch.entity.BranchEntity;
 
 /**
  * Mapper для BranchEntity ↔ DTO конвертації Відповідальність: тільки основна Branch entity без
- * embedded objects
+ * embedded objects.
  */
 @Mapper(
     componentModel = "spring",
@@ -33,7 +33,7 @@ public interface BranchMapper {
 
   // DTO → Entity mappings (для create/update)
 
-  /** CreateBranchRequest → BranchEntity */
+  /** CreateBranchRequest → BranchEntity. */
   @Mapping(target = "uuid", expression = "java(java.util.UUID.randomUUID())")
   @Mapping(target = "receiptCounter", constant = "0L")
   @Mapping(target = "code", source = "name")
@@ -48,7 +48,7 @@ public interface BranchMapper {
   @Mapping(target = "status", ignore = true) // встановлюється окремо в Service
   BranchEntity toEntity(CreateBranchRequest request);
 
-  /** UpdateBranchRequest → BranchEntity (для оновлення) */
+  /** UpdateBranchRequest → BranchEntity (для оновлення). */
   @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "receiptCounter", ignore = true)
   @Mapping(target = "code", source = "name")
@@ -65,7 +65,7 @@ public interface BranchMapper {
 
   // Entity → DTO mappings (для response)
 
-  /** BranchEntity → BranchResponse */
+  /** BranchEntity → BranchResponse. */
   @Mapping(target = "id", source = "uuid")
   @Mapping(
       target = "createdAt",
@@ -80,11 +80,11 @@ public interface BranchMapper {
   @Mapping(target = "workingSchedule", ignore = true) // окремий mapper для WorkingSchedule
   BranchResponse toBranchResponse(BranchEntity entity);
 
-  /** BranchEntity → BranchSummaryResponse */
+  /** BranchEntity → BranchSummaryResponse. */
   @Mapping(target = "id", source = "uuid")
   BranchSummaryResponse toBranchSummaryResponse(BranchEntity entity);
 
-  /** BranchEntity → BranchWithDistanceResponse */
+  /** BranchEntity → BranchWithDistanceResponse. */
   @Mapping(target = "id", source = "entity.uuid")
   @Mapping(target = "status", source = "entity.status", qualifiedByName = "domainBranchStatusToApi")
   @Mapping(target = "address", source = "entity")
@@ -92,49 +92,49 @@ public interface BranchMapper {
   @Mapping(target = "workingSchedule", ignore = true) // окремий mapper для WorkingSchedule
   BranchWithDistanceResponse toBranchWithDistanceResponse(BranchEntity entity, Double distance);
 
-  /** List<BranchEntity> → List<BranchResponse> */
+  /** List<BranchEntity> → List<BranchResponse>. */
   List<BranchResponse> toBranchResponseList(List<BranchEntity> entities);
 
-  /** List<BranchEntity> → List<BranchSummaryResponse> */
+  /** List<BranchEntity> → List<BranchSummaryResponse>. */
   List<BranchSummaryResponse> toBranchSummaryResponseList(List<BranchEntity> entities);
 
   // Utility mappings
 
-  /** LocalDateTime (Entity) → OffsetDateTime (DTO) - auto mapping */
+  /** LocalDateTime (Entity) → OffsetDateTime (DTO) - auto mapping. */
   default OffsetDateTime map(LocalDateTime localDateTime) {
     return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
   }
 
-  /** OffsetDateTime (DTO) → LocalDateTime (Entity) - auto mapping */
+  /** OffsetDateTime (DTO) → LocalDateTime (Entity) - auto mapping. */
   default LocalDateTime map(OffsetDateTime offsetDateTime) {
     return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
   }
 
-  /** LocalDateTime (Entity) → OffsetDateTime (DTO) - named mapping */
+  /** LocalDateTime (Entity) → OffsetDateTime (DTO) - named mapping. */
   @Named("localDateTimeToOffsetDateTime")
   default OffsetDateTime localDateTimeToOffsetDateTime(LocalDateTime localDateTime) {
     return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
   }
 
-  /** OffsetDateTime (DTO) → LocalDateTime (Entity) - named mapping */
+  /** OffsetDateTime (DTO) → LocalDateTime (Entity) - named mapping. */
   @Named("offsetDateTimeToLocalDateTime")
   default LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
     return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
   }
 
-  /** String → URI */
+  /** String → URI. */
   default URI stringToUri(String url) {
     return url != null ? URI.create(url) : null;
   }
 
-  /** URI → String */
+  /** URI → String. */
   default String uriToString(URI uri) {
     return uri != null ? uri.toString() : null;
   }
 
   // Enum mappings
 
-  /** Domain BranchStatus → API BranchStatus */
+  /** Domain BranchStatus → API BranchStatus. */
   @Named("domainBranchStatusToApi")
   default com.aksi.api.branch.dto.BranchStatus domainBranchStatusToApi(
       com.aksi.domain.branch.enums.BranchStatus domainStatus) {
@@ -143,7 +143,7 @@ public interface BranchMapper {
         : null;
   }
 
-  /** API BranchStatus → Domain BranchStatus */
+  /** API BranchStatus → Domain BranchStatus. */
   default com.aksi.domain.branch.enums.BranchStatus apiToDomainBranchStatus(
       com.aksi.api.branch.dto.BranchStatus apiStatus) {
     return apiStatus != null
@@ -151,7 +151,7 @@ public interface BranchMapper {
         : null;
   }
 
-  /** Domain BranchOpenStatus → API BranchOpenStatus */
+  /** Domain BranchOpenStatus → API BranchOpenStatus. */
   @Named("domainOpenStatusToApi")
   default com.aksi.api.branch.dto.BranchOpenStatus domainOpenStatusToApi(
       com.aksi.domain.branch.enums.BranchOpenStatus domainStatus) {
@@ -160,7 +160,7 @@ public interface BranchMapper {
         : null;
   }
 
-  /** API BranchOpenStatus → Domain BranchOpenStatus */
+  /** API BranchOpenStatus → Domain BranchOpenStatus. */
   default com.aksi.domain.branch.enums.BranchOpenStatus apiToDomainOpenStatus(
       com.aksi.api.branch.dto.BranchOpenStatus apiStatus) {
     return apiStatus != null
@@ -168,7 +168,7 @@ public interface BranchMapper {
         : null;
   }
 
-  /** Створити BranchStatisticsResponse на основі філії та періоду */
+  /** Створити BranchStatisticsResponse на основі філії та періоду. */
   default BranchStatisticsResponse toBranchStatisticsResponse(
       BranchEntity entity, LocalDate startDate, LocalDate endDate) {
     BranchStatisticsResponse response = new BranchStatisticsResponse();
@@ -190,7 +190,7 @@ public interface BranchMapper {
     return response;
   }
 
-  /** Створити список BranchComparisonResponse на основі філій та періоду */
+  /** Створити список BranchComparisonResponse на основі філій та періоду. */
   default List<BranchComparisonResponse> toBranchComparisonResponseList(
       List<BranchEntity> branches,
       LocalDate startDate,

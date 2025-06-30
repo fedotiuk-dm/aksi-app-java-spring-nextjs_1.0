@@ -30,28 +30,28 @@ public interface ClientRepository
   // БАЗОВІ МЕТОДИ ПОШУКУ (Derived Methods)
   // ==============================
 
-  /** Пошук клієнта за UUID (для API сумісності) */
+  /** Пошук клієнта за UUID (для API сумісності). */
   Optional<ClientEntity> findByUuid(UUID uuid);
 
-  /** Перевірка існування клієнта за UUID */
+  /** Перевірка існування клієнта за UUID. */
   boolean existsByUuid(UUID uuid);
 
-  /** Пошук клієнта за номером телефону */
+  /** Пошук клієнта за номером телефону. */
   Optional<ClientEntity> findByPhone(String phone);
 
-  /** Перевірка існування клієнта з таким телефоном */
+  /** Перевірка існування клієнта з таким телефоном. */
   boolean existsByPhone(String phone);
 
-  /** Пошук клієнта за email */
+  /** Пошук клієнта за email. */
   Optional<ClientEntity> findByEmail(String email);
 
-  /** Перевірка існування клієнта з таким email */
+  /** Перевірка існування клієнта з таким email. */
   boolean existsByEmail(String email);
 
-  /** Пошук клієнтів за ім'ям та прізвищем */
+  /** Пошук клієнтів за ім'ям та прізвищем. */
   List<ClientEntity> findByFirstNameAndLastName(String firstName, String lastName);
 
-  /** Пошук клієнтів за джерелом надходження */
+  /** Пошук клієнтів за джерелом надходження. */
   List<ClientEntity> findBySourceType(ClientSourceType sourceType);
 
   // ==============================
@@ -61,10 +61,10 @@ public interface ClientRepository
   /** Підрахунок VIP клієнтів (замість @Query) */
   long countByIsVipTrue();
 
-  /** Підрахунок клієнтів за джерелом */
+  /** Підрахунок клієнтів за джерелом. */
   long countBySourceType(ClientSourceType sourceType);
 
-  /** Перевірка чи є VIP клієнти */
+  /** Перевірка чи є VIP клієнти. */
   boolean existsByIsVipTrue();
 
   // ==============================

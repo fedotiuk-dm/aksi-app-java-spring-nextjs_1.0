@@ -9,7 +9,7 @@ import com.aksi.api.item.dto.PhotoResponse;
 import com.aksi.api.item.dto.UpdatePhotoMetadataRequest;
 import com.aksi.domain.item.entity.ItemPhotoEntity;
 
-/** MapStruct mapper для ItemPhoto - Entity ↔ DTO конвертація */
+/** MapStruct mapper для ItemPhoto - Entity ↔ DTO конвертація. */
 @Mapper(componentModel = "spring")
 public interface ItemPhotoMapper {
 

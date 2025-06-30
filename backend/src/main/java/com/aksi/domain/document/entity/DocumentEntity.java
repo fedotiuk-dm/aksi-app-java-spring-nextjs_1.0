@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/** JPA Entity для документів з business методами. Базується на OpenAPI схемі: DocumentResponse */
+/** JPA Entity для документів з business методами. Базується на OpenAPI схемі: DocumentResponse. */
 @Entity
 @Table(
     name = "documents",

@@ -19,19 +19,19 @@ public interface WorkingScheduleRepository
     extends JpaRepository<WorkingScheduleEntity, Long>,
         JpaSpecificationExecutor<WorkingScheduleEntity> {
 
-  /** Знаходить розклад за UUID */
+  /** Знаходить розклад за UUID. */
   Optional<WorkingScheduleEntity> findByUuid(UUID uuid);
 
-  /** Знаходить розклад за UUID філії */
+  /** Знаходить розклад за UUID філії. */
   Optional<WorkingScheduleEntity> findByBranchUuid(UUID branchUuid);
 
-  /** Перевіряє чи існує розклад для філії за UUID */
+  /** Перевіряє чи існує розклад для філії за UUID. */
   boolean existsByBranchUuid(UUID branchUuid);
 
-  /** Знаходить всі розклади з певним часовим поясом */
+  /** Знаходить всі розклади з певним часовим поясом. */
   List<WorkingScheduleEntity> findByTimezone(String timezone);
 
-  /** Підраховує кількість розкладів з часовим поясом */
+  /** Підраховує кількість розкладів з часовим поясом. */
   long countByTimezone(String timezone);
 
   // СКЛАДНІ ЗАПИТИ ПЕРЕНЕСЕНІ У WorkingScheduleSpecification:

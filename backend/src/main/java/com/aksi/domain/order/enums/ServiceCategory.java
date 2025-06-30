@@ -2,7 +2,7 @@ package com.aksi.domain.order.enums;
 
 import java.util.Set;
 
-/** Domain enum для категорій послуг з business логікою */
+/** Domain enum для категорій послуг з business логікою. */
 public enum ServiceCategory {
   TEXTILE_CLEANING("Чистка одягу та текстилю"),
   LAUNDRY("Прання білизни"),
@@ -22,57 +22,57 @@ public enum ServiceCategory {
     return description;
   }
 
-  /** Перевіряє чи категорія працює з текстильними виробами */
+  /** Перевіряє чи категорія працює з текстильними виробами. */
   public boolean isTextileCategory() {
     return this == TEXTILE_CLEANING || this == LAUNDRY || this == IRONING || this == DYEING;
   }
 
-  /** Перевіряє чи категорія працює зі шкіряними виробами */
+  /** Перевіряє чи категорія працює зі шкіряними виробами. */
   public boolean isLeatherCategory() {
     return this == LEATHER_CLEANING || this == SHEEPSKIN;
   }
 
-  /** Перевіряє чи категорія працює з хутром */
+  /** Перевіряє чи категорія працює з хутром. */
   public boolean isFurCategory() {
     return this == FUR || this == SHEEPSKIN;
   }
 
-  /** Перевіряє чи потребує спеціальних умов зберігання */
+  /** Перевіряє чи потребує спеціальних умов зберігання. */
   public boolean requiresSpecialStorage() {
     return this == FUR || this == LEATHER_CLEANING || this == SHEEPSKIN;
   }
 
-  /** Перевіряє чи дозволені текстильні модифікатори */
+  /** Перевіряє чи дозволені текстильні модифікатори. */
   public boolean allowsTextileModifiers() {
     return isTextileCategory();
   }
 
-  /** Перевіряє чи дозволені шкіряні модифікатори */
+  /** Перевіряє чи дозволені шкіряні модифікатори. */
   public boolean allowsLeatherModifiers() {
     return isLeatherCategory();
   }
 
-  /** Перевіряє чи потребує вологі процедури */
+  /** Перевіряє чи потребує вологі процедури. */
   public boolean requiresWetProcess() {
     return this == TEXTILE_CLEANING || this == LAUNDRY || this == LEATHER_CLEANING;
   }
 
-  /** Перевіряє чи дозволена термінова обробка */
+  /** Перевіряє чи дозволена термінова обробка. */
   public boolean allowsUrgentProcessing() {
     return this != FUR && this != DYEING; // Хутро та фарбування не терпить поспіху
   }
 
-  /** Отримує категорії що потребують додаткового часу */
+  /** Отримує категорії що потребують додаткового часу. */
   public static Set<ServiceCategory> getCategoriesRequiringExtraTime() {
     return Set.of(FUR, DYEING, SHEEPSKIN);
   }
 
-  /** Отримує категорії що працюють з натуральними матеріалами */
+  /** Отримує категорії що працюють з натуральними матеріалами. */
   public static Set<ServiceCategory> getNaturalMaterialCategories() {
     return Set.of(LEATHER_CLEANING, SHEEPSKIN, FUR);
   }
 
-  /** Перевіряє сумісність категорії з типом матеріалу */
+  /** Перевіряє сумісність категорії з типом матеріалу. */
   public boolean isCompatibleWithMaterial(String material) {
     if (material == null || material.trim().isEmpty()) {
       return true; // За замовчуванням сумісний
@@ -96,7 +96,7 @@ public enum ServiceCategory {
     };
   }
 
-  /** Отримує рекомендований час обробки в днях */
+  /** Отримує рекомендований час обробки в днях. */
   public int getRecommendedProcessingDays() {
     return switch (this) {
       case IRONING -> 1;

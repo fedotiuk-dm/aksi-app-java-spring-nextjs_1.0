@@ -15,7 +15,7 @@ import com.aksi.domain.item.service.ItemPhotoService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP контролер для управління фотографіями предметів */
+/** HTTP контролер для управління фотографіями предметів. */
 @Controller
 @RequiredArgsConstructor
 public class ItemPhotosApiController implements ItemPhotosApi {

@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Сервіс для роботи з геолокацією та пошуком філій Відповідальність: географічний пошук, відстані,
- * швидкий пошук
+ * швидкий пошук.
  */
 @Slf4j
 @Service
@@ -30,7 +30,7 @@ public class BranchLocationService {
 
   // API методи (для контролерів) - працюють з DTO
 
-  /** Швидкий пошук філій за текстом */
+  /** Швидкий пошук філій за текстом. */
   @Transactional(readOnly = true)
   public List<BranchSummaryResponse> quickSearch(String query, int limit) {
     log.debug("Quick search branches: '{}', limit: {}", query, limit);
@@ -39,7 +39,7 @@ public class BranchLocationService {
     return branchMapper.toBranchSummaryResponseList(entities);
   }
 
-  /** Знайти найближчі філії за координатами */
+  /** Знайти найближчі філії за координатами. */
   @Transactional(readOnly = true)
   public List<BranchWithDistanceResponse> findNearbyBranches(
       double latitude, double longitude, double radiusKm, int limit) {
@@ -66,7 +66,7 @@ public class BranchLocationService {
         .toList();
   }
 
-  /** Знайти філії в конкретному місті */
+  /** Знайти філії в конкретному місті. */
   @Transactional(readOnly = true)
   public List<BranchSummaryResponse> findBranchesByCity(String city) {
     log.debug("Finding branches in city: {}", city);
@@ -75,7 +75,7 @@ public class BranchLocationService {
     return branchMapper.toBranchSummaryResponseList(entities);
   }
 
-  /** Отримати всі міста з філіями */
+  /** Отримати всі міста з філіями. */
   @Transactional(readOnly = true)
   public List<String> getAllCities() {
     log.debug("Getting all cities with branches");
@@ -83,7 +83,7 @@ public class BranchLocationService {
     return branchRepository.findAllCities();
   }
 
-  /** Розрахувати відстань між двома точками */
+  /** Розрахувати відстань між двома точками. */
   public double calculateDistanceBetweenBranches(UUID branch1Id, UUID branch2Id) {
     log.debug("Calculating distance between branches: {} and {}", branch1Id, branch2Id);
 
@@ -101,7 +101,7 @@ public class BranchLocationService {
         branch2.getCoordinates().getLatitude(), branch2.getCoordinates().getLongitude());
   }
 
-  /** Знайти найближчі філії (для API контролера) */
+  /** Знайти найближчі філії (для API контролера). */
   @Transactional(readOnly = true)
   public List<BranchWithDistanceResponse> getNearbyBranches(
       java.math.BigDecimal latitude,
@@ -125,7 +125,7 @@ public class BranchLocationService {
 
   // Entity методи (для внутрішньої логіки)
 
-  /** Швидкий пошук філій (Entity рівень) */
+  /** Швидкий пошук філій (Entity рівень). */
   @Transactional(readOnly = true)
   public List<BranchEntity> quickSearchBranches(String query, int limit) {
     if (query == null || query.trim().isEmpty()) {
@@ -139,7 +139,7 @@ public class BranchLocationService {
         .toList();
   }
 
-  /** Знайти найближчі філії (Entity рівень) */
+  /** Знайти найближчі філії (Entity рівень). */
   @Transactional(readOnly = true)
   public List<BranchEntity> findNearby(
       double latitude, double longitude, double radiusKm, int limit) {
@@ -161,7 +161,7 @@ public class BranchLocationService {
         .toList();
   }
 
-  /** Розрахувати відстань між координатами за формулою Гаверсіна */
+  /** Розрахувати відстань між координатами за формулою Гаверсіна. */
   public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     if ((lat1 == lat2) && (lon1 == lon2)) {
       return 0;
@@ -184,7 +184,7 @@ public class BranchLocationService {
     return earthRadius * c;
   }
 
-  /** Знайти найближчу філію до координат */
+  /** Знайти найближчу філію до координат. */
   @Transactional(readOnly = true)
   public BranchEntity findNearestBranch(double latitude, double longitude) {
     log.debug("Finding nearest branch to ({}, {})", latitude, longitude);
@@ -212,7 +212,7 @@ public class BranchLocationService {
 
   // Helper методи
 
-  /** Перевірити чи відповідає філія пошуковому запиту */
+  /** Перевірити чи відповідає філія пошуковому запиту. */
   private boolean matchesQuery(BranchEntity branch, String query) {
     String lowerQuery = query.toLowerCase().trim();
 

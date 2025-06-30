@@ -2,7 +2,7 @@ package com.aksi.domain.document.exception;
 
 import java.util.UUID;
 
-/** Exception що викидається коли квитанція не знайдена */
+/** Exception що викидається коли квитанція не знайдена. */
 public class ReceiptNotFoundException extends RuntimeException {
 
   public ReceiptNotFoundException(String message) {

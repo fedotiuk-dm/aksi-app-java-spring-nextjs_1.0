@@ -17,7 +17,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/** Сутність для зберігання refresh токенів Для безпечного керування сесіями користувачів */
+/** Сутність для зберігання refresh токенів Для безпечного керування сесіями користувачів. */
 @Entity
 @Table(
     name = "refresh_tokens",
@@ -62,33 +62,33 @@ public class RefreshTokenEntity extends BaseEntity {
 
   // Business Methods
 
-  /** Перевірка чи токен ще дійсний */
+  /** Перевірка чи токен ще дійсний. */
   public boolean isValid() {
     return Boolean.TRUE.equals(isActive) && expiresAt.isAfter(LocalDateTime.now());
   }
 
-  /** Перевірка чи токен закінчився */
+  /** Перевірка чи токен закінчився. */
   public boolean isExpired() {
     return expiresAt.isBefore(LocalDateTime.now());
   }
 
-  /** Відзначення використання токену */
+  /** Відзначення використання токену. */
   public void markAsUsed() {
     this.lastUsedAt = LocalDateTime.now();
   }
 
-  /** Інвалідація токену */
+  /** Інвалідація токену. */
   public void invalidate() {
     this.isActive = false;
   }
 
-  /** Продовження терміну дії токену */
+  /** Продовження терміну дії токену. */
   public void extendExpiration(int daysToAdd) {
     this.expiresAt = LocalDateTime.now().plusDays(daysToAdd);
     this.lastUsedAt = LocalDateTime.now();
   }
 
-  /** Оновлення інформації про пристрій */
+  /** Оновлення інформації про пристрій. */
   public void updateDeviceInfo(String deviceInfo, String ipAddress) {
     this.deviceInfo = deviceInfo;
     this.ipAddress = ipAddress;

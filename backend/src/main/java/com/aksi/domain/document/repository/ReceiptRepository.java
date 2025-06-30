@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import com.aksi.domain.document.entity.ReceiptEntity;
 
-/** Repository для роботи з квитанціями з JPA Specification підтримкою */
+/** Repository для роботи з квитанціями з JPA Specification підтримкою. */
 @Repository
 public interface ReceiptRepository
     extends JpaRepository<ReceiptEntity, Long>, JpaSpecificationExecutor<ReceiptEntity> {

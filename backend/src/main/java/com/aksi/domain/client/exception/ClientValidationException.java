@@ -1,6 +1,6 @@
 package com.aksi.domain.client.exception;
 
-/** Виняток, що виникає при порушенні бізнес-правил валідації клієнта */
+/** Виняток, що виникає при порушенні бізнес-правил валідації клієнта. */
 public class ClientValidationException extends RuntimeException {
 
   public ClientValidationException(String message) {

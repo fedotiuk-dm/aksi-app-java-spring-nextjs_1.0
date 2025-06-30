@@ -11,7 +11,7 @@ import com.aksi.domain.branch.enums.BranchStatus;
 /** JPA Specifications для композиційних запитів до HolidayEntity. */
 public class HolidaySpecification {
 
-  /** Святкові дні за конкретною датою */
+  /** Святкові дні за конкретною датою. */
   public static Specification<HolidayEntity> onDate(LocalDate date) {
     return (root, query, criteriaBuilder) -> {
       if (date == null) {
@@ -21,7 +21,7 @@ public class HolidaySpecification {
     };
   }
 
-  /** Святкові дні в діапазоні дат */
+  /** Святкові дні в діапазоні дат. */
   public static Specification<HolidayEntity> betweenDates(LocalDate startDate, LocalDate endDate) {
     return (root, query, criteriaBuilder) -> {
       if (startDate == null && endDate == null) {
@@ -38,7 +38,7 @@ public class HolidaySpecification {
     };
   }
 
-  /** Святкові дні після певної дати */
+  /** Святкові дні після певної дати. */
   public static Specification<HolidayEntity> afterDate(LocalDate date) {
     return (root, query, criteriaBuilder) -> {
       if (date == null) {
@@ -48,7 +48,7 @@ public class HolidaySpecification {
     };
   }
 
-  /** Святкові дні до певної дати */
+  /** Святкові дні до певної дати. */
   public static Specification<HolidayEntity> beforeDate(LocalDate date) {
     return (root, query, criteriaBuilder) -> {
       if (date == null) {
@@ -58,22 +58,22 @@ public class HolidaySpecification {
     };
   }
 
-  /** Майбутні святкові дні */
+  /** Майбутні святкові дні. */
   public static Specification<HolidayEntity> upcoming() {
     return afterDate(LocalDate.now());
   }
 
-  /** Минулі святкові дні */
+  /** Минулі святкові дні. */
   public static Specification<HolidayEntity> past() {
     return beforeDate(LocalDate.now());
   }
 
-  /** Сьогоднішні святкові дні */
+  /** Сьогоднішні святкові дні. */
   public static Specification<HolidayEntity> today() {
     return onDate(LocalDate.now());
   }
 
-  /** Святкові дні за розкладом */
+  /** Святкові дні за розкладом. */
   public static Specification<HolidayEntity> forSchedule(UUID scheduleId) {
     return (root, query, criteriaBuilder) -> {
       if (scheduleId == null) {
@@ -83,7 +83,7 @@ public class HolidaySpecification {
     };
   }
 
-  /** Святкові дні з назвою */
+  /** Святкові дні з назвою. */
   public static Specification<HolidayEntity> hasName(String name) {
     return (root, query, criteriaBuilder) -> {
       if (name == null || name.trim().isEmpty()) {
@@ -94,28 +94,28 @@ public class HolidaySpecification {
     };
   }
 
-  /** Щорічні святкові дні */
+  /** Щорічні святкові дні. */
   public static Specification<HolidayEntity> isRecurring() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.isTrue(root.get("isRecurring"));
     };
   }
 
-  /** Одноразові святкові дні */
+  /** Одноразові святкові дні. */
   public static Specification<HolidayEntity> isOneTime() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.isFalse(root.get("isRecurring"));
     };
   }
 
-  /** Святкові дні з описом */
+  /** Святкові дні з описом. */
   public static Specification<HolidayEntity> hasDescription() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.isNotNull(root.get("description"));
     };
   }
 
-  /** Пошук у описі */
+  /** Пошук у описі. */
   public static Specification<HolidayEntity> descriptionContains(String text) {
     return (root, query, criteriaBuilder) -> {
       if (text == null || text.trim().isEmpty()) {
@@ -126,7 +126,7 @@ public class HolidaySpecification {
     };
   }
 
-  /** Святкові дні для активних філій */
+  /** Святкові дні для активних філій. */
   public static Specification<HolidayEntity> forActiveBranches() {
     return (root, query, criteriaBuilder) -> {
       return criteriaBuilder.equal(
@@ -134,7 +134,7 @@ public class HolidaySpecification {
     };
   }
 
-  /** Святкові дні філії за ID */
+  /** Святкові дні філії за ID. */
   public static Specification<HolidayEntity> forBranch(UUID branchId) {
     return (root, query, criteriaBuilder) -> {
       if (branchId == null) {
@@ -144,28 +144,28 @@ public class HolidaySpecification {
     };
   }
 
-  /** Найближчі святкові дні (в наступні N днів) */
+  /** Найближчі святкові дні (в наступні N днів). */
   public static Specification<HolidayEntity> upcomingInDays(int days) {
     LocalDate startDate = LocalDate.now();
     LocalDate endDate = startDate.plusDays(days);
     return betweenDates(startDate, endDate);
   }
 
-  /** Святкові дні в поточному році */
+  /** Святкові дні в поточному році. */
   public static Specification<HolidayEntity> thisYear() {
     LocalDate startOfYear = LocalDate.of(LocalDate.now().getYear(), 1, 1);
     LocalDate endOfYear = LocalDate.of(LocalDate.now().getYear(), 12, 31);
     return betweenDates(startOfYear, endOfYear);
   }
 
-  /** Святкові дні в певному році */
+  /** Святкові дні в певному році. */
   public static Specification<HolidayEntity> inYear(int year) {
     LocalDate startOfYear = LocalDate.of(year, 1, 1);
     LocalDate endOfYear = LocalDate.of(year, 12, 31);
     return betweenDates(startOfYear, endOfYear);
   }
 
-  /** Комплексний пошук святкових днів */
+  /** Комплексний пошук святкових днів. */
   public static Specification<HolidayEntity> searchHolidays(
       String name, LocalDate startDate, LocalDate endDate, Boolean isRecurring, UUID branchId) {
     Specification<HolidayEntity> spec =
@@ -184,7 +184,7 @@ public class HolidaySpecification {
     return spec;
   }
 
-  /** Актуальні щорічні святкові дні */
+  /** Актуальні щорічні святкові дні. */
   public static Specification<HolidayEntity> activeRecurringHolidays() {
     return Specification.where(isRecurring()).and(forActiveBranches());
   }

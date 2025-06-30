@@ -28,7 +28,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/** Entity для категорій послуг */
+/** Entity для категорій послуг. */
 @Entity
 @Table(
     name = "service_categories",
@@ -98,76 +98,76 @@ public class ServiceCategoryEntity extends BaseEntity {
 
   // ===== BUSINESS МЕТОДИ =====
 
-  /** Перевірити, чи є категорія активною */
+  /** Перевірити, чи є категорія активною. */
   public boolean isActiveCategory() {
     return Boolean.TRUE.equals(isActive);
   }
 
-  /** Перевірити, чи є категорія батьківською */
+  /** Перевірити, чи є категорія батьківською. */
   public boolean isParentCategory() {
     return parentId == null;
   }
 
-  /** Перевірити, чи є категорія дочірньою */
+  /** Перевірити, чи є категорія дочірньою. */
   public boolean isChildCategory() {
     return parentId != null;
   }
 
-  /** Отримати кількість активних предметів */
+  /** Отримати кількість активних предметів. */
   public long getActiveItemsCount() {
     return items.stream().filter(item -> Boolean.TRUE.equals(item.getIsActive())).count();
   }
 
-  /** Перевірити, чи підтримує категорія матеріал */
+  /** Перевірити, чи підтримує категорія матеріал. */
   public boolean supportsMaterial(String materialType) {
     return availableMaterials.contains(materialType);
   }
 
-  /** Перевірити, чи підтримує категорія модифікатор */
+  /** Перевірити, чи підтримує категорія модифікатор. */
   public boolean supportsModifier(UUID modifierId) {
     return availableModifiers.contains(modifierId);
   }
 
-  /** Додати підтримуваний матеріал */
+  /** Додати підтримуваний матеріал. */
   public void addSupportedMaterial(String materialType) {
     if (!availableMaterials.contains(materialType)) {
       availableMaterials.add(materialType);
     }
   }
 
-  /** Видалити підтримуваний матеріал */
+  /** Видалити підтримуваний матеріал. */
   public void removeSupportedMaterial(String materialType) {
     availableMaterials.remove(materialType);
   }
 
-  /** Додати підтримуваний модифікатор */
+  /** Додати підтримуваний модифікатор. */
   public void addSupportedModifier(UUID modifierId) {
     if (!availableModifiers.contains(modifierId)) {
       availableModifiers.add(modifierId);
     }
   }
 
-  /** Видалити підтримуваний модифікатор */
+  /** Видалити підтримуваний модифікатор. */
   public void removeSupportedModifier(UUID modifierId) {
     availableModifiers.remove(modifierId);
   }
 
-  /** Активувати категорію */
+  /** Активувати категорію. */
   public void activate() {
     this.isActive = true;
   }
 
-  /** Деактивувати категорію */
+  /** Деактивувати категорію. */
   public void deactivate() {
     this.isActive = false;
   }
 
-  /** Перевірити, чи можна видалити категорію */
+  /** Перевірити, чи можна видалити категорію. */
   public boolean canBeDeleted() {
     return !isActiveCategory() && getActiveItemsCount() == 0;
   }
 
-  /** Отримати стандартний термін виконання з урахуванням складності */
+  /** Отримати стандартний термін виконання з урахуванням складності. */
   public int getEffectiveStandardDays() {
     if (isParentCategory()) {
       return standardDays;

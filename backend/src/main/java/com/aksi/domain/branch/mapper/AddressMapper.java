@@ -14,7 +14,7 @@ import com.aksi.shared.mapper.BaseMapperConfig;
 
 /**
  * Mapper для Address ↔ BranchEntity адресних полів Відповідальність: конвертація між розширеними
- * Entity полями та спрощеними API полями
+ * Entity полями та спрощеними API полями.
  */
 @Mapper(
     componentModel = "spring",
@@ -24,7 +24,7 @@ public interface AddressMapper {
 
   // DTO → Entity mappings
 
-  /** CreateAddressRequest → BranchEntity (тільки адресні поля) */
+  /** CreateAddressRequest → BranchEntity (тільки адресні поля). */
   @Mapping(target = "street", source = "street", qualifiedByName = "parseStreetFromAddress")
   @Mapping(
       target = "buildingNumber",
@@ -34,7 +34,7 @@ public interface AddressMapper {
   @Mapping(target = "district", ignore = true) // немає в API
   BranchEntity toEntityFields(CreateAddressRequest request);
 
-  /** UpdateAddressRequest → BranchEntity (тільки адресні поля) */
+  /** UpdateAddressRequest → BranchEntity (тільки адресні поля). */
   @Mapping(target = "street", source = "street", qualifiedByName = "parseStreetFromAddress")
   @Mapping(
       target = "buildingNumber",
@@ -44,7 +44,7 @@ public interface AddressMapper {
   @Mapping(target = "district", ignore = true)
   BranchEntity toEntityFieldsForUpdate(UpdateAddressRequest request);
 
-  /** Address → BranchEntity (тільки адресні поля) */
+  /** Address → BranchEntity (тільки адресні поля). */
   @Mapping(target = "street", source = "street", qualifiedByName = "parseStreetFromAddress")
   @Mapping(
       target = "buildingNumber",
@@ -56,11 +56,11 @@ public interface AddressMapper {
 
   // Entity → DTO mappings
 
-  /** BranchEntity → AddressResponse */
+  /** BranchEntity → AddressResponse. */
   @Mapping(target = "street", source = ".", qualifiedByName = "buildFullStreet")
   AddressResponse toAddressResponse(BranchEntity entity);
 
-  /** BranchEntity → Address */
+  /** BranchEntity → Address. */
   @Mapping(target = "street", source = ".", qualifiedByName = "buildFullStreet")
   Address toAddress(BranchEntity entity);
 
@@ -87,7 +87,7 @@ public interface AddressMapper {
     return fullAddress.trim();
   }
 
-  /** Парсить номер будинку з повної адреси Приклад: "вул. Хрещатик, 1" → "1" */
+  /** Парсить номер будинку з повної адреси Приклад: "вул. Хрещатик, 1" → "1". */
   @Named("parseBuildingFromAddress")
   default String parseBuildingFromAddress(String fullAddress) {
     if (fullAddress == null || fullAddress.trim().isEmpty()) {

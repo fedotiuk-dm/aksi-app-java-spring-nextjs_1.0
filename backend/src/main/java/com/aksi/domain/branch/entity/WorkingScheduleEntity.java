@@ -45,7 +45,7 @@ public class WorkingScheduleEntity extends BaseEntity {
 
   /**
    * UUID для API сумісності (зовнішній ідентифікатор) Внутрішньо використовуємо Long id з
-   * BaseEntity
+   * BaseEntity.
    */
   @Column(name = "uuid", nullable = false, unique = true, updatable = false)
   @Builder.Default
@@ -69,7 +69,7 @@ public class WorkingScheduleEntity extends BaseEntity {
 
   // Business methods
 
-  /** Перевіряє чи філія працює в заданий час */
+  /** Перевіряє чи філія працює в заданий час. */
   public boolean isOpenAt(LocalDate date, LocalTime time) {
     // Перевіряємо чи це святковий день
     if (isHoliday(date)) {
@@ -85,12 +85,12 @@ public class WorkingScheduleEntity extends BaseEntity {
     return workingDay.isOpenAt(time);
   }
 
-  /** Перевіряє чи заданий день є святковим */
+  /** Перевіряє чи заданий день є святковим. */
   public boolean isHoliday(LocalDate date) {
     return holidays.stream().anyMatch(holiday -> holiday.isHolidayOn(date));
   }
 
-  /** Знаходить робочий день для заданого дня тижня */
+  /** Знаходить робочий день для заданого дня тижня. */
   public WorkingDayEntity getWorkingDayFor(java.time.DayOfWeek dayOfWeek) {
     return workingDays.stream()
         .filter(day -> day.getDayOfWeek().name().equals(dayOfWeek.name()))
@@ -98,7 +98,7 @@ public class WorkingScheduleEntity extends BaseEntity {
         .orElse(null);
   }
 
-  /** Отримує наступний робочий день після заданої дати */
+  /** Отримує наступний робочий день після заданої дати. */
   public LocalDate getNextWorkingDate(LocalDate fromDate) {
     LocalDate checkDate = fromDate.plusDays(1);
     int maxDaysToCheck = 14; // Перевіряємо максимум 2 тижні
@@ -116,18 +116,18 @@ public class WorkingScheduleEntity extends BaseEntity {
     return null; // Не знайшли робочий день впродовж 2 тижнів
   }
 
-  /** Отримує часовий пояс як ZoneId */
+  /** Отримує часовий пояс як ZoneId. */
   public ZoneId getZoneId() {
     return ZoneId.of(timezone);
   }
 
-  /** Додає робочий день */
+  /** Додає робочий день. */
   public void addWorkingDay(WorkingDayEntity workingDay) {
     workingDay.setWorkingSchedule(this);
     this.workingDays.add(workingDay);
   }
 
-  /** Додає святковий день */
+  /** Додає святковий день. */
   public void addHoliday(HolidayEntity holiday) {
     holiday.setWorkingSchedule(this);
     this.holidays.add(holiday);

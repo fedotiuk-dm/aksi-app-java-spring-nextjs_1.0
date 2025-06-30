@@ -41,47 +41,47 @@ public enum DefectType {
 
   // ===== BUSINESS МЕТОДИ =====
 
-  /** Чи можна відремонтувати дефект */
+  /** Чи можна відремонтувати дефект. */
   public boolean isRepairable() {
     return isRepairable;
   }
 
-  /** Чи впливає на гарантію */
+  /** Чи впливає на гарантію. */
   public boolean affectsWarranty() {
     return affectsWarranty;
   }
 
-  /** Отримати коефіцієнт ризику */
+  /** Отримати коефіцієнт ризику. */
   public double getRiskMultiplier() {
     return riskMultiplier;
   }
 
-  /** Чи є дефект критичним */
+  /** Чи є дефект критичним. */
   public boolean isCritical() {
     return this == TORN || this == COLOR_CHANGE_RISK || this == DEFORMATION_RISK;
   }
 
-  /** Чи потребує спеціального повідомлення клієнту */
+  /** Чи потребує спеціального повідомлення клієнту. */
   public boolean requiresClientNotification() {
     return affectsWarranty || isCritical();
   }
 
-  /** Чи можна обробляти в експрес-режимі */
+  /** Чи можна обробляти в експрес-режимі. */
   public boolean isExpressProcessingCompatible() {
     return !isCritical() && !affectsWarranty;
   }
 
-  /** Чи потребує додаткової документації */
+  /** Чи потребує додаткової документації. */
   public boolean needsDocumentation() {
     return this == NO_WARRANTY || this == COLOR_CHANGE_RISK || this == DEFORMATION_RISK;
   }
 
-  /** Чи потребує фотографування */
+  /** Чи потребує фотографування. */
   public boolean requiresPhotos() {
     return this == WEAR || this == TORN || this == DAMAGED_HARDWARE;
   }
 
-  /** Отримати рекомендоване попередження для клієнта */
+  /** Отримати рекомендоване попередження для клієнта. */
   public String getClientWarning() {
     return switch (this) {
       case COLOR_CHANGE_RISK -> "Можлива зміна кольору виробу під час обробки";
@@ -92,7 +92,7 @@ public enum DefectType {
     };
   }
 
-  /** Отримати рівень пріоритету (1-5, де 5 найвищий) */
+  /** Отримати рівень пріоритету (1-5, де 5 найвищий). */
   public int getPriorityLevel() {
     return switch (this) {
       case NO_WARRANTY -> 5;

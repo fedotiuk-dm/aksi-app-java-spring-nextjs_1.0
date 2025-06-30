@@ -1,6 +1,6 @@
 package com.aksi.domain.client.exception;
 
-/** Виняток, що виникає при спробі створити клієнта який вже існує */
+/** Виняток, що виникає при спробі створити клієнта який вже існує. */
 public class ClientAlreadyExistsException extends RuntimeException {
 
   public ClientAlreadyExistsException(String message) {

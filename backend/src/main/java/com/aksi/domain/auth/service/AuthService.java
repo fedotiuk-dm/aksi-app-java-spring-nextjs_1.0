@@ -28,7 +28,7 @@ import com.aksi.domain.auth.validation.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** Service для бізнес-логіки автентифікації та авторизації Дотримується принципів DDD SOLID */
+/** Service для бізнес-логіки автентифікації та авторизації Дотримується принципів DDD SOLID. */
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -44,7 +44,7 @@ public class AuthService {
 
   // API методи (для контролерів) - працюють з DTO
 
-  /** Автентифікація користувача API метод для LoginRequest → AuthResponse */
+  /** Автентифікація користувача API метод для LoginRequest → AuthResponse. */
   @Transactional
   public AuthResponse authenticateUser(LoginRequest loginRequest) {
     log.debug("Спроба автентифікації користувача: {}", loginRequest.getUsername());
@@ -82,7 +82,7 @@ public class AuthService {
         accessToken, refreshTokenString, jwtTokenService.getExpirationInSeconds(), user);
   }
 
-  /** Оновлення access токену API метод для RefreshTokenRequest → AuthResponse */
+  /** Оновлення access токену API метод для RefreshTokenRequest → AuthResponse. */
   @Transactional
   public AuthResponse refreshAccessToken(RefreshTokenRequest refreshTokenRequest) {
     log.debug("Спроба оновлення access токену");
@@ -113,7 +113,7 @@ public class AuthService {
         newAccessToken, newRefreshToken, jwtTokenService.getExpirationInSeconds(), user);
   }
 
-  /** Вихід з системи API метод для logout → LogoutResponse */
+  /** Вихід з системи API метод для logout → LogoutResponse. */
   @Transactional
   public LogoutResponse logoutUser(String refreshToken) {
     log.debug("Спроба виходу з системи");
@@ -138,7 +138,7 @@ public class AuthService {
     return response;
   }
 
-  /** Отримання поточного користувача за ID API метод для getUserInfo → UserResponse */
+  /** Отримання поточного користувача за ID API метод для getUserInfo → UserResponse. */
   public UserResponse getCurrentUser(Long userId) {
     log.debug("Отримання інформації про користувача ID: {}", userId);
 
@@ -147,7 +147,7 @@ public class AuthService {
     return authMapper.toUserResponse(user);
   }
 
-  /** Отримання поточного користувача з JWT токена API метод для JWT Security Filter */
+  /** Отримання поточного користувача з JWT токена API метод для JWT Security Filter. */
   public UserResponse getCurrentUserFromToken(String token) {
     log.debug("Отримання інформації про користувача з токена");
 
@@ -164,12 +164,12 @@ public class AuthService {
 
   // Entity методи (для внутрішньої логіки)
 
-  /** Пошук користувача за ID */
+  /** Пошук користувача за ID. */
   public Optional<UserEntity> findUserById(Long userId) {
     return userRepository.findById(userId);
   }
 
-  /** Пошук користувача за username або email */
+  /** Пошук користувача за username або email. */
   public Optional<UserEntity> findUserByUsernameOrEmail(String identifier) {
     // Перевірка чи це email
     if (identifier.contains("@")) {
@@ -181,7 +181,7 @@ public class AuthService {
     }
   }
 
-  /** Створення нового користувача */
+  /** Створення нового користувача. */
   @Transactional
   public UserEntity createUser(
       String username,

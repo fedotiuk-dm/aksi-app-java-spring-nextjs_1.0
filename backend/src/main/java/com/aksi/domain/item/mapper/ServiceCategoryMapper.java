@@ -12,7 +12,7 @@ import com.aksi.api.item.dto.ServiceCategoryResponse;
 import com.aksi.api.item.dto.UpdateServiceCategoryRequest;
 import com.aksi.domain.item.entity.ServiceCategoryEntity;
 
-/** MapStruct mapper для ServiceCategory - Entity ↔ DTO конвертація */
+/** MapStruct mapper для ServiceCategory - Entity ↔ DTO конвертація. */
 @Mapper(componentModel = "spring")
 public interface ServiceCategoryMapper {
 

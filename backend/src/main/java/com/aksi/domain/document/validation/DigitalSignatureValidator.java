@@ -12,14 +12,14 @@ import com.aksi.domain.document.repository.DigitalSignatureRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/** Validator для business rules цифрових підписів */
+/** Validator для business rules цифрових підписів. */
 @Component
 @RequiredArgsConstructor
 public class DigitalSignatureValidator {
 
   private final DigitalSignatureRepository signatureRepository;
 
-  /** Валідація для створення підпису */
+  /** Валідація для створення підпису. */
   public void validateForCreate(DigitalSignatureEntity signature) {
     validateType(signature.getType());
     validateSignerInfo(signature);
@@ -27,7 +27,7 @@ public class DigitalSignatureValidator {
     validatePhysicalPresenceRequirement(signature);
   }
 
-  /** Валідація для оновлення підпису */
+  /** Валідація для оновлення підпису. */
   public void validateForUpdate(DigitalSignatureEntity existing, DigitalSignatureEntity updated) {
     validateCanBeModified(existing);
 
@@ -44,14 +44,14 @@ public class DigitalSignatureValidator {
     validateSignerInfo(updated);
   }
 
-  /** Валідація типу підпису */
+  /** Валідація типу підпису. */
   private void validateType(SignatureType type) {
     if (type == null) {
       throw new SignatureValidationException("Тип підпису є обов'язковим");
     }
   }
 
-  /** Валідація інформації про підписувача */
+  /** Валідація інформації про підписувача. */
   private void validateSignerInfo(DigitalSignatureEntity signature) {
     if (signature.getSignerName() == null || signature.getSignerName().trim().isEmpty()) {
       throw SignatureValidationException.missingSignerInfo();
@@ -62,7 +62,7 @@ public class DigitalSignatureValidator {
     }
   }
 
-  /** Валідація дублікатів підписів */
+  /** Валідація дублікатів підписів. */
   private void validateDuplicateSignature(DigitalSignatureEntity signature) {
     if (signature.getDocumentId() != null && signature.getType() != null) {
       boolean exists =
@@ -87,7 +87,7 @@ public class DigitalSignatureValidator {
     }
   }
 
-  /** Валідація вимоги фізичної присутності */
+  /** Валідація вимоги фізичної присутності. */
   private void validatePhysicalPresenceRequirement(DigitalSignatureEntity signature) {
     if (signature.getType().requiresPhysicalPresence()) {
       if (signature.getIpAddress() == null || signature.getIpAddress().trim().isEmpty()) {
@@ -97,7 +97,7 @@ public class DigitalSignatureValidator {
     }
   }
 
-  /** Валідація можливості модифікації */
+  /** Валідація можливості модифікації. */
   private void validateCanBeModified(DigitalSignatureEntity signature) {
     if (signature.isSigned()) {
       throw new SignatureValidationException("Підписаний документ не може бути модифікований");
@@ -108,7 +108,7 @@ public class DigitalSignatureValidator {
     }
   }
 
-  /** Валідація зображення підпису */
+  /** Валідація зображення підпису. */
   public void validateSignatureImage(DigitalSignatureEntity signature) {
     if (!signature.getType().canBeStoredAsImage()) {
       throw new SignatureValidationException(
@@ -120,7 +120,7 @@ public class DigitalSignatureValidator {
     }
   }
 
-  /** Валідація можливості підпису документа */
+  /** Валідація можливості підпису документа. */
   public void validateCanSignDocument(
       UUID documentId, SignatureType signatureType, String signerName) {
     // Перевірка існування підпису
@@ -132,7 +132,7 @@ public class DigitalSignatureValidator {
     validateSignerAuthorization(signerName, signatureType);
   }
 
-  /** Валідація можливості підпису квитанції */
+  /** Валідація можливості підпису квитанції. */
   public void validateCanSignReceipt(
       ReceiptEntity receipt, SignatureType signatureType, String signerName) {
     // Перевірка існування підпису
@@ -150,7 +150,7 @@ public class DigitalSignatureValidator {
     }
   }
 
-  /** Валідація авторизації підписувача */
+  /** Валідація авторизації підписувача. */
   private void validateSignerAuthorization(String signerName, SignatureType signatureType) {
     // Базова перевірка - можна розширити бізнес-правилами
     if (signerName == null || signerName.trim().isEmpty()) {
@@ -163,7 +163,7 @@ public class DigitalSignatureValidator {
     }
   }
 
-  /** Валідація прав оператора */
+  /** Валідація прав оператора. */
   private void validateOperatorPermissions(String operatorName) {
     // Тут можна додати перевірку ролей користувача
     // Наразі базова перевірка
@@ -172,7 +172,7 @@ public class DigitalSignatureValidator {
     }
   }
 
-  /** Валідація дійсності підпису */
+  /** Валідація дійсності підпису. */
   public void validateSignatureValidity(DigitalSignatureEntity signature) {
     if (!signature.isValid()) {
       throw SignatureValidationException.invalidSignature("Підпис позначений як недійсний");
@@ -187,7 +187,7 @@ public class DigitalSignatureValidator {
     }
   }
 
-  /** Валідація можливості інвалідації підпису */
+  /** Валідація можливості інвалідації підпису. */
   public void validateCanInvalidate(DigitalSignatureEntity signature, String reason) {
     if (!signature.isValid()) {
       throw new SignatureValidationException("Підпис вже інвалідований");

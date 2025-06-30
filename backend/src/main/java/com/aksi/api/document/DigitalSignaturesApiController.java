@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * HTTP Controller для DigitalSignaturesApi Відповідальність: тільки HTTP делегація до
- * DocumentService
+ * DocumentService.
  */
 @Controller
 @RequiredArgsConstructor

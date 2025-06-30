@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Сервіс для управління генерацією номерів квитанцій Відповідальність: використання API DTO через
- * ReceiptNumberMapper
+ * ReceiptNumberMapper.
  */
 @Slf4j
 @Service
@@ -37,7 +37,7 @@ public class ReceiptNumberService {
 
   // API методи (для контролерів) - працюють з DTO
 
-  /** Генерувати номер квитанції за запитом */
+  /** Генерувати номер квитанції за запитом. */
   public ReceiptNumberResponse generateReceiptNumber(GenerateReceiptNumberRequest request) {
     log.debug("Generating receipt number for request: {}", request.getBranchId());
 
@@ -53,7 +53,7 @@ public class ReceiptNumberService {
     return receiptNumberMapper.toReceiptNumberResponse(branch, receiptNumber);
   }
 
-  /** Валідувати номер квитанції */
+  /** Валідувати номер квитанції. */
   @Transactional(readOnly = true)
   public ReceiptValidationResponse validateReceiptNumber(ValidateReceiptNumberRequest request) {
     log.debug("Validating receipt number: {}", request.getReceiptNumber());
@@ -80,7 +80,7 @@ public class ReceiptNumberService {
         receiptNumber, isValid, errors, branchCode);
   }
 
-  /** Розпарсити номер квитанції на компоненти */
+  /** Розпарсити номер квитанції на компоненти. */
   @Transactional(readOnly = true)
   public ReceiptNumberParseResponse parseReceiptNumber(ParseReceiptNumberRequest request) {
     log.debug("Parsing receipt number: {}", request.getReceiptNumber());
@@ -99,7 +99,7 @@ public class ReceiptNumberService {
         receiptNumber, branchCode, year, sequenceNumber, branch);
   }
 
-  /** Отримати поточний лічільник квитанцій філії */
+  /** Отримати поточний лічільник квитанцій філії. */
   @Transactional(readOnly = true)
   public Long getCurrentCounter(UUID branchId) {
     log.debug("Getting current counter for branch: {}", branchId);
@@ -108,7 +108,7 @@ public class ReceiptNumberService {
     return branch.getReceiptCounter();
   }
 
-  /** Скинути лічільник квитанцій (адміністративна операція) */
+  /** Скинути лічільник квитанцій (адміністративна операція). */
   public void resetCounter(UUID branchId) {
     log.debug("Resetting counter for branch: {}", branchId);
 
@@ -119,7 +119,7 @@ public class ReceiptNumberService {
     log.info("Reset receipt counter for branch: {}", branch.getCode());
   }
 
-  /** Оновити лічільник квитанцій (адміністративна операція) */
+  /** Оновити лічільник квитанцій (адміністративна операція). */
   public void updateCounter(UUID branchId, Long newCounter) {
     log.debug("Updating counter for branch: {} to {}", branchId, newCounter);
 
@@ -129,7 +129,7 @@ public class ReceiptNumberService {
     log.info("Updated receipt counter for branch: {} to {}", branchId, newCounter);
   }
 
-  /** Генерувати кілька номерів квитанцій для пакетної обробки */
+  /** Генерувати кілька номерів квитанцій для пакетної обробки. */
   public List<ReceiptNumberResponse> generateMultipleReceiptNumbers(
       GenerateReceiptNumberRequest request, int count) {
     log.debug("Generating {} receipt numbers for branch: {}", count, request.getBranchId());
@@ -158,7 +158,7 @@ public class ReceiptNumberService {
 
   // Entity методи (для внутрішньої логіки)
 
-  /** Генерувати номер квитанції для Entity (без DTO) */
+  /** Генерувати номер квитанції для Entity (без DTO). */
   @Transactional
   public String generateReceiptNumberForBranch(BranchEntity branch) {
     log.debug("Generating receipt number for branch entity: {}", branch.getCode());
@@ -171,19 +171,19 @@ public class ReceiptNumberService {
     return receiptNumber;
   }
 
-  /** Валідувати формат номера квитанції (Entity метод) */
+  /** Валідувати формат номера квитанції (Entity метод). */
   @Transactional(readOnly = true)
   public boolean validateReceiptNumberFormat(String receiptNumber) {
     return receiptNumberMapper.isValidReceiptNumberFormat(receiptNumber);
   }
 
-  /** Отримати лічільник для Entity */
+  /** Отримати лічільник для Entity. */
   @Transactional(readOnly = true)
   public Long getCounterForBranch(BranchEntity branch) {
     return branch.getReceiptCounter();
   }
 
-  /** Скинути лічільник для Entity */
+  /** Скинути лічільник для Entity. */
   @Transactional
   public void resetCounterForBranch(BranchEntity branch) {
     log.debug("Resetting counter for branch entity: {}", branch.getCode());
@@ -194,7 +194,7 @@ public class ReceiptNumberService {
     log.info("Reset receipt counter for branch: {}", branch.getCode());
   }
 
-  /** Отримати наступний номер квитанції БЕЗ збереження (preview) */
+  /** Отримати наступний номер квитанції БЕЗ збереження (preview). */
   @Transactional(readOnly = true)
   public String previewNextReceiptNumber(UUID branchId) {
     log.debug("Preview next receipt number for branch: {}", branchId);

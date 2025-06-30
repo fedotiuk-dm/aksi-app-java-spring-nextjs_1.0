@@ -36,7 +36,7 @@ public class ServiceCategoryService {
 
   // ========== API МЕТОДИ (для контролерів) - DTO ↔ DTO ==========
 
-  /** Створити нову категорію послуг */
+  /** Створити нову категорію послуг. */
   public ServiceCategoryResponse createServiceCategory(CreateServiceCategoryRequest request) {
     validateUniqueCode(request.getCode());
 
@@ -47,14 +47,14 @@ public class ServiceCategoryService {
     return mapper.toResponse(savedEntity);
   }
 
-  /** Отримати категорію за UUID */
+  /** Отримати категорію за UUID. */
   @Transactional(readOnly = true)
   public ServiceCategoryResponse getServiceCategoryById(UUID uuid) {
     var entity = findByUuid(uuid);
     return mapper.toResponse(entity);
   }
 
-  /** Оновити категорію послуг */
+  /** Оновити категорію послуг. */
   public ServiceCategoryResponse updateServiceCategory(
       UUID uuid, UpdateServiceCategoryRequest request) {
     var entity = findByUuid(uuid);
@@ -64,7 +64,7 @@ public class ServiceCategoryService {
     return mapper.toResponse(savedEntity);
   }
 
-  /** Видалити категорію послуг */
+  /** Видалити категорію послуг. */
   public void deleteServiceCategory(UUID uuid) {
     var entity = findByUuid(uuid);
 
@@ -77,21 +77,21 @@ public class ServiceCategoryService {
     repository.delete(entity);
   }
 
-  /** Отримати список активних категорій */
+  /** Отримати список активних категорій. */
   @Transactional(readOnly = true)
   public List<ServiceCategoryResponse> getActiveServiceCategories() {
     var entities = repository.findByIsActiveTrue();
     return mapper.toResponseList(entities);
   }
 
-  /** Отримати всі категорії з пагінацією */
+  /** Отримати всі категорії з пагінацією. */
   @Transactional(readOnly = true)
   public Page<ServiceCategoryResponse> getServiceCategories(Pageable pageable) {
     var entityPage = repository.findAll(pageable);
     return entityPage.map(mapper::toResponse);
   }
 
-  /** Отримати дочірні категорії */
+  /** Отримати дочірні категорії. */
   @Transactional(readOnly = true)
   public List<ServiceCategoryResponse> getChildCategories(UUID parentUuid) {
     var entities = repository.findByParentId(parentUuid);
@@ -100,14 +100,14 @@ public class ServiceCategoryService {
 
   // ========== HELPER МЕТОДИ ==========
 
-  /** Знайти категорію за UUID (internal helper) */
+  /** Знайти категорію за UUID (internal helper). */
   private ServiceCategoryEntity findByUuid(UUID uuid) {
     return repository
         .findByUuid(uuid)
         .orElseThrow(() -> new ServiceCategoryNotFoundException(uuid));
   }
 
-  /** Валідація унікальності коду */
+  /** Валідація унікальності коду. */
   private void validateUniqueCode(String code) {
     if (repository.existsByCode(code)) {
       throw ServiceCategoryAlreadyExistsException.byCode(code);

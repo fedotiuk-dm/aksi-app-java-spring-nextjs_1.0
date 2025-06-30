@@ -1,6 +1,6 @@
 package com.aksi.domain.auth.exception;
 
-/** Виняток для невірних облікових даних Domain-specific RuntimeException */
+/** Виняток для невірних облікових даних Domain-specific RuntimeException. */
 public class InvalidCredentialsException extends RuntimeException {
 
   public InvalidCredentialsException() {

@@ -1,6 +1,6 @@
 package com.aksi.domain.auth.exception;
 
-/** Виняток коли користувач вже існує Domain-specific RuntimeException */
+/** Виняток коли користувач вже існує Domain-specific RuntimeException. */
 public class UserAlreadyExistsException extends RuntimeException {
 
   public UserAlreadyExistsException(String message) {

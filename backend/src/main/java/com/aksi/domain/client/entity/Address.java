@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** Адреса клієнта Синхронізовано з OpenAPI схемою Address */
+/** Адреса клієнта Синхронізовано з OpenAPI схемою Address. */
 @Embeddable
 @Data
 @Builder
@@ -31,7 +31,7 @@ public class Address {
   @Builder.Default
   private String country = "Україна";
 
-  /** Domain-specific метод для отримання повної адреси */
+  /** Domain-specific метод для отримання повної адреси. */
   public String getFullAddress() {
     StringBuilder fullAddress = new StringBuilder();
 
@@ -70,7 +70,7 @@ public class Address {
     return fullAddress.toString();
   }
 
-  /** Domain-specific метод для перевірки чи адреса повна */
+  /** Domain-specific метод для перевірки чи адреса повна. */
   public boolean isComplete() {
     return street != null && !street.trim().isEmpty() && city != null && !city.trim().isEmpty();
   }

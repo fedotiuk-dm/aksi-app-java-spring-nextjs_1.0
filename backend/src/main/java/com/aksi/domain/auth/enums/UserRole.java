@@ -3,7 +3,7 @@ package com.aksi.domain.auth.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/** Ролі користувачів в системі хімчистки Синхронізовано з OpenAPI enum UserRole */
+/** Ролі користувачів в системі хімчистки Синхронізовано з OpenAPI enum UserRole. */
 @Getter
 @RequiredArgsConstructor
 public enum UserRole {
@@ -16,7 +16,7 @@ public enum UserRole {
   private final String value;
   private final String description;
 
-  /** Конвертація з API значення до domain enum */
+  /** Конвертація з API значення до domain enum. */
   public static UserRole fromApiValue(String value) {
     if (value == null) {
       return null;
@@ -29,22 +29,22 @@ public enum UserRole {
     throw new IllegalArgumentException("Невідома роль користувача: " + value);
   }
 
-  /** Конвертація до API значення */
+  /** Конвертація до API значення. */
   public String toApiValue() {
     return this.value;
   }
 
-  /** Перевірка чи є роль адміністративною */
+  /** Перевірка чи є роль адміністративною. */
   public boolean isAdministrative() {
     return this == ADMIN || this == MANAGER;
   }
 
-  /** Перевірка чи може роль працювати з касою */
+  /** Перевірка чи може роль працювати з касою. */
   public boolean canHandleCash() {
     return this == CASHIER || this == MANAGER || this == ADMIN;
   }
 
-  /** Перевірка чи може роль приймати замовлення */
+  /** Перевірка чи може роль приймати замовлення. */
   public boolean canTakeOrders() {
     return this == OPERATOR || this == EMPLOYEE || this == MANAGER || this == ADMIN;
   }

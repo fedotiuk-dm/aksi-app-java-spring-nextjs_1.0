@@ -13,7 +13,7 @@ import com.aksi.domain.document.service.PdfService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP Controller для PdfGenerationApi Відповідальність: тільки HTTP делегація до PdfService */
+/** HTTP Controller для PdfGenerationApi Відповідальність: тільки HTTP делегація до PdfService. */
 @Controller
 @RequiredArgsConstructor
 public class PdfGenerationApiController implements PdfGenerationApi {

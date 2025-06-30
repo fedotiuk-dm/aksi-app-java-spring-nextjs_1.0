@@ -7,7 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.aksi.domain.document.entity.ReceiptEntity;
 
-/** JPA Specifications для ReceiptEntity - type-safe dynamic queries */
+/** JPA Specifications для ReceiptEntity - type-safe dynamic queries. */
 public class ReceiptSpecification {
 
   // Document relationship specifications

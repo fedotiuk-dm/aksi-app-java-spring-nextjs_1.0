@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class OrderItemValidator {
 
-  /** Валідація складних бізнес-правил при створенні позиції */
+  /** Валідація складних бізнес-правил при створенні позиції. */
   public void validateForCreate(OrderItemEntity item) {
     log.debug("Валідація бізнес-правил для створення позиції: {}", item.getItemName());
 
@@ -35,7 +35,7 @@ public class OrderItemValidator {
     validatePriceBusinessLogic(item);
   }
 
-  /** Валідація складних бізнес-правил при оновленні позиції */
+  /** Валідація складних бізнес-правил при оновленні позиції. */
   public void validateForUpdate(OrderItemEntity existingItem, OrderItemEntity updatedItem) {
     log.debug("Валідація бізнес-правил для оновлення позиції: {}", existingItem.getId());
 
@@ -43,7 +43,7 @@ public class OrderItemValidator {
     validateForCreate(updatedItem);
   }
 
-  /** Валідація додавання позиції до замовлення */
+  /** Валідація додавання позиції до замовлення. */
   public void validateForAddToOrder(OrderEntity order, OrderItemEntity item) {
     validateOrderAcceptsItems(order);
     validateItemOrderCompatibility(order, item);
@@ -53,7 +53,7 @@ public class OrderItemValidator {
 
   // === СКЛАДНІ БІЗНЕС-ПРАВИЛА ===
 
-  /** БІЗНЕС-ПРАВИЛО: Сумісність забруднень з матеріалом та категорією */
+  /** БІЗНЕС-ПРАВИЛО: Сумісність забруднень з матеріалом та категорією. */
   private void validateStainMaterialCompatibility(OrderItemEntity item) {
     if (item.getStains() == null || item.getStains().isEmpty()) {
       return;
@@ -77,7 +77,7 @@ public class OrderItemValidator {
     validateStainCombinations(item.getStains());
   }
 
-  /** БІЗНЕС-ПРАВИЛО: Сумісність дефектів з категорією обслуговування */
+  /** БІЗНЕС-ПРАВИЛО: Сумісність дефектів з категорією обслуговування. */
   private void validateDefectServiceCompatibility(OrderItemEntity item) {
     if (item.getDefects() == null || item.getDefects().isEmpty()) {
       return;
@@ -95,7 +95,7 @@ public class OrderItemValidator {
     validateCriticalDefectConsent(item.getDefects());
   }
 
-  /** БІЗНЕС-ПРАВИЛО: Логіка ціноутворення */
+  /** БІЗНЕС-ПРАВИЛО: Логіка ціноутворення. */
   private void validatePriceBusinessLogic(OrderItemEntity item) {
     // БІЗНЕС-ПРАВИЛО: Фінальна ціна не може бути менше 50% від базової
     BigDecimal minPrice = item.getBasePrice().multiply(BigDecimal.valueOf(0.5));
@@ -114,7 +114,7 @@ public class OrderItemValidator {
     }
   }
 
-  /** БІЗНЕС-ПРАВИЛО: Дозволи на оновлення залежно від стану замовлення */
+  /** БІЗНЕС-ПРАВИЛО: Дозволи на оновлення залежно від стану замовлення. */
   private void validateUpdatePermissions(
       OrderItemEntity existingItem, OrderItemEntity updatedItem) {
     // БІЗНЕС-ПРАВИЛО: Заборона зміни категорії після початку обробки
@@ -128,7 +128,7 @@ public class OrderItemValidator {
     }
   }
 
-  /** БІЗНЕС-ПРАВИЛО: Замовлення може приймати нові предмети */
+  /** БІЗНЕС-ПРАВИЛО: Замовлення може приймати нові предмети. */
   private void validateOrderAcceptsItems(OrderEntity order) {
     // БІЗНЕС-ПРАВИЛО: Не можна додавати предмети до завершених замовлень
     if (order.getStatus().name().contains("COMPLETED")
@@ -138,7 +138,7 @@ public class OrderItemValidator {
     }
   }
 
-  /** БІЗНЕС-ПРАВИЛО: Сумісність предмета з типом замовлення */
+  /** БІЗНЕС-ПРАВИЛО: Сумісність предмета з типом замовлення. */
   private void validateItemOrderCompatibility(OrderEntity order, OrderItemEntity item) {
     // БІЗНЕС-ПРАВИЛО: Термінові замовлення мають обмеження категорій
     if (order.getUrgency() != null && order.getUrgency().name().contains("URGENT")) {
@@ -174,7 +174,7 @@ public class OrderItemValidator {
     return !category.name().contains("BASIC");
   }
 
-  /** БІЗНЕС-ПРАВИЛО: Перевірка згоди клієнта для замовлення з критичними дефектами */
+  /** БІЗНЕС-ПРАВИЛО: Перевірка згоди клієнта для замовлення з критичними дефектами. */
   private void validateCriticalDefectConsentForOrder(OrderEntity order, OrderItemEntity item) {
     boolean itemHasCriticalDefects =
         item.getDefects() != null

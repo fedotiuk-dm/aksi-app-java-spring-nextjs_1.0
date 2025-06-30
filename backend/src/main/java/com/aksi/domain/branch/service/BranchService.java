@@ -24,7 +24,7 @@ import com.aksi.domain.branch.validation.BranchValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** Сервіс для управління філіями Відповідальність: CRUD операції з BranchEntity */
+/** Сервіс для управління філіями Відповідальність: CRUD операції з BranchEntity. */
 @Slf4j
 @Service
 @Transactional
@@ -37,7 +37,7 @@ public class BranchService {
 
   // API методи (для контролерів) - працюють з DTO
 
-  /** Створити нову філію */
+  /** Створити нову філію. */
   public BranchResponse createBranch(CreateBranchRequest request) {
     log.debug("Creating branch from request: {}", request.getName());
 
@@ -50,7 +50,7 @@ public class BranchService {
     return branchMapper.toBranchResponse(savedEntity);
   }
 
-  /** Отримати філію за UUID */
+  /** Отримати філію за UUID. */
   @Transactional(readOnly = true)
   public BranchResponse getBranchById(UUID uuid) {
     log.debug("Getting branch by UUID: {}", uuid);
@@ -59,7 +59,7 @@ public class BranchService {
     return branchMapper.toBranchResponse(entity);
   }
 
-  /** Оновити філію */
+  /** Оновити філію. */
   public BranchResponse updateBranch(UUID uuid, UpdateBranchRequest request) {
     log.debug("Updating branch {} with request: {}", uuid, request.getName());
 
@@ -78,7 +78,7 @@ public class BranchService {
     return branchMapper.toBranchResponse(savedEntity);
   }
 
-  /** Видалити філію */
+  /** Видалити філію. */
   public void deleteBranch(UUID uuid) {
     log.debug("Deleting branch: {}", uuid);
 
@@ -88,7 +88,7 @@ public class BranchService {
     branchRepository.deleteById(uuid);
   }
 
-  /** Отримати всі філії (список) */
+  /** Отримати всі філії (список). */
   @Transactional(readOnly = true)
   public List<BranchResponse> getAllBranches() {
     log.debug("Getting all branches");
@@ -97,7 +97,7 @@ public class BranchService {
     return branchMapper.toBranchResponseList(entities);
   }
 
-  /** Отримати короткий список філій */
+  /** Отримати короткий список філій. */
   @Transactional(readOnly = true)
   public List<BranchSummaryResponse> getBranchesSummary() {
     log.debug("Getting branches summary");
@@ -106,13 +106,13 @@ public class BranchService {
     return branchMapper.toBranchSummaryResponseList(entities);
   }
 
-  /** Перевірити чи існує філія за кодом */
+  /** Перевірити чи існує філія за кодом. */
   @Transactional(readOnly = true)
   public boolean existsByCode(String code) {
     return branchRepository.existsByCode(code);
   }
 
-  /** Активувати філію */
+  /** Активувати філію. */
   public BranchResponse activateBranch(UUID uuid) {
     log.debug("Activating branch: {}", uuid);
 
@@ -123,7 +123,7 @@ public class BranchService {
     return branchMapper.toBranchResponse(savedEntity);
   }
 
-  /** Деактивувати філію */
+  /** Деактивувати філію. */
   public BranchResponse deactivateBranch(UUID uuid) {
     log.debug("Deactivating branch: {}", uuid);
 
@@ -134,7 +134,7 @@ public class BranchService {
     return branchMapper.toBranchResponse(savedEntity);
   }
 
-  /** Отримати філії з фільтрами */
+  /** Отримати філії з фільтрами. */
   @Transactional(readOnly = true)
   public List<BranchResponse> getBranches(Boolean active, String city, Boolean includeInactive) {
     log.debug(
@@ -164,7 +164,7 @@ public class BranchService {
     return branchMapper.toBranchResponseList(filtered);
   }
 
-  /** Отримати філію за кодом */
+  /** Отримати філію за кодом. */
   @Transactional(readOnly = true)
   public BranchResponse getBranchByCode(String code) {
     log.debug("Getting branch by code: {}", code);
@@ -174,7 +174,7 @@ public class BranchService {
     return branchMapper.toBranchResponse(entity);
   }
 
-  /** Отримати статистику філії */
+  /** Отримати статистику філії. */
   @Transactional(readOnly = true)
   public BranchStatisticsResponse getBranchStatistics(
       UUID branchId, LocalDate startDate, LocalDate endDate) {
@@ -188,7 +188,7 @@ public class BranchService {
     return branchMapper.toBranchStatisticsResponse(branch, startDate, endDate);
   }
 
-  /** Порівняти статистику філій */
+  /** Порівняти статистику філій. */
   @Transactional(readOnly = true)
   public List<BranchComparisonResponse> compareBranchStatistics(
       LocalDate startDate, LocalDate endDate, String city, String sortBy, String order) {
@@ -208,13 +208,13 @@ public class BranchService {
 
   // Entity методи (для внутрішньої логіки)
 
-  /** Створити entity */
+  /** Створити entity. */
   public BranchEntity create(BranchEntity entity) {
     branchValidator.validateUniqueness(entity);
     return branchRepository.save(entity);
   }
 
-  /** Знайти entity за UUID */
+  /** Знайти entity за UUID. */
   @Transactional(readOnly = true)
   public BranchEntity findEntityById(UUID uuid) {
     return branchRepository
@@ -222,24 +222,24 @@ public class BranchService {
         .orElseThrow(() -> BranchNotFoundException.withUuid(uuid));
   }
 
-  /** Знайти entity за кодом */
+  /** Знайти entity за кодом. */
   @Transactional(readOnly = true)
   public Optional<BranchEntity> findByCode(String code) {
     return branchRepository.findByCode(code);
   }
 
-  /** Знайти всі entities */
+  /** Знайти всі entities. */
   @Transactional(readOnly = true)
   public List<BranchEntity> findAll() {
     return branchRepository.findAll();
   }
 
-  /** Оновити entity */
+  /** Оновити entity. */
   public BranchEntity update(BranchEntity entity) {
     return branchRepository.save(entity);
   }
 
-  /** Перевірити чи може філія приймати замовлення */
+  /** Перевірити чи може філія приймати замовлення. */
   @Transactional(readOnly = true)
   public boolean canAcceptOrders(UUID uuid) {
     BranchEntity entity = findEntityById(uuid);

@@ -2,7 +2,7 @@ package com.aksi.domain.order.enums;
 
 import java.util.Set;
 
-/** Domain enum для типів плям з business логікою обробки */
+/** Domain enum для типів плям з business логікою обробки. */
 public enum StainType {
   FAT("Жир", "fatty"),
   BLOOD("Кров", "protein"),
@@ -30,27 +30,27 @@ public enum StainType {
     return chemicalGroup;
   }
 
-  /** Перевіряє чи пляма потребує спеціальної обробки */
+  /** Перевіряє чи пляма потребує спеціальної обробки. */
   public boolean requiresSpecialTreatment() {
     return this == BLOOD || this == WINE || this == INK;
   }
 
-  /** Перевіряє чи пляма може бути видалена стандартними засобами */
+  /** Перевіряє чи пляма може бути видалена стандартними засобами. */
   public boolean isRemovableWithStandardTreatment() {
     return this == FAT || this == GRASS || this == COFFEE;
   }
 
-  /** Перевіряє чи пляма потребує попередньої обробки */
+  /** Перевіряє чи пляма потребує попередньої обробки. */
   public boolean requiresPreTreatment() {
     return this == BLOOD || this == PROTEIN || this == WINE;
   }
 
-  /** Перевіряє чи пляма може залишити постійний слід */
+  /** Перевіряє чи пляма може залишити постійний слід. */
   public boolean canCausePermanentDamage() {
     return this == INK || this == WINE || this == OTHER;
   }
 
-  /** Отримує рекомендовану температуру обробки */
+  /** Отримує рекомендовану температуру обробки. */
   public int getRecommendedTemperature() {
     return switch (this) {
       case BLOOD, PROTEIN -> 30; // Низька температура для білків
@@ -62,7 +62,7 @@ public enum StainType {
     };
   }
 
-  /** Перевіряє сумісність з типом тканини */
+  /** Перевіряє сумісність з типом тканини. */
   public boolean isCompatibleWithMaterial(String material) {
     if (material == null) return true;
 
@@ -76,17 +76,17 @@ public enum StainType {
     return true;
   }
 
-  /** Отримує плями що потребують негайної обробки */
+  /** Отримує плями що потребують негайної обробки. */
   public static Set<StainType> getUrgentTreatmentStains() {
     return Set.of(BLOOD, WINE, INK);
   }
 
-  /** Отримує плями що можуть взаємодіяти з іншими плямами */
+  /** Отримує плями що можуть взаємодіяти з іншими плямами. */
   public static Set<StainType> getInteractiveStains() {
     return Set.of(INK, COSMETICS, OTHER);
   }
 
-  /** Перевіряє чи плями можуть взаємодіяти між собою */
+  /** Перевіряє чи плями можуть взаємодіяти між собою. */
   public boolean canInteractWith(StainType other) {
     if (this == other) return false;
 
@@ -99,7 +99,7 @@ public enum StainType {
     return (this == BLOOD || this == PROTEIN) && (other == WINE || other == COFFEE);
   }
 
-  /** Отримує рівень складності видалення (1-5) */
+  /** Отримує рівень складності видалення (1-5). */
   public int getDifficultyLevel() {
     return switch (this) {
       case FAT, GRASS -> 2; // Легко

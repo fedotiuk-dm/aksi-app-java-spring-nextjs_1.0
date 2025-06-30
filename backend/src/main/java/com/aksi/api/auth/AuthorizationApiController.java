@@ -8,7 +8,7 @@ import com.aksi.domain.auth.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
-/** HTTP Controller для AuthorizationApi Відповідальність: тільки HTTP делегація до AuthService */
+/** HTTP Controller для AuthorizationApi Відповідальність: тільки HTTP делегація до AuthService. */
 @Controller
 @RequiredArgsConstructor
 public class AuthorizationApiController implements AuthorizationApi {

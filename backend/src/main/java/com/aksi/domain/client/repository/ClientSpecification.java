@@ -15,7 +15,7 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-/** JPA Specifications для ClientEntity Type-safe та композиційні запити */
+/** JPA Specifications для ClientEntity Type-safe та композиційні запити. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientSpecification {
 
@@ -34,7 +34,7 @@ public class ClientSpecification {
   private static final String TOTAL_SPENT_FIELD = "totalSpent";
   private static final String LAST_ORDER_DATE_FIELD = "lastOrderDate";
 
-  /** Helper метод для створення LIKE запитів з null check */
+  /** Helper метод для створення LIKE запитів з null check. */
   private static Specification<ClientEntity> createLikeSpecification(String field, String value) {
     return (root, criteriaQuery, criteriaBuilder) -> {
       if (!StringUtils.hasText(value)) {
@@ -45,7 +45,7 @@ public class ClientSpecification {
     };
   }
 
-  /** Helper метод для створення LIKE запитів без lowercase */
+  /** Helper метод для створення LIKE запитів без lowercase. */
   private static Specification<ClientEntity> createSimpleLikeSpecification(
       String field, String value) {
     return (root, criteriaQuery, criteriaBuilder) -> {
@@ -56,7 +56,7 @@ public class ClientSpecification {
     };
   }
 
-  /** Helper метод для створення EQUAL запитів з null check */
+  /** Helper метод для створення EQUAL запитів з null check. */
   private static <T> Specification<ClientEntity> createEqualSpecification(String field, T value) {
     return (root, criteriaQuery, criteriaBuilder) -> {
       if (value == null) {
@@ -66,7 +66,7 @@ public class ClientSpecification {
     };
   }
 
-  /** Загальний пошук по імені, прізвищу, телефону, email */
+  /** Загальний пошук по імені, прізвищу, телефону, email. */
   public static Specification<ClientEntity> generalSearch(String query) {
     return (root, criteriaQuery, criteriaBuilder) -> {
       if (!StringUtils.hasText(query)) {
@@ -87,27 +87,27 @@ public class ClientSpecification {
     };
   }
 
-  /** Пошук за ім'ям (частковий збіг) */
+  /** Пошук за ім'ям (частковий збіг). */
   public static Specification<ClientEntity> firstNameContains(String firstName) {
     return createLikeSpecification(FIRST_NAME_FIELD, firstName);
   }
 
-  /** Пошук за прізвищем (частковий збіг) */
+  /** Пошук за прізвищем (частковий збіг). */
   public static Specification<ClientEntity> lastNameContains(String lastName) {
     return createLikeSpecification(LAST_NAME_FIELD, lastName);
   }
 
-  /** Пошук за телефоном (частковий збіг) */
+  /** Пошук за телефоном (частковий збіг). */
   public static Specification<ClientEntity> phoneContains(String phone) {
     return createSimpleLikeSpecification(PHONE_FIELD, phone);
   }
 
-  /** Пошук за email (частковий збіг) */
+  /** Пошук за email (частковий збіг). */
   public static Specification<ClientEntity> emailContains(String email) {
     return createLikeSpecification(EMAIL_FIELD, email);
   }
 
-  /** Пошук за містом (через адресу) */
+  /** Пошук за містом (через адресу). */
   public static Specification<ClientEntity> cityContains(String city) {
     return (root, criteriaQuery, criteriaBuilder) -> {
       if (!StringUtils.hasText(city)) {
@@ -119,12 +119,12 @@ public class ClientSpecification {
     };
   }
 
-  /** Фільтр за джерелом надходження */
+  /** Фільтр за джерелом надходження. */
   public static Specification<ClientEntity> hasSourceType(ClientSourceType sourceType) {
     return createEqualSpecification(SOURCE_TYPE_FIELD, sourceType);
   }
 
-  /** Фільтр за способами зв'язку */
+  /** Фільтр за способами зв'язку. */
   public static Specification<ClientEntity> hasCommunicationMethods(
       List<CommunicationMethodType> methods) {
     return (root, criteriaQuery, criteriaBuilder) -> {
@@ -141,7 +141,7 @@ public class ClientSpecification {
     };
   }
 
-  /** Фільтр за датою реєстрації (від) */
+  /** Фільтр за датою реєстрації (від). */
   public static Specification<ClientEntity> registeredAfter(LocalDate fromDate) {
     return (root, criteriaQuery, criteriaBuilder) -> {
       if (fromDate == null) {
@@ -152,7 +152,7 @@ public class ClientSpecification {
     };
   }
 
-  /** Фільтр за датою реєстрації (до) */
+  /** Фільтр за датою реєстрації (до). */
   public static Specification<ClientEntity> registeredBefore(LocalDate toDate) {
     return (root, criteriaQuery, criteriaBuilder) -> {
       if (toDate == null) {
@@ -163,12 +163,12 @@ public class ClientSpecification {
     };
   }
 
-  /** Фільтр за VIP статусом */
+  /** Фільтр за VIP статусом. */
   public static Specification<ClientEntity> isVip(Boolean isVip) {
     return createEqualSpecification(IS_VIP_FIELD, isVip);
   }
 
-  /** Композиційний метод для розширеного пошуку Збирає всі фільтри з ClientSearchRequest */
+  /** Композиційний метод для розширеного пошуку Збирає всі фільтри з ClientSearchRequest. */
   public static Specification<ClientEntity> buildAdvancedSearch(
       String query,
       String firstName,
@@ -195,25 +195,25 @@ public class ClientSpecification {
         .and(isVip(isVip));
   }
 
-  /** Специфікація для топ клієнтів за замовленнями */
+  /** Специфікація для топ клієнтів за замовленнями. */
   public static Specification<ClientEntity> hasOrders() {
     return (root, criteriaQuery, criteriaBuilder) ->
         criteriaBuilder.greaterThan(root.get(TOTAL_ORDERS_FIELD), 0);
   }
 
-  /** Специфікація для клієнтів з витратами */
+  /** Специфікація для клієнтів з витратами. */
   public static Specification<ClientEntity> hasSpending() {
     return (root, criteriaQuery, criteriaBuilder) ->
         criteriaBuilder.greaterThan(root.get(TOTAL_SPENT_FIELD), 0);
   }
 
-  /** Специфікація для клієнтів без замовлень */
+  /** Специфікація для клієнтів без замовлень. */
   public static Specification<ClientEntity> hasNoOrders() {
     return (root, criteriaQuery, criteriaBuilder) ->
         criteriaBuilder.equal(root.get(TOTAL_ORDERS_FIELD), 0);
   }
 
-  /** Специфікація для неактивних клієнтів */
+  /** Специфікація для неактивних клієнтів. */
   public static Specification<ClientEntity> inactiveSince(LocalDate cutoffDate) {
     return (root, criteriaQuery, criteriaBuilder) ->
         criteriaBuilder.and(

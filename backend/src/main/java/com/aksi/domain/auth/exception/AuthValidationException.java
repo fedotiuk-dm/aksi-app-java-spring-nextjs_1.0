@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * Виняток для валідаційних помилок в auth domain Domain-specific RuntimeException з деталями
- * помилок
+ * помилок.
  */
 public class AuthValidationException extends RuntimeException {
 

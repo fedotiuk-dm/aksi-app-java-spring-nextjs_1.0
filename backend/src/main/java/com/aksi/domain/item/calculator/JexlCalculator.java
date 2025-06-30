@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * JEXL калькулятор для складних правил (10% випадків) Обробляє модифікатори з jexlFormula
- * ВИКОРИСТОВУЄ DTO CalculationStep (OpenAPI First!)
+ * ВИКОРИСТОВУЄ DTO CalculationStep (OpenAPI First!).
  */
 @Component
 @Slf4j
@@ -31,7 +31,7 @@ public class JexlCalculator {
     this.jexl = new JexlBuilder().cache(512).strict(false).silent(false).create();
   }
 
-  /** Розрахувати ціну з JEXL модифікаторами */
+  /** Розрахувати ціну з JEXL модифікаторами. */
   public CalculationResult calculate(
       Double basePrice, List<PriceModifierEntity> modifiers, Map<String, Object> context) {
     log.debug("JEXL calculation for base price: {} with {} modifiers", basePrice, modifiers.size());
@@ -85,7 +85,7 @@ public class JexlCalculator {
         .build();
   }
 
-  /** Застосувати один JEXL модифікатор */
+  /** Застосувати один JEXL модифікатор. */
   private Double applyJexlModifier(
       Double currentPrice, PriceModifierEntity modifier, JexlContext context) {
     String formula = modifier.getJexlFormula();
@@ -106,7 +106,7 @@ public class JexlCalculator {
     }
   }
 
-  /** Створити JEXL контекст */
+  /** Створити JEXL контекст. */
   private JexlContext createJexlContext(
       Double currentPrice, Map<String, Object> additionalContext) {
     JexlContext context = new MapContext();
@@ -128,23 +128,23 @@ public class JexlCalculator {
     return context;
   }
 
-  /** Сформатувати опис кроку */
+  /** Сформатувати опис кроку. */
   private String formatDescription(PriceModifierEntity modifier, Double changeAmount) {
     String sign = changeAmount >= 0 ? "+" : "";
     return String.format("%s: %s%.2f грн (JEXL)", modifier.getName(), sign, changeAmount);
   }
 
-  /** Перевірити чи може обробити модифікатор */
+  /** Перевірити чи може обробити модифікатор. */
   public boolean canHandle(PriceModifierEntity modifier) {
     return modifier.hasJexlFormula();
   }
 
-  /** Перевірити чи може обробити всі модифікатори */
+  /** Перевірити чи може обробити всі модифікатори. */
   public boolean canHandleAll(List<PriceModifierEntity> modifiers) {
     return modifiers.stream().allMatch(this::canHandle);
   }
 
-  /** Fallback розрахунок без додаткового контексту */
+  /** Fallback розрахунок без додаткового контексту. */
   public CalculationResult calculate(Double basePrice, List<PriceModifierEntity> modifiers) {
     return calculate(basePrice, modifiers, new HashMap<>());
   }

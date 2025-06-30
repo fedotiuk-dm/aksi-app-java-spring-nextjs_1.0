@@ -16,7 +16,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/** Entity для фотографій предметів */
+/** Entity для фотографій предметів. */
 @Entity
 @Table(
     name = "item_photos",
@@ -81,29 +81,29 @@ public class ItemPhotoEntity extends BaseEntity {
 
   // ===== BUSINESS МЕТОДИ =====
 
-  /** Перевірити, чи є фото основним */
+  /** Перевірити, чи є фото основним. */
   public boolean isPrimaryPhoto() {
     return Boolean.TRUE.equals(isPrimary);
   }
 
-  /** Перевірити, чи є файл зображенням */
+  /** Перевірити, чи є файл зображенням. */
   public boolean isImage() {
     return contentType != null && contentType.startsWith("image/");
   }
 
-  /** Перевірити, чи є розмір файлу допустимим (до 10 МБ) */
+  /** Перевірити, чи є розмір файлу допустимим (до 10 МБ). */
   public boolean hasValidFileSize() {
     return fileSize != null && fileSize > 0 && fileSize <= 10_485_760; // 10 MB
   }
 
-  /** Отримати розширення файлу */
+  /** Отримати розширення файлу. */
   public String getFileExtension() {
     if (fileName == null) return "";
     int lastDot = fileName.lastIndexOf('.');
     return lastDot >= 0 ? fileName.substring(lastDot + 1).toLowerCase() : "";
   }
 
-  /** Перевірити, чи є формат підтримуваним */
+  /** Перевірити, чи є формат підтримуваним. */
   public boolean isSupportedFormat() {
     String extension = getFileExtension();
     return "jpg".equals(extension)
@@ -113,23 +113,23 @@ public class ItemPhotoEntity extends BaseEntity {
         || "webp".equals(extension);
   }
 
-  /** Перевірити, чи потрібен thumbnail */
+  /** Перевірити, чи потрібен thumbnail. */
   public boolean needsThumbnail() {
     return isImage()
         && (imageWidth == null || imageWidth > 300 || imageHeight == null || imageHeight > 300);
   }
 
-  /** Встановити як основне фото */
+  /** Встановити як основне фото. */
   public void setAsPrimary() {
     this.isPrimary = true;
   }
 
-  /** Зняти статус основного фото */
+  /** Зняти статус основного фото. */
   public void unsetAsPrimary() {
     this.isPrimary = false;
   }
 
-  /** Отримати форматований розмір файлу */
+  /** Отримати форматований розмір файлу. */
   public String getFormattedFileSize() {
     if (fileSize == null) return "0 B";
 
@@ -142,50 +142,50 @@ public class ItemPhotoEntity extends BaseEntity {
     }
   }
 
-  /** Перевірити, чи має thumbnail */
+  /** Перевірити, чи має thumbnail. */
   public boolean hasThumbnail() {
     return thumbnailPath != null && !thumbnailPath.trim().isEmpty();
   }
 
-  /** Отримати відносний шлях до файлу */
+  /** Отримати відносний шлях до файлу. */
   public String getRelativeFilePath() {
     if (filePath == null) return "";
     // Видаляємо базовий шлях якщо є
     return filePath.replaceFirst("^.*/uploads/", "/uploads/");
   }
 
-  /** Отримати відносний шлях до thumbnail */
+  /** Отримати відносний шлях до thumbnail. */
   public String getRelativeThumbnailPath() {
     if (thumbnailPath == null) return "";
     return thumbnailPath.replaceFirst("^.*/uploads/", "/uploads/");
   }
 
-  /** Перевірити тип фото */
+  /** Перевірити тип фото. */
   public boolean isPhotoType(String type) {
     return type != null && type.equals(photoType);
   }
 
-  /** Перевірити, чи є фото дефекту */
+  /** Перевірити, чи є фото дефекту. */
   public boolean isDefectPhoto() {
     return isPhotoType("DEFECT");
   }
 
-  /** Перевірити, чи є фото плями */
+  /** Перевірити, чи є фото плями. */
   public boolean isStainPhoto() {
     return isPhotoType("STAIN");
   }
 
-  /** Перевірити, чи є фото "до" обробки */
+  /** Перевірити, чи є фото "до" обробки. */
   public boolean isBeforePhoto() {
     return isPhotoType("BEFORE");
   }
 
-  /** Перевірити, чи є фото "після" обробки */
+  /** Перевірити, чи є фото "після" обробки. */
   public boolean isAfterPhoto() {
     return isPhotoType("AFTER");
   }
 
-  /** Отримати пріоритет для сортування */
+  /** Отримати пріоритет для сортування. */
   public int getSortPriority() {
     if (isPrimaryPhoto()) return 1;
 
