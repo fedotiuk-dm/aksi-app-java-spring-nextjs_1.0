@@ -16,23 +16,25 @@ import com.aksi.domain.item.exception.ServiceCategoryAlreadyExistsException;
 import com.aksi.domain.item.exception.ServiceCategoryNotFoundException;
 import com.aksi.domain.item.mapper.ServiceCategoryMapper;
 import com.aksi.domain.item.repository.ServiceCategoryRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.aksi.shared.service.BaseService;
+import com.aksi.shared.service.EntityCreationHelper;
 
 /**
- * Сервіс для управління категоріями послуг.
- *
- * <p>Архітектура: - API методи (public) - працюють з DTO для контролерів - Entity методи
- * (package-private) - працюють з Entity для внутрішньої логіки - Business logic + validation +
- * transaction management
+ * Сервіс для управління категоріями послуг. Розширює BaseService для уникнення дублювання CRUD
+ * логіки.
  */
 @Service
 @Transactional
-@RequiredArgsConstructor
-public class ServiceCategoryService {
+public class ServiceCategoryService
+    extends BaseService<ServiceCategoryEntity, Long, ServiceCategoryRepository> {
 
-  private final ServiceCategoryRepository repository;
   private final ServiceCategoryMapper mapper;
+
+  public ServiceCategoryService(
+      ServiceCategoryRepository repository, ServiceCategoryMapper mapper) {
+    super(repository);
+    this.mapper = mapper;
+  }
 
   // ========== API МЕТОДИ (для контролерів) - DTO ↔ DTO ==========
 
@@ -41,32 +43,32 @@ public class ServiceCategoryService {
     validateUniqueCode(request.getCode());
 
     var entity = mapper.toEntity(request);
-    entity.setUuid(UUID.randomUUID());
+    EntityCreationHelper.setRandomUuid(entity);
 
-    var savedEntity = repository.save(entity);
+    var savedEntity = save(entity);
     return mapper.toResponse(savedEntity);
   }
 
   /** Отримати категорію за UUID. */
   @Transactional(readOnly = true)
   public ServiceCategoryResponse getServiceCategoryById(UUID uuid) {
-    var entity = findByUuid(uuid);
+    var entity = findByUuidOrThrow(uuid);
     return mapper.toResponse(entity);
   }
 
   /** Оновити категорію послуг. */
   public ServiceCategoryResponse updateServiceCategory(
       UUID uuid, UpdateServiceCategoryRequest request) {
-    var entity = findByUuid(uuid);
+    var entity = findByUuidOrThrow(uuid);
 
     mapper.updateEntityFromRequest(request, entity);
-    var savedEntity = repository.save(entity);
+    var savedEntity = save(entity);
     return mapper.toResponse(savedEntity);
   }
 
   /** Видалити категорію послуг. */
   public void deleteServiceCategory(UUID uuid) {
-    var entity = findByUuid(uuid);
+    var entity = findByUuidOrThrow(uuid);
 
     // Перевірити чи немає дочірніх категорій
     var childCategories = repository.findByParentId(uuid);
@@ -74,7 +76,7 @@ public class ServiceCategoryService {
       throw new IllegalStateException("Неможливо видалити категорію з дочірніми категоріями");
     }
 
-    repository.delete(entity);
+    delete(entity);
   }
 
   /** Отримати список активних категорій. */
@@ -87,7 +89,7 @@ public class ServiceCategoryService {
   /** Отримати всі категорії з пагінацією. */
   @Transactional(readOnly = true)
   public Page<ServiceCategoryResponse> getServiceCategories(Pageable pageable) {
-    var entityPage = repository.findAll(pageable);
+    var entityPage = findAll(pageable);
     return entityPage.map(mapper::toResponse);
   }
 
@@ -100,8 +102,8 @@ public class ServiceCategoryService {
 
   // ========== HELPER МЕТОДИ ==========
 
-  /** Знайти категорію за UUID (internal helper). */
-  private ServiceCategoryEntity findByUuid(UUID uuid) {
+  /** Знайти категорію за UUID з винятком. */
+  private ServiceCategoryEntity findByUuidOrThrow(UUID uuid) {
     return repository
         .findByUuid(uuid)
         .orElseThrow(() -> new ServiceCategoryNotFoundException(uuid));

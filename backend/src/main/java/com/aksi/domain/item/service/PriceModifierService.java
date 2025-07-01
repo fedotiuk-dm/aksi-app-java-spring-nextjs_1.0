@@ -16,23 +16,24 @@ import com.aksi.domain.item.exception.PriceModifierAlreadyExistsException;
 import com.aksi.domain.item.exception.PriceModifierNotFoundException;
 import com.aksi.domain.item.mapper.PriceModifierMapper;
 import com.aksi.domain.item.repository.PriceModifierRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.aksi.shared.service.BaseService;
+import com.aksi.shared.service.EntityCreationHelper;
 
 /**
- * Сервіс для управління модифікаторами цін.
- *
- * <p>Архітектура: - API методи (public) - працюють з DTO для контролерів - Entity методи
- * (package-private) - працюють з Entity для внутрішньої логіки - Business logic + validation +
- * transaction management
+ * Сервіс для управління модифікаторами цін. Розширює BaseService для уникнення дублювання CRUD
+ * логіки.
  */
 @Service
 @Transactional
-@RequiredArgsConstructor
-public class PriceModifierService {
+public class PriceModifierService
+    extends BaseService<PriceModifierEntity, Long, PriceModifierRepository> {
 
-  private final PriceModifierRepository repository;
   private final PriceModifierMapper mapper;
+
+  public PriceModifierService(PriceModifierRepository repository, PriceModifierMapper mapper) {
+    super(repository);
+    this.mapper = mapper;
+  }
 
   // ========== API МЕТОДИ (для контролерів) - DTO ↔ DTO ==========
 
@@ -41,38 +42,38 @@ public class PriceModifierService {
     validateUniqueCode(request.getCode());
 
     var entity = mapper.toEntity(request);
-    entity.setUuid(UUID.randomUUID());
+    EntityCreationHelper.setRandomUuid(entity);
 
-    var savedEntity = repository.save(entity);
+    var savedEntity = save(entity);
     return mapper.toResponse(savedEntity);
   }
 
   /** Отримати модифікатор за UUID. */
   @Transactional(readOnly = true)
   public PriceModifierResponse getPriceModifierById(UUID uuid) {
-    var entity = findByUuid(uuid);
+    var entity = findByUuidOrThrow(uuid);
     return mapper.toResponse(entity);
   }
 
   /** Оновити модифікатор ціни. */
   public PriceModifierResponse updatePriceModifier(UUID uuid, UpdatePriceModifierRequest request) {
-    var entity = findByUuid(uuid);
+    var entity = findByUuidOrThrow(uuid);
 
     mapper.updateEntityFromRequest(request, entity);
-    var savedEntity = repository.save(entity);
+    var savedEntity = save(entity);
     return mapper.toResponse(savedEntity);
   }
 
   /** Видалити модифікатор ціни. */
   public void deletePriceModifier(UUID uuid) {
-    var entity = findByUuid(uuid);
-    repository.delete(entity);
+    var entity = findByUuidOrThrow(uuid);
+    delete(entity);
   }
 
   /** Отримати всі модифікатори з пагінацією. */
   @Transactional(readOnly = true)
   public Page<PriceModifierResponse> getPriceModifiers(Pageable pageable) {
-    var entityPage = repository.findAll(pageable);
+    var entityPage = findAll(pageable);
     return entityPage.map(mapper::toResponse);
   }
 
@@ -98,8 +99,8 @@ public class PriceModifierService {
 
   // ========== HELPER МЕТОДИ ==========
 
-  /** Знайти модифікатор за UUID (internal helper). */
-  private PriceModifierEntity findByUuid(UUID uuid) {
+  /** Знайти модифікатор за UUID з винятком. */
+  private PriceModifierEntity findByUuidOrThrow(UUID uuid) {
     return repository.findByUuid(uuid).orElseThrow(() -> new PriceModifierNotFoundException(uuid));
   }
 

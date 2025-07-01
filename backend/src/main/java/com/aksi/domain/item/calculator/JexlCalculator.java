@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.aksi.api.item.dto.CalculationStep;
 import com.aksi.domain.item.entity.PriceModifierEntity;
+import com.aksi.shared.service.CalculationStepBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,11 +53,9 @@ public class JexlCalculator {
         jexlContext.set("currentPrice", currentPrice);
 
         // Створити крок розрахунку (DTO!)
-        CalculationStep step = new CalculationStep();
-        step.setStep(modifier.getCode());
-        step.setDescription(formatDescription(modifier, currentPrice - previousPrice));
-        step.setAmount(currentPrice - previousPrice);
-        step.setRunningTotal(currentPrice);
+        CalculationStep step =
+            CalculationStepBuilder.createJexlStep(
+                modifier, currentPrice - previousPrice, currentPrice);
 
         steps.add(step);
         log.debug(
@@ -126,12 +125,6 @@ public class JexlCalculator {
     context.set("max", (java.util.function.BinaryOperator<Double>) Math::max);
 
     return context;
-  }
-
-  /** Сформатувати опис кроку. */
-  private String formatDescription(PriceModifierEntity modifier, Double changeAmount) {
-    String sign = changeAmount >= 0 ? "+" : "";
-    return String.format("%s: %s%.2f грн (JEXL)", modifier.getName(), sign, changeAmount);
   }
 
   /** Перевірити чи може обробити модифікатор. */

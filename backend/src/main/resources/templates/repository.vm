@@ -1,0 +1,67 @@
+package ${packageName}.repository;
+
+import ${packageName}.entity.${className};
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * Repository для ${domainName}
+ * Автоматично згенеровано Domain Code Generator
+ */
+@Repository
+public interface ${domainName}Repository extends JpaRepository<${className}, Long>, JpaSpecificationExecutor<${className}> {
+
+    /**
+     * Знаходить ${domainName} за UUID
+     */
+    Optional<${className}> findByUuid(UUID uuid);
+
+    /**
+     * Перевіряє чи існує ${domainName} з таким UUID
+     */
+    boolean existsByUuid(UUID uuid);
+
+    /**
+     * Видаляє ${domainName} за UUID
+     */
+    void deleteByUuid(UUID uuid);
+
+#if($searchableFields && $searchableFields.size() > 0)
+    /**
+     * Швидкий пошук ${domainName} за текстом
+     */
+    @Query("SELECT e FROM ${className} e WHERE " +
+#foreach($field in $searchableFields)
+#if($field.type == "String")
+           "LOWER(e.${field.name}) LIKE LOWER(CONCAT('%', :query, '%'))"#if($foreach.hasNext) + " OR " +#end
+#elseif($field.type == "UUID")
+           "CAST(e.${field.name} as string) LIKE CONCAT('%', :query, '%')"#if($foreach.hasNext) + " OR " +#end
+#end
+#end
+)
+    Page<${className}> quickSearch(@Param("query") String query, Pageable pageable);
+
+#foreach($field in $searchableFields)
+#if($field.type == "String")
+    /**
+     * Знаходить ${domainName} за ${field.name}
+     */
+    Optional<${className}> findBy${field.name.substring(0,1).toUpperCase()}${field.name.substring(1)}(String ${field.name});
+
+    /**
+     * Перевіряє чи існує ${domainName} з таким ${field.name}
+     */
+    boolean existsBy${field.name.substring(0,1).toUpperCase()}${field.name.substring(1)}(String ${field.name});
+
+#end
+#end
+#end
+}

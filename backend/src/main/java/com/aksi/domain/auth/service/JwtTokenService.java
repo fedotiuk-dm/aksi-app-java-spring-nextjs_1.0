@@ -20,6 +20,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +42,7 @@ public class JwtTokenService {
       @Value("${jwt.refresh.expiration:2592000000}") long refreshTokenExpirationInMs) {
     this.jwtExpirationInMs = jwtExpirationInMs;
     this.refreshTokenExpirationInMs = refreshTokenExpirationInMs;
-    this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
   }
 
   /** Генерація JWT access токену. */
@@ -52,18 +53,12 @@ public class JwtTokenService {
     // Додаємо ролі як список строк
     List<String> roles = user.getRoles().stream().map(UserRole::name).collect(Collectors.toList());
 
-    return Jwts.builder()
-        .subject(user.getId().toString())
-        .issuedAt(now)
-        .expiration(expiryDate)
-        .claim("userId", user.getId())
-        .claim("username", user.getUsername())
+    return buildJwtToken(user, now, expiryDate)
         .claim("email", user.getEmail())
         .claim("firstName", user.getFirstName())
         .claim("lastName", user.getLastName())
         .claim("isActive", user.getIsActive())
         .claim("roles", roles)
-        .signWith(secretKey, Jwts.SIG.HS512)
         .compact();
   }
 
@@ -72,15 +67,19 @@ public class JwtTokenService {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + refreshTokenExpirationInMs);
 
+    return buildJwtToken(user, now, expiryDate).claim("type", "refresh").compact();
+  }
+
+  /** Базовий JWT builder для уникнення дублювання. */
+  private io.jsonwebtoken.JwtBuilder buildJwtToken(
+      UserEntity user, Date issuedAt, Date expiration) {
     return Jwts.builder()
         .subject(user.getId().toString())
-        .issuedAt(now)
-        .expiration(expiryDate)
+        .issuedAt(issuedAt)
+        .expiration(expiration)
         .claim("userId", user.getId())
         .claim("username", user.getUsername())
-        .claim("type", "refresh")
-        .signWith(secretKey, Jwts.SIG.HS512)
-        .compact();
+        .signWith(secretKey, Jwts.SIG.HS512);
   }
 
   /** Отримання користувача ID з токену. */
@@ -104,23 +103,12 @@ public class JwtTokenService {
 
   /** Перевірка валідності токену. */
   public boolean isTokenValid(String token) {
-    try {
-      getClaimsFromToken(token);
-      return true;
-    } catch (JwtException | IllegalArgumentException e) {
-      log.debug("Токен невалідний: {}", e.getMessage());
-      return false;
-    }
+    return safeTokenOperation(token, claims -> true, false);
   }
 
   /** Перевірка чи токен прострочений. */
   public boolean isTokenExpired(String token) {
-    try {
-      Claims claims = getClaimsFromToken(token);
-      return claims.getExpiration().before(new Date());
-    } catch (JwtException | IllegalArgumentException e) {
-      return true;
-    }
+    return safeTokenOperation(token, claims -> claims.getExpiration().before(new Date()), true);
   }
 
   /** Отримання дати експірації токену. */
@@ -131,32 +119,19 @@ public class JwtTokenService {
 
   /** Валідація токену з детальною перевіркою. */
   public void validateToken(String token) {
-    try {
-      Claims claims = getClaimsFromToken(token);
+    Claims claims = getClaimsFromToken(token);
 
-      // Перевірка експірації
-      if (claims.getExpiration().before(new Date())) {
-        throw new InvalidTokenException("Токен прострочений");
-      }
-
-      // Перевірка обов'язкових полів
-      if (claims.getSubject() == null || claims.getSubject().isEmpty()) {
-        throw new InvalidTokenException("Токен не містить subject");
-      }
-
-      log.debug("Токен валідний для користувача: {}", claims.get("username"));
-
-    } catch (ExpiredJwtException e) {
-      throw new InvalidTokenException("Токен прострочений", e);
-    } catch (UnsupportedJwtException e) {
-      throw new InvalidTokenException("Непідтримуваний токен", e);
-    } catch (MalformedJwtException e) {
-      throw new InvalidTokenException("Некоректний формат токену", e);
-    } catch (JwtException e) {
-      throw new InvalidTokenException("Невалідний токен", e);
-    } catch (IllegalArgumentException e) {
-      throw new InvalidTokenException("Токен не може бути порожнім", e);
+    // Перевірка експірації
+    if (claims.getExpiration().before(new Date())) {
+      throw new InvalidTokenException("Токен прострочений");
     }
+
+    // Перевірка обов'язкових полів
+    if (claims.getSubject() == null || claims.getSubject().isEmpty()) {
+      throw new InvalidTokenException("Токен не містить subject");
+    }
+
+    log.debug("Токен валідний для користувача: {}", claims.get("username"));
   }
 
   /** Отримання експірації в секундах (для API response). */
@@ -166,12 +141,8 @@ public class JwtTokenService {
 
   /** Перевірка чи токен є refresh токеном. */
   public boolean isRefreshToken(String token) {
-    try {
-      Claims claims = getClaimsFromToken(token);
-      return "refresh".equals(claims.get("type", String.class));
-    } catch (JwtException | IllegalArgumentException e) {
-      return false;
-    }
+    return safeTokenOperation(
+        token, claims -> "refresh".equals(claims.get("type", String.class)), false);
   }
 
   /** Отримання всіх даних користувача з токену. */
@@ -248,10 +219,22 @@ public class JwtTokenService {
     }
   }
 
-  /** Отримання Claims з токену. */
+  /** Безпечне виконання операції з токеном (generic exception handler). */
+  private <T> T safeTokenOperation(
+      String token, java.util.function.Function<Claims, T> operation, T defaultValue) {
+    try {
+      Claims claims = parseTokenClaims(token);
+      return operation.apply(claims);
+    } catch (JwtException | IllegalArgumentException e) {
+      log.debug("Операція з токеном невдала: {}", e.getMessage());
+      return defaultValue;
+    }
+  }
+
+  /** Отримання Claims з токену з exception handling. */
   private Claims getClaimsFromToken(String token) {
     try {
-      return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+      return parseTokenClaims(token);
     } catch (ExpiredJwtException e) {
       throw new InvalidTokenException("Токен прострочений", e);
     } catch (UnsupportedJwtException e) {
@@ -263,5 +246,10 @@ public class JwtTokenService {
     } catch (IllegalArgumentException e) {
       throw new InvalidTokenException("Токен не може бути порожнім", e);
     }
+  }
+
+  /** Парсинг токену без exception transformation. */
+  private Claims parseTokenClaims(String token) {
+    return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
   }
 }

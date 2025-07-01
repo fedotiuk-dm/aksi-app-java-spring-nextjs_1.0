@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.aksi.api.item.dto.CalculationStep;
 import com.aksi.domain.item.entity.PriceModifierEntity;
+import com.aksi.shared.service.CalculationStepBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,11 +33,8 @@ public class SimpleCalculator {
       currentPrice = applyModifier(currentPrice, modifier);
 
       // Створити крок розрахунку (DTO!)
-      CalculationStep step = new CalculationStep();
-      step.setStep(modifier.getCode());
-      step.setDescription(formatDescription(modifier, currentPrice - previousPrice));
-      step.setAmount(currentPrice - previousPrice);
-      step.setRunningTotal(currentPrice);
+      CalculationStep step =
+          CalculationStepBuilder.createStep(modifier, currentPrice - previousPrice, currentPrice);
 
       steps.add(step);
       log.debug("Applied modifier {}: {} -> {}", modifier.getCode(), previousPrice, currentPrice);
@@ -57,11 +55,7 @@ public class SimpleCalculator {
     return modifier.applyToPrice(currentPrice);
   }
 
-  /** Сформатувати опис кроку. */
-  private String formatDescription(PriceModifierEntity modifier, Double changeAmount) {
-    String sign = changeAmount >= 0 ? "+" : "";
-    return String.format("%s: %s%.2f грн", modifier.getName(), sign, changeAmount);
-  }
+  // formatDescription методи видалені - використовуємо CalculationStepBuilder
 
   /** Перевірити чи може обробити модифікатор. */
   public boolean canHandle(PriceModifierEntity modifier) {

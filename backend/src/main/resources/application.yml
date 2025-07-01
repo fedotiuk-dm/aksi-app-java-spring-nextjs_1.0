@@ -111,7 +111,7 @@ aksi:
 
 # JWT Configuration
 jwt:
-  secret: 7Jl7CMvDgZaYWEr3ZsRMRi1CJG3vjYXm0QFrDHB3z1WGMhsQ+yWgYMwzM6MqkVEM3J40TxOFsYyyvmFkh76WDQ==
+  secret: aGVsbG93b3JsZHRoaXNpc2F2ZXJ5c2VjdXJla2V5Zm9yand0dG9rZW5zaWduaW5nYW5kaXRpcmVhbGx5c2VjdXJl
   expiration: 86400000 # 24 години у мілісекундах
   refresh:
     expiration: 604800000 # 7 днів у мілісекундах
