@@ -33,6 +33,17 @@ DocumentStatus:
     * PRINTED - Роздруковано
     * ARCHIVED - Заархівовано
 
+ImageFormat:
+  type: string
+  enum:
+    - PNG
+    - SVG
+  description: |
+    Формати зображень:
+    * PNG - Растрове зображення PNG
+    * SVG - Векторне зображення SVG
+  example: PNG
+
 SignatureType:
   type: string
   enum:

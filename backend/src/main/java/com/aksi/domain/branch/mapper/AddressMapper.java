@@ -10,16 +10,12 @@ import com.aksi.api.branch.dto.AddressResponse;
 import com.aksi.api.branch.dto.CreateAddressRequest;
 import com.aksi.api.branch.dto.UpdateAddressRequest;
 import com.aksi.domain.branch.entity.BranchEntity;
-import com.aksi.shared.mapper.BaseMapperConfig;
 
 /**
  * Mapper для Address ↔ BranchEntity адресних полів Відповідальність: конвертація між розширеними
  * Entity полями та спрощеними API полями.
  */
-@Mapper(
-    componentModel = "spring",
-    uses = {BaseMapperConfig.class},
-    unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AddressMapper {
 
   // DTO → Entity mappings

@@ -49,7 +49,7 @@ public class QrCodeService {
       response.setSize(request.getSize());
       response.setType(request.getType());
       response.setId(UUID.randomUUID());
-      response.setCreatedAt(java.time.OffsetDateTime.now());
+      response.setCreatedAt(java.time.Instant.now());
 
       return response;
 

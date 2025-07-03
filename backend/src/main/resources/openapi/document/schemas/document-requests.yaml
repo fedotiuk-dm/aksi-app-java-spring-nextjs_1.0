@@ -7,21 +7,26 @@ GenerateReceiptRequest:
   properties:
     orderId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
       description: Ідентифікатор замовлення
     template:
       $ref: "./document-enums.yaml#/ReceiptTemplate"
+      nullable: false
       default: STANDARD
       description: Шаблон квитанції
     includePhotos:
       type: boolean
+      nullable: false
       default: false
       description: Включити фотографії предметів
     generatePdf:
       type: boolean
+      nullable: false
       default: true
       description: Автоматично генерувати PDF
     generateQrCode:
       type: boolean
+      nullable: false
       default: true
       description: Автоматично генерувати QR-код
 
@@ -31,8 +36,10 @@ UpdateReceiptRequest:
   properties:
     data:
       $ref: "#/ReceiptDataRequest"
+      nullable: false
     regeneratePdf:
       type: boolean
+      nullable: false
       default: false
       description: Перегенерувати PDF після оновлення
 
@@ -108,23 +115,28 @@ GenerateQRCodeRequest:
   properties:
     data:
       type: string
+      nullable: false
       description: Дані для кодування в QR-код
       example: AKSI-01-2024-000001
     type:
       $ref: "./document-enums.yaml#/QRCodeType"
+      nullable: false
       description: Тип QR-коду
     size:
       type: integer
       minimum: 50
       maximum: 1000
+      nullable: false
       default: 200
       description: Розмір в пікселях
     format:
       $ref: "./document-enums.yaml#/QRCodeFormat"
+      nullable: false
       default: PNG
       description: Формат зображення
     errorCorrectionLevel:
       $ref: "./document-enums.yaml#/ErrorCorrectionLevel"
+      nullable: false
       default: MEDIUM
       description: Рівень корекції помилок
 
@@ -139,22 +151,28 @@ CreateDigitalSignatureRequest:
   properties:
     documentId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
       description: Ідентифікатор документа
     signatureData:
       type: string
+      nullable: false
       description: Base64 дані підпису (SVG або PNG)
     type:
       $ref: "./document-enums.yaml#/SignatureType"
+      nullable: false
     signerName:
       type: string
       maxLength: 100
+      nullable: false
       description: Ім'я підписанта
     signerRole:
       type: string
       maxLength: 50
+      nullable: false
       description: Роль підписанта
     metadata:
       $ref: "#/SignatureMetadataRequest"
+      nullable: false
 
 SignatureMetadataRequest:
   type: object
@@ -198,13 +216,16 @@ UpdateDocumentStatusRequest:
   properties:
     status:
       $ref: "./document-enums.yaml#/DocumentStatus"
+      nullable: false
       description: Новий статус документа
     reason:
       type: string
       maxLength: 500
+      nullable: false
       description: Причина зміни статусу
     metadata:
       type: object
+      nullable: false
       description: Додаткова інформація про зміну статусу
       additionalProperties:
         type: string

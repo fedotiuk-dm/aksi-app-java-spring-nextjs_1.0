@@ -1,8 +1,8 @@
 package com.aksi.domain.document.mapper;
 
 import java.net.URI;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -21,24 +21,18 @@ import com.aksi.domain.document.enums.DocumentType;
 import com.aksi.domain.document.enums.SignatureType;
 
 /**
- * MapStruct Mapper для Document Domain Entity↔DTO конвертації Спрощена версія за еталоном
- * AuthMapper.
+ * MapStruct Mapper для Document Domain Entity↔DTO конвертації BaseEntity поля (Instant) - прямий
+ * маппінг, специфічні поля (LocalDateTime) - конвертація.
  */
 @Mapper(componentModel = "spring")
 public interface DocumentMapper {
 
   // ===== BASIC UTILITY MAPPINGS =====
 
-  /** LocalDateTime (Entity) → OffsetDateTime (DTO) Аналог з AuthMapper. */
-  @Named("localDateTimeToOffsetDateTime")
-  default OffsetDateTime localDateTimeToOffsetDateTime(LocalDateTime localDateTime) {
-    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
-  }
-
-  /** OffsetDateTime (DTO) → LocalDateTime (Entity). */
-  @Named("offsetDateTimeToLocalDateTime")
-  default LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
-    return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
+  /** LocalDateTime (Entity) → Instant (DTO) для специфічних полів. */
+  @Named("localDateTimeToInstant")
+  default Instant localDateTimeToInstant(LocalDateTime localDateTime) {
+    return localDateTime != null ? localDateTime.toInstant(ZoneOffset.UTC) : null;
   }
 
   /** String → URI conversion. */
@@ -107,7 +101,7 @@ public interface DocumentMapper {
 
   // ===== SIMPLE ENTITY MAPPINGS =====
 
-  /** DocumentEntity → DocumentResponse (базові поля). */
+  /** DocumentEntity → DocumentResponse (прямий маппінг з Instant для BaseEntity полів). */
   default DocumentResponse toDocumentResponse(DocumentEntity entity) {
     if (entity == null) return null;
 
@@ -122,14 +116,14 @@ public interface DocumentMapper {
     response.setFileSize(entity.getFileSize());
     response.setMimeType(entity.getMimeType());
     response.setDownloadUrl(stringToUri(entity.getDownloadUrl()));
-    response.setCreatedAt(localDateTimeToOffsetDateTime(entity.getCreatedAt()));
-    response.setUpdatedAt(localDateTimeToOffsetDateTime(entity.getUpdatedAt()));
+    response.setCreatedAt(entity.getCreatedAt()); // Прямий маппінг Instant (BaseEntity)
+    response.setUpdatedAt(entity.getUpdatedAt()); // Прямий маппінг Instant (BaseEntity)
     response.setCreatedBy(entity.getCreatedBy());
     // metadata - складний об'єкт, обробляється в Service
     return response;
   }
 
-  /** ReceiptEntity → ReceiptResponse (базові поля). */
+  /** ReceiptEntity → ReceiptResponse (змішаний маппінг). */
   default ReceiptResponse toReceiptResponse(ReceiptEntity entity) {
     if (entity == null) return null;
 
@@ -138,14 +132,16 @@ public interface DocumentMapper {
     response.setOrderId(entity.getOrderId());
     response.setReceiptNumber(entity.getReceiptNumber());
     response.setIsPrinted(entity.getIsPrinted());
-    response.setPrintedAt(localDateTimeToOffsetDateTime(entity.getPrintedAt()));
-    response.setGeneratedAt(localDateTimeToOffsetDateTime(entity.getGeneratedAt()));
+    response.setPrintedAt(
+        localDateTimeToInstant(entity.getPrintedAt())); // Конвертація LocalDateTime → Instant
+    response.setGeneratedAt(
+        localDateTimeToInstant(entity.getGeneratedAt())); // Конвертація LocalDateTime → Instant
     response.setGeneratedBy(entity.getGeneratedBy());
     // data, pdfDocument, qrCode, signatures - складні об'єкти, обробляються в Service
     return response;
   }
 
-  /** DigitalSignatureEntity → DigitalSignatureResponse (базові поля). */
+  /** DigitalSignatureEntity → DigitalSignatureResponse (змішаний маппінг). */
   default DigitalSignatureResponse toDigitalSignatureResponse(DigitalSignatureEntity entity) {
     if (entity == null) return null;
 
@@ -155,7 +151,8 @@ public interface DocumentMapper {
     response.setType(domainToApiSignatureType(entity.getType()));
     response.setSignerName(entity.getSignerName());
     response.setSignerRole(entity.getSignerRole());
-    response.setSignedAt(localDateTimeToOffsetDateTime(entity.getSignedAt()));
+    response.setSignedAt(
+        localDateTimeToInstant(entity.getSignedAt())); // Конвертація LocalDateTime → Instant
     response.setIsValid(entity.getIsValid());
     response.setImageUrl(stringToUri(entity.getImageUrl()));
     response.setIpAddress(entity.getIpAddress());

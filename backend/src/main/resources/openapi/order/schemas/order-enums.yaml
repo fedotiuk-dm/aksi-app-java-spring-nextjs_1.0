@@ -24,6 +24,19 @@ OrderStatus:
     - Завершене
     - Скасоване
 
+ReceiptFormat:
+  type: string
+  description: Формат квитанції
+  enum:
+    - PDF
+    - HTML
+  x-enum-varnames:
+    - PDF
+    - HTML
+  x-enum-descriptions:
+    - PDF файл для друку
+    - HTML для перегляду в браузері
+
 UrgencyType:
   type: string
   description: Тип терміновості виконання

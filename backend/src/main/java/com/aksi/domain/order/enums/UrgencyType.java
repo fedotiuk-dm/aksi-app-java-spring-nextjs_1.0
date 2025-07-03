@@ -1,7 +1,9 @@
 package com.aksi.domain.order.enums;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /** Domain enum для типу терміновості з business логікою розрахунків. */
 public enum UrgencyType {
@@ -61,6 +63,12 @@ public enum UrgencyType {
   /** Розраховує приблизну дату готовності замовлення. */
   public LocalDateTime calculateReadyDate(LocalDateTime orderDate) {
     return orderDate.plusDays(standardDays);
+  }
+
+  /** Розраховує приблизну дату готовності замовлення з Instant (для BaseEntity.createdAt). */
+  public LocalDateTime calculateReadyDate(Instant orderInstant) {
+    LocalDateTime orderDate = orderInstant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+    return calculateReadyDate(orderDate);
   }
 
   /** Перевіряє чи дата відповідає терміновості. */

@@ -1,7 +1,7 @@
 package com.aksi.api.branch;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class WorkingScheduleApiController implements WorkingScheduleApi {
 
   @Override
   public ResponseEntity<BranchOpenStatusResponse> getBranchOpenStatus(
-      UUID branchId, OffsetDateTime dateTime) {
+      UUID branchId, Instant dateTime) {
     BranchOpenStatusResponse response =
         workingScheduleService.getBranchOpenStatus(branchId, dateTime);
     return ResponseEntity.ok(response);

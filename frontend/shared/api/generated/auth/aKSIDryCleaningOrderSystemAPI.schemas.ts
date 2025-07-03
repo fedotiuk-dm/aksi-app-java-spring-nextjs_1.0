@@ -5,6 +5,649 @@
  * API для односторінкової системи замовлень хімчистки з DDD архітектурою
  * OpenAPI spec version: 1.0.0
  */
+export interface ServiceCategoryResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  /** Унікальний код категорії */
+  code: string;
+  /** Назва категорії */
+  name: string;
+  /** Опис категорії */
+  description?: string;
+  /** Унікальний ідентифікатор (UUID v4) */
+  parentId?: string;
+  /** Стандартний термін виконання в днях */
+  standardDays: number;
+  /** Чи активна категорія */
+  isActive: boolean;
+  /** Доступні матеріали для категорії */
+  availableMaterials: string[];
+  /** Доступні модифікатори для категорії */
+  availableModifiers: string[];
+  /** Кількість предметів в категорії */
+  itemsCount: number;
+  /** Дата створення */
+  readonly createdAt: string;
+  /** Дата останнього оновлення */
+  readonly updatedAt: string;
+}
+
+export interface ErrorResponse {
+  /** Час виникнення помилки */
+  timestamp: string;
+  /** HTTP статус код */
+  status: number;
+  /** Тип помилки */
+  error: string;
+  /** Опис помилки */
+  message: string;
+  /** Шлях запиту */
+  path: string;
+  /** Ідентифікатор для відстеження помилки */
+  traceId?: string;
+}
+
+/**
+ * Запит на оновлення категорії послуг
+ */
+export interface UpdateServiceCategoryRequest {
+  /**
+   * Назва категорії
+   * @minLength 0
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * Опис категорії
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /**
+   * Стандартний термін виконання в днях
+   * @minimum 1
+   * @maximum 30
+   */
+  standardDays?: number;
+  /** Чи активна категорія */
+  isActive?: boolean;
+}
+
+export interface BranchInfoResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  branchId: string;
+  branchCode: string;
+  branchName: string;
+  address: string;
+  phone: string;
+  managerName: string;
+}
+
+export interface ClientInfoResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  clientId: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  preferredContactMethod: string;
+}
+
+export interface CompanyInfoResponse {
+  companyName: string;
+  legalName: string;
+  address: string;
+  phone: string;
+  email: string;
+  website?: string;
+  logoUrl?: string;
+  taxNumber: string;
+}
+
+export type DigitalSignatureSummaryResponseType = typeof DigitalSignatureSummaryResponseType[keyof typeof DigitalSignatureSummaryResponseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DigitalSignatureSummaryResponseType = {
+  CLIENT_HANDOVER: 'CLIENT_HANDOVER',
+  CLIENT_PICKUP: 'CLIENT_PICKUP',
+  OPERATOR: 'OPERATOR',
+  DIGITAL: 'DIGITAL',
+} as const;
+
+export interface DigitalSignatureSummaryResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id?: string;
+  type?: DigitalSignatureSummaryResponseType;
+  signerName?: string;
+  /** Мітка часу в ISO 8601 форматі */
+  signedAt?: string;
+  imageUrl?: string;
+}
+
+export interface DocumentSummaryResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id?: string;
+  fileName?: string;
+  fileSize?: number;
+  downloadUrl?: string;
+  /** Мітка часу в ISO 8601 форматі */
+  createdAt?: string;
+}
+
+export interface FinancialSummaryResponse {
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  subtotal?: number;
+  discountType?: string;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  discountAmount?: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  expediteCharge?: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  totalAmount?: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  paidAmount?: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  remainingAmount?: number;
+  paymentMethod?: string;
+}
+
+export type ItemDetailResponseColor = typeof ItemDetailResponseColor[keyof typeof ItemDetailResponseColor];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemDetailResponseColor = {
+  BLACK: 'BLACK',
+  WHITE: 'WHITE',
+  GRAY: 'GRAY',
+  BROWN: 'BROWN',
+  NAVY: 'NAVY',
+  BLUE: 'BLUE',
+  GREEN: 'GREEN',
+  RED: 'RED',
+  BEIGE: 'BEIGE',
+  CREAM: 'CREAM',
+  PINK: 'PINK',
+  YELLOW: 'YELLOW',
+  PURPLE: 'PURPLE',
+  MULTICOLOR: 'MULTICOLOR',
+  OTHER: 'OTHER',
+} as const;
+
+export interface ItemDetailResponse {
+  itemNumber: number;
+  itemName: string;
+  category: string;
+  quantity: string;
+  material: string;
+  color: ItemDetailResponseColor;
+  /** Кастомний колір (має значення тільки якщо color = OTHER) */
+  customColor?: JsonNullableString;
+  filling?: string;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  basePrice: number;
+  modifiers: ModifierDetailResponse[];
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  finalPrice: number;
+  stains: string[];
+  defects: string[];
+  defectNotes?: string;
+  photos: PhotoSummaryResponse[];
+}
+
+export interface JsonNullableString {
+  present?: boolean;
+}
+
+export interface LegalInfoResponse {
+  termsAndConditions?: string;
+  liabilityLimitations?: string;
+  warrantyInfo?: string;
+  acceptanceConfirmed?: boolean;
+  /** Мітка часу в ISO 8601 форматі */
+  acceptanceDate?: string;
+}
+
+export type ModifierDetailResponseType = typeof ModifierDetailResponseType[keyof typeof ModifierDetailResponseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ModifierDetailResponseType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT',
+  MULTIPLIER: 'MULTIPLIER',
+} as const;
+
+export interface ModifierDetailResponse {
+  name?: string;
+  type?: ModifierDetailResponseType;
+  value?: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  appliedAmount?: number;
+}
+
+export interface OperatorInfoResponse {
+  operatorName?: string;
+  operatorPosition?: string;
+  /** Унікальний ідентифікатор (UUID v4) */
+  operatorId?: string;
+}
+
+export type OrderInfoResponseExpediteType = typeof OrderInfoResponseExpediteType[keyof typeof OrderInfoResponseExpediteType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrderInfoResponseExpediteType = {
+  NORMAL: 'NORMAL',
+  URGENT_48H: 'URGENT_48H',
+  URGENT_24H: 'URGENT_24H',
+} as const;
+
+export interface OrderInfoResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  orderId: string;
+  orderNumber: string;
+  /** Мітка часу в ISO 8601 форматі */
+  createdAt: string;
+  /** Мітка часу в ISO 8601 форматі */
+  expectedCompletionDate: string;
+  expediteType: OrderInfoResponseExpediteType;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  totalAmount: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  discountAmount: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  finalAmount: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  paidAmount: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  remainingAmount: number;
+}
+
+export interface PhotoSummaryResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id?: string;
+  thumbnailUrl?: string;
+  fullUrl?: string;
+}
+
+export interface QRCodeSummaryResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id?: string;
+  imageUrl?: string;
+  size?: number;
+}
+
+export interface ReceiptDataResponse {
+  companyInfo: CompanyInfoResponse;
+  branchInfo: BranchInfoResponse;
+  orderInfo: OrderInfoResponse;
+  clientInfo: ClientInfoResponse;
+  items: ItemDetailResponse[];
+  financial: FinancialSummaryResponse;
+  legalInfo: LegalInfoResponse;
+  operatorInfo: OperatorInfoResponse;
+}
+
+export interface ReceiptResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  /** Унікальний ідентифікатор (UUID v4) */
+  orderId: string;
+  /** Номер квитанції */
+  receiptNumber: string;
+  data: ReceiptDataResponse;
+  pdfDocument?: DocumentSummaryResponse;
+  qrCode?: QRCodeSummaryResponse;
+  signatures?: DigitalSignatureSummaryResponse[];
+  /** Чи роздрукована квитанція */
+  isPrinted: boolean;
+  /** Мітка часу в ISO 8601 форматі */
+  printedAt?: string;
+  /** Мітка часу в ISO 8601 форматі */
+  generatedAt: string;
+  /** Хто згенерував */
+  generatedBy: string;
+}
+
+export interface FieldError {
+  /** Назва поля з помилкою */
+  field: string;
+  /** Опис помилки */
+  message: string;
+  /** Відхилене значення */
+  rejectedValue?: JsonNullableObject;
+  /** Код помилки валідації */
+  code?: string;
+}
+
+export interface JsonNullableObject {
+  present?: boolean;
+}
+
+export interface ValidationErrorResponse {
+  /** Час виникнення помилки */
+  timestamp: string;
+  /** HTTP статус код (400) */
+  status: number;
+  /** Тип помилки */
+  error: string;
+  /** Загальний опис помилки валідації */
+  message: string;
+  /** Шлях запиту */
+  path: string;
+  /** Список помилок валідації полів */
+  errors: FieldError[];
+}
+
+export interface CompanyInfoRequest {
+  /**
+   * @minLength 0
+   * @maxLength 200
+   */
+  companyName?: string;
+  /**
+   * @minLength 0
+   * @maxLength 200
+   */
+  legalName?: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  address?: string;
+  /**
+   * Номер телефону в міжнародному форматі
+   * @pattern ^\+380\d{9}$
+   */
+  phone?: string;
+  /**
+   * Email адреса
+   * @minLength 3
+   * @maxLength 254
+   */
+  email?: string;
+  website?: string;
+  logoUrl?: string;
+  /**
+   * @minLength 0
+   * @maxLength 50
+   */
+  taxNumber?: string;
+}
+
+export interface LegalInfoRequest {
+  /**
+   * @minLength 0
+   * @maxLength 2000
+   */
+  termsAndConditions?: string;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  liabilityLimitations?: string;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  warrantyInfo?: string;
+}
+
+export interface OperatorInfoRequest {
+  /**
+   * @minLength 0
+   * @maxLength 100
+   */
+  operatorName?: string;
+  /**
+   * @minLength 0
+   * @maxLength 100
+   */
+  operatorPosition?: string;
+}
+
+export interface ReceiptDataRequest {
+  companyInfo?: CompanyInfoRequest;
+  operatorInfo?: OperatorInfoRequest;
+  legalInfo?: LegalInfoRequest;
+}
+
+export interface UpdateReceiptRequest {
+  data?: ReceiptDataRequest;
+  /** Перегенерувати PDF після оновлення */
+  regeneratePdf?: boolean;
+}
+
+export type PriceModifierResponseType = typeof PriceModifierResponseType[keyof typeof PriceModifierResponseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceModifierResponseType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT',
+} as const;
+
+export interface PriceModifierResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  /** Унікальний код модифікатора */
+  code: string;
+  /** Назва модифікатора */
+  name: string;
+  type: PriceModifierResponseType;
+  /** Значення модифікатора */
+  value: number;
+  /** Категорії, до яких застосовується */
+  applicableTo: string[];
+  /** Чи активний модифікатор */
+  isActive: boolean;
+  /** Опис модифікатора */
+  description?: string;
+}
+
+/**
+ * Запит на оновлення модифікатора ціни
+ */
+export interface UpdatePriceModifierRequest {
+  /**
+   * Назва модифікатора
+   * @minLength 0
+   * @maxLength 200
+   */
+  name?: string;
+  /** Значення модифікатора */
+  value?: number;
+  /** Категорії, до яких застосовується модифікатор */
+  applicableTo?: string[];
+  /**
+   * Опис модифікатора
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /** Чи активний модифікатор */
+  isActive?: boolean;
+}
+
+export type PriceListItemResponseUnitOfMeasure = typeof PriceListItemResponseUnitOfMeasure[keyof typeof PriceListItemResponseUnitOfMeasure];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceListItemResponseUnitOfMeasure = {
+  шт: 'шт',
+  кг: 'кг',
+  пара: 'пара',
+  квм: 'кв.м',
+} as const;
+
+export interface PriceListItemResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  /** Унікальний ідентифікатор (UUID v4) */
+  categoryId: string;
+  categoryInfo?: ServiceCategorySummary;
+  /** Каталоговий номер предмета */
+  catalogNumber: number;
+  /** Назва предмета */
+  name: string;
+  unitOfMeasure: PriceListItemResponseUnitOfMeasure;
+  /** Базова ціна */
+  basePrice: number;
+  /** Ціна для чорних речей (може бути null) */
+  priceBlack?: number;
+  /** Ціна для кольорових речей (може бути null) */
+  priceColor?: number;
+  /** Чи активний предмет */
+  isActive: boolean;
+  /** Дата створення */
+  readonly createdAt: string;
+  /** Дата останнього оновлення */
+  readonly updatedAt: string;
+}
+
+export interface ServiceCategorySummary {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  code: string;
+  name: string;
+  standardDays: number;
+}
+
+export type UpdatePriceListItemRequestUnitOfMeasure = typeof UpdatePriceListItemRequestUnitOfMeasure[keyof typeof UpdatePriceListItemRequestUnitOfMeasure];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdatePriceListItemRequestUnitOfMeasure = {
+  шт: 'шт',
+  кг: 'кг',
+  пара: 'пара',
+  квм: 'кв.м',
+} as const;
+
+/**
+ * Запит на оновлення предмета в прайс-листі
+ */
+export interface UpdatePriceListItemRequest {
+  /**
+   * Назва предмета
+   * @minLength 0
+   * @maxLength 255
+   */
+  name?: string;
+  unitOfMeasure?: UpdatePriceListItemRequestUnitOfMeasure;
+  /**
+   * Базова ціна
+   * @minimum 0
+   */
+  basePrice?: number;
+  /**
+   * Ціна для чорних речей (опціонально)
+   * @minimum 0
+   */
+  priceBlack?: number;
+  /**
+   * Ціна для кольорових речей (опціонально)
+   * @minimum 0
+   */
+  priceColor?: number;
+  /** Чи активний предмет */
+  isActive?: boolean;
+}
+
+export interface PhotoResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  /** Унікальний ідентифікатор (UUID v4) */
+  itemId: string;
+  /** Ім'я файлу */
+  filename: string;
+  /** Оригінальне ім'я файлу */
+  originalFilename?: string;
+  /** URL для доступу до фотографії */
+  url: string;
+  /** URL мініатюри */
+  thumbnailUrl?: string;
+  /** Розмір файлу в байтах */
+  fileSize: number;
+  /** MIME тип файлу */
+  mimeType: string;
+  /** Опис фотографії */
+  description?: string;
+  /** Мітка часу в ISO 8601 форматі */
+  uploadedAt: string;
+}
+
+export type UpdatePhotoMetadataRequestPhotoType = typeof UpdatePhotoMetadataRequestPhotoType[keyof typeof UpdatePhotoMetadataRequestPhotoType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdatePhotoMetadataRequestPhotoType = {
+  BEFORE: 'BEFORE',
+  AFTER: 'AFTER',
+  DEFECT: 'DEFECT',
+  STAIN: 'STAIN',
+  DETAIL: 'DETAIL',
+} as const;
+
+/**
+ * Запит на оновлення метаданих фотографії
+ */
+export interface UpdatePhotoMetadataRequest {
+  /**
+   * Опис фотографії
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  photoType?: UpdatePhotoMetadataRequestPhotoType;
+  /** Чи є це основна фотографія предмета */
+  isMain?: boolean;
+}
+
 export interface Address {
   /**
    * Вулиця та номер будинку
@@ -80,7 +723,7 @@ export interface ClientResponse {
   phone: string;
   /**
    * Email адреса
-   * @minLength 0
+   * @minLength 3
    * @maxLength 254
    */
   email?: string;
@@ -115,51 +758,6 @@ export interface ClientStatistics {
   isVip?: boolean;
   /** Дата в ISO 8601 форматі */
   registrationDate?: string;
-}
-
-export interface FieldError {
-  /** Назва поля з помилкою */
-  field: string;
-  /** Опис помилки */
-  message: string;
-  /** Відхилене значення */
-  rejectedValue?: JsonNullableObject;
-  /** Код помилки валідації */
-  code?: string;
-}
-
-export interface JsonNullableObject {
-  present?: boolean;
-}
-
-export interface ValidationErrorResponse {
-  /** Час виникнення помилки */
-  timestamp: string;
-  /** HTTP статус код (400) */
-  status: number;
-  /** Тип помилки */
-  error: string;
-  /** Загальний опис помилки валідації */
-  message: string;
-  /** Шлях запиту */
-  path: string;
-  /** Список помилок валідації полів */
-  errors: FieldError[];
-}
-
-export interface ErrorResponse {
-  /** Час виникнення помилки */
-  timestamp: string;
-  /** HTTP статус код */
-  status: number;
-  /** Тип помилки */
-  error: string;
-  /** Опис помилки */
-  message: string;
-  /** Шлях запиту */
-  path: string;
-  /** Ідентифікатор для відстеження помилки */
-  traceId?: string;
 }
 
 export interface UpdateAddressRequest {
@@ -241,7 +839,7 @@ export interface UpdateClientRequest {
   phone?: string;
   /**
    * Email адреса
-   * @minLength 0
+   * @minLength 3
    * @maxLength 254
    */
   email?: string;
@@ -271,7 +869,7 @@ export const ClientContactsResponseCommunicationMethodsItem = {
 
 export interface ClientContactsResponse {
   /** Унікальний ідентифікатор (UUID v4) */
-  id?: string;
+  id: string;
   /**
    * Номер телефону в міжнародному форматі
    * @pattern ^\+380\d{9}$
@@ -279,7 +877,7 @@ export interface ClientContactsResponse {
   phone?: string;
   /**
    * Email адреса
-   * @minLength 0
+   * @minLength 3
    * @maxLength 254
    */
   email?: string;
@@ -307,13 +905,733 @@ export interface UpdateClientContactsRequest {
   phone?: string;
   /**
    * Email адреса
-   * @minLength 0
+   * @minLength 3
    * @maxLength 254
    */
   email?: string;
   /** Бажані способи зв'язку */
   communicationMethods?: UpdateClientContactsRequestCommunicationMethodsItem[];
   address?: UpdateAddressRequest;
+}
+
+export type BranchResponseStatus = typeof BranchResponseStatus[keyof typeof BranchResponseStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BranchResponseStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  TEMPORARILY_CLOSED: 'TEMPORARILY_CLOSED',
+  UNDER_RENOVATION: 'UNDER_RENOVATION',
+} as const;
+
+export interface BranchResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  /** Унікальний код філії */
+  code: string;
+  /** Назва філії */
+  name: string;
+  /** Опис розташування */
+  description: string;
+  address: Address;
+  contactInfo: ContactInfoResponse;
+  coordinates?: CoordinatesResponse;
+  status: BranchResponseStatus;
+  workingSchedule?: WorkingScheduleResponse;
+  /** Поточний лічильник квитанцій */
+  receiptCounter: number;
+  /** Дата створення */
+  readonly createdAt: string;
+  /** Дата останнього оновлення */
+  readonly updatedAt: string;
+}
+
+export interface ContactInfoResponse {
+  /** Основний телефон */
+  phone: string;
+  /** Додатковий телефон */
+  alternativePhone?: string;
+  /** Email філії */
+  email: string;
+  /** Ім'я менеджера */
+  managerName: string;
+}
+
+export interface CoordinatesResponse {
+  /** Широта */
+  latitude?: number;
+  /** Довгота */
+  longitude?: number;
+  /** Посилання на карту */
+  mapUrl?: string;
+}
+
+export interface HolidayResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  /** Дата в ISO 8601 форматі */
+  date: string;
+  /** Назва свята */
+  name: string;
+  /** Чи повторюється щороку */
+  isRecurring: boolean;
+}
+
+export type WorkingDayResponseDayOfWeek = typeof WorkingDayResponseDayOfWeek[keyof typeof WorkingDayResponseDayOfWeek];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const WorkingDayResponseDayOfWeek = {
+  MONDAY: 'MONDAY',
+  TUESDAY: 'TUESDAY',
+  WEDNESDAY: 'WEDNESDAY',
+  THURSDAY: 'THURSDAY',
+  FRIDAY: 'FRIDAY',
+  SATURDAY: 'SATURDAY',
+  SUNDAY: 'SUNDAY',
+} as const;
+
+export interface WorkingDayResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  dayOfWeek: WorkingDayResponseDayOfWeek;
+  /** Час відкриття */
+  openTime?: string;
+  /** Час закриття */
+  closeTime?: string;
+  /** Чи є день робочим */
+  isWorkingDay: boolean;
+  /** Примітки до дня */
+  notes?: string;
+}
+
+export interface WorkingScheduleResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  /** Унікальний ідентифікатор (UUID v4) */
+  branchId: string;
+  workingDays: WorkingDayResponse[];
+  holidays: HolidayResponse[];
+  /** Часовий пояс */
+  timezone: string;
+}
+
+export interface ContactInfoRequest {
+  /**
+   * Номер телефону в міжнародному форматі
+   * @pattern ^\+380\d{9}$
+   */
+  phone: string;
+  /**
+   * Номер телефону в міжнародному форматі
+   * @pattern ^\+380\d{9}$
+   */
+  alternativePhone?: string;
+  /**
+   * Email адреса
+   * @minLength 3
+   * @maxLength 254
+   */
+  email: string;
+  /**
+   * Ім'я менеджера
+   * @minLength 0
+   * @maxLength 100
+   */
+  managerName: string;
+}
+
+export interface CoordinatesRequest {
+  /**
+   * Широта
+   * @minimum -90
+   * @maximum 90
+   */
+  latitude?: number;
+  /**
+   * Довгота
+   * @minimum -180
+   * @maximum 180
+   */
+  longitude?: number;
+  /** Посилання на карту */
+  mapUrl?: string;
+}
+
+export type UpdateBranchRequestStatus = typeof UpdateBranchRequestStatus[keyof typeof UpdateBranchRequestStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateBranchRequestStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  TEMPORARILY_CLOSED: 'TEMPORARILY_CLOSED',
+  UNDER_RENOVATION: 'UNDER_RENOVATION',
+} as const;
+
+export interface UpdateBranchRequest {
+  /**
+   * Назва філії
+   * @minLength 3
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * Опис розташування
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  address?: UpdateAddressRequest;
+  contactInfo?: ContactInfoRequest;
+  coordinates?: CoordinatesRequest;
+  status?: UpdateBranchRequestStatus;
+}
+
+export interface HolidayRequest {
+  /** Дата в ISO 8601 форматі */
+  date: string;
+  /**
+   * Назва свята
+   * @minLength 0
+   * @maxLength 100
+   */
+  name: string;
+  /** Чи повторюється щороку */
+  isRecurring?: boolean;
+}
+
+export interface UpdateWorkingScheduleRequest {
+  /**
+   * @minItems 7
+   * @maxItems 7
+   */
+  workingDays?: WorkingDayRequest[];
+  holidays?: HolidayRequest[];
+  timezone?: string;
+}
+
+export type WorkingDayRequestDayOfWeek = typeof WorkingDayRequestDayOfWeek[keyof typeof WorkingDayRequestDayOfWeek];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const WorkingDayRequestDayOfWeek = {
+  MONDAY: 'MONDAY',
+  TUESDAY: 'TUESDAY',
+  WEDNESDAY: 'WEDNESDAY',
+  THURSDAY: 'THURSDAY',
+  FRIDAY: 'FRIDAY',
+  SATURDAY: 'SATURDAY',
+  SUNDAY: 'SUNDAY',
+} as const;
+
+export interface WorkingDayRequest {
+  dayOfWeek: WorkingDayRequestDayOfWeek;
+  /** Час відкриття (якщо робочий день) */
+  openTime?: string;
+  /** Час закриття (якщо робочий день) */
+  closeTime?: string;
+  /** Чи є день робочим */
+  isWorkingDay: boolean;
+  /**
+   * Примітки до дня
+   * @minLength 0
+   * @maxLength 200
+   */
+  notes?: string;
+}
+
+/**
+ * Запит на створення нової категорії послуг
+ */
+export interface CreateServiceCategoryRequest {
+  /**
+   * Унікальний код категорії
+   * @minLength 0
+   * @maxLength 20
+   */
+  code: string;
+  /**
+   * Назва категорії
+   * @minLength 0
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * Опис категорії
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /** Ідентифікатор батьківської категорії */
+  parentId?: string;
+  /**
+   * Стандартний термін виконання в днях
+   * @minimum 1
+   * @maximum 30
+   */
+  standardDays: number;
+  /** Чи активна категорія */
+  isActive?: boolean;
+}
+
+export type GenerateReceiptRequestTemplate = typeof GenerateReceiptRequestTemplate[keyof typeof GenerateReceiptRequestTemplate];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GenerateReceiptRequestTemplate = {
+  STANDARD: 'STANDARD',
+  COMPACT: 'COMPACT',
+  DETAILED: 'DETAILED',
+} as const;
+
+export interface GenerateReceiptRequest {
+  /** Унікальний ідентифікатор (UUID v4) */
+  orderId: string;
+  template?: GenerateReceiptRequestTemplate;
+  /** Включити фотографії предметів */
+  includePhotos?: boolean;
+  /** Автоматично генерувати PDF */
+  generatePdf?: boolean;
+  /** Автоматично генерувати QR-код */
+  generateQrCode?: boolean;
+}
+
+export interface DocumentMetadataResponse {
+  template?: string;
+  version?: string;
+  /** Час генерації в секундах */
+  generationTime?: number;
+  /** Кількість сторінок (для PDF) */
+  pageCount?: number;
+}
+
+export type DocumentResponseType = typeof DocumentResponseType[keyof typeof DocumentResponseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DocumentResponseType = {
+  RECEIPT: 'RECEIPT',
+  CONTRACT: 'CONTRACT',
+  INVOICE: 'INVOICE',
+  PHOTO: 'PHOTO',
+  QR_CODE: 'QR_CODE',
+  SIGNATURE: 'SIGNATURE',
+} as const;
+
+export type DocumentResponseStatus = typeof DocumentResponseStatus[keyof typeof DocumentResponseStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DocumentResponseStatus = {
+  DRAFT: 'DRAFT',
+  GENERATED: 'GENERATED',
+  SIGNED: 'SIGNED',
+  PRINTED: 'PRINTED',
+  ARCHIVED: 'ARCHIVED',
+} as const;
+
+export interface DocumentResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  documentNumber: string;
+  type: DocumentResponseType;
+  /** Унікальний ідентифікатор (UUID v4) */
+  relatedEntityId: string;
+  fileName: string;
+  filePath: string;
+  fileSize: number;
+  mimeType: string;
+  status: DocumentResponseStatus;
+  downloadUrl: string;
+  metadata: DocumentMetadataResponse;
+  /** Дата створення */
+  readonly createdAt?: string;
+  /** Дата останнього оновлення */
+  readonly updatedAt?: string;
+  createdBy?: string;
+}
+
+export type GeneratePdfRequestTemplate = typeof GeneratePdfRequestTemplate[keyof typeof GeneratePdfRequestTemplate];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GeneratePdfRequestTemplate = {
+  STANDARD: 'STANDARD',
+  COMPACT: 'COMPACT',
+  DETAILED: 'DETAILED',
+} as const;
+
+export interface GeneratePdfRequest {
+  template?: GeneratePdfRequestTemplate;
+  /** Перегенерувати якщо вже існує */
+  regenerate?: boolean;
+}
+
+export interface ReceiptValidationResponse {
+  /** Перевірений номер */
+  receiptNumber: string;
+  /** Чи правильний формат */
+  isValid: boolean;
+  /** Список помилок (якщо є) */
+  errors: string[];
+  /** Код філії (якщо валідний) */
+  branchCode?: string;
+}
+
+export interface ValidateReceiptNumberRequest {
+  /** Номер квитанції для валідації */
+  receiptNumber: string;
+}
+
+export interface BranchSummaryResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  code: string;
+  name: string;
+  city: string;
+}
+
+export interface ReceiptNumberParseResponse {
+  /** Оригінальний номер */
+  receiptNumber: string;
+  /** Код філії */
+  branchCode: string;
+  /** Рік */
+  year: number;
+  /** Порядковий номер */
+  sequenceNumber: number;
+  branchInfo?: BranchSummaryResponse;
+}
+
+export interface ParseReceiptNumberRequest {
+  /** Номер квитанції для розбору */
+  receiptNumber: string;
+}
+
+export interface ReceiptNumberResponse {
+  /** Згенерований номер квитанції */
+  receiptNumber: string;
+  /** Унікальний ідентифікатор (UUID v4) */
+  branchId: string;
+  branchCode: string;
+  year: number;
+  sequenceNumber: number;
+  /** Мітка часу в ISO 8601 форматі */
+  generatedAt: string;
+}
+
+export interface GenerateReceiptNumberRequest {
+  /** Унікальний ідентифікатор (UUID v4) */
+  branchId: string;
+  /**
+   * Код філії (альтернатива до branchId)
+   * @pattern ^[A-Z0-9-]+$
+   */
+  branchCode?: string;
+}
+
+export type QRCodeResponseType = typeof QRCodeResponseType[keyof typeof QRCodeResponseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QRCodeResponseType = {
+  ORDER_TRACKING: 'ORDER_TRACKING',
+  RECEIPT_VERIFICATION: 'RECEIPT_VERIFICATION',
+  CONTACT_INFO: 'CONTACT_INFO',
+} as const;
+
+export type QRCodeResponseFormat = typeof QRCodeResponseFormat[keyof typeof QRCodeResponseFormat];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QRCodeResponseFormat = {
+  PNG: 'PNG',
+  SVG: 'SVG',
+  JPEG: 'JPEG',
+} as const;
+
+export interface QRCodeResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id?: string;
+  /** Закодовані дані */
+  data?: string;
+  type?: QRCodeResponseType;
+  size?: number;
+  format?: QRCodeResponseFormat;
+  /** URL для отримання зображення */
+  imageUrl?: string;
+  /** Мітка часу в ISO 8601 форматі */
+  createdAt?: string;
+}
+
+export type GenerateQRCodeRequestType = typeof GenerateQRCodeRequestType[keyof typeof GenerateQRCodeRequestType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GenerateQRCodeRequestType = {
+  ORDER_TRACKING: 'ORDER_TRACKING',
+  RECEIPT_VERIFICATION: 'RECEIPT_VERIFICATION',
+  CONTACT_INFO: 'CONTACT_INFO',
+} as const;
+
+export type GenerateQRCodeRequestFormat = typeof GenerateQRCodeRequestFormat[keyof typeof GenerateQRCodeRequestFormat];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GenerateQRCodeRequestFormat = {
+  PNG: 'PNG',
+  SVG: 'SVG',
+  JPEG: 'JPEG',
+} as const;
+
+export type GenerateQRCodeRequestErrorCorrectionLevel = typeof GenerateQRCodeRequestErrorCorrectionLevel[keyof typeof GenerateQRCodeRequestErrorCorrectionLevel];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GenerateQRCodeRequestErrorCorrectionLevel = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  QUARTILE: 'QUARTILE',
+  HIGH: 'HIGH',
+} as const;
+
+export interface GenerateQRCodeRequest {
+  /** Дані для кодування в QR-код */
+  data: string;
+  type: GenerateQRCodeRequestType;
+  /**
+   * Розмір в пікселях
+   * @minimum 50
+   * @maximum 1000
+   */
+  size?: number;
+  format?: GenerateQRCodeRequestFormat;
+  errorCorrectionLevel?: GenerateQRCodeRequestErrorCorrectionLevel;
+}
+
+export type CreatePriceModifierRequestType = typeof CreatePriceModifierRequestType[keyof typeof CreatePriceModifierRequestType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreatePriceModifierRequestType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT',
+} as const;
+
+/**
+ * Запит на створення нового модифікатора ціни
+ */
+export interface CreatePriceModifierRequest {
+  /**
+   * Унікальний код модифікатора
+   * @minLength 0
+   * @maxLength 50
+   */
+  code: string;
+  /**
+   * Назва модифікатора
+   * @minLength 0
+   * @maxLength 200
+   */
+  name: string;
+  type: CreatePriceModifierRequestType;
+  /** Значення модифікатора */
+  value: number;
+  /** Категорії, до яких застосовується модифікатор */
+  applicableTo?: string[];
+  /**
+   * Опис модифікатора
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /** Чи активний модифікатор */
+  isActive?: boolean;
+}
+
+export type CreatePriceListItemRequestUnitOfMeasure = typeof CreatePriceListItemRequestUnitOfMeasure[keyof typeof CreatePriceListItemRequestUnitOfMeasure];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreatePriceListItemRequestUnitOfMeasure = {
+  шт: 'шт',
+  кг: 'кг',
+  пара: 'пара',
+  квм: 'кв.м',
+} as const;
+
+/**
+ * Запит на створення нового предмета в прайс-листі
+ */
+export interface CreatePriceListItemRequest {
+  /** Ідентифікатор категорії */
+  categoryId: string;
+  /**
+   * Каталоговий номер предмета
+   * @minimum 1
+   */
+  catalogNumber: number;
+  /**
+   * Назва предмета
+   * @minLength 0
+   * @maxLength 255
+   */
+  name: string;
+  unitOfMeasure: CreatePriceListItemRequestUnitOfMeasure;
+  /**
+   * Базова ціна
+   * @minimum 0
+   */
+  basePrice: number;
+  /**
+   * Ціна для чорних речей (опціонально)
+   * @minimum 0
+   */
+  priceBlack?: number;
+  /**
+   * Ціна для кольорових речей (опціонально)
+   * @minimum 0
+   */
+  priceColor?: number;
+  /** Чи активний предмет */
+  isActive?: boolean;
+}
+
+export type DigitalSignatureResponseType = typeof DigitalSignatureResponseType[keyof typeof DigitalSignatureResponseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DigitalSignatureResponseType = {
+  CLIENT_HANDOVER: 'CLIENT_HANDOVER',
+  CLIENT_PICKUP: 'CLIENT_PICKUP',
+  OPERATOR: 'OPERATOR',
+  DIGITAL: 'DIGITAL',
+} as const;
+
+export interface DigitalSignatureResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id?: string;
+  /** Унікальний ідентифікатор (UUID v4) */
+  documentId?: string;
+  type?: DigitalSignatureResponseType;
+  signerName?: string;
+  signerRole?: string;
+  /** Мітка часу в ISO 8601 форматі */
+  signedAt?: string;
+  ipAddress?: string;
+  /** URL для отримання зображення підпису */
+  imageUrl?: string;
+  metadata?: SignatureMetadataResponse;
+  /** Чи валідний підпис */
+  isValid?: boolean;
+}
+
+export type SignatureMetadataResponseSignatureMethod = typeof SignatureMetadataResponseSignatureMethod[keyof typeof SignatureMetadataResponseSignatureMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SignatureMetadataResponseSignatureMethod = {
+  TOUCH: 'TOUCH',
+  MOUSE: 'MOUSE',
+  STYLUS: 'STYLUS',
+} as const;
+
+export interface SignatureMetadataResponse {
+  deviceInfo?: string;
+  browserInfo?: string;
+  screenResolution?: string;
+  signatureMethod?: SignatureMetadataResponseSignatureMethod;
+  /** Час створення підпису в секундах */
+  signatureDuration?: number;
+}
+
+export type CreateDigitalSignatureRequestType = typeof CreateDigitalSignatureRequestType[keyof typeof CreateDigitalSignatureRequestType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateDigitalSignatureRequestType = {
+  CLIENT_HANDOVER: 'CLIENT_HANDOVER',
+  CLIENT_PICKUP: 'CLIENT_PICKUP',
+  OPERATOR: 'OPERATOR',
+  DIGITAL: 'DIGITAL',
+} as const;
+
+export interface CreateDigitalSignatureRequest {
+  /** Унікальний ідентифікатор (UUID v4) */
+  documentId: string;
+  /** Base64 дані підпису (SVG або PNG) */
+  signatureData: string;
+  type: CreateDigitalSignatureRequestType;
+  /**
+   * Ім'я підписанта
+   * @minLength 0
+   * @maxLength 100
+   */
+  signerName: string;
+  /**
+   * Роль підписанта
+   * @minLength 0
+   * @maxLength 50
+   */
+  signerRole?: string;
+  metadata?: SignatureMetadataRequest;
+}
+
+export type SignatureMetadataRequestSignatureMethod = typeof SignatureMetadataRequestSignatureMethod[keyof typeof SignatureMetadataRequestSignatureMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SignatureMetadataRequestSignatureMethod = {
+  TOUCH: 'TOUCH',
+  MOUSE: 'MOUSE',
+  STYLUS: 'STYLUS',
+} as const;
+
+export interface SignatureMetadataRequest {
+  /**
+   * Інформація про пристрій
+   * @minLength 0
+   * @maxLength 200
+   */
+  deviceInfo?: string;
+  /**
+   * Інформація про браузер
+   * @minLength 0
+   * @maxLength 200
+   */
+  browserInfo?: string;
+  /**
+   * Роздільна здатність екрану
+   * @minLength 0
+   * @maxLength 20
+   */
+  screenResolution?: string;
+  signatureMethod?: SignatureMetadataRequestSignatureMethod;
+}
+
+/**
+ * Результат валідації цифрового підпису
+ */
+export interface SignatureValidationResponse {
+  /** Чи валідний підпис */
+  isValid?: boolean;
+  validationDetails?: ValidationDetails;
+}
+
+/**
+ * Детальна інформація про валідацію
+ */
+export interface ValidationDetails {
+  /** Чи цілісний підпис */
+  signatureIntact?: boolean;
+  /** Чи відповідає документу */
+  documentMatches?: boolean;
+  /** Чи не прострочений */
+  notExpired?: boolean;
+  /** Чи підтверджений підписант */
+  signerVerified?: boolean;
 }
 
 export interface CreateAddressRequest {
@@ -395,7 +1713,7 @@ export interface CreateClientRequest {
   phone: string;
   /**
    * Email адреса
-   * @minLength 0
+   * @minLength 3
    * @maxLength 254
    */
   email?: string;
@@ -416,18 +1734,18 @@ export interface CreateClientRequest {
 }
 
 export interface ClientPageResponse {
-  content?: ClientResponse[];
-  pageable?: PageableInfo;
+  content: ClientResponse[];
+  pageable: PageableInfo;
   /** Загальна кількість елементів */
-  totalElements?: number;
+  totalElements: number;
   /** Загальна кількість сторінок */
-  totalPages?: number;
+  totalPages: number;
   /** Чи це остання сторінка */
-  last?: boolean;
+  last: boolean;
   /** Чи це перша сторінка */
-  first?: boolean;
+  first: boolean;
   /** Кількість елементів на поточній сторінці */
-  numberOfElements?: number;
+  numberOfElements: number;
 }
 
 export interface PageableInfo {
@@ -492,9 +1810,6 @@ export const ClientSearchRequestCommunicationMethodsItem = {
   EMAIL: 'EMAIL',
 } as const;
 
-/**
- * Поле для сортування
- */
 export type ClientSearchRequestSort = typeof ClientSearchRequestSort[keyof typeof ClientSearchRequestSort];
 
 
@@ -508,6 +1823,9 @@ export const ClientSearchRequestSort = {
   totalSpent: 'totalSpent',
 } as const;
 
+/**
+ * Запит на пошук клієнтів (хоча б один пошуковий параметр обов'язковий)
+ */
 export interface ClientSearchRequest {
   /**
    * Загальний пошуковий запит
@@ -556,8 +1874,350 @@ export interface ClientSearchRequest {
    * @maximum 100
    */
   size?: number;
-  /** Поле для сортування */
   sort?: ClientSearchRequestSort;
+}
+
+export type AppliedModifierResultType = typeof AppliedModifierResultType[keyof typeof AppliedModifierResultType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AppliedModifierResultType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT',
+} as const;
+
+export interface AppliedModifierResult {
+  /** Унікальний ідентифікатор (UUID v4) */
+  modifierId: string;
+  name: string;
+  type: AppliedModifierResultType;
+  value: number;
+  appliedAmount: number;
+  description?: string;
+}
+
+export interface CalculationStep {
+  /** Назва кроку */
+  step: string;
+  /** Опис кроку */
+  description: string;
+  /** Сума на цьому кроці */
+  amount: number;
+  /** Накопичена сума */
+  runningTotal: number;
+}
+
+export interface ItemCalculationResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  priceListItemId: string;
+  itemName: string;
+  quantity: number;
+  /** Базова ціна за одиницю */
+  basePrice: number;
+  /** Базова ціна за кількість */
+  totalBasePrice: number;
+  /** Застосовані модифікатори */
+  appliedModifiers: AppliedModifierResult[];
+  /** Загальна сума модифікаторів */
+  modifiersTotal: number;
+  /** Проміжна сума */
+  subtotal: number;
+  /** Надбавка за терміновість */
+  urgencyCharge: number;
+  /** Фінальна ціна */
+  finalPrice: number;
+  /** Детальні кроки розрахунку */
+  calculationSteps: CalculationStep[];
+  /** Попередження щодо розрахунку */
+  warnings: string[];
+}
+
+/**
+ * Підсумок розрахунку замовлення
+ */
+export interface OrderSummaryResponse {
+  /** Сума всіх предметів */
+  itemsTotal: number;
+  /** Надбавка за терміновість */
+  urgencyCharge: number;
+  /** Сума знижки */
+  discountAmount: number;
+  /** Проміжна сума */
+  subtotal: number;
+  /** Фінальна сума до сплати */
+  finalTotal: number;
+  /** Розрахунки по кожному предмету */
+  itemCalculations: ItemCalculationResponse[];
+  /** Попередження (наприклад, про незастосовані знижки) */
+  warnings: string[];
+}
+
+export type CalculateOrderSummaryRequestUrgency = typeof CalculateOrderSummaryRequestUrgency[keyof typeof CalculateOrderSummaryRequestUrgency];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CalculateOrderSummaryRequestUrgency = {
+  NORMAL: 'NORMAL',
+  URGENT_48H: 'URGENT_48H',
+  URGENT_24H: 'URGENT_24H',
+} as const;
+
+/**
+ * Запит на розрахунок загальної вартості замовлення
+ */
+export interface CalculateOrderSummaryRequest {
+  /**
+   * Список предметів для розрахунку
+   * @minItems 1
+   * @maxItems 2147483647
+   */
+  items: ItemCalculationRequest[];
+  discount?: OrderDiscountInfo;
+  urgency?: CalculateOrderSummaryRequestUrgency;
+}
+
+export type ItemCalculationRequestUrgency = typeof ItemCalculationRequestUrgency[keyof typeof ItemCalculationRequestUrgency];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemCalculationRequestUrgency = {
+  NORMAL: 'NORMAL',
+  URGENT_48H: 'URGENT_48H',
+  URGENT_24H: 'URGENT_24H',
+} as const;
+
+/**
+ * Предмет для розрахунку в замовленні
+ */
+export interface ItemCalculationRequest {
+  /** Ідентифікатор предмета з прайс-листа */
+  priceListItemId: string;
+  /**
+   * Кількість предметів
+   * @minimum 1
+   */
+  quantity: number;
+  /** Список модифікаторів для застосування */
+  appliedModifiers?: string[];
+  urgency?: ItemCalculationRequestUrgency;
+  characteristics?: ItemCharacteristicsRequest;
+}
+
+export type ItemCharacteristicsRequestMaterial = typeof ItemCharacteristicsRequestMaterial[keyof typeof ItemCharacteristicsRequestMaterial];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemCharacteristicsRequestMaterial = {
+  COTTON: 'COTTON',
+  WOOL: 'WOOL',
+  SILK: 'SILK',
+  SYNTHETIC: 'SYNTHETIC',
+  SMOOTH_LEATHER: 'SMOOTH_LEATHER',
+  NUBUCK: 'NUBUCK',
+  SPLIT_LEATHER: 'SPLIT_LEATHER',
+  SUEDE: 'SUEDE',
+  OTHER: 'OTHER',
+} as const;
+
+export type ItemCharacteristicsRequestColor = typeof ItemCharacteristicsRequestColor[keyof typeof ItemCharacteristicsRequestColor];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemCharacteristicsRequestColor = {
+  BLACK: 'BLACK',
+  WHITE: 'WHITE',
+  GRAY: 'GRAY',
+  BROWN: 'BROWN',
+  NAVY: 'NAVY',
+  BLUE: 'BLUE',
+  GREEN: 'GREEN',
+  RED: 'RED',
+  BEIGE: 'BEIGE',
+  CREAM: 'CREAM',
+  PINK: 'PINK',
+  YELLOW: 'YELLOW',
+  PURPLE: 'PURPLE',
+  MULTICOLOR: 'MULTICOLOR',
+  OTHER: 'OTHER',
+} as const;
+
+export type ItemCharacteristicsRequestFilling = typeof ItemCharacteristicsRequestFilling[keyof typeof ItemCharacteristicsRequestFilling];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemCharacteristicsRequestFilling = {
+  DOWN: 'DOWN',
+  SYNTHETIC: 'SYNTHETIC',
+  OTHER: 'OTHER',
+} as const;
+
+export type ItemCharacteristicsRequestWearDegree = typeof ItemCharacteristicsRequestWearDegree[keyof typeof ItemCharacteristicsRequestWearDegree];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemCharacteristicsRequestWearDegree = {
+  WEAR_10: 'WEAR_10',
+  WEAR_30: 'WEAR_30',
+  WEAR_50: 'WEAR_50',
+  WEAR_75: 'WEAR_75',
+} as const;
+
+export type ItemCharacteristicsRequestStainsItem = typeof ItemCharacteristicsRequestStainsItem[keyof typeof ItemCharacteristicsRequestStainsItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemCharacteristicsRequestStainsItem = {
+  FAT: 'FAT',
+  BLOOD: 'BLOOD',
+  PROTEIN: 'PROTEIN',
+  WINE: 'WINE',
+  COFFEE: 'COFFEE',
+  GRASS: 'GRASS',
+  INK: 'INK',
+  COSMETICS: 'COSMETICS',
+  OTHER: 'OTHER',
+} as const;
+
+export type ItemCharacteristicsRequestDefectsItem = typeof ItemCharacteristicsRequestDefectsItem[keyof typeof ItemCharacteristicsRequestDefectsItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemCharacteristicsRequestDefectsItem = {
+  WEAR: 'WEAR',
+  TORN: 'TORN',
+  MISSING_HARDWARE: 'MISSING_HARDWARE',
+  DAMAGED_HARDWARE: 'DAMAGED_HARDWARE',
+  COLOR_CHANGE_RISK: 'COLOR_CHANGE_RISK',
+  DEFORMATION_RISK: 'DEFORMATION_RISK',
+  NO_WARRANTY: 'NO_WARRANTY',
+} as const;
+
+export interface ItemCharacteristicsRequest {
+  material: ItemCharacteristicsRequestMaterial;
+  color: ItemCharacteristicsRequestColor;
+  /** Кастомний колір (обов'язковий тільки якщо вибрано OTHER) */
+  customColor?: JsonNullableString;
+  filling?: ItemCharacteristicsRequestFilling;
+  wearDegree?: ItemCharacteristicsRequestWearDegree;
+  /**
+   * Типи плям
+   * @minItems 0
+   * @maxItems 10
+   */
+  stains?: ItemCharacteristicsRequestStainsItem[];
+  /**
+   * Опис кастомної плями (якщо вибрано OTHER)
+   * @minLength 0
+   * @maxLength 100
+   */
+  customStain?: string;
+  /**
+   * Дефекти та ризики
+   * @minItems 0
+   * @maxItems 10
+   */
+  defects?: ItemCharacteristicsRequestDefectsItem[];
+  /**
+   * Примітки щодо дефектів
+   * @minLength 0
+   * @maxLength 500
+   */
+  defectNotes?: string;
+  /** Наявність ризиків */
+  hasRisks?: boolean;
+  /**
+   * Опис ризиків
+   * @minLength 0
+   * @maxLength 500
+   */
+  riskDescription?: string;
+  /**
+   * URL фотографій предмета (максимум 5 фото)
+   * @minItems 0
+   * @maxItems 5
+   */
+  photos?: string[];
+}
+
+export type OrderDiscountInfoType = typeof OrderDiscountInfoType[keyof typeof OrderDiscountInfoType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrderDiscountInfoType = {
+  NONE: 'NONE',
+  EVERCARD: 'EVERCARD',
+  SOCIAL_MEDIA: 'SOCIAL_MEDIA',
+  MILITARY: 'MILITARY',
+  OTHER: 'OTHER',
+} as const;
+
+/**
+ * Інформація про знижку
+ */
+export interface OrderDiscountInfo {
+  type?: OrderDiscountInfoType;
+  /**
+   * Значення знижки
+   * @minimum 0
+   */
+  value?: number;
+}
+
+/**
+ * Попередній розрахунок ціни предмета
+ */
+export interface ItemPricePreviewResponse {
+  /** Базова ціна за одиницю */
+  basePrice: number;
+  /** Базова ціна за кількість */
+  totalBasePrice: number;
+  /** Сума модифікаторів */
+  modifiersAmount: number;
+  /** Проміжна сума (база + модифікатори) */
+  subtotal: number;
+  /** Надбавка за терміновість */
+  urgencyAmount: number;
+  /** Фінальна ціна */
+  finalPrice: number;
+}
+
+export interface CreateBranchRequest {
+  /**
+   * Унікальний код філії
+   * @minLength 3
+   * @maxLength 20
+   * @pattern ^[A-Z0-9-]+$
+   */
+  code: string;
+  /**
+   * Назва філії
+   * @minLength 3
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * Опис розташування
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  address: CreateAddressRequest;
+  contactInfo: ContactInfoRequest;
+  coordinates?: CoordinatesRequest;
+  workingSchedule?: WorkingScheduleRequest;
+}
+
+export interface WorkingScheduleRequest {
+  /**
+   * Робочі дні (7 днів тижня)
+   * @minItems 7
+   * @maxItems 7
+   */
+  workingDays: WorkingDayRequest[];
+  /** Святкові дні */
+  holidays?: HolidayRequest[];
+  /** Часовий пояс */
+  timezone: string;
 }
 
 /**
@@ -670,7 +2330,7 @@ export interface LoginRequest {
    * Ім'я користувача або email
    * @minLength 3
    * @maxLength 100
-   * @pattern ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|^[a-zA-Z0-9_]+$
+   * @pattern ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$
    */
   username: string;
   /**
@@ -681,28 +2341,85 @@ export interface LoginRequest {
   password: string;
 }
 
+export type UpdateDocumentStatusRequestStatus = typeof UpdateDocumentStatusRequestStatus[keyof typeof UpdateDocumentStatusRequestStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateDocumentStatusRequestStatus = {
+  DRAFT: 'DRAFT',
+  GENERATED: 'GENERATED',
+  SIGNED: 'SIGNED',
+  PRINTED: 'PRINTED',
+  ARCHIVED: 'ARCHIVED',
+} as const;
+
+/**
+ * Додаткова інформація про зміну статусу
+ */
+export type UpdateDocumentStatusRequestMetadata = {[key: string]: string};
+
+/**
+ * Запит на оновлення статусу документа
+ */
+export interface UpdateDocumentStatusRequest {
+  status: UpdateDocumentStatusRequestStatus;
+  /**
+   * Причина зміни статусу
+   * @minLength 0
+   * @maxLength 500
+   */
+  reason?: string;
+  /** Додаткова інформація про зміну статусу */
+  metadata?: UpdateDocumentStatusRequestMetadata;
+}
+
+export interface ReceiptPageResponse {
+  content: ReceiptResponse[];
+  pageable: PageableInfo;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+  first: boolean;
+  numberOfElements: number;
+}
+
+export interface PriceListPageResponse {
+  content: PriceListItemResponse[];
+  pageable: PageableInfo;
+}
+
+export interface DocumentPageResponse {
+  content: DocumentResponse[];
+  pageable: PageableInfo;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+  first: boolean;
+  numberOfElements: number;
+}
+
 export interface ClientSearchResponse {
-  results?: ClientSearchResult[];
+  results: ClientSearchResult[];
   /** Загальна кількість знайдених результатів */
-  totalFound?: number;
+  totalFound: number;
   /** Чи є ще результати */
-  hasMore?: boolean;
+  hasMore: boolean;
 }
 
 export interface ClientSearchResult {
   /** Унікальний ідентифікатор (UUID v4) */
-  id?: string;
-  firstName?: string;
-  lastName?: string;
+  id: string;
+  firstName: string;
+  lastName: string;
   readonly fullName?: string;
   /**
    * Номер телефону в міжнародному форматі
    * @pattern ^\+380\d{9}$
    */
-  phone?: string;
+  phone: string;
   /**
    * Email адреса
-   * @minLength 0
+   * @minLength 3
    * @maxLength 254
    */
   email?: string;
@@ -712,5 +2429,157 @@ export interface ClientSearchResult {
   orderCount?: number;
   /** Поля, які відповідають пошуковому запиту */
   highlightedFields?: string[];
+}
+
+export interface BranchStatisticsResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  branchId: string;
+  branchName: string;
+  period: StatisticsPeriod;
+  /** Кількість замовлень */
+  ordersCount: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  totalRevenue: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  averageOrderValue: number;
+  popularServices: ServiceStatisticResponse[];
+  dailyStats: DailyStatisticResponse[];
+}
+
+export interface DailyStatisticResponse {
+  /** Дата в ISO 8601 форматі */
+  date: string;
+  ordersCount: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  revenue: number;
+}
+
+export interface ServiceStatisticResponse {
+  serviceName: string;
+  ordersCount: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  totalRevenue: number;
+  /** Відсоток від загального доходу */
+  percentage: number;
+}
+
+/**
+ * Період для статистики
+ */
+export interface StatisticsPeriod {
+  /** Дата в ISO 8601 форматі */
+  startDate: string;
+  /** Дата в ISO 8601 форматі */
+  endDate: string;
+}
+
+export interface NextWorkingDayResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  branchId: string;
+  /** Дата в ISO 8601 форматі */
+  nextWorkingDate?: string;
+  workingHours?: WorkingHoursInfo;
+  /** Кількість днів до наступного робочого дня */
+  daysUntilNextWorking?: number;
+}
+
+/**
+ * Інформація про робочі години
+ */
+export interface WorkingHoursInfo {
+  /** Час відкриття */
+  openTime: string;
+  /** Час закриття */
+  closeTime: string;
+}
+
+export type BranchOpenStatusResponseCurrentStatus = typeof BranchOpenStatusResponseCurrentStatus[keyof typeof BranchOpenStatusResponseCurrentStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BranchOpenStatusResponseCurrentStatus = {
+  OPEN: 'OPEN',
+  CLOSED: 'CLOSED',
+  HOLIDAY: 'HOLIDAY',
+} as const;
+
+export interface BranchOpenStatusResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  branchId: string;
+  /** Чи відкрита філія зараз */
+  isOpen: boolean;
+  /** Мітка часу в ISO 8601 форматі */
+  checkDateTime: string;
+  currentStatus: BranchOpenStatusResponseCurrentStatus;
+  /** Мітка часу в ISO 8601 форматі */
+  nextOpenTime?: string;
+  todaySchedule?: WorkingDayResponse;
+}
+
+export interface BranchComparisonResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  branchId: string;
+  branchName: string;
+  branchCode: string;
+  ordersCount: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  totalRevenue: number;
+  /**
+   * Грошова сума (в гривнях)
+   * @minimum 0
+   */
+  averageOrderValue: number;
+  /** Позиція в рейтингу */
+  ranking: number;
+}
+
+export type BranchWithDistanceResponseStatus = typeof BranchWithDistanceResponseStatus[keyof typeof BranchWithDistanceResponseStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BranchWithDistanceResponseStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  TEMPORARILY_CLOSED: 'TEMPORARILY_CLOSED',
+  UNDER_RENOVATION: 'UNDER_RENOVATION',
+} as const;
+
+export interface BranchWithDistanceResponse {
+  /** Унікальний ідентифікатор (UUID v4) */
+  id: string;
+  /** Унікальний код філії */
+  code: string;
+  /** Назва філії */
+  name: string;
+  /** Опис розташування */
+  description: string;
+  address: Address;
+  contactInfo: ContactInfoResponse;
+  coordinates?: CoordinatesResponse;
+  status: BranchWithDistanceResponseStatus;
+  workingSchedule?: WorkingScheduleResponse;
+  /** Поточний лічильник квитанцій */
+  receiptCounter: number;
+  /** Дата створення */
+  readonly createdAt: string;
+  /** Дата останнього оновлення */
+  readonly updatedAt: string;
+  /** Відстань в кілометрах */
+  distance: number;
 }
 

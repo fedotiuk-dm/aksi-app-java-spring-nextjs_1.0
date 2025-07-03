@@ -1,9 +1,5 @@
 package com.aksi.domain.branch.mapper;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -23,9 +19,7 @@ public interface ReceiptNumberMapper {
   @Mapping(target = "branchCode", source = "branch.code")
   @Mapping(target = "year", expression = "java(java.time.Year.now().getValue())")
   @Mapping(target = "sequenceNumber", source = "branch.receiptCounter")
-  @Mapping(
-      target = "generatedAt",
-      expression = "java(convertToOffsetDateTime(java.time.LocalDateTime.now()))")
+  @Mapping(target = "generatedAt", expression = "java(java.time.Instant.now())")
   ReceiptNumberResponse toReceiptNumberResponse(BranchEntity branch, String receiptNumber);
 
   /** Створити ReceiptValidationResponse для валідації. */
@@ -57,10 +51,7 @@ public interface ReceiptNumberMapper {
 
   // Utility методи
 
-  /** Конвертація LocalDateTime → OffsetDateTime. */
-  default OffsetDateTime convertToOffsetDateTime(LocalDateTime localDateTime) {
-    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
-  }
+  // З Instant типами - LocalDateTime ↔ OffsetDateTime конвертери не потрібні (OpenAPI-first)
 
   /** Витягти код філії з номера квитанції (формат: BRANCH_CODE-YEAR-SEQUENCE). */
   default String extractBranchCodeFromReceiptNumber(String receiptNumber) {

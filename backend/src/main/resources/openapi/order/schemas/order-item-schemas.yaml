@@ -32,10 +32,14 @@ CreateOrderItemRequest:
       description: Матеріал виробу
       example: Шерсть
     color:
+      $ref: "../../item/schemas/item-enums.yaml#/ItemColor"
+      description: Колір виробу (базовий колір для швидкого вибору)
+    customColor:
       type: string
       maxLength: 50
-      description: Колір виробу
-      example: Чорний
+      description: Кастомний колір (обов'язковий тільки якщо вибрано OTHER)
+      example: "темно-бордовий"
+      nullable: true
     filling:
       type: string
       maxLength: 50
@@ -101,9 +105,14 @@ UpdateOrderItemRequest:
       maxLength: 50
       description: Матеріал виробу
     color:
+      $ref: "../../item/schemas/item-enums.yaml#/ItemColor"
+      description: Колір виробу (базовий колір для швидкого вибору)
+    customColor:
       type: string
       maxLength: 50
-      description: Колір виробу
+      description: Кастомний колір (обов'язковий тільки якщо вибрано OTHER)
+      example: "темно-бордовий"
+      nullable: true
     filling:
       type: string
       maxLength: 50

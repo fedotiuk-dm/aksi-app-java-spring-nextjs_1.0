@@ -9,39 +9,53 @@ OrderResponse:
     - clientId
     - branchId
     - status
+    - items
+    - calculation
+    - urgency
     - createdAt
+    - updatedAt
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     receiptNumber:
       type: string
       description: Номер квитанції
       example: AKSI-2025-000123
+      nullable: false
     uniqueTag:
       type: string
       description: Унікальна мітка замовлення
+      nullable: false
     clientId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     clientInfo:
       $ref: "#/ClientSummary"
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     branchInfo:
       $ref: "#/BranchSummary"
     status:
       $ref: "../schemas/order-enums.yaml#/OrderStatus"
+      nullable: false
     items:
       type: array
       items:
         $ref: "#/OrderItemResponse"
+      nullable: false
     calculation:
       $ref: "#/OrderCalculationSummary"
+      nullable: false
     urgency:
       $ref: "../schemas/order-enums.yaml#/UrgencyType"
+      nullable: false
     executionDate:
       type: string
       format: date-time
       description: Дата виконання замовлення
+      nullable: false
     discount:
       $ref: "#/DiscountInfo"
     payment:
@@ -49,12 +63,15 @@ OrderResponse:
     notes:
       type: string
       description: Примітки до замовлення
+      nullable: false
     clientSignature:
       type: string
       description: Цифровий підпис клієнта (base64)
+      nullable: false
     operatorName:
       type: string
       description: Ім'я оператора
+      nullable: false
   allOf:
     - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
 
@@ -70,8 +87,10 @@ OrderPageResponse:
       items:
         $ref: "#/OrderResponse"
       description: Список замовлень
+      nullable: false
     pageable:
       $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
+      nullable: false
 
 OrderItemResponse:
   type: object
@@ -86,183 +105,274 @@ OrderItemResponse:
     - color
     - basePrice
     - finalPrice
+    - modifiers
+    - calculation
+    - photos
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     itemName:
       type: string
       description: Найменування предмета
+      nullable: false
     category:
       type: string
       description: Категорія послуги
+      nullable: false
     quantity:
       type: integer
       description: Кількість
+      nullable: false
     unit:
       $ref: "../schemas/price-modifiers.yaml#/UnitType"
       description: Одиниця виміру
+      nullable: false
     material:
       type: string
       description: Матеріал виробу
+      nullable: false
     color:
+      $ref: "../../item/schemas/item-enums.yaml#/ItemColor"
+      description: Колір виробу (базовий колір)
+      nullable: false
+    customColor:
       type: string
-      description: Колір виробу
+      description: Кастомний колір (має значення тільки якщо color = OTHER)
+      nullable: true
     filling:
       type: string
       description: Наповнювач
+      nullable: false
     wearDegree:
       type: integer
       description: Ступінь зносу у відсотках
+      nullable: false
     stains:
       type: array
       items:
         type: string
       description: Типи плям
+      nullable: false
     defects:
       type: array
       items:
         type: string
       description: Дефекти та ризики
+      nullable: false
     defectNotes:
       type: string
       description: Примітки щодо дефектів
+      nullable: false
     basePrice:
       type: number
       format: double
       description: Базова ціна
+      nullable: false
     modifiers:
       type: array
       items:
         $ref: "#/AppliedModifier"
       description: Застосовані модифікатори
+      nullable: false
     finalPrice:
       type: number
       format: double
       description: Фінальна ціна за предмет
+      nullable: false
     calculation:
       $ref: "#/ItemCalculationDetails"
+      nullable: false
     photos:
       type: array
       items:
         type: string
         format: uri
       description: URL фотографій предмета
+      nullable: false
 
 ClientSummary:
   type: object
   title: ClientSummary
+  required:
+    - id
+    - firstName
+    - lastName
+    - phone
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     firstName:
       type: string
+      nullable: false
     lastName:
       type: string
+      nullable: false
     phone:
       type: string
+      nullable: false
 
 BranchSummary:
   type: object
   title: BranchSummary
+  required:
+    - id
+    - name
+    - address
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     name:
       type: string
+      nullable: false
     address:
       type: string
+      nullable: false
 
 OrderCalculationSummary:
   type: object
   title: OrderCalculationSummary
+  required:
+    - itemsTotal
+    - urgencyCharge
+    - discountAmount
+    - totalAmount
   properties:
     itemsTotal:
       type: number
       format: double
+      nullable: false
     urgencyCharge:
       type: number
       format: double
+      nullable: false
     discountAmount:
       type: number
       format: double
+      nullable: false
     totalAmount:
       type: number
       format: double
+      nullable: false
 
 DiscountInfo:
   type: object
   title: DiscountInfo
+  required:
+    - type
+    - percentage
+    - amount
   properties:
     type:
       $ref: "../schemas/order-enums.yaml#/DiscountType"
+      nullable: false
     percentage:
       type: number
       format: double
+      nullable: false
     amount:
       type: number
       format: double
+      nullable: false
     description:
       type: string
+      nullable: false
 
 PaymentInfo:
   type: object
   title: PaymentInfo
+  required:
+    - method
+    - paidAmount
+    - remainingAmount
   properties:
     method:
       $ref: "../schemas/order-enums.yaml#/PaymentMethod"
+      nullable: false
     paidAmount:
       type: number
       format: double
+      nullable: false
     remainingAmount:
       type: number
       format: double
+      nullable: false
 
 AppliedModifier:
   type: object
   title: AppliedModifier
+  required:
+    - name
+    - type
+    - value
+    - calculatedAmount
   properties:
     name:
       type: string
+      nullable: false
     type:
       $ref: "../schemas/order-enums.yaml#/ModifierType"
+      nullable: false
     value:
       type: number
       format: double
+      nullable: false
     calculatedAmount:
       type: number
       format: double
+      nullable: false
 
 ItemCalculationDetails:
   type: object
   title: ItemCalculationDetails
+  required:
+    - basePrice
+    - steps
+    - finalPrice
   properties:
     basePrice:
       type: number
       format: double
+      nullable: false
     steps:
       type: array
       items:
         $ref: "#/CalculationStep"
+      nullable: false
     finalPrice:
       type: number
       format: double
+      nullable: false
 
 CalculationStep:
   type: object
   title: CalculationStep
+  required:
+    - step
+    - description
+    - formula
+    - amount
+    - subtotal
   properties:
     step:
       type: integer
+      nullable: false
     description:
       type: string
+      nullable: false
     formula:
       type: string
+      nullable: false
     amount:
       type: number
       format: double
+      nullable: false
     subtotal:
       type: number
       format: double
+      nullable: false
 
 ReceiptGenerationResponse:
   type: object
@@ -277,14 +387,16 @@ ReceiptGenerationResponse:
       type: string
       format: uri
       description: URL для завантаження квитанції
+      nullable: false
     format:
-      type: string
-      enum: [PDF, HTML]
+      $ref: "../schemas/order-enums.yaml#/ReceiptFormat"
       description: Формат згенерованої квитанції
+      nullable: false
     generateTime:
       type: string
       format: date-time
       description: Час генерації
+      nullable: false
   example:
     url: "http://localhost:8080/api/orders/123e4567-e89b-12d3-a456-426614174000/receipt?format=PDF"
     format: "PDF"

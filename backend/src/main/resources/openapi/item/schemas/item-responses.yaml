@@ -8,43 +8,60 @@ ServiceCategoryResponse:
     - name
     - standardDays
     - isActive
+    - availableMaterials
+    - availableModifiers
+    - itemsCount
+    - createdAt
+    - updatedAt
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     code:
       type: string
       description: Унікальний код категорії
       example: TEXTILE_CLEANING
+      nullable: false
     name:
       type: string
       description: Назва категорії
       example: Чистка одягу та текстилю
+      nullable: false
     description:
       type: string
       description: Опис категорії
+      nullable: false
     parentId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     standardDays:
       type: integer
       description: Стандартний термін виконання в днях
       example: 2
+      nullable: false
     isActive:
       type: boolean
       description: Чи активна категорія
+      nullable: false
     availableMaterials:
       type: array
       items:
         type: string
       description: Доступні матеріали для категорії
+      nullable: false
     availableModifiers:
       type: array
       items:
         type: string
         format: uuid
       description: Доступні модифікатори для категорії
+      nullable: false
     itemsCount:
       type: integer
       description: Кількість предметів в категорії
+      nullable: false
+  allOf:
+    - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
 
 PriceListItemResponse:
   type: object
@@ -57,30 +74,38 @@ PriceListItemResponse:
     - unitOfMeasure
     - basePrice
     - isActive
+    - createdAt
+    - updatedAt
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     categoryId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     categoryInfo:
       $ref: "#/ServiceCategorySummary"
     catalogNumber:
       type: integer
       description: Каталоговий номер предмета
       example: 8
+      nullable: false
     name:
       type: string
       description: Назва предмета
       example: "Піджак, кітель"
+      nullable: false
     unitOfMeasure:
       $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
       description: Одиниця виміру
       example: "шт"
+      nullable: false
     basePrice:
       type: number
       format: double
       description: Базова ціна
       example: 480.0
+      nullable: false
     priceBlack:
       type: number
       format: double
@@ -94,6 +119,7 @@ PriceListItemResponse:
     isActive:
       type: boolean
       description: Чи активний предмет
+      nullable: false
   allOf:
     - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
 
@@ -107,86 +133,120 @@ PriceModifierResponse:
     - type
     - value
     - isActive
+    - applicableTo
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     code:
       type: string
       description: Унікальний код модифікатора
       example: CHILDREN_ITEMS
+      nullable: false
     name:
       type: string
       description: Назва модифікатора
       example: Дитячі речі (до 30 розміру)
+      nullable: false
     type:
       $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
+      nullable: false
     value:
       type: number
       format: double
       description: Значення модифікатора
       example: 30.0
+      nullable: false
     applicableTo:
       type: array
       items:
         type: string
         format: uuid
       description: Категорії, до яких застосовується
+      nullable: false
     isActive:
       type: boolean
       description: Чи активний модифікатор
+      nullable: false
     description:
       type: string
       description: Опис модифікатора
+      nullable: false
 
 ItemCalculationResponse:
   type: object
   title: ItemCalculationResponse
+  required:
+    - priceListItemId
+    - itemName
+    - quantity
+    - basePrice
+    - totalBasePrice
+    - appliedModifiers
+    - modifiersTotal
+    - subtotal
+    - urgencyCharge
+    - finalPrice
+    - calculationSteps
+    - warnings
   properties:
     priceListItemId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     itemName:
       type: string
+      nullable: false
     quantity:
       type: integer
+      nullable: false
     basePrice:
       type: number
       format: double
       description: Базова ціна за одиницю
+      nullable: false
     totalBasePrice:
       type: number
       format: double
       description: Базова ціна за кількість
+      nullable: false
     appliedModifiers:
       type: array
       items:
         $ref: "#/AppliedModifierResult"
       description: Застосовані модифікатори
+      nullable: false
     modifiersTotal:
       type: number
       format: double
       description: Загальна сума модифікаторів
+      nullable: false
     subtotal:
       type: number
       format: double
       description: Проміжна сума
+      nullable: false
     urgencyCharge:
       type: number
       format: double
       description: Надбавка за терміновість
+      nullable: false
     finalPrice:
       type: number
       format: double
       description: Фінальна ціна
+      nullable: false
     calculationSteps:
       type: array
       items:
         $ref: "#/CalculationStep"
       description: Детальні кроки розрахунку
+      nullable: false
     warnings:
       type: array
       items:
         type: string
       description: Попередження щодо розрахунку
+      nullable: false
 
 PhotoResponse:
   type: object
@@ -197,174 +257,248 @@ PhotoResponse:
     - filename
     - url
     - uploadedAt
+    - fileSize
+    - mimeType
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     itemId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     filename:
       type: string
       description: Ім'я файлу
+      nullable: false
     originalFilename:
       type: string
       description: Оригінальне ім'я файлу
+      nullable: false
     url:
       type: string
       format: uri
       description: URL для доступу до фотографії
+      nullable: false
     thumbnailUrl:
       type: string
       format: uri
       description: URL мініатюри
+      nullable: false
     fileSize:
       type: integer
       format: int64
       description: Розмір файлу в байтах
+      nullable: false
     mimeType:
       type: string
       description: MIME тип файлу
       example: image/jpeg
+      nullable: false
     description:
       type: string
       description: Опис фотографії
+      nullable: false
     uploadedAt:
       $ref: "../../common/schemas/base.yaml#/Timestamp"
+      nullable: false
 
 PriceListPageResponse:
   type: object
   title: PriceListPageResponse
+  required:
+    - content
+    - pageable
   properties:
     content:
       type: array
       items:
         $ref: "#/PriceListItemResponse"
+      nullable: false
     pageable:
       $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
+      nullable: false
 
 ServiceCategorySummary:
   type: object
   title: ServiceCategorySummary
+  required:
+    - id
+    - code
+    - name
+    - standardDays
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     code:
       type: string
+      nullable: false
     name:
       type: string
+      nullable: false
     standardDays:
       type: integer
+      nullable: false
 
 AppliedModifierResult:
   type: object
   title: AppliedModifierResult
+  required:
+    - modifierId
+    - name
+    - type
+    - value
+    - appliedAmount
   properties:
     modifierId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     name:
       type: string
+      nullable: false
     type:
       $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
+      nullable: false
     value:
       type: number
       format: double
+      nullable: false
     appliedAmount:
       type: number
       format: double
+      nullable: false
     description:
       type: string
+      nullable: false
 
 CalculationStep:
   type: object
   title: CalculationStep
+  required:
+    - step
+    - description
+    - amount
+    - runningTotal
   properties:
     step:
       type: string
       description: Назва кроку
+      nullable: false
     description:
       type: string
       description: Опис кроку
+      nullable: false
     amount:
       type: number
       format: double
       description: Сума на цьому кроці
+      nullable: false
     runningTotal:
       type: number
       format: double
       description: Накопичена сума
+      nullable: false
 
 # Price Preview Response
 ItemPricePreviewResponse:
   type: object
   title: ItemPricePreviewResponse
   description: Попередній розрахунок ціни предмета
+  required:
+    - basePrice
+    - totalBasePrice
+    - modifiersAmount
+    - subtotal
+    - urgencyAmount
+    - finalPrice
   properties:
     basePrice:
       type: number
       format: double
       description: Базова ціна за одиницю
       example: 480.00
+      nullable: false
     totalBasePrice:
       type: number
       format: double
       description: Базова ціна за кількість
       example: 480.00
+      nullable: false
     modifiersAmount:
       type: number
       format: double
       description: Сума модифікаторів
       example: 50.00
+      nullable: false
     subtotal:
       type: number
       format: double
       description: Проміжна сума (база + модифікатори)
       example: 530.00
+      nullable: false
     urgencyAmount:
       type: number
       format: double
       description: Надбавка за терміновість
       example: 100.00
+      nullable: false
     finalPrice:
       type: number
       format: double
       description: Фінальна ціна
       example: 630.00
+      nullable: false
 
 # Order Summary Response
 OrderSummaryResponse:
   type: object
   title: OrderSummaryResponse
   description: Підсумок розрахунку замовлення
+  required:
+    - itemsTotal
+    - urgencyCharge
+    - discountAmount
+    - subtotal
+    - finalTotal
+    - itemCalculations
+    - warnings
   properties:
     itemsTotal:
       type: number
       format: double
       description: Сума всіх предметів
       example: 1530.00
+      nullable: false
     urgencyCharge:
       type: number
       format: double
       description: Надбавка за терміновість
       example: 200.00
+      nullable: false
     discountAmount:
       type: number
       format: double
       description: Сума знижки
       example: 50.00
+      nullable: false
     subtotal:
       type: number
       format: double
       description: Проміжна сума
       example: 1680.00
+      nullable: false
     finalTotal:
       type: number
       format: double
       description: Фінальна сума до сплати
       example: 1630.00
+      nullable: false
     itemCalculations:
       type: array
       items:
         $ref: "#/ItemCalculationResponse"
       description: Розрахунки по кожному предмету
+      nullable: false
     warnings:
       type: array
       items:
@@ -372,6 +506,7 @@ OrderSummaryResponse:
       description: Попередження (наприклад, про незастосовані знижки)
       example:
         ["Модифікатор CHILDREN_ITEMS не застосовується до цієї категорії"]
+      nullable: false
 
 # Photo Download Response
 PhotoDownloadResponse:

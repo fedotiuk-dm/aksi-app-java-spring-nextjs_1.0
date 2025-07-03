@@ -6,7 +6,7 @@
     summary: Отримати статистику філії
     description: Повертає статистику замовлень та доходів для конкретної філії
     parameters:
-      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
       - name: startDate
         in: query
         description: Початкова дата періоду

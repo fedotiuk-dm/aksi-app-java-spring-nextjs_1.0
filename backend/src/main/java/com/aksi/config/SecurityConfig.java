@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,13 +28,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
   private final Environment environment;
 
-  @Value("${cors.allowed-origins:http://localhost:3000,http://localhost")
+  @Value("${cors.allowed-origins:http://localhost:3000,http://localhost:3001}")
   private String corsAllowedOrigins;
 
   /** Password encoder для хешування паролів Використовує BCrypt algorithm з силою 12. */
@@ -58,7 +57,7 @@ public class SecurityConfig {
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
         // CSRF відключено для REST API
-        .csrf(csrf -> csrf.disable())
+        .csrf(AbstractHttpConfigurer::disable)
 
         // Session management - stateless для REST API
         .sessionManagement(
@@ -76,6 +75,9 @@ public class SecurityConfig {
                 authz
                     // Публічні endpoints (без авторизації)
                     .requestMatchers(
+                        // Auth endpoints (логін, реєстрація, refresh token)
+                        "/api/auth/**",
+
                         // OpenAPI документація
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
@@ -98,10 +100,8 @@ public class SecurityConfig {
               }
             });
 
-    // HTTP Basic для development (тимчасово)
-    if (!isDevProfile) {
-      http.httpBasic(basic -> {});
-    }
+    // JWT авторизація буде додана через JWT фільтри
+    // HTTP Basic відключено для REST API
 
     return http.build();
   }
@@ -136,6 +136,9 @@ public class SecurityConfig {
 
   /** Отримання дозволених origins для CORS. */
   private List<String> getAllowedOrigins() {
-    return List.of(corsAllowedOrigins.split(","));
+    String[] origins = corsAllowedOrigins.split(",");
+    return Arrays.stream(origins)
+        .map(String::trim) // Видаляємо пробіли
+        .toList();
   }
 }

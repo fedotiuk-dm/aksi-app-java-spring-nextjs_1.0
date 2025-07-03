@@ -15,26 +15,33 @@ PageableInfo:
       type: integer
       minimum: 0
       description: Номер поточної сторінки (починаючи з 0)
+      nullable: false
     size:
       type: integer
       minimum: 1
       description: Розмір сторінки
+      nullable: false
     totalElements:
       type: integer
       format: int64
       description: Загальна кількість елементів
+      nullable: false
     totalPages:
       type: integer
       description: Загальна кількість сторінок
+      nullable: false
     last:
       type: boolean
       description: Чи є поточна сторінка останньою
+      nullable: false
     first:
       type: boolean
       description: Чи є поточна сторінка першою
+      nullable: false
     numberOfElements:
       type: integer
       description: Кількість елементів на поточній сторінці
+      nullable: false
     sort:
       type: object
       title: SortInfo
@@ -43,9 +50,12 @@ PageableInfo:
         sorted:
           type: boolean
           description: Чи застосовано сортування
+          nullable: false
         unsorted:
           type: boolean
           description: Чи не застосовано сортування
+          nullable: false
         empty:
           type: boolean
           description: Чи відсутнє сортування
+          nullable: false

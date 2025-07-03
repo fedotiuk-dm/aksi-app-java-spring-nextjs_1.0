@@ -1,7 +1,7 @@
 package com.aksi.api.auth;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.api.auth.dto.AuthResponse;
 import com.aksi.api.auth.dto.LoginRequest;
@@ -12,7 +12,7 @@ import com.aksi.domain.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 
 /** HTTP Controller для AuthenticationApi Відповідальність: тільки HTTP делегація до AuthService. */
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class AuthenticationApiController implements AuthenticationApi {
 

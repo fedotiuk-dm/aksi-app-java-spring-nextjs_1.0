@@ -93,6 +93,10 @@ logging:
   file:
     name: logs/application.log
 
+# CORS Configuration
+cors:
+  allowed-origins: "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
+
 # Custom application properties
 aksi:
   order:

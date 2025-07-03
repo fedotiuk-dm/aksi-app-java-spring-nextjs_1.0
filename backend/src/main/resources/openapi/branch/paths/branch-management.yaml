@@ -70,7 +70,7 @@
     summary: Отримати філію за ID
     description: Повертає детальну інформацію про філію
     parameters:
-      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
     responses:
       200:
         description: Інформація про філію
@@ -92,7 +92,7 @@
     summary: Оновити філію
     description: Оновлює інформацію про філію
     parameters:
-      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
     requestBody:
       required: true
       content:
@@ -126,7 +126,7 @@
     summary: Деактивувати філію
     description: Деактивує філію (не видаляє, а робить неактивною)
     parameters:
-      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
     responses:
       204:
         description: Філія успішно деактивована

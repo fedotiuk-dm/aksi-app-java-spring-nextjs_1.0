@@ -1,5 +1,6 @@
 package com.aksi.domain.client.mapper;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,16 +20,12 @@ import com.aksi.api.client.dto.UpdateClientContactsRequest;
 import com.aksi.api.client.dto.UpdateClientRequest;
 import com.aksi.domain.client.entity.ClientEntity;
 import com.aksi.domain.client.enums.CommunicationMethodType;
-import com.aksi.shared.mapper.BaseMapperConfig;
 
 /**
  * MapStruct mapper для конвертації між Entity та DTO Базується на реальних згенерованих OpenAPI
  * DTO.
  */
-@Mapper(
-    componentModel = "spring",
-    uses = {BaseMapperConfig.class},
-    unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ClientMapper {
 
   // DTO → Entity mappings (для create/update)
@@ -54,15 +51,8 @@ public interface ClientMapper {
   /** Конвертація ClientEntity → ClientResponse. */
   @Mapping(target = "fullName", expression = "java(entity.getFullName())")
   @Mapping(target = "statistics", source = "entity")
-  @Mapping(
-      target = "createdAt",
-      source = "createdAt",
-      qualifiedByName = "localDateTimeToOffsetDateTime")
-  @Mapping(
-      target = "updatedAt",
-      source = "updatedAt",
-      qualifiedByName = "localDateTimeToOffsetDateTime")
   @Mapping(target = "communicationMethods", source = "communicationMethods")
+  // З typeMappings datetime маппінг автоматичний: Instant → Instant
   ClientResponse toResponse(ClientEntity entity);
 
   /** Конвертація ClientEntity → ClientContactsResponse. */
@@ -79,8 +69,14 @@ public interface ClientMapper {
   @Mapping(
       target = "registrationDate",
       source = "createdAt",
-      qualifiedByName = "localDateTimeToLocalDate")
+      qualifiedByName = "instantToLocalDate")
   ClientStatistics toStatistics(ClientEntity entity);
+
+  // MapStruct conversion: Instant → LocalDate
+  @org.mapstruct.Named("instantToLocalDate")
+  default java.time.LocalDate instantToLocalDate(Instant instant) {
+    return instant != null ? instant.atZone(java.time.ZoneOffset.UTC).toLocalDate() : null;
+  }
 
   // List mappings
 

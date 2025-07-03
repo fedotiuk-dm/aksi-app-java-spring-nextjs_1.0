@@ -1,0 +1,54 @@
+# Enum схеми для Item домену
+ItemColor:
+  type: string
+  enum:
+    - BLACK
+    - WHITE
+    - GRAY
+    - BROWN
+    - NAVY
+    - BLUE
+    - GREEN
+    - RED
+    - BEIGE
+    - CREAM
+    - PINK
+    - YELLOW
+    - PURPLE
+    - MULTICOLOR
+    - OTHER
+  description: |
+    Базові кольори предметів одягу:
+    * BLACK - Чорний
+    * WHITE - Білий
+    * GRAY - Сірий
+    * BROWN - Коричневий
+    * NAVY - Темно-синій
+    * BLUE - Синій
+    * GREEN - Зелений
+    * RED - Червоний
+    * BEIGE - Бежевий
+    * CREAM - Кремовий
+    * PINK - Рожевий
+    * YELLOW - Жовтий
+    * PURPLE - Фіолетовий
+    * MULTICOLOR - Різнокольоровий
+    * OTHER - Інший (вказати в customColor)
+  example: BLACK
+
+PhotoType:
+  type: string
+  enum:
+    - BEFORE
+    - AFTER
+    - DEFECT
+    - STAIN
+    - DETAIL
+  description: |
+    Типи фотографій предметів:
+    * BEFORE - Фото до обробки
+    * AFTER - Фото після обробки
+    * DEFECT - Фото дефекту
+    * STAIN - Фото забруднення
+    * DETAIL - Детальне фото
+  example: BEFORE

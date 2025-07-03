@@ -4,179 +4,308 @@
 ReceiptResponse:
   type: object
   title: ReceiptResponse
+  required:
+    - id
+    - orderId
+    - receiptNumber
+    - data
+    - isPrinted
+    - generatedAt
+    - generatedBy
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     orderId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     receiptNumber:
       type: string
+      nullable: false
       description: Номер квитанції
       example: AKSI-01-2024-000001
     data:
       $ref: "#/ReceiptDataResponse"
+      nullable: false
     pdfDocument:
       $ref: "#/DocumentSummaryResponse"
+      nullable: false
     qrCode:
       $ref: "#/QRCodeSummaryResponse"
+      nullable: false
     signatures:
       type: array
+      nullable: false
       items:
         $ref: "#/DigitalSignatureSummaryResponse"
     isPrinted:
       type: boolean
+      nullable: false
       description: Чи роздрукована квитанція
     printedAt:
       $ref: "../../common/schemas/base.yaml#/Timestamp"
+      nullable: false
     generatedAt:
       $ref: "../../common/schemas/base.yaml#/Timestamp"
+      nullable: false
     generatedBy:
       type: string
+      nullable: false
       description: Хто згенерував
 
 ReceiptDataResponse:
   type: object
   title: ReceiptDataResponse
+  required:
+    - companyInfo
+    - branchInfo
+    - orderInfo
+    - clientInfo
+    - items
+    - financial
+    - legalInfo
+    - operatorInfo
   properties:
     companyInfo:
       $ref: "#/CompanyInfoResponse"
+      nullable: false
     branchInfo:
       $ref: "#/BranchInfoResponse"
+      nullable: false
     orderInfo:
       $ref: "#/OrderInfoResponse"
+      nullable: false
     clientInfo:
       $ref: "#/ClientInfoResponse"
+      nullable: false
     items:
       type: array
+      nullable: false
       items:
         $ref: "#/ItemDetailResponse"
     financial:
       $ref: "#/FinancialSummaryResponse"
+      nullable: false
     legalInfo:
       $ref: "#/LegalInfoResponse"
+      nullable: false
     operatorInfo:
       $ref: "#/OperatorInfoResponse"
+      nullable: false
 
 CompanyInfoResponse:
   type: object
   title: CompanyInfoResponse
+  required:
+    - companyName
+    - legalName
+    - address
+    - phone
+    - email
+    - taxNumber
   properties:
     companyName:
       type: string
+      nullable: false
     legalName:
       type: string
+      nullable: false
     address:
       type: string
+      nullable: false
     phone:
       type: string
+      nullable: false
     email:
       type: string
+      nullable: false
     website:
       type: string
+      nullable: false
     logoUrl:
       type: string
+      nullable: false
     taxNumber:
       type: string
+      nullable: false
 
 BranchInfoResponse:
   type: object
   title: BranchInfoResponse
+  required:
+    - branchId
+    - branchCode
+    - branchName
+    - address
+    - phone
+    - managerName
   properties:
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     branchCode:
       type: string
+      nullable: false
     branchName:
       type: string
+      nullable: false
     address:
       type: string
+      nullable: false
     phone:
       type: string
+      nullable: false
     managerName:
       type: string
+      nullable: false
 
 OrderInfoResponse:
   type: object
   title: OrderInfoResponse
+  required:
+    - orderId
+    - orderNumber
+    - createdAt
+    - expectedCompletionDate
+    - expediteType
+    - totalAmount
+    - discountAmount
+    - finalAmount
+    - paidAmount
+    - remainingAmount
   properties:
     orderId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     orderNumber:
       type: string
+      nullable: false
     createdAt:
       $ref: "../../common/schemas/base.yaml#/Timestamp"
+      nullable: false
     expectedCompletionDate:
       $ref: "../../common/schemas/base.yaml#/Timestamp"
+      nullable: false
     expediteType:
       $ref: "../schemas/document-enums.yaml#/ExpediteType"
+      nullable: false
     totalAmount:
       $ref: "../../common/schemas/base.yaml#/Money"
+      nullable: false
     discountAmount:
       $ref: "../../common/schemas/base.yaml#/Money"
+      nullable: false
     finalAmount:
       $ref: "../../common/schemas/base.yaml#/Money"
+      nullable: false
     paidAmount:
       $ref: "../../common/schemas/base.yaml#/Money"
+      nullable: false
     remainingAmount:
       $ref: "../../common/schemas/base.yaml#/Money"
+      nullable: false
 
 ClientInfoResponse:
   type: object
   title: ClientInfoResponse
+  required:
+    - clientId
+    - firstName
+    - lastName
+    - phone
+    - preferredContactMethod
   properties:
     clientId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     firstName:
       type: string
+      nullable: false
     lastName:
       type: string
+      nullable: false
     phone:
       type: string
+      nullable: false
     email:
       type: string
+      nullable: false
     address:
       type: string
+      nullable: false
     preferredContactMethod:
       type: string
+      nullable: false
 
 ItemDetailResponse:
   type: object
   title: ItemDetailResponse
+  required:
+    - itemNumber
+    - itemName
+    - category
+    - quantity
+    - material
+    - color
+    - basePrice
+    - modifiers
+    - finalPrice
+    - stains
+    - defects
+    - photos
   properties:
     itemNumber:
       type: integer
+      nullable: false
     itemName:
       type: string
+      nullable: false
     category:
       type: string
+      nullable: false
     quantity:
       type: string
+      nullable: false
     material:
       type: string
+      nullable: false
     color:
+      $ref: "../../item/schemas/item-enums.yaml#/ItemColor"
+      nullable: false
+    customColor:
       type: string
+      description: Кастомний колір (має значення тільки якщо color = OTHER)
+      nullable: true
     filling:
       type: string
+      nullable: false
     basePrice:
       $ref: "../../common/schemas/base.yaml#/Money"
+      nullable: false
     modifiers:
       type: array
+      nullable: false
       items:
         $ref: "#/ModifierDetailResponse"
     finalPrice:
       $ref: "../../common/schemas/base.yaml#/Money"
+      nullable: false
     stains:
       type: array
+      nullable: false
       items:
         type: string
     defects:
       type: array
+      nullable: false
       items:
         type: string
     defectNotes:
       type: string
+      nullable: false
     photos:
       type: array
+      nullable: false
       items:
         $ref: "#/PhotoSummaryResponse"
 
@@ -258,37 +387,61 @@ OperatorInfoResponse:
 DocumentResponse:
   type: object
   title: DocumentResponse
+  required:
+    - id
+    - documentNumber
+    - type
+    - relatedEntityId
+    - fileName
+    - filePath
+    - fileSize
+    - mimeType
+    - status
+    - downloadUrl
+    - metadata
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     documentNumber:
       type: string
+      nullable: false
     type:
       $ref: "../schemas/document-enums.yaml#/DocumentType"
+      nullable: false
     relatedEntityId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     fileName:
       type: string
+      nullable: false
     filePath:
       type: string
+      nullable: false
     fileSize:
       type: integer
       format: int64
+      nullable: false
     mimeType:
       type: string
+      nullable: false
     status:
       $ref: "../schemas/document-enums.yaml#/DocumentStatus"
+      nullable: false
     downloadUrl:
       type: string
       format: uri
+      nullable: false
     metadata:
       $ref: "#/DocumentMetadataResponse"
+      nullable: false
   allOf:
     - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
     - type: object
       properties:
         createdBy:
           type: string
+          nullable: false
 
 DocumentSummaryResponse:
   type: object
@@ -424,46 +577,76 @@ SignatureMetadataResponse:
 ReceiptPageResponse:
   type: object
   title: ReceiptPageResponse
+  required:
+    - content
+    - pageable
+    - totalElements
+    - totalPages
+    - last
+    - first
+    - numberOfElements
   properties:
     content:
       type: array
+      nullable: false
       items:
         $ref: "#/ReceiptResponse"
     pageable:
       $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
+      nullable: false
     totalElements:
       type: integer
       format: int64
+      nullable: false
     totalPages:
       type: integer
+      nullable: false
     last:
       type: boolean
+      nullable: false
     first:
       type: boolean
+      nullable: false
     numberOfElements:
       type: integer
+      nullable: false
 
 DocumentPageResponse:
   type: object
   title: DocumentPageResponse
+  required:
+    - content
+    - pageable
+    - totalElements
+    - totalPages
+    - last
+    - first
+    - numberOfElements
   properties:
     content:
       type: array
+      nullable: false
       items:
         $ref: "#/DocumentResponse"
     pageable:
       $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
+      nullable: false
     totalElements:
       type: integer
       format: int64
+      nullable: false
     totalPages:
       type: integer
+      nullable: false
     last:
       type: boolean
+      nullable: false
     first:
       type: boolean
+      nullable: false
     numberOfElements:
       type: integer
+      nullable: false
 
 # PDF Generation Responses
 PdfGenerationResponse:
@@ -522,10 +705,8 @@ SignatureImageResponse:
       description: URL для завантаження зображення підпису
       example: "http://localhost:8080/api/digital-signatures/550e8400-e29b-41d4-a716-446655440000/image?format=PNG"
     format:
-      type: string
-      enum: [PNG, SVG]
+      $ref: "./document-enums.yaml#/ImageFormat"
       description: Формат зображення
-      example: "PNG"
     filename:
       type: string
       description: Ім'я файлу для завантаження

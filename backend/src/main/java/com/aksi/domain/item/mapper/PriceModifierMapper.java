@@ -24,7 +24,7 @@ public interface PriceModifierMapper {
   @Mapping(source = "modifierType", target = "type")
   PriceModifierResponse toResponse(PriceModifierEntity entity);
 
-  // List mappings
+  /** List mappings. */
   List<PriceModifierResponse> toResponseList(List<PriceModifierEntity> entities);
 
   // Update entity з DTO
@@ -39,12 +39,5 @@ public interface PriceModifierMapper {
   void updateEntityFromRequest(
       UpdatePriceModifierRequest request, @org.mapstruct.MappingTarget PriceModifierEntity entity);
 
-  // DateTime конвертація
-  default java.time.OffsetDateTime map(java.time.LocalDateTime localDateTime) {
-    return localDateTime != null ? localDateTime.atOffset(java.time.ZoneOffset.UTC) : null;
-  }
-
-  default java.time.LocalDateTime map(java.time.OffsetDateTime offsetDateTime) {
-    return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
-  }
+  // З Instant типами - конвертери дат не потрібні (OpenAPI-first)
 }

@@ -24,6 +24,7 @@ public interface ServiceCategoryMapper {
   // Entity → DTO (для response)
   @Mapping(source = "id", target = "id")
   @Mapping(source = "items", target = "itemsCount", qualifiedByName = "itemsToCount")
+  // З Instant datetime маппінг автоматичний!
   ServiceCategoryResponse toResponse(ServiceCategoryEntity entity);
 
   // List mappings

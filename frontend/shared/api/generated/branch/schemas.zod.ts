@@ -5,4 +5,1129 @@
  * API для односторінкової системи замовлень хімчистки з DDD архітектурою
  * OpenAPI spec version: 1.0.0
  */
+import {
+  z as zod
+} from 'zod';
 
+/**
+ * Повертає детальну інформацію про філію
+ * @summary Отримати філію за ID
+ */
+export const getBranchByIdParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getBranchById200ResponseAddressStreetMin = 0;
+
+export const getBranchById200ResponseAddressStreetMax = 200;
+export const getBranchById200ResponseAddressCityMin = 0;
+
+export const getBranchById200ResponseAddressCityMax = 100;
+export const getBranchById200ResponseAddressRegionMin = 0;
+
+export const getBranchById200ResponseAddressRegionMax = 100;
+export const getBranchById200ResponseAddressPostalCodeMin = 0;
+
+export const getBranchById200ResponseAddressPostalCodeMax = 10;
+export const getBranchById200ResponseAddressCountryMin = 0;
+
+export const getBranchById200ResponseAddressCountryMax = 100;
+
+
+export const getBranchById200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "code": zod.coerce.string().describe('Унікальний код філії'),
+  "name": zod.coerce.string().describe('Назва філії'),
+  "description": zod.coerce.string().describe('Опис розташування'),
+  "address": zod.object({
+  "street": zod.coerce.string().min(getBranchById200ResponseAddressStreetMin).max(getBranchById200ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
+  "city": zod.coerce.string().min(getBranchById200ResponseAddressCityMin).max(getBranchById200ResponseAddressCityMax).optional().describe('Місто'),
+  "region": zod.coerce.string().min(getBranchById200ResponseAddressRegionMin).max(getBranchById200ResponseAddressRegionMax).optional().describe('Область/регіон'),
+  "postalCode": zod.coerce.string().min(getBranchById200ResponseAddressPostalCodeMin).max(getBranchById200ResponseAddressPostalCodeMax).optional().describe('Поштовий індекс'),
+  "country": zod.coerce.string().min(getBranchById200ResponseAddressCountryMin).max(getBranchById200ResponseAddressCountryMax).optional().describe('Країна')
+}).strict(),
+  "contactInfo": zod.object({
+  "phone": zod.coerce.string().describe('Основний телефон'),
+  "alternativePhone": zod.coerce.string().optional().describe('Додатковий телефон'),
+  "email": zod.coerce.string().describe('Email філії'),
+  "managerName": zod.coerce.string().describe('Ім\'я менеджера')
+}).strict(),
+  "coordinates": zod.object({
+  "latitude": zod.coerce.number().optional().describe('Широта'),
+  "longitude": zod.coerce.number().optional().describe('Довгота'),
+  "mapUrl": zod.coerce.string().url().optional().describe('Посилання на карту')
+}).strict().optional(),
+  "status": zod.enum(['ACTIVE', 'INACTIVE', 'TEMPORARILY_CLOSED', 'UNDER_RENOVATION']),
+  "workingSchedule": zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "workingDays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().optional().describe('Примітки до дня')
+}).strict()),
+  "holidays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().describe('Чи повторюється щороку')
+}).strict()),
+  "timezone": zod.coerce.string().describe('Часовий пояс')
+}).strict().optional(),
+  "receiptCounter": zod.coerce.number().describe('Поточний лічильник квитанцій'),
+  "createdAt": zod.coerce.string().datetime({}).describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).describe('Дата останнього оновлення')
+}).strict()
+
+export const getBranchById404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Оновлює інформацію про філію
+ * @summary Оновити філію
+ */
+export const updateBranchParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const updateBranchBodyNameMin = 3;
+
+export const updateBranchBodyNameMax = 100;
+export const updateBranchBodyDescriptionMin = 0;
+
+export const updateBranchBodyDescriptionMax = 500;
+export const updateBranchBodyAddressStreetMin = 0;
+
+export const updateBranchBodyAddressStreetMax = 200;
+export const updateBranchBodyAddressCityMin = 0;
+
+export const updateBranchBodyAddressCityMax = 100;
+export const updateBranchBodyAddressRegionMin = 0;
+
+export const updateBranchBodyAddressRegionMax = 100;
+export const updateBranchBodyAddressPostalCodeMin = 0;
+
+export const updateBranchBodyAddressPostalCodeMax = 10;
+export const updateBranchBodyAddressCountryMin = 0;
+
+export const updateBranchBodyAddressCountryMax = 100;
+export const updateBranchBodyContactInfoPhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const updateBranchBodyContactInfoAlternativePhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const updateBranchBodyContactInfoEmailMin = 3;
+
+export const updateBranchBodyContactInfoEmailMax = 254;
+export const updateBranchBodyContactInfoManagerNameMin = 0;
+
+export const updateBranchBodyContactInfoManagerNameMax = 100;
+export const updateBranchBodyCoordinatesLatitudeMin = -90;
+
+export const updateBranchBodyCoordinatesLatitudeMax = 90;
+export const updateBranchBodyCoordinatesLongitudeMin = -180;
+
+export const updateBranchBodyCoordinatesLongitudeMax = 180;
+
+
+export const updateBranchBody = zod.object({
+  "name": zod.coerce.string().min(updateBranchBodyNameMin).max(updateBranchBodyNameMax).optional().describe('Назва філії'),
+  "description": zod.coerce.string().min(updateBranchBodyDescriptionMin).max(updateBranchBodyDescriptionMax).optional().describe('Опис розташування'),
+  "address": zod.object({
+  "street": zod.coerce.string().min(updateBranchBodyAddressStreetMin).max(updateBranchBodyAddressStreetMax).optional().describe('Вулиця та номер будинку'),
+  "city": zod.coerce.string().min(updateBranchBodyAddressCityMin).max(updateBranchBodyAddressCityMax).optional().describe('Місто'),
+  "region": zod.coerce.string().min(updateBranchBodyAddressRegionMin).max(updateBranchBodyAddressRegionMax).optional().describe('Область/регіон'),
+  "postalCode": zod.coerce.string().min(updateBranchBodyAddressPostalCodeMin).max(updateBranchBodyAddressPostalCodeMax).optional().describe('Поштовий індекс'),
+  "country": zod.coerce.string().min(updateBranchBodyAddressCountryMin).max(updateBranchBodyAddressCountryMax).optional().describe('Країна')
+}).strict().optional(),
+  "contactInfo": zod.object({
+  "phone": zod.coerce.string().regex(updateBranchBodyContactInfoPhoneRegExp).describe('Номер телефону в міжнародному форматі'),
+  "alternativePhone": zod.coerce.string().regex(updateBranchBodyContactInfoAlternativePhoneRegExp).optional().describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(updateBranchBodyContactInfoEmailMin).max(updateBranchBodyContactInfoEmailMax).describe('Email адреса'),
+  "managerName": zod.coerce.string().min(updateBranchBodyContactInfoManagerNameMin).max(updateBranchBodyContactInfoManagerNameMax).describe('Ім\'я менеджера')
+}).strict().optional(),
+  "coordinates": zod.object({
+  "latitude": zod.coerce.number().min(updateBranchBodyCoordinatesLatitudeMin).max(updateBranchBodyCoordinatesLatitudeMax).optional().describe('Широта'),
+  "longitude": zod.coerce.number().min(updateBranchBodyCoordinatesLongitudeMin).max(updateBranchBodyCoordinatesLongitudeMax).optional().describe('Довгота'),
+  "mapUrl": zod.coerce.string().url().optional().describe('Посилання на карту')
+}).strict().optional(),
+  "status": zod.enum(['ACTIVE', 'INACTIVE', 'TEMPORARILY_CLOSED', 'UNDER_RENOVATION']).optional()
+}).strict()
+
+export const updateBranch200ResponseAddressStreetMin = 0;
+
+export const updateBranch200ResponseAddressStreetMax = 200;
+export const updateBranch200ResponseAddressCityMin = 0;
+
+export const updateBranch200ResponseAddressCityMax = 100;
+export const updateBranch200ResponseAddressRegionMin = 0;
+
+export const updateBranch200ResponseAddressRegionMax = 100;
+export const updateBranch200ResponseAddressPostalCodeMin = 0;
+
+export const updateBranch200ResponseAddressPostalCodeMax = 10;
+export const updateBranch200ResponseAddressCountryMin = 0;
+
+export const updateBranch200ResponseAddressCountryMax = 100;
+
+
+export const updateBranch200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "code": zod.coerce.string().describe('Унікальний код філії'),
+  "name": zod.coerce.string().describe('Назва філії'),
+  "description": zod.coerce.string().describe('Опис розташування'),
+  "address": zod.object({
+  "street": zod.coerce.string().min(updateBranch200ResponseAddressStreetMin).max(updateBranch200ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
+  "city": zod.coerce.string().min(updateBranch200ResponseAddressCityMin).max(updateBranch200ResponseAddressCityMax).optional().describe('Місто'),
+  "region": zod.coerce.string().min(updateBranch200ResponseAddressRegionMin).max(updateBranch200ResponseAddressRegionMax).optional().describe('Область/регіон'),
+  "postalCode": zod.coerce.string().min(updateBranch200ResponseAddressPostalCodeMin).max(updateBranch200ResponseAddressPostalCodeMax).optional().describe('Поштовий індекс'),
+  "country": zod.coerce.string().min(updateBranch200ResponseAddressCountryMin).max(updateBranch200ResponseAddressCountryMax).optional().describe('Країна')
+}).strict(),
+  "contactInfo": zod.object({
+  "phone": zod.coerce.string().describe('Основний телефон'),
+  "alternativePhone": zod.coerce.string().optional().describe('Додатковий телефон'),
+  "email": zod.coerce.string().describe('Email філії'),
+  "managerName": zod.coerce.string().describe('Ім\'я менеджера')
+}).strict(),
+  "coordinates": zod.object({
+  "latitude": zod.coerce.number().optional().describe('Широта'),
+  "longitude": zod.coerce.number().optional().describe('Довгота'),
+  "mapUrl": zod.coerce.string().url().optional().describe('Посилання на карту')
+}).strict().optional(),
+  "status": zod.enum(['ACTIVE', 'INACTIVE', 'TEMPORARILY_CLOSED', 'UNDER_RENOVATION']),
+  "workingSchedule": zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "workingDays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().optional().describe('Примітки до дня')
+}).strict()),
+  "holidays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().describe('Чи повторюється щороку')
+}).strict()),
+  "timezone": zod.coerce.string().describe('Часовий пояс')
+}).strict().optional(),
+  "receiptCounter": zod.coerce.number().describe('Поточний лічильник квитанцій'),
+  "createdAt": zod.coerce.string().datetime({}).describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).describe('Дата останнього оновлення')
+}).strict()
+
+export const updateBranch400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+export const updateBranch404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Деактивує філію (не видаляє, а робить неактивною)
+ * @summary Деактивувати філію
+ */
+export const deleteBranchParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const deleteBranch404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає графік роботи конкретної філії
+ * @summary Отримати графік роботи філії
+ */
+export const getBranchScheduleParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getBranchSchedule200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "workingDays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().optional().describe('Примітки до дня')
+}).strict()),
+  "holidays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().describe('Чи повторюється щороку')
+}).strict()),
+  "timezone": zod.coerce.string().describe('Часовий пояс')
+}).strict()
+
+export const getBranchSchedule404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Оновлює графік роботи філії
+ * @summary Оновити графік роботи
+ */
+export const updateBranchScheduleParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const updateBranchScheduleBodyWorkingDaysItemNotesMin = 0;
+
+export const updateBranchScheduleBodyWorkingDaysItemNotesMax = 200;
+export const updateBranchScheduleBodyWorkingDaysMin = 7;
+
+export const updateBranchScheduleBodyWorkingDaysMax = 7;
+export const updateBranchScheduleBodyHolidaysItemNameMin = 0;
+
+export const updateBranchScheduleBodyHolidaysItemNameMax = 100;
+
+
+export const updateBranchScheduleBody = zod.object({
+  "workingDays": zod.array(zod.object({
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття (якщо робочий день)'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття (якщо робочий день)'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().min(updateBranchScheduleBodyWorkingDaysItemNotesMin).max(updateBranchScheduleBodyWorkingDaysItemNotesMax).optional().describe('Примітки до дня')
+}).strict()).min(updateBranchScheduleBodyWorkingDaysMin).max(updateBranchScheduleBodyWorkingDaysMax).optional(),
+  "holidays": zod.array(zod.object({
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().min(updateBranchScheduleBodyHolidaysItemNameMin).max(updateBranchScheduleBodyHolidaysItemNameMax).describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().optional().describe('Чи повторюється щороку')
+}).strict()).optional(),
+  "timezone": zod.coerce.string().optional()
+}).strict()
+
+export const updateBranchSchedule200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "workingDays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().optional().describe('Примітки до дня')
+}).strict()),
+  "holidays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().describe('Чи повторюється щороку')
+}).strict()),
+  "timezone": zod.coerce.string().describe('Часовий пояс')
+}).strict()
+
+export const updateBranchSchedule400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+export const updateBranchSchedule404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Перевіряє правильність формату номера квитанції
+ * @summary Валідувати номер квитанції
+ */
+export const validateReceiptNumberBody = zod.object({
+  "receiptNumber": zod.coerce.string().describe('Номер квитанції для валідації')
+}).strict()
+
+export const validateReceiptNumber200Response = zod.object({
+  "receiptNumber": zod.coerce.string().describe('Перевірений номер'),
+  "isValid": zod.coerce.boolean().describe('Чи правильний формат'),
+  "errors": zod.array(zod.coerce.string()).describe('Список помилок (якщо є)'),
+  "branchCode": zod.coerce.string().optional().describe('Код філії (якщо валідний)')
+}).strict()
+
+
+/**
+ * Розбирає номер квитанції на компоненти
+ * @summary Розпарсити номер квитанції
+ */
+export const parseReceiptNumberBody = zod.object({
+  "receiptNumber": zod.coerce.string().describe('Номер квитанції для розбору')
+}).strict()
+
+export const parseReceiptNumber200Response = zod.object({
+  "receiptNumber": zod.coerce.string().describe('Оригінальний номер'),
+  "branchCode": zod.coerce.string().describe('Код філії'),
+  "year": zod.coerce.number().describe('Рік'),
+  "sequenceNumber": zod.coerce.number().describe('Порядковий номер'),
+  "branchInfo": zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "code": zod.coerce.string(),
+  "name": zod.coerce.string(),
+  "city": zod.coerce.string()
+}).strict().optional()
+}).strict()
+
+export const parseReceiptNumber400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+
+/**
+ * Генерує унікальний номер квитанції для філії
+ * @summary Згенерувати номер квитанції
+ */
+export const generateReceiptNumberBodyBranchCodeRegExp = new RegExp('^[A-Z0-9-]+$');
+
+
+export const generateReceiptNumberBody = zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchCode": zod.coerce.string().regex(generateReceiptNumberBodyBranchCodeRegExp).optional().describe('Код філії (альтернатива до branchId)')
+}).strict()
+
+export const generateReceiptNumber201Response = zod.object({
+  "receiptNumber": zod.coerce.string().describe('Згенерований номер квитанції'),
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchCode": zod.coerce.string(),
+  "year": zod.coerce.number(),
+  "sequenceNumber": zod.coerce.number(),
+  "generatedAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі')
+}).strict()
+
+export const generateReceiptNumber400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+export const generateReceiptNumber404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає список всіх філій з можливістю фільтрації
+ * @summary Отримати список філій
+ */
+export const getBranchesQueryActiveDefault = true;export const getBranchesQueryIncludeInactiveDefault = false;
+
+export const getBranchesQueryParams = zod.object({
+  "active": zod.coerce.boolean().default(getBranchesQueryActiveDefault).describe('Фільтр по активності'),
+  "city": zod.coerce.string().optional().describe('Фільтр за містом'),
+  "includeInactive": zod.coerce.boolean().optional().describe('Включити неактивні філії')
+}).strict()
+
+export const getBranches200ResponseAddressStreetMin = 0;
+
+export const getBranches200ResponseAddressStreetMax = 200;
+export const getBranches200ResponseAddressCityMin = 0;
+
+export const getBranches200ResponseAddressCityMax = 100;
+export const getBranches200ResponseAddressRegionMin = 0;
+
+export const getBranches200ResponseAddressRegionMax = 100;
+export const getBranches200ResponseAddressPostalCodeMin = 0;
+
+export const getBranches200ResponseAddressPostalCodeMax = 10;
+export const getBranches200ResponseAddressCountryMin = 0;
+
+export const getBranches200ResponseAddressCountryMax = 100;
+
+
+export const getBranches200ResponseItem = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "code": zod.coerce.string().describe('Унікальний код філії'),
+  "name": zod.coerce.string().describe('Назва філії'),
+  "description": zod.coerce.string().describe('Опис розташування'),
+  "address": zod.object({
+  "street": zod.coerce.string().min(getBranches200ResponseAddressStreetMin).max(getBranches200ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
+  "city": zod.coerce.string().min(getBranches200ResponseAddressCityMin).max(getBranches200ResponseAddressCityMax).optional().describe('Місто'),
+  "region": zod.coerce.string().min(getBranches200ResponseAddressRegionMin).max(getBranches200ResponseAddressRegionMax).optional().describe('Область/регіон'),
+  "postalCode": zod.coerce.string().min(getBranches200ResponseAddressPostalCodeMin).max(getBranches200ResponseAddressPostalCodeMax).optional().describe('Поштовий індекс'),
+  "country": zod.coerce.string().min(getBranches200ResponseAddressCountryMin).max(getBranches200ResponseAddressCountryMax).optional().describe('Країна')
+}).strict(),
+  "contactInfo": zod.object({
+  "phone": zod.coerce.string().describe('Основний телефон'),
+  "alternativePhone": zod.coerce.string().optional().describe('Додатковий телефон'),
+  "email": zod.coerce.string().describe('Email філії'),
+  "managerName": zod.coerce.string().describe('Ім\'я менеджера')
+}).strict(),
+  "coordinates": zod.object({
+  "latitude": zod.coerce.number().optional().describe('Широта'),
+  "longitude": zod.coerce.number().optional().describe('Довгота'),
+  "mapUrl": zod.coerce.string().url().optional().describe('Посилання на карту')
+}).strict().optional(),
+  "status": zod.enum(['ACTIVE', 'INACTIVE', 'TEMPORARILY_CLOSED', 'UNDER_RENOVATION']),
+  "workingSchedule": zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "workingDays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().optional().describe('Примітки до дня')
+}).strict()),
+  "holidays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().describe('Чи повторюється щороку')
+}).strict()),
+  "timezone": zod.coerce.string().describe('Часовий пояс')
+}).strict().optional(),
+  "receiptCounter": zod.coerce.number().describe('Поточний лічильник квитанцій'),
+  "createdAt": zod.coerce.string().datetime({}).describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).describe('Дата останнього оновлення')
+}).strict()
+export const getBranches200Response = zod.array(getBranches200ResponseItem)
+
+
+/**
+ * Створює нову філію хімчистки
+ * @summary Створити нову філію
+ */
+export const createBranchBodyCodeMin = 3;
+
+export const createBranchBodyCodeMax = 20;
+
+export const createBranchBodyCodeRegExp = new RegExp('^[A-Z0-9-]+$');
+export const createBranchBodyNameMin = 3;
+
+export const createBranchBodyNameMax = 100;
+export const createBranchBodyDescriptionMin = 0;
+
+export const createBranchBodyDescriptionMax = 500;
+export const createBranchBodyAddressStreetMin = 0;
+
+export const createBranchBodyAddressStreetMax = 200;
+export const createBranchBodyAddressCityMin = 0;
+
+export const createBranchBodyAddressCityMax = 100;
+export const createBranchBodyAddressRegionMin = 0;
+
+export const createBranchBodyAddressRegionMax = 100;
+export const createBranchBodyAddressPostalCodeMin = 0;
+
+export const createBranchBodyAddressPostalCodeMax = 10;
+export const createBranchBodyAddressCountryMin = 0;
+
+export const createBranchBodyAddressCountryMax = 100;
+export const createBranchBodyContactInfoPhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const createBranchBodyContactInfoAlternativePhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const createBranchBodyContactInfoEmailMin = 3;
+
+export const createBranchBodyContactInfoEmailMax = 254;
+export const createBranchBodyContactInfoManagerNameMin = 0;
+
+export const createBranchBodyContactInfoManagerNameMax = 100;
+export const createBranchBodyCoordinatesLatitudeMin = -90;
+
+export const createBranchBodyCoordinatesLatitudeMax = 90;
+export const createBranchBodyCoordinatesLongitudeMin = -180;
+
+export const createBranchBodyCoordinatesLongitudeMax = 180;
+export const createBranchBodyWorkingScheduleWorkingDaysItemNotesMin = 0;
+
+export const createBranchBodyWorkingScheduleWorkingDaysItemNotesMax = 200;
+export const createBranchBodyWorkingScheduleWorkingDaysMin = 7;
+
+export const createBranchBodyWorkingScheduleWorkingDaysMax = 7;
+export const createBranchBodyWorkingScheduleHolidaysItemNameMin = 0;
+
+export const createBranchBodyWorkingScheduleHolidaysItemNameMax = 100;
+
+
+export const createBranchBody = zod.object({
+  "code": zod.coerce.string().min(createBranchBodyCodeMin).max(createBranchBodyCodeMax).regex(createBranchBodyCodeRegExp).describe('Унікальний код філії'),
+  "name": zod.coerce.string().min(createBranchBodyNameMin).max(createBranchBodyNameMax).describe('Назва філії'),
+  "description": zod.coerce.string().min(createBranchBodyDescriptionMin).max(createBranchBodyDescriptionMax).optional().describe('Опис розташування'),
+  "address": zod.object({
+  "street": zod.coerce.string().min(createBranchBodyAddressStreetMin).max(createBranchBodyAddressStreetMax).optional().describe('Вулиця та номер будинку'),
+  "city": zod.coerce.string().min(createBranchBodyAddressCityMin).max(createBranchBodyAddressCityMax).optional().describe('Місто'),
+  "region": zod.coerce.string().min(createBranchBodyAddressRegionMin).max(createBranchBodyAddressRegionMax).optional().describe('Область/регіон'),
+  "postalCode": zod.coerce.string().min(createBranchBodyAddressPostalCodeMin).max(createBranchBodyAddressPostalCodeMax).optional().describe('Поштовий індекс'),
+  "country": zod.coerce.string().min(createBranchBodyAddressCountryMin).max(createBranchBodyAddressCountryMax).optional().describe('Країна')
+}).strict(),
+  "contactInfo": zod.object({
+  "phone": zod.coerce.string().regex(createBranchBodyContactInfoPhoneRegExp).describe('Номер телефону в міжнародному форматі'),
+  "alternativePhone": zod.coerce.string().regex(createBranchBodyContactInfoAlternativePhoneRegExp).optional().describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(createBranchBodyContactInfoEmailMin).max(createBranchBodyContactInfoEmailMax).describe('Email адреса'),
+  "managerName": zod.coerce.string().min(createBranchBodyContactInfoManagerNameMin).max(createBranchBodyContactInfoManagerNameMax).describe('Ім\'я менеджера')
+}).strict(),
+  "coordinates": zod.object({
+  "latitude": zod.coerce.number().min(createBranchBodyCoordinatesLatitudeMin).max(createBranchBodyCoordinatesLatitudeMax).optional().describe('Широта'),
+  "longitude": zod.coerce.number().min(createBranchBodyCoordinatesLongitudeMin).max(createBranchBodyCoordinatesLongitudeMax).optional().describe('Довгота'),
+  "mapUrl": zod.coerce.string().url().optional().describe('Посилання на карту')
+}).strict().optional(),
+  "workingSchedule": zod.object({
+  "workingDays": zod.array(zod.object({
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття (якщо робочий день)'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття (якщо робочий день)'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().min(createBranchBodyWorkingScheduleWorkingDaysItemNotesMin).max(createBranchBodyWorkingScheduleWorkingDaysItemNotesMax).optional().describe('Примітки до дня')
+}).strict()).min(createBranchBodyWorkingScheduleWorkingDaysMin).max(createBranchBodyWorkingScheduleWorkingDaysMax).describe('Робочі дні (7 днів тижня)'),
+  "holidays": zod.array(zod.object({
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().min(createBranchBodyWorkingScheduleHolidaysItemNameMin).max(createBranchBodyWorkingScheduleHolidaysItemNameMax).describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().optional().describe('Чи повторюється щороку')
+}).strict()).optional().describe('Святкові дні'),
+  "timezone": zod.coerce.string().describe('Часовий пояс')
+}).strict().optional()
+}).strict()
+
+export const createBranch201ResponseAddressStreetMin = 0;
+
+export const createBranch201ResponseAddressStreetMax = 200;
+export const createBranch201ResponseAddressCityMin = 0;
+
+export const createBranch201ResponseAddressCityMax = 100;
+export const createBranch201ResponseAddressRegionMin = 0;
+
+export const createBranch201ResponseAddressRegionMax = 100;
+export const createBranch201ResponseAddressPostalCodeMin = 0;
+
+export const createBranch201ResponseAddressPostalCodeMax = 10;
+export const createBranch201ResponseAddressCountryMin = 0;
+
+export const createBranch201ResponseAddressCountryMax = 100;
+
+
+export const createBranch201Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "code": zod.coerce.string().describe('Унікальний код філії'),
+  "name": zod.coerce.string().describe('Назва філії'),
+  "description": zod.coerce.string().describe('Опис розташування'),
+  "address": zod.object({
+  "street": zod.coerce.string().min(createBranch201ResponseAddressStreetMin).max(createBranch201ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
+  "city": zod.coerce.string().min(createBranch201ResponseAddressCityMin).max(createBranch201ResponseAddressCityMax).optional().describe('Місто'),
+  "region": zod.coerce.string().min(createBranch201ResponseAddressRegionMin).max(createBranch201ResponseAddressRegionMax).optional().describe('Область/регіон'),
+  "postalCode": zod.coerce.string().min(createBranch201ResponseAddressPostalCodeMin).max(createBranch201ResponseAddressPostalCodeMax).optional().describe('Поштовий індекс'),
+  "country": zod.coerce.string().min(createBranch201ResponseAddressCountryMin).max(createBranch201ResponseAddressCountryMax).optional().describe('Країна')
+}).strict(),
+  "contactInfo": zod.object({
+  "phone": zod.coerce.string().describe('Основний телефон'),
+  "alternativePhone": zod.coerce.string().optional().describe('Додатковий телефон'),
+  "email": zod.coerce.string().describe('Email філії'),
+  "managerName": zod.coerce.string().describe('Ім\'я менеджера')
+}).strict(),
+  "coordinates": zod.object({
+  "latitude": zod.coerce.number().optional().describe('Широта'),
+  "longitude": zod.coerce.number().optional().describe('Довгота'),
+  "mapUrl": zod.coerce.string().url().optional().describe('Посилання на карту')
+}).strict().optional(),
+  "status": zod.enum(['ACTIVE', 'INACTIVE', 'TEMPORARILY_CLOSED', 'UNDER_RENOVATION']),
+  "workingSchedule": zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "workingDays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().optional().describe('Примітки до дня')
+}).strict()),
+  "holidays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().describe('Чи повторюється щороку')
+}).strict()),
+  "timezone": zod.coerce.string().describe('Часовий пояс')
+}).strict().optional(),
+  "receiptCounter": zod.coerce.number().describe('Поточний лічильник квитанцій'),
+  "createdAt": zod.coerce.string().datetime({}).describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).describe('Дата останнього оновлення')
+}).strict()
+
+export const createBranch400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+export const createBranch409Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає статистику замовлень та доходів для конкретної філії
+ * @summary Отримати статистику філії
+ */
+export const getBranchStatisticsParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getBranchStatisticsQueryParams = zod.object({
+  "startDate": zod.coerce.string().date().describe('Початкова дата періоду'),
+  "endDate": zod.coerce.string().date().describe('Кінцева дата періоду')
+}).strict()
+
+export const getBranchStatistics200ResponseTotalRevenueMin = 0;
+export const getBranchStatistics200ResponseAverageOrderValueMin = 0;
+export const getBranchStatistics200ResponsePopularServicesItemTotalRevenueMin = 0;
+export const getBranchStatistics200ResponseDailyStatsItemRevenueMin = 0;
+
+
+export const getBranchStatistics200Response = zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchName": zod.coerce.string(),
+  "period": zod.object({
+  "startDate": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "endDate": zod.coerce.string().date().describe('Дата в ISO 8601 форматі')
+}).strict().describe('Період для статистики'),
+  "ordersCount": zod.coerce.number().describe('Кількість замовлень'),
+  "totalRevenue": zod.coerce.number().min(getBranchStatistics200ResponseTotalRevenueMin).describe('Грошова сума (в гривнях)'),
+  "averageOrderValue": zod.coerce.number().min(getBranchStatistics200ResponseAverageOrderValueMin).describe('Грошова сума (в гривнях)'),
+  "popularServices": zod.array(zod.object({
+  "serviceName": zod.coerce.string(),
+  "ordersCount": zod.coerce.number(),
+  "totalRevenue": zod.coerce.number().min(getBranchStatistics200ResponsePopularServicesItemTotalRevenueMin).describe('Грошова сума (в гривнях)'),
+  "percentage": zod.coerce.number().describe('Відсоток від загального доходу')
+}).strict()),
+  "dailyStats": zod.array(zod.object({
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "ordersCount": zod.coerce.number(),
+  "revenue": zod.coerce.number().min(getBranchStatistics200ResponseDailyStatsItemRevenueMin).describe('Грошова сума (в гривнях)')
+}).strict())
+}).strict()
+
+export const getBranchStatistics400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+export const getBranchStatistics404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає наступний робочий день філії
+ * @summary Наступний робочий день
+ */
+export const getBranchNextWorkingDayParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getBranchNextWorkingDayQueryParams = zod.object({
+  "fromDate": zod.coerce.string().date().optional().describe('Дата від якої шукати (ISO 8601 date)')
+}).strict()
+
+export const getBranchNextWorkingDay200Response = zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "nextWorkingDate": zod.coerce.string().date().optional().describe('Дата в ISO 8601 форматі'),
+  "workingHours": zod.object({
+  "openTime": zod.coerce.string().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().describe('Час закриття')
+}).strict().optional().describe('Інформація про робочі години'),
+  "daysUntilNextWorking": zod.coerce.number().optional().describe('Кількість днів до наступного робочого дня')
+}).strict()
+
+export const getBranchNextWorkingDay404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Перевіряє чи працює філія в конкретний час
+ * @summary Перевірити чи відкрита філія
+ */
+export const getBranchOpenStatusParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getBranchOpenStatusQueryParams = zod.object({
+  "dateTime": zod.coerce.string().datetime({}).optional().describe('Дата та час для перевірки (ISO 8601)')
+}).strict()
+
+export const getBranchOpenStatus200Response = zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "isOpen": zod.coerce.boolean().describe('Чи відкрита філія зараз'),
+  "checkDateTime": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "currentStatus": zod.enum(['OPEN', 'CLOSED', 'HOLIDAY']),
+  "nextOpenTime": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "todaySchedule": zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().optional().describe('Примітки до дня')
+}).strict().optional()
+}).strict()
+
+export const getBranchOpenStatus404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає порівняльну статистику всіх філій за період
+ * @summary Порівняти статистику філій
+ */
+export const compareBranchStatisticsQuerySortByDefault = "revenue";export const compareBranchStatisticsQueryOrderDefault = "desc";
+
+export const compareBranchStatisticsQueryParams = zod.object({
+  "startDate": zod.coerce.string().date().describe('Початкова дата періоду'),
+  "endDate": zod.coerce.string().date().describe('Кінцева дата періоду'),
+  "city": zod.coerce.string().optional().describe('Фільтр за містом'),
+  "sortBy": zod.coerce.string().default(compareBranchStatisticsQuerySortByDefault).describe('Поле для сортування'),
+  "order": zod.coerce.string().default(compareBranchStatisticsQueryOrderDefault).describe('Порядок сортування')
+}).strict()
+
+export const compareBranchStatistics200ResponseTotalRevenueMin = 0;
+export const compareBranchStatistics200ResponseAverageOrderValueMin = 0;
+
+
+export const compareBranchStatistics200ResponseItem = zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchName": zod.coerce.string(),
+  "branchCode": zod.coerce.string(),
+  "ordersCount": zod.coerce.number(),
+  "totalRevenue": zod.coerce.number().min(compareBranchStatistics200ResponseTotalRevenueMin).describe('Грошова сума (в гривнях)'),
+  "averageOrderValue": zod.coerce.number().min(compareBranchStatistics200ResponseAverageOrderValueMin).describe('Грошова сума (в гривнях)'),
+  "ranking": zod.coerce.number().describe('Позиція в рейтингу')
+}).strict()
+export const compareBranchStatistics200Response = zod.array(compareBranchStatistics200ResponseItem)
+
+export const compareBranchStatistics400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+
+/**
+ * Повертає філії в радіусі від заданих координат
+ * @summary Знайти найближчі філії
+ */
+export const getNearbyBranchesQueryLatitudeMin = -90;
+
+export const getNearbyBranchesQueryLatitudeMax = 90;
+export const getNearbyBranchesQueryLongitudeMin = -180;
+
+export const getNearbyBranchesQueryLongitudeMax = 180;
+export const getNearbyBranchesQueryRadiusDefault = 10;
+export const getNearbyBranchesQueryRadiusMin = 0.1;
+
+export const getNearbyBranchesQueryRadiusMax = 100;
+export const getNearbyBranchesQueryLimitDefault = 10;
+export const getNearbyBranchesQueryLimitMax = 50;
+
+
+export const getNearbyBranchesQueryParams = zod.object({
+  "latitude": zod.coerce.number().min(getNearbyBranchesQueryLatitudeMin).max(getNearbyBranchesQueryLatitudeMax).describe('Широта'),
+  "longitude": zod.coerce.number().min(getNearbyBranchesQueryLongitudeMin).max(getNearbyBranchesQueryLongitudeMax).describe('Довгота'),
+  "radius": zod.coerce.number().min(getNearbyBranchesQueryRadiusMin).max(getNearbyBranchesQueryRadiusMax).default(getNearbyBranchesQueryRadiusDefault).describe('Радіус пошуку в кілометрах'),
+  "limit": zod.coerce.number().min(1).max(getNearbyBranchesQueryLimitMax).default(getNearbyBranchesQueryLimitDefault).describe('Максимальна кількість результатів')
+}).strict()
+
+export const getNearbyBranches200ResponseAddressStreetMin = 0;
+
+export const getNearbyBranches200ResponseAddressStreetMax = 200;
+export const getNearbyBranches200ResponseAddressCityMin = 0;
+
+export const getNearbyBranches200ResponseAddressCityMax = 100;
+export const getNearbyBranches200ResponseAddressRegionMin = 0;
+
+export const getNearbyBranches200ResponseAddressRegionMax = 100;
+export const getNearbyBranches200ResponseAddressPostalCodeMin = 0;
+
+export const getNearbyBranches200ResponseAddressPostalCodeMax = 10;
+export const getNearbyBranches200ResponseAddressCountryMin = 0;
+
+export const getNearbyBranches200ResponseAddressCountryMax = 100;
+
+
+export const getNearbyBranches200ResponseItem = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "code": zod.coerce.string().describe('Унікальний код філії'),
+  "name": zod.coerce.string().describe('Назва філії'),
+  "description": zod.coerce.string().describe('Опис розташування'),
+  "address": zod.object({
+  "street": zod.coerce.string().min(getNearbyBranches200ResponseAddressStreetMin).max(getNearbyBranches200ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
+  "city": zod.coerce.string().min(getNearbyBranches200ResponseAddressCityMin).max(getNearbyBranches200ResponseAddressCityMax).optional().describe('Місто'),
+  "region": zod.coerce.string().min(getNearbyBranches200ResponseAddressRegionMin).max(getNearbyBranches200ResponseAddressRegionMax).optional().describe('Область/регіон'),
+  "postalCode": zod.coerce.string().min(getNearbyBranches200ResponseAddressPostalCodeMin).max(getNearbyBranches200ResponseAddressPostalCodeMax).optional().describe('Поштовий індекс'),
+  "country": zod.coerce.string().min(getNearbyBranches200ResponseAddressCountryMin).max(getNearbyBranches200ResponseAddressCountryMax).optional().describe('Країна')
+}).strict(),
+  "contactInfo": zod.object({
+  "phone": zod.coerce.string().describe('Основний телефон'),
+  "alternativePhone": zod.coerce.string().optional().describe('Додатковий телефон'),
+  "email": zod.coerce.string().describe('Email філії'),
+  "managerName": zod.coerce.string().describe('Ім\'я менеджера')
+}).strict(),
+  "coordinates": zod.object({
+  "latitude": zod.coerce.number().optional().describe('Широта'),
+  "longitude": zod.coerce.number().optional().describe('Довгота'),
+  "mapUrl": zod.coerce.string().url().optional().describe('Посилання на карту')
+}).strict().optional(),
+  "status": zod.enum(['ACTIVE', 'INACTIVE', 'TEMPORARILY_CLOSED', 'UNDER_RENOVATION']),
+  "workingSchedule": zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "workingDays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().optional().describe('Примітки до дня')
+}).strict()),
+  "holidays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().describe('Чи повторюється щороку')
+}).strict()),
+  "timezone": zod.coerce.string().describe('Часовий пояс')
+}).strict().optional(),
+  "receiptCounter": zod.coerce.number().describe('Поточний лічильник квитанцій'),
+  "createdAt": zod.coerce.string().datetime({}).describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).describe('Дата останнього оновлення'),
+  "distance": zod.coerce.number().describe('Відстань в кілометрах')
+}).strict()
+export const getNearbyBranches200Response = zod.array(getNearbyBranches200ResponseItem)
+
+export const getNearbyBranches400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+
+/**
+ * Повертає філію за унікальним кодом
+ * @summary Отримати філію за кодом
+ */
+export const getBranchByCodePathCodeRegExp = new RegExp('^[A-Z0-9-]+$');
+
+
+export const getBranchByCodeParams = zod.object({
+  "code": zod.coerce.string().regex(getBranchByCodePathCodeRegExp).describe('Унікальний код філії')
+}).strict()
+
+export const getBranchByCode200ResponseAddressStreetMin = 0;
+
+export const getBranchByCode200ResponseAddressStreetMax = 200;
+export const getBranchByCode200ResponseAddressCityMin = 0;
+
+export const getBranchByCode200ResponseAddressCityMax = 100;
+export const getBranchByCode200ResponseAddressRegionMin = 0;
+
+export const getBranchByCode200ResponseAddressRegionMax = 100;
+export const getBranchByCode200ResponseAddressPostalCodeMin = 0;
+
+export const getBranchByCode200ResponseAddressPostalCodeMax = 10;
+export const getBranchByCode200ResponseAddressCountryMin = 0;
+
+export const getBranchByCode200ResponseAddressCountryMax = 100;
+
+
+export const getBranchByCode200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "code": zod.coerce.string().describe('Унікальний код філії'),
+  "name": zod.coerce.string().describe('Назва філії'),
+  "description": zod.coerce.string().describe('Опис розташування'),
+  "address": zod.object({
+  "street": zod.coerce.string().min(getBranchByCode200ResponseAddressStreetMin).max(getBranchByCode200ResponseAddressStreetMax).optional().describe('Вулиця та номер будинку'),
+  "city": zod.coerce.string().min(getBranchByCode200ResponseAddressCityMin).max(getBranchByCode200ResponseAddressCityMax).optional().describe('Місто'),
+  "region": zod.coerce.string().min(getBranchByCode200ResponseAddressRegionMin).max(getBranchByCode200ResponseAddressRegionMax).optional().describe('Область/регіон'),
+  "postalCode": zod.coerce.string().min(getBranchByCode200ResponseAddressPostalCodeMin).max(getBranchByCode200ResponseAddressPostalCodeMax).optional().describe('Поштовий індекс'),
+  "country": zod.coerce.string().min(getBranchByCode200ResponseAddressCountryMin).max(getBranchByCode200ResponseAddressCountryMax).optional().describe('Країна')
+}).strict(),
+  "contactInfo": zod.object({
+  "phone": zod.coerce.string().describe('Основний телефон'),
+  "alternativePhone": zod.coerce.string().optional().describe('Додатковий телефон'),
+  "email": zod.coerce.string().describe('Email філії'),
+  "managerName": zod.coerce.string().describe('Ім\'я менеджера')
+}).strict(),
+  "coordinates": zod.object({
+  "latitude": zod.coerce.number().optional().describe('Широта'),
+  "longitude": zod.coerce.number().optional().describe('Довгота'),
+  "mapUrl": zod.coerce.string().url().optional().describe('Посилання на карту')
+}).strict().optional(),
+  "status": zod.enum(['ACTIVE', 'INACTIVE', 'TEMPORARILY_CLOSED', 'UNDER_RENOVATION']),
+  "workingSchedule": zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "workingDays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "dayOfWeek": zod.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
+  "openTime": zod.coerce.string().optional().describe('Час відкриття'),
+  "closeTime": zod.coerce.string().optional().describe('Час закриття'),
+  "isWorkingDay": zod.coerce.boolean().describe('Чи є день робочим'),
+  "notes": zod.coerce.string().optional().describe('Примітки до дня')
+}).strict()),
+  "holidays": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "date": zod.coerce.string().date().describe('Дата в ISO 8601 форматі'),
+  "name": zod.coerce.string().describe('Назва свята'),
+  "isRecurring": zod.coerce.boolean().describe('Чи повторюється щороку')
+}).strict()),
+  "timezone": zod.coerce.string().describe('Часовий пояс')
+}).strict().optional(),
+  "receiptCounter": zod.coerce.number().describe('Поточний лічильник квитанцій'),
+  "createdAt": zod.coerce.string().datetime({}).describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).describe('Дата останнього оновлення')
+}).strict()
+
+export const getBranchByCode404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()

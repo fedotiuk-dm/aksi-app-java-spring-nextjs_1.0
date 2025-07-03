@@ -2,9 +2,6 @@ package com.aksi.domain.branch.mapper;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,17 +61,10 @@ public interface BranchMapper {
   // Entity → DTO mappings (для response)
 
   /** {@code BranchEntity} → {@code BranchResponse}. */
-  @Mapping(
-      target = "createdAt",
-      source = "createdAt",
-      qualifiedByName = "localDateTimeToOffsetDateTime")
-  @Mapping(
-      target = "updatedAt",
-      source = "updatedAt",
-      qualifiedByName = "localDateTimeToOffsetDateTime")
   @Mapping(target = "status", source = "status", qualifiedByName = "domainBranchStatusToApi")
   @Mapping(target = "address", source = ".")
   @Mapping(target = "workingSchedule", ignore = true) // окремий mapper для WorkingSchedule
+  // createdAt, updatedAt: Instant → Instant (автоматичний маппінг)
   BranchResponse toBranchResponse(BranchEntity entity);
 
   /** {@code BranchEntity} → {@code BranchSummaryResponse}. */
@@ -93,29 +83,7 @@ public interface BranchMapper {
   /** List<BranchEntity> → List<BranchSummaryResponse>. */
   List<BranchSummaryResponse> toBranchSummaryResponseList(List<BranchEntity> entities);
 
-  // Utility mappings
-
-  /** LocalDateTime (Entity) → OffsetDateTime (DTO) - auto mapping. */
-  default OffsetDateTime map(LocalDateTime localDateTime) {
-    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
-  }
-
-  /** OffsetDateTime (DTO) → LocalDateTime (Entity) - auto mapping. */
-  default LocalDateTime map(OffsetDateTime offsetDateTime) {
-    return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
-  }
-
-  /** LocalDateTime (Entity) → OffsetDateTime (DTO) - named mapping. */
-  @Named("localDateTimeToOffsetDateTime")
-  default OffsetDateTime localDateTimeToOffsetDateTime(LocalDateTime localDateTime) {
-    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
-  }
-
-  /** OffsetDateTime (DTO) → LocalDateTime (Entity) - named mapping. */
-  @Named("offsetDateTimeToLocalDateTime")
-  default LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
-    return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
-  }
+  // З Instant типами - LocalDateTime ↔ OffsetDateTime конвертери не потрібні (OpenAPI-first)
 
   /** String → URI. */
   default URI stringToUri(String url) {

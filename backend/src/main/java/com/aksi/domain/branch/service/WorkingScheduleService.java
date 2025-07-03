@@ -1,8 +1,9 @@
 package com.aksi.domain.branch.service;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -182,17 +183,17 @@ public class WorkingScheduleService {
 
   /** Отримати статус відкриття філії (для API контролера). */
   @Transactional(readOnly = true)
-  public BranchOpenStatusResponse getBranchOpenStatus(UUID branchId, OffsetDateTime dateTime) {
+  public BranchOpenStatusResponse getBranchOpenStatus(UUID branchId, Instant dateTime) {
     log.debug("Getting branch open status for: {} at: {}", branchId, dateTime);
 
     // Якщо dateTime не вказана, використовуємо поточний час
-    LocalDateTime checkDateTime =
-        dateTime != null ? dateTime.toLocalDateTime() : LocalDateTime.now();
+    Instant checkDateTime = dateTime != null ? dateTime : Instant.now();
 
-    boolean isOpen = isBranchOpenAt(branchId, checkDateTime);
+    // Мінімальна конвертація для business логіки (поки Entity не оновлено)
+    LocalDateTime localDateTime = LocalDateTime.ofInstant(checkDateTime, ZoneOffset.UTC);
+    boolean isOpen = isBranchOpenAt(branchId, localDateTime);
 
-    // Для простоти створюємо базову відповідь
-    // TODO: В майбутньому додати більше деталей з розкладу
+    // Прямий маппінг через mapper
     return workingScheduleMapper.toBranchOpenStatusResponse(branchId, isOpen, checkDateTime);
   }
 

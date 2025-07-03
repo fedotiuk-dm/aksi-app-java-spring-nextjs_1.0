@@ -1,8 +1,6 @@
 package com.aksi.shared;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -36,11 +34,11 @@ public abstract class BaseEntity {
 
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
-  private LocalDateTime createdAt;
+  private Instant createdAt;
 
   @LastModifiedDate
   @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
+  private Instant updatedAt;
 
   @Version
   @Column(name = "version")
@@ -51,30 +49,5 @@ public abstract class BaseEntity {
     // Для JPA
   }
 
-  // API Helper методи для MapStruct сумісності
-
-  /** Конвертація createdAt в OffsetDateTime для API. */
-  public OffsetDateTime getCreatedAtAsOffsetDateTime() {
-    return createdAt != null ? createdAt.atOffset(ZoneOffset.UTC) : null;
-  }
-
-  /** Конвертація updatedAt в OffsetDateTime для API. */
-  public OffsetDateTime getUpdatedAtAsOffsetDateTime() {
-    return updatedAt != null ? updatedAt.atOffset(ZoneOffset.UTC) : null;
-  }
-
-  /** Конвертація createdAt в LocalDate для API. */
-  public java.time.LocalDate getCreatedAtAsLocalDate() {
-    return createdAt != null ? createdAt.toLocalDate() : null;
-  }
-
-  /** Статичний helper для конвертації LocalDateTime → OffsetDateTime. */
-  public static OffsetDateTime toOffsetDateTime(LocalDateTime localDateTime) {
-    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
-  }
-
-  /** Статичний helper для конвертації OffsetDateTime → LocalDateTime. */
-  public static LocalDateTime toLocalDateTime(OffsetDateTime offsetDateTime) {
-    return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
-  }
+  // З Instant більше не потрібні conversion methods - прямий mapping!
 }

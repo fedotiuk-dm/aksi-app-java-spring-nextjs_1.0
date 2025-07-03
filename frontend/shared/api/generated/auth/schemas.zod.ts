@@ -121,7 +121,7 @@ export const loginUserBodyUsernameMin = 3;
 
 export const loginUserBodyUsernameMax = 100;
 
-export const loginUserBodyUsernameRegExp = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}|^[a-zA-Z0-9_]+$');
+export const loginUserBodyUsernameRegExp = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$');
 export const loginUserBodyPasswordMin = 6;
 
 export const loginUserBodyPasswordMax = 128;

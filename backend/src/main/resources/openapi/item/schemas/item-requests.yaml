@@ -10,44 +10,58 @@ ItemCharacteristicsRequest:
     material:
       $ref: "../../order/schemas/price-modifiers.yaml#/MaterialType"
       description: Матеріал виробу
+      nullable: false
     color:
+      $ref: "./item-enums.yaml#/ItemColor"
+      description: Колір виробу (базовий колір для швидкого вибору)
+      nullable: false
+    customColor:
       type: string
       maxLength: 50
-      description: Колір виробу (для різних цін чорного та інших кольорів)
-      example: "чорний"
+      description: Кастомний колір (обов'язковий тільки якщо вибрано OTHER)
+      example: "темно-бордовий"
+      nullable: true
     filling:
       $ref: "../../order/schemas/price-modifiers.yaml#/FillingType"
       description: Наповнювач
+      nullable: false
     wearDegree:
       $ref: "../../order/schemas/order-enums.yaml#/WearDegreeType"
       description: Ступінь зносу виробу
+      nullable: false
     stains:
       type: array
       items:
         $ref: "../../order/schemas/order-item-schemas.yaml#/StainType"
       description: Типи плям
       maxItems: 10
+      nullable: false
     customStain:
       type: string
       maxLength: 100
       description: Опис кастомної плями (якщо вибрано OTHER)
+      nullable: false
     defects:
       type: array
       items:
         $ref: "../../order/schemas/order-item-schemas.yaml#/DefectType"
       description: Дефекти та ризики
       maxItems: 10
+      nullable: false
     defectNotes:
       type: string
       maxLength: 500
       description: Примітки щодо дефектів
+      nullable: false
     hasRisks:
       type: boolean
       description: Наявність ризиків
+      nullable: false
     riskDescription:
       type: string
       maxLength: 500
       description: Опис ризиків
+      nullable: false
     photos:
       type: array
       items:
@@ -55,6 +69,7 @@ ItemCharacteristicsRequest:
         format: uri
       maxItems: 5
       description: URL фотографій предмета (максимум 5 фото)
+      nullable: false
 
 # Service Category Requests
 CreateServiceCategoryRequest:
@@ -71,30 +86,36 @@ CreateServiceCategoryRequest:
       maxLength: 20
       description: Унікальний код категорії
       example: "DRY_CLEANING"
+      nullable: false
     name:
       type: string
       maxLength: 100
       description: Назва категорії
       example: "Хімчистка"
+      nullable: false
     description:
       type: string
       maxLength: 500
       description: Опис категорії
       example: "Хімічне чищення одягу"
+      nullable: false
     parentId:
       type: string
       format: uuid
       description: Ідентифікатор батьківської категорії
+      nullable: false
     standardDays:
       type: integer
       minimum: 1
       maximum: 30
       description: Стандартний термін виконання в днях
       example: 3
+      nullable: false
     isActive:
       type: boolean
       default: true
       description: Чи активна категорія
+      nullable: false
 
 UpdateServiceCategoryRequest:
   type: object
@@ -106,20 +127,24 @@ UpdateServiceCategoryRequest:
       maxLength: 100
       description: Назва категорії
       example: "Хімчистка"
+      nullable: false
     description:
       type: string
       maxLength: 500
       description: Опис категорії
       example: "Хімічне чищення одягу"
+      nullable: false
     standardDays:
       type: integer
       minimum: 1
       maximum: 30
       description: Стандартний термін виконання в днях
       example: 3
+      nullable: false
     isActive:
       type: boolean
       description: Чи активна категорія
+      nullable: false
 
 # Price List Item Requests
 CreatePriceListItemRequest:
@@ -137,26 +162,31 @@ CreatePriceListItemRequest:
       type: string
       format: uuid
       description: Ідентифікатор категорії
+      nullable: false
     catalogNumber:
       type: integer
       minimum: 1
       description: Каталоговий номер предмета
       example: 1
+      nullable: false
     name:
       type: string
       maxLength: 255
       description: Назва предмета
       example: "Піджак, кітель"
+      nullable: false
     unitOfMeasure:
       $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
       description: Одиниця виміру
       example: "шт"
+      nullable: false
     basePrice:
       type: number
       format: double
       minimum: 0
       description: Базова ціна
       example: 480.00
+      nullable: false
     priceBlack:
       type: number
       format: double
@@ -173,6 +203,7 @@ CreatePriceListItemRequest:
       type: boolean
       default: true
       description: Чи активний предмет
+      nullable: false
 
 UpdatePriceListItemRequest:
   type: object
@@ -184,16 +215,19 @@ UpdatePriceListItemRequest:
       maxLength: 255
       description: Назва предмета
       example: "Піджак, кітель"
+      nullable: false
     unitOfMeasure:
       $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
       description: Одиниця виміру
       example: "шт"
+      nullable: false
     basePrice:
       type: number
       format: double
       minimum: 0
       description: Базова ціна
       example: 480.00
+      nullable: false
     priceBlack:
       type: number
       format: double
@@ -209,6 +243,7 @@ UpdatePriceListItemRequest:
     isActive:
       type: boolean
       description: Чи активний предмет
+      nullable: false
 
 # Price Modifier Requests
 CreatePriceModifierRequest:
@@ -226,34 +261,41 @@ CreatePriceModifierRequest:
       maxLength: 50
       description: Унікальний код модифікатора
       example: "CHILDREN_ITEMS"
+      nullable: false
     name:
       type: string
       maxLength: 200
       description: Назва модифікатора
       example: "Дитячі речі (до 30 розміру)"
+      nullable: false
     type:
       $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
       description: Тип модифікатора
+      nullable: false
     value:
       type: number
       format: double
       description: Значення модифікатора
       example: 30.0
+      nullable: false
     applicableTo:
       type: array
       items:
         type: string
         format: uuid
       description: Категорії, до яких застосовується модифікатор
+      nullable: false
     description:
       type: string
       maxLength: 500
       description: Опис модифікатора
       example: "Знижка для дитячих речей"
+      nullable: false
     isActive:
       type: boolean
       default: true
       description: Чи активний модифікатор
+      nullable: false
 
 UpdatePriceModifierRequest:
   type: object
@@ -265,25 +307,30 @@ UpdatePriceModifierRequest:
       maxLength: 200
       description: Назва модифікатора
       example: "Дитячі речі (до 30 розміру)"
+      nullable: false
     value:
       type: number
       format: double
       description: Значення модифікатора
       example: 30.0
+      nullable: false
     applicableTo:
       type: array
       items:
         type: string
         format: uuid
       description: Категорії, до яких застосовується модифікатор
+      nullable: false
     description:
       type: string
       maxLength: 500
       description: Опис модифікатора
       example: "Знижка для дитячих речей"
+      nullable: false
     isActive:
       type: boolean
       description: Чи активний модифікатор
+      nullable: false
 
 # Item Calculation Request for Order Summary
 ItemCalculationRequest:
@@ -298,11 +345,13 @@ ItemCalculationRequest:
       type: string
       format: uuid
       description: Ідентифікатор предмета з прайс-листа
+      nullable: false
     quantity:
       type: integer
       minimum: 1
       description: Кількість предметів
       example: 2
+      nullable: false
     appliedModifiers:
       type: array
       items:
@@ -310,10 +359,12 @@ ItemCalculationRequest:
         format: uuid
       description: Список модифікаторів для застосування
       example: ["CHILDREN_ITEMS", "URGENT_SERVICE"]
+      nullable: false
     urgency:
       $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
       description: Терміновість для конкретного предмета
       default: NORMAL
+      nullable: false
     characteristics:
       $ref: "#/ItemCharacteristicsRequest"
       description: Характеристики предмета для розрахунку (матеріал, колір, плями, дефекти тощо)
@@ -332,6 +383,7 @@ CalculateOrderSummaryRequest:
         $ref: "#/ItemCalculationRequest"
       minItems: 1
       description: Список предметів для розрахунку
+      nullable: false
     discount:
       type: object
       title: OrderDiscountInfo
@@ -340,16 +392,19 @@ CalculateOrderSummaryRequest:
         type:
           $ref: "../../order/schemas/order-enums.yaml#/DiscountType"
           description: Тип знижки
+          nullable: false
         value:
           type: number
           format: double
           minimum: 0
           description: Значення знижки
           example: 10.00
+          nullable: false
     urgency:
       $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
       description: Загальна терміновість замовлення
       default: NORMAL
+      nullable: false
 
 # Photo Upload Requests
 UploadItemPhotoRequest:
@@ -364,24 +419,27 @@ UploadItemPhotoRequest:
       type: string
       format: uuid
       description: Ідентифікатор предмета
+      nullable: false
     file:
       type: string
       format: binary
       description: Файл зображення
+      nullable: false
     description:
       type: string
       maxLength: 500
       description: Опис фотографії
       example: "Фото дефекту на рукаві"
+      nullable: false
     photoType:
-      type: string
-      enum: ["BEFORE", "AFTER", "DEFECT", "STAIN", "DETAIL"]
+      $ref: "./item-enums.yaml#/PhotoType"
       description: Тип фотографії
-      example: "BEFORE"
+      nullable: false
     isMain:
       type: boolean
       default: false
       description: Чи є це основна фотографія предмета
+      nullable: false
 
 UpdatePhotoMetadataRequest:
   type: object
@@ -393,11 +451,12 @@ UpdatePhotoMetadataRequest:
       maxLength: 500
       description: Опис фотографії
       example: "Фото дефекту на рукаві"
+      nullable: false
     photoType:
-      type: string
-      enum: ["BEFORE", "AFTER", "DEFECT", "STAIN", "DETAIL"]
+      $ref: "./item-enums.yaml#/PhotoType"
       description: Тип фотографії
-      example: "BEFORE"
+      nullable: false
     isMain:
       type: boolean
       description: Чи є це основна фотографія предмета
+      nullable: false

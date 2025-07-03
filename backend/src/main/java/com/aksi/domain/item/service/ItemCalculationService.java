@@ -239,8 +239,8 @@ public class ItemCalculationService {
   /** Отримати фактичну базову ціну для відображення в response. */
   private Double getActualBasePriceForResponse(
       PriceListItemEntity priceListItem, ItemCalculationRequest request) {
-    String color = request.getCharacteristics().getColor().toLowerCase().trim();
-    boolean isBlack = "чорний".equals(color);
+    String color = request.getCharacteristics().getColor().getValue().toLowerCase().trim();
+    boolean isBlack = "black".equals(color);
     return priceListItem.getPriceByColor(isBlack);
   }
 
@@ -249,7 +249,7 @@ public class ItemCalculationService {
     List<String> warnings = new ArrayList<>();
     if (priceListItem.hasColorSpecificPricing()) {
 
-      String color = request.getCharacteristics().getColor();
+      String color = request.getCharacteristics().getColor().toString();
       warnings.add("Застосовано кольорове ціноутворення для кольору: " + color);
 
       if (priceListItem.getPriceBlack() != null) {
@@ -315,8 +315,8 @@ public class ItemCalculationService {
     Integer quantity = request.getQuantity();
 
     // Отримати колір та визначити ціну
-    String color = request.getCharacteristics().getColor().toLowerCase().trim();
-    boolean isBlack = "чорний".equals(color);
+    String color = request.getCharacteristics().getColor().getValue().toLowerCase().trim();
+    boolean isBlack = "black".equals(color);
     Double pricePerUnit = priceListItem.getPriceByColor(isBlack);
 
     log.debug(

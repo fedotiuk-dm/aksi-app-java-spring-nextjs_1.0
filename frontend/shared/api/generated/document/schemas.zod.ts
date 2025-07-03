@@ -5,4 +5,1592 @@
  * API для односторінкової системи замовлень хімчистки з DDD архітектурою
  * OpenAPI spec version: 1.0.0
  */
+import {
+  z as zod
+} from 'zod';
 
+/**
+ * Повертає детальну інформацію про квитанцію
+ * @summary Отримати квитанцію за ID
+ */
+export const getReceiptByIdParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getReceiptById200ResponseDataOrderInfoTotalAmountMin = 0;
+export const getReceiptById200ResponseDataOrderInfoDiscountAmountMin = 0;
+export const getReceiptById200ResponseDataOrderInfoFinalAmountMin = 0;
+export const getReceiptById200ResponseDataOrderInfoPaidAmountMin = 0;
+export const getReceiptById200ResponseDataOrderInfoRemainingAmountMin = 0;
+export const getReceiptById200ResponseDataItemsItemBasePriceMin = 0;
+export const getReceiptById200ResponseDataItemsItemModifiersItemAppliedAmountMin = 0;
+export const getReceiptById200ResponseDataItemsItemFinalPriceMin = 0;
+export const getReceiptById200ResponseDataFinancialSubtotalMin = 0;
+export const getReceiptById200ResponseDataFinancialDiscountAmountMin = 0;
+export const getReceiptById200ResponseDataFinancialExpediteChargeMin = 0;
+export const getReceiptById200ResponseDataFinancialTotalAmountMin = 0;
+export const getReceiptById200ResponseDataFinancialPaidAmountMin = 0;
+export const getReceiptById200ResponseDataFinancialRemainingAmountMin = 0;
+
+
+export const getReceiptById200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "receiptNumber": zod.coerce.string().describe('Номер квитанції'),
+  "data": zod.object({
+  "companyInfo": zod.object({
+  "companyName": zod.coerce.string(),
+  "legalName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string(),
+  "website": zod.coerce.string().optional(),
+  "logoUrl": zod.coerce.string().optional(),
+  "taxNumber": zod.coerce.string()
+}).strict(),
+  "branchInfo": zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchCode": zod.coerce.string(),
+  "branchName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "managerName": zod.coerce.string()
+}).strict(),
+  "orderInfo": zod.object({
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderNumber": zod.coerce.string(),
+  "createdAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expectedCompletionDate": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expediteType": zod.enum(['NORMAL', 'URGENT_48H', 'URGENT_24H']),
+  "totalAmount": zod.coerce.number().min(getReceiptById200ResponseDataOrderInfoTotalAmountMin).describe('Грошова сума (в гривнях)'),
+  "discountAmount": zod.coerce.number().min(getReceiptById200ResponseDataOrderInfoDiscountAmountMin).describe('Грошова сума (в гривнях)'),
+  "finalAmount": zod.coerce.number().min(getReceiptById200ResponseDataOrderInfoFinalAmountMin).describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(getReceiptById200ResponseDataOrderInfoPaidAmountMin).describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(getReceiptById200ResponseDataOrderInfoRemainingAmountMin).describe('Грошова сума (в гривнях)')
+}).strict(),
+  "clientInfo": zod.object({
+  "clientId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "firstName": zod.coerce.string(),
+  "lastName": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string().optional(),
+  "address": zod.coerce.string().optional(),
+  "preferredContactMethod": zod.coerce.string()
+}).strict(),
+  "items": zod.array(zod.object({
+  "itemNumber": zod.coerce.number(),
+  "itemName": zod.coerce.string(),
+  "category": zod.coerce.string(),
+  "quantity": zod.coerce.string(),
+  "material": zod.coerce.string(),
+  "color": zod.enum(['BLACK', 'WHITE', 'GRAY', 'BROWN', 'NAVY', 'BLUE', 'GREEN', 'RED', 'BEIGE', 'CREAM', 'PINK', 'YELLOW', 'PURPLE', 'MULTICOLOR', 'OTHER']),
+  "customColor": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "filling": zod.coerce.string().optional(),
+  "basePrice": zod.coerce.number().min(getReceiptById200ResponseDataItemsItemBasePriceMin).describe('Грошова сума (в гривнях)'),
+  "modifiers": zod.array(zod.object({
+  "name": zod.coerce.string().optional(),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional(),
+  "value": zod.coerce.number().optional(),
+  "appliedAmount": zod.coerce.number().min(getReceiptById200ResponseDataItemsItemModifiersItemAppliedAmountMin).optional().describe('Грошова сума (в гривнях)')
+}).strict()),
+  "finalPrice": zod.coerce.number().min(getReceiptById200ResponseDataItemsItemFinalPriceMin).describe('Грошова сума (в гривнях)'),
+  "stains": zod.array(zod.coerce.string()),
+  "defects": zod.array(zod.coerce.string()),
+  "defectNotes": zod.coerce.string().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "thumbnailUrl": zod.coerce.string().url().optional(),
+  "fullUrl": zod.coerce.string().url().optional()
+}).strict())
+}).strict()),
+  "financial": zod.object({
+  "subtotal": zod.coerce.number().min(getReceiptById200ResponseDataFinancialSubtotalMin).optional().describe('Грошова сума (в гривнях)'),
+  "discountType": zod.coerce.string().optional(),
+  "discountAmount": zod.coerce.number().min(getReceiptById200ResponseDataFinancialDiscountAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "expediteCharge": zod.coerce.number().min(getReceiptById200ResponseDataFinancialExpediteChargeMin).optional().describe('Грошова сума (в гривнях)'),
+  "totalAmount": zod.coerce.number().min(getReceiptById200ResponseDataFinancialTotalAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(getReceiptById200ResponseDataFinancialPaidAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(getReceiptById200ResponseDataFinancialRemainingAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paymentMethod": zod.coerce.string().optional()
+}).strict(),
+  "legalInfo": zod.object({
+  "termsAndConditions": zod.coerce.string().optional(),
+  "liabilityLimitations": zod.coerce.string().optional(),
+  "warrantyInfo": zod.coerce.string().optional(),
+  "acceptanceConfirmed": zod.coerce.boolean().optional(),
+  "acceptanceDate": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict(),
+  "operatorInfo": zod.object({
+  "operatorName": zod.coerce.string().optional(),
+  "operatorPosition": zod.coerce.string().optional(),
+  "operatorId": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)')
+}).strict()
+}).strict(),
+  "pdfDocument": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string().optional(),
+  "fileSize": zod.coerce.number().optional(),
+  "downloadUrl": zod.coerce.string().url().optional(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict().optional(),
+  "qrCode": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "imageUrl": zod.coerce.string().url().optional(),
+  "size": zod.coerce.number().optional()
+}).strict().optional(),
+  "signatures": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "type": zod.enum(['CLIENT_HANDOVER', 'CLIENT_PICKUP', 'OPERATOR', 'DIGITAL']).optional(),
+  "signerName": zod.coerce.string().optional(),
+  "signedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "imageUrl": zod.coerce.string().url().optional()
+}).strict()).optional(),
+  "isPrinted": zod.coerce.boolean().describe('Чи роздрукована квитанція'),
+  "printedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "generatedAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "generatedBy": zod.coerce.string().describe('Хто згенерував')
+}).strict()
+
+export const getReceiptById404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Оновлює дані квитанції (якщо ще не роздрукована)
+ * @summary Оновити квитанцію
+ */
+export const updateReceiptParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const updateReceiptBodyDataCompanyInfoCompanyNameMin = 0;
+
+export const updateReceiptBodyDataCompanyInfoCompanyNameMax = 200;
+export const updateReceiptBodyDataCompanyInfoLegalNameMin = 0;
+
+export const updateReceiptBodyDataCompanyInfoLegalNameMax = 200;
+export const updateReceiptBodyDataCompanyInfoAddressMin = 0;
+
+export const updateReceiptBodyDataCompanyInfoAddressMax = 500;
+export const updateReceiptBodyDataCompanyInfoPhoneRegExp = new RegExp('^\\+380\\d{9}$');
+export const updateReceiptBodyDataCompanyInfoEmailMin = 3;
+
+export const updateReceiptBodyDataCompanyInfoEmailMax = 254;
+export const updateReceiptBodyDataCompanyInfoTaxNumberMin = 0;
+
+export const updateReceiptBodyDataCompanyInfoTaxNumberMax = 50;
+export const updateReceiptBodyDataOperatorInfoOperatorNameMin = 0;
+
+export const updateReceiptBodyDataOperatorInfoOperatorNameMax = 100;
+export const updateReceiptBodyDataOperatorInfoOperatorPositionMin = 0;
+
+export const updateReceiptBodyDataOperatorInfoOperatorPositionMax = 100;
+export const updateReceiptBodyDataLegalInfoTermsAndConditionsMin = 0;
+
+export const updateReceiptBodyDataLegalInfoTermsAndConditionsMax = 2000;
+export const updateReceiptBodyDataLegalInfoLiabilityLimitationsMin = 0;
+
+export const updateReceiptBodyDataLegalInfoLiabilityLimitationsMax = 1000;
+export const updateReceiptBodyDataLegalInfoWarrantyInfoMin = 0;
+
+export const updateReceiptBodyDataLegalInfoWarrantyInfoMax = 1000;
+
+
+export const updateReceiptBody = zod.object({
+  "data": zod.object({
+  "companyInfo": zod.object({
+  "companyName": zod.coerce.string().min(updateReceiptBodyDataCompanyInfoCompanyNameMin).max(updateReceiptBodyDataCompanyInfoCompanyNameMax).optional(),
+  "legalName": zod.coerce.string().min(updateReceiptBodyDataCompanyInfoLegalNameMin).max(updateReceiptBodyDataCompanyInfoLegalNameMax).optional(),
+  "address": zod.coerce.string().min(updateReceiptBodyDataCompanyInfoAddressMin).max(updateReceiptBodyDataCompanyInfoAddressMax).optional(),
+  "phone": zod.coerce.string().regex(updateReceiptBodyDataCompanyInfoPhoneRegExp).optional().describe('Номер телефону в міжнародному форматі'),
+  "email": zod.coerce.string().min(updateReceiptBodyDataCompanyInfoEmailMin).max(updateReceiptBodyDataCompanyInfoEmailMax).optional().describe('Email адреса'),
+  "website": zod.coerce.string().url().optional(),
+  "logoUrl": zod.coerce.string().url().optional(),
+  "taxNumber": zod.coerce.string().min(updateReceiptBodyDataCompanyInfoTaxNumberMin).max(updateReceiptBodyDataCompanyInfoTaxNumberMax).optional()
+}).strict().optional(),
+  "operatorInfo": zod.object({
+  "operatorName": zod.coerce.string().min(updateReceiptBodyDataOperatorInfoOperatorNameMin).max(updateReceiptBodyDataOperatorInfoOperatorNameMax).optional(),
+  "operatorPosition": zod.coerce.string().min(updateReceiptBodyDataOperatorInfoOperatorPositionMin).max(updateReceiptBodyDataOperatorInfoOperatorPositionMax).optional()
+}).strict().optional(),
+  "legalInfo": zod.object({
+  "termsAndConditions": zod.coerce.string().min(updateReceiptBodyDataLegalInfoTermsAndConditionsMin).max(updateReceiptBodyDataLegalInfoTermsAndConditionsMax).optional(),
+  "liabilityLimitations": zod.coerce.string().min(updateReceiptBodyDataLegalInfoLiabilityLimitationsMin).max(updateReceiptBodyDataLegalInfoLiabilityLimitationsMax).optional(),
+  "warrantyInfo": zod.coerce.string().min(updateReceiptBodyDataLegalInfoWarrantyInfoMin).max(updateReceiptBodyDataLegalInfoWarrantyInfoMax).optional()
+}).strict().optional()
+}).strict().optional(),
+  "regeneratePdf": zod.coerce.boolean().optional().describe('Перегенерувати PDF після оновлення')
+}).strict()
+
+export const updateReceipt200ResponseDataOrderInfoTotalAmountMin = 0;
+export const updateReceipt200ResponseDataOrderInfoDiscountAmountMin = 0;
+export const updateReceipt200ResponseDataOrderInfoFinalAmountMin = 0;
+export const updateReceipt200ResponseDataOrderInfoPaidAmountMin = 0;
+export const updateReceipt200ResponseDataOrderInfoRemainingAmountMin = 0;
+export const updateReceipt200ResponseDataItemsItemBasePriceMin = 0;
+export const updateReceipt200ResponseDataItemsItemModifiersItemAppliedAmountMin = 0;
+export const updateReceipt200ResponseDataItemsItemFinalPriceMin = 0;
+export const updateReceipt200ResponseDataFinancialSubtotalMin = 0;
+export const updateReceipt200ResponseDataFinancialDiscountAmountMin = 0;
+export const updateReceipt200ResponseDataFinancialExpediteChargeMin = 0;
+export const updateReceipt200ResponseDataFinancialTotalAmountMin = 0;
+export const updateReceipt200ResponseDataFinancialPaidAmountMin = 0;
+export const updateReceipt200ResponseDataFinancialRemainingAmountMin = 0;
+
+
+export const updateReceipt200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "receiptNumber": zod.coerce.string().describe('Номер квитанції'),
+  "data": zod.object({
+  "companyInfo": zod.object({
+  "companyName": zod.coerce.string(),
+  "legalName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string(),
+  "website": zod.coerce.string().optional(),
+  "logoUrl": zod.coerce.string().optional(),
+  "taxNumber": zod.coerce.string()
+}).strict(),
+  "branchInfo": zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchCode": zod.coerce.string(),
+  "branchName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "managerName": zod.coerce.string()
+}).strict(),
+  "orderInfo": zod.object({
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderNumber": zod.coerce.string(),
+  "createdAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expectedCompletionDate": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expediteType": zod.enum(['NORMAL', 'URGENT_48H', 'URGENT_24H']),
+  "totalAmount": zod.coerce.number().min(updateReceipt200ResponseDataOrderInfoTotalAmountMin).describe('Грошова сума (в гривнях)'),
+  "discountAmount": zod.coerce.number().min(updateReceipt200ResponseDataOrderInfoDiscountAmountMin).describe('Грошова сума (в гривнях)'),
+  "finalAmount": zod.coerce.number().min(updateReceipt200ResponseDataOrderInfoFinalAmountMin).describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(updateReceipt200ResponseDataOrderInfoPaidAmountMin).describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(updateReceipt200ResponseDataOrderInfoRemainingAmountMin).describe('Грошова сума (в гривнях)')
+}).strict(),
+  "clientInfo": zod.object({
+  "clientId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "firstName": zod.coerce.string(),
+  "lastName": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string().optional(),
+  "address": zod.coerce.string().optional(),
+  "preferredContactMethod": zod.coerce.string()
+}).strict(),
+  "items": zod.array(zod.object({
+  "itemNumber": zod.coerce.number(),
+  "itemName": zod.coerce.string(),
+  "category": zod.coerce.string(),
+  "quantity": zod.coerce.string(),
+  "material": zod.coerce.string(),
+  "color": zod.enum(['BLACK', 'WHITE', 'GRAY', 'BROWN', 'NAVY', 'BLUE', 'GREEN', 'RED', 'BEIGE', 'CREAM', 'PINK', 'YELLOW', 'PURPLE', 'MULTICOLOR', 'OTHER']),
+  "customColor": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "filling": zod.coerce.string().optional(),
+  "basePrice": zod.coerce.number().min(updateReceipt200ResponseDataItemsItemBasePriceMin).describe('Грошова сума (в гривнях)'),
+  "modifiers": zod.array(zod.object({
+  "name": zod.coerce.string().optional(),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional(),
+  "value": zod.coerce.number().optional(),
+  "appliedAmount": zod.coerce.number().min(updateReceipt200ResponseDataItemsItemModifiersItemAppliedAmountMin).optional().describe('Грошова сума (в гривнях)')
+}).strict()),
+  "finalPrice": zod.coerce.number().min(updateReceipt200ResponseDataItemsItemFinalPriceMin).describe('Грошова сума (в гривнях)'),
+  "stains": zod.array(zod.coerce.string()),
+  "defects": zod.array(zod.coerce.string()),
+  "defectNotes": zod.coerce.string().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "thumbnailUrl": zod.coerce.string().url().optional(),
+  "fullUrl": zod.coerce.string().url().optional()
+}).strict())
+}).strict()),
+  "financial": zod.object({
+  "subtotal": zod.coerce.number().min(updateReceipt200ResponseDataFinancialSubtotalMin).optional().describe('Грошова сума (в гривнях)'),
+  "discountType": zod.coerce.string().optional(),
+  "discountAmount": zod.coerce.number().min(updateReceipt200ResponseDataFinancialDiscountAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "expediteCharge": zod.coerce.number().min(updateReceipt200ResponseDataFinancialExpediteChargeMin).optional().describe('Грошова сума (в гривнях)'),
+  "totalAmount": zod.coerce.number().min(updateReceipt200ResponseDataFinancialTotalAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(updateReceipt200ResponseDataFinancialPaidAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(updateReceipt200ResponseDataFinancialRemainingAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paymentMethod": zod.coerce.string().optional()
+}).strict(),
+  "legalInfo": zod.object({
+  "termsAndConditions": zod.coerce.string().optional(),
+  "liabilityLimitations": zod.coerce.string().optional(),
+  "warrantyInfo": zod.coerce.string().optional(),
+  "acceptanceConfirmed": zod.coerce.boolean().optional(),
+  "acceptanceDate": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict(),
+  "operatorInfo": zod.object({
+  "operatorName": zod.coerce.string().optional(),
+  "operatorPosition": zod.coerce.string().optional(),
+  "operatorId": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)')
+}).strict()
+}).strict(),
+  "pdfDocument": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string().optional(),
+  "fileSize": zod.coerce.number().optional(),
+  "downloadUrl": zod.coerce.string().url().optional(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict().optional(),
+  "qrCode": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "imageUrl": zod.coerce.string().url().optional(),
+  "size": zod.coerce.number().optional()
+}).strict().optional(),
+  "signatures": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "type": zod.enum(['CLIENT_HANDOVER', 'CLIENT_PICKUP', 'OPERATOR', 'DIGITAL']).optional(),
+  "signerName": zod.coerce.string().optional(),
+  "signedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "imageUrl": zod.coerce.string().url().optional()
+}).strict()).optional(),
+  "isPrinted": zod.coerce.boolean().describe('Чи роздрукована квитанція'),
+  "printedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "generatedAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "generatedBy": zod.coerce.string().describe('Хто згенерував')
+}).strict()
+
+export const updateReceipt400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+export const updateReceipt404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає список квитанцій з можливістю фільтрації
+ * @summary Отримати список квитанцій
+ */
+export const getReceiptsQueryPageDefault = 0;
+export const getReceiptsQueryPageMin = 0;
+export const getReceiptsQuerySizeDefault = 20;
+export const getReceiptsQuerySizeMax = 100;
+
+
+export const getReceiptsQueryParams = zod.object({
+  "orderId": zod.coerce.string().uuid().optional().describe('Фільтр за замовленням'),
+  "branchId": zod.coerce.string().uuid().optional().describe('Фільтр за філією'),
+  "clientId": zod.coerce.string().uuid().optional().describe('Фільтр за клієнтом'),
+  "startDate": zod.coerce.string().date().optional().describe('Початкова дата'),
+  "endDate": zod.coerce.string().date().optional().describe('Кінцева дата'),
+  "page": zod.coerce.number().min(getReceiptsQueryPageMin).optional().describe('Номер сторінки (починається з 0)'),
+  "size": zod.coerce.number().min(1).max(getReceiptsQuerySizeMax).default(getReceiptsQuerySizeDefault).describe('Розмір сторінки')
+}).strict()
+
+export const getReceipts200ResponseContentItemDataOrderInfoTotalAmountMin = 0;
+export const getReceipts200ResponseContentItemDataOrderInfoDiscountAmountMin = 0;
+export const getReceipts200ResponseContentItemDataOrderInfoFinalAmountMin = 0;
+export const getReceipts200ResponseContentItemDataOrderInfoPaidAmountMin = 0;
+export const getReceipts200ResponseContentItemDataOrderInfoRemainingAmountMin = 0;
+export const getReceipts200ResponseContentItemDataItemsItemBasePriceMin = 0;
+export const getReceipts200ResponseContentItemDataItemsItemModifiersItemAppliedAmountMin = 0;
+export const getReceipts200ResponseContentItemDataItemsItemFinalPriceMin = 0;
+export const getReceipts200ResponseContentItemDataFinancialSubtotalMin = 0;
+export const getReceipts200ResponseContentItemDataFinancialDiscountAmountMin = 0;
+export const getReceipts200ResponseContentItemDataFinancialExpediteChargeMin = 0;
+export const getReceipts200ResponseContentItemDataFinancialTotalAmountMin = 0;
+export const getReceipts200ResponseContentItemDataFinancialPaidAmountMin = 0;
+export const getReceipts200ResponseContentItemDataFinancialRemainingAmountMin = 0;
+export const getReceipts200ResponsePageablePageMin = 0;
+
+
+export const getReceipts200Response = zod.object({
+  "content": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "receiptNumber": zod.coerce.string().describe('Номер квитанції'),
+  "data": zod.object({
+  "companyInfo": zod.object({
+  "companyName": zod.coerce.string(),
+  "legalName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string(),
+  "website": zod.coerce.string().optional(),
+  "logoUrl": zod.coerce.string().optional(),
+  "taxNumber": zod.coerce.string()
+}).strict(),
+  "branchInfo": zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchCode": zod.coerce.string(),
+  "branchName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "managerName": zod.coerce.string()
+}).strict(),
+  "orderInfo": zod.object({
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderNumber": zod.coerce.string(),
+  "createdAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expectedCompletionDate": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expediteType": zod.enum(['NORMAL', 'URGENT_48H', 'URGENT_24H']),
+  "totalAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataOrderInfoTotalAmountMin).describe('Грошова сума (в гривнях)'),
+  "discountAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataOrderInfoDiscountAmountMin).describe('Грошова сума (в гривнях)'),
+  "finalAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataOrderInfoFinalAmountMin).describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataOrderInfoPaidAmountMin).describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataOrderInfoRemainingAmountMin).describe('Грошова сума (в гривнях)')
+}).strict(),
+  "clientInfo": zod.object({
+  "clientId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "firstName": zod.coerce.string(),
+  "lastName": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string().optional(),
+  "address": zod.coerce.string().optional(),
+  "preferredContactMethod": zod.coerce.string()
+}).strict(),
+  "items": zod.array(zod.object({
+  "itemNumber": zod.coerce.number(),
+  "itemName": zod.coerce.string(),
+  "category": zod.coerce.string(),
+  "quantity": zod.coerce.string(),
+  "material": zod.coerce.string(),
+  "color": zod.enum(['BLACK', 'WHITE', 'GRAY', 'BROWN', 'NAVY', 'BLUE', 'GREEN', 'RED', 'BEIGE', 'CREAM', 'PINK', 'YELLOW', 'PURPLE', 'MULTICOLOR', 'OTHER']),
+  "customColor": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "filling": zod.coerce.string().optional(),
+  "basePrice": zod.coerce.number().min(getReceipts200ResponseContentItemDataItemsItemBasePriceMin).describe('Грошова сума (в гривнях)'),
+  "modifiers": zod.array(zod.object({
+  "name": zod.coerce.string().optional(),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional(),
+  "value": zod.coerce.number().optional(),
+  "appliedAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataItemsItemModifiersItemAppliedAmountMin).optional().describe('Грошова сума (в гривнях)')
+}).strict()),
+  "finalPrice": zod.coerce.number().min(getReceipts200ResponseContentItemDataItemsItemFinalPriceMin).describe('Грошова сума (в гривнях)'),
+  "stains": zod.array(zod.coerce.string()),
+  "defects": zod.array(zod.coerce.string()),
+  "defectNotes": zod.coerce.string().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "thumbnailUrl": zod.coerce.string().url().optional(),
+  "fullUrl": zod.coerce.string().url().optional()
+}).strict())
+}).strict()),
+  "financial": zod.object({
+  "subtotal": zod.coerce.number().min(getReceipts200ResponseContentItemDataFinancialSubtotalMin).optional().describe('Грошова сума (в гривнях)'),
+  "discountType": zod.coerce.string().optional(),
+  "discountAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataFinancialDiscountAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "expediteCharge": zod.coerce.number().min(getReceipts200ResponseContentItemDataFinancialExpediteChargeMin).optional().describe('Грошова сума (в гривнях)'),
+  "totalAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataFinancialTotalAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataFinancialPaidAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(getReceipts200ResponseContentItemDataFinancialRemainingAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paymentMethod": zod.coerce.string().optional()
+}).strict(),
+  "legalInfo": zod.object({
+  "termsAndConditions": zod.coerce.string().optional(),
+  "liabilityLimitations": zod.coerce.string().optional(),
+  "warrantyInfo": zod.coerce.string().optional(),
+  "acceptanceConfirmed": zod.coerce.boolean().optional(),
+  "acceptanceDate": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict(),
+  "operatorInfo": zod.object({
+  "operatorName": zod.coerce.string().optional(),
+  "operatorPosition": zod.coerce.string().optional(),
+  "operatorId": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)')
+}).strict()
+}).strict(),
+  "pdfDocument": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string().optional(),
+  "fileSize": zod.coerce.number().optional(),
+  "downloadUrl": zod.coerce.string().url().optional(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict().optional(),
+  "qrCode": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "imageUrl": zod.coerce.string().url().optional(),
+  "size": zod.coerce.number().optional()
+}).strict().optional(),
+  "signatures": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "type": zod.enum(['CLIENT_HANDOVER', 'CLIENT_PICKUP', 'OPERATOR', 'DIGITAL']).optional(),
+  "signerName": zod.coerce.string().optional(),
+  "signedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "imageUrl": zod.coerce.string().url().optional()
+}).strict()).optional(),
+  "isPrinted": zod.coerce.boolean().describe('Чи роздрукована квитанція'),
+  "printedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "generatedAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "generatedBy": zod.coerce.string().describe('Хто згенерував')
+}).strict()),
+  "pageable": zod.object({
+  "page": zod.coerce.number().min(getReceipts200ResponsePageablePageMin).describe('Номер поточної сторінки (починаючи з 0)'),
+  "size": zod.coerce.number().min(1).describe('Розмір сторінки'),
+  "totalElements": zod.coerce.number().describe('Загальна кількість елементів'),
+  "totalPages": zod.coerce.number().describe('Загальна кількість сторінок'),
+  "last": zod.coerce.boolean().describe('Чи є поточна сторінка останньою'),
+  "first": zod.coerce.boolean().describe('Чи є поточна сторінка першою'),
+  "numberOfElements": zod.coerce.number().describe('Кількість елементів на поточній сторінці'),
+  "sort": zod.object({
+  "sorted": zod.coerce.boolean().optional().describe('Чи застосовано сортування'),
+  "unsorted": zod.coerce.boolean().optional().describe('Чи не застосовано сортування'),
+  "empty": zod.coerce.boolean().optional().describe('Чи відсутнє сортування')
+}).strict().optional().describe('Інформація про сортування')
+}).strict(),
+  "totalElements": zod.coerce.number(),
+  "totalPages": zod.coerce.number(),
+  "last": zod.coerce.boolean(),
+  "first": zod.coerce.boolean(),
+  "numberOfElements": zod.coerce.number()
+}).strict()
+
+
+/**
+ * Генерує нову квитанцію для замовлення
+ * @summary Згенерувати квитанцію
+ */
+export const createReceiptBody = zod.object({
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "template": zod.enum(['STANDARD', 'COMPACT', 'DETAILED']).optional(),
+  "includePhotos": zod.coerce.boolean().optional().describe('Включити фотографії предметів'),
+  "generatePdf": zod.coerce.boolean().optional().describe('Автоматично генерувати PDF'),
+  "generateQrCode": zod.coerce.boolean().optional().describe('Автоматично генерувати QR-код')
+}).strict()
+
+export const createReceipt201ResponseDataOrderInfoTotalAmountMin = 0;
+export const createReceipt201ResponseDataOrderInfoDiscountAmountMin = 0;
+export const createReceipt201ResponseDataOrderInfoFinalAmountMin = 0;
+export const createReceipt201ResponseDataOrderInfoPaidAmountMin = 0;
+export const createReceipt201ResponseDataOrderInfoRemainingAmountMin = 0;
+export const createReceipt201ResponseDataItemsItemBasePriceMin = 0;
+export const createReceipt201ResponseDataItemsItemModifiersItemAppliedAmountMin = 0;
+export const createReceipt201ResponseDataItemsItemFinalPriceMin = 0;
+export const createReceipt201ResponseDataFinancialSubtotalMin = 0;
+export const createReceipt201ResponseDataFinancialDiscountAmountMin = 0;
+export const createReceipt201ResponseDataFinancialExpediteChargeMin = 0;
+export const createReceipt201ResponseDataFinancialTotalAmountMin = 0;
+export const createReceipt201ResponseDataFinancialPaidAmountMin = 0;
+export const createReceipt201ResponseDataFinancialRemainingAmountMin = 0;
+
+
+export const createReceipt201Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "receiptNumber": zod.coerce.string().describe('Номер квитанції'),
+  "data": zod.object({
+  "companyInfo": zod.object({
+  "companyName": zod.coerce.string(),
+  "legalName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string(),
+  "website": zod.coerce.string().optional(),
+  "logoUrl": zod.coerce.string().optional(),
+  "taxNumber": zod.coerce.string()
+}).strict(),
+  "branchInfo": zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchCode": zod.coerce.string(),
+  "branchName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "managerName": zod.coerce.string()
+}).strict(),
+  "orderInfo": zod.object({
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderNumber": zod.coerce.string(),
+  "createdAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expectedCompletionDate": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expediteType": zod.enum(['NORMAL', 'URGENT_48H', 'URGENT_24H']),
+  "totalAmount": zod.coerce.number().min(createReceipt201ResponseDataOrderInfoTotalAmountMin).describe('Грошова сума (в гривнях)'),
+  "discountAmount": zod.coerce.number().min(createReceipt201ResponseDataOrderInfoDiscountAmountMin).describe('Грошова сума (в гривнях)'),
+  "finalAmount": zod.coerce.number().min(createReceipt201ResponseDataOrderInfoFinalAmountMin).describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(createReceipt201ResponseDataOrderInfoPaidAmountMin).describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(createReceipt201ResponseDataOrderInfoRemainingAmountMin).describe('Грошова сума (в гривнях)')
+}).strict(),
+  "clientInfo": zod.object({
+  "clientId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "firstName": zod.coerce.string(),
+  "lastName": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string().optional(),
+  "address": zod.coerce.string().optional(),
+  "preferredContactMethod": zod.coerce.string()
+}).strict(),
+  "items": zod.array(zod.object({
+  "itemNumber": zod.coerce.number(),
+  "itemName": zod.coerce.string(),
+  "category": zod.coerce.string(),
+  "quantity": zod.coerce.string(),
+  "material": zod.coerce.string(),
+  "color": zod.enum(['BLACK', 'WHITE', 'GRAY', 'BROWN', 'NAVY', 'BLUE', 'GREEN', 'RED', 'BEIGE', 'CREAM', 'PINK', 'YELLOW', 'PURPLE', 'MULTICOLOR', 'OTHER']),
+  "customColor": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "filling": zod.coerce.string().optional(),
+  "basePrice": zod.coerce.number().min(createReceipt201ResponseDataItemsItemBasePriceMin).describe('Грошова сума (в гривнях)'),
+  "modifiers": zod.array(zod.object({
+  "name": zod.coerce.string().optional(),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional(),
+  "value": zod.coerce.number().optional(),
+  "appliedAmount": zod.coerce.number().min(createReceipt201ResponseDataItemsItemModifiersItemAppliedAmountMin).optional().describe('Грошова сума (в гривнях)')
+}).strict()),
+  "finalPrice": zod.coerce.number().min(createReceipt201ResponseDataItemsItemFinalPriceMin).describe('Грошова сума (в гривнях)'),
+  "stains": zod.array(zod.coerce.string()),
+  "defects": zod.array(zod.coerce.string()),
+  "defectNotes": zod.coerce.string().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "thumbnailUrl": zod.coerce.string().url().optional(),
+  "fullUrl": zod.coerce.string().url().optional()
+}).strict())
+}).strict()),
+  "financial": zod.object({
+  "subtotal": zod.coerce.number().min(createReceipt201ResponseDataFinancialSubtotalMin).optional().describe('Грошова сума (в гривнях)'),
+  "discountType": zod.coerce.string().optional(),
+  "discountAmount": zod.coerce.number().min(createReceipt201ResponseDataFinancialDiscountAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "expediteCharge": zod.coerce.number().min(createReceipt201ResponseDataFinancialExpediteChargeMin).optional().describe('Грошова сума (в гривнях)'),
+  "totalAmount": zod.coerce.number().min(createReceipt201ResponseDataFinancialTotalAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(createReceipt201ResponseDataFinancialPaidAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(createReceipt201ResponseDataFinancialRemainingAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paymentMethod": zod.coerce.string().optional()
+}).strict(),
+  "legalInfo": zod.object({
+  "termsAndConditions": zod.coerce.string().optional(),
+  "liabilityLimitations": zod.coerce.string().optional(),
+  "warrantyInfo": zod.coerce.string().optional(),
+  "acceptanceConfirmed": zod.coerce.boolean().optional(),
+  "acceptanceDate": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict(),
+  "operatorInfo": zod.object({
+  "operatorName": zod.coerce.string().optional(),
+  "operatorPosition": zod.coerce.string().optional(),
+  "operatorId": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)')
+}).strict()
+}).strict(),
+  "pdfDocument": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string().optional(),
+  "fileSize": zod.coerce.number().optional(),
+  "downloadUrl": zod.coerce.string().url().optional(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict().optional(),
+  "qrCode": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "imageUrl": zod.coerce.string().url().optional(),
+  "size": zod.coerce.number().optional()
+}).strict().optional(),
+  "signatures": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "type": zod.enum(['CLIENT_HANDOVER', 'CLIENT_PICKUP', 'OPERATOR', 'DIGITAL']).optional(),
+  "signerName": zod.coerce.string().optional(),
+  "signedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "imageUrl": zod.coerce.string().url().optional()
+}).strict()).optional(),
+  "isPrinted": zod.coerce.boolean().describe('Чи роздрукована квитанція'),
+  "printedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "generatedAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "generatedBy": zod.coerce.string().describe('Хто згенерував')
+}).strict()
+
+export const createReceipt400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+export const createReceipt404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Позначає квитанцію як роздруковану
+ * @summary Позначити як роздруковану
+ */
+export const printReceiptParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const printReceipt200ResponseDataOrderInfoTotalAmountMin = 0;
+export const printReceipt200ResponseDataOrderInfoDiscountAmountMin = 0;
+export const printReceipt200ResponseDataOrderInfoFinalAmountMin = 0;
+export const printReceipt200ResponseDataOrderInfoPaidAmountMin = 0;
+export const printReceipt200ResponseDataOrderInfoRemainingAmountMin = 0;
+export const printReceipt200ResponseDataItemsItemBasePriceMin = 0;
+export const printReceipt200ResponseDataItemsItemModifiersItemAppliedAmountMin = 0;
+export const printReceipt200ResponseDataItemsItemFinalPriceMin = 0;
+export const printReceipt200ResponseDataFinancialSubtotalMin = 0;
+export const printReceipt200ResponseDataFinancialDiscountAmountMin = 0;
+export const printReceipt200ResponseDataFinancialExpediteChargeMin = 0;
+export const printReceipt200ResponseDataFinancialTotalAmountMin = 0;
+export const printReceipt200ResponseDataFinancialPaidAmountMin = 0;
+export const printReceipt200ResponseDataFinancialRemainingAmountMin = 0;
+
+
+export const printReceipt200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "receiptNumber": zod.coerce.string().describe('Номер квитанції'),
+  "data": zod.object({
+  "companyInfo": zod.object({
+  "companyName": zod.coerce.string(),
+  "legalName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string(),
+  "website": zod.coerce.string().optional(),
+  "logoUrl": zod.coerce.string().optional(),
+  "taxNumber": zod.coerce.string()
+}).strict(),
+  "branchInfo": zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchCode": zod.coerce.string(),
+  "branchName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "managerName": zod.coerce.string()
+}).strict(),
+  "orderInfo": zod.object({
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderNumber": zod.coerce.string(),
+  "createdAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expectedCompletionDate": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expediteType": zod.enum(['NORMAL', 'URGENT_48H', 'URGENT_24H']),
+  "totalAmount": zod.coerce.number().min(printReceipt200ResponseDataOrderInfoTotalAmountMin).describe('Грошова сума (в гривнях)'),
+  "discountAmount": zod.coerce.number().min(printReceipt200ResponseDataOrderInfoDiscountAmountMin).describe('Грошова сума (в гривнях)'),
+  "finalAmount": zod.coerce.number().min(printReceipt200ResponseDataOrderInfoFinalAmountMin).describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(printReceipt200ResponseDataOrderInfoPaidAmountMin).describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(printReceipt200ResponseDataOrderInfoRemainingAmountMin).describe('Грошова сума (в гривнях)')
+}).strict(),
+  "clientInfo": zod.object({
+  "clientId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "firstName": zod.coerce.string(),
+  "lastName": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string().optional(),
+  "address": zod.coerce.string().optional(),
+  "preferredContactMethod": zod.coerce.string()
+}).strict(),
+  "items": zod.array(zod.object({
+  "itemNumber": zod.coerce.number(),
+  "itemName": zod.coerce.string(),
+  "category": zod.coerce.string(),
+  "quantity": zod.coerce.string(),
+  "material": zod.coerce.string(),
+  "color": zod.enum(['BLACK', 'WHITE', 'GRAY', 'BROWN', 'NAVY', 'BLUE', 'GREEN', 'RED', 'BEIGE', 'CREAM', 'PINK', 'YELLOW', 'PURPLE', 'MULTICOLOR', 'OTHER']),
+  "customColor": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "filling": zod.coerce.string().optional(),
+  "basePrice": zod.coerce.number().min(printReceipt200ResponseDataItemsItemBasePriceMin).describe('Грошова сума (в гривнях)'),
+  "modifiers": zod.array(zod.object({
+  "name": zod.coerce.string().optional(),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional(),
+  "value": zod.coerce.number().optional(),
+  "appliedAmount": zod.coerce.number().min(printReceipt200ResponseDataItemsItemModifiersItemAppliedAmountMin).optional().describe('Грошова сума (в гривнях)')
+}).strict()),
+  "finalPrice": zod.coerce.number().min(printReceipt200ResponseDataItemsItemFinalPriceMin).describe('Грошова сума (в гривнях)'),
+  "stains": zod.array(zod.coerce.string()),
+  "defects": zod.array(zod.coerce.string()),
+  "defectNotes": zod.coerce.string().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "thumbnailUrl": zod.coerce.string().url().optional(),
+  "fullUrl": zod.coerce.string().url().optional()
+}).strict())
+}).strict()),
+  "financial": zod.object({
+  "subtotal": zod.coerce.number().min(printReceipt200ResponseDataFinancialSubtotalMin).optional().describe('Грошова сума (в гривнях)'),
+  "discountType": zod.coerce.string().optional(),
+  "discountAmount": zod.coerce.number().min(printReceipt200ResponseDataFinancialDiscountAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "expediteCharge": zod.coerce.number().min(printReceipt200ResponseDataFinancialExpediteChargeMin).optional().describe('Грошова сума (в гривнях)'),
+  "totalAmount": zod.coerce.number().min(printReceipt200ResponseDataFinancialTotalAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(printReceipt200ResponseDataFinancialPaidAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(printReceipt200ResponseDataFinancialRemainingAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paymentMethod": zod.coerce.string().optional()
+}).strict(),
+  "legalInfo": zod.object({
+  "termsAndConditions": zod.coerce.string().optional(),
+  "liabilityLimitations": zod.coerce.string().optional(),
+  "warrantyInfo": zod.coerce.string().optional(),
+  "acceptanceConfirmed": zod.coerce.boolean().optional(),
+  "acceptanceDate": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict(),
+  "operatorInfo": zod.object({
+  "operatorName": zod.coerce.string().optional(),
+  "operatorPosition": zod.coerce.string().optional(),
+  "operatorId": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)')
+}).strict()
+}).strict(),
+  "pdfDocument": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string().optional(),
+  "fileSize": zod.coerce.number().optional(),
+  "downloadUrl": zod.coerce.string().url().optional(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict().optional(),
+  "qrCode": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "imageUrl": zod.coerce.string().url().optional(),
+  "size": zod.coerce.number().optional()
+}).strict().optional(),
+  "signatures": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "type": zod.enum(['CLIENT_HANDOVER', 'CLIENT_PICKUP', 'OPERATOR', 'DIGITAL']).optional(),
+  "signerName": zod.coerce.string().optional(),
+  "signedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "imageUrl": zod.coerce.string().url().optional()
+}).strict()).optional(),
+  "isPrinted": zod.coerce.boolean().describe('Чи роздрукована квитанція'),
+  "printedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "generatedAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "generatedBy": zod.coerce.string().describe('Хто згенерував')
+}).strict()
+
+export const printReceipt404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає PDF версію квитанції
+ * @summary Отримати PDF квитанції
+ */
+export const getReceiptPdfParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getReceiptPdfQueryParams = zod.object({
+  "template": zod.enum(['STANDARD', 'COMPACT', 'DETAILED']).optional().describe('Шаблон квитанції')
+}).strict()
+
+export const getReceiptPdf200Response = zod.instanceof(File)
+
+export const getReceiptPdf404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Генерує PDF версію квитанції (якщо ще не згенерована)
+ * @summary Згенерувати PDF квитанції
+ */
+export const generateReceiptPdfParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const generateReceiptPdfBody = zod.object({
+  "template": zod.enum(['STANDARD', 'COMPACT', 'DETAILED']).optional(),
+  "regenerate": zod.coerce.boolean().optional().describe('Перегенерувати якщо вже існує')
+}).strict()
+
+export const generateReceiptPdf200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "documentNumber": zod.coerce.string(),
+  "type": zod.enum(['RECEIPT', 'CONTRACT', 'INVOICE', 'PHOTO', 'QR_CODE', 'SIGNATURE']),
+  "relatedEntityId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string(),
+  "filePath": zod.coerce.string(),
+  "fileSize": zod.coerce.number(),
+  "mimeType": zod.coerce.string(),
+  "status": zod.enum(['DRAFT', 'GENERATED', 'SIGNED', 'PRINTED', 'ARCHIVED']),
+  "downloadUrl": zod.coerce.string().url(),
+  "metadata": zod.object({
+  "template": zod.coerce.string().optional(),
+  "version": zod.coerce.string().optional(),
+  "generationTime": zod.coerce.number().optional().describe('Час генерації в секундах'),
+  "pageCount": zod.coerce.number().optional().describe('Кількість сторінок (для PDF)')
+}).strict(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).optional().describe('Дата останнього оновлення'),
+  "createdBy": zod.coerce.string().optional()
+}).strict()
+
+export const generateReceiptPdf201Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "documentNumber": zod.coerce.string(),
+  "type": zod.enum(['RECEIPT', 'CONTRACT', 'INVOICE', 'PHOTO', 'QR_CODE', 'SIGNATURE']),
+  "relatedEntityId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string(),
+  "filePath": zod.coerce.string(),
+  "fileSize": zod.coerce.number(),
+  "mimeType": zod.coerce.string(),
+  "status": zod.enum(['DRAFT', 'GENERATED', 'SIGNED', 'PRINTED', 'ARCHIVED']),
+  "downloadUrl": zod.coerce.string().url(),
+  "metadata": zod.object({
+  "template": zod.coerce.string().optional(),
+  "version": zod.coerce.string().optional(),
+  "generationTime": zod.coerce.number().optional().describe('Час генерації в секундах'),
+  "pageCount": zod.coerce.number().optional().describe('Кількість сторінок (для PDF)')
+}).strict(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).optional().describe('Дата останнього оновлення'),
+  "createdBy": zod.coerce.string().optional()
+}).strict()
+
+export const generateReceiptPdf404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Генерує QR-код для замовлення або квитанції
+ * @summary Згенерувати QR-код
+ */
+export const generateQrCodeBodySizeMin = 50;
+
+export const generateQrCodeBodySizeMax = 1000;
+
+
+export const generateQrCodeBody = zod.object({
+  "data": zod.coerce.string().describe('Дані для кодування в QR-код'),
+  "type": zod.enum(['ORDER_TRACKING', 'RECEIPT_VERIFICATION', 'CONTACT_INFO']),
+  "size": zod.coerce.number().min(generateQrCodeBodySizeMin).max(generateQrCodeBodySizeMax).optional().describe('Розмір в пікселях'),
+  "format": zod.enum(['PNG', 'SVG', 'JPEG']).optional(),
+  "errorCorrectionLevel": zod.enum(['LOW', 'MEDIUM', 'QUARTILE', 'HIGH']).optional()
+}).strict()
+
+export const generateQrCode201Response = zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "data": zod.coerce.string().optional().describe('Закодовані дані'),
+  "type": zod.enum(['ORDER_TRACKING', 'RECEIPT_VERIFICATION', 'CONTACT_INFO']).optional(),
+  "size": zod.coerce.number().optional(),
+  "format": zod.enum(['PNG', 'SVG', 'JPEG']).optional(),
+  "imageUrl": zod.coerce.string().url().optional().describe('URL для отримання зображення'),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict()
+
+export const generateQrCode400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+
+/**
+ * Зберігає цифровий підпис клієнта або оператора
+ * @summary Створити цифровий підпис
+ */
+export const createDigitalSignatureBodySignerNameMin = 0;
+
+export const createDigitalSignatureBodySignerNameMax = 100;
+export const createDigitalSignatureBodySignerRoleMin = 0;
+
+export const createDigitalSignatureBodySignerRoleMax = 50;
+export const createDigitalSignatureBodyMetadataDeviceInfoMin = 0;
+
+export const createDigitalSignatureBodyMetadataDeviceInfoMax = 200;
+export const createDigitalSignatureBodyMetadataBrowserInfoMin = 0;
+
+export const createDigitalSignatureBodyMetadataBrowserInfoMax = 200;
+export const createDigitalSignatureBodyMetadataScreenResolutionMin = 0;
+
+export const createDigitalSignatureBodyMetadataScreenResolutionMax = 20;
+
+
+export const createDigitalSignatureBody = zod.object({
+  "documentId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "signatureData": zod.coerce.string().describe('Base64 дані підпису (SVG або PNG)'),
+  "type": zod.enum(['CLIENT_HANDOVER', 'CLIENT_PICKUP', 'OPERATOR', 'DIGITAL']),
+  "signerName": zod.coerce.string().min(createDigitalSignatureBodySignerNameMin).max(createDigitalSignatureBodySignerNameMax).describe('Ім\'я підписанта'),
+  "signerRole": zod.coerce.string().min(createDigitalSignatureBodySignerRoleMin).max(createDigitalSignatureBodySignerRoleMax).optional().describe('Роль підписанта'),
+  "metadata": zod.object({
+  "deviceInfo": zod.coerce.string().min(createDigitalSignatureBodyMetadataDeviceInfoMin).max(createDigitalSignatureBodyMetadataDeviceInfoMax).optional().describe('Інформація про пристрій'),
+  "browserInfo": zod.coerce.string().min(createDigitalSignatureBodyMetadataBrowserInfoMin).max(createDigitalSignatureBodyMetadataBrowserInfoMax).optional().describe('Інформація про браузер'),
+  "screenResolution": zod.coerce.string().min(createDigitalSignatureBodyMetadataScreenResolutionMin).max(createDigitalSignatureBodyMetadataScreenResolutionMax).optional().describe('Роздільна здатність екрану'),
+  "signatureMethod": zod.enum(['TOUCH', 'MOUSE', 'STYLUS']).optional()
+}).strict().optional()
+}).strict()
+
+export const createDigitalSignature201Response = zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "documentId": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "type": zod.enum(['CLIENT_HANDOVER', 'CLIENT_PICKUP', 'OPERATOR', 'DIGITAL']).optional(),
+  "signerName": zod.coerce.string().optional(),
+  "signerRole": zod.coerce.string().optional(),
+  "signedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "ipAddress": zod.coerce.string().optional(),
+  "imageUrl": zod.coerce.string().url().optional().describe('URL для отримання зображення підпису'),
+  "metadata": zod.object({
+  "deviceInfo": zod.coerce.string().optional(),
+  "browserInfo": zod.coerce.string().optional(),
+  "screenResolution": zod.coerce.string().optional(),
+  "signatureMethod": zod.enum(['TOUCH', 'MOUSE', 'STYLUS']).optional(),
+  "signatureDuration": zod.coerce.number().optional().describe('Час створення підпису в секундах')
+}).strict().optional(),
+  "isValid": zod.coerce.boolean().optional().describe('Чи валідний підпис')
+}).strict()
+
+export const createDigitalSignature400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+
+/**
+ * Перевіряє валідність цифрового підпису
+ * @summary Валідувати підпис
+ */
+export const validateDigitalSignatureParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const validateDigitalSignature200Response = zod.object({
+  "isValid": zod.coerce.boolean().optional().describe('Чи валідний підпис'),
+  "validationDetails": zod.object({
+  "signatureIntact": zod.coerce.boolean().optional().describe('Чи цілісний підпис'),
+  "documentMatches": zod.coerce.boolean().optional().describe('Чи відповідає документу'),
+  "notExpired": zod.coerce.boolean().optional().describe('Чи не прострочений'),
+  "signerVerified": zod.coerce.boolean().optional().describe('Чи підтверджений підписант')
+}).strict().optional().describe('Детальна інформація про валідацію')
+}).strict().describe('Результат валідації цифрового підпису')
+
+export const validateDigitalSignature404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Оновлює статус документа
+ * @summary Змінити статус документа
+ */
+export const updateDocumentStatusParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const updateDocumentStatusBodyReasonMin = 0;
+
+export const updateDocumentStatusBodyReasonMax = 500;
+
+
+export const updateDocumentStatusBody = zod.object({
+  "status": zod.enum(['DRAFT', 'GENERATED', 'SIGNED', 'PRINTED', 'ARCHIVED']),
+  "reason": zod.coerce.string().min(updateDocumentStatusBodyReasonMin).max(updateDocumentStatusBodyReasonMax).optional().describe('Причина зміни статусу'),
+  "metadata": zod.record(zod.string(), zod.coerce.string()).optional().describe('Додаткова інформація про зміну статусу')
+}).strict().describe('Запит на оновлення статусу документа')
+
+export const updateDocumentStatus200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "documentNumber": zod.coerce.string(),
+  "type": zod.enum(['RECEIPT', 'CONTRACT', 'INVOICE', 'PHOTO', 'QR_CODE', 'SIGNATURE']),
+  "relatedEntityId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string(),
+  "filePath": zod.coerce.string(),
+  "fileSize": zod.coerce.number(),
+  "mimeType": zod.coerce.string(),
+  "status": zod.enum(['DRAFT', 'GENERATED', 'SIGNED', 'PRINTED', 'ARCHIVED']),
+  "downloadUrl": zod.coerce.string().url(),
+  "metadata": zod.object({
+  "template": zod.coerce.string().optional(),
+  "version": zod.coerce.string().optional(),
+  "generationTime": zod.coerce.number().optional().describe('Час генерації в секундах'),
+  "pageCount": zod.coerce.number().optional().describe('Кількість сторінок (для PDF)')
+}).strict(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).optional().describe('Дата останнього оновлення'),
+  "createdBy": zod.coerce.string().optional()
+}).strict()
+
+export const updateDocumentStatus400Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код (400)'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Загальний опис помилки валідації'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "errors": zod.array(zod.object({
+  "field": zod.coerce.string().describe('Назва поля з помилкою'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "rejectedValue": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "code": zod.coerce.string().optional().describe('Код помилки валідації')
+}).strict()).describe('Список помилок валідації полів')
+}).strict()
+
+export const updateDocumentStatus404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає квитанцію за номером
+ * @summary Отримати квитанцію за номером
+ */
+export const getReceiptByNumberPathReceiptNumberRegExp = new RegExp('^[A-Z0-9-]+$');
+
+
+export const getReceiptByNumberParams = zod.object({
+  "receiptNumber": zod.coerce.string().regex(getReceiptByNumberPathReceiptNumberRegExp).describe('Номер квитанції')
+}).strict()
+
+export const getReceiptByNumber200ResponseDataOrderInfoTotalAmountMin = 0;
+export const getReceiptByNumber200ResponseDataOrderInfoDiscountAmountMin = 0;
+export const getReceiptByNumber200ResponseDataOrderInfoFinalAmountMin = 0;
+export const getReceiptByNumber200ResponseDataOrderInfoPaidAmountMin = 0;
+export const getReceiptByNumber200ResponseDataOrderInfoRemainingAmountMin = 0;
+export const getReceiptByNumber200ResponseDataItemsItemBasePriceMin = 0;
+export const getReceiptByNumber200ResponseDataItemsItemModifiersItemAppliedAmountMin = 0;
+export const getReceiptByNumber200ResponseDataItemsItemFinalPriceMin = 0;
+export const getReceiptByNumber200ResponseDataFinancialSubtotalMin = 0;
+export const getReceiptByNumber200ResponseDataFinancialDiscountAmountMin = 0;
+export const getReceiptByNumber200ResponseDataFinancialExpediteChargeMin = 0;
+export const getReceiptByNumber200ResponseDataFinancialTotalAmountMin = 0;
+export const getReceiptByNumber200ResponseDataFinancialPaidAmountMin = 0;
+export const getReceiptByNumber200ResponseDataFinancialRemainingAmountMin = 0;
+
+
+export const getReceiptByNumber200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "receiptNumber": zod.coerce.string().describe('Номер квитанції'),
+  "data": zod.object({
+  "companyInfo": zod.object({
+  "companyName": zod.coerce.string(),
+  "legalName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string(),
+  "website": zod.coerce.string().optional(),
+  "logoUrl": zod.coerce.string().optional(),
+  "taxNumber": zod.coerce.string()
+}).strict(),
+  "branchInfo": zod.object({
+  "branchId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "branchCode": zod.coerce.string(),
+  "branchName": zod.coerce.string(),
+  "address": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "managerName": zod.coerce.string()
+}).strict(),
+  "orderInfo": zod.object({
+  "orderId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "orderNumber": zod.coerce.string(),
+  "createdAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expectedCompletionDate": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "expediteType": zod.enum(['NORMAL', 'URGENT_48H', 'URGENT_24H']),
+  "totalAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataOrderInfoTotalAmountMin).describe('Грошова сума (в гривнях)'),
+  "discountAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataOrderInfoDiscountAmountMin).describe('Грошова сума (в гривнях)'),
+  "finalAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataOrderInfoFinalAmountMin).describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataOrderInfoPaidAmountMin).describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataOrderInfoRemainingAmountMin).describe('Грошова сума (в гривнях)')
+}).strict(),
+  "clientInfo": zod.object({
+  "clientId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "firstName": zod.coerce.string(),
+  "lastName": zod.coerce.string(),
+  "phone": zod.coerce.string(),
+  "email": zod.coerce.string().optional(),
+  "address": zod.coerce.string().optional(),
+  "preferredContactMethod": zod.coerce.string()
+}).strict(),
+  "items": zod.array(zod.object({
+  "itemNumber": zod.coerce.number(),
+  "itemName": zod.coerce.string(),
+  "category": zod.coerce.string(),
+  "quantity": zod.coerce.string(),
+  "material": zod.coerce.string(),
+  "color": zod.enum(['BLACK', 'WHITE', 'GRAY', 'BROWN', 'NAVY', 'BLUE', 'GREEN', 'RED', 'BEIGE', 'CREAM', 'PINK', 'YELLOW', 'PURPLE', 'MULTICOLOR', 'OTHER']),
+  "customColor": zod.object({
+  "present": zod.coerce.boolean().optional()
+}).strict().optional(),
+  "filling": zod.coerce.string().optional(),
+  "basePrice": zod.coerce.number().min(getReceiptByNumber200ResponseDataItemsItemBasePriceMin).describe('Грошова сума (в гривнях)'),
+  "modifiers": zod.array(zod.object({
+  "name": zod.coerce.string().optional(),
+  "type": zod.enum(['PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER']).optional(),
+  "value": zod.coerce.number().optional(),
+  "appliedAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataItemsItemModifiersItemAppliedAmountMin).optional().describe('Грошова сума (в гривнях)')
+}).strict()),
+  "finalPrice": zod.coerce.number().min(getReceiptByNumber200ResponseDataItemsItemFinalPriceMin).describe('Грошова сума (в гривнях)'),
+  "stains": zod.array(zod.coerce.string()),
+  "defects": zod.array(zod.coerce.string()),
+  "defectNotes": zod.coerce.string().optional(),
+  "photos": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "thumbnailUrl": zod.coerce.string().url().optional(),
+  "fullUrl": zod.coerce.string().url().optional()
+}).strict())
+}).strict()),
+  "financial": zod.object({
+  "subtotal": zod.coerce.number().min(getReceiptByNumber200ResponseDataFinancialSubtotalMin).optional().describe('Грошова сума (в гривнях)'),
+  "discountType": zod.coerce.string().optional(),
+  "discountAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataFinancialDiscountAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "expediteCharge": zod.coerce.number().min(getReceiptByNumber200ResponseDataFinancialExpediteChargeMin).optional().describe('Грошова сума (в гривнях)'),
+  "totalAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataFinancialTotalAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paidAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataFinancialPaidAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "remainingAmount": zod.coerce.number().min(getReceiptByNumber200ResponseDataFinancialRemainingAmountMin).optional().describe('Грошова сума (в гривнях)'),
+  "paymentMethod": zod.coerce.string().optional()
+}).strict(),
+  "legalInfo": zod.object({
+  "termsAndConditions": zod.coerce.string().optional(),
+  "liabilityLimitations": zod.coerce.string().optional(),
+  "warrantyInfo": zod.coerce.string().optional(),
+  "acceptanceConfirmed": zod.coerce.boolean().optional(),
+  "acceptanceDate": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict(),
+  "operatorInfo": zod.object({
+  "operatorName": zod.coerce.string().optional(),
+  "operatorPosition": zod.coerce.string().optional(),
+  "operatorId": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)')
+}).strict()
+}).strict(),
+  "pdfDocument": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string().optional(),
+  "fileSize": zod.coerce.number().optional(),
+  "downloadUrl": zod.coerce.string().url().optional(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі')
+}).strict().optional(),
+  "qrCode": zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "imageUrl": zod.coerce.string().url().optional(),
+  "size": zod.coerce.number().optional()
+}).strict().optional(),
+  "signatures": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "type": zod.enum(['CLIENT_HANDOVER', 'CLIENT_PICKUP', 'OPERATOR', 'DIGITAL']).optional(),
+  "signerName": zod.coerce.string().optional(),
+  "signedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "imageUrl": zod.coerce.string().url().optional()
+}).strict()).optional(),
+  "isPrinted": zod.coerce.boolean().describe('Чи роздрукована квитанція'),
+  "printedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "generatedAt": zod.coerce.string().datetime({}).describe('Мітка часу в ISO 8601 форматі'),
+  "generatedBy": zod.coerce.string().describe('Хто згенерував')
+}).strict()
+
+export const getReceiptByNumber404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає зображення QR-коду
+ * @summary Отримати QR-код
+ */
+export const getQrCodeByIdParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getQrCodeByIdQuerySizeDefault = 200;
+export const getQrCodeByIdQuerySizeMin = 50;
+
+export const getQrCodeByIdQuerySizeMax = 1000;
+
+
+export const getQrCodeByIdQueryParams = zod.object({
+  "format": zod.enum(['PNG', 'SVG', 'JPEG']).optional().describe('Формат зображення'),
+  "size": zod.coerce.number().min(getQrCodeByIdQuerySizeMin).max(getQrCodeByIdQuerySizeMax).default(getQrCodeByIdQuerySizeDefault).describe('Розмір зображення в пікселях')
+}).strict()
+
+export const getQrCodeById200Response = zod.instanceof(File)
+
+export const getQrCodeById404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає список документів з можливістю фільтрації
+ * @summary Отримати список документів
+ */
+export const getDocumentsQueryPageDefault = 0;
+export const getDocumentsQueryPageMin = 0;
+export const getDocumentsQuerySizeDefault = 20;
+export const getDocumentsQuerySizeMax = 100;
+
+
+export const getDocumentsQueryParams = zod.object({
+  "type": zod.enum(['RECEIPT', 'CONTRACT', 'INVOICE', 'PHOTO', 'QR_CODE', 'SIGNATURE']).optional().describe('Фільтр за типом документа'),
+  "status": zod.enum(['DRAFT', 'GENERATED', 'SIGNED', 'PRINTED', 'ARCHIVED']).optional().describe('Фільтр за статусом документа'),
+  "relatedEntityId": zod.coerce.string().uuid().optional().describe('Фільтр за пов\'язаною сутністю'),
+  "startDate": zod.coerce.string().date().optional().describe('Початкова дата'),
+  "endDate": zod.coerce.string().date().optional().describe('Кінцева дата'),
+  "page": zod.coerce.number().min(getDocumentsQueryPageMin).optional().describe('Номер сторінки (починається з 0)'),
+  "size": zod.coerce.number().min(1).max(getDocumentsQuerySizeMax).default(getDocumentsQuerySizeDefault).describe('Розмір сторінки'),
+  "sort": zod.coerce.string().optional().describe('Параметри сортування (field,direction)')
+}).strict()
+
+export const getDocuments200ResponsePageablePageMin = 0;
+
+
+export const getDocuments200Response = zod.object({
+  "content": zod.array(zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "documentNumber": zod.coerce.string(),
+  "type": zod.enum(['RECEIPT', 'CONTRACT', 'INVOICE', 'PHOTO', 'QR_CODE', 'SIGNATURE']),
+  "relatedEntityId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string(),
+  "filePath": zod.coerce.string(),
+  "fileSize": zod.coerce.number(),
+  "mimeType": zod.coerce.string(),
+  "status": zod.enum(['DRAFT', 'GENERATED', 'SIGNED', 'PRINTED', 'ARCHIVED']),
+  "downloadUrl": zod.coerce.string().url(),
+  "metadata": zod.object({
+  "template": zod.coerce.string().optional(),
+  "version": zod.coerce.string().optional(),
+  "generationTime": zod.coerce.number().optional().describe('Час генерації в секундах'),
+  "pageCount": zod.coerce.number().optional().describe('Кількість сторінок (для PDF)')
+}).strict(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).optional().describe('Дата останнього оновлення'),
+  "createdBy": zod.coerce.string().optional()
+}).strict()),
+  "pageable": zod.object({
+  "page": zod.coerce.number().min(getDocuments200ResponsePageablePageMin).describe('Номер поточної сторінки (починаючи з 0)'),
+  "size": zod.coerce.number().min(1).describe('Розмір сторінки'),
+  "totalElements": zod.coerce.number().describe('Загальна кількість елементів'),
+  "totalPages": zod.coerce.number().describe('Загальна кількість сторінок'),
+  "last": zod.coerce.boolean().describe('Чи є поточна сторінка останньою'),
+  "first": zod.coerce.boolean().describe('Чи є поточна сторінка першою'),
+  "numberOfElements": zod.coerce.number().describe('Кількість елементів на поточній сторінці'),
+  "sort": zod.object({
+  "sorted": zod.coerce.boolean().optional().describe('Чи застосовано сортування'),
+  "unsorted": zod.coerce.boolean().optional().describe('Чи не застосовано сортування'),
+  "empty": zod.coerce.boolean().optional().describe('Чи відсутнє сортування')
+}).strict().optional().describe('Інформація про сортування')
+}).strict(),
+  "totalElements": zod.coerce.number(),
+  "totalPages": zod.coerce.number(),
+  "last": zod.coerce.boolean(),
+  "first": zod.coerce.boolean(),
+  "numberOfElements": zod.coerce.number()
+}).strict()
+
+
+/**
+ * Повертає інформацію про документ
+ * @summary Отримати документ за ID
+ */
+export const getDocumentByIdParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getDocumentById200Response = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "documentNumber": zod.coerce.string(),
+  "type": zod.enum(['RECEIPT', 'CONTRACT', 'INVOICE', 'PHOTO', 'QR_CODE', 'SIGNATURE']),
+  "relatedEntityId": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID v4)'),
+  "fileName": zod.coerce.string(),
+  "filePath": zod.coerce.string(),
+  "fileSize": zod.coerce.number(),
+  "mimeType": zod.coerce.string(),
+  "status": zod.enum(['DRAFT', 'GENERATED', 'SIGNED', 'PRINTED', 'ARCHIVED']),
+  "downloadUrl": zod.coerce.string().url(),
+  "metadata": zod.object({
+  "template": zod.coerce.string().optional(),
+  "version": zod.coerce.string().optional(),
+  "generationTime": zod.coerce.number().optional().describe('Час генерації в секундах'),
+  "pageCount": zod.coerce.number().optional().describe('Кількість сторінок (для PDF)')
+}).strict(),
+  "createdAt": zod.coerce.string().datetime({}).optional().describe('Дата створення'),
+  "updatedAt": zod.coerce.string().datetime({}).optional().describe('Дата останнього оновлення'),
+  "createdBy": zod.coerce.string().optional()
+}).strict()
+
+export const getDocumentById404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Видаляє документ (м'яке видалення)
+ * @summary Видалити документ
+ */
+export const deleteDocumentParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const deleteDocument404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає файл документа для завантаження
+ * @summary Завантажити документ
+ */
+export const downloadDocumentParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const downloadDocument200Response = zod.instanceof(File)
+
+export const downloadDocument404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає інформацію про цифровий підпис
+ * @summary Отримати цифровий підпис
+ */
+export const getDigitalSignatureByIdParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getDigitalSignatureById200Response = zod.object({
+  "id": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "documentId": zod.coerce.string().uuid().optional().describe('Унікальний ідентифікатор (UUID v4)'),
+  "type": zod.enum(['CLIENT_HANDOVER', 'CLIENT_PICKUP', 'OPERATOR', 'DIGITAL']).optional(),
+  "signerName": zod.coerce.string().optional(),
+  "signerRole": zod.coerce.string().optional(),
+  "signedAt": zod.coerce.string().datetime({}).optional().describe('Мітка часу в ISO 8601 форматі'),
+  "ipAddress": zod.coerce.string().optional(),
+  "imageUrl": zod.coerce.string().url().optional().describe('URL для отримання зображення підпису'),
+  "metadata": zod.object({
+  "deviceInfo": zod.coerce.string().optional(),
+  "browserInfo": zod.coerce.string().optional(),
+  "screenResolution": zod.coerce.string().optional(),
+  "signatureMethod": zod.enum(['TOUCH', 'MOUSE', 'STYLUS']).optional(),
+  "signatureDuration": zod.coerce.number().optional().describe('Час створення підпису в секундах')
+}).strict().optional(),
+  "isValid": zod.coerce.boolean().optional().describe('Чи валідний підпис')
+}).strict()
+
+export const getDigitalSignatureById404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()
+
+
+/**
+ * Повертає зображення цифрового підпису
+ * @summary Отримати зображення підпису
+ */
+export const getDigitalSignatureImageParams = zod.object({
+  "id": zod.coerce.string().uuid().describe('Унікальний ідентифікатор (UUID)')
+}).strict()
+
+export const getDigitalSignatureImageQueryFormatDefault = "PNG";
+
+export const getDigitalSignatureImageQueryParams = zod.object({
+  "format": zod.coerce.string().default(getDigitalSignatureImageQueryFormatDefault).describe('Формат зображення')
+}).strict()
+
+export const getDigitalSignatureImage200Response = zod.instanceof(File)
+
+export const getDigitalSignatureImage404Response = zod.object({
+  "timestamp": zod.coerce.string().datetime({}).describe('Час виникнення помилки'),
+  "status": zod.coerce.number().describe('HTTP статус код'),
+  "error": zod.coerce.string().describe('Тип помилки'),
+  "message": zod.coerce.string().describe('Опис помилки'),
+  "path": zod.coerce.string().describe('Шлях запиту'),
+  "traceId": zod.coerce.string().optional().describe('Ідентифікатор для відстеження помилки')
+}).strict()

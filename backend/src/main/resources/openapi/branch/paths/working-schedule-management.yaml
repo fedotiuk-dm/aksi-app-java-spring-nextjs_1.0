@@ -6,7 +6,7 @@
     summary: Отримати графік роботи філії
     description: Повертає графік роботи конкретної філії
     parameters:
-      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
     responses:
       200:
         description: Графік роботи філії
@@ -28,7 +28,7 @@
     summary: Оновити графік роботи
     description: Оновлює графік роботи філії
     parameters:
-      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
     requestBody:
       required: true
       content:
@@ -63,7 +63,7 @@
     summary: Перевірити чи відкрита філія
     description: Перевіряє чи працює філія в конкретний час
     parameters:
-      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
       - name: dateTime
         in: query
         description: Дата та час для перевірки (ISO 8601)
@@ -93,7 +93,7 @@
     summary: Наступний робочий день
     description: Повертає наступний робочий день філії
     parameters:
-      - $ref: "../../common/parameters/path.yaml#/BranchIdParam"
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
       - name: fromDate
         in: query
         description: Дата від якої шукати (ISO 8601 date)

@@ -1,8 +1,5 @@
 package com.aksi.domain.auth.mapper;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import org.mapstruct.Mapper;
@@ -29,11 +26,8 @@ public interface AuthMapper {
    * користувача.
    */
   @Mapping(target = "id", source = "id")
-  @Mapping(
-      target = "createdAt",
-      source = "createdAt",
-      qualifiedByName = "localDateTimeToOffsetDateTime")
   @Mapping(target = "roles", source = "roles", qualifiedByName = "domainRolesToApiRoles")
+  // createdAt: Instant → Instant (автоматичний маппінг)
   UserResponse toUserResponse(UserEntity user);
 
   /** {@code List<UserEntity>} → {@code List<UserResponse>}. */
@@ -61,19 +55,7 @@ public interface AuthMapper {
   AuthResponse toAuthResponse(
       String accessToken, String refreshToken, Long expiresIn, UserEntity userEntity);
 
-  // Utility mappings
-
-  /** LocalDateTime (Entity) → OffsetDateTime (DTO) Аналог з ClientMapper. */
-  @Named("localDateTimeToOffsetDateTime")
-  default OffsetDateTime localDateTimeToOffsetDateTime(LocalDateTime localDateTime) {
-    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
-  }
-
-  /** OffsetDateTime (DTO) → LocalDateTime (Entity). */
-  @Named("offsetDateTimeToLocalDateTime")
-  default LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
-    return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
-  }
+  // З Instant типами datetime utility методи не потрібні
 
   // UserRole mappings (Domain ↔ API)
 

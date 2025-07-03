@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aksi.api.item.dto.PhotoResponse;
+import com.aksi.api.item.dto.PhotoType;
 import com.aksi.api.item.dto.UpdatePhotoMetadataRequest;
 import com.aksi.domain.item.service.ItemPhotoService;
 
@@ -59,7 +60,7 @@ public class ItemPhotosApiController implements ItemPhotosApi {
       UUID itemId2,
       MultipartFile file,
       String description,
-      String photoType,
+      PhotoType photoType,
       Boolean isMain) {
     // TODO: Додати file upload логіку
     return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -57,12 +57,5 @@ public interface PriceListItemMapper {
   void updateEntityFromRequest(
       UpdatePriceListItemRequest request, @org.mapstruct.MappingTarget PriceListItemEntity entity);
 
-  // DateTime конвертація
-  default java.time.OffsetDateTime map(java.time.LocalDateTime localDateTime) {
-    return localDateTime != null ? localDateTime.atOffset(java.time.ZoneOffset.UTC) : null;
-  }
-
-  default java.time.LocalDateTime map(java.time.OffsetDateTime offsetDateTime) {
-    return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
-  }
+  // З Instant типами - конвертери дат не потрібні (OpenAPI-first)
 }

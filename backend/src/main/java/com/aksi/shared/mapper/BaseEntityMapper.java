@@ -1,41 +1,18 @@
 package com.aksi.shared.mapper;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Утилітарний клас для загальних методів маппінгу. Використовується в MapStruct мапперах для
- * уникнення дублювання коду.
+ * Базовий mapper для Entity → DTO конвертацій. З Instant типами - ніяких конверторів дат не
+ * потрібно (OpenAPI-first).
  */
 public final class BaseEntityMapper {
 
   private BaseEntityMapper() {
-    // Утилітарний клас
-  }
-
-  /**
-   * Конвертує LocalDateTime в OffsetDateTime.
-   *
-   * @param localDateTime LocalDateTime для конвертації
-   * @return OffsetDateTime або null
-   */
-  public static OffsetDateTime localToOffset(LocalDateTime localDateTime) {
-    return Optional.ofNullable(localDateTime).map(dt -> dt.atOffset(ZoneOffset.UTC)).orElse(null);
-  }
-
-  /**
-   * Конвертує OffsetDateTime в LocalDateTime.
-   *
-   * @param offsetDateTime OffsetDateTime для конвертації
-   * @return LocalDateTime або null
-   */
-  public static LocalDateTime offsetToLocal(OffsetDateTime offsetDateTime) {
-    return Optional.ofNullable(offsetDateTime).map(OffsetDateTime::toLocalDateTime).orElse(null);
+    // Utility клас
   }
 
   /**

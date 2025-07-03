@@ -1,8 +1,6 @@
 package com.aksi.domain.branch.mapper;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -47,15 +45,7 @@ public interface WorkingDayMapper {
     return offsetTime != null ? offsetTime.toLocalTime() : null;
   }
 
-  /** LocalDateTime (Entity) → OffsetDateTime (DTO) - auto mapping. */
-  default OffsetDateTime map(LocalDateTime localDateTime) {
-    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
-  }
-
-  /** OffsetDateTime (DTO) → LocalDateTime (Entity) - auto mapping. */
-  default LocalDateTime map(OffsetDateTime offsetDateTime) {
-    return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
-  }
+  // З Instant типами - LocalDateTime ↔ OffsetDateTime конвертери не потрібні (OpenAPI-first)
 
   /** API DayOfWeek → java.time.DayOfWeek - auto mapping. */
   default java.time.DayOfWeek map(com.aksi.api.branch.dto.DayOfWeek apiDayOfWeek) {

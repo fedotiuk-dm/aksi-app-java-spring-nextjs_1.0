@@ -9,20 +9,25 @@ CreateOrderRequest:
   properties:
     clientId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     uniqueTag:
       type: string
       minLength: 1
       maxLength: 50
+      nullable: false
       description: Унікальна мітка замовлення
       example: TAG-2025-001
     notes:
       type: string
       maxLength: 1000
+      nullable: false
       description: Примітки до замовлення
     urgency:
       $ref: "../schemas/order-enums.yaml#/UrgencyType"
+      nullable: false
       description: Терміновість виконання
       default: NORMAL
 
@@ -34,18 +39,23 @@ UpdateOrderRequest:
       type: string
       minLength: 1
       maxLength: 50
+      nullable: false
       description: Унікальна мітка замовлення
     executionDate:
       type: string
       format: date-time
+      nullable: false
       description: Дата виконання замовлення
     urgency:
       $ref: "../schemas/order-enums.yaml#/UrgencyType"
+      nullable: false
     discount:
       $ref: "#/DiscountRequest"
+      nullable: false
     notes:
       type: string
       maxLength: 1000
+      nullable: false
       description: Примітки до замовлення
 
 DiscountRequest:
@@ -56,15 +66,18 @@ DiscountRequest:
   properties:
     type:
       $ref: "../schemas/order-enums.yaml#/DiscountType"
+      nullable: false
     customPercentage:
       type: number
       format: double
       minimum: 0
       maximum: 100
+      nullable: false
       description: Кастомний відсоток знижки (для типу OTHER)
     description:
       type: string
       maxLength: 200
+      nullable: false
       description: Опис знижки
 
 UpdatePaymentRequest:
@@ -76,10 +89,12 @@ UpdatePaymentRequest:
   properties:
     paymentMethod:
       $ref: "../schemas/order-enums.yaml#/PaymentMethod"
+      nullable: false
     paidAmount:
       type: number
       format: double
       minimum: 0
+      nullable: false
       description: Сума передоплати
       example: 500.0
 
@@ -92,16 +107,20 @@ CompleteOrderRequest:
   properties:
     clientSignature:
       type: string
+      nullable: false
       description: Цифровий підпис клієнта (base64)
     legalAcceptance:
       type: boolean
+      nullable: false
       description: Згода з умовами надання послуг
       example: true
     operatorName:
       type: string
       maxLength: 100
+      nullable: false
       description: Ім'я оператора
     finalNotes:
       type: string
       maxLength: 500
+      nullable: false
       description: Фінальні примітки

@@ -11,12 +11,15 @@ ClientResponse:
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     firstName:
       type: string
       description: Ім'я клієнта
+      nullable: false
     lastName:
       type: string
       description: Прізвище клієнта
+      nullable: false
     fullName:
       type: string
       description: Повне ім'я (firstName + lastName)
@@ -24,6 +27,7 @@ ClientResponse:
     phone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
       description: Номер телефону
+      nullable: false
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
       description: Email адреса
@@ -46,60 +50,91 @@ ClientResponse:
 ClientPageResponse:
   type: object
   title: ClientPageResponse
+  required:
+    - content
+    - pageable
+    - totalElements
+    - totalPages
+    - last
+    - first
+    - numberOfElements
   properties:
     content:
       type: array
       items:
         $ref: "#/ClientResponse"
+      nullable: false
     pageable:
       $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
+      nullable: false
     totalElements:
       type: integer
       format: int64
       description: Загальна кількість елементів
+      nullable: false
     totalPages:
       type: integer
       description: Загальна кількість сторінок
+      nullable: false
     last:
       type: boolean
       description: Чи це остання сторінка
+      nullable: false
     first:
       type: boolean
       description: Чи це перша сторінка
+      nullable: false
     numberOfElements:
       type: integer
       description: Кількість елементів на поточній сторінці
+      nullable: false
 
 ClientSearchResponse:
   type: object
   title: ClientSearchResponse
+  required:
+    - results
+    - totalFound
+    - hasMore
   properties:
     results:
       type: array
       items:
         $ref: "#/ClientSearchResult"
+      nullable: false
     totalFound:
       type: integer
       description: Загальна кількість знайдених результатів
+      nullable: false
     hasMore:
       type: boolean
       description: Чи є ще результати
+      nullable: false
 
 ClientSearchResult:
   type: object
   title: ClientSearchResult
+  required:
+    - id
+    - firstName
+    - lastName
+    - phone
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     firstName:
       type: string
+      nullable: false
     lastName:
       type: string
+      nullable: false
     fullName:
       type: string
       readOnly: true
     phone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
+      nullable: false
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
     lastOrderDate:
@@ -117,9 +152,12 @@ ClientSearchResult:
 ClientContactsResponse:
   type: object
   title: ClientContactsResponse
+  required:
+    - id
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     phone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
       description: Номер телефону
