@@ -163,6 +163,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-jexl3</artifactId>
             <version>3.5.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Testing -->
@@ -191,7 +197,7 @@
         </dependency>
     </dependencies>
     <build>
-
+        
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

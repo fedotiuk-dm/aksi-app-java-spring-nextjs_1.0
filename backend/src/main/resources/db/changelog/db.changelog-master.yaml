@@ -36,6 +36,8 @@ databaseChangeLog:
       file: db/changelog/item/011-add-readable-columns.yaml
   - include:
       file: db/changelog/item/012-add-readable-columns-materials.yaml
+  - include:
+      file: db/changelog/item/013-create-item-colors-table.yaml
 
   # Branch Domain міграції
   - include:

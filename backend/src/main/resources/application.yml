@@ -192,6 +192,8 @@ logging:
     com.zaxxer.hikari: ERROR # HikariCP connection pool
     org.apache.maven: ERROR # Maven - тільки помилки
     org.openapitools: ERROR # OpenAPI генератор - тільки помилки
+    org.apache.commons.logging: OFF # Вимкнути Commons Logging попередження
+    org.springframework.jcl: OFF # Вимкнути Spring Commons Logging попередження
     # Критично важливі логи для діагностики
     org.springframework.boot.actuator.health: WARN
     org.springframework.boot.web.embedded.tomcat: WARN # Tomcat startup

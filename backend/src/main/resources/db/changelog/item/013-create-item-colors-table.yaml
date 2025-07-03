@@ -1,0 +1,169 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013-create-item-colors-table
+      author: system
+      comment: "Створення довідкової таблиці кольорів предметів"
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: item_colors
+      changes:
+        - createTable:
+            tableName: item_colors
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name_uk
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name_en
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hex_color
+                  type: VARCHAR(7)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: affects_price
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValue: "false"
+              - column:
+                  name: sort_order
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+                  defaultValue: "1"
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValue: "true"
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        - createIndex:
+            tableName: item_colors
+            indexName: idx_item_colors_code
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            tableName: item_colors
+            indexName: idx_item_colors_active
+            columns:
+              - column:
+                  name: is_active
+
+        - createIndex:
+            tableName: item_colors
+            indexName: idx_item_colors_sort_order
+            columns:
+              - column:
+                  name: sort_order
+
+        - sql:
+            sql: "ALTER TABLE item_colors ADD CONSTRAINT chk_item_colors_hex_format CHECK (hex_color IS NULL OR hex_color = '' OR hex_color ~ '^#[0-9A-Fa-f]{6}$')"
+            rollback:
+              sql: "ALTER TABLE item_colors DROP CONSTRAINT chk_item_colors_hex_format"
+
+  - changeSet:
+      id: 013-insert-item-colors-data
+      author: system
+      comment: "Завантаження базових кольорів з CSV файлу"
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: "SELECT COUNT(*) FROM item_colors"
+      changes:
+        - loadData:
+            tableName: item_colors
+            file: db/changelog/item/data/item-colors.csv
+            separator: ","
+            quotchar: '"'
+            nullValue: ""
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  type: STRING
+                  header: code
+              - column:
+                  name: name_uk
+                  type: STRING
+                  header: name_uk
+              - column:
+                  name: name_en
+                  type: STRING
+                  header: name_en
+              - column:
+                  name: hex_color
+                  type: STRING
+                  header: hex_color
+              - column:
+                  name: affects_price
+                  type: BOOLEAN
+                  header: affects_price
+              - column:
+                  name: sort_order
+                  type: NUMERIC
+                  header: sort_order
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  header: is_active
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+      rollback:
+        - delete:
+            tableName: item_colors
+
+  - changeSet:
+      id: 013-drop-item-colors-table
+      author: system
+      comment: "Видалення таблиці item_colors при rollback"
+      runOnChange: false
+      changes:
+        - dropTable:
+            tableName: item_colors
