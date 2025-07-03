@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 019-fix-price-column-types
+      author: system
+      comment: "Змінюємо типи цінових колонок з DECIMAL на DOUBLE PRECISION для відповідності Java Double типу"
+      changes:
+        - modifyDataType:
+            tableName: price_list_items
+            columnName: base_price
+            newDataType: DOUBLE PRECISION
+
+        - modifyDataType:
+            tableName: price_list_items
+            columnName: price_black
+            newDataType: DOUBLE PRECISION
+
+        - modifyDataType:
+            tableName: price_list_items
+            columnName: price_color
+            newDataType: DOUBLE PRECISION
+
+        # Також виправимо тип в price_modifiers для консистентності
+        - modifyDataType:
+            tableName: price_modifiers
+            columnName: value
+            newDataType: DOUBLE PRECISION

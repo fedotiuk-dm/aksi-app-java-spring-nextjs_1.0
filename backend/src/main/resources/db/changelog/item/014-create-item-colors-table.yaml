@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 013-create-item-colors-table
+      id: 014-create-item-colors-table
       author: system
       comment: "Створення довідкової таблиці кольорів предметів"
       preConditions:
@@ -70,6 +70,12 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: version
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
 
         - createIndex:
             tableName: item_colors
@@ -98,7 +104,7 @@ databaseChangeLog:
               sql: "ALTER TABLE item_colors DROP CONSTRAINT chk_item_colors_hex_format"
 
   - changeSet:
-      id: 013-insert-item-colors-data
+      id: 014-insert-item-colors-data
       author: system
       comment: "Завантаження базових кольорів з CSV файлу"
       preConditions:
@@ -114,10 +120,6 @@ databaseChangeLog:
             quotchar: '"'
             nullValue: ""
             columns:
-              - column:
-                  name: id
-                  type: UUID
-                  defaultValueComputed: gen_random_uuid()
               - column:
                   name: code
                   type: STRING
@@ -146,24 +148,7 @@ databaseChangeLog:
                   name: is_active
                   type: BOOLEAN
                   header: is_active
-              - column:
-                  name: created_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
-              - column:
-                  name: updated_at
-                  type: TIMESTAMP
-                  defaultValueComputed: CURRENT_TIMESTAMP
 
       rollback:
         - delete:
-            tableName: item_colors
-
-  - changeSet:
-      id: 013-drop-item-colors-table
-      author: system
-      comment: "Видалення таблиці item_colors при rollback"
-      runOnChange: false
-      changes:
-        - dropTable:
             tableName: item_colors

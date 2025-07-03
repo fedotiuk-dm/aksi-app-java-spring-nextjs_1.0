@@ -1,0 +1,308 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-orders-table-minimal
+      author: system
+      comment: "Створення мінімальної таблиці замовлень для Hibernate валідації"
+      changes:
+        - createTable:
+            tableName: orders
+            remarks: "Таблиця замовлень хімчистки"
+            columns:
+              # BaseEntity поля
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: version
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+
+              # Основні поля OrderEntity
+              - column:
+                  name: receipt_number
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: unique_tag
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: client_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: branch_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  defaultValue: "'DRAFT'"
+              - column:
+                  name: urgency
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+                  defaultValue: "'NORMAL'"
+              - column:
+                  name: execution_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: notes
+                  type: VARCHAR(1000)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: client_signature
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: operator_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: final_notes
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: legal_acceptance
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+              - column:
+                  name: critical_defects_consent
+                  type: BOOLEAN
+                  constraints:
+                    nullable: true
+
+              # @Embedded DiscountEntity поля
+              - column:
+                  name: discount_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: discount_percentage
+                  type: DECIMAL(5,4)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: discount_description
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: true
+
+              # @Embedded OrderCalculationEntity поля
+              - column:
+                  name: items_total
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+              - column:
+                  name: urgency_charge
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+              - column:
+                  name: discount_amount
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+              - column:
+                  name: total_amount
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+
+              # @Embedded PaymentInfoEntity поля
+              - column:
+                  name: payment_method
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: paid_amount
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+
+        - createIndex:
+            tableName: orders
+            indexName: idx_order_receipt_number
+            unique: true
+            columns:
+              - column:
+                  name: receipt_number
+
+        - createIndex:
+            tableName: orders
+            indexName: idx_order_client_id
+            columns:
+              - column:
+                  name: client_id
+
+        - createIndex:
+            tableName: orders
+            indexName: idx_order_status
+            columns:
+              - column:
+                  name: status
+
+  - changeSet:
+      id: 001-create-order-items-table-minimal
+      author: system
+      comment: "Створення мінімальної таблиці предметів замовлення для Hibernate валідації"
+      changes:
+        - createTable:
+            tableName: order_items
+            remarks: "Таблиця предметів замовлення"
+            columns:
+              # BaseEntity поля
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: version
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+
+              # Основні поля OrderItemEntity
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: item_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+                  defaultValue: "1"
+              - column:
+                  name: unit
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: material
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: color
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: filling
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: wear_degree
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: defect_notes
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: base_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+              - column:
+                  name: final_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+
+        - addForeignKeyConstraint:
+            baseTableName: order_items
+            baseColumnNames: order_id
+            constraintName: fk_order_items_order
+            referencedTableName: orders
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+
+        - createIndex:
+            tableName: order_items
+            indexName: idx_order_item_order_id
+            columns:
+              - column:
+                  name: order_id
+
+        - createIndex:
+            tableName: order_items
+            indexName: idx_order_item_category
+            columns:
+              - column:
+                  name: category

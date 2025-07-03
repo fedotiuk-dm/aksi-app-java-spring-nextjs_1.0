@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 020-add-version-to-price-modifiers
+      author: system
+      comment: "Додаємо відсутню колонку version в таблицю price_modifiers (PriceModifierEntity extends BaseEntity)"
+      changes:
+        - addColumn:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: version
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+                  remarks: "Hibernate optimistic locking version field"
+
+        - sql:
+            sql: "UPDATE price_modifiers SET version = 0 WHERE version IS NULL"
+
+        - addNotNullConstraint:
+            tableName: price_modifiers
+            columnName: version

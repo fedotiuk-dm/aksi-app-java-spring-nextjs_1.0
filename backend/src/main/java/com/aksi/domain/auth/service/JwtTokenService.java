@@ -163,7 +163,7 @@ public class JwtTokenService {
         roles);
   }
 
-  public static record UserTokenData(
+  public record UserTokenData(
       UUID userId,
       String username,
       String email,

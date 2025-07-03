@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 018-add-version-column-to-price-list-items
+      author: system
+      comment: "Додаємо відсутню колонку version в таблицю price_list_items для Hibernate optimistic locking"
+      changes:
+        - addColumn:
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: version
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                  defaultValue: "0"
+                  remarks: "Hibernate optimistic locking version field"
+
+        - sql:
+            sql: "UPDATE price_list_items SET version = 0 WHERE version IS NULL"
+
+        - addNotNullConstraint:
+            tableName: price_list_items
+            columnName: version
+            defaultNullValue: "0"

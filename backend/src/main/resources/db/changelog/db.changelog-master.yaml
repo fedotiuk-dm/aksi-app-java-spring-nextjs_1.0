@@ -2,6 +2,8 @@ databaseChangeLog:
   # Auth Domain міграції
   - include:
       file: db/changelog/auth/001-create-auth-tables.yaml
+  - include:
+      file: db/changelog/auth/002-add-refresh-token-columns.yaml
 
   # Client Domain міграції
   - include:
@@ -9,9 +11,9 @@ databaseChangeLog:
   - include:
       file: db/changelog/client/002-insert-client-seed-data.yaml
 
-  # Order Domain міграції (TODO)
-  # - include:
-  #     file: db/changelog/order/001-create-order-tables.yaml
+  # Order Domain міграції
+  - include:
+      file: db/changelog/order/001-create-order-tables-minimal.yaml
 
   # Item Domain міграції
   - include:
@@ -37,11 +39,31 @@ databaseChangeLog:
   - include:
       file: db/changelog/item/012-add-readable-columns-materials.yaml
   - include:
-      file: db/changelog/item/013-create-item-colors-table.yaml
+      file: db/changelog/item/013-add-service-category-fields.yaml
+  - include:
+      file: db/changelog/item/014-create-item-colors-table.yaml
+  - include:
+      file: db/changelog/item/015-create-item-photos-table.yaml
+  - include:
+      file: db/changelog/item/016-create-modifier-collection-tables.yaml
+  - include:
+      file: db/changelog/item/017-create-stains-defects-tables.yaml
+  - include:
+      file: db/changelog/item/018-add-version-column-to-price-list-items.yaml
+  - include:
+      file: db/changelog/item/019-fix-price-column-types.yaml
+  - include:
+      file: db/changelog/item/020-add-version-to-price-modifiers.yaml
+  - include:
+      file: db/changelog/item/021-add-version-to-service-categories.yaml
+  - include:
+      file: db/changelog/item/022-add-parent-id-to-service-categories.yaml
 
   # Branch Domain міграції
   - include:
       file: db/changelog/branch/001-create-branch-tables.yaml
+  - include:
+      file: db/changelog/branch/003-fix-coordinate-types.yaml
   - include:
       file: db/changelog/branch/002-insert-branch-seed-data.yaml
 

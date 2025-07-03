@@ -153,7 +153,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update # Для dev - дозволяємо Hibernate оновлювати схему
+      ddl-auto: validate # Використовуємо тільки Liquibase для міграцій
     show-sql: true
     properties:
       hibernate:
