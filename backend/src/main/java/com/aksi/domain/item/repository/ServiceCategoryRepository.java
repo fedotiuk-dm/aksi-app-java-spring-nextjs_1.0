@@ -16,11 +16,8 @@ import com.aksi.domain.item.entity.ServiceCategoryEntity;
  */
 @Repository
 public interface ServiceCategoryRepository
-    extends JpaRepository<ServiceCategoryEntity, Long>,
+    extends JpaRepository<ServiceCategoryEntity, UUID>,
         JpaSpecificationExecutor<ServiceCategoryEntity> {
-
-  /** Знайти категорію за UUID. */
-  Optional<ServiceCategoryEntity> findByUuid(UUID uuid);
 
   /** Знайти категорію за кодом. */
   Optional<ServiceCategoryEntity> findByCode(String code);
@@ -29,7 +26,7 @@ public interface ServiceCategoryRepository
   boolean existsByCode(String code);
 
   /** Перевірити існування категорії за кодом (виключаючи вказану). */
-  boolean existsByCodeAndUuidNot(String code, UUID uuid);
+  boolean existsByCodeAndIdNot(String code, UUID id);
 
   /** Знайти всі активні категорії. */
   List<ServiceCategoryEntity> findByIsActiveTrue();

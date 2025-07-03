@@ -19,7 +19,7 @@ public interface ReceiptNumberMapper {
 
   /** Створити ReceiptNumberResponse з даних філії та згенерованого номера. */
   @Mapping(target = "receiptNumber", source = "receiptNumber")
-  @Mapping(target = "branchId", source = "branch.uuid")
+  @Mapping(target = "branchId", source = "branch.id")
   @Mapping(target = "branchCode", source = "branch.code")
   @Mapping(target = "year", expression = "java(java.time.Year.now().getValue())")
   @Mapping(target = "sequenceNumber", source = "branch.receiptCounter")
@@ -50,7 +50,6 @@ public interface ReceiptNumberMapper {
       BranchEntity branch);
 
   /** Конвертація BranchEntity → BranchSummaryResponse для ParseResponse. */
-  @Mapping(target = "id", source = "uuid")
   @Mapping(target = "code", source = "code")
   @Mapping(target = "name", source = "name")
   @Mapping(target = "city", source = "city")

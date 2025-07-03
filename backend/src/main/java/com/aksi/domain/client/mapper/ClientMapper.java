@@ -52,7 +52,6 @@ public interface ClientMapper {
   // Entity → DTO mappings (для response)
 
   /** Конвертація ClientEntity → ClientResponse. */
-  @Mapping(target = "id", source = "uuid")
   @Mapping(target = "fullName", expression = "java(entity.getFullName())")
   @Mapping(target = "statistics", source = "entity")
   @Mapping(
@@ -67,12 +66,10 @@ public interface ClientMapper {
   ClientResponse toResponse(ClientEntity entity);
 
   /** Конвертація ClientEntity → ClientContactsResponse. */
-  @Mapping(target = "id", source = "uuid")
   @Mapping(target = "communicationMethods", source = "communicationMethods")
   ClientContactsResponse toContactsResponse(ClientEntity entity);
 
   /** Конвертація ClientEntity → ClientSearchResult. */
-  @Mapping(target = "id", source = "uuid")
   @Mapping(target = "fullName", expression = "java(entity.getFullName())")
   @Mapping(target = "orderCount", source = "totalOrders")
   @Mapping(target = "highlightedFields", ignore = true)

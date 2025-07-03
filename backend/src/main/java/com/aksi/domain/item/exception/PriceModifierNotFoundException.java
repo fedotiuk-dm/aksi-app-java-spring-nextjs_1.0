@@ -2,27 +2,32 @@ package com.aksi.domain.item.exception;
 
 import java.util.UUID;
 
-/** Exception що викидається коли модифікатор ціни не знайдений. */
+/** Виняток коли модифікатор ціни не знайдений Domain-specific RuntimeException для Item domain. */
 public class PriceModifierNotFoundException extends RuntimeException {
 
   public PriceModifierNotFoundException(String message) {
     super(message);
   }
 
-  public PriceModifierNotFoundException(UUID uuid) {
-    super("Модифікатор ціни з UUID " + uuid + " не знайдений");
+  public PriceModifierNotFoundException(UUID id) {
+    super("Модифікатор ціни не знайдений з ID: " + id);
   }
 
-  public static PriceModifierNotFoundException byCode(String code) {
-    return new PriceModifierNotFoundException(
-        "Модифікатор ціни з кодом '" + code + "' не знайдений");
-  }
-
-  public PriceModifierNotFoundException(Long id) {
-    super("Модифікатор ціни з ID " + id + " не знайдений");
+  public PriceModifierNotFoundException(String field, String value) {
+    super("Модифікатор ціни не знайдений з " + field + ": " + value);
   }
 
   public PriceModifierNotFoundException(String message, Throwable cause) {
     super(message, cause);
+  }
+
+  // Static factory methods для різних сценаріїв
+
+  public static PriceModifierNotFoundException byCode(String code) {
+    return new PriceModifierNotFoundException("code", code);
+  }
+
+  public static PriceModifierNotFoundException byType(String modifierType) {
+    return new PriceModifierNotFoundException("modifierType", modifierType);
   }
 }

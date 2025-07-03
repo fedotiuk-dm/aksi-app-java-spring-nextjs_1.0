@@ -23,8 +23,8 @@ public class BranchNotFoundException extends RuntimeException {
 
   // Static factory methods
 
-  public static BranchNotFoundException withId(Long id) {
-    return new BranchNotFoundException(String.format("Філію з ID '%s' не знайдено", id));
+  public static BranchNotFoundException withId(UUID id) {
+    return new BranchNotFoundException("Філія не знайдена з ID: " + id);
   }
 
   public static BranchNotFoundException withUuid(UUID uuid) {

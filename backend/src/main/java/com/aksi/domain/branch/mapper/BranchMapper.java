@@ -34,7 +34,6 @@ public interface BranchMapper {
   // DTO → Entity mappings (для create/update)
 
   /** CreateBranchRequest → BranchEntity. */
-  @Mapping(target = "uuid", expression = "java(java.util.UUID.randomUUID())")
   @Mapping(target = "receiptCounter", constant = "0L")
   @Mapping(target = "code", source = "name")
   @Mapping(target = "street", source = "address.street")
@@ -49,7 +48,6 @@ public interface BranchMapper {
   BranchEntity toEntity(CreateBranchRequest request);
 
   /** UpdateBranchRequest → BranchEntity (для оновлення). */
-  @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "receiptCounter", ignore = true)
   @Mapping(target = "code", source = "name")
   @Mapping(target = "street", source = "address.street")
@@ -66,7 +64,6 @@ public interface BranchMapper {
   // Entity → DTO mappings (для response)
 
   /** {@code BranchEntity} → {@code BranchResponse}. */
-  @Mapping(target = "id", source = "uuid")
   @Mapping(
       target = "createdAt",
       source = "createdAt",
@@ -81,11 +78,9 @@ public interface BranchMapper {
   BranchResponse toBranchResponse(BranchEntity entity);
 
   /** {@code BranchEntity} → {@code BranchSummaryResponse}. */
-  @Mapping(target = "id", source = "uuid")
   BranchSummaryResponse toBranchSummaryResponse(BranchEntity entity);
 
   /** BranchEntity → BranchWithDistanceResponse. */
-  @Mapping(target = "id", source = "entity.uuid")
   @Mapping(target = "status", source = "entity.status", qualifiedByName = "domainBranchStatusToApi")
   @Mapping(target = "address", source = "entity")
   @Mapping(target = "distance", source = "distance")
@@ -172,7 +167,7 @@ public interface BranchMapper {
   default BranchStatisticsResponse toBranchStatisticsResponse(
       BranchEntity entity, LocalDate startDate, LocalDate endDate) {
     BranchStatisticsResponse response = new BranchStatisticsResponse();
-    response.setBranchId(entity.getUuid());
+    response.setBranchId(entity.getId());
     response.setBranchName(entity.getName());
 
     StatisticsPeriod period = new StatisticsPeriod();
@@ -203,7 +198,7 @@ public interface BranchMapper {
       BranchEntity entity = branches.get(i);
       BranchComparisonResponse response = new BranchComparisonResponse();
 
-      response.setBranchId(entity.getUuid());
+      response.setBranchId(entity.getId());
       response.setBranchName(entity.getName());
       response.setBranchCode(entity.getCode());
       response.setRanking(i + 1);

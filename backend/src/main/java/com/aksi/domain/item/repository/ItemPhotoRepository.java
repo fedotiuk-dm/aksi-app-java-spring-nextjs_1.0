@@ -21,10 +21,10 @@ import com.aksi.domain.item.entity.ItemPhotoEntity;
  */
 @Repository
 public interface ItemPhotoRepository
-    extends JpaRepository<ItemPhotoEntity, Long>, JpaSpecificationExecutor<ItemPhotoEntity> {
+    extends JpaRepository<ItemPhotoEntity, UUID>, JpaSpecificationExecutor<ItemPhotoEntity> {
 
   // Basic queries
-  Optional<ItemPhotoEntity> findByUuid(UUID uuid);
+  // findById(UUID) успадкований з JpaRepository
 
   List<ItemPhotoEntity> findByItemId(UUID itemId);
 

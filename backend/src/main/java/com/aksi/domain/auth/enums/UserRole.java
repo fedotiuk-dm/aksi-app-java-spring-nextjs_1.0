@@ -1,11 +1,9 @@
 package com.aksi.domain.auth.enums;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /** Ролі користувачів в системі хімчистки Синхронізовано з OpenAPI enum UserRole. */
 @Getter
-@RequiredArgsConstructor
 public enum UserRole {
   ADMIN("ADMIN", "Адміністратор системи"),
   MANAGER("MANAGER", "Менеджер філії"),
@@ -15,6 +13,12 @@ public enum UserRole {
 
   private final String value;
   private final String description;
+
+  /** Конструктор enum. */
+  UserRole(String value, String description) {
+    this.value = value;
+    this.description = description;
+  }
 
   /** Конвертація з API значення до domain enum. */
   public static UserRole fromApiValue(String value) {

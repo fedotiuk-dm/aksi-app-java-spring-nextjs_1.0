@@ -17,7 +17,6 @@ import com.aksi.domain.item.exception.ServiceCategoryNotFoundException;
 import com.aksi.domain.item.mapper.ServiceCategoryMapper;
 import com.aksi.domain.item.repository.ServiceCategoryRepository;
 import com.aksi.shared.service.BaseService;
-import com.aksi.shared.service.EntityCreationHelper;
 
 /**
  * Сервіс для управління категоріями послуг. Розширює BaseService для уникнення дублювання CRUD
@@ -26,7 +25,7 @@ import com.aksi.shared.service.EntityCreationHelper;
 @Service
 @Transactional
 public class ServiceCategoryService
-    extends BaseService<ServiceCategoryEntity, Long, ServiceCategoryRepository> {
+    extends BaseService<ServiceCategoryEntity, ServiceCategoryRepository> {
 
   private final ServiceCategoryMapper mapper;
 
@@ -43,23 +42,23 @@ public class ServiceCategoryService
     validateUniqueCode(request.getCode());
 
     var entity = mapper.toEntity(request);
-    EntityCreationHelper.setRandomUuid(entity);
+    // UUID генерується автоматично через @UuidGenerator в BaseEntity
 
     var savedEntity = save(entity);
     return mapper.toResponse(savedEntity);
   }
 
-  /** Отримати категорію за UUID. */
+  /** Отримати категорію за ID. */
   @Transactional(readOnly = true)
-  public ServiceCategoryResponse getServiceCategoryById(UUID uuid) {
-    var entity = findByUuidOrThrow(uuid);
+  public ServiceCategoryResponse getServiceCategoryById(UUID id) {
+    var entity = findByIdOrThrow(id);
     return mapper.toResponse(entity);
   }
 
   /** Оновити категорію послуг. */
   public ServiceCategoryResponse updateServiceCategory(
-      UUID uuid, UpdateServiceCategoryRequest request) {
-    var entity = findByUuidOrThrow(uuid);
+      UUID id, UpdateServiceCategoryRequest request) {
+    var entity = findByIdOrThrow(id);
 
     mapper.updateEntityFromRequest(request, entity);
     var savedEntity = save(entity);
@@ -67,11 +66,11 @@ public class ServiceCategoryService
   }
 
   /** Видалити категорію послуг. */
-  public void deleteServiceCategory(UUID uuid) {
-    var entity = findByUuidOrThrow(uuid);
+  public void deleteServiceCategory(UUID id) {
+    var entity = findByIdOrThrow(id);
 
     // Перевірити чи немає дочірніх категорій
-    var childCategories = repository.findByParentId(uuid);
+    var childCategories = repository.findByParentId(id);
     if (!childCategories.isEmpty()) {
       throw new IllegalStateException("Неможливо видалити категорію з дочірніми категоріями");
     }
@@ -102,11 +101,9 @@ public class ServiceCategoryService
 
   // ========== HELPER МЕТОДИ ==========
 
-  /** Знайти категорію за UUID з винятком. */
-  private ServiceCategoryEntity findByUuidOrThrow(UUID uuid) {
-    return repository
-        .findByUuid(uuid)
-        .orElseThrow(() -> new ServiceCategoryNotFoundException(uuid));
+  /** Знайти категорію за ID з винятком. */
+  private ServiceCategoryEntity findByIdOrThrow(UUID id) {
+    return repository.findById(id).orElseThrow(() -> new ServiceCategoryNotFoundException(id));
   }
 
   /** Валідація унікальності коду. */

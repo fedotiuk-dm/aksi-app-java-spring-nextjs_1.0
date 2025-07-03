@@ -3,6 +3,7 @@ package com.aksi.domain.auth.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,7 @@ import com.aksi.domain.auth.enums.UserRole;
 
 /** Repository для роботи з користувачами Spring Data JPA з custom query методами. */
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
   /** Пошук користувача за username. */
   Optional<UserEntity> findByUsername(String username);
@@ -61,12 +62,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   /** Оновлення останнього входу користувача. */
   @Query(
       "UPDATE UserEntity u SET u.lastLoginAt = :loginTime, u.failedLoginAttempts = 0 WHERE u.id = :userId")
-  void updateLastLogin(@Param("userId") Long userId, @Param("loginTime") LocalDateTime loginTime);
+  void updateLastLogin(@Param("userId") UUID userId, @Param("loginTime") LocalDateTime loginTime);
 
   /** Скидання невдалих спроб входу. */
   @Query(
       "UPDATE UserEntity u SET u.failedLoginAttempts = 0, u.lockedUntil = null WHERE u.id = :userId")
-  void resetFailedAttempts(@Param("userId") Long userId);
+  void resetFailedAttempts(@Param("userId") UUID userId);
 
   /** Пошук адміністраторів системи. */
   @Query(

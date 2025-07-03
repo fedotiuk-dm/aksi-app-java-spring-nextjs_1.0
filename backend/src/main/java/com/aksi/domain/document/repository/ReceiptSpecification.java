@@ -11,7 +11,7 @@ import com.aksi.domain.document.entity.ReceiptEntity;
 public class ReceiptSpecification {
 
   // Document relationship specifications
-  public static Specification<ReceiptEntity> hasDocumentId(Long documentId) {
+  public static Specification<ReceiptEntity> hasDocumentId(UUID documentId) {
     return (root, query, criteriaBuilder) ->
         documentId == null
             ? null

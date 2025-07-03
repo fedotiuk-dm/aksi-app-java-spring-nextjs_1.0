@@ -3,8 +3,6 @@ package com.aksi.domain.item.entity;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.hibernate.annotations.UuidGenerator;
-
 import com.aksi.shared.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -38,10 +36,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class PriceListItemEntity extends BaseEntity {
-
-  @Column(name = "uuid", updatable = false, nullable = false, unique = true)
-  @UuidGenerator
-  private UUID uuid;
 
   @NotNull(message = "Категорія обов'язкова")
   @Column(name = "category_id", nullable = false)

@@ -5,7 +5,6 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import com.aksi.domain.client.enums.ClientSourceType;
 import com.aksi.domain.client.enums.CommunicationMethodType;
@@ -32,7 +31,6 @@ import lombok.NoArgsConstructor;
 @Table(
     name = "clients",
     indexes = {
-      @Index(name = "idx_client_uuid", columnList = "uuid"),
       @Index(name = "idx_client_phone", columnList = "phone"),
       @Index(name = "idx_client_email", columnList = "email"),
       @Index(name = "idx_client_full_name", columnList = "first_name, last_name"),
@@ -44,14 +42,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientEntity extends BaseEntity {
-
-  /**
-   * UUID для API сумісності (зовнішній ідентифікатор) Внутрішньо використовуємо Long id з
-   * BaseEntity.
-   */
-  @Column(name = "uuid", nullable = false, unique = true, updatable = false)
-  @Builder.Default
-  private UUID uuid = UUID.randomUUID();
 
   /** Ім'я клієнта. */
   @Column(name = "first_name", nullable = false, length = 50)

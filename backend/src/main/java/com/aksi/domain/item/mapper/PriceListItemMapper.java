@@ -18,11 +18,9 @@ import com.aksi.domain.item.entity.PriceListItemEntity;
 public interface PriceListItemMapper {
 
   // DTO → Entity (для create)
-  @Mapping(target = "uuid", ignore = true)
   PriceListItemEntity toEntity(CreatePriceListItemRequest request);
 
   // Entity → DTO (для response)
-  @Mapping(source = "uuid", target = "id")
   @Mapping(target = "categoryInfo", ignore = true) // Буде заповнено в Service
   PriceListItemResponse toResponse(PriceListItemEntity entity);
 
@@ -54,7 +52,6 @@ public interface PriceListItemMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
-  @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "categoryId", ignore = true) // Категорію не змінюємо при оновленні
   @Mapping(target = "catalogNumber", ignore = true) // Каталоговий номер не змінюємо
   void updateEntityFromRequest(

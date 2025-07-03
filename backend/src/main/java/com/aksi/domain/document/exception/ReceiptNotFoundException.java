@@ -2,30 +2,32 @@ package com.aksi.domain.document.exception;
 
 import java.util.UUID;
 
-/** Exception що викидається коли квитанція не знайдена. */
+/** Виняток коли квитанція не знайдена Специфічний для Document domain RuntimeException. */
 public class ReceiptNotFoundException extends RuntimeException {
 
   public ReceiptNotFoundException(String message) {
     super(message);
   }
 
+  public ReceiptNotFoundException(UUID id) {
+    super("Квитанція не знайдена з ID: " + id);
+  }
+
+  public ReceiptNotFoundException(String field, String value) {
+    super("Квитанція не знайдена з " + field + ": " + value);
+  }
+
   public ReceiptNotFoundException(String message, Throwable cause) {
     super(message, cause);
   }
 
-  public ReceiptNotFoundException(Long id) {
-    super("Квитанція з ID " + id + " не знайдена");
-  }
+  // Static factory methods для різних сценаріїв
 
-  public ReceiptNotFoundException(String field, String value) {
-    super("Квитанція з " + field + " '" + value + "' не знайдена");
+  public static ReceiptNotFoundException byOrderId(UUID orderId) {
+    return new ReceiptNotFoundException("orderId", orderId.toString());
   }
 
   public static ReceiptNotFoundException byReceiptNumber(String receiptNumber) {
     return new ReceiptNotFoundException("receiptNumber", receiptNumber);
-  }
-
-  public static ReceiptNotFoundException byOrderId(UUID orderId) {
-    return new ReceiptNotFoundException("orderId", orderId.toString());
   }
 }

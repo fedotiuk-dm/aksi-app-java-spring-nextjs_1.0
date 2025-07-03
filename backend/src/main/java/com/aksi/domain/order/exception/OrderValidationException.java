@@ -2,6 +2,7 @@ package com.aksi.domain.order.exception;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.aksi.domain.order.enums.OrderStatus;
 import com.aksi.domain.order.enums.UrgencyType;
@@ -86,16 +87,14 @@ public class OrderValidationException extends RuntimeException {
             + ". Очікується: DRAFT");
   }
 
-  public static OrderValidationException cannotDeleteOrder(Long orderId, OrderStatus status) {
+  public static OrderValidationException cannotDeleteOrder(UUID orderId, OrderStatus status) {
     return new OrderValidationException(
-        String.format(
-            "Неможливо видалити замовлення %d в статусі %s", orderId, status.getDescription()));
+        "Не можна видалити замовлення з ID " + orderId + " в статусі " + status);
   }
 
-  public static OrderValidationException cannotModifyOrder(Long orderId, OrderStatus status) {
+  public static OrderValidationException cannotModifyOrder(UUID orderId, OrderStatus status) {
     return new OrderValidationException(
-        String.format(
-            "Неможливо змінити замовлення %d в статусі %s", orderId, status.getDescription()));
+        "Не можна змінити замовлення з ID " + orderId + " в статусі " + status);
   }
 
   public static OrderValidationException cannotChangeOrderId() {

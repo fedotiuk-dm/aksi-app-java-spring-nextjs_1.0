@@ -14,7 +14,6 @@ import com.aksi.domain.item.entity.ItemPhotoEntity;
 public interface ItemPhotoMapper {
 
   // Entity → DTO (для response)
-  @Mapping(source = "uuid", target = "id")
   @Mapping(source = "originalName", target = "filename")
   @Mapping(source = "originalName", target = "originalFilename")
   @Mapping(source = "contentType", target = "mimeType")
@@ -31,7 +30,6 @@ public interface ItemPhotoMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
-  @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "itemId", ignore = true)
   @Mapping(target = "originalName", ignore = true)
   @Mapping(target = "fileName", ignore = true)

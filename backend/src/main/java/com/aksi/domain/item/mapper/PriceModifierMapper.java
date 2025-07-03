@@ -15,14 +15,12 @@ import com.aksi.domain.item.entity.PriceModifierEntity;
 public interface PriceModifierMapper {
 
   // DTO → Entity (для create)
-  @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "jexlFormula", ignore = true)
   @Mapping(target = "jexlCondition", ignore = true)
   @Mapping(source = "type", target = "modifierType")
   PriceModifierEntity toEntity(CreatePriceModifierRequest request);
 
   // Entity → DTO (для response)
-  @Mapping(source = "uuid", target = "id")
   @Mapping(source = "modifierType", target = "type")
   PriceModifierResponse toResponse(PriceModifierEntity entity);
 
@@ -34,7 +32,6 @@ public interface PriceModifierMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
-  @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "code", ignore = true) // Код не змінюється при оновленні
   @Mapping(target = "modifierType", ignore = true) // Тип не змінюється при оновленні
   @Mapping(target = "jexlFormula", ignore = true) // JEXL поля керуються окремо

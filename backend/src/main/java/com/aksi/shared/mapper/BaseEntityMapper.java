@@ -6,7 +6,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -17,26 +16,6 @@ public final class BaseEntityMapper {
 
   private BaseEntityMapper() {
     // Утилітарний клас
-  }
-
-  /**
-   * Конвертує UUID в Long.
-   *
-   * @param uuid UUID для конвертації
-   * @return Long значення або null
-   */
-  public static Long uuidToLong(UUID uuid) {
-    return Optional.ofNullable(uuid).map(UUID::getMostSignificantBits).orElse(null);
-  }
-
-  /**
-   * Конвертує Long в UUID.
-   *
-   * @param longValue Long значення для конвертації
-   * @return UUID або null
-   */
-  public static UUID longToUuid(Long longValue) {
-    return Optional.ofNullable(longValue).map(value -> new UUID(value, 0L)).orElse(null);
   }
 
   /**

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.UuidGenerator;
-
 import com.aksi.shared.BaseEntity;
 
 import jakarta.persistence.CollectionTable;
@@ -42,10 +40,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class PriceModifierEntity extends BaseEntity {
-
-  @Column(name = "uuid", updatable = false, nullable = false, unique = true)
-  @UuidGenerator
-  private UUID uuid;
 
   @NotBlank(message = "Код модифікатора обов'язковий")
   @Size(max = 50, message = "Код не може бути довше 50 символів")

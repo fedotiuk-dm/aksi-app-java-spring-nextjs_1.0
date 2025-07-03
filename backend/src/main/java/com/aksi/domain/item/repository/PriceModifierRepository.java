@@ -18,19 +18,19 @@ import com.aksi.domain.item.entity.PriceModifierEntity;
  */
 @Repository
 public interface PriceModifierRepository
-    extends JpaRepository<PriceModifierEntity, Long>,
+    extends JpaRepository<PriceModifierEntity, UUID>,
         JpaSpecificationExecutor<PriceModifierEntity> {
 
   // Basic queries
-  Optional<PriceModifierEntity> findByUuid(UUID uuid);
+  // findById(UUID) успадкований з JpaRepository
 
-  List<PriceModifierEntity> findByUuidIn(List<UUID> uuids);
+  List<PriceModifierEntity> findByIdIn(List<UUID> ids);
 
   Optional<PriceModifierEntity> findByCode(String code);
 
   boolean existsByCode(String code);
 
-  boolean existsByCodeAndUuidNot(String code, UUID uuid);
+  boolean existsByCodeAndIdNot(String code, UUID id);
 
   // Active modifiers
   List<PriceModifierEntity> findByIsActiveTrue();

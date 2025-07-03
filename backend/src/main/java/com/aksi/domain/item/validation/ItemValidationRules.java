@@ -34,8 +34,8 @@ public final class ItemValidationRules {
       ServiceCategoryRepository repository) {
     return CommonValidationRules.uniqueFieldForUpdate(
         ServiceCategoryEntity::getCode,
-        ServiceCategoryEntity::getUuid,
-        repository::existsByCodeAndUuidNot,
+        ServiceCategoryEntity::getId,
+        repository::existsByCodeAndIdNot,
         "Код категорії");
   }
 
@@ -43,7 +43,7 @@ public final class ItemValidationRules {
   public static Validator<ServiceCategoryEntity> validParentCategory(
       ServiceCategoryRepository repository) {
     return CommonValidationRules.relatedEntityExists(
-        ServiceCategoryEntity::getParentId, repository::findByUuid, "Батьківська категорія");
+        ServiceCategoryEntity::getParentId, repository::findById, "Батьківська категорія");
   }
 
   /** Бізнес-правила для категорій. */
@@ -60,7 +60,7 @@ public final class ItemValidationRules {
   public static Validator<ServiceCategoryEntity> noCircularReference(
       ServiceCategoryRepository repository) {
     return entity -> {
-      if (entity.getParentId() == null || entity.getUuid().equals(entity.getParentId())) {
+      if (entity.getParentId() == null || entity.getId().equals(entity.getParentId())) {
         return ValidationResult.valid();
       }
 
@@ -69,13 +69,13 @@ public final class ItemValidationRules {
       final int maxDepth = 10;
 
       while (currentParentId != null && depth < maxDepth) {
-        if (currentParentId.equals(entity.getUuid())) {
+        if (currentParentId.equals(entity.getId())) {
           return ValidationResult.invalid("Виявлено циклічне посилання в ієрархії категорій");
         }
 
         currentParentId =
             repository
-                .findByUuid(currentParentId)
+                .findById(currentParentId)
                 .map(ServiceCategoryEntity::getParentId)
                 .orElse(null);
         depth++;
@@ -113,8 +113,8 @@ public final class ItemValidationRules {
       PriceModifierRepository repository) {
     return CommonValidationRules.uniqueFieldForUpdate(
         PriceModifierEntity::getCode,
-        PriceModifierEntity::getUuid,
-        repository::existsByCodeAndUuidNot,
+        PriceModifierEntity::getId,
+        repository::existsByCodeAndIdNot,
         "Код модифікатора");
   }
 
@@ -171,7 +171,7 @@ public final class ItemValidationRules {
 
       var invalidCategories =
           categories.stream()
-              .filter(categoryId -> categoryRepository.findByUuid(categoryId).isEmpty())
+              .filter(categoryId -> categoryRepository.findById(categoryId).isEmpty())
               .toList();
 
       if (!invalidCategories.isEmpty()) {
@@ -180,11 +180,11 @@ public final class ItemValidationRules {
 
       var inactiveCategories =
           categories.stream()
-              .map(categoryRepository::findByUuid)
+              .map(categoryRepository::findById)
               .filter(Optional::isPresent)
               .map(Optional::get)
               .filter(category -> !category.isActiveCategory())
-              .map(ServiceCategoryEntity::getUuid)
+              .map(ServiceCategoryEntity::getId)
               .toList();
 
       if (!inactiveCategories.isEmpty()) {
@@ -211,7 +211,7 @@ public final class ItemValidationRules {
   public static Validator<PriceListItemEntity> uniqueCatalogNumberForUpdate(
       PriceListItemRepository repository) {
     return entity ->
-        repository.existsByCatalogNumberAndUuidNot(entity.getCatalogNumber(), entity.getUuid())
+        repository.existsByCatalogNumberAndIdNot(entity.getCatalogNumber(), entity.getId())
             ? ValidationResult.invalid(
                 "Каталожний номер '" + entity.getCatalogNumber() + "' вже існує")
             : ValidationResult.valid();
@@ -221,7 +221,7 @@ public final class ItemValidationRules {
   public static Validator<PriceListItemEntity> validCategory(
       ServiceCategoryRepository categoryRepository) {
     return CommonValidationRules.relatedEntityExists(
-        PriceListItemEntity::getCategoryId, categoryRepository::findByUuid, "Категорія");
+        PriceListItemEntity::getCategoryId, categoryRepository::findById, "Категорія");
   }
 
   /** Валідація цінових полів. */
@@ -271,8 +271,7 @@ public final class ItemValidationRules {
       }
 
       var existingPrimary = repository.findByItemIdAndIsPrimaryTrue(entity.getItemId());
-      if (existingPrimary.isPresent()
-          && !existingPrimary.get().getUuid().equals(entity.getUuid())) {
+      if (existingPrimary.isPresent() && !existingPrimary.get().getId().equals(entity.getId())) {
         return ValidationResult.invalid("Для предмета вже існує первинне фото");
       }
 

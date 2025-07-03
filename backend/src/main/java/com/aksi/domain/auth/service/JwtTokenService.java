@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
@@ -83,9 +84,9 @@ public class JwtTokenService {
   }
 
   /** Отримання користувача ID з токену. */
-  public Long getUserIdFromToken(String token) {
+  public UUID getUserIdFromToken(String token) {
     Claims claims = getClaimsFromToken(token);
-    return Long.valueOf(claims.getSubject());
+    return UUID.fromString(claims.getSubject());
   }
 
   /** Отримання username з токену. */
@@ -153,7 +154,7 @@ public class JwtTokenService {
     List<String> roles = (List<String>) claims.get("roles");
 
     return new UserTokenData(
-        Long.valueOf(claims.getSubject()),
+        UUID.fromString(claims.getSubject()),
         claims.get("username", String.class),
         claims.get("email", String.class),
         claims.get("firstName", String.class),
@@ -162,62 +163,14 @@ public class JwtTokenService {
         roles);
   }
 
-  /** DTO для даних користувача з токену. */
-  public static class UserTokenData {
-    private final Long userId;
-    private final String username;
-    private final String email;
-    private final String firstName;
-    private final String lastName;
-    private final Boolean isActive;
-    private final List<String> roles;
-
-    public UserTokenData(
-        Long userId,
-        String username,
-        String email,
-        String firstName,
-        String lastName,
-        Boolean isActive,
-        List<String> roles) {
-      this.userId = userId;
-      this.username = username;
-      this.email = email;
-      this.firstName = firstName;
-      this.lastName = lastName;
-      this.isActive = isActive;
-      this.roles = roles;
-    }
-
-    // Getters
-    public Long getUserId() {
-      return userId;
-    }
-
-    public String getUsername() {
-      return username;
-    }
-
-    public String getEmail() {
-      return email;
-    }
-
-    public String getFirstName() {
-      return firstName;
-    }
-
-    public String getLastName() {
-      return lastName;
-    }
-
-    public Boolean getIsActive() {
-      return isActive;
-    }
-
-    public List<String> getRoles() {
-      return roles;
-    }
-  }
+  public static record UserTokenData(
+      UUID userId,
+      String username,
+      String email,
+      String firstName,
+      String lastName,
+      Boolean isActive,
+      List<String> roles) {}
 
   /** Безпечне виконання операції з токеном (generic exception handler). */
   private <T> T safeTokenOperation(

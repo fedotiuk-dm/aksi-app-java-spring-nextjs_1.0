@@ -24,17 +24,13 @@ import com.aksi.domain.client.enums.ClientSourceType;
  */
 @Repository
 public interface ClientRepository
-    extends JpaRepository<ClientEntity, Long>, JpaSpecificationExecutor<ClientEntity> {
+    extends JpaRepository<ClientEntity, UUID>, JpaSpecificationExecutor<ClientEntity> {
 
   // ==============================
   // БАЗОВІ МЕТОДИ ПОШУКУ (Derived Methods)
   // ==============================
 
-  /** Пошук клієнта за UUID (для API сумісності). */
-  Optional<ClientEntity> findByUuid(UUID uuid);
-
-  /** Перевірка існування клієнта за UUID. */
-  boolean existsByUuid(UUID uuid);
+  // findById(UUID) та existsById(UUID) успадковані з JpaRepository
 
   /** Пошук клієнта за номером телефону. */
   Optional<ClientEntity> findByPhone(String phone);

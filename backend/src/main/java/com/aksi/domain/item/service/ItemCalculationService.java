@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -186,7 +187,7 @@ public class ItemCalculationService {
 
   private PriceListItemEntity findPriceListItem(UUID priceListItemId) {
     return priceListItemRepository
-        .findByUuid(priceListItemId)
+        .findById(priceListItemId)
         .orElseThrow(() -> new PriceListItemNotFoundException(priceListItemId));
   }
 
@@ -196,7 +197,7 @@ public class ItemCalculationService {
       return new ArrayList<>();
     }
 
-    return priceModifierRepository.findByUuidIn(request.getAppliedModifiers()).stream()
+    return priceModifierRepository.findByIdIn(request.getAppliedModifiers()).stream()
         .filter(PriceModifierEntity::isActiveModifier)
         .toList();
   }
@@ -229,7 +230,8 @@ public class ItemCalculationService {
     response.setCalculationSteps(result.getSteps());
 
     // Попередження щодо кольору (якщо є кольорове ціноутворення)
-    addColorPricingWarnings(response, priceListItem, request);
+    List<String> warnings = addColorPricingWarnings(priceListItem, request);
+    response.setWarnings(warnings);
 
     return response;
   }
@@ -242,22 +244,18 @@ public class ItemCalculationService {
     return priceListItem.getPriceByColor(isBlack);
   }
 
-  /** Додати попередження щодо кольорового ціноутворення. */
-  private void addColorPricingWarnings(
-      ItemCalculationResponse response,
-      PriceListItemEntity priceListItem,
-      ItemCalculationRequest request) {
+  private List<String> addColorPricingWarnings(
+      PriceListItemEntity priceListItem, ItemCalculationRequest request) {
+    List<String> warnings = new ArrayList<>();
     if (priceListItem.hasColorSpecificPricing()) {
-      List<String> warnings = new ArrayList<>();
 
       String color = request.getCharacteristics().getColor();
       warnings.add("Застосовано кольорове ціноутворення для кольору: " + color);
 
       if (priceListItem.getPriceBlack() != null) {
         warnings.add(
-            "Доступна спеціальна ціна для чорного кольору: "
-                + priceListItem.getPriceBlack()
-                + " грн");
+            "Доступна спеціальна ціна для чорного кольору: %.2f грн"
+                .formatted(priceListItem.getPriceBlack()));
       }
 
       if (priceListItem.getPriceColor() != null) {
@@ -266,9 +264,8 @@ public class ItemCalculationService {
                 + priceListItem.getPriceColor()
                 + " грн");
       }
-
-      response.setWarnings(warnings);
     }
+    return warnings;
   }
 
   private Double calculateUrgencyCharge(Double itemsTotal, UrgencyType urgency) {
@@ -292,10 +289,10 @@ public class ItemCalculationService {
     }
 
     // Розрахувати знижку на основі типу
-    Double totalEligibleAmount =
+    double totalEligibleAmount =
         itemCalculations.stream().mapToDouble(ItemCalculationResponse::getSubtotal).sum();
 
-    return switch (discount.getType()) {
+    return switch (Objects.requireNonNull(discount.getType())) {
       case NONE -> 0.0; // Без знижки
       case EVERCARD -> totalEligibleAmount * 0.10; // 10% знижка
       case SOCIAL_MEDIA -> totalEligibleAmount * 0.05; // 5% знижка

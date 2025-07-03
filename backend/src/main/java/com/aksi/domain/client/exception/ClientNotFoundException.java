@@ -13,8 +13,8 @@ public class ClientNotFoundException extends RuntimeException {
     super(message, cause);
   }
 
-  public static ClientNotFoundException byId(Long id) {
-    return new ClientNotFoundException("Клієнт з ID " + id + " не знайдений");
+  public static ClientNotFoundException byId(UUID id) {
+    return new ClientNotFoundException("Клієнт не знайдений з ID: " + id);
   }
 
   public static ClientNotFoundException byUuid(UUID uuid) {

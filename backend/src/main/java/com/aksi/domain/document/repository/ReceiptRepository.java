@@ -19,7 +19,7 @@ import com.aksi.domain.document.entity.ReceiptEntity;
 /** Repository для роботи з квитанціями з JPA Specification підтримкою. */
 @Repository
 public interface ReceiptRepository
-    extends JpaRepository<ReceiptEntity, Long>, JpaSpecificationExecutor<ReceiptEntity> {
+    extends JpaRepository<ReceiptEntity, UUID>, JpaSpecificationExecutor<ReceiptEntity> {
 
   // Basic finders
   Optional<ReceiptEntity> findByReceiptNumber(String receiptNumber);

@@ -165,13 +165,6 @@
             <version>3.5.0</version>
         </dependency>
 
-        <!-- Apache Velocity for code generation -->
-        <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity-engine-core</artifactId>
-            <version>2.3</version>
-        </dependency>
-
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -198,37 +191,6 @@
         </dependency>
     </dependencies>
     <build>
-        <pluginManagement>
-            <plugins>
-                <!-- Lifecycle mapping для Eclipse IDE -->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
-                                        <artifactId>exec-maven-plugin</artifactId>
-                                        <versionRange>[3.0.0,]</versionRange>
-                                        <goals>
-                                            <goal>java</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute>
-                                            <runOnIncremental>false</runOnIncremental>
-                                        </execute>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
 
         <plugins>
             <plugin>
@@ -291,7 +253,6 @@
                         <configuration>
                             <sources>
                                 <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
-                                <source>${project.build.directory}/generated-sources/domain</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -302,32 +263,35 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>7.8.0</version>
+                <version>7.13.0</version>
                 <configuration>
-                    <skip>${openapi.skip}</skip>
+                    <!-- Вимикаємо post-processing - використовуємо Spotless замість цього -->
+                    <enablePostProcessFile>false</enablePostProcessFile>
                 </configuration>
                 <executions>
                     <!-- Auth API -->
                     <execution>
                         <id>generate-auth-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/resources/openapi/auth-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <output>${project.build.directory}/generated-sources/openapi</output>
                             <apiPackage>com.aksi.api.auth</apiPackage>
                             <modelPackage>com.aksi.api.auth.dto</modelPackage>
                             <configOptions>
-                                <sourceFolder>src/main/java</sourceFolder>
-                                <delegatePattern>false</delegatePattern>
                                 <interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -335,24 +299,26 @@
                     <!-- Client API -->
                     <execution>
                         <id>generate-client-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/resources/openapi/client-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <output>${project.build.directory}/generated-sources/openapi</output>
                             <apiPackage>com.aksi.api.client</apiPackage>
                             <modelPackage>com.aksi.api.client.dto</modelPackage>
                             <configOptions>
-                                <sourceFolder>src/main/java</sourceFolder>
-                                <delegatePattern>false</delegatePattern>
                                 <interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -360,24 +326,26 @@
                     <!-- Order API -->
                     <execution>
                         <id>generate-order-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/resources/openapi/order-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <output>${project.build.directory}/generated-sources/openapi</output>
                             <apiPackage>com.aksi.api.order</apiPackage>
                             <modelPackage>com.aksi.api.order.dto</modelPackage>
                             <configOptions>
-                                <sourceFolder>src/main/java</sourceFolder>
-                                <delegatePattern>false</delegatePattern>
                                 <interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -385,24 +353,26 @@
                     <!-- Item API -->
                     <execution>
                         <id>generate-item-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/resources/openapi/item-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <output>${project.build.directory}/generated-sources/openapi</output>
                             <apiPackage>com.aksi.api.item</apiPackage>
                             <modelPackage>com.aksi.api.item.dto</modelPackage>
                             <configOptions>
-                                <sourceFolder>src/main/java</sourceFolder>
-                                <delegatePattern>false</delegatePattern>
                                 <interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -410,24 +380,26 @@
                     <!-- Branch API -->
                     <execution>
                         <id>generate-branch-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/resources/openapi/branch-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <output>${project.build.directory}/generated-sources/openapi</output>
                             <apiPackage>com.aksi.api.branch</apiPackage>
                             <modelPackage>com.aksi.api.branch.dto</modelPackage>
                             <configOptions>
-                                <sourceFolder>src/main/java</sourceFolder>
-                                <delegatePattern>false</delegatePattern>
                                 <interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -435,24 +407,26 @@
                     <!-- Document API -->
                     <execution>
                         <id>generate-document-api</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/resources/openapi/document-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <output>${project.build.directory}/generated-sources/openapi</output>
                             <apiPackage>com.aksi.api.document</apiPackage>
                             <modelPackage>com.aksi.api.document.dto</modelPackage>
                             <configOptions>
-                                <sourceFolder>src/main/java</sourceFolder>
-                                <delegatePattern>false</delegatePattern>
                                 <interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <useTags>true</useTags>
                                 <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -507,28 +481,19 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>${maven-pmd-plugin.version}</version>
                 <configuration>
-                    <!-- Збільшуємо мінімум токенів для фокусу на реальних проблемах -->
-                    <minimumTokens>50</minimumTokens>
+                    <minimumTokens>30</minimumTokens>
                     <skipEmptyReport>false</skipEmptyReport>
                     <analysisCache>true</analysisCache>
                     <printFailingErrors>true</printFailingErrors>
                     <linkXRef>false</linkXRef>
                     <failOnViolation>false</failOnViolation>
-                    <!-- Виключення природних дублювань архітектури -->
+                    <!-- Виключення контролерів з CPD -->
                     <excludes>
-                        <!-- API Controllers - містять схожу HTTP логіку -->
                         <exclude>**/api/**/*Controller.java</exclude>
                         <exclude>**/util/ApiResponseUtils.java</exclude>
-                        <!-- MapStruct маппери - схожі конвертації -->
-                        <exclude>**/mapper/**/*Mapper.java</exclude>
-                        <!-- JPA Specifications - схожі query методи -->
-                        <exclude>**/repository/**/*Specification.java</exclude>
-                        <!-- Entity класи - схожі базові поля/методи -->
-                        <exclude>**/entity/**/*Entity.java</exclude>
-                        <!-- DTO класи - схожі структури -->
-                        <exclude>**/dto/**/*.java</exclude>
-                        <!-- Enum класи - схожі методи -->
-                        <exclude>**/enums/**/*.java</exclude>
+                        <exclude>**/target/**/*</exclude>
+                        <exclude>target/**</exclude>
+                        <exclude>**/generated-sources/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -575,35 +540,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Додаємо Code Generation Plugin -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.5.1</version>
-                <executions>
-                    <execution>
-                        <id>generate-domain-components</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>com.aksi.tools.DomainCodeGenerator</mainClass>
-                            <includeProjectDependencies>true</includeProjectDependencies>
-                            <includePluginDependencies>false</includePluginDependencies>
-                            <args>
-                                <arg>--scan-entities</arg>
-                                <arg>src/main/java/com/aksi/domain</arg>
-                                <arg>--output-dir</arg>
-                                <arg>target/generated-sources/domain</arg>
-                                <arg>--generate</arg>
-                                <arg>repositories,mappers,services</arg>
-                            </args>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -621,8 +557,9 @@
                 <maven.test.skip>true</maven.test.skip>
                 <!-- Пропускаємо checkstyle -->
                 <checkstyle.skip>true</checkstyle.skip>
-                <!-- Пропускаємо PMD -->
+                <!-- Пропускаємо PMD і CPD -->
                 <pmd.skip>true</pmd.skip>
+                <cpd.skip>true</cpd.skip>
                 <!-- Залишаємо spotless для OpenAPI файлів -->
                 <spotless.skip>false</spotless.skip>
             </properties>
@@ -636,6 +573,7 @@
                 <maven.test.skip>true</maven.test.skip>
                 <checkstyle.skip>true</checkstyle.skip>
                 <pmd.skip>true</pmd.skip>
+                <cpd.skip>true</cpd.skip>
                 <spotless.skip>true</spotless.skip>
             </properties>
             <build>
@@ -682,6 +620,7 @@
                 <skipTests>false</skipTests>
                 <checkstyle.skip>false</checkstyle.skip>
                 <pmd.skip>false</pmd.skip>
+                <cpd.skip>false</cpd.skip>
                 <spotless.skip>false</spotless.skip>
             </properties>
         </profile>

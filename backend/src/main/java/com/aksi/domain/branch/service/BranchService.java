@@ -68,7 +68,6 @@ public class BranchService {
     // Оновлюємо поля з request
     BranchEntity updatedEntity = branchMapper.toEntityForUpdate(request);
     updatedEntity.setId(existingEntity.getId());
-    updatedEntity.setUuid(existingEntity.getUuid());
     updatedEntity.setReceiptCounter(existingEntity.getReceiptCounter());
     updatedEntity.setStatus(existingEntity.getStatus()); // зберігаємо поточний статус
 

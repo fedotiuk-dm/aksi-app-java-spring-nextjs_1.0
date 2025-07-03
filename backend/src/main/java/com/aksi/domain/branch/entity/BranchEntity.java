@@ -1,7 +1,5 @@
 package com.aksi.domain.branch.entity;
 
-import java.util.UUID;
-
 import com.aksi.domain.branch.enums.BranchStatus;
 import com.aksi.shared.BaseEntity;
 
@@ -25,7 +23,6 @@ import lombok.ToString;
     name = "branches",
     indexes = {
       @Index(name = "idx_branch_code", columnList = "code", unique = true),
-      @Index(name = "idx_branch_uuid", columnList = "uuid"),
       @Index(name = "idx_branch_status", columnList = "status"),
       @Index(name = "idx_branch_coordinates", columnList = "latitude, longitude")
     })
@@ -36,14 +33,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class BranchEntity extends BaseEntity {
-
-  /**
-   * UUID для API сумісності (зовнішній ідентифікатор) Внутрішньо використовуємо Long id з
-   * BaseEntity.
-   */
-  @Column(name = "uuid", nullable = false, unique = true, updatable = false)
-  @Builder.Default
-  private UUID uuid = UUID.randomUUID();
 
   @Column(name = "code", nullable = false, unique = true, length = 20)
   private String code;

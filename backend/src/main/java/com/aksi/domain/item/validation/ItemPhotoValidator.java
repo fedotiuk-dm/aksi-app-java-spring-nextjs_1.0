@@ -48,7 +48,7 @@ public class ItemPhotoValidator {
   public void validateForDelete(UUID photoUuid) {
     var photo =
         itemPhotoRepository
-            .findByUuid(photoUuid)
+            .findById(photoUuid)
             .orElseThrow(
                 () ->
                     ItemValidationException.businessRuleViolation(

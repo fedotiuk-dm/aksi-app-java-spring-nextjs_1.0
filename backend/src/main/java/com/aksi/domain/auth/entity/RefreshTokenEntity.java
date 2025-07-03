@@ -1,6 +1,7 @@
 package com.aksi.domain.auth.entity;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.aksi.shared.BaseEntity;
 
@@ -38,7 +39,7 @@ public class RefreshTokenEntity extends BaseEntity {
   private String token;
 
   @Column(name = "user_id", nullable = false)
-  private Long userId;
+  private UUID userId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -48,10 +49,9 @@ public class RefreshTokenEntity extends BaseEntity {
   private LocalDateTime expiresAt;
 
   @Column(name = "is_active", nullable = false)
-  @Builder.Default
-  private Boolean isActive = true;
+  private Boolean isActive;
 
-  @Column(name = "device_info", length = 255)
+  @Column(name = "device_info")
   private String deviceInfo;
 
   @Column(name = "ip_address", length = 45)

@@ -1,7 +1,6 @@
 package com.aksi.domain.item.mapper;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,14 +16,13 @@ import com.aksi.domain.item.entity.ServiceCategoryEntity;
 public interface ServiceCategoryMapper {
 
   // DTO → Entity (для create)
-  @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "items", ignore = true)
   @Mapping(target = "availableMaterials", ignore = true)
   @Mapping(target = "availableModifiers", ignore = true)
   ServiceCategoryEntity toEntity(CreateServiceCategoryRequest request);
 
   // Entity → DTO (для response)
-  @Mapping(source = "uuid", target = "id")
+  @Mapping(source = "id", target = "id")
   @Mapping(source = "items", target = "itemsCount", qualifiedByName = "itemsToCount")
   ServiceCategoryResponse toResponse(ServiceCategoryEntity entity);
 
@@ -36,7 +34,6 @@ public interface ServiceCategoryMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
-  @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "code", ignore = true) // Код не змінюється при оновленні
   @Mapping(target = "items", ignore = true)
   @Mapping(target = "availableMaterials", ignore = true)
@@ -50,14 +47,5 @@ public interface ServiceCategoryMapper {
   @Named("itemsToCount")
   default Integer itemsToCount(List<?> items) {
     return items != null ? items.size() : 0;
-  }
-
-  // UUID → Long conversion (для внутрішньої логіки якщо потрібно)
-  default Long uuidToLong(UUID uuid) {
-    return uuid != null ? uuid.getMostSignificantBits() : null;
-  }
-
-  default UUID longToUuid(Long id) {
-    return id != null ? new UUID(id, 0L) : null;
   }
 }

@@ -9,59 +9,79 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Repository для ${domainName}
+ * Repository для роботи з ${domainName}
+ * Використовує JpaSpecificationExecutor для type-safe dynamic queries
+ *
+ * <p>ПРИНЦИПИ:
+ * 1. Складні динамічні запити → ${domainName}Specification
+ * 2. Прості запити → derived methods (findBy*, countBy*, existsBy*)
+ * 3. Специфічні запити → @Query (тільки коли необхідно, як quickSearch)
+ *
  * Автоматично згенеровано Domain Code Generator
  */
 @Repository
 public interface ${domainName}Repository extends JpaRepository<${className}, Long>, JpaSpecificationExecutor<${className}> {
 
-    /**
-     * Знаходить ${domainName} за UUID
-     */
-    Optional<${className}> findByUuid(UUID uuid);
+  // ==============================
+  // БАЗОВІ МЕТОДИ ПОШУКУ (Derived Methods)
+  // ==============================
 
-    /**
-     * Перевіряє чи існує ${domainName} з таким UUID
-     */
-    boolean existsByUuid(UUID uuid);
+  /** Пошук ${domainNameLower} за UUID (для API сумісності). */
+  Optional<${className}> findByUuid(UUID uuid);
 
-    /**
-     * Видаляє ${domainName} за UUID
-     */
-    void deleteByUuid(UUID uuid);
+  /** Перевірка існування ${domainNameLower} за UUID. */
+  boolean existsByUuid(UUID uuid);
+
+#foreach($field in $searchableFields)
+#if($field.type == "String")
+  /** Пошук ${domainNameLower} за ${field.name}. */
+  Optional<${className}> findBy${field.name.substring(0,1).toUpperCase()}${field.name.substring(1)}(String ${field.name});
+
+  /** Перевірка існування ${domainNameLower} з таким ${field.name}. */
+  boolean existsBy${field.name.substring(0,1).toUpperCase()}${field.name.substring(1)}(String ${field.name});
+
+#end
+#end
+
+  // ==============================
+  // СПЕЦІАЛЬНІ @QUERY МЕТОДИ
+  // ==============================
 
 #if($searchableFields && $searchableFields.size() > 0)
-    /**
-     * Швидкий пошук ${domainName} за текстом
-     */
-    @Query("SELECT e FROM ${className} e WHERE " +
+  /**
+   * Швидкий пошук ${domainNameLower} за текстом з null safety
+   */
+  @Query("""
+        SELECT e FROM ${className} e
+        WHERE :query IS NOT NULL AND :query != '' AND (
+#set($stringFields = [])
 #foreach($field in $searchableFields)
 #if($field.type == "String")
-           "LOWER(e.${field.name}) LIKE LOWER(CONCAT('%', :query, '%'))"#if($foreach.hasNext) + " OR " +#end
-#elseif($field.type == "UUID")
-           "CAST(e.${field.name} as string) LIKE CONCAT('%', :query, '%')"#if($foreach.hasNext) + " OR " +#end
+#set($ignored = $stringFields.add($field))
 #end
 #end
-)
-    Page<${className}> quickSearch(@Param("query") String query, Pageable pageable);
-
-#foreach($field in $searchableFields)
-#if($field.type == "String")
-    /**
-     * Знаходить ${domainName} за ${field.name}
-     */
-    Optional<${className}> findBy${field.name.substring(0,1).toUpperCase()}${field.name.substring(1)}(String ${field.name});
-
-    /**
-     * Перевіряє чи існує ${domainName} з таким ${field.name}
-     */
-    boolean existsBy${field.name.substring(0,1).toUpperCase()}${field.name.substring(1)}(String ${field.name});
-
+#if($stringFields.size() > 0)
+#foreach($field in $stringFields)
+            LOWER(COALESCE(e.${field.name}, '')) LIKE LOWER(CONCAT('%', :query, '%'))#if($foreach.hasNext)
+            OR #end
 #end
+#else
+            1=0
 #end
+        )
+        ORDER BY#if($searchableFields.size() > 0) e.${searchableFields.get(0).name}#else e.id#end
+        """)
+  Page<${className}> quickSearch(@Param("query") String query, Pageable pageable);
+#else
+  /**
+   * Базовий пошук за ID (fallback коли немає searchable полів)
+   */
+  @Query("SELECT e FROM ${className} e WHERE e.id = :id")
+  Page<${className}> quickSearch(@Param("query") String query, Pageable pageable);
 #end
 }

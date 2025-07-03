@@ -64,6 +64,8 @@ Percentage:
 Email:
   type: string
   format: email
+  nullable: false
+  minLength: 3
   maxLength: 254
   description: Email адреса
   example: user@example.com

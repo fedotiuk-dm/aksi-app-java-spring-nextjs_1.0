@@ -2,8 +2,6 @@ package com.aksi.domain.item.entity;
 
 import java.util.UUID;
 
-import org.hibernate.annotations.UuidGenerator;
-
 import com.aksi.shared.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -31,10 +29,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ItemPhotoEntity extends BaseEntity {
-
-  @Column(name = "uuid", updatable = false, nullable = false, unique = true)
-  @UuidGenerator
-  private UUID uuid;
 
   @Column(name = "item_id", nullable = false)
   private UUID itemId; // посилання на предмет замовлення

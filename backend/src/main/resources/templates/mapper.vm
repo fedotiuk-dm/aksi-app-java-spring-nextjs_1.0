@@ -1,9 +1,10 @@
 package ${packageName}.mapper;
 
 import ${packageName}.entity.${className};
-import com.aksi.api.${domainNameLower}.dto.Create${domainName}Request;
-import com.aksi.api.${domainNameLower}.dto.Update${domainName}Request;
-import com.aksi.api.${domainNameLower}.dto.${domainName}Response;
+import com.aksi.api.${apiPackageName}.dto.Create${domainName}Request;
+import com.aksi.api.${apiPackageName}.dto.Update${domainName}Request;
+import com.aksi.api.${apiPackageName}.dto.${domainName}Response;
+import com.aksi.shared.mapper.BaseMapperConfig;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -14,38 +15,45 @@ import org.mapstruct.ReportingPolicy;
 import java.util.List;
 
 /**
- * MapStruct Mapper для ${domainName}
+ * MapStruct mapper для конвертації між Entity та DTO
+ * Базується на реальних згенерованих OpenAPI DTO.
+ *
  * Автоматично згенеровано Domain Code Generator
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(
+    componentModel = "spring",
+    uses = {BaseMapperConfig.class},
+    unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ${domainName}Mapper {
 
-    /**
-     * Конвертує CreateRequest в Entity
-     */
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "uuid", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    ${className} toEntity(Create${domainName}Request request);
+  // DTO → Entity mappings (для create/update)
 
-    /**
-     * Конвертує Entity в Response
-     */
-    ${domainName}Response toResponse(${className} entity);
+  /**
+   * Конвертація Create${domainName}Request → ${className}
+   * BaseEntity поля автоматично ігноруються через BaseMapperConfig.
+   */
+  ${className} toEntity(Create${domainName}Request request);
 
-    /**
-     * Конвертує список Entity в список Response
-     */
-    List<${domainName}Response> toResponseList(List<${className}> entities);
+  /** Оновлення існуючого ${className} з Update${domainName}Request. */
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+  void updateEntityFromRequest(Update${domainName}Request request, @MappingTarget ${className} entity);
 
-    /**
-     * Оновлює Entity з UpdateRequest (тільки non-null поля)
-     */
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "uuid", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    void updateEntityFromRequest(Update${domainName}Request request, @MappingTarget ${className} entity);
+  // Entity → DTO mappings (для response)
+
+  /** Конвертація ${className} → ${domainName}Response. */
+  @Mapping(target = "id", source = "uuid")
+  @Mapping(
+      target = "createdAt",
+      source = "createdAt",
+      qualifiedByName = "localDateTimeToOffsetDateTime")
+  @Mapping(
+      target = "updatedAt",
+      source = "updatedAt",
+      qualifiedByName = "localDateTimeToOffsetDateTime")
+  ${domainName}Response toResponse(${className} entity);
+
+  // List mappings
+
+  /** Конвертація списку Entity → список Response. */
+  List<${domainName}Response> toResponseList(List<${className}> entities);
 }

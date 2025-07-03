@@ -11,12 +11,16 @@ public class DigitalSignatureNotFoundException extends RuntimeException {
     super(message);
   }
 
-  public DigitalSignatureNotFoundException(String message, Throwable cause) {
-    super(message, cause);
+  public DigitalSignatureNotFoundException(UUID id) {
+    super("Цифровий підпис не знайдений з ID: " + id);
   }
 
-  public DigitalSignatureNotFoundException(Long id) {
-    super("Цифровий підпис з ID " + id + " не знайдений");
+  public DigitalSignatureNotFoundException(String field, String value) {
+    super("Цифровий підпис не знайдений з " + field + ": " + value);
+  }
+
+  public DigitalSignatureNotFoundException(String message, Throwable cause) {
+    super(message, cause);
   }
 
   public static DigitalSignatureNotFoundException byDocumentIdAndType(

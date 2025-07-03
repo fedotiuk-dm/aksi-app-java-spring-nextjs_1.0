@@ -10,8 +10,7 @@ databaseChangeLog:
               # BaseEntity поля
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -117,7 +116,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: false
               - column:
@@ -156,8 +155,7 @@ databaseChangeLog:
               # BaseEntity поля
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -183,7 +181,7 @@ databaseChangeLog:
                     unique: true
               - column:
                   name: user_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: false
               - column:
@@ -192,9 +190,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: is_used
+                  name: is_active
                   type: BOOLEAN
-                  defaultValue: "false"
+                  defaultValue: "true"
                   constraints:
                     nullable: false
               - column:
@@ -232,11 +230,11 @@ databaseChangeLog:
               - column:
                   name: expires_at
         - createIndex:
-            indexName: idx_refresh_token_is_used
+            indexName: idx_refresh_token_is_active
             tableName: refresh_tokens
             columns:
               - column:
-                  name: is_used
+                  name: is_active
 
   # Додавання check constraints для enum полів
   - changeSet:
@@ -284,5 +282,5 @@ databaseChangeLog:
             remarks: "JWT refresh токен"
         - setColumnRemarks:
             tableName: refresh_tokens
-            columnName: is_used
-            remarks: "Чи використаний токен (для безпеки)"
+            columnName: is_active
+            remarks: "Чи активний токен (для безпеки)"

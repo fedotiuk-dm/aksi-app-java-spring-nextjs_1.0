@@ -4,22 +4,28 @@ import ${packageName}.entity.${className};
 import ${packageName}.repository.${domainName}Repository;
 import ${packageName}.mapper.${domainName}Mapper;
 import ${packageName}.validation.${domainName}Validator;
-import com.aksi.api.${domainNameLower}.dto.Create${domainName}Request;
-import com.aksi.api.${domainNameLower}.dto.Update${domainName}Request;
-import com.aksi.api.${domainNameLower}.dto.${domainName}Response;
+import ${packageName}.exception.${domainName}NotFoundException;
+import com.aksi.api.${apiPackageName}.dto.Create${domainName}Request;
+import com.aksi.api.${apiPackageName}.dto.Update${domainName}Request;
+import com.aksi.api.${apiPackageName}.dto.${domainName}Response;
 import com.aksi.shared.service.BaseService;
 import com.aksi.shared.service.EntityCreationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
- * Service для ${domainName}
+ * ${domainName} Service з API-First підходом
+ * Наслідує BaseService для CRUD операцій + додає API методи
+ *
  * Автоматично згенеровано Domain Code Generator
  */
 @Slf4j
@@ -28,103 +34,98 @@ import java.util.UUID;
 @Transactional
 public class ${domainName}Service extends BaseService<${className}, Long, ${domainName}Repository> {
 
-    private final ${domainName}Repository repository;
-    private final ${domainName}Mapper mapper;
-    private final ${domainName}Validator validator;
+  private final ${domainName}Repository repository;
+  private final ${domainName}Mapper mapper;
+  private final ${domainName}Validator validator;
 
-    public ${domainName}Service(${domainName}Repository repository, ${domainName}Mapper mapper, ${domainName}Validator validator) {
-        super(repository);
-        this.repository = repository;
-        this.mapper = mapper;
-        this.validator = validator;
+  // Константи для уникнення magic numbers
+  private static final int DEFAULT_PAGE_SIZE = 20;
+  private static final int DEFAULT_SEARCH_LIMIT = 10;
+  private static final String DEFAULT_SORT_FIELD = "id";
+
+  // Конструктор для BaseService
+  public ${domainName}Service(${domainName}Repository repository, ${domainName}Mapper mapper, ${domainName}Validator validator) {
+    super(repository);
+    this.repository = repository;
+    this.mapper = mapper;
+    this.validator = validator;
+  }
+
+  // ==============================
+  // API МЕТОДИ (DTO ↔ DTO)
+  // ==============================
+
+  /** POST /api/${domainNameLower}s. */
+  public ${domainName}Response create${domainName}(Create${domainName}Request request) {
+    log.info("Створення нового ${domainName}: {}", request);
+
+    ${className} entity = mapper.toEntity(request);
+    validator.validateForCreate(entity);
+    EntityCreationHelper.setRandomUuid(entity);
+
+    ${className} savedEntity = save(entity);
+    return mapper.toResponse(savedEntity);
+  }
+
+  /** GET /api/${domainNameLower}s/{id}. */
+  @Transactional(readOnly = true)
+  public ${domainName}Response get${domainName}ById(UUID uuid) {
+    log.debug("Отримання ${domainName} за UUID: {}", uuid);
+
+    ${className} entity = findByUuidOrThrow(uuid);
+    return mapper.toResponse(entity);
+  }
+
+  /** PUT /api/${domainNameLower}s/{id}. */
+  public ${domainName}Response update${domainName}(UUID uuid, Update${domainName}Request request) {
+    log.info("Оновлення ${domainName} {}: {}", uuid, request);
+
+    ${className} existingEntity = findByUuidOrThrow(uuid);
+    mapper.updateEntityFromRequest(request, existingEntity);
+    validator.validateForUpdate(existingEntity);
+
+    ${className} updatedEntity = save(existingEntity);
+    return mapper.toResponse(updatedEntity);
+  }
+
+  /** DELETE /api/${domainNameLower}s/{id}. */
+  public void delete${domainName}(UUID uuid) {
+    log.info("Видалення ${domainName}: {}", uuid);
+
+    ${className} entity = findByUuidOrThrow(uuid);
+    validator.validateForDeletion(entity);
+    delete(entity);
+  }
+
+#if($searchableFields && $searchableFields.size() > 0)
+  /** GET /api/${domainNameLower}s/search. */
+  @Transactional(readOnly = true)
+  public Page<${domainName}Response> search${domainName}s(String query, Pageable pageable) {
+    log.debug("Швидкий пошук ${domainName}: query='{}', page={}", query, pageable);
+
+    // Валідація query (узгоджено з @Query логікою в quickSearch)
+    if (query == null || query.trim().isEmpty()) {
+      return Page.empty(pageable);
     }
 
-    // =========================
-    // API METHODS (DTO ↔ DTO)
-    // =========================
+    Page<${className}> entities = repository.quickSearch(query.trim(), pageable);
+    return entities.map(mapper::toResponse);
+  }
+#end
 
-    /**
-     * Створює новий ${domainName}
-     */
-    public ${domainName}Response create${domainName}(Create${domainName}Request request) {
-        log.info("Створення нового ${domainName}: {}", request);
+  // ==============================
+  // ENTITY МЕТОДИ (Internal Use)
+  // ==============================
 
-        validator.validateForCreate(request);
+  /** Знаходить Entity за UUID або кидає виключення. */
+  public ${className} findByUuidOrThrow(UUID uuid) {
+    return repository.findByUuid(uuid)
+        .orElseThrow(() -> ${domainName}NotFoundException.byUuid(uuid));
+  }
 
-        ${className} entity = mapper.toEntity(request);
-        EntityCreationHelper.setRandomUuid(entity);
-
-        ${className} savedEntity = save(entity);
-
-        return mapper.toResponse(savedEntity);
-    }
-
-    /**
-     * Оновлює існуючий ${domainName}
-     */
-    public ${domainName}Response update${domainName}(UUID uuid, Update${domainName}Request request) {
-        log.info("Оновлення ${domainName} {}: {}", uuid, request);
-
-        ${className} entity = findByUuidOrThrow(uuid);
-        validator.validateForUpdate(entity, request);
-
-        mapper.updateEntityFromRequest(request, entity);
-        ${className} updatedEntity = save(entity);
-
-        return mapper.toResponse(updatedEntity);
-    }
-
-    /**
-     * Отримує ${domainName} за UUID
-     */
-    @Transactional(readOnly = true)
-    public ${domainName}Response get${domainName}ByUuid(UUID uuid) {
-        log.debug("Отримання ${domainName} за UUID: {}", uuid);
-
-        ${className} entity = findByUuidOrThrow(uuid);
-        return mapper.toResponse(entity);
-    }
-
-    /**
-     * Видаляє ${domainName} за UUID
-     */
-    public void delete${domainName}(UUID uuid) {
-        log.info("Видалення ${domainName}: {}", uuid);
-
-        ${className} entity = findByUuidOrThrow(uuid);
-        validator.validateForDelete(entity);
-
-        delete(entity);
-    }
-
-    /**
-     * Швидкий пошук ${domainName}
-     */
-    @Transactional(readOnly = true)
-    public Page<${domainName}Response> quickSearch(String query, Pageable pageable) {
-        log.debug("Швидкий пошук ${domainName}: query='{}', page={}", query, pageable);
-
-        Page<${className}> entities = repository.quickSearch(query, pageable);
-        return entities.map(mapper::toResponse);
-    }
-
-    // ==============================
-    // ENTITY METHODS (Internal Use)
-    // ==============================
-
-    /**
-     * Знаходить Entity за UUID або кидає виключення
-     */
-    public ${className} findByUuidOrThrow(UUID uuid) {
-        return repository.findByUuid(uuid)
-                        .orElseThrow(() -> new ${domainName}NotFoundException("${domainName} не знайдено: " + uuid));
-    }
-
-    /**
-     * Перевіряє чи існує ${domainName} з таким UUID
-     */
-    @Transactional(readOnly = true)
-    public boolean existsByUuid(UUID uuid) {
-        return repository.existsByUuid(uuid);
-    }
+  /** Перевіряє чи існує ${domainName} з таким UUID. */
+  @Transactional(readOnly = true)
+  public boolean existsByUuid(UUID uuid) {
+    return repository.existsByUuid(uuid);
+  }
 }

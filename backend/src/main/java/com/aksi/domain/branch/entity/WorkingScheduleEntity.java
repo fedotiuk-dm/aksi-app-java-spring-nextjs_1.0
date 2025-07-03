@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.aksi.shared.BaseEntity;
 
@@ -29,10 +28,7 @@ import lombok.ToString;
 @Entity
 @Table(
     name = "working_schedules",
-    indexes = {
-      @Index(name = "idx_working_schedule_branch", columnList = "branch_id"),
-      @Index(name = "idx_working_schedule_uuid", columnList = "uuid")
-    })
+    indexes = {@Index(name = "idx_working_schedule_branch", columnList = "branch_id")})
 @Data
 @Builder
 @NoArgsConstructor
@@ -42,14 +38,6 @@ import lombok.ToString;
     callSuper = true,
     exclude = {"workingDays", "holidays"})
 public class WorkingScheduleEntity extends BaseEntity {
-
-  /**
-   * UUID для API сумісності (зовнішній ідентифікатор) Внутрішньо використовуємо Long id з
-   * BaseEntity.
-   */
-  @Column(name = "uuid", nullable = false, unique = true, updatable = false)
-  @Builder.Default
-  private UUID uuid = UUID.randomUUID();
 
   @OneToOne
   @JoinColumn(name = "branch_id", nullable = false)

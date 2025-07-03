@@ -16,17 +16,16 @@ import com.aksi.domain.branch.entity.WorkingScheduleEntity;
  */
 @Repository
 public interface WorkingScheduleRepository
-    extends JpaRepository<WorkingScheduleEntity, Long>,
+    extends JpaRepository<WorkingScheduleEntity, UUID>,
         JpaSpecificationExecutor<WorkingScheduleEntity> {
 
-  /** Знаходить розклад за UUID. */
-  Optional<WorkingScheduleEntity> findByUuid(UUID uuid);
+  // findById(UUID) успадкований з JpaRepository
 
-  /** Знаходить розклад за UUID філії. */
-  Optional<WorkingScheduleEntity> findByBranchUuid(UUID branchUuid);
+  /** Знаходить розклад за ID філії. */
+  Optional<WorkingScheduleEntity> findByBranchId(UUID branchId);
 
-  /** Перевіряє чи існує розклад для філії за UUID. */
-  boolean existsByBranchUuid(UUID branchUuid);
+  /** Перевіряє чи існує розклад для філії за ID. */
+  boolean existsByBranchId(UUID branchId);
 
   /** Знаходить всі розклади з певним часовим поясом. */
   List<WorkingScheduleEntity> findByTimezone(String timezone);

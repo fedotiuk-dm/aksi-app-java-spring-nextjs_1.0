@@ -46,7 +46,7 @@ public class PriceListItemService {
     validateCategoryExists(request.getCategoryId());
 
     var entity = mapper.toEntity(request);
-    entity.setUuid(UUID.randomUUID());
+    // UUID генерується автоматично через @UuidGenerator в BaseEntity
 
     var savedEntity = repository.save(entity);
     return enrichAndMapToResponse(savedEntity);
@@ -54,14 +54,14 @@ public class PriceListItemService {
 
   /** Отримати позицію за UUID. */
   @Transactional(readOnly = true)
-  public PriceListItemResponse getPriceListItemById(UUID uuid) {
-    var entity = findByUuid(uuid);
+  public PriceListItemResponse getPriceListItemById(UUID id) {
+    var entity = findById(id);
     return enrichAndMapToResponse(entity);
   }
 
   /** Оновити позицію прайс-листа. */
   public PriceListItemResponse updatePriceListItem(UUID uuid, UpdatePriceListItemRequest request) {
-    var entity = findByUuid(uuid);
+    var entity = findById(uuid);
 
     mapper.updateEntityFromRequest(request, entity);
     var savedEntity = repository.save(entity);
@@ -70,7 +70,7 @@ public class PriceListItemService {
 
   /** Видалити позицію прайс-листа. */
   public void deletePriceListItem(UUID uuid) {
-    var entity = findByUuid(uuid);
+    var entity = findById(uuid);
     repository.delete(entity);
   }
 
@@ -159,8 +159,8 @@ public class PriceListItemService {
   // ========== HELPER МЕТОДИ ==========
 
   /** Знайти позицію за UUID (internal helper). */
-  private PriceListItemEntity findByUuid(UUID uuid) {
-    return repository.findByUuid(uuid).orElseThrow(() -> new PriceListItemNotFoundException(uuid));
+  private PriceListItemEntity findById(UUID id) {
+    return repository.findById(id).orElseThrow(() -> new PriceListItemNotFoundException(id));
   }
 
   /** Валідація унікальності каталогового номера. */
@@ -173,7 +173,7 @@ public class PriceListItemService {
 
   /** Валідація існування категорії. */
   private void validateCategoryExists(UUID categoryUuid) {
-    if (categoryRepository.findByUuid(categoryUuid).isEmpty()) {
+    if (categoryRepository.findById(categoryUuid).isEmpty()) {
       throw new IllegalArgumentException("Категорія з UUID " + categoryUuid + " не існує");
     }
   }
@@ -184,12 +184,12 @@ public class PriceListItemService {
 
     // Збагачуємо інформацією про категорію
     categoryRepository
-        .findByUuid(entity.getCategoryId())
+        .findById(entity.getCategoryId())
         .ifPresent(
             category -> {
               response.setCategoryInfo(
                   new com.aksi.api.item.dto.ServiceCategorySummary()
-                      .id(category.getUuid())
+                      .id(category.getId())
                       .name(category.getName())
                       .code(category.getCode()));
             });

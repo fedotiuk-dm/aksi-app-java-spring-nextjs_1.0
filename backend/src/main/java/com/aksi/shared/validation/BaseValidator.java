@@ -1,6 +1,7 @@
 package com.aksi.shared.validation;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,12 +10,12 @@ import com.aksi.shared.BaseEntity;
 
 /**
  * Базовий abstract клас для Validators з загальними методами валідації. Зменшує дублювання коду в
- * доменних Validator класах.
+ * доменних Validator класах. Працює з BaseEntity UUID архітектурою.
  *
  * @param <T> тип Entity
  * @param <R> тип Repository
  */
-public abstract class BaseValidator<T extends BaseEntity, R extends JpaRepository<T, Long>> {
+public abstract class BaseValidator<T extends BaseEntity, R extends JpaRepository<T, UUID>> {
 
   protected final R repository;
 
@@ -73,10 +74,10 @@ public abstract class BaseValidator<T extends BaseEntity, R extends JpaRepositor
   /**
    * Валідує entity для видалення.
    *
-   * @param id ID entity для видалення
+   * @param id UUID ID entity для видалення
    * @return результат валідації
    */
-  public ValidationResult validateForDelete(Long id) {
+  public ValidationResult validateForDelete(UUID id) {
     ValidationResult result = ValidationResult.valid();
 
     // Базова валідація
@@ -137,24 +138,24 @@ public abstract class BaseValidator<T extends BaseEntity, R extends JpaRepositor
   }
 
   /**
-   * Перевіряє чи існує entity за ID.
+   * Перевіряє чи існує entity за UUID ID.
    *
-   * @param id ID для перевірки
+   * @param id UUID ID для перевірки
    * @return результат валідації
    */
-  protected ValidationResult validateExists(Long id) {
+  protected ValidationResult validateExists(UUID id) {
     return repository.existsById(id)
         ? ValidationResult.valid()
         : ValidationResult.invalid("Entity з ID " + id + " не знайдено");
   }
 
   /**
-   * Перевіряє чи НЕ існує entity за ID.
+   * Перевіряє чи НЕ існує entity за UUID ID.
    *
-   * @param id ID для перевірки
+   * @param id UUID ID для перевірки
    * @return результат валідації
    */
-  protected ValidationResult validateNotExists(Long id) {
+  protected ValidationResult validateNotExists(UUID id) {
     return !repository.existsById(id)
         ? ValidationResult.valid()
         : ValidationResult.invalid("Entity з ID " + id + " вже існує");
@@ -181,10 +182,10 @@ public abstract class BaseValidator<T extends BaseEntity, R extends JpaRepositor
   /**
    * Виконує специфічну валідацію для видалення. Може бути перевизначений в дочірніх класах.
    *
-   * @param id ID entity для видалення
+   * @param id UUID ID entity для видалення
    * @return результат валідації
    */
-  protected ValidationResult performDeleteValidation(Long id) {
+  protected ValidationResult performDeleteValidation(UUID id) {
     return ValidationResult.valid();
   }
 }

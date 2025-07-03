@@ -21,7 +21,7 @@ import com.aksi.domain.document.enums.DocumentType;
 /** Repository для роботи з документами з JPA Specification підтримкою. */
 @Repository
 public interface DocumentRepository
-    extends JpaRepository<DocumentEntity, Long>, JpaSpecificationExecutor<DocumentEntity> {
+    extends JpaRepository<DocumentEntity, UUID>, JpaSpecificationExecutor<DocumentEntity> {
 
   // Basic finders
   Optional<DocumentEntity> findByDocumentNumber(String documentNumber);

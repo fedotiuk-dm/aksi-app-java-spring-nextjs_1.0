@@ -23,7 +23,13 @@ public interface HolidayMapper {
   // DTO → Entity mappings
 
   /** HolidayRequest → HolidayEntity. */
-  @Mapping(target = "uuid", ignore = true) // автоматично генерується
+  /**
+   * {@link HolidayRequest} → {@link HolidayEntity} annotation is used to specify the mapping
+   * target.
+   *
+   * @param request
+   * @return
+   */
   @Mapping(target = "workingSchedule", ignore = true) // встановлюється в Service
   HolidayEntity toEntity(HolidayRequest request);
 
@@ -36,16 +42,6 @@ public interface HolidayMapper {
   List<HolidayResponse> toResponseList(List<HolidayEntity> entities);
 
   // Utility mappings
-
-  /** Long (Entity) → UUID (DTO) - auto mapping. */
-  default java.util.UUID map(Long id) {
-    return id != null ? java.util.UUID.nameUUIDFromBytes(id.toString().getBytes()) : null;
-  }
-
-  /** UUID (DTO) → Long (Entity) - auto mapping. */
-  default Long map(java.util.UUID uuid) {
-    return uuid != null ? (long) Math.abs(uuid.hashCode()) : null;
-  }
 
   /** LocalDate (Entity) → LocalDate (DTO) - auto mapping (без конвертації). */
   default LocalDate map(LocalDate localDate) {

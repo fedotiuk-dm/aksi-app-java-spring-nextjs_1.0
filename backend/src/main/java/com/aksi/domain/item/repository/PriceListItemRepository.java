@@ -18,11 +18,10 @@ import com.aksi.domain.item.entity.PriceListItemEntity;
  */
 @Repository
 public interface PriceListItemRepository
-    extends JpaRepository<PriceListItemEntity, Long>,
+    extends JpaRepository<PriceListItemEntity, UUID>,
         JpaSpecificationExecutor<PriceListItemEntity> {
 
-  /** Знайти предмет за UUID. */
-  Optional<PriceListItemEntity> findByUuid(UUID uuid);
+  // findById(UUID) успадкований з JpaRepository
 
   /** Знайти предмети за категорією. */
   List<PriceListItemEntity> findByCategoryId(UUID categoryId);
@@ -43,7 +42,7 @@ public interface PriceListItemRepository
   boolean existsByCatalogNumber(Integer catalogNumber);
 
   /** Перевірити існування предмета за каталоговим номером (виключаючи вказаний). */
-  boolean existsByCatalogNumberAndUuidNot(Integer catalogNumber, UUID uuid);
+  boolean existsByCatalogNumberAndIdNot(Integer catalogNumber, UUID id);
 
   /** Знайти всі активні предмети. */
   List<PriceListItemEntity> findByIsActiveTrue();

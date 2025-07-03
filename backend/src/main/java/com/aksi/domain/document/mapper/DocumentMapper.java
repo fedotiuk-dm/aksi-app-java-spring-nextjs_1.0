@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.UUID;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
@@ -29,18 +28,6 @@ import com.aksi.domain.document.enums.SignatureType;
 public interface DocumentMapper {
 
   // ===== BASIC UTILITY MAPPINGS =====
-
-  /** Long (Entity) → UUID (DTO) Аналог з AuthMapper. */
-  @Named("longToUuid")
-  default UUID longToUuid(Long id) {
-    return id != null ? UUID.nameUUIDFromBytes(id.toString().getBytes()) : null;
-  }
-
-  /** UUID (DTO) → Long (Entity). */
-  @Named("uuidToLong")
-  default Long uuidToLong(UUID uuid) {
-    return uuid != null ? (long) Math.abs(uuid.hashCode()) : null;
-  }
 
   /** LocalDateTime (Entity) → OffsetDateTime (DTO) Аналог з AuthMapper. */
   @Named("localDateTimeToOffsetDateTime")
@@ -125,7 +112,7 @@ public interface DocumentMapper {
     if (entity == null) return null;
 
     DocumentResponse response = new DocumentResponse();
-    response.setId(longToUuid(entity.getId()));
+    response.setId(entity.getId());
     response.setDocumentNumber(entity.getDocumentNumber());
     response.setType(domainToApiDocumentType(entity.getType()));
     response.setStatus(domainToApiDocumentStatus(entity.getStatus()));
@@ -147,7 +134,7 @@ public interface DocumentMapper {
     if (entity == null) return null;
 
     ReceiptResponse response = new ReceiptResponse();
-    response.setId(longToUuid(entity.getId()));
+    response.setId(entity.getId());
     response.setOrderId(entity.getOrderId());
     response.setReceiptNumber(entity.getReceiptNumber());
     response.setIsPrinted(entity.getIsPrinted());
@@ -163,7 +150,7 @@ public interface DocumentMapper {
     if (entity == null) return null;
 
     DigitalSignatureResponse response = new DigitalSignatureResponse();
-    response.setId(longToUuid(entity.getId()));
+    response.setId(entity.getId());
     response.setDocumentId(entity.getDocumentId());
     response.setType(domainToApiSignatureType(entity.getType()));
     response.setSignerName(entity.getSignerName());

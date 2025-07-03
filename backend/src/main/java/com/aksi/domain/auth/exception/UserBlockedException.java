@@ -2,7 +2,10 @@ package com.aksi.domain.auth.exception;
 
 import java.time.LocalDateTime;
 
+import lombok.Getter;
+
 /** Виняток для заблокованих користувачів Domain-specific RuntimeException. */
+@Getter
 public class UserBlockedException extends RuntimeException {
 
   private final LocalDateTime lockedUntil;
@@ -20,9 +23,5 @@ public class UserBlockedException extends RuntimeException {
   public UserBlockedException(String message, Throwable cause) {
     super(message, cause);
     this.lockedUntil = null;
-  }
-
-  public LocalDateTime getLockedUntil() {
-    return lockedUntil;
   }
 }

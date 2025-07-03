@@ -34,16 +34,16 @@ public class ItemPhotoService {
 
   // ========== API МЕТОДИ (для контролерів) - DTO ↔ DTO ==========
 
-  /** Отримати фото за UUID. */
+  /** Отримати фото за ID. */
   @Transactional(readOnly = true)
-  public PhotoResponse getPhotoById(UUID uuid) {
-    var entity = findByUuid(uuid);
+  public PhotoResponse getPhotoById(UUID id) {
+    var entity = findById(id);
     return enrichAndMapToResponse(entity);
   }
 
   /** Оновити метадані фото. */
-  public PhotoResponse updatePhotoMetadata(UUID uuid, UpdatePhotoMetadataRequest request) {
-    var entity = findByUuid(uuid);
+  public PhotoResponse updatePhotoMetadata(UUID id, UpdatePhotoMetadataRequest request) {
+    var entity = findById(id);
 
     mapper.updateEntityFromRequest(request, entity);
     var savedEntity = repository.save(entity);
@@ -51,8 +51,8 @@ public class ItemPhotoService {
   }
 
   /** Видалити фото. */
-  public void deletePhoto(UUID uuid) {
-    var entity = findByUuid(uuid);
+  public void deletePhoto(UUID id) {
+    var entity = findById(id);
     repository.delete(entity);
   }
 
@@ -78,8 +78,8 @@ public class ItemPhotoService {
   }
 
   /** Встановити фото як головне. */
-  public PhotoResponse setPrimaryPhoto(UUID uuid) {
-    var entity = findByUuid(uuid);
+  public PhotoResponse setPrimaryPhoto(UUID id) {
+    var entity = findById(id);
 
     // Зняти primary з інших фото цього предмета
     var otherPhotos = repository.findByItemIdAndIsPrimaryTrue(entity.getItemId());
@@ -98,8 +98,8 @@ public class ItemPhotoService {
   // ========== HELPER МЕТОДИ ==========
 
   /** Знайти фото за UUID (internal helper). */
-  private ItemPhotoEntity findByUuid(UUID uuid) {
-    return repository.findByUuid(uuid).orElseThrow(() -> new ItemPhotoNotFoundException(uuid));
+  private ItemPhotoEntity findById(UUID id) {
+    return repository.findById(id).orElseThrow(() -> new ItemPhotoNotFoundException(id));
   }
 
   /** Збагатити entity додатковими даними та змапити до Response. */

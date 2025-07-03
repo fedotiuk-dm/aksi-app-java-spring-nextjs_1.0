@@ -222,21 +222,21 @@ public class WorkingScheduleService {
   @Transactional(readOnly = true)
   private WorkingScheduleEntity findEntityById(UUID uuid) {
     return workingScheduleRepository
-        .findByUuid(uuid)
+        .findById(uuid)
         .orElseThrow(() -> WorkingScheduleException.notFound(uuid));
   }
 
   /** Знайти entity за ID філії. */
   @Transactional(readOnly = true)
   public Optional<WorkingScheduleEntity> findByBranchId(UUID branchId) {
-    return workingScheduleRepository.findByBranchUuid(branchId);
+    return workingScheduleRepository.findByBranchId(branchId);
   }
 
   /** Знайти робочий день за UUID. */
   @Transactional(readOnly = true)
   private WorkingDayEntity findWorkingDayById(UUID uuid) {
     return workingDayRepository
-        .findByUuid(uuid)
+        .findById(uuid)
         .orElseThrow(() -> new RuntimeException("Working day not found: " + uuid));
   }
 

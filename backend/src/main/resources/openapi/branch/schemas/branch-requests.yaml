@@ -15,21 +15,26 @@ CreateBranchRequest:
       maxLength: 20
       description: Унікальний код філії
       example: AKSI-01
+      nullable: false
     name:
       type: string
       minLength: 3
       maxLength: 100
       description: Назва філії
       example: Хімчистка AKSI - Центр
+      nullable: false
     description:
       type: string
       maxLength: 500
       description: Опис розташування
       example: ТЦ Глобус, 2 поверх
+      nullable: false
     address:
       $ref: "../../common/schemas/address.yaml#/CreateAddressRequest"
+      nullable: false
     contactInfo:
       $ref: "#/ContactInfoRequest"
+      nullable: false
     coordinates:
       $ref: "#/CoordinatesRequest"
     workingSchedule:
@@ -44,14 +49,18 @@ UpdateBranchRequest:
       minLength: 3
       maxLength: 100
       description: Назва філії
+      nullable: false
     description:
       type: string
       maxLength: 500
       description: Опис розташування
+      nullable: false
     address:
       $ref: "../../common/schemas/address.yaml#/UpdateAddressRequest"
+      nullable: false
     contactInfo:
       $ref: "#/ContactInfoRequest"
+      nullable: false
     coordinates:
       $ref: "#/CoordinatesRequest"
     status:
@@ -65,6 +74,7 @@ ContactInfoRequest:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
       description: Основний телефон
       example: +380501234567
+      nullable: false
     alternativePhone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
       description: Додатковий телефон
@@ -73,11 +83,13 @@ ContactInfoRequest:
       $ref: "../../common/schemas/base.yaml#/Email"
       description: Email філії
       example: branch01@aksi.com
+      nullable: false
     managerName:
       type: string
       maxLength: 100
       description: Ім'я менеджера
       example: Іванова Марія Петрівна
+      nullable: false
 
 CoordinatesRequest:
   type: object

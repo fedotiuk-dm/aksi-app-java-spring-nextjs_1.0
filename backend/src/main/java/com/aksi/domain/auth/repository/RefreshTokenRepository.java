@@ -3,6 +3,7 @@ package com.aksi.domain.auth.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,7 +15,7 @@ import com.aksi.domain.auth.entity.RefreshTokenEntity;
 
 /** Repository для роботи з refresh токенами Управління сесіями користувачів. */
 @Repository
-public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, Long> {
+public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, UUID> {
 
   /** Пошук токену за значенням. */
   Optional<RefreshTokenEntity> findByToken(String token);
@@ -26,14 +27,14 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
       @Param("token") String token, @Param("now") LocalDateTime now);
 
   /** Пошук всіх токенів користувача. */
-  List<RefreshTokenEntity> findByUserId(Long userId);
+  List<RefreshTokenEntity> findByUserId(UUID userId);
 
   /** Пошук активних токенів користувача. */
   @Query(
       "SELECT rt FROM RefreshTokenEntity rt "
           + "WHERE rt.userId = :userId AND rt.isActive = true AND rt.expiresAt > :now")
   List<RefreshTokenEntity> findActiveTokensByUserId(
-      @Param("userId") Long userId, @Param("now") LocalDateTime now);
+      @Param("userId") UUID userId, @Param("now") LocalDateTime now);
 
   /** Перевірка чи існує активний токен. */
   @Query(
@@ -49,7 +50,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
   /** Інвалідація всіх токенів користувача. */
   @Modifying
   @Query("UPDATE RefreshTokenEntity rt SET rt.isActive = false WHERE rt.userId = :userId")
-  void invalidateAllUserTokens(@Param("userId") Long userId);
+  void invalidateAllUserTokens(@Param("userId") UUID userId);
 
   /** Видалення прострочених токенів. */
   @Modifying
@@ -76,10 +77,26 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
   @Query(
       "SELECT COUNT(rt) FROM RefreshTokenEntity rt "
           + "WHERE rt.userId = :userId AND rt.isActive = true AND rt.expiresAt > :now")
-  long countActiveSessionsByUserId(@Param("userId") Long userId, @Param("now") LocalDateTime now);
+  long countActiveSessionsByUserId(@Param("userId") UUID userId, @Param("now") LocalDateTime now);
 
   /** Статистика токенів по користувачах. */
   @Query(
       "SELECT rt.userId, COUNT(rt) FROM RefreshTokenEntity rt WHERE rt.isActive = true GROUP BY rt.userId")
   List<Object[]> getActiveTokenStatsByUser();
+
+  /** Пошук всіх активних токенів користувача. */
+  List<RefreshTokenEntity> findByUserIdAndIsActive(UUID userId, Boolean isActive);
+
+  /** Перевірка існування активного токену. */
+  boolean existsByTokenAndIsActive(String token, Boolean isActive);
+
+  /** Видалення всіх токенів користувача. */
+  void deleteByUserId(UUID userId);
+
+  /** Видалення конкретного токену. */
+  void deleteByToken(String token);
+
+  /** Пошук прострочених токенів. */
+  @Query("SELECT rt FROM RefreshTokenEntity rt WHERE rt.expiresAt < :now")
+  List<RefreshTokenEntity> findExpiredTokens(@Param("now") LocalDateTime now);
 }

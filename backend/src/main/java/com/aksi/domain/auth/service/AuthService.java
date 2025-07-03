@@ -3,6 +3,7 @@ package com.aksi.domain.auth.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -139,7 +140,7 @@ public class AuthService {
   }
 
   /** Отримання поточного користувача за ID API метод для getUserInfo → UserResponse. */
-  public UserResponse getCurrentUser(Long userId) {
+  public UserResponse getCurrentUser(UUID userId) {
     log.debug("Отримання інформації про користувача ID: {}", userId);
 
     UserEntity user = findUserById(userId).orElseThrow(() -> new UserNotFoundException(userId));
@@ -152,7 +153,7 @@ public class AuthService {
     log.debug("Отримання інформації про користувача з токена");
 
     // Отримуємо ID з токена
-    Long userId = jwtTokenService.getUserIdFromToken(token);
+    UUID userId = jwtTokenService.getUserIdFromToken(token);
 
     UserEntity user = findUserById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
@@ -165,7 +166,7 @@ public class AuthService {
   // Entity методи (для внутрішньої логіки)
 
   /** Пошук користувача за ID. */
-  public Optional<UserEntity> findUserById(Long userId) {
+  public Optional<UserEntity> findUserById(UUID userId) {
     return userRepository.findById(userId);
   }
 

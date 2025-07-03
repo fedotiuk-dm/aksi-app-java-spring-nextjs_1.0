@@ -3,6 +3,7 @@ package com.aksi.shared.specification;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -10,7 +11,7 @@ import jakarta.persistence.criteria.Predicate;
 
 /**
  * Базовий клас для JPA Specifications з загальними методами пошуку. Зменшує дублювання коду в
- * доменних Specification класах.
+ * доменних Specification класах. Працює з BaseEntity UUID архітектурою.
  */
 public final class BaseSpecification {
 
@@ -19,13 +20,13 @@ public final class BaseSpecification {
   }
 
   /**
-   * Створює Specification для пошуку за ID.
+   * Створює Specification для пошуку за UUID ID (BaseEntity.id).
    *
-   * @param id значення для пошуку
+   * @param id UUID значення для пошуку
    * @param <T> тип entity
    * @return Specification або null
    */
-  public static <T> Specification<T> hasId(Long id) {
+  public static <T> Specification<T> hasId(UUID id) {
     return Optional.ofNullable(id)
         .map(value -> (Specification<T>) (root, query, cb) -> cb.equal(root.get("id"), value))
         .orElse(null);

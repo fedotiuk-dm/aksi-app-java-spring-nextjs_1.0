@@ -2,6 +2,7 @@ package com.aksi.shared.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,12 +18,11 @@ import com.aksi.shared.BaseEntity;
  * доменних Service класах.
  *
  * @param <T> тип Entity
- * @param <ID> тип ID
  * @param <R> тип Repository
  */
 @Transactional(readOnly = true)
 public abstract class BaseService<
-    T extends BaseEntity, ID, R extends JpaRepository<T, ID> & JpaSpecificationExecutor<T>> {
+    T extends BaseEntity, R extends JpaRepository<T, UUID> & JpaSpecificationExecutor<T>> {
 
   protected final R repository;
 
@@ -36,7 +36,7 @@ public abstract class BaseService<
    * @param id ID entity
    * @return Optional з entity
    */
-  public Optional<T> findById(ID id) {
+  public Optional<T> findById(UUID id) {
     return repository.findById(id);
   }
 
@@ -62,22 +62,22 @@ public abstract class BaseService<
   /**
    * Знаходить entities за Specification.
    *
-   * @param specification критерії пошуку
+   * @param spec критерії пошуку
    * @return список entities
    */
-  public List<T> findAll(Specification<T> specification) {
-    return repository.findAll(specification);
+  public List<T> findAll(Specification<T> spec) {
+    return repository.findAll(spec);
   }
 
   /**
    * Знаходить entities за Specification з пагінацією.
    *
-   * @param specification критерії пошуку
+   * @param spec критерії пошуку
    * @param pageable параметри пагінації
    * @return сторінка entities
    */
-  public Page<T> findAll(Specification<T> specification, Pageable pageable) {
-    return repository.findAll(specification, pageable);
+  public Page<T> findAll(Specification<T> spec, Pageable pageable) {
+    return repository.findAll(spec, pageable);
   }
 
   /**
@@ -86,18 +86,18 @@ public abstract class BaseService<
    * @param id ID entity
    * @return true якщо існує
    */
-  public boolean existsById(ID id) {
+  public boolean existsById(UUID id) {
     return repository.existsById(id);
   }
 
   /**
    * Перевіряє чи існує entity за Specification.
    *
-   * @param specification критерії пошуку
+   * @param spec критерії пошуку
    * @return true якщо існує
    */
-  public boolean exists(Specification<T> specification) {
-    return repository.exists(specification);
+  public boolean exists(Specification<T> spec) {
+    return repository.exists(spec);
   }
 
   /**
@@ -112,11 +112,11 @@ public abstract class BaseService<
   /**
    * Підраховує кількість entities за Specification.
    *
-   * @param specification критерії пошуку
+   * @param spec критерії пошуку
    * @return кількість entities
    */
-  public long count(Specification<T> specification) {
-    return repository.count(specification);
+  public long count(Specification<T> spec) {
+    return repository.count(spec);
   }
 
   /**
@@ -147,7 +147,7 @@ public abstract class BaseService<
    * @param id ID entity
    */
   @Transactional
-  public void deleteById(ID id) {
+  public void deleteById(UUID id) {
     repository.deleteById(id);
   }
 
@@ -173,7 +173,7 @@ public abstract class BaseService<
    * @param ids список ID для видалення
    */
   @Transactional
-  public void deleteAllById(List<ID> ids) {
+  public void deleteAllById(List<UUID> ids) {
     repository.deleteAllById(ids);
   }
 }

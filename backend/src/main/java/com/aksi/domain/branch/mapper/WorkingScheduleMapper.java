@@ -29,14 +29,12 @@ public interface WorkingScheduleMapper {
   // DTO → Entity mappings
 
   /** WorkingScheduleRequest → WorkingScheduleEntity. */
-  @Mapping(target = "uuid", ignore = true) // автоматично генерується
   @Mapping(target = "branch", ignore = true) // встановлюється в Service
   @Mapping(target = "workingDays", ignore = true) // окремий mapper
   @Mapping(target = "holidays", ignore = true) // окремий mapper
   WorkingScheduleEntity toEntity(WorkingScheduleRequest request);
 
   /** UpdateWorkingScheduleRequest → WorkingScheduleEntity (для оновлення). */
-  @Mapping(target = "uuid", ignore = true) // зберігається з існуючого entity
   @Mapping(target = "branch", ignore = true)
   @Mapping(target = "workingDays", ignore = true)
   @Mapping(target = "holidays", ignore = true)
@@ -47,23 +45,13 @@ public interface WorkingScheduleMapper {
   /** WorkingScheduleEntity → WorkingScheduleResponse. */
   @Mapping(target = "workingDays", ignore = true) // окремий mapper
   @Mapping(target = "holidays", ignore = true) // окремий mapper
-  @Mapping(target = "branchId", source = "branch.uuid")
+  @Mapping(target = "branchId", source = "branch.id")
   WorkingScheduleResponse toResponse(WorkingScheduleEntity entity);
 
   /** List<WorkingScheduleEntity> → List<WorkingScheduleResponse>. */
   List<WorkingScheduleResponse> toResponseList(List<WorkingScheduleEntity> entities);
 
   // Utility mappings
-
-  /** Long (Entity) → UUID (DTO) - auto mapping. */
-  default java.util.UUID map(Long id) {
-    return id != null ? java.util.UUID.nameUUIDFromBytes(id.toString().getBytes()) : null;
-  }
-
-  /** UUID (DTO) → Long (Entity) - auto mapping. */
-  default Long map(java.util.UUID uuid) {
-    return uuid != null ? (long) Math.abs(uuid.hashCode()) : null;
-  }
 
   /** LocalDateTime (Entity) → OffsetDateTime (DTO) - auto mapping. */
   default OffsetDateTime map(LocalDateTime localDateTime) {

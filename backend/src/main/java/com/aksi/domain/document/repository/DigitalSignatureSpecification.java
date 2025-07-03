@@ -2,6 +2,7 @@ package com.aksi.domain.document.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -47,7 +48,7 @@ public class DigitalSignatureSpecification {
   }
 
   // Receipt relationship specifications
-  public static Specification<DigitalSignatureEntity> hasReceiptId(Long receiptId) {
+  public static Specification<DigitalSignatureEntity> hasReceiptId(UUID receiptId) {
     return (root, query, criteriaBuilder) ->
         receiptId == null ? null : criteriaBuilder.equal(root.get("receipt").get("id"), receiptId);
   }

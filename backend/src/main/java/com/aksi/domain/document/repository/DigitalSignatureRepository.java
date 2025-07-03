@@ -21,24 +21,24 @@ import com.aksi.domain.document.enums.SignatureType;
 /** Repository для роботи з цифровими підписами з JPA Specification підтримкою. */
 @Repository
 public interface DigitalSignatureRepository
-    extends JpaRepository<DigitalSignatureEntity, Long>,
+    extends JpaRepository<DigitalSignatureEntity, UUID>,
         JpaSpecificationExecutor<DigitalSignatureEntity> {
 
   // Basic finders
   List<DigitalSignatureEntity> findByType(SignatureType type);
 
-  List<DigitalSignatureEntity> findByReceiptId(Long receiptId);
+  List<DigitalSignatureEntity> findByReceiptId(UUID receiptId);
 
   List<DigitalSignatureEntity> findBySignerName(String signerName);
 
-  Optional<DigitalSignatureEntity> findByReceiptIdAndType(Long receiptId, SignatureType type);
+  Optional<DigitalSignatureEntity> findByReceiptIdAndType(UUID receiptId, SignatureType type);
 
   Optional<DigitalSignatureEntity> findByDocumentIdAndType(UUID documentId, SignatureType type);
 
   Optional<DigitalSignatureEntity> findByReceiptAndType(ReceiptEntity receipt, SignatureType type);
 
   // Exists checks
-  boolean existsByReceiptIdAndType(Long receiptId, SignatureType type);
+  boolean existsByReceiptIdAndType(UUID receiptId, SignatureType type);
 
   boolean existsBySignerName(String signerName);
 
@@ -48,7 +48,7 @@ public interface DigitalSignatureRepository
   // Type-specific queries
   List<DigitalSignatureEntity> findByTypeAndIsValid(SignatureType type, boolean isValid);
 
-  List<DigitalSignatureEntity> findByReceiptIdAndIsValid(Long receiptId, boolean isValid);
+  List<DigitalSignatureEntity> findByReceiptIdAndIsValid(UUID receiptId, boolean isValid);
 
   // Pagination queries
   Page<DigitalSignatureEntity> findByType(SignatureType type, Pageable pageable);

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.UuidGenerator;
-
 import com.aksi.shared.BaseEntity;
 
 import jakarta.persistence.CollectionTable;
@@ -43,10 +41,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ServiceCategoryEntity extends BaseEntity {
-
-  @Column(name = "uuid", updatable = false, nullable = false, unique = true)
-  @UuidGenerator
-  private UUID uuid;
 
   @NotBlank(message = "Код категорії обов'язковий")
   @Size(max = 50, message = "Код категорії не може бути довше 50 символів")
@@ -92,7 +86,7 @@ public class ServiceCategoryEntity extends BaseEntity {
   private List<UUID> availableModifiers = new ArrayList<>();
 
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id", referencedColumnName = "uuid")
+  @JoinColumn(name = "category_id", referencedColumnName = "id")
   @Builder.Default
   private List<PriceListItemEntity> items = new ArrayList<>();
 

@@ -12,7 +12,8 @@ LoginRequest:
       minLength: 3
       maxLength: 100
       example: "admin@aksi.com"
-      pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|^[a-zA-Z0-9_]+$'
+      pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'
+      nullable: false
     password:
       type: string
       description: Пароль користувача
@@ -20,6 +21,7 @@ LoginRequest:
       maxLength: 128
       format: password
       example: "password123"
+      nullable: false
   additionalProperties: false
 
 RefreshTokenRequest:

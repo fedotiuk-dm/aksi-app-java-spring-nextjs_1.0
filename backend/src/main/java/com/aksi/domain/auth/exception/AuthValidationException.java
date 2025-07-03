@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+
 /**
  * Виняток для валідаційних помилок в auth domain Domain-specific RuntimeException з деталями
  * помилок.
  */
+@Getter
 public class AuthValidationException extends RuntimeException {
 
   private final Map<String, List<String>> errors;
@@ -33,12 +36,8 @@ public class AuthValidationException extends RuntimeException {
     this.errors = new HashMap<>();
   }
 
-  public Map<String, List<String>> getErrors() {
-    return errors;
-  }
-
   public boolean hasErrors() {
-    return !errors.isEmpty();
+    return errors != null && !errors.isEmpty();
   }
 
   public void addError(String field, String errorMessage) {

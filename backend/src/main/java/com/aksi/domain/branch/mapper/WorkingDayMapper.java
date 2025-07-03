@@ -24,7 +24,6 @@ public interface WorkingDayMapper {
   // DTO → Entity mappings
 
   /** WorkingDayRequest → WorkingDayEntity. */
-  @Mapping(target = "uuid", ignore = true) // автоматично генерується
   @Mapping(target = "workingSchedule", ignore = true) // встановлюється в Service
   WorkingDayEntity toEntity(WorkingDayRequest request);
 
@@ -37,16 +36,6 @@ public interface WorkingDayMapper {
   List<WorkingDayResponse> toResponseList(List<WorkingDayEntity> entities);
 
   // Utility mappings
-
-  /** Long (Entity) → UUID (DTO) - auto mapping. */
-  default java.util.UUID map(Long id) {
-    return id != null ? java.util.UUID.nameUUIDFromBytes(id.toString().getBytes()) : null;
-  }
-
-  /** UUID (DTO) → Long (Entity) - auto mapping. */
-  default Long map(java.util.UUID uuid) {
-    return uuid != null ? (long) Math.abs(uuid.hashCode()) : null;
-  }
 
   /** LocalTime (Entity) → OffsetTime (DTO) - auto mapping. */
   default OffsetTime map(LocalTime localTime) {

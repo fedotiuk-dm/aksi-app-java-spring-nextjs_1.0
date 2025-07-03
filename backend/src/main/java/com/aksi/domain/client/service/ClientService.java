@@ -70,14 +70,14 @@ public class ClientService {
   @Transactional(readOnly = true)
   public ClientResponse getClientById(UUID uuid) {
     ClientEntity entity =
-        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+        clientRepository.findById(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
     return clientMapper.toResponse(entity);
   }
 
   /** PUT /api/clients/{id}. */
   public ClientResponse updateClient(UUID uuid, UpdateClientRequest request) {
     ClientEntity existingEntity =
-        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+        clientRepository.findById(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
     clientMapper.updateEntityFromRequest(request, existingEntity);
     clientValidator.validateUniquenessForUpdate(existingEntity);
     clientValidator.validateContactInfo(existingEntity);
@@ -88,7 +88,7 @@ public class ClientService {
   /** DELETE /api/clients/{id}. */
   public void deleteClient(UUID uuid) {
     ClientEntity entity =
-        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+        clientRepository.findById(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
     clientValidator.validateForDeletion(entity);
     clientRepository.delete(entity);
   }
@@ -110,7 +110,7 @@ public class ClientService {
   @Transactional(readOnly = true)
   public ClientStatistics getClientStatistics(UUID uuid) {
     ClientEntity entity =
-        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+        clientRepository.findById(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
     return clientMapper.toStatistics(entity);
   }
 
@@ -197,7 +197,7 @@ public class ClientService {
   @Transactional(readOnly = true)
   public ClientContactsResponse getClientContacts(UUID uuid) {
     ClientEntity entity =
-        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+        clientRepository.findById(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
     return clientMapper.toContactsResponse(entity);
   }
 
@@ -205,7 +205,7 @@ public class ClientService {
   public ClientContactsResponse updateClientContacts(
       UUID uuid, UpdateClientContactsRequest request) {
     ClientEntity existingEntity =
-        clientRepository.findByUuid(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
+        clientRepository.findById(uuid).orElseThrow(() -> ClientNotFoundException.byUuid(uuid));
     clientMapper.updateContactsFromRequest(request, existingEntity);
     clientValidator.validateContactInfo(existingEntity);
     ClientEntity updatedEntity = clientRepository.save(existingEntity);

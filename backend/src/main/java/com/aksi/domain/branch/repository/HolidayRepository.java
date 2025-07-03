@@ -17,25 +17,22 @@ import com.aksi.domain.branch.entity.HolidayEntity;
  */
 @Repository
 public interface HolidayRepository
-    extends JpaRepository<HolidayEntity, Long>, JpaSpecificationExecutor<HolidayEntity> {
-
-  /** Знаходить святковий день за UUID. */
-  Optional<HolidayEntity> findByUuid(UUID uuid);
+    extends JpaRepository<HolidayEntity, UUID>, JpaSpecificationExecutor<HolidayEntity> {
 
   /** Знаходить святковий день за датою та розкладом. */
-  Optional<HolidayEntity> findByDateAndWorkingSchedule_Id(LocalDate date, Long workingScheduleId);
+  Optional<HolidayEntity> findByDateAndWorkingSchedule_Id(LocalDate date, UUID workingScheduleId);
 
   /** Знаходить всі святкові дні за розкладом. */
-  List<HolidayEntity> findByWorkingSchedule_Id(Long workingScheduleId);
+  List<HolidayEntity> findByWorkingSchedule_Id(UUID workingScheduleId);
 
-  /** Знаходить святкові дні за датою. */
+  /** Знаходить всі святкові дні за датою. */
   List<HolidayEntity> findByDate(LocalDate date);
 
-  /** Знаходить щорічні святкові дні. */
-  List<HolidayEntity> findByIsRecurring(boolean isRecurring);
+  /** Знаходить всі повторювані святкові дні. */
+  List<HolidayEntity> findByIsRecurring(Boolean isRecurring);
 
   /** Підраховує кількість святкових днів за розкладом. */
-  long countByWorkingSchedule_Id(Long workingScheduleId);
+  long countByWorkingSchedule_Id(UUID workingScheduleId);
 
   /** Підраховує кількість щорічних святкових днів. */
   long countByIsRecurring(boolean isRecurring);

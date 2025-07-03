@@ -17,7 +17,6 @@ import com.aksi.domain.item.exception.PriceModifierNotFoundException;
 import com.aksi.domain.item.mapper.PriceModifierMapper;
 import com.aksi.domain.item.repository.PriceModifierRepository;
 import com.aksi.shared.service.BaseService;
-import com.aksi.shared.service.EntityCreationHelper;
 
 /**
  * Сервіс для управління модифікаторами цін. Розширює BaseService для уникнення дублювання CRUD
@@ -26,7 +25,7 @@ import com.aksi.shared.service.EntityCreationHelper;
 @Service
 @Transactional
 public class PriceModifierService
-    extends BaseService<PriceModifierEntity, Long, PriceModifierRepository> {
+    extends BaseService<PriceModifierEntity, PriceModifierRepository> {
 
   private final PriceModifierMapper mapper;
 
@@ -42,22 +41,22 @@ public class PriceModifierService
     validateUniqueCode(request.getCode());
 
     var entity = mapper.toEntity(request);
-    EntityCreationHelper.setRandomUuid(entity);
+    // UUID генерується автоматично через @UuidGenerator в BaseEntity
 
     var savedEntity = save(entity);
     return mapper.toResponse(savedEntity);
   }
 
-  /** Отримати модифікатор за UUID. */
+  /** Отримати модифікатор за ID. */
   @Transactional(readOnly = true)
-  public PriceModifierResponse getPriceModifierById(UUID uuid) {
-    var entity = findByUuidOrThrow(uuid);
+  public PriceModifierResponse getPriceModifierById(UUID id) {
+    var entity = findByIdOrThrow(id);
     return mapper.toResponse(entity);
   }
 
   /** Оновити модифікатор ціни. */
-  public PriceModifierResponse updatePriceModifier(UUID uuid, UpdatePriceModifierRequest request) {
-    var entity = findByUuidOrThrow(uuid);
+  public PriceModifierResponse updatePriceModifier(UUID id, UpdatePriceModifierRequest request) {
+    var entity = findByIdOrThrow(id);
 
     mapper.updateEntityFromRequest(request, entity);
     var savedEntity = save(entity);
@@ -65,8 +64,8 @@ public class PriceModifierService
   }
 
   /** Видалити модифікатор ціни. */
-  public void deletePriceModifier(UUID uuid) {
-    var entity = findByUuidOrThrow(uuid);
+  public void deletePriceModifier(UUID id) {
+    var entity = findByIdOrThrow(id);
     delete(entity);
   }
 
@@ -99,9 +98,9 @@ public class PriceModifierService
 
   // ========== HELPER МЕТОДИ ==========
 
-  /** Знайти модифікатор за UUID з винятком. */
-  private PriceModifierEntity findByUuidOrThrow(UUID uuid) {
-    return repository.findByUuid(uuid).orElseThrow(() -> new PriceModifierNotFoundException(uuid));
+  /** Знайти модифікатор за ID з винятком. */
+  private PriceModifierEntity findByIdOrThrow(UUID id) {
+    return repository.findById(id).orElseThrow(() -> new PriceModifierNotFoundException(id));
   }
 
   /** Валідація унікальності коду. */

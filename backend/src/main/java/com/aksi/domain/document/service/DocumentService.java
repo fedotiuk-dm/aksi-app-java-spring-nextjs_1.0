@@ -63,7 +63,7 @@ public class DocumentService {
   /** Отримати документ за ID. */
   @Transactional(readOnly = true)
   public DocumentResponse getDocumentById(UUID documentId) {
-    DocumentEntity entity = findEntityByIdOrThrow(documentMapper.uuidToLong(documentId));
+    DocumentEntity entity = findEntityByIdOrThrow(documentId);
     return documentMapper.toDocumentResponse(entity);
   }
 
@@ -108,7 +108,7 @@ public class DocumentService {
   /** Оновити статус документа. */
   public DocumentResponse updateDocumentStatus(
       UUID documentId, UpdateDocumentStatusRequest request) {
-    DocumentEntity entity = findEntityByIdOrThrow(documentMapper.uuidToLong(documentId));
+    DocumentEntity entity = findEntityByIdOrThrow(documentId);
 
     DocumentStatus newStatus = documentMapper.apiToDomainDocumentStatus(request.getStatus());
 
@@ -123,7 +123,7 @@ public class DocumentService {
 
   /** Видалити документ. */
   public void deleteDocument(UUID documentId) {
-    DocumentEntity entity = findEntityByIdOrThrow(documentMapper.uuidToLong(documentId));
+    DocumentEntity entity = findEntityByIdOrThrow(documentId);
 
     // Валідація можливості видалення (тільки DRAFT документи можна видаляти)
     if (entity.getStatus() != DocumentStatus.DRAFT) {
@@ -140,7 +140,7 @@ public class DocumentService {
   /** Отримати квитанцію за ID. */
   @Transactional(readOnly = true)
   public ReceiptResponse getReceiptById(UUID receiptId) {
-    ReceiptEntity entity = findReceiptEntityByIdOrThrow(documentMapper.uuidToLong(receiptId));
+    ReceiptEntity entity = findReceiptEntityByIdOrThrow(receiptId);
     return documentMapper.toReceiptResponse(entity);
   }
 
@@ -179,7 +179,7 @@ public class DocumentService {
 
   /** Позначити квитанцію як роздруковану. */
   public ReceiptResponse markReceiptAsPrinted(UUID receiptId) {
-    ReceiptEntity entity = findReceiptEntityByIdOrThrow(documentMapper.uuidToLong(receiptId));
+    ReceiptEntity entity = findReceiptEntityByIdOrThrow(receiptId);
 
     if (!entity.canBePrinted()) {
       throw new DocumentValidationException(
@@ -213,8 +213,7 @@ public class DocumentService {
   /** Отримати підпис за ID. */
   @Transactional(readOnly = true)
   public DigitalSignatureResponse getDigitalSignatureById(UUID signatureId) {
-    DigitalSignatureEntity entity =
-        findDigitalSignatureEntityByIdOrThrow(documentMapper.uuidToLong(signatureId));
+    DigitalSignatureEntity entity = findDigitalSignatureEntityByIdOrThrow(signatureId);
     return documentMapper.toDigitalSignatureResponse(entity);
   }
 
@@ -222,39 +221,39 @@ public class DocumentService {
 
   /** Знайти DocumentEntity за ID. */
   @Transactional(readOnly = true)
-  public Optional<DocumentEntity> findEntityById(Long id) {
+  public Optional<DocumentEntity> findEntityById(UUID id) {
     return documentRepository.findById(id);
   }
 
   /** Знайти DocumentEntity за ID або викинути exception. */
   @Transactional(readOnly = true)
-  public DocumentEntity findEntityByIdOrThrow(Long id) {
+  public DocumentEntity findEntityByIdOrThrow(UUID id) {
     return findEntityById(id)
         .orElseThrow(() -> new DocumentNotFoundException("Document not found with id: " + id));
   }
 
   /** Знайти ReceiptEntity за ID. */
   @Transactional(readOnly = true)
-  public Optional<ReceiptEntity> findReceiptEntityById(Long id) {
+  public Optional<ReceiptEntity> findReceiptEntityById(UUID id) {
     return receiptRepository.findById(id);
   }
 
   /** Знайти ReceiptEntity за ID або викинути exception. */
   @Transactional(readOnly = true)
-  public ReceiptEntity findReceiptEntityByIdOrThrow(Long id) {
+  public ReceiptEntity findReceiptEntityByIdOrThrow(UUID id) {
     return findReceiptEntityById(id)
         .orElseThrow(() -> new ReceiptNotFoundException("Receipt not found with id: " + id));
   }
 
   /** Знайти DigitalSignatureEntity за ID. */
   @Transactional(readOnly = true)
-  public Optional<DigitalSignatureEntity> findDigitalSignatureEntityById(Long id) {
+  public Optional<DigitalSignatureEntity> findDigitalSignatureEntityById(UUID id) {
     return digitalSignatureRepository.findById(id);
   }
 
   /** Знайти DigitalSignatureEntity за ID або викинути exception. */
   @Transactional(readOnly = true)
-  public DigitalSignatureEntity findDigitalSignatureEntityByIdOrThrow(Long id) {
+  public DigitalSignatureEntity findDigitalSignatureEntityByIdOrThrow(UUID id) {
     return findDigitalSignatureEntityById(id)
         .orElseThrow(
             () ->
@@ -276,7 +275,7 @@ public class DocumentService {
   }
 
   /** Видалити DocumentEntity за ID. */
-  public void deleteEntity(Long id) {
+  public void deleteEntity(UUID id) {
     DocumentEntity entity = findEntityByIdOrThrow(id);
 
     // Валідація можливості видалення (тільки DRAFT документи можна видаляти)
@@ -294,9 +293,7 @@ public class DocumentService {
   /** Перевірити чи документ готовий для завантаження. */
   @Transactional(readOnly = true)
   public boolean isDocumentReadyForDownload(UUID documentId) {
-    return findEntityById(documentMapper.uuidToLong(documentId))
-        .map(DocumentEntity::canBeDownloaded)
-        .orElse(false);
+    return findEntityById(documentId).map(DocumentEntity::canBeDownloaded).orElse(false);
   }
 
   /** Отримати кількість документів за статусом. */
@@ -308,9 +305,7 @@ public class DocumentService {
   /** Перевірити чи квитанція готова для друку. */
   @Transactional(readOnly = true)
   public boolean isReceiptReadyForPrint(UUID receiptId) {
-    return findReceiptEntityById(documentMapper.uuidToLong(receiptId))
-        .map(ReceiptEntity::canBePrinted)
-        .orElse(false);
+    return findReceiptEntityById(receiptId).map(ReceiptEntity::canBePrinted).orElse(false);
   }
 
   // ===== HELPER МЕТОДИ =====

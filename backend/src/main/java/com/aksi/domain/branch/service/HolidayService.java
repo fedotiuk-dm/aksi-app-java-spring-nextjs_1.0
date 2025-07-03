@@ -131,7 +131,7 @@ public class HolidayService {
   @Transactional(readOnly = true)
   private HolidayEntity findEntityById(UUID uuid) {
     return holidayRepository
-        .findByUuid(uuid)
+        .findById(uuid)
         .orElseThrow(() -> new RuntimeException("Holiday not found: " + uuid));
   }
 

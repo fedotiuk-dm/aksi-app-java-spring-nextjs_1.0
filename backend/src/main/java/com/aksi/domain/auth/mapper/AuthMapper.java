@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.UUID;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -29,7 +28,7 @@ public interface AuthMapper {
    * {@code UserEntity} → {@code UserResponse} Головний маппінг для публічної інформації
    * користувача.
    */
-  @Mapping(target = "id", source = "id", qualifiedByName = "longToUuid")
+  @Mapping(target = "id", source = "id")
   @Mapping(
       target = "createdAt",
       source = "createdAt",
@@ -63,18 +62,6 @@ public interface AuthMapper {
       String accessToken, String refreshToken, Long expiresIn, UserEntity userEntity);
 
   // Utility mappings
-
-  /** Long (Entity) → UUID (DTO) Аналог з ClientMapper. */
-  @Named("longToUuid")
-  default UUID longToUuid(Long id) {
-    return id != null ? UUID.nameUUIDFromBytes(id.toString().getBytes()) : null;
-  }
-
-  /** UUID (DTO) → Long (Entity) Зворотна конвертація. */
-  @Named("uuidToLong")
-  default Long uuidToLong(UUID uuid) {
-    return uuid != null ? (long) Math.abs(uuid.hashCode()) : null;
-  }
 
   /** LocalDateTime (Entity) → OffsetDateTime (DTO) Аналог з ClientMapper. */
   @Named("localDateTimeToOffsetDateTime")

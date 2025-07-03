@@ -5,21 +5,27 @@ BranchResponse:
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     code:
       type: string
       description: Унікальний код філії
       example: AKSI-01
+      nullable: false
     name:
       type: string
       description: Назва філії
       example: Хімчистка AKSI - Центр
+      nullable: false
     description:
       type: string
       description: Опис розташування
+      nullable: false
     address:
       $ref: "../../common/schemas/address.yaml#/Address"
+      nullable: false
     contactInfo:
       $ref: "#/ContactInfoResponse"
+      nullable: false
     coordinates:
       $ref: "#/CoordinatesResponse"
     status:
@@ -30,6 +36,7 @@ BranchResponse:
       type: integer
       format: int64
       description: Поточний лічильник квитанцій
+      nullable: false
   allOf:
     - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
 
@@ -51,15 +58,18 @@ ContactInfoResponse:
     phone:
       type: string
       description: Основний телефон
+      nullable: false
     alternativePhone:
       type: string
       description: Додатковий телефон
     email:
       type: string
       description: Email філії
+      nullable: false
     managerName:
       type: string
       description: Ім'я менеджера
+      nullable: false
 
 CoordinatesResponse:
   type: object
@@ -104,22 +114,27 @@ WorkingDayResponse:
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     dayOfWeek:
       $ref: "../schemas/branch-enums.yaml#/DayOfWeek"
     openTime:
       type: string
       format: time
       description: Час відкриття
+      nullable: false
     closeTime:
       type: string
       format: time
       description: Час закриття
+      nullable: false
     isWorkingDay:
       type: boolean
       description: Чи є день робочим
+      nullable: false
     notes:
       type: string
       description: Примітки до дня
+      nullable: false
 
 HolidayResponse:
   type: object
@@ -127,15 +142,19 @@ HolidayResponse:
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     date:
       $ref: "../../common/schemas/base.yaml#/Date"
       description: Дата свята
+      nullable: false
     name:
       type: string
       description: Назва свята
+      nullable: false
     isRecurring:
       type: boolean
       description: Чи повторюється щороку
+      nullable: false
 
 BranchOpenStatusResponse:
   type: object
@@ -143,15 +162,19 @@ BranchOpenStatusResponse:
   properties:
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     isOpen:
       type: boolean
       description: Чи відкрита філія зараз
+      nullable: false
     checkDateTime:
       $ref: "../../common/schemas/base.yaml#/Timestamp"
       description: Час перевірки
+      nullable: false
     currentStatus:
       $ref: "../schemas/branch-enums.yaml#/BranchOpenStatus"
       description: Поточний статус
+      nullable: false
     nextOpenTime:
       $ref: "../../common/schemas/base.yaml#/Timestamp"
       description: Наступний час відкриття (якщо зачинена)
@@ -164,6 +187,7 @@ NextWorkingDayResponse:
   properties:
     branchId:
       $ref: "../../common/schemas/base.yaml#/UUID"
+      nullable: false
     nextWorkingDate:
       $ref: "../../common/schemas/base.yaml#/Date"
       description: Наступна робоча дата

@@ -2,7 +2,6 @@ package com.aksi.domain.branch.entity;
 
 import java.time.LocalDate;
 import java.time.MonthDay;
-import java.util.UUID;
 
 import com.aksi.shared.BaseEntity;
 
@@ -26,8 +25,7 @@ import lombok.ToString;
     name = "holidays",
     indexes = {
       @Index(name = "idx_holiday_schedule", columnList = "working_schedule_id"),
-      @Index(name = "idx_holiday_date", columnList = "date"),
-      @Index(name = "idx_holiday_uuid", columnList = "uuid")
+      @Index(name = "idx_holiday_date", columnList = "date")
     })
 @Data
 @Builder
@@ -36,14 +34,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true, exclude = "workingSchedule")
 public class HolidayEntity extends BaseEntity {
-
-  /**
-   * UUID для API сумісності (зовнішній ідентифікатор) Внутрішньо використовуємо Long id з
-   * BaseEntity.
-   */
-  @Column(name = "uuid", nullable = false, unique = true, updatable = false)
-  @Builder.Default
-  private UUID uuid = UUID.randomUUID();
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "working_schedule_id", nullable = false)
