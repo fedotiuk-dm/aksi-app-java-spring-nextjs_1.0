@@ -12,11 +12,10 @@ databaseChangeLog:
         - createTable:
             tableName: documents
             columns:
-              # BaseEntity поля
+              # BaseEntity поля (UUID як primary key)
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -86,11 +85,10 @@ databaseChangeLog:
         - createTable:
             tableName: receipts
             columns:
-              # BaseEntity поля
+              # BaseEntity поля (UUID як primary key)
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -124,7 +122,7 @@ databaseChangeLog:
                   type: JSON
               - column:
                   name: pdf_document_id
-                  type: BIGINT
+                  type: UUID
               - column:
                   name: qr_code_id
                   type: UUID
@@ -155,11 +153,10 @@ databaseChangeLog:
         - createTable:
             tableName: digital_signatures
             columns:
-              # BaseEntity поля
+              # BaseEntity поля (UUID як primary key)
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -209,7 +206,7 @@ databaseChangeLog:
                   defaultValue: "true"
               - column:
                   name: receipt_id
-                  type: BIGINT
+                  type: UUID
 
   # Додавання Foreign Key constraints
   - changeSet:

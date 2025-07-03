@@ -115,7 +115,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: active
+                  name: is_active
                   type: BOOLEAN
                   constraints:
                     nullable: false
@@ -152,7 +152,7 @@ databaseChangeLog:
             indexName: idx_price_list_items_active
             columns:
               - column:
-                  name: active
+                  name: is_active
 
         - createIndex:
             tableName: price_list_items
@@ -215,7 +215,7 @@ databaseChangeLog:
                   type: TEXT
                   remarks: "JSON масив категорій до яких застосовується модифікатор"
               - column:
-                  name: active
+                  name: is_active
                   type: BOOLEAN
                   constraints:
                     nullable: false
@@ -258,7 +258,7 @@ databaseChangeLog:
             indexName: idx_price_modifiers_active
             columns:
               - column:
-                  name: active
+                  name: is_active
 
         - sql:
             sql: "ALTER TABLE price_modifiers ADD CONSTRAINT chk_modifier_type CHECK (modifier_type IN ('PERCENTAGE', 'FIXED_AMOUNT', 'JEXL'))"

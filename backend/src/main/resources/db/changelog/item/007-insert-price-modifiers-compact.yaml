@@ -40,7 +40,7 @@ databaseChangeLog:
                   type: NUMERIC
                   header: value
               - column:
-                  name: active
+                  name: is_active
                   type: BOOLEAN
                   header: active
               - column:

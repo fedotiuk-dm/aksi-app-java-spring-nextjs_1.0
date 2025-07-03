@@ -7,20 +7,13 @@ databaseChangeLog:
         - createTable:
             tableName: branches
             columns:
-              # BaseEntity поля
+              # BaseEntity поля (UUID як primary key)
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column:
-                  name: uuid
-                  type: UUID
-                  constraints:
-                    nullable: false
-                    unique: true
               - column:
                   name: created_at
                   type: TIMESTAMP
@@ -136,12 +129,6 @@ databaseChangeLog:
       author: system
       changes:
         - createIndex:
-            indexName: idx_branch_uuid
-            tableName: branches
-            columns:
-              - column:
-                  name: uuid
-        - createIndex:
             indexName: idx_branch_code
             tableName: branches
             columns:
@@ -203,20 +190,13 @@ databaseChangeLog:
         - createTable:
             tableName: working_schedules
             columns:
-              # BaseEntity поля
+              # BaseEntity поля (UUID як primary key)
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column:
-                  name: uuid
-                  type: UUID
-                  constraints:
-                    nullable: false
-                    unique: true
               - column:
                   name: created_at
                   type: TIMESTAMP
@@ -233,7 +213,7 @@ databaseChangeLog:
               # WorkingScheduleEntity поля
               - column:
                   name: branch_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: false
               - column:
@@ -256,12 +236,6 @@ databaseChangeLog:
       author: system
       changes:
         - createIndex:
-            indexName: idx_working_schedule_uuid
-            tableName: working_schedules
-            columns:
-              - column:
-                  name: uuid
-        - createIndex:
             indexName: idx_working_schedule_branch_id
             tableName: working_schedules
             columns:
@@ -282,20 +256,13 @@ databaseChangeLog:
         - createTable:
             tableName: working_days
             columns:
-              # BaseEntity поля
+              # BaseEntity поля (UUID як primary key)
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column:
-                  name: uuid
-                  type: UUID
-                  constraints:
-                    nullable: false
-                    unique: true
               - column:
                   name: created_at
                   type: TIMESTAMP
@@ -312,7 +279,7 @@ databaseChangeLog:
               # WorkingDayEntity поля
               - column:
                   name: working_schedule_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: false
               - column:
@@ -355,12 +322,6 @@ databaseChangeLog:
       id: 007-create-working-days-indexes
       author: system
       changes:
-        - createIndex:
-            indexName: idx_working_day_uuid
-            tableName: working_days
-            columns:
-              - column:
-                  name: uuid
         - createIndex:
             indexName: idx_working_day_schedule_id
             tableName: working_days
@@ -412,20 +373,13 @@ databaseChangeLog:
         - createTable:
             tableName: holidays
             columns:
-              # BaseEntity поля
+              # BaseEntity поля (UUID як primary key)
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: UUID
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column:
-                  name: uuid
-                  type: UUID
-                  constraints:
-                    nullable: false
-                    unique: true
               - column:
                   name: created_at
                   type: TIMESTAMP
@@ -442,7 +396,7 @@ databaseChangeLog:
               # HolidayEntity поля
               - column:
                   name: working_schedule_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: false
               - column:
@@ -478,12 +432,6 @@ databaseChangeLog:
       id: 010-create-holidays-indexes
       author: system
       changes:
-        - createIndex:
-            indexName: idx_holiday_uuid
-            tableName: holidays
-            columns:
-              - column:
-                  name: uuid
         - createIndex:
             indexName: idx_holiday_schedule_id
             tableName: holidays

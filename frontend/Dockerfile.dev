@@ -40,14 +40,12 @@ ENV CHOKIDAR_USEPOLLING=true
 # Копіюємо конфігураційні файли для кешування залежностей
 COPY --chown=node:node package*.json .npmrc* ./
 
-# Встановлюємо залежності з оптимізацією швидкості (цей шар буде закешований)
-RUN npm config set audit false && \
-    npm config set fund false && \
-    npm config set progress false && \
-    npm config set fetch-retries 3 && \
-    npm config set maxsockets 20 && \
-    npm config set audit-level none && \
-    npm ci --no-audit --no-fund --prefer-offline || npm install --no-audit --no-fund --prefer-offline
+# Встановлюємо залежності, використовуючи .npmrc для конфігурації
+# Це прискорить білд, оскільки цей шар буде кешуватися
+RUN npm ci || npm install
+
+# Копіюємо решту файлів додатку
+COPY --chown=node:node . .
 
 # Створюємо директорії для Next.js кешу
 RUN mkdir -p .next/cache && \
@@ -66,4 +64,3 @@ ENTRYPOINT ["dumb-init", "--"]
 # Команда для запуску в розробці з hot reload
 # npm ci вже виконано в RUN, тому просто запускаємо dev сервер
 CMD ["npm", "run", "dev"]
-

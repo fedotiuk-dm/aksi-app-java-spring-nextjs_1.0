@@ -8,7 +8,7 @@ databaseChangeLog:
             tableName: branches
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "550e8400-e29b-41d4-a716-446655440001"
               - column:
                   name: code
@@ -75,7 +75,7 @@ databaseChangeLog:
             tableName: branches
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "550e8400-e29b-41d4-a716-446655440002"
               - column:
                   name: code
@@ -142,7 +142,7 @@ databaseChangeLog:
             tableName: branches
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "550e8400-e29b-41d4-a716-446655440003"
               - column:
                   name: code
@@ -214,7 +214,7 @@ databaseChangeLog:
             tableName: working_schedules
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "660e8400-e29b-41d4-a716-446655440001"
               - column:
                   name: branch_id
@@ -230,7 +230,7 @@ databaseChangeLog:
             tableName: working_schedules
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "660e8400-e29b-41d4-a716-446655440002"
               - column:
                   name: branch_id
@@ -246,7 +246,7 @@ databaseChangeLog:
             tableName: working_schedules
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "660e8400-e29b-41d4-a716-446655440003"
               - column:
                   name: branch_id
@@ -267,11 +267,11 @@ databaseChangeLog:
             tableName: working_days
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "770e8400-e29b-41d4-a716-446655440001"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: day_of_week
                   value: "MONDAY"
@@ -298,11 +298,11 @@ databaseChangeLog:
             tableName: working_days
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "770e8400-e29b-41d4-a716-446655440002"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: day_of_week
                   value: "TUESDAY"
@@ -329,11 +329,11 @@ databaseChangeLog:
             tableName: working_days
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "770e8400-e29b-41d4-a716-446655440003"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: day_of_week
                   value: "WEDNESDAY"
@@ -360,11 +360,11 @@ databaseChangeLog:
             tableName: working_days
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "770e8400-e29b-41d4-a716-446655440004"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: day_of_week
                   value: "THURSDAY"
@@ -391,11 +391,11 @@ databaseChangeLog:
             tableName: working_days
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "770e8400-e29b-41d4-a716-446655440005"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: day_of_week
                   value: "FRIDAY"
@@ -422,11 +422,11 @@ databaseChangeLog:
             tableName: working_days
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "770e8400-e29b-41d4-a716-446655440006"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: day_of_week
                   value: "SATURDAY"
@@ -450,11 +450,11 @@ databaseChangeLog:
             tableName: working_days
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "770e8400-e29b-41d4-a716-446655440007"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: day_of_week
                   value: "SUNDAY"
@@ -477,11 +477,11 @@ databaseChangeLog:
             tableName: holidays
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "880e8400-e29b-41d4-a716-446655440001"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: name
                   value: "Новий рік"
@@ -502,11 +502,11 @@ databaseChangeLog:
             tableName: holidays
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "880e8400-e29b-41d4-a716-446655440002"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: name
                   value: "День Незалежності України"
@@ -527,11 +527,11 @@ databaseChangeLog:
             tableName: holidays
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "880e8400-e29b-41d4-a716-446655440003"
               - column:
                   name: working_schedule_id
-                  valueComputed: "(SELECT id FROM working_schedules WHERE uuid = '660e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM working_schedules WHERE id = '660e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: name
                   value: "Спеціальний вихідний"

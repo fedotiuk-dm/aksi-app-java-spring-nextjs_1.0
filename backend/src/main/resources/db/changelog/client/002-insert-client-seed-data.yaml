@@ -10,7 +10,7 @@ databaseChangeLog:
             tableName: clients
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "550e8400-e29b-41d4-a716-446655440001"
               - column:
                   name: first_name
@@ -69,7 +69,7 @@ databaseChangeLog:
             tableName: clients
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "550e8400-e29b-41d4-a716-446655440002"
               - column:
                   name: first_name
@@ -107,7 +107,7 @@ databaseChangeLog:
             tableName: clients
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "550e8400-e29b-41d4-a716-446655440003"
               - column:
                   name: first_name
@@ -151,7 +151,7 @@ databaseChangeLog:
             tableName: clients
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "550e8400-e29b-41d4-a716-446655440004"
               - column:
                   name: first_name
@@ -198,7 +198,7 @@ databaseChangeLog:
             tableName: clients
             columns:
               - column:
-                  name: uuid
+                  name: id
                   value: "550e8400-e29b-41d4-a716-446655440005"
               - column:
                   name: first_name
@@ -261,7 +261,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: communication_method
                   value: "PHONE"
@@ -270,7 +270,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: communication_method
                   value: "EMAIL"
@@ -279,7 +279,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440001')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440001')"
               - column:
                   name: communication_method
                   value: "VIBER"
@@ -290,7 +290,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440002')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440002')"
               - column:
                   name: communication_method
                   value: "PHONE"
@@ -299,7 +299,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440002')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440002')"
               - column:
                   name: communication_method
                   value: "SMS"
@@ -310,7 +310,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440003')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440003')"
               - column:
                   name: communication_method
                   value: "EMAIL"
@@ -319,7 +319,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440003')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440003')"
               - column:
                   name: communication_method
                   value: "TELEGRAM"
@@ -330,7 +330,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440004')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440004')"
               - column:
                   name: communication_method
                   value: "PHONE"
@@ -339,7 +339,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440004')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440004')"
               - column:
                   name: communication_method
                   value: "EMAIL"
@@ -350,7 +350,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440005')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440005')"
               - column:
                   name: communication_method
                   value: "PHONE"
@@ -359,7 +359,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: client_id
-                  valueComputed: "(SELECT id FROM clients WHERE uuid = '550e8400-e29b-41d4-a716-446655440005')"
+                  valueComputed: "(SELECT id FROM clients WHERE id = '550e8400-e29b-41d4-a716-446655440005')"
               - column:
                   name: communication_method
                   value: "EMAIL"
