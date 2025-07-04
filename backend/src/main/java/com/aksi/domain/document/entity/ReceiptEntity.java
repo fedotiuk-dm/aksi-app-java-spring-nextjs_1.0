@@ -48,7 +48,7 @@ public class ReceiptEntity extends BaseEntity {
   private String receiptNumber;
 
   // Receipt data as JSON column - буде мапитися через MapStruct
-  @Column(name = "data", columnDefinition = "JSON")
+  @Column(name = "data", nullable = false, columnDefinition = "JSON")
   private String data;
 
   // Relationships
@@ -64,17 +64,17 @@ public class ReceiptEntity extends BaseEntity {
   @Column(name = "qr_code_id")
   private UUID qrCodeId;
 
-  @Column(name = "is_printed")
+  @Column(name = "is_printed", nullable = false)
   @Builder.Default
   private Boolean isPrinted = false;
 
-  @Column(name = "printed_at")
+  @Column(name = "printed_at", nullable = false)
   private LocalDateTime printedAt;
 
-  @Column(name = "generated_at")
+  @Column(name = "generated_at", nullable = false)
   private LocalDateTime generatedAt;
 
-  @Column(name = "generated_by", length = 100)
+  @Column(name = "generated_by", nullable = false, length = 100)
   private String generatedBy;
 
   // Business methods

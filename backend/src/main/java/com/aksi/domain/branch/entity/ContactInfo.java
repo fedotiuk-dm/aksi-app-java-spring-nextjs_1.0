@@ -15,16 +15,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ContactInfo {
 
-  @Column(name = "phone", length = 20)
+  @Column(name = "phone", nullable = false, length = 20)
   private String phone;
 
   @Column(name = "alternative_phone", length = 20)
   private String alternativePhone;
 
-  @Column(name = "email", length = 100)
+  @Column(name = "email", nullable = false, length = 100)
   private String email;
 
-  @Column(name = "manager_name", length = 100)
+  @Column(name = "manager_name", nullable = false, length = 100)
   private String managerName;
 
   /** Перевіряє чи є валідна контактна інформація. */

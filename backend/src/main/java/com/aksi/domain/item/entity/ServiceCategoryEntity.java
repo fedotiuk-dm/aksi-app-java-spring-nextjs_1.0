@@ -53,7 +53,7 @@ public class ServiceCategoryEntity extends BaseEntity {
   private String name;
 
   @Size(max = 1000, message = "Опис не може бути довше 1000 символів")
-  @Column(name = "description", columnDefinition = "TEXT")
+  @Column(name = "description", nullable = false, columnDefinition = "TEXT")
   private String description;
 
   @Column(name = "parent_id")

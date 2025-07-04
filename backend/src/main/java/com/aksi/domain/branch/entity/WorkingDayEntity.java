@@ -44,17 +44,17 @@ public class WorkingDayEntity extends BaseEntity {
   @Column(name = "day_of_week", nullable = false)
   private java.time.DayOfWeek dayOfWeek;
 
-  @Column(name = "open_time")
+  @Column(name = "open_time", nullable = false)
   private LocalTime openTime;
 
-  @Column(name = "close_time")
+  @Column(name = "close_time", nullable = false)
   private LocalTime closeTime;
 
   @Column(name = "is_working_day", nullable = false)
   @Builder.Default
   private Boolean isWorkingDay = false;
 
-  @Column(name = "notes", length = 200)
+  @Column(name = "notes", nullable = false, length = 200)
   private String notes;
 
   // Business methods

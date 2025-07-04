@@ -40,7 +40,7 @@ public class BranchEntity extends BaseEntity {
   @Column(name = "name", nullable = false, length = 100)
   private String name;
 
-  @Column(name = "description", length = 500)
+  @Column(name = "description", nullable = false, length = 500)
   private String description;
 
   // Address fields (embedded)

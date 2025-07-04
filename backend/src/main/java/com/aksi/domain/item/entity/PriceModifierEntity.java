@@ -52,7 +52,7 @@ public class PriceModifierEntity extends BaseEntity {
   private String name;
 
   @Size(max = 500, message = "Опис не може бути довше 500 символів")
-  @Column(name = "description", length = 500)
+  @Column(name = "description", nullable = false, length = 500)
   private String description;
 
   @NotBlank(message = "Тип модифікатора обов'язковий")

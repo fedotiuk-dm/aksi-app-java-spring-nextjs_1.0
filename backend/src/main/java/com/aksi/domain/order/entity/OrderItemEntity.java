@@ -64,19 +64,19 @@ public class OrderItemEntity extends BaseEntity {
   @Builder.Default
   private Integer quantity = 1;
 
-  @Column(name = "unit", length = 10)
+  @Column(name = "unit", nullable = false, length = 10)
   private String unit; // Використовуємо String для API enum UnitType
 
-  @Column(name = "material", length = 50)
+  @Column(name = "material", nullable = false, length = 50)
   private String material;
 
-  @Column(name = "color", length = 50)
+  @Column(name = "color", nullable = false, length = 50)
   private String color;
 
-  @Column(name = "filling", length = 50)
+  @Column(name = "filling", nullable = false, length = 50)
   private String filling;
 
-  @Column(name = "wear_degree")
+  @Column(name = "wear_degree", nullable = false)
   private Integer wearDegree;
 
   @ElementCollection(targetClass = StainType.class)
@@ -93,14 +93,14 @@ public class OrderItemEntity extends BaseEntity {
   @Builder.Default
   private Set<DefectType> defects = new HashSet<>();
 
-  @Column(name = "defect_notes", length = 500)
+  @Column(name = "defect_notes", nullable = false, length = 500)
   private String defectNotes;
 
-  @Column(name = "base_price", precision = 10, scale = 2)
+  @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
   @Builder.Default
   private BigDecimal basePrice = BigDecimal.ZERO;
 
-  @Column(name = "final_price", precision = 10, scale = 2)
+  @Column(name = "final_price", nullable = false, precision = 10, scale = 2)
   @Builder.Default
   private BigDecimal finalPrice = BigDecimal.ZERO;
 

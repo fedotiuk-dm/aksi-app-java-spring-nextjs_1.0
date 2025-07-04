@@ -74,24 +74,24 @@ public class OrderEntity extends BaseEntity {
   @Embedded private OrderCalculationEntity calculation;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "urgency")
+  @Column(name = "urgency", nullable = false)
   @Builder.Default
   private UrgencyType urgency = UrgencyType.NORMAL;
 
-  @Column(name = "execution_date")
+  @Column(name = "execution_date", nullable = false)
   private LocalDateTime executionDate;
 
   @Embedded private DiscountEntity discount;
 
   @Embedded private PaymentInfoEntity payment;
 
-  @Column(name = "notes", length = 1000)
+  @Column(name = "notes", nullable = false, length = 1000)
   private String notes;
 
-  @Column(name = "client_signature", columnDefinition = "TEXT")
+  @Column(name = "client_signature", nullable = false, columnDefinition = "TEXT")
   private String clientSignature;
 
-  @Column(name = "operator_name", length = 100)
+  @Column(name = "operator_name", nullable = false, length = 100)
   private String operatorName;
 
   @Column(name = "final_notes", length = 500)
