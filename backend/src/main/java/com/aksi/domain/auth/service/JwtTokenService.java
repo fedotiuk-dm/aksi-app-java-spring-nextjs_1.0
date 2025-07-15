@@ -83,33 +83,9 @@ public class JwtTokenService {
         .signWith(secretKey, Jwts.SIG.HS512);
   }
 
-  /** Отримання користувача ID з токену. */
-  public UUID getUserIdFromToken(String token) {
-    Claims claims = getClaimsFromToken(token);
-    return UUID.fromString(claims.getSubject());
-  }
-
-  /** Отримання username з токену. */
-  public String getUsernameFromToken(String token) {
-    Claims claims = getClaimsFromToken(token);
-    return claims.get("username", String.class);
-  }
-
-  /** Отримання ролей з токену. */
-  @SuppressWarnings("unchecked")
-  public List<String> getRolesFromToken(String token) {
-    Claims claims = getClaimsFromToken(token);
-    return (List<String>) claims.get("roles");
-  }
-
   /** Перевірка валідності токену. */
   public boolean isTokenValid(String token) {
     return safeTokenOperation(token, claims -> true, false);
-  }
-
-  /** Перевірка чи токен прострочений. */
-  public boolean isTokenExpired(String token) {
-    return safeTokenOperation(token, claims -> claims.getExpiration().before(new Date()), true);
   }
 
   /** Отримання дати експірації токену. */
@@ -138,12 +114,6 @@ public class JwtTokenService {
   /** Отримання експірації в секундах (для API response). */
   public long getExpirationInSeconds() {
     return jwtExpirationInMs / 1000;
-  }
-
-  /** Перевірка чи токен є refresh токеном. */
-  public boolean isRefreshToken(String token) {
-    return safeTokenOperation(
-        token, claims -> "refresh".equals(claims.get("type", String.class)), false);
   }
 
   /** Отримання всіх даних користувача з токену. */

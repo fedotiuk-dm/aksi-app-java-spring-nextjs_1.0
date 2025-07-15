@@ -17,7 +17,7 @@
               username: "admin"
               email: "admin@aksi.com"
               firstName: "Олександр"
-              lastName: "Петренко"
+              lastName: "Олійник"
               roles: ["ADMIN"]
               isActive: true
               createdAt: "2024-01-15T10:30:00Z"

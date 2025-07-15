@@ -115,7 +115,7 @@ aksi:
 
 # JWT Configuration
 jwt:
-  secret: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+  secret: eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0
   expiration: 86400000 # 24 години у мілісекундах
   refresh:
     expiration: 604800000 # 7 днів у мілісекундах
@@ -147,13 +147,13 @@ spring:
       on-profile: dev
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/aksi_cleaners_db_v5}
     username: ${SPRING_DATASOURCE_USERNAME:aksi_user}
     password: ${SPRING_DATASOURCE_PASSWORD:1911}
 
   jpa:
     hibernate:
-      ddl-auto: validate # Використовуємо тільки Liquibase для міграцій
+#      ddl-auto: validate # Використовуємо тільки Liquibase для міграцій
     show-sql: true
     properties:
       hibernate:

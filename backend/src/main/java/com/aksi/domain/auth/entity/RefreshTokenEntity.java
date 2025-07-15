@@ -66,31 +66,4 @@ public class RefreshTokenEntity extends BaseEntity {
   public boolean isValid() {
     return Boolean.TRUE.equals(isActive) && expiresAt.isAfter(LocalDateTime.now());
   }
-
-  /** Перевірка чи токен закінчився. */
-  public boolean isExpired() {
-    return expiresAt.isBefore(LocalDateTime.now());
-  }
-
-  /** Відзначення використання токену. */
-  public void markAsUsed() {
-    this.lastUsedAt = LocalDateTime.now();
-  }
-
-  /** Інвалідація токену. */
-  public void invalidate() {
-    this.isActive = false;
-  }
-
-  /** Продовження терміну дії токену. */
-  public void extendExpiration(int daysToAdd) {
-    this.expiresAt = LocalDateTime.now().plusDays(daysToAdd);
-    this.lastUsedAt = LocalDateTime.now();
-  }
-
-  /** Оновлення інформації про пристрій. */
-  public void updateDeviceInfo(String deviceInfo, String ipAddress) {
-    this.deviceInfo = deviceInfo;
-    this.ipAddress = ipAddress;
-  }
 }

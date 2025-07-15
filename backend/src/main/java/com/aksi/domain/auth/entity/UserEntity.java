@@ -46,7 +46,7 @@ public class UserEntity extends BaseEntity {
   @Column(name = "email", nullable = false, unique = true, length = 100)
   private String email;
 
-  @Column(name = "password_hash", nullable = false, length = 255)
+  @Column(name = "password_hash", nullable = false)
   private String passwordHash;
 
   @Column(name = "first_name", nullable = false, length = 50)
@@ -78,53 +78,10 @@ public class UserEntity extends BaseEntity {
 
   // Business Methods
 
-  /** Повне ім'я користувача. */
-  public String getFullName() {
-    return firstName + " " + lastName;
-  }
-
   /** Перевірка чи користувач активний та не заблокований. */
   public boolean isActiveAndNotLocked() {
     return Boolean.TRUE.equals(isActive)
         && (lockedUntil == null || lockedUntil.isBefore(LocalDateTime.now()));
-  }
-
-  /** Перевірка чи користувач має конкретну роль. */
-  public boolean hasRole(UserRole role) {
-    return roles.contains(role);
-  }
-
-  /** Перевірка чи користувач може виконувати адміністративні дії. */
-  public boolean canAdministrate() {
-    return roles.stream().anyMatch(UserRole::isAdministrative);
-  }
-
-  /** Перевірка чи користувач може працювати з касою. */
-  public boolean canHandleCash() {
-    return roles.stream().anyMatch(UserRole::canHandleCash);
-  }
-
-  /** Перевірка чи користувач може приймати замовлення. */
-  public boolean canTakeOrders() {
-    return roles.stream().anyMatch(UserRole::canTakeOrders);
-  }
-
-  /** Додавання ролі користувачу. */
-  public void addRole(UserRole role) {
-    if (!roles.contains(role)) {
-      roles.add(role);
-    }
-  }
-
-  /** Видалення ролі користувача. */
-  public void removeRole(UserRole role) {
-    roles.remove(role);
-  }
-
-  /** Оновлення останнього входу. */
-  public void updateLastLogin() {
-    this.lastLoginAt = LocalDateTime.now();
-    this.failedLoginAttempts = 0; // скидаємо лічильник невдалих спроб
   }
 
   /** Збільшення лічильника невдалих спроб входу. */
@@ -134,21 +91,6 @@ public class UserEntity extends BaseEntity {
     // Блокування після 5 невдалих спроб на 1 хвилину (під час розробки)
     if (this.failedLoginAttempts >= 5) {
       this.lockedUntil = LocalDateTime.now().plusMinutes(1);
-    }
-  }
-
-  /** Скидання блокування. */
-  public void unlockAccount() {
-    this.lockedUntil = null;
-    this.failedLoginAttempts = 0;
-  }
-
-  /** Активація/деактивація користувача. */
-  public void setActiveStatus(boolean active) {
-    this.isActive = active;
-    if (active) {
-      // При активації скидаємо блокування
-      unlockAccount();
     }
   }
 }

@@ -1,7 +1,6 @@
 package com.aksi.domain.auth.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,7 +15,6 @@ import com.aksi.api.auth.dto.RefreshTokenRequest;
 import com.aksi.api.auth.dto.UserResponse;
 import com.aksi.domain.auth.entity.RefreshTokenEntity;
 import com.aksi.domain.auth.entity.UserEntity;
-import com.aksi.domain.auth.enums.UserRole;
 import com.aksi.domain.auth.exception.InvalidCredentialsException;
 import com.aksi.domain.auth.exception.InvalidTokenException;
 import com.aksi.domain.auth.exception.UserBlockedException;
@@ -98,8 +96,8 @@ public class AuthService {
     validateUserStatus(user);
 
     // Оновлення refresh токену
-    refreshToken.markAsUsed();
-    refreshTokenRepository.save(refreshToken);
+    refreshTokenRepository.updateLastUsed(refreshToken.getToken(), LocalDateTime.now());
+    refreshTokenRepository.invalidateToken(refreshToken.getToken());
 
     // Генерація нових токенів
     String newAccessToken = jwtTokenService.generateAccessToken(user);
@@ -121,14 +119,8 @@ public class AuthService {
 
     if (refreshToken != null) {
       // Інвалідація refresh токену
-      refreshTokenRepository
-          .findByToken(refreshToken)
-          .ifPresent(
-              token -> {
-                token.invalidate();
-                refreshTokenRepository.save(token);
-                log.debug("Refresh токен інвалідовано");
-              });
+      refreshTokenRepository.invalidateToken(refreshToken);
+      log.debug("Refresh токен інвалідовано");
     }
 
     LogoutResponse response = new LogoutResponse();
@@ -148,21 +140,6 @@ public class AuthService {
     return authMapper.toUserResponse(user);
   }
 
-  /** Отримання поточного користувача з JWT токена API метод для JWT Security Filter. */
-  public UserResponse getCurrentUserFromToken(String token) {
-    log.debug("Отримання інформації про користувача з токена");
-
-    // Отримуємо ID з токена
-    UUID userId = jwtTokenService.getUserIdFromToken(token);
-
-    UserEntity user = findUserById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-
-    // Перевірка статусу користувача
-    validateUserStatus(user);
-
-    return authMapper.toUserResponse(user);
-  }
-
   // Entity методи (для внутрішньої логіки)
 
   /** Пошук користувача за ID. */
@@ -172,62 +149,13 @@ public class AuthService {
 
   /** Пошук користувача за username або email. */
   public Optional<UserEntity> findUserByUsernameOrEmail(String identifier) {
-    // Перевірка чи це email
-    if (identifier.contains("@")) {
-      String normalizedEmail = userValidator.normalizeEmail(identifier);
-      return userRepository.findByEmail(normalizedEmail);
-    } else {
-      String normalizedUsername = userValidator.normalizeUsername(identifier);
-      return userRepository.findByUsername(normalizedUsername);
-    }
-  }
+    // Нормалізуємо identifier залежно від типу
+    String normalizedIdentifier =
+        identifier.contains("@")
+            ? userValidator.normalizeEmail(identifier)
+            : userValidator.normalizeUsername(identifier);
 
-  /** Створення нового користувача. */
-  @Transactional
-  public UserEntity createUser(
-      String username,
-      String email,
-      String password,
-      String firstName,
-      String lastName,
-      List<UserRole> roles) {
-    log.debug("Створення нового користувача: {}", username);
-
-    // Нормалізація даних
-    String normalizedUsername = userValidator.normalizeUsername(username);
-    String normalizedEmail = userValidator.normalizeEmail(email);
-    String normalizedFirstName = userValidator.normalizeName(firstName);
-    String normalizedLastName = userValidator.normalizeName(lastName);
-
-    // Перевірка унікальності
-    if (userRepository.existsByUsername(normalizedUsername)) {
-      throw new com.aksi.domain.auth.exception.UserAlreadyExistsException(
-          "username", normalizedUsername);
-    }
-    if (userRepository.existsByEmail(normalizedEmail)) {
-      throw new com.aksi.domain.auth.exception.UserAlreadyExistsException("email", normalizedEmail);
-    }
-
-    // Створення Entity
-    UserEntity user =
-        UserEntity.builder()
-            .username(normalizedUsername)
-            .email(normalizedEmail)
-            .passwordHash(passwordEncoder.encode(password))
-            .firstName(normalizedFirstName)
-            .lastName(normalizedLastName)
-            .roles(roles)
-            .isActive(true)
-            .failedLoginAttempts(0)
-            .build();
-
-    // Валідація бізнес-правил
-    userValidator.validateForCreation(user);
-
-    UserEntity savedUser = userRepository.save(user);
-    log.info("Користувач {} створений з ID: {}", savedUser.getUsername(), savedUser.getId());
-
-    return savedUser;
+    return userRepository.findByUsernameOrEmail(normalizedIdentifier);
   }
 
   // Приватні допоміжні методи
@@ -250,8 +178,7 @@ public class AuthService {
   }
 
   private void handleSuccessfulLogin(UserEntity user) {
-    user.updateLastLogin();
-    userRepository.save(user);
+    userRepository.updateLastLogin(user.getId(), LocalDateTime.now());
   }
 
   private RefreshTokenEntity validateRefreshToken(String token) {
@@ -259,16 +186,10 @@ public class AuthService {
     jwtTokenService.validateToken(token);
 
     // Потім перевіряємо наявність в БД та статус
-    RefreshTokenEntity refreshToken =
-        refreshTokenRepository
-            .findByToken(token)
-            .orElseThrow(() -> new InvalidTokenException("Невалідний refresh токен"));
 
-    if (!refreshToken.isValid()) {
-      throw new InvalidTokenException("Refresh токен прострочений або неактивний");
-    }
-
-    return refreshToken;
+    return refreshTokenRepository
+        .findValidToken(token, LocalDateTime.now())
+        .orElseThrow(InvalidTokenException::refreshToken);
   }
 
   private void createRefreshTokenEntity(UserEntity user, String refreshToken) {

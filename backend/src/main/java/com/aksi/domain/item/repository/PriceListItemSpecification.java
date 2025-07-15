@@ -32,6 +32,8 @@ public class PriceListItemSpecification {
     };
   }
 
+  // public static Specification<PriceListItemEntity> searchByKeywords (String searchTerm)
+
   /** Предмети за назвою (містить). */
   public static Specification<PriceListItemEntity> nameContains(String searchTerm) {
     return (root, query, criteriaBuilder) -> {

@@ -13,9 +13,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.aksi.config.security.JwtAuthenticationEntryPoint;
+import com.aksi.config.security.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
 
   private final Environment environment;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
   @Value("${cors.allowed-origins:http://localhost:3000,http://localhost:3001}")
   private String corsAllowedOrigins;
@@ -75,8 +81,9 @@ public class SecurityConfig {
                 authz
                     // Публічні endpoints (без авторизації)
                     .requestMatchers(
-                        // Auth endpoints (логін, реєстрація, refresh token)
-                        "/api/auth/**",
+                        // Auth endpoints (логін, refresh token)
+                        "/api/auth/login",
+                        "/api/auth/refresh-token",
 
                         // OpenAPI документація
                         "/v3/api-docs/**",
@@ -100,8 +107,13 @@ public class SecurityConfig {
               }
             });
 
-    // JWT авторизація буде додана через JWT фільтри
-    // HTTP Basic відключено для REST API
+    // Додаємо JWT фільтр перед UsernamePasswordAuthenticationFilter
+    if (!isDevProfile) {
+      http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+          .exceptionHandling(
+              exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+      log.info("🔑 JWT Authentication filter and entry point added to security chain");
+    }
 
     return http.build();
   }

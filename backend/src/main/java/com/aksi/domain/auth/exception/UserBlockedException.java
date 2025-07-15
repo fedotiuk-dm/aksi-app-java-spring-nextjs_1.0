@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import lombok.Getter;
 
-/** Виняток для заблокованих користувачів Domain-specific RuntimeException. */
+/** Виняток для заблокованих користувачів. */
 @Getter
 public class UserBlockedException extends RuntimeException {
 
@@ -18,10 +18,5 @@ public class UserBlockedException extends RuntimeException {
   public UserBlockedException(String username, LocalDateTime lockedUntil) {
     super("Користувач " + username + " заблокований до " + lockedUntil);
     this.lockedUntil = lockedUntil;
-  }
-
-  public UserBlockedException(String message, Throwable cause) {
-    super(message, cause);
-    this.lockedUntil = null;
   }
 }

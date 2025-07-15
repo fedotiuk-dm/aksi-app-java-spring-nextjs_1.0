@@ -37,19 +37,4 @@ public enum UserRole {
   public String toApiValue() {
     return this.value;
   }
-
-  /** Перевірка чи є роль адміністративною. */
-  public boolean isAdministrative() {
-    return this == ADMIN || this == MANAGER;
-  }
-
-  /** Перевірка чи може роль працювати з касою. */
-  public boolean canHandleCash() {
-    return this == CASHIER || this == MANAGER || this == ADMIN;
-  }
-
-  /** Перевірка чи може роль приймати замовлення. */
-  public boolean canTakeOrders() {
-    return this == OPERATOR || this == EMPLOYEE || this == MANAGER || this == ADMIN;
-  }
 }

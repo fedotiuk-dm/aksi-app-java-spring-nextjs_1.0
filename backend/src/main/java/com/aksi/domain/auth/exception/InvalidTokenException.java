@@ -1,29 +1,17 @@
 package com.aksi.domain.auth.exception;
 
-/** Виняток для невалідних токенів Domain-specific RuntimeException. */
+/** Виняток для невалідних токенів. */
 public class InvalidTokenException extends RuntimeException {
-
-  public InvalidTokenException() {
-    super("Токен недійсний або закінчився");
-  }
 
   public InvalidTokenException(String message) {
     super(message);
   }
 
-  public InvalidTokenException(String tokenType, String reason) {
-    super("Невалідний " + tokenType + " токен: " + reason);
+  public InvalidTokenException(String message, Throwable cause) {
+    super(message, cause);
   }
 
   public static InvalidTokenException refreshToken() {
-    return new InvalidTokenException("refresh", "недійсний або закінчився");
-  }
-
-  public static InvalidTokenException accessToken() {
-    return new InvalidTokenException("access", "недійсний або закінчився");
-  }
-
-  public InvalidTokenException(String message, Throwable cause) {
-    super(message, cause);
+    return new InvalidTokenException("Невалідний refresh токен: недійсний або закінчився");
   }
 }
