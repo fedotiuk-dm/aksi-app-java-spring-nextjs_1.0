@@ -85,7 +85,13 @@ public class JwtTokenService {
 
   /** Перевірка валідності токену. */
   public boolean isTokenValid(String token) {
-    return safeTokenOperation(token, claims -> true, false);
+    try {
+      parseTokenClaims(token);
+      return true;
+    } catch (JwtException | IllegalArgumentException e) {
+      log.debug("Токен невалідний: {}", e.getMessage());
+      return false;
+    }
   }
 
   /** Отримання дати експірації токену. */
@@ -141,18 +147,6 @@ public class JwtTokenService {
       String lastName,
       Boolean isActive,
       List<String> roles) {}
-
-  /** Безпечне виконання операції з токеном (generic exception handler). */
-  private <T> T safeTokenOperation(
-      String token, java.util.function.Function<Claims, T> operation, T defaultValue) {
-    try {
-      Claims claims = parseTokenClaims(token);
-      return operation.apply(claims);
-    } catch (JwtException | IllegalArgumentException e) {
-      log.debug("Операція з токеном невдала: {}", e.getMessage());
-      return defaultValue;
-    }
-  }
 
   /** Отримання Claims з токену з exception handling. */
   private Claims getClaimsFromToken(String token) {
