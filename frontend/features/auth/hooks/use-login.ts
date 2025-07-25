@@ -3,7 +3,6 @@
  */
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -20,7 +19,6 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const useLogin = () => {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const setUser = useAuthStore((state) => state.setUser);
 
@@ -38,14 +36,21 @@ export const useLogin = () => {
     try {
       const response = await authService.login(data);
       
-      if (response.success && response.user) {
-        setUser(response.user);
-        toast.success(`Вітаємо, ${response.user.firstName}!`);
+      if (response.success) {
+        if (response.user) {
+          setUser(response.user);
+          toast.success(`Вітаємо, ${response.user.firstName}!`);
+        } else {
+          // Якщо немає даних користувача, просто показуємо загальне повідомлення
+          toast.success('Вхід успішний!');
+        }
         
         // Перенаправляємо на dashboard або збережену сторінку
         const params = new URLSearchParams(window.location.search);
         const callbackUrl = params.get('callbackUrl') || '/dashboard';
-        router.push(callbackUrl);
+        
+        // Використовуємо window.location для надійного редіректу
+        window.location.href = callbackUrl;
       } else {
         toast.error(response.message || 'Невірний логін або пароль');
         form.setError('root', {

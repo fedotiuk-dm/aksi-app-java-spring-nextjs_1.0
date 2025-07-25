@@ -126,7 +126,7 @@ export const handleApiError = (error: unknown): ApiError => {
 };
 
 // Отримуємо базовий URL API з змінних середовища
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 console.log('🔧 Axios baseURL:', baseURL);
 
@@ -150,9 +150,11 @@ if (process.env.NODE_ENV === 'development') {
     const url = config.url || '';
     const isSensitive = url.includes('/auth/') || url.includes('/users/');
 
-    if (!isSensitive) {
-      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
-    }
+    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
+      withCredentials: config.withCredentials,
+      headers: config.headers,
+    });
+
     return config;
   });
 
@@ -187,7 +189,7 @@ let failedQueue: QueueItem[] = [];
 async function refreshToken(): Promise<boolean> {
   try {
     // Викликаємо backend API для оновлення токена
-    await apiClient.post('/api/auth/refresh-token', {});
+    await apiClient.post('/auth/refresh-token', {});
     return true;
   } catch (error) {
     console.error('Помилка оновлення токена:', error);
@@ -254,8 +256,8 @@ apiClient.interceptors.response.use(
     // Створюємо розширену помилку API для кращого логування
     const apiError = ApiError.fromAxiosError(error);
 
-    // Логуємо помилку у режимі розробки
-    if (process.env.NODE_ENV === 'development') {
+    // Логуємо помилку у режимі розробки (крім /users/me)
+    if (process.env.NODE_ENV === 'development' && !error.config?.url?.includes('/users/me')) {
       apiError.logToConsole();
     }
 
@@ -269,10 +271,36 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // Обробка 500 Internal Server Error
+    if (error.response?.status === 500) {
+      // Особлива обробка для /users/me - це може означати, що користувач не авторизований
+      if (originalRequest.url?.includes('/users/me')) {
+        console.log('📌 500 error on /users/me - user might not be authenticated');
+        return Promise.reject(new ApiError({
+          status: 401,
+          message: 'Користувач не авторизований',
+          path: '/users/me',
+          method: 'GET'
+        }));
+      }
+
+      // Для інших 500 помилок
+      console.error('🔴 Server error:', error.response.data);
+      return Promise.reject(apiError);
+    }
+
+    // Спеціальна обробка для /users/me - не логуємо і не показуємо помилки
+    if (originalRequest.url?.includes('/users/me')) {
+      if (error.response?.status === 401 || error.response?.status === 404 || error.response?.status === 500) {
+        // Тихо повертаємо помилку без логування
+        return Promise.reject(new Error('User not authenticated'));
+      }
+    }
+
     // Обробка 401 Unauthorized помилки - спроба оновити токен
     if (error.response?.status === 401 && !originalRequest._retry) {
       // Ігноруємо, якщо це вже запит на оновлення токена
-      if (originalRequest.url?.includes('/api/auth/refresh-token')) {
+      if (originalRequest.url?.includes('/auth/refresh-token')) {
         useAuthStore.getState().logout();
         window.location.href = '/login';
         return Promise.reject(error);
@@ -318,9 +346,12 @@ apiClient.interceptors.response.use(
 
     // Обробка 403 Forbidden
     if (error.response?.status === 403) {
-      useAuthStore.getState().logout();
-      const callbackUrl = window.location.pathname + window.location.search;
-      window.location.href = `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+      // Не перенаправляємо на логін для /users/me
+      if (!originalRequest.url?.includes('/users/me')) {
+        useAuthStore.getState().logout();
+        const callbackUrl = window.location.pathname + window.location.search;
+        window.location.href = `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+      }
     }
 
     // Логування деталей помилки

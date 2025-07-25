@@ -25,10 +25,16 @@ class AuthService {
   async login(credentials: LoginRequest): Promise<AuthServiceResponse> {
     try {
       // Backend встановить HttpOnly cookies автоматично
-      await api.post('/api/auth/login', credentials);
+      await api.post('/auth/login', credentials);
       
-      // Отримуємо дані користувача після успішного логіну
-      const user = await this.getCurrentUser();
+      // Спробуємо отримати користувача, але не блокуємо успішний логін
+      let user = undefined;
+      try {
+        user = await this.getCurrentUser();
+      } catch (getUserError) {
+        // Ігноруємо помилку отримання користувача - логін все одно успішний
+        console.log('Could not get user data after login, but login was successful');
+      }
       
       return {
         success: true,
@@ -49,7 +55,7 @@ class AuthService {
    */
   async logout(): Promise<void> {
     try {
-      await api.post('/api/auth/logout');
+      await api.post('/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
       // Навіть якщо помилка - очищаємо локальний стан
@@ -61,10 +67,21 @@ class AuthService {
    */
   async getCurrentUser(): Promise<UserResponse | null> {
     try {
-      console.log('🔍 Getting current user from /api/users/me');
-      return await api.get<UserResponse>('/api/users/me');
-    } catch (error) {
-      console.error('Get current user error:', error);
+      console.log('🔍 Getting current user from /users/me');
+      const response = await api.get<UserResponse>('/users/me');
+      console.log('✅ User data received:', response);
+      return response;
+    } catch (error: any) {
+      console.log('❌ Get current user error:', error?.response?.status || error.message);
+      
+      // Якщо помилка 401 або 500 (що теж може означати не авторизований) - це нормально
+      if (error?.response?.status === 401 || error?.response?.status === 500) {
+        console.log('📌 User not authenticated, returning null');
+        return null;
+      }
+      
+      // Для інших помилок також повертаємо null, але логуємо
+      console.error('Unexpected error getting user:', error);
       return null;
     }
   }
@@ -88,7 +105,7 @@ class AuthService {
    */
   async refreshToken(): Promise<boolean> {
     try {
-      await api.post('/api/auth/refresh-token');
+      await api.post('/auth/refresh-token');
       return true;
     } catch {
       return false;

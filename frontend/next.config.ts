@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || BACKEND_URL,
   },
 
+  // Вимкнено proxy - використовуємо прямі запити до бекенду
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/:path*',
+  //       destination: `${BACKEND_URL}/api/:path*`,
+  //     },
+  //   ];
+  // },
+
   // Пропуск перевірки типів під час збірки
   typescript: {
     // Дозволяємо успішне завершення збірки для продакшну, навіть якщо

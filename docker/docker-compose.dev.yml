@@ -1,27 +1,27 @@
 services:
-  # Traefik - зворотний проксі для маршрутизації
-  traefik:
-    image: traefik:v3.5
-    container_name: traefik-dev
-    ports:
-      - "80:80" # HTTP порт
-      - "9090:8080" # Traefik Dashboard (змінено з 8080 на 9090, щоб уникнути конфлікту)
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command:
-      # Налаштування Docker провайдера
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      # Налаштування точок входу
-      - "--entrypoints.web.address=:80"
-      # Включення API Dashboard
-      - "--api.dashboard=true"
-      - "--api.insecure=true"
-      # Налаштування логування
-      - "--log.level=INFO"
-    networks:
-      - aksi-network-dev
-    restart: unless-stopped
+  # # Traefik - зворотний проксі для маршрутизації
+  # traefik:
+  #   image: traefik:v3.5
+  #   container_name: traefik-dev
+  #   ports:
+  #     - "80:80" # HTTP порт
+  #     - "9090:8080" # Traefik Dashboard (змінено з 8080 на 9090, щоб уникнути конфлікту)
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   command:
+  #     # Налаштування Docker провайдера
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.exposedbydefault=false"
+  #     # Налаштування точок входу
+  #     - "--entrypoints.web.address=:80"
+  #     # Включення API Dashboard
+  #     - "--api.dashboard=true"
+  #     - "--api.insecure=true"
+  #     # Налаштування логування
+  #     - "--log.level=INFO"
+  #   networks:
+  #     - aksi-network-dev
+  #   restart: unless-stopped
   # PostgreSQL - зберігаємо однаковий з основним compose файлом
   postgres:
     image: postgres:17
@@ -109,7 +109,8 @@ services:
       SPRING_DEVTOOLS_RESTART_ENABLED: "true"
       SPRING_DEVTOOLS_LIVERELOAD_ENABLED: "true"
       # Рівень логування (ERROR для максимально чистих логів, DEBUG для детальної діагностики)
-      AKSI_LOG_LEVEL: "ERROR"
+      AKSI_LOG_LEVEL: "DEBUG"
+      LOGGING_LEVEL_COM_AKSI: "DEBUG"
     volumes:
       - ../backend/src:/app/src # Монтуємо тільки src для hot reload
       - ../backend/target:/app/target # Монтуємо target для збереження compiled класів
@@ -117,8 +118,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      traefik:
-        condition: service_started
+      # traefik:
+      #   condition: service_started
     restart: unless-stopped
     networks:
       - aksi-network-dev
@@ -135,15 +136,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s # Даємо більше часу на запуск Spring Boot
-    labels:
-      # Налаштування Traefik
-      - "traefik.enable=true"
-      # Правило маршрутизації - всі запити на /api/* спрямовуються на бекенд
-      - "traefik.http.routers.backend.rule=PathPrefix(`/`)"
-      # Вказуємо на якому порті працює сервіс
-      - "traefik.http.services.backend.loadbalancer.server.port=8080"
-      # Середній пріоритет для backend маршрутів
-      - "traefik.http.routers.backend.priority=50"
+    # labels:
+    #   # Налаштування Traefik
+    #   - "traefik.enable=true"
+    #   # Правило маршрутизації - запити на /api/* спрямовуються на бекенд
+    #   - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+    #   # Вказуємо на якому порті працює сервіс
+    #   - "traefik.http.services.backend.loadbalancer.server.port=8080"
+    #   # Високий пріоритет для /api маршрутів
+    #   - "traefik.http.routers.backend.priority=100"
 
   # Frontend (Next.js) - розробка
   frontend:
@@ -157,10 +158,10 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: development
-      # API URL для клієнтської частини (browser) - через Traefik
-      NEXT_PUBLIC_API_URL: http://localhost
+      # API URL для клієнтської частини (browser) - прямі запити до backend
+      NEXT_PUBLIC_API_URL: http://localhost:8080/api
       # API URL для серверної частини (SSR) - прямо до backend контейнера
-      NEXT_SERVER_API_URL: http://backend:8080
+      NEXT_SERVER_API_URL: http://backend:8080/api
       NEXT_TELEMETRY_DISABLED: 1
       # Orval конфігурація для генерації API
       ORVAL_API_URL: http://backend:8080/v3/api-docs
@@ -179,8 +180,8 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-      traefik:
-        condition: service_started
+      # traefik:
+      #   condition: service_started
     restart: unless-stopped
     networks:
       - aksi-network-dev
@@ -191,15 +192,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s # Даємо час на запуск Next.js
-    labels:
-      # Налаштування Traefik
-      - "traefik.enable=true"
-      # Правило маршрутизації - всі запити, які не починаються з /api
-      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
-      # Пріоритет - низький, щоб дозволити спочатку обробити /api запити
-      - "traefik.http.routers.frontend.priority=1"
-      # Вказуємо на якому порті працює сервіс
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    # labels:
+    #   # Налаштування Traefik
+    #   - "traefik.enable=true"
+    #   # Правило маршрутизації - всі запити, які не починаються з /api
+    #   - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+    #   # Пріоритет - низький, щоб дозволити спочатку обробити /api запити
+    #   - "traefik.http.routers.frontend.priority=1"
+    #   # Вказуємо на якому порті працює сервіс
+    #   - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
 networks:
   aksi-network-dev:

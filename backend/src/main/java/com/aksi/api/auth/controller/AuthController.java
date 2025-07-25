@@ -2,6 +2,7 @@ package com.aksi.api.auth.controller;
 
 import java.time.Duration;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import com.aksi.api.auth.dto.LoginRequest;
 import com.aksi.api.auth.dto.LogoutResponse;
 import com.aksi.api.auth.dto.RefreshTokenRequest;
 import com.aksi.domain.auth.config.JwtProperties;
+import com.aksi.domain.auth.service.AuthEventLogger;
 import com.aksi.domain.auth.service.AuthService;
 import com.aksi.domain.auth.util.CookieUtils;
 
@@ -33,10 +35,17 @@ public class AuthController {
   private final AuthService authService;
   private final CookieUtils cookieUtils;
   private final JwtProperties jwtProperties;
+  private final AuthEventLogger eventLogger;
 
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(
-      @Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+      @Valid @RequestBody LoginRequest loginRequest,
+      HttpServletResponse response,
+      HttpServletRequest request) {
+
+    eventLogger.logAuthenticationAttempt();
+    eventLogger.logLoginRequest(
+        loginRequest.getUsername(), request.getRemoteAddr(), request.getHeader("User-Agent"));
 
     AuthResponse authResponse = authService.authenticate(loginRequest);
 
@@ -46,12 +55,14 @@ public class AuthController {
         authResponse.getAccessToken(),
         Duration.ofSeconds(jwtProperties.getAccessTokenExpirationSeconds()));
 
+    eventLogger.logCookieSet("accessToken", false, null);
+
     cookieUtils.createRefreshTokenCookie(
         response,
         authResponse.getRefreshToken(),
         Duration.ofSeconds(jwtProperties.getRefreshTokenExpirationSeconds()));
 
-    log.info("User authenticated successfully, cookies set");
+    eventLogger.logCookieSet("refreshToken", false, null);
 
     // Return response without tokens (they are in httpOnly cookies)
     AuthResponse safeResponse =
@@ -68,13 +79,31 @@ public class AuthController {
   public ResponseEntity<LogoutResponse> logout(
       HttpServletRequest request, HttpServletResponse response) {
 
+    // Get current user from SecurityContext before clearing
+    String username =
+        SecurityContextHolder.getContext().getAuthentication() != null
+            ? SecurityContextHolder.getContext().getAuthentication().getName()
+            : "Unknown";
+
+    eventLogger.logLogoutRequest(
+        username, request.getRemoteAddr(), request.getHeader("User-Agent"));
+
     // Get access token from cookies
     String accessToken = cookieUtils.getAccessTokenFromCookies(request);
+
+    if (accessToken == null) {
+      eventLogger.logCookieNotFound("accessToken");
+    }
+
+    eventLogger.logDebug(
+        "LOGOUT - Access token from cookies: {}", accessToken != null ? "present" : "missing");
 
     if (accessToken != null) {
       // Create a fake Authorization header for the existing logout logic
       String fakeAuthHeader = "Bearer " + accessToken;
       authService.logout(fakeAuthHeader);
+    } else {
+      eventLogger.logDebug("No access token found in cookies, skipping token revocation");
     }
 
     // Clear all auth cookies
@@ -83,7 +112,7 @@ public class AuthController {
     // Clear security context
     SecurityContextHolder.clearContext();
 
-    log.info("User logged out successfully, cookies cleared");
+    eventLogger.logDebug("Cookies cleared for user: {}", username);
 
     LogoutResponse logoutResponse = new LogoutResponse();
     logoutResponse.setSuccess(true);
@@ -100,7 +129,8 @@ public class AuthController {
     String refreshToken = cookieUtils.getRefreshTokenFromCookies(request);
 
     if (refreshToken == null) {
-      throw new IllegalStateException("No refresh token found in cookies");
+      eventLogger.logCookieNotFound("refreshToken");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     // Create refresh token request
@@ -118,7 +148,7 @@ public class AuthController {
 
     // Refresh token stays the same in this implementation
 
-    log.info("Tokens refreshed successfully, cookies updated");
+    eventLogger.logDebug("Tokens refreshed successfully, cookies updated");
 
     // Return response without tokens (they are in httpOnly cookies)
     AuthResponse safeResponse =

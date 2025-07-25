@@ -14,12 +14,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -49,7 +50,7 @@ public class SecurityConfig {
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final UserDetailsProvider userDetailsProvider;
 
-  @Value("${cors.allowed-origins:http://localhost:3000,http://localhost:3001}")
+  @Value("${cors.allowed-origins:http://localhost:3000,http://localhost:3001,http://localhost}")
   private String corsAllowedOrigins;
 
   /** Password encoder для хешування паролів Використовує BCrypt algorithm з силою 12. */
@@ -73,8 +74,28 @@ public class SecurityConfig {
         // CORS конфігурація
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-        // CSRF відключено для REST API
-        .csrf(AbstractHttpConfigurer::disable)
+        // CSRF конфігурація для cookie-based auth
+        .csrf(
+            csrf -> {
+              if (isDevProfile) {
+                // DEV профіль - CSRF відключено для зручності розробки
+                csrf.disable();
+                log.info("🔓 DEV mode: CSRF protection disabled");
+              } else {
+                // PRODUCTION профіль - CSRF увімкнено з cookie repository
+                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                    // Виключаємо деякі endpoints від CSRF перевірки
+                    .ignoringRequestMatchers(
+                        "/api/auth/login", // Login не потребує CSRF токену
+                        "/api/auth/refresh-token", // Refresh використовує свій токен
+                        "/v3/api-docs/**", // OpenAPI
+                        "/swagger-ui/**", // Swagger UI
+                        "/actuator/**" // Actuator endpoints
+                        );
+                log.info("🔒 PROD mode: CSRF protection enabled with cookie repository");
+              }
+            })
 
         // Session management - stateless для REST API
         .sessionManagement(
@@ -120,13 +141,13 @@ public class SecurityConfig {
             });
 
     // Додаємо JWT фільтр перед UsernamePasswordAuthenticationFilter
-    if (!isDevProfile) {
-      http.authenticationProvider(authenticationProvider(passwordEncoder))
-          .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-          .exceptionHandling(
-              exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint));
-      log.info("🔑 JWT Authentication filter and entry point added to security chain");
-    }
+    http.authenticationProvider(authenticationProvider(passwordEncoder))
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .exceptionHandling(
+            exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+    log.info(
+        "🔑 JWT Authentication filter and entry point added to security chain (profile: {})",
+        isDevProfile ? "dev" : "prod");
 
     return http.build();
   }

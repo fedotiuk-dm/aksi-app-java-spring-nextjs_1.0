@@ -53,7 +53,10 @@ components:
   securitySchemes:
     BearerAuth:
       $ref: "common/security.yaml#/securitySchemes/BearerAuth"
+    CookieAuth:
+      $ref: "common/security.yaml#/securitySchemes/CookieAuth"
 
 # Більшість endpoints потребують автентифікації, крім login
 security:
-  - BearerAuth: []
+  - CookieAuth: []
+  - BearerAuth: []  # Legacy support

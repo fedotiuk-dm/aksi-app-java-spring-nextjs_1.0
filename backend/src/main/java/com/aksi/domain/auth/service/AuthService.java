@@ -33,13 +33,14 @@ public class AuthService {
   private final RefreshTokenService refreshTokenService;
   private final JwtProperties jwtProperties;
   private final UserService userService;
+  private final AuthEventLogger eventLogger;
 
   /** Authenticate user and generate tokens */
   public AuthResponse authenticate(LoginRequest request) {
     try {
       // Check if user exists
       if (!userDetailsProvider.existsByUsername(request.getUsername())) {
-        log.warn("Authentication attempt for non-existent user: {}", request.getUsername());
+        eventLogger.logLoginFailure(request.getUsername(), "Non-existent user");
         throw new InvalidCredentialsException("Invalid username or password");
       }
 
@@ -66,9 +67,10 @@ public class AuthService {
 
       // Log active tokens count
       long activeTokens = refreshTokenService.countActiveTokens(userDetails.getUsername());
-      log.info(
-          "User {} successfully authenticated. Active tokens: {}",
+      eventLogger.logLoginSuccess(
           userDetails.getUsername(),
+          userDetails.getAuthorities(),
+          jwtProperties.getAccessTokenExpirationSeconds(),
           activeTokens);
 
       // Handle successful login
@@ -82,7 +84,7 @@ public class AuthService {
           (int) jwtProperties.getAccessTokenExpirationSeconds());
 
     } catch (Exception e) {
-      log.error("Authentication failed for user: {}", request.getUsername(), e);
+      eventLogger.logLoginFailure(request.getUsername(), e.getMessage());
 
       // Handle failed login attempt
       if (e instanceof InvalidCredentialsException
@@ -97,21 +99,27 @@ public class AuthService {
 
   /** Logout user and revoke tokens */
   public void logout(String authHeader) {
+    eventLogger.logDebug(
+        "Logout initiated - AuthHeader present: {}", authHeader != null && !authHeader.isEmpty());
+
     try {
       // Extract username from token
       String token = extractTokenFromHeader(authHeader);
       String username = jwtTokenService.extractUsername(token);
+
+      eventLogger.logDebug("Logout processing for user: {}", username);
 
       // Revoke all user tokens
       refreshTokenService.revokeUserTokens(username);
 
       // Clear security context
       SecurityContextHolder.clearContext();
+      eventLogger.logSecurityContextCleared();
 
-      log.info("User {} successfully logged out", username);
+      eventLogger.logLogoutSuccess(username);
 
     } catch (Exception e) {
-      log.error("Logout failed", e);
+      eventLogger.logLogoutFailure(e.getMessage());
       throw new InvalidTokenException("Invalid token");
     }
   }
@@ -129,7 +137,8 @@ public class AuthService {
       // Generate new access token
       String newAccessToken = jwtTokenService.generateAccessToken(userDetails);
 
-      log.info("Access token refreshed for user: {}", refreshToken.getUsername());
+      eventLogger.logTokenRefresh(
+          refreshToken.getUsername(), jwtProperties.getAccessTokenExpirationSeconds());
 
       // Build response
       return new AuthResponse(

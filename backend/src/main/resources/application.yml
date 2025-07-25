@@ -76,6 +76,10 @@ management:
 logging:
   level:
     com.aksi: DEBUG
+    com.aksi.api.auth: INFO  # Show auth controller operations
+    com.aksi.domain.auth: INFO  # Show all auth operations
+    com.aksi.domain.auth.service.AuthEventLogger: INFO  # Auth event logger
+    com.aksi.domain.auth.security: DEBUG  # Debug for security filters
     org.springframework.security: DEBUG
     org.springframework.boot: INFO
     org.springframework.boot.web.embedded.tomcat: INFO
@@ -100,6 +104,10 @@ application:
       access-token-expiration: PT15M # 15 minutes
       refresh-token-expiration: P7D # 7 days
       issuer: AKSI Dry Cleaning System
+    cookie:
+      secure: ${COOKIE_SECURE:false}  # true for production (HTTPS only)
+      domain: ${COOKIE_DOMAIN:}       # set domain for production
+      sameSite: ${COOKIE_SAME_SITE:Lax}  # Strict, Lax, or None
 
 ---
 # Development profile
@@ -144,6 +152,9 @@ logging:
   level:
     root: INFO # Показувати основну інформацію
     com.aksi: DEBUG # Наш код - детальне логування
+    com.aksi.api.auth: INFO # Auth controller логи 
+    com.aksi.domain.auth: INFO # Auth service логи
+    com.aksi.domain.auth.service.AuthEventLogger: INFO # Auth event logger
     org.springframework.boot: INFO # Spring Boot запуск
     org.springframework.boot.web.embedded.tomcat: INFO # Tomcat startup
     org.springframework.context: INFO # Context initialization

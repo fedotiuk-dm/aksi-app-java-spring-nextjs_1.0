@@ -17,28 +17,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const initializeRef = useRef(false);
 
   useEffect(() => {
+    const initializeAuth = async () => {
+      // Перевіряємо чи це сторінка логіну
+      const isLoginPage = window.location.pathname === '/login';
+      
+      // Якщо це сторінка логіну - не намагаємось отримати користувача
+      if (isLoginPage) {
+        setLoading(false);
+        return;
+      }
+      
+      setLoading(true);
+      try {
+        // Просто намагаємось отримати поточного користувача
+        const currentUser = await authService.getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+        }
+      } catch {
+        // Користувач не авторизований - це нормально
+        console.log('User not authenticated - this is expected on initial load');
+        // Очищаємо стан користувача
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     // Запобігаємо подвійному виклику в React.StrictMode
     if (initializeRef.current) return;
     initializeRef.current = true;
-    
-    initializeAuth();
-  }, []);
 
-  const initializeAuth = async () => {
-    setLoading(true);
-    try {
-      // Просто намагаємось отримати поточного користувача
-      const currentUser = await authService.getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
-      }
-    } catch (error) {
-      // Користувач не авторизований - це нормально
-      console.log('User not authenticated');
-    } finally {
-      setLoading(false);
-    }
-  };
+    initializeAuth();
+  }, [setUser, setLoading]);
 
   return <>{children}</>;
 };

@@ -4,4 +4,9 @@ securitySchemes:
     type: http
     scheme: bearer
     bearerFormat: JWT
-    description: JWT токен для автентифікації
+    description: JWT токен для автентифікації (legacy - для сумісності)
+  CookieAuth:
+    type: apiKey
+    in: cookie
+    name: accessToken
+    description: JWT токен в httpOnly cookie

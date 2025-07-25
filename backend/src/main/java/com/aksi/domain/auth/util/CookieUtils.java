@@ -19,41 +19,68 @@ public class CookieUtils {
   private static final String ACCESS_TOKEN_COOKIE = "accessToken";
   private static final String REFRESH_TOKEN_COOKIE = "refreshToken";
   private static final String COOKIE_PATH = "/";
-  private static final String SAME_SITE_LAX = "Lax";
 
   @Value("${application.security.cookie.secure:false}")
   private boolean secureCookies;
 
+  @Value("${application.security.cookie.domain:}")
+  private String cookieDomain;
+
+  @Value("${application.security.cookie.sameSite:Lax}")
+  private String sameSite;
+
   /** Create httpOnly cookie for access token */
   public void createAccessTokenCookie(
       HttpServletResponse response, String token, Duration expiration) {
-    ResponseCookie cookie =
+    ResponseCookie.ResponseCookieBuilder cookieBuilder =
         ResponseCookie.from(ACCESS_TOKEN_COOKIE, token)
             .httpOnly(true)
             .secure(secureCookies) // Only over HTTPS in production
             .path(COOKIE_PATH)
             .maxAge(expiration)
-            .sameSite(SAME_SITE_LAX)
-            .build();
+            .sameSite(sameSite);
+
+    // Add domain if configured
+    if (cookieDomain != null && !cookieDomain.isEmpty()) {
+      cookieBuilder.domain(cookieDomain);
+    }
+
+    ResponseCookie cookie = cookieBuilder.build();
 
     response.addHeader("Set-Cookie", cookie.toString());
-    log.debug("Access token cookie created with expiration: {}", expiration);
+    log.debug(
+        "Access token cookie created | Expiration: {} | Secure: {} | Domain: {} | SameSite: {}",
+        expiration,
+        secureCookies,
+        cookieDomain,
+        sameSite);
   }
 
   /** Create httpOnly cookie for refresh token */
   public void createRefreshTokenCookie(
       HttpServletResponse response, String token, Duration expiration) {
-    ResponseCookie cookie =
+    ResponseCookie.ResponseCookieBuilder cookieBuilder =
         ResponseCookie.from(REFRESH_TOKEN_COOKIE, token)
             .httpOnly(true)
             .secure(secureCookies) // Only over HTTPS in production
             .path(COOKIE_PATH)
             .maxAge(expiration)
-            .sameSite(SAME_SITE_LAX)
-            .build();
+            .sameSite(sameSite);
+
+    // Add domain if configured
+    if (cookieDomain != null && !cookieDomain.isEmpty()) {
+      cookieBuilder.domain(cookieDomain);
+    }
+
+    ResponseCookie cookie = cookieBuilder.build();
 
     response.addHeader("Set-Cookie", cookie.toString());
-    log.debug("Refresh token cookie created with expiration: {}", expiration);
+    log.debug(
+        "Refresh token cookie created | Expiration: {} | Secure: {} | Domain: {} | SameSite: {}",
+        expiration,
+        secureCookies,
+        cookieDomain,
+        sameSite);
   }
 
   /** Extract access token from cookies */
@@ -97,14 +124,20 @@ public class CookieUtils {
 
   /** Clear specific cookie */
   private void clearCookie(HttpServletResponse response, String cookieName) {
-    ResponseCookie cookie =
+    ResponseCookie.ResponseCookieBuilder cookieBuilder =
         ResponseCookie.from(cookieName, "")
             .httpOnly(true)
             .secure(secureCookies)
             .path(COOKIE_PATH)
             .maxAge(0) // Expire immediately
-            .sameSite(SAME_SITE_LAX)
-            .build();
+            .sameSite(sameSite);
+
+    // Add domain if configured
+    if (cookieDomain != null && !cookieDomain.isEmpty()) {
+      cookieBuilder.domain(cookieDomain);
+    }
+
+    ResponseCookie cookie = cookieBuilder.build();
 
     response.addHeader("Set-Cookie", cookie.toString());
     log.debug("Cookie {} cleared", cookieName);
