@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -136,8 +135,7 @@ public class SecurityConfig {
   @Bean
   public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
     // Using the recommended constructor-based approach for Spring Security 6.0+
-    DaoAuthenticationProvider authProvider =
-        new DaoAuthenticationProvider((UserDetailsService) userDetailsProvider);
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsProvider);
     authProvider.setPasswordEncoder(passwordEncoder);
     return authProvider;
   }

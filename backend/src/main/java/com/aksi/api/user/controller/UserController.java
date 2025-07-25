@@ -79,7 +79,7 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN') or @userSecurity.isCurrentUser(#userId)")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<UserResponse> getUserById(UUID userId) {
     log.info("Getting user by ID: {}", userId);
     UserResponse response = userService.getUserById(userId);
@@ -87,7 +87,7 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN') or @userSecurity.isCurrentUser(#userId)")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<UserResponse> updateUser(UUID userId, UpdateUserRequest updateUserRequest) {
     log.info("Updating user: {}", userId);
     UserResponse response = userService.updateUser(userId, updateUserRequest);
@@ -95,7 +95,7 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN') or @userSecurity.isCurrentUser(#userId)")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Void> changeUserPassword(
       UUID userId, ChangePasswordRequest changePasswordRequest) {
     log.info("Changing password for user: {}", userId);

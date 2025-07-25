@@ -10,13 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.auth.dto.AuthResponse;
 import com.aksi.api.auth.dto.LoginRequest;
-import com.aksi.api.auth.dto.LogoutResponse;
 import com.aksi.api.auth.dto.RefreshTokenRequest;
 import com.aksi.domain.auth.config.JwtProperties;
 import com.aksi.domain.auth.entity.RefreshTokenEntity;
 import com.aksi.domain.auth.exception.InvalidCredentialsException;
 import com.aksi.domain.auth.exception.InvalidTokenException;
-import com.aksi.domain.auth.util.CookieUtils;
 import com.aksi.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +33,6 @@ public class AuthService {
   private final RefreshTokenService refreshTokenService;
   private final JwtProperties jwtProperties;
   private final UserService userService;
-  private final CookieUtils cookieUtils;
 
   /** Authenticate user and generate tokens */
   public AuthResponse authenticate(LoginRequest request) {
@@ -99,7 +96,7 @@ public class AuthService {
   }
 
   /** Logout user and revoke tokens */
-  public LogoutResponse logout(String authHeader) {
+  public void logout(String authHeader) {
     try {
       // Extract username from token
       String token = extractTokenFromHeader(authHeader);
@@ -112,11 +109,6 @@ public class AuthService {
       SecurityContextHolder.clearContext();
 
       log.info("User {} successfully logged out", username);
-
-      LogoutResponse response = new LogoutResponse();
-      response.setSuccess(true);
-      response.setMessage("Successfully logged out");
-      return response;
 
     } catch (Exception e) {
       log.error("Logout failed", e);
