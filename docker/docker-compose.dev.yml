@@ -129,7 +129,7 @@ services:
           "wget",
           "-q",
           "--spider",
-          "http://localhost:8080/api/actuator/health",
+          "http://localhost:8080/actuator/health",
         ]
       interval: 30s
       timeout: 10s
@@ -139,11 +139,11 @@ services:
       # Налаштування Traefik
       - "traefik.enable=true"
       # Правило маршрутизації - всі запити на /api/* спрямовуються на бекенд
-      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/`)"
       # Вказуємо на якому порті працює сервіс
       - "traefik.http.services.backend.loadbalancer.server.port=8080"
-      # Високий пріоритет для /api маршрутів
-      - "traefik.http.routers.backend.priority=100"
+      # Середній пріоритет для backend маршрутів
+      - "traefik.http.routers.backend.priority=50"
 
   # Frontend (Next.js) - розробка
   frontend:
@@ -158,12 +158,12 @@ services:
     environment:
       NODE_ENV: development
       # API URL для клієнтської частини (browser) - через Traefik
-      NEXT_PUBLIC_API_URL: http://localhost/api
+      NEXT_PUBLIC_API_URL: http://localhost
       # API URL для серверної частини (SSR) - прямо до backend контейнера
-      NEXT_SERVER_API_URL: http://backend:8080/api
+      NEXT_SERVER_API_URL: http://backend:8080
       NEXT_TELEMETRY_DISABLED: 1
       # Orval конфігурація для генерації API
-      ORVAL_API_URL: http://backend:8080/api/v3/api-docs
+      ORVAL_API_URL: http://backend:8080/v3/api-docs
       # 🚀 NPM ОПТИМІЗАЦІЯ для прискорення
       npm_config_audit: "false"
       npm_config_fund: "false"
