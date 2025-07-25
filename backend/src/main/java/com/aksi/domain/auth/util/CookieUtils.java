@@ -2,6 +2,7 @@ package com.aksi.domain.auth.util;
 
 import java.time.Duration;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,11 @@ public class CookieUtils {
   private static final String REFRESH_TOKEN_COOKIE = "refreshToken";
   private static final String COOKIE_PATH = "/";
 
+  /**
+   * -- GETTER --
+   * Get configured secure cookie setting
+   */
+  @Getter
   @Value("${application.security.cookie.secure:false}")
   private boolean secureCookies;
 
@@ -116,11 +122,6 @@ public class CookieUtils {
   private void clearCookie(HttpServletResponse response, String cookieName) {
     createAuthCookie(response, cookieName, "", Duration.ZERO);
     log.debug("Cookie {} cleared", cookieName);
-  }
-
-  /** Get configured secure cookie setting */
-  public boolean isSecureCookies() {
-    return secureCookies;
   }
 
   /** Get configured cookie domain */
