@@ -145,10 +145,8 @@ components:
       $ref: "common/schemas/pagination.yaml#/PageableInfo"
 
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    CookieAuth:
+      $ref: "common/security.yaml#/securitySchemes/CookieAuth"
 
 security:
-  - bearerAuth: []
+  - CookieAuth: []

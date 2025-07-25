@@ -1,6 +1,7 @@
 package com.aksi.domain.auth.service;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,12 +84,14 @@ public class RefreshTokenService {
   }
 
   /** Count active tokens for user */
+  @Transactional(readOnly = true)
   public long countActiveTokens(String username) {
     return refreshTokenRepository.countActiveTokensByUsername(username, Instant.now());
   }
 
   /** Find active refresh token for user */
-  public RefreshTokenEntity findActiveByUsername(String username) {
-    return refreshTokenRepository.findActiveByUsername(username, Instant.now()).orElse(null);
+  @Transactional(readOnly = true)
+  public Optional<RefreshTokenEntity> findActiveByUsername( String username) {
+    return refreshTokenRepository.findActiveByUsername(username, Instant.now());
   }
 }

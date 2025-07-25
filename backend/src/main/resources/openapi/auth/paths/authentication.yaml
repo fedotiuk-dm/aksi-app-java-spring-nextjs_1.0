@@ -20,9 +20,8 @@
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/AuthResponse"
             example:
-              accessToken: "jwt.access.token"
-              refreshToken: "jwt.refresh.token"
-              tokenType: "Bearer"
+              accessToken: null
+              refreshToken: null
               expiresIn: 3600
       "400":
         description: Невірний формат запиту
@@ -110,9 +109,8 @@
             schema:
               $ref: "../../auth-api.yaml#/components/schemas/AuthResponse"
             example:
-              accessToken: "jwt.new.access.token"
-              refreshToken: "jwt.new.refresh.token"
-              tokenType: "Bearer"
+              accessToken: null
+              refreshToken: null
               expiresIn: 3600
       "400":
         description: Невірний формат запиту

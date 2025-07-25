@@ -59,8 +59,8 @@ components:
       $ref: "common/schemas/address.yaml#/Address"
 
   securitySchemes:
-    BearerAuth:
-      $ref: "common/security.yaml#/securitySchemes/BearerAuth"
+    CookieAuth:
+      $ref: "common/security.yaml#/securitySchemes/CookieAuth"
 
 security:
-  - BearerAuth: []
+  - CookieAuth: []

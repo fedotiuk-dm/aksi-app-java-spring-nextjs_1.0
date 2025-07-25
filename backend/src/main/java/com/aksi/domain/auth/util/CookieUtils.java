@@ -117,4 +117,14 @@ public class CookieUtils {
     createAuthCookie(response, cookieName, "", Duration.ZERO);
     log.debug("Cookie {} cleared", cookieName);
   }
+
+  /** Get configured secure cookie setting */
+  public boolean isSecureCookies() {
+    return secureCookies;
+  }
+
+  /** Get configured cookie domain */
+  public String getCookieDomain() {
+    return cookieDomain != null && !cookieDomain.isEmpty() ? cookieDomain : null;
+  }
 }

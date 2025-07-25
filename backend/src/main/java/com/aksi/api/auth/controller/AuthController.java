@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.api.auth.dto.AuthResponse;
+import com.aksi.api.auth.dto.InternalAuthResponse;
 import com.aksi.api.auth.dto.LoginRequest;
 import com.aksi.api.auth.dto.LogoutResponse;
 import com.aksi.api.auth.dto.RefreshTokenRequest;
@@ -47,30 +48,27 @@ public class AuthController {
     eventLogger.logLoginRequest(
         loginRequest.getUsername(), request.getRemoteAddr(), request.getHeader("User-Agent"));
 
-    AuthResponse authResponse = authService.authenticate(loginRequest);
+    InternalAuthResponse internalAuthResponse = authService.authenticate(loginRequest);
 
     // Set httpOnly cookies
     cookieUtils.createAccessTokenCookie(
         response,
-        authResponse.getAccessToken(),
+        internalAuthResponse.getAccessToken(),
         Duration.ofSeconds(jwtProperties.getAccessTokenExpirationSeconds()));
 
-    eventLogger.logCookieSet("accessToken", false, null);
+    eventLogger.logCookieSet(
+        "accessToken", cookieUtils.isSecureCookies(), cookieUtils.getCookieDomain());
 
     cookieUtils.createRefreshTokenCookie(
         response,
-        authResponse.getRefreshToken(),
+        internalAuthResponse.getRefreshToken(),
         Duration.ofSeconds(jwtProperties.getRefreshTokenExpirationSeconds()));
 
-    eventLogger.logCookieSet("refreshToken", false, null);
+    eventLogger.logCookieSet(
+        "refreshToken", cookieUtils.isSecureCookies(), cookieUtils.getCookieDomain());
 
     // Return response without tokens (they are in httpOnly cookies)
-    AuthResponse safeResponse =
-        new AuthResponse(
-            null, // Don't return tokens in response body
-            null,
-            authResponse.getTokenType(),
-            authResponse.getExpiresIn());
+    AuthResponse safeResponse = new AuthResponse(internalAuthResponse.getExpiresIn());
 
     return ResponseEntity.ok(safeResponse);
   }
@@ -99,9 +97,7 @@ public class AuthController {
         "LOGOUT - Access token from cookies: {}", accessToken != null ? "present" : "missing");
 
     if (accessToken != null) {
-      // Create a fake Authorization header for the existing logout logic
-      String fakeAuthHeader = "Bearer " + accessToken;
-      authService.logout(fakeAuthHeader);
+      authService.logout(accessToken);
     } else {
       eventLogger.logDebug("No access token found in cookies, skipping token revocation");
     }
@@ -138,12 +134,12 @@ public class AuthController {
     refreshRequest.setRefreshToken(refreshToken);
 
     // Refresh tokens
-    AuthResponse authResponse = authService.refreshToken(refreshRequest);
+    InternalAuthResponse internalAuthResponse = authService.refreshToken(refreshRequest);
 
     // Update cookies with new tokens
     cookieUtils.createAccessTokenCookie(
         response,
-        authResponse.getAccessToken(),
+        internalAuthResponse.getAccessToken(),
         Duration.ofSeconds(jwtProperties.getAccessTokenExpirationSeconds()));
 
     // Refresh token stays the same in this implementation
@@ -151,12 +147,7 @@ public class AuthController {
     eventLogger.logDebug("Tokens refreshed successfully, cookies updated");
 
     // Return response without tokens (they are in httpOnly cookies)
-    AuthResponse safeResponse =
-        new AuthResponse(
-            null, // Don't return tokens in response body
-            null,
-            authResponse.getTokenType(),
-            authResponse.getExpiresIn());
+    AuthResponse safeResponse = new AuthResponse(internalAuthResponse.getExpiresIn());
 
     return ResponseEntity.ok(safeResponse);
   }

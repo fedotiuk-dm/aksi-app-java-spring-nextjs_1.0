@@ -1,10 +1,5 @@
 # Спільні налаштування безпеки
 securitySchemes:
-  BearerAuth:
-    type: http
-    scheme: bearer
-    bearerFormat: JWT
-    description: JWT токен для автентифікації (legacy - для сумісності)
   CookieAuth:
     type: apiKey
     in: cookie

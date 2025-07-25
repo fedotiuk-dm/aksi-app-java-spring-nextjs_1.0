@@ -153,8 +153,8 @@ components:
       $ref: "common/schemas/pagination.yaml#/PageableInfo"
 
   securitySchemes:
-    BearerAuth:
-      $ref: "common/security.yaml#/securitySchemes/BearerAuth"
+    CookieAuth:
+      $ref: "common/security.yaml#/securitySchemes/CookieAuth"
 
 security:
-  - BearerAuth: []
+  - CookieAuth: []

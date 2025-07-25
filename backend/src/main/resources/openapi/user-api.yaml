@@ -65,9 +65,9 @@ components:
       $ref: "common/schemas/errors.yaml#/FieldError"
 
   securitySchemes:
-    BearerAuth:
-      $ref: "common/security.yaml#/securitySchemes/BearerAuth"
+    CookieAuth:
+      $ref: "common/security.yaml#/securitySchemes/CookieAuth"
 
 # Всі endpoints потребують автентифікації
 security:
-  - BearerAuth: []
+  - CookieAuth: []

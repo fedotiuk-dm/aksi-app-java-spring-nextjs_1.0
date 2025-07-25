@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.api.auth.dto.AuthResponse;
+import com.aksi.api.auth.dto.InternalAuthResponse;
 import com.aksi.api.auth.dto.LoginRequest;
 import com.aksi.api.auth.dto.RefreshTokenRequest;
 import com.aksi.domain.auth.config.JwtProperties;
@@ -36,7 +36,7 @@ public class AuthService {
   private final AuthEventLogger eventLogger;
 
   /** Authenticate user and generate tokens */
-  public AuthResponse authenticate(LoginRequest request) {
+  public InternalAuthResponse authenticate(LoginRequest request) {
     try {
       // Check if user exists
       if (!userDetailsProvider.existsByUsername(request.getUsername())) {
@@ -53,12 +53,13 @@ public class AuthService {
       UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
       // Check if user already has active refresh token
-      RefreshTokenEntity existingToken =
-          refreshTokenService.findActiveByUsername(userDetails.getUsername());
-      if (existingToken != null) {
-        log.info(
-            "User {} has existing active refresh token, revoking it", userDetails.getUsername());
-      }
+      refreshTokenService
+          .findActiveByUsername(userDetails.getUsername())
+          .ifPresent(
+              existingToken ->
+                  log.info(
+                      "User {} has existing active refresh token, revoking it",
+                      userDetails.getUsername()));
 
       // Generate tokens
       String accessToken = jwtTokenService.generateAccessToken(userDetails);
@@ -77,10 +78,9 @@ public class AuthService {
       userService.handleSuccessfulLogin(userDetails.getUsername());
 
       // Build response
-      return new AuthResponse(
+      return new InternalAuthResponse(
           accessToken,
           refreshToken.getToken(),
-          AuthResponse.TokenTypeEnum.BEARER,
           (int) jwtProperties.getAccessTokenExpirationSeconds());
 
     } catch (Exception e) {
@@ -98,14 +98,18 @@ public class AuthService {
   }
 
   /** Logout user and revoke tokens */
-  public void logout(String authHeader) {
+  public void logout(String accessToken) {
     eventLogger.logDebug(
-        "Logout initiated - AuthHeader present: {}", authHeader != null && !authHeader.isEmpty());
+        "Logout initiated - Token present: {}", accessToken != null && !accessToken.isEmpty());
+
+    if (accessToken == null || accessToken.isEmpty()) {
+      eventLogger.logDebug("No token provided for logout");
+      return;
+    }
 
     try {
       // Extract username from token
-      String token = extractTokenFromHeader(authHeader);
-      String username = jwtTokenService.extractUsername(token);
+      String username = jwtTokenService.extractUsername(accessToken);
 
       eventLogger.logDebug("Logout processing for user: {}", username);
 
@@ -120,12 +124,13 @@ public class AuthService {
 
     } catch (Exception e) {
       eventLogger.logLogoutFailure(e.getMessage());
-      throw new InvalidTokenException("Invalid token");
+      // Don't throw exception on logout failure - just log it
+      log.warn("Logout failed but continuing: {}", e.getMessage());
     }
   }
 
   /** Refresh access token using refresh token */
-  public AuthResponse refreshToken(RefreshTokenRequest request) {
+  public InternalAuthResponse refreshToken(RefreshTokenRequest request) {
     try {
       // Find and verify refresh token
       RefreshTokenEntity refreshToken = refreshTokenService.findByToken(request.getRefreshToken());
@@ -141,23 +146,14 @@ public class AuthService {
           refreshToken.getUsername(), jwtProperties.getAccessTokenExpirationSeconds());
 
       // Build response
-      return new AuthResponse(
+      return new InternalAuthResponse(
           newAccessToken,
           refreshToken.getToken(),
-          AuthResponse.TokenTypeEnum.BEARER,
           (int) jwtProperties.getAccessTokenExpirationSeconds());
 
     } catch (Exception e) {
       log.error("Token refresh failed", e);
       throw new InvalidTokenException("Invalid refresh token");
     }
-  }
-
-  /** Extract token from Authorization header */
-  private String extractTokenFromHeader(String authHeader) {
-    if (authHeader != null && authHeader.startsWith("Bearer ")) {
-      return authHeader.substring(7);
-    }
-    throw new InvalidTokenException("Invalid authorization header");
   }
 }

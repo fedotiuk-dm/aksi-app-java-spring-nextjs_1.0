@@ -35,12 +35,11 @@ components:
     # Response Schemas
     AuthResponse:
       $ref: "auth/schemas/auth-responses.yaml#/AuthResponse"
+    InternalAuthResponse:
+      $ref: "auth/schemas/auth-responses.yaml#/InternalAuthResponse"
     LogoutResponse:
       $ref: "auth/schemas/auth-responses.yaml#/LogoutResponse"
 
-    # Enums
-    TokenType:
-      $ref: "auth/schemas/auth-enums.yaml#/TokenType"
 
     # Common Schemas (використовуємо спільні)
     ErrorResponse:
@@ -51,12 +50,9 @@ components:
       $ref: "common/schemas/errors.yaml#/FieldError"
 
   securitySchemes:
-    BearerAuth:
-      $ref: "common/security.yaml#/securitySchemes/BearerAuth"
     CookieAuth:
       $ref: "common/security.yaml#/securitySchemes/CookieAuth"
 
 # Більшість endpoints потребують автентифікації, крім login
 security:
   - CookieAuth: []
-  - BearerAuth: []  # Legacy support

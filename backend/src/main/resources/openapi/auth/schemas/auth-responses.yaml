@@ -1,33 +1,38 @@
 AuthResponse:
   type: object
   title: AuthResponse
-  description: Відповідь з токенами після успішної автентифікації
+  description: Відповідь після успішної автентифікації (токени в httpOnly cookies)
   required:
-    - accessToken
-    - refreshToken
-    - tokenType
     - expiresIn
   properties:
-    accessToken:
-      type: string
-      description: JWT access токен для автентифікації API запитів
-      example: "jwt.access.token"
-    refreshToken:
-      type: string
-      description: Refresh токен для оновлення access токену
-      example: "jwt.refresh.token"
-    tokenType:
-      type: string
-      description: Тип токену (завжди Bearer)
-      enum:
-        - "Bearer"
-      example: "Bearer"
     expiresIn:
       type: integer
       description: Час життя access токену в секундах
       minimum: 300
       maximum: 86400
       example: 3600
+  additionalProperties: false
+
+InternalAuthResponse:
+  type: object
+  title: InternalAuthResponse
+  description: Внутрішня відповідь з токенами для передачі між сервісом і контролером
+  required:
+    - accessToken
+    - refreshToken
+    - expiresIn
+  properties:
+    accessToken:
+      type: string
+      description: JWT access токен
+    refreshToken:
+      type: string
+      description: Refresh токен
+    expiresIn:
+      type: integer
+      description: Час життя access токену в секундах
+      minimum: 300
+      maximum: 86400
   additionalProperties: false
 
 
