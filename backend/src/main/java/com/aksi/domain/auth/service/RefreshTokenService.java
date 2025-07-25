@@ -91,7 +91,7 @@ public class RefreshTokenService {
 
   /** Find active refresh token for user */
   @Transactional(readOnly = true)
-  public Optional<RefreshTokenEntity> findActiveByUsername( String username) {
+  public Optional<RefreshTokenEntity> findActiveByUsername(String username) {
     return refreshTokenRepository.findActiveByUsername(username, Instant.now());
   }
 }

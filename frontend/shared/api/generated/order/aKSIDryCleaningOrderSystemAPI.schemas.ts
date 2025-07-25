@@ -139,26 +139,9 @@ export interface CreateUserRequest {
 }
 
 /**
- * Тип токену (завжди Bearer)
- */
-export type AuthResponseTokenType = typeof AuthResponseTokenType[keyof typeof AuthResponseTokenType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AuthResponseTokenType = {
-  Bearer: 'Bearer',
-} as const;
-
-/**
- * Відповідь з токенами після успішної автентифікації
+ * Відповідь після успішної автентифікації (токени в httpOnly cookies)
  */
 export interface AuthResponse {
-  /** JWT access токен для автентифікації API запитів */
-  accessToken: string;
-  /** Refresh токен для оновлення access токену */
-  refreshToken: string;
-  /** Тип токену (завжди Bearer) */
-  tokenType: AuthResponseTokenType;
   /**
    * Час життя access токену в секундах
    * @minimum 300

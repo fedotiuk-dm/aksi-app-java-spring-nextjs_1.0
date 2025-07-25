@@ -11,16 +11,24 @@ import type { AxiosRequestConfig } from 'axios';
  * Custom instance для Orval
  * Використовує наш налаштований axios клієнт з HttpOnly cookies
  */
-const customInstance = <T>(
+const customInstance = async <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig
 ): Promise<T> => {
-  const mergedConfig = {
-    ...config,
-    ...options,
-  };
+  try {
+    const mergedConfig: AxiosRequestConfig = {
+      ...config,
+      ...options,
+      // Забезпечуємо, що withCredentials завжди true для cookies
+      withCredentials: true,
+    };
 
-  return apiClient(mergedConfig).then(({ data }) => data);
+    const { data } = await apiClient.request<T>(mergedConfig);
+    return data;
+  } catch (error) {
+    // Передаємо помилку далі для обробки Orval
+    throw error;
+  }
 };
 
 // Default export для Orval

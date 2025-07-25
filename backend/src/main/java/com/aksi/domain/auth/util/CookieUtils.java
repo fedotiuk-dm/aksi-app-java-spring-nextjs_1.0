@@ -2,7 +2,6 @@ package com.aksi.domain.auth.util;
 
 import java.time.Duration;
 
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Component;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /** Utility class for working with HTTP cookies for JWT authentication */
@@ -21,10 +21,7 @@ public class CookieUtils {
   private static final String REFRESH_TOKEN_COOKIE = "refreshToken";
   private static final String COOKIE_PATH = "/";
 
-  /**
-   * -- GETTER --
-   * Get configured secure cookie setting
-   */
+  /** -- GETTER -- Get configured secure cookie setting */
   @Getter
   @Value("${application.security.cookie.secure:false}")
   private boolean secureCookies;

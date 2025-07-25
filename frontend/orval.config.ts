@@ -55,25 +55,25 @@ const MUTATOR_NAME = 'orvalFetcher';
 // 🎯 ДОМЕННІ ТЕГИ (синхронізовані з backend OpenAPI)
 const DOMAIN_TAGS = {
   // 🔐 Auth Domain
-  auth: ['auth', 'authentication', 'authorization'],
+  auth: ['auth-controller'],
 
-  // 👥 User Domain
-  user: ['users'],
+  // 👥 User Domain  
+  user: ['user-controller'],
 
   // 👤 Client Domain
-  client: ['clients', 'client-search', 'client-contacts'],
+  client: ['client-controller'],
 
   // 🏢 Branch Domain
-  branch: ['branches', 'working-schedule', 'receipt-numbers', 'branch-statistics'],
+  branch: ['branch-controller'],
 
   // 📦 Order Domain
-  order: ['orders', 'order-items', 'order-calculations', 'order-completion'],
+  order: ['order-controller'],
 
   // 🏷️ Item Domain
-  item: ['service-categories', 'price-list', 'price-modifiers', 'item-calculations', 'item-photos'],
+  item: ['item-controller', 'service-category-controller', 'price-list-controller'],
 
   // 📄 Document Domain
-  document: ['receipts', 'documents', 'digital-signatures', 'qr-codes', 'pdf-generation'],
+  document: ['document-controller', 'receipt-controller'],
 };
 
 // 🏭 Фабрика для створення доменних конфігурацій
@@ -83,6 +83,7 @@ const createDomainConfig = (name: string, tags: string[]) => ({
     input: {
       target: API_BASE_URL,
       filters: {
+        mode: 'include' as const,
         tags,
       },
     },
@@ -119,6 +120,7 @@ const createDomainConfig = (name: string, tags: string[]) => ({
     input: {
       target: API_BASE_URL,
       filters: {
+        mode: 'include' as const,
         tags,
       },
     },

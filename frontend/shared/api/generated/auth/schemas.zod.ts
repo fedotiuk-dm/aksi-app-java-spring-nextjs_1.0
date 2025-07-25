@@ -5,4 +5,19 @@
  * API для односторінкової системи замовлень хімчистки з DDD архітектурою
  * OpenAPI spec version: 1.0.0
  */
+import {
+  z as zod
+} from 'zod';
 
+export const loginBodyUsernameMin = 3;
+
+export const loginBodyUsernameMax = 100;
+export const loginBodyPasswordMin = 6;
+
+export const loginBodyPasswordMax = 128;
+
+
+export const loginBody = zod.strictObject({
+  "username": zod.coerce.string().min(loginBodyUsernameMin).max(loginBodyUsernameMax).describe('Ім\'я користувача або email'),
+  "password": zod.coerce.string().min(loginBodyPasswordMin).max(loginBodyPasswordMax).describe('Пароль користувача')
+}).describe('Запит на автентифікацію користувача')
