@@ -15,21 +15,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.auth.service.AuthEventLogger;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /** Health check controller for system diagnostics */
 @Slf4j
 @RestController
 @RequestMapping("/api/health")
-@RequiredArgsConstructor
 public class HealthCheckController {
 
   private final AuthEventLogger eventLogger;
   private final Environment environment;
+  private final BuildProperties buildProperties;
 
-  @Autowired(required = false)
-  private BuildProperties buildProperties;
+  public HealthCheckController(
+      AuthEventLogger eventLogger,
+      Environment environment,
+      @Autowired(required = false) BuildProperties buildProperties) {
+    this.eventLogger = eventLogger;
+    this.environment = environment;
+    this.buildProperties = buildProperties;
+  }
 
   @GetMapping("/check")
   public ResponseEntity<Map<String, Object>> healthCheck() {

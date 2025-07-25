@@ -32,22 +32,7 @@ public class CookieUtils {
   /** Create httpOnly cookie for access token */
   public void createAccessTokenCookie(
       HttpServletResponse response, String token, Duration expiration) {
-    ResponseCookie.ResponseCookieBuilder cookieBuilder =
-        ResponseCookie.from(ACCESS_TOKEN_COOKIE, token)
-            .httpOnly(true)
-            .secure(secureCookies) // Only over HTTPS in production
-            .path(COOKIE_PATH)
-            .maxAge(expiration)
-            .sameSite(sameSite);
-
-    // Add domain if configured
-    if (cookieDomain != null && !cookieDomain.isEmpty()) {
-      cookieBuilder.domain(cookieDomain);
-    }
-
-    ResponseCookie cookie = cookieBuilder.build();
-
-    response.addHeader("Set-Cookie", cookie.toString());
+    createAuthCookie(response, ACCESS_TOKEN_COOKIE, token, expiration);
     log.debug(
         "Access token cookie created | Expiration: {} | Secure: {} | Domain: {} | SameSite: {}",
         expiration,
@@ -59,10 +44,22 @@ public class CookieUtils {
   /** Create httpOnly cookie for refresh token */
   public void createRefreshTokenCookie(
       HttpServletResponse response, String token, Duration expiration) {
+    createAuthCookie(response, REFRESH_TOKEN_COOKIE, token, expiration);
+    log.debug(
+        "Refresh token cookie created | Expiration: {} | Secure: {} | Domain: {} | SameSite: {}",
+        expiration,
+        secureCookies,
+        cookieDomain,
+        sameSite);
+  }
+
+  /** Create httpOnly auth cookie with common settings */
+  private void createAuthCookie(
+      HttpServletResponse response, String cookieName, String token, Duration expiration) {
     ResponseCookie.ResponseCookieBuilder cookieBuilder =
-        ResponseCookie.from(REFRESH_TOKEN_COOKIE, token)
+        ResponseCookie.from(cookieName, token)
             .httpOnly(true)
-            .secure(secureCookies) // Only over HTTPS in production
+            .secure(secureCookies)
             .path(COOKIE_PATH)
             .maxAge(expiration)
             .sameSite(sameSite);
@@ -73,14 +70,7 @@ public class CookieUtils {
     }
 
     ResponseCookie cookie = cookieBuilder.build();
-
     response.addHeader("Set-Cookie", cookie.toString());
-    log.debug(
-        "Refresh token cookie created | Expiration: {} | Secure: {} | Domain: {} | SameSite: {}",
-        expiration,
-        secureCookies,
-        cookieDomain,
-        sameSite);
   }
 
   /** Extract access token from cookies */
@@ -124,22 +114,7 @@ public class CookieUtils {
 
   /** Clear specific cookie */
   private void clearCookie(HttpServletResponse response, String cookieName) {
-    ResponseCookie.ResponseCookieBuilder cookieBuilder =
-        ResponseCookie.from(cookieName, "")
-            .httpOnly(true)
-            .secure(secureCookies)
-            .path(COOKIE_PATH)
-            .maxAge(0) // Expire immediately
-            .sameSite(sameSite);
-
-    // Add domain if configured
-    if (cookieDomain != null && !cookieDomain.isEmpty()) {
-      cookieBuilder.domain(cookieDomain);
-    }
-
-    ResponseCookie cookie = cookieBuilder.build();
-
-    response.addHeader("Set-Cookie", cookie.toString());
+    createAuthCookie(response, cookieName, "", Duration.ZERO);
     log.debug("Cookie {} cleared", cookieName);
   }
 }
