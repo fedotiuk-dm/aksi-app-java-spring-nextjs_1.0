@@ -7,104 +7,29 @@ AuthResponse:
     - refreshToken
     - tokenType
     - expiresIn
-    - user
   properties:
     accessToken:
       type: string
       description: JWT access токен для автентифікації API запитів
       example: "jwt.access.token"
-      nullable: false
     refreshToken:
       type: string
       description: Refresh токен для оновлення access токену
       example: "jwt.refresh.token"
-      nullable: false
     tokenType:
       type: string
       description: Тип токену (завжди Bearer)
       enum:
         - "Bearer"
       example: "Bearer"
-      nullable: false
     expiresIn:
       type: integer
       description: Час життя access токену в секундах
       minimum: 300
       maximum: 86400
       example: 3600
-      nullable: false
-    user:
-      $ref: "#/UserResponse"
-      nullable: false
   additionalProperties: false
 
-UserResponse:
-  type: object
-  title: UserResponse
-  description: Інформація про користувача
-  required:
-    - id
-    - username
-    - email
-    - firstName
-    - lastName
-    - roles
-    - isActive
-    - createdAt
-  properties:
-    id:
-      type: string
-      format: uuid
-      description: Унікальний ідентифікатор користувача
-      example: "123e4567-e89b-12d3-a456-426614174000"
-      nullable: false
-    username:
-      type: string
-      description: Ім'я користувача
-      minLength: 3
-      maxLength: 50
-      example: "admin"
-      nullable: false
-    email:
-      type: string
-      format: email
-      description: Email користувача
-      example: "admin@aksi.com"
-      nullable: false
-    firstName:
-      type: string
-      description: Ім'я користувача
-      minLength: 1
-      maxLength: 50
-      example: "Олександр"
-      nullable: false
-    lastName:
-      type: string
-      description: Прізвище користувача
-      minLength: 1
-      maxLength: 50
-      example: "Петренко"
-      nullable: false
-    roles:
-      type: array
-      description: Ролі користувача
-      items:
-        $ref: "./auth-enums.yaml#/UserRole"
-      minItems: 1
-      example: ["ADMIN", "MANAGER"]
-      nullable: false
-    isActive:
-      type: boolean
-      description: Чи активний користувач
-      example: true
-      nullable: false
-    createdAt:
-      type: string
-      format: date-time
-      description: Дата створення користувача
-      example: "2024-01-15T10:30:00Z"
-      nullable: false
-  additionalProperties: false
 
 LogoutResponse:
   type: object
@@ -118,10 +43,8 @@ LogoutResponse:
       type: boolean
       description: Статус операції
       example: true
-      nullable: false
     message:
       type: string
       description: Повідомлення про результат
       example: "Користувач успішно вийшов з системи"
-      nullable: false
   additionalProperties: false

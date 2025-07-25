@@ -6,13 +6,12 @@
     summary: Отримати список модифікаторів
     operationId: getPriceModifiers
     parameters:
-      - name: categoryId
+      - name: categoryCode
         in: query
-        description: Фільтр по категорії
+        description: Фільтр по коду категорії
         required: false
         schema:
-          type: string
-          format: uuid
+          $ref: "../../order/schemas/price-modifiers.yaml#/ServiceCategory"
       - name: active
         in: query
         description: Фільтр по активності
@@ -28,136 +27,3 @@
               type: array
               items:
                 $ref: "../schemas/item-responses.yaml#/PriceModifierResponse"
-
-  post:
-    tags:
-      - price-modifiers
-    summary: Створити новий модифікатор
-    operationId: createPriceModifier
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/item-requests.yaml#/CreatePriceModifierRequest"
-    responses:
-      201:
-        description: Модифікатор створений
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/item-responses.yaml#/PriceModifierResponse"
-      400:
-        description: Помилка валідації
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
-
-/api/price-modifiers/{id}:
-  get:
-    tags:
-      - price-modifiers
-    summary: Отримати модифікатор за ID
-    operationId: getPriceModifierById
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    responses:
-      200:
-        description: Модифікатор знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/item-responses.yaml#/PriceModifierResponse"
-      404:
-        description: Модифікатор не знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-
-  put:
-    tags:
-      - price-modifiers
-    summary: Оновити модифікатор
-    operationId: updatePriceModifier
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/item-requests.yaml#/UpdatePriceModifierRequest"
-    responses:
-      200:
-        description: Модифікатор оновлений
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/item-responses.yaml#/PriceModifierResponse"
-      404:
-        description: Модифікатор не знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-
-  delete:
-    tags:
-      - price-modifiers
-    summary: Видалити модифікатор
-    operationId: deletePriceModifier
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    responses:
-      204:
-        description: Модифікатор видалений
-      404:
-        description: Модифікатор не знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-
-/api/price-modifiers/by-code/{code}:
-  get:
-    tags:
-      - price-modifiers
-    summary: Отримати модифікатор за кодом
-    operationId: getPriceModifierByCode
-    parameters:
-      - name: code
-        in: path
-        required: true
-        schema:
-          type: string
-          example: CHILDREN_ITEMS
-    responses:
-      200:
-        description: Модифікатор знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/item-responses.yaml#/PriceModifierResponse"
-      404:
-        description: Модифікатор не знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"

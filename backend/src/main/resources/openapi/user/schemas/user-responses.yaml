@@ -1,0 +1,98 @@
+UserResponse:
+  type: object
+  title: UserResponse
+  description: Інформація про користувача (оператора) системи
+  required:
+    - id
+    - username
+    - email
+    - firstName
+    - lastName
+    - role
+    - isActive
+    - createdAt
+  properties:
+    id:
+      type: string
+      format: uuid
+      description: Унікальний ідентифікатор користувача
+      example: "123e4567-e89b-12d3-a456-426614174000"
+    username:
+      type: string
+      description: Ім'я користувача для входу в систему
+      minLength: 3
+      maxLength: 50
+      example: "operator1"
+    email:
+      type: string
+      format: email
+      description: Email користувача
+      example: "operator@aksi.com"
+    firstName:
+      type: string
+      description: Ім'я оператора
+      minLength: 1
+      maxLength: 50
+      example: "Олександр"
+    lastName:
+      type: string
+      description: Прізвище оператора
+      minLength: 1
+      maxLength: 50
+      example: "Петренко"
+    role:
+      $ref: "./user-enums.yaml#/UserRole"
+      description: Роль користувача в системі
+    isActive:
+      type: boolean
+      description: Чи активний користувач
+      example: true
+    createdAt:
+      type: string
+      format: date-time
+      description: Дата створення користувача
+      example: "2024-01-15T10:30:00Z"
+    branchId:
+      type: string
+      format: uuid
+      description: ID філії, до якої прикріплений оператор
+      example: "456e7890-e89b-12d3-a456-426614174000"
+  additionalProperties: false
+
+UserListResponse:
+  type: object
+  title: UserListResponse
+  description: Список користувачів з пагінацією
+  required:
+    - items
+    - totalElements
+    - totalPages
+    - currentPage
+    - pageSize
+  properties:
+    items:
+      type: array
+      description: Список користувачів
+      items:
+        $ref: "#/UserResponse"
+    totalElements:
+      type: integer
+      format: int64
+      description: Загальна кількість користувачів
+      example: 50
+    totalPages:
+      type: integer
+      format: int32
+      description: Загальна кількість сторінок
+      example: 5
+    currentPage:
+      type: integer
+      format: int32
+      description: Поточна сторінка (0-based)
+      example: 0
+    pageSize:
+      type: integer
+      format: int32
+      description: Розмір сторінки
+      example: 10
+  additionalProperties: false

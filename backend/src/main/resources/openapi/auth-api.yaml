@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Auth Domain API
-  description: API для автентифікації та авторизації користувачів хімчистки
+  description: API для JWT автентифікації користувачів системи хімчистки
   version: 1.0.0
   contact:
     name: AKSI Development Team
@@ -13,11 +13,7 @@ servers:
     description: Production server
 tags:
   - name: auth
-    description: Автентифікація користувачів
-  - name: authentication
-    description: Логін, логаут, оновлення токенів
-  - name: authorization
-    description: Авторизація та права доступу
+    description: JWT автентифікація користувачів (логін, логаут, оновлення токенів)
 
 paths:
   # Authentication
@@ -27,10 +23,6 @@ paths:
     $ref: "auth/paths/authentication.yaml#/~1api~1auth~1logout"
   /api/auth/refresh-token:
     $ref: "auth/paths/authentication.yaml#/~1api~1auth~1refresh-token"
-
-  # User Info
-  /api/auth/me:
-    $ref: "auth/paths/user-info.yaml#/~1api~1auth~1me"
 
 components:
   schemas:
@@ -43,14 +35,10 @@ components:
     # Response Schemas
     AuthResponse:
       $ref: "auth/schemas/auth-responses.yaml#/AuthResponse"
-    UserResponse:
-      $ref: "auth/schemas/auth-responses.yaml#/UserResponse"
     LogoutResponse:
       $ref: "auth/schemas/auth-responses.yaml#/LogoutResponse"
 
     # Enums
-    UserRole:
-      $ref: "auth/schemas/auth-enums.yaml#/UserRole"
     TokenType:
       $ref: "auth/schemas/auth-enums.yaml#/TokenType"
 

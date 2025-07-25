@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Branch Domain API
-  description: API для управління філіями в односторінковій системі хімчистки
+  description: API для управління філіями хімчистки
   version: 1.0.0
   contact:
     name: AKSI Development Team
@@ -14,12 +14,6 @@ servers:
 tags:
   - name: branches
     description: Управління філіями
-  - name: working-schedule
-    description: Графік роботи філій
-  - name: receipt-numbers
-    description: Генерація номерів квитанцій
-  - name: branch-statistics
-    description: Статистика філій
 
 paths:
   # Branch Management
@@ -27,32 +21,6 @@ paths:
     $ref: "branch/paths/branch-management.yaml#/~1api~1branches"
   /api/branches/{id}:
     $ref: "branch/paths/branch-management.yaml#/~1api~1branches~1{id}"
-  /api/branches/code/{code}:
-    $ref: "branch/paths/branch-management.yaml#/~1api~1branches~1code~1{code}"
-  /api/branches/nearby:
-    $ref: "branch/paths/branch-management.yaml#/~1api~1branches~1nearby"
-
-  # Working Schedule Management
-  /api/branches/{id}/schedule:
-    $ref: "branch/paths/working-schedule-management.yaml#/~1api~1branches~1{id}~1schedule"
-  /api/branches/{id}/is-open:
-    $ref: "branch/paths/working-schedule-management.yaml#/~1api~1branches~1{id}~1is-open"
-  /api/branches/{id}/next-working-day:
-    $ref: "branch/paths/working-schedule-management.yaml#/~1api~1branches~1{id}~1next-working-day"
-
-  # Receipt Number Management
-  /api/receipt-numbers/generate:
-    $ref: "branch/paths/receipt-number-management.yaml#/~1api~1receipt-numbers~1generate"
-  /api/receipt-numbers/validate:
-    $ref: "branch/paths/receipt-number-management.yaml#/~1api~1receipt-numbers~1validate"
-  /api/receipt-numbers/parse:
-    $ref: "branch/paths/receipt-number-management.yaml#/~1api~1receipt-numbers~1parse"
-
-  # Branch Statistics
-  /api/branches/{id}/statistics:
-    $ref: "branch/paths/branch-statistics.yaml#/~1api~1branches~1{id}~1statistics"
-  /api/branches/statistics/compare:
-    $ref: "branch/paths/branch-statistics.yaml#/~1api~1branches~1statistics~1compare"
 
 components:
   schemas:
@@ -61,62 +29,24 @@ components:
       $ref: "branch/schemas/branch-requests.yaml#/CreateBranchRequest"
     UpdateBranchRequest:
       $ref: "branch/schemas/branch-requests.yaml#/UpdateBranchRequest"
-    ContactInfoRequest:
-      $ref: "branch/schemas/branch-requests.yaml#/ContactInfoRequest"
-    CoordinatesRequest:
-      $ref: "branch/schemas/branch-requests.yaml#/CoordinatesRequest"
     WorkingScheduleRequest:
       $ref: "branch/schemas/branch-requests.yaml#/WorkingScheduleRequest"
     WorkingDayRequest:
       $ref: "branch/schemas/branch-requests.yaml#/WorkingDayRequest"
-    HolidayRequest:
-      $ref: "branch/schemas/branch-requests.yaml#/HolidayRequest"
-    UpdateWorkingScheduleRequest:
-      $ref: "branch/schemas/branch-requests.yaml#/UpdateWorkingScheduleRequest"
-    GenerateReceiptNumberRequest:
-      $ref: "branch/schemas/branch-requests.yaml#/GenerateReceiptNumberRequest"
 
     # Response Schemas
     BranchResponse:
       $ref: "branch/schemas/branch-responses.yaml#/BranchResponse"
-    BranchWithDistanceResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/BranchWithDistanceResponse"
-    AddressResponse:
-      $ref: "common/schemas/address.yaml#/Address"
-    ContactInfoResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/ContactInfoResponse"
-    CoordinatesResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/CoordinatesResponse"
+    BranchListResponse:
+      $ref: "branch/schemas/branch-responses.yaml#/BranchListResponse"
     WorkingScheduleResponse:
       $ref: "branch/schemas/branch-responses.yaml#/WorkingScheduleResponse"
     WorkingDayResponse:
       $ref: "branch/schemas/branch-responses.yaml#/WorkingDayResponse"
-    HolidayResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/HolidayResponse"
-    BranchOpenStatusResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/BranchOpenStatusResponse"
-    NextWorkingDayResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/NextWorkingDayResponse"
-    ReceiptNumberResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/ReceiptNumberResponse"
-    ReceiptValidationResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/ReceiptValidationResponse"
-    ReceiptNumberParseResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/ReceiptNumberParseResponse"
-    BranchSummaryResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/BranchSummaryResponse"
-    BranchStatisticsResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/BranchStatisticsResponse"
-    ServiceStatisticResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/ServiceStatisticResponse"
-    DailyStatisticResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/DailyStatisticResponse"
-    BranchComparisonResponse:
-      $ref: "branch/schemas/branch-responses.yaml#/BranchComparisonResponse"
 
     # Enums
-    BranchStatus:
-      $ref: "branch/schemas/branch-enums.yaml#/BranchStatus"
+    DayOfWeek:
+      $ref: "branch/schemas/branch-enums.yaml#/DayOfWeek"
 
     # Common Schemas (використовуємо спільні)
     ErrorResponse:
@@ -125,6 +55,8 @@ components:
       $ref: "common/schemas/errors.yaml#/ValidationErrorResponse"
     FieldError:
       $ref: "common/schemas/errors.yaml#/FieldError"
+    Address:
+      $ref: "common/schemas/address.yaml#/Address"
 
   securitySchemes:
     BearerAuth:

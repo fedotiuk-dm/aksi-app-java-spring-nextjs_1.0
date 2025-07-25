@@ -2,6 +2,7 @@
 ClientResponse:
   type: object
   title: ClientResponse
+  description: Інформація про клієнта хімчистки
   required:
     - id
     - firstName
@@ -11,109 +12,93 @@ ClientResponse:
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
     firstName:
       type: string
       description: Ім'я клієнта
-      nullable: false
+      minLength: 2
+      maxLength: 50
+      example: Олександр
     lastName:
       type: string
       description: Прізвище клієнта
-      nullable: false
-    fullName:
-      type: string
-      description: Повне ім'я (firstName + lastName)
-      readOnly: true
+      minLength: 2
+      maxLength: 50
+      example: Петренко
     phone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
-      description: Номер телефону
-      nullable: false
+      description: Номер телефону (обов'язковий)
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
-      description: Email адреса
+      description: Email адреса (опційна)
     address:
       $ref: "../../common/schemas/address.yaml#/Address"
+      description: Адреса клієнта (опційна)
     communicationMethods:
       type: array
+      description: Способи зв'язку (номер телефону, SMS, Viber)
       items:
         $ref: "./client-enums.yaml#/CommunicationMethod"
+      example: ["PHONE", "SMS", "VIBER"]
     sourceType:
       $ref: "./client-enums.yaml#/ClientSourceType"
-    notes:
+      description: Джерело інформації про хімчистку
+    sourceOther:
       type: string
-      description: Примітки
-    statistics:
-      $ref: "#/ClientStatistics"
+      description: Уточнення для джерела "Інше"
+      maxLength: 100
+    preferredBranchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+      description: ID улюбленої філії клієнта
+    orderCount:
+      type: integer
+      description: Кількість замовлень клієнта
+      readOnly: true
+      example: 10
+    totalSpent:
+      type: number
+      format: double
+      description: Загальна сума витрат клієнта
+      readOnly: true
+      example: 5000.00
+    isVip:
+      type: boolean
+      description: VIP клієнт (10+ замовлень або 5000+ грн)
+      readOnly: true
+      example: true
   allOf:
     - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
 
-ClientPageResponse:
+ClientListResponse:
   type: object
-  title: ClientPageResponse
+  title: ClientListResponse
+  description: Список клієнтів
   required:
-    - content
-    - pageable
-    - totalElements
-    - totalPages
-    - last
-    - first
-    - numberOfElements
+    - items
   properties:
-    content:
+    items:
       type: array
+      description: Список клієнтів
       items:
         $ref: "#/ClientResponse"
-      nullable: false
-    pageable:
-      $ref: "../../common/schemas/pagination.yaml#/PageableInfo"
-      nullable: false
-    totalElements:
-      type: integer
-      format: int64
-      description: Загальна кількість елементів
-      nullable: false
-    totalPages:
-      type: integer
-      description: Загальна кількість сторінок
-      nullable: false
-    last:
-      type: boolean
-      description: Чи це остання сторінка
-      nullable: false
-    first:
-      type: boolean
-      description: Чи це перша сторінка
-      nullable: false
-    numberOfElements:
-      type: integer
-      description: Кількість елементів на поточній сторінці
-      nullable: false
 
 ClientSearchResponse:
   type: object
   title: ClientSearchResponse
+  description: Результати швидкого пошуку клієнтів
   required:
     - results
-    - totalFound
-    - hasMore
   properties:
     results:
       type: array
+      description: Знайдені клієнти (максимум 10)
       items:
         $ref: "#/ClientSearchResult"
-      nullable: false
-    totalFound:
-      type: integer
-      description: Загальна кількість знайдених результатів
-      nullable: false
-    hasMore:
-      type: boolean
-      description: Чи є ще результати
-      nullable: false
+      maxItems: 10
 
 ClientSearchResult:
   type: object
   title: ClientSearchResult
+  description: Результат пошуку клієнта для швидкого вибору
   required:
     - id
     - firstName
@@ -122,74 +107,22 @@ ClientSearchResult:
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
     firstName:
       type: string
-      nullable: false
     lastName:
       type: string
-      nullable: false
-    fullName:
-      type: string
-      readOnly: true
     phone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
-      nullable: false
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
     lastOrderDate:
-      $ref: "../../common/schemas/base.yaml#/Date"
+      type: string
+      format: date
       description: Дата останнього замовлення
     orderCount:
       type: integer
       description: Кількість замовлень
-    highlightedFields:
-      type: array
-      items:
-        type: string
-      description: Поля, які відповідають пошуковому запиту
-
-ClientContactsResponse:
-  type: object
-  title: ClientContactsResponse
-  required:
-    - id
-  properties:
-    id:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    phone:
-      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
-      description: Номер телефону
-    email:
-      $ref: "../../common/schemas/base.yaml#/Email"
-      description: Email адреса
-    communicationMethods:
-      type: array
-      items:
-        $ref: "./client-enums.yaml#/CommunicationMethod"
-    address:
-      $ref: "../../common/schemas/address.yaml#/Address"
-
-ClientStatistics:
-  type: object
-  title: ClientStatistics
-  properties:
-    totalOrders:
-      type: integer
-      description: Загальна кількість замовлень
-    totalSpent:
-      $ref: "../../common/schemas/base.yaml#/Money"
-      description: Загальна сума витрат
-    lastOrderDate:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      description: Дата останнього замовлення
-    averageOrderValue:
-      $ref: "../../common/schemas/base.yaml#/Money"
-      description: Середня вартість замовлення
-    isVip:
-      type: boolean
-      description: Чи є клієнт VIP
-    registrationDate:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      description: Дата першого замовлення
+    highlightedText:
+      type: string
+      description: Підсвічений текст збігу пошуку
+      example: "Петренко <mark>Олександр</mark>"

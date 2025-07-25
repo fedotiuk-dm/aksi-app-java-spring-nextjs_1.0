@@ -3,25 +3,15 @@
   get:
     tags:
       - price-list
-    summary: Отримати прайс-лист з пагінацією
+    summary: Отримати прайс-лист
     operationId: getPriceList
     parameters:
-      - $ref: "../../common/parameters/query.yaml#/PageParam"
-      - $ref: "../../common/parameters/query.yaml#/SizeParam"
-      - name: sort
+      - name: categoryCode
         in: query
-        description: Параметри сортування
+        description: Фільтр по коду категорії
         required: false
         schema:
-          type: string
-          example: itemNumber,asc
-      - name: categoryId
-        in: query
-        description: Фільтр по категорії
-        required: false
-        schema:
-          type: string
-          format: uuid
+          $ref: "../../order/schemas/price-modifiers.yaml#/ServiceCategory"
       - name: search
         in: query
         description: Пошук за назвою
@@ -40,135 +30,4 @@
         content:
           application/json:
             schema:
-              $ref: "../schemas/item-responses.yaml#/PriceListPageResponse"
-
-  post:
-    tags:
-      - price-list
-    summary: Додати предмет до прайс-листа
-    operationId: createPriceListItem
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/item-requests.yaml#/CreatePriceListItemRequest"
-    responses:
-      201:
-        description: Предмет створений
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/item-responses.yaml#/PriceListItemResponse"
-      400:
-        description: Помилка валідації
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
-
-/api/price-list/{id}:
-  get:
-    tags:
-      - price-list
-    summary: Отримати предмет прайс-листа за ID
-    operationId: getPriceListItem
-    parameters:
-      - $ref: "../../common/parameters/path.yaml#/IdParam"
-    responses:
-      200:
-        description: Предмет знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/item-responses.yaml#/PriceListItemResponse"
-      404:
-        description: Предмет не знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-
-  put:
-    tags:
-      - price-list
-    summary: Оновити предмет прайс-листа
-    operationId: updatePriceListItem
-    parameters:
-      - $ref: "../../common/parameters/path.yaml#/IdParam"
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/item-requests.yaml#/UpdatePriceListItemRequest"
-    responses:
-      200:
-        description: Предмет оновлений
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/item-responses.yaml#/PriceListItemResponse"
-      404:
-        description: Предмет не знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-
-  delete:
-    tags:
-      - price-list
-    summary: Видалити предмет з прайс-листа
-    operationId: deletePriceListItem
-    parameters:
-      - $ref: "../../common/parameters/path.yaml#/IdParam"
-    responses:
-      204:
-        description: Предмет видалений
-      404:
-        description: Предмет не знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-
-/api/price-list/search:
-  get:
-    tags:
-      - price-list
-    summary: Пошук предметів для швидкого вибору
-    operationId: searchPriceListItems
-    parameters:
-      - name: query
-        in: query
-        description: Пошуковий запит
-        required: true
-        schema:
-          type: string
-          minLength: 2
-      - name: categoryId
-        in: query
-        description: Обмежити пошук категорією
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: limit
-        in: query
-        description: Максимальна кількість результатів
-        required: false
-        schema:
-          type: integer
-          format: int32
-          default: 10
-          maximum: 50
-    responses:
-      200:
-        description: Результати пошуку
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: "../schemas/item-responses.yaml#/PriceListItemResponse"
+              $ref: "../schemas/item-responses.yaml#/PriceListResponse"

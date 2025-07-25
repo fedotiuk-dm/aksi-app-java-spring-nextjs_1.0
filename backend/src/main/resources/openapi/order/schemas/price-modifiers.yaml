@@ -78,29 +78,14 @@ ServiceCategory:
   type: string
   description: Категорії послуг
   enum:
-    - TEXTILE_CLEANING
+    - CLOTHING
     - LAUNDRY
     - IRONING
-    - LEATHER_CLEANING
-    - SHEEPSKIN
+    - LEATHER
+    - PADDING
     - FUR
     - DYEING
-  x-enum-varnames:
-    - TEXTILE_CLEANING
-    - LAUNDRY
-    - IRONING
-    - LEATHER_CLEANING
-    - SHEEPSKIN
-    - FUR
-    - DYEING
-  x-enum-descriptions:
-    - Чистка одягу та текстилю
-    - Прання білизни
-    - Прасування
-    - Чистка та відновлення шкіряних виробів
-    - Дублянки
-    - Вироби із натурального хутра
-    - Фарбування текстильних виробів
+    - ADDITIONAL_SERVICES
 
 MaterialType:
   type: string
@@ -142,20 +127,10 @@ UnitType:
   type: string
   description: Одиниці виміру
   enum:
-    - шт
-    - кг
-    - пара
-    - кв.м
-  x-enum-varnames:
     - PIECE
     - KILOGRAM
     - PAIR
     - SQUARE_METER
-  x-enum-descriptions:
-    - Штуки
-    - Кілограми
-    - Пара
-    - Квадратні метри
 
 HeavilysoiledModifier:
   type: object

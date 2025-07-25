@@ -16,8 +16,6 @@ tags:
     description: Управління клієнтами
   - name: client-search
     description: Пошук клієнтів
-  - name: client-contacts
-    description: Контактна інформація
 
 paths:
   # Client Management
@@ -25,18 +23,9 @@ paths:
     $ref: "client/paths/client-management.yaml#/~1api~1clients"
   /api/clients/{id}:
     $ref: "client/paths/client-management.yaml#/~1api~1clients~1{id}"
-  /api/clients/{id}/statistics:
-    $ref: "client/paths/client-management.yaml#/~1api~1clients~1{id}~1statistics"
-
   # Client Search
   /api/clients/search:
     $ref: "client/paths/client-search.yaml#/~1api~1clients~1search"
-  /api/clients/search/advanced:
-    $ref: "client/paths/client-search.yaml#/~1api~1clients~1search~1advanced"
-
-  # Client Contacts
-  /api/clients/{id}/contacts:
-    $ref: "client/paths/client-contacts.yaml#/~1api~1clients~1{id}~1contacts"
 
 components:
   schemas:
@@ -47,22 +36,15 @@ components:
       $ref: "client/schemas/client-requests.yaml#/UpdateClientRequest"
     ClientSearchRequest:
       $ref: "client/schemas/client-requests.yaml#/ClientSearchRequest"
-    UpdateClientContactsRequest:
-      $ref: "client/schemas/client-requests.yaml#/UpdateClientContactsRequest"
-
     # Response Schemas
     ClientResponse:
       $ref: "client/schemas/client-responses.yaml#/ClientResponse"
-    ClientPageResponse:
-      $ref: "client/schemas/client-responses.yaml#/ClientPageResponse"
+    ClientListResponse:
+      $ref: "client/schemas/client-responses.yaml#/ClientListResponse"
     ClientSearchResponse:
       $ref: "client/schemas/client-responses.yaml#/ClientSearchResponse"
     ClientSearchResult:
       $ref: "client/schemas/client-responses.yaml#/ClientSearchResult"
-    ClientContactsResponse:
-      $ref: "client/schemas/client-responses.yaml#/ClientContactsResponse"
-    ClientStatistics:
-      $ref: "client/schemas/client-responses.yaml#/ClientStatistics"
 
     # Enums
     CommunicationMethod:

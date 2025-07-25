@@ -35,20 +35,3 @@ ItemColor:
     * MULTICOLOR - Різнокольоровий
     * OTHER - Інший (вказати в customColor)
   example: BLACK
-
-PhotoType:
-  type: string
-  enum:
-    - BEFORE
-    - AFTER
-    - DEFECT
-    - STAIN
-    - DETAIL
-  description: |
-    Типи фотографій предметів:
-    * BEFORE - Фото до обробки
-    * AFTER - Фото після обробки
-    * DEFECT - Фото дефекту
-    * STAIN - Фото забруднення
-    * DETAIL - Детальне фото
-  example: BEFORE

@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: User Domain API
+  description: API для управління користувачами (операторами) системи хімчистки
+  version: 1.0.0
+  contact:
+    name: AKSI Development Team
+    email: dev@aksi.com
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.aksi.com
+    description: Production server
+tags:
+  - name: users
+    description: Управління користувачами системи
+
+paths:
+  # User Info
+  /api/users/me:
+    $ref: "user/paths/user-info.yaml#/~1api~1users~1me"
+  
+  # User Management
+  /api/users:
+    $ref: "user/paths/user-management.yaml#/~1api~1users"
+  /api/users/{userId}:
+    $ref: "user/paths/user-management.yaml#/~1api~1users~1{userId}"
+  /api/users/{userId}/role:
+    $ref: "user/paths/user-management.yaml#/~1api~1users~1{userId}~1role"
+  /api/users/{userId}/status:
+    $ref: "user/paths/user-management.yaml#/~1api~1users~1{userId}~1status"
+  /api/users/{userId}/password:
+    $ref: "user/paths/user-management.yaml#/~1api~1users~1{userId}~1password"
+
+components:
+  schemas:
+    # Request Schemas
+    CreateUserRequest:
+      $ref: "user/schemas/user-requests.yaml#/CreateUserRequest"
+    UpdateUserRequest:
+      $ref: "user/schemas/user-requests.yaml#/UpdateUserRequest"
+    UpdateUserRoleRequest:
+      $ref: "user/schemas/user-requests.yaml#/UpdateUserRoleRequest"
+    UpdateUserStatusRequest:
+      $ref: "user/schemas/user-requests.yaml#/UpdateUserStatusRequest"
+    ChangePasswordRequest:
+      $ref: "user/schemas/user-requests.yaml#/ChangePasswordRequest"
+    
+    # Response Schemas
+    UserResponse:
+      $ref: "user/schemas/user-responses.yaml#/UserResponse"
+    UserListResponse:
+      $ref: "user/schemas/user-responses.yaml#/UserListResponse"
+    
+    # Enums
+    UserRole:
+      $ref: "user/schemas/user-enums.yaml#/UserRole"
+
+    # Common Schemas (використовуємо спільні)
+    ErrorResponse:
+      $ref: "common/schemas/errors.yaml#/ErrorResponse"
+    ValidationErrorResponse:
+      $ref: "common/schemas/errors.yaml#/ValidationErrorResponse"
+    FieldError:
+      $ref: "common/schemas/errors.yaml#/FieldError"
+
+  securitySchemes:
+    BearerAuth:
+      $ref: "common/security.yaml#/securitySchemes/BearerAuth"
+
+# Всі endpoints потребують автентифікації
+security:
+  - BearerAuth: []

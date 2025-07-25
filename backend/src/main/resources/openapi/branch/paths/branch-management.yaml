@@ -4,15 +4,9 @@
     tags:
       - branches
     summary: Отримати список філій
-    description: Повертає список всіх філій з можливістю фільтрації
+    description: Повертає список активних філій для вибору в дропдауні
+    operationId: getBranches
     parameters:
-      - $ref: "../../common/parameters/query.yaml#/ActiveParam"
-      - name: city
-        in: query
-        description: Фільтр за містом
-        required: false
-        schema:
-          type: string
       - name: includeInactive
         in: query
         description: Включити неактивні філії
@@ -26,42 +20,39 @@
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "../schemas/branch-responses.yaml#/BranchResponse"
-    operationId: getBranches
+              $ref: "../../branch-api.yaml#/components/schemas/BranchListResponse"
+      401:
+        $ref: "#/components/responses/UnauthorizedError"
+      500:
+        $ref: "#/components/responses/InternalServerError"
 
   post:
     tags:
       - branches
     summary: Створити нову філію
-    description: Створює нову філію хімчистки
+    description: Створює нову філію хімчистки (доступно тільки для адміністраторів)
+    operationId: createBranch
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: "../schemas/branch-requests.yaml#/CreateBranchRequest"
+            $ref: "../../branch-api.yaml#/components/schemas/CreateBranchRequest"
     responses:
       201:
         description: Філія успішно створена
         content:
           application/json:
             schema:
-              $ref: "../schemas/branch-responses.yaml#/BranchResponse"
+              $ref: "../../branch-api.yaml#/components/schemas/BranchResponse"
       400:
-        description: Помилка валідації
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
-      409:
-        description: Філія з таким кодом вже існує
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-    operationId: createBranch
+        $ref: "#/components/responses/BadRequestError"
+      401:
+        $ref: "#/components/responses/UnauthorizedError"
+      403:
+        $ref: "#/components/responses/ForbiddenError"
+      500:
+        $ref: "#/components/responses/InternalServerError"
 
 /api/branches/{id}:
   get:
@@ -69,6 +60,7 @@
       - branches
     summary: Отримати філію за ID
     description: Повертає детальну інформацію про філію
+    operationId: getBranchById
     parameters:
       - $ref: "../../common/parameters/path.yaml#/IdParam"
     responses:
@@ -77,20 +69,20 @@
         content:
           application/json:
             schema:
-              $ref: "../schemas/branch-responses.yaml#/BranchResponse"
+              $ref: "../../branch-api.yaml#/components/schemas/BranchResponse"
+      401:
+        $ref: "#/components/responses/UnauthorizedError"
       404:
-        description: Філія не знайдена
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-    operationId: getBranchById
+        $ref: "#/components/responses/BranchNotFoundError"
+      500:
+        $ref: "#/components/responses/InternalServerError"
 
-  put:
+  patch:
     tags:
       - branches
     summary: Оновити філію
-    description: Оновлює інформацію про філію
+    description: Часткове оновлення інформації про філію (доступно тільки для адміністраторів)
+    operationId: updateBranch
     parameters:
       - $ref: "../../common/parameters/path.yaml#/IdParam"
     requestBody:
@@ -98,133 +90,70 @@
       content:
         application/json:
           schema:
-            $ref: "../schemas/branch-requests.yaml#/UpdateBranchRequest"
+            $ref: "../../branch-api.yaml#/components/schemas/UpdateBranchRequest"
     responses:
       200:
         description: Філія успішно оновлена
         content:
           application/json:
             schema:
-              $ref: "../schemas/branch-responses.yaml#/BranchResponse"
+              $ref: "../../branch-api.yaml#/components/schemas/BranchResponse"
       400:
-        description: Помилка валідації
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
+        $ref: "#/components/responses/BadRequestError"
+      401:
+        $ref: "#/components/responses/UnauthorizedError"
+      403:
+        $ref: "#/components/responses/ForbiddenError"
       404:
-        description: Філія не знайдена
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-    operationId: updateBranch
+        $ref: "#/components/responses/BranchNotFoundError"
+      500:
+        $ref: "#/components/responses/InternalServerError"
 
-  delete:
-    tags:
-      - branches
-    summary: Деактивувати філію
-    description: Деактивує філію (не видаляє, а робить неактивною)
-    parameters:
-      - $ref: "../../common/parameters/path.yaml#/IdParam"
-    responses:
-      204:
-        description: Філія успішно деактивована
-      404:
-        description: Філія не знайдена
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-    operationId: deleteBranch
-
-/api/branches/code/{code}:
-  get:
-    tags:
-      - branches
-    summary: Отримати філію за кодом
-    description: Повертає філію за унікальним кодом
-    parameters:
-      - name: code
-        in: path
-        required: true
-        description: Унікальний код філії
-        schema:
-          type: string
-          pattern: ^[A-Z0-9-]+$
-          example: AKSI-01
-    responses:
-      200:
-        description: Інформація про філію
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/branch-responses.yaml#/BranchResponse"
-      404:
-        description: Філія з таким кодом не знайдена
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-    operationId: getBranchByCode
-
-/api/branches/nearby:
-  get:
-    tags:
-      - branches
-    summary: Знайти найближчі філії
-    description: Повертає філії в радіусі від заданих координат
-    parameters:
-      - name: latitude
-        in: query
-        required: true
-        description: Широта
-        schema:
-          type: number
-          format: double
-          minimum: -90
-          maximum: 90
-      - name: longitude
-        in: query
-        required: true
-        description: Довгота
-        schema:
-          type: number
-          format: double
-          minimum: -180
-          maximum: 180
-      - name: radius
-        in: query
-        description: Радіус пошуку в кілометрах
-        required: false
-        schema:
-          type: number
-          format: double
-          minimum: 0.1
-          maximum: 100
-          default: 10
-      - name: limit
-        in: query
-        description: Максимальна кількість результатів
-        required: false
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 50
-          default: 10
-    responses:
-      200:
-        description: Список найближчих філій
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: "../schemas/branch-responses.yaml#/BranchWithDistanceResponse"
-      400:
-        description: Неправильні координати
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
-    operationId: getNearbyBranches
+components:
+  responses:
+    UnauthorizedError:
+      description: Невалідний або відсутній токен
+      content:
+        application/json:
+          schema:
+            $ref: "../../branch-api.yaml#/components/schemas/ErrorResponse"
+          example:
+            message: "Токен автентифікації недійсний"
+            code: "INVALID_TOKEN"
+            timestamp: "2024-01-15T10:30:00Z"
+    
+    ForbiddenError:
+      description: Недостатньо прав доступу
+      content:
+        application/json:
+          schema:
+            $ref: "../../branch-api.yaml#/components/schemas/ErrorResponse"
+          example:
+            message: "Недостатньо прав для виконання операції"
+            code: "ACCESS_DENIED"
+            timestamp: "2024-01-15T10:30:00Z"
+    
+    BadRequestError:
+      description: Невалідні дані запиту
+      content:
+        application/json:
+          schema:
+            $ref: "../../branch-api.yaml#/components/schemas/ValidationErrorResponse"
+    
+    BranchNotFoundError:
+      description: Філія не знайдена
+      content:
+        application/json:
+          schema:
+            $ref: "../../branch-api.yaml#/components/schemas/ErrorResponse"
+          example:
+            message: "Філія не знайдена"
+            code: "BRANCH_NOT_FOUND"
+            timestamp: "2024-01-15T10:30:00Z"
+    
+    InternalServerError:
+      description: Внутрішня помилка сервера
+      content:
+        application/json:
+          schema:
+            $ref: "../../branch-api.yaml#/components/schemas/ErrorResponse"

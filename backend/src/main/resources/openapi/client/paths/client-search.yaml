@@ -37,30 +37,3 @@
             schema:
               $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
     operationId: searchClients
-
-/api/clients/search/advanced:
-  post:
-    tags:
-      - client-search
-    summary: Розширений пошук клієнтів
-    description: Розширений пошук з фільтрами та сортуванням
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../schemas/client-requests.yaml#/ClientSearchRequest"
-    responses:
-      200:
-        description: Результати розширеного пошуку
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/client-responses.yaml#/ClientPageResponse"
-      400:
-        description: Некоректні параметри пошуку
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ValidationErrorResponse"
-    operationId: advancedSearchClients

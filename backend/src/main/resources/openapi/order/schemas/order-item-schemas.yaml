@@ -39,7 +39,6 @@ CreateOrderItemRequest:
       maxLength: 50
       description: Кастомний колір (обов'язковий тільки якщо вибрано OTHER)
       example: "темно-бордовий"
-      nullable: true
     filling:
       type: string
       maxLength: 50
@@ -54,12 +53,12 @@ CreateOrderItemRequest:
     stains:
       type: array
       items:
-        $ref: "#/StainType"
+        $ref: "../schemas/order-enums.yaml#/StainType"
       description: Типи плям
     defects:
       type: array
       items:
-        $ref: "#/DefectType"
+        $ref: "../schemas/order-enums.yaml#/DefectType"
       description: Дефекти та ризики
     defectNotes:
       type: string
@@ -112,7 +111,6 @@ UpdateOrderItemRequest:
       maxLength: 50
       description: Кастомний колір (обов'язковий тільки якщо вибрано OTHER)
       example: "темно-бордовий"
-      nullable: true
     filling:
       type: string
       maxLength: 50
@@ -125,11 +123,11 @@ UpdateOrderItemRequest:
     stains:
       type: array
       items:
-        $ref: "#/StainType"
+        $ref: "../schemas/order-enums.yaml#/StainType"
     defects:
       type: array
       items:
-        $ref: "#/DefectType"
+        $ref: "../schemas/order-enums.yaml#/DefectType"
     defectNotes:
       type: string
       maxLength: 500
@@ -163,45 +161,3 @@ PriceModifierRequest:
       type: number
       format: double
       description: Значення модифікатора
-
-StainType:
-  type: string
-  enum:
-    - FAT
-    - BLOOD
-    - PROTEIN
-    - WINE
-    - COFFEE
-    - GRASS
-    - INK
-    - COSMETICS
-    - OTHER
-  x-enum-descriptions:
-    - Жир
-    - Кров
-    - Білок
-    - Вино
-    - Кава
-    - Трава
-    - Чорнило
-    - Косметика
-    - Інше
-
-DefectType:
-  type: string
-  enum:
-    - WEAR
-    - TORN
-    - MISSING_HARDWARE
-    - DAMAGED_HARDWARE
-    - COLOR_CHANGE_RISK
-    - DEFORMATION_RISK
-    - NO_WARRANTY
-  x-enum-descriptions:
-    - Потертості
-    - Порване
-    - Відсутність фурнітури
-    - Пошкодження фурнітури
-    - Ризики зміни кольору
-    - Ризики деформації
-    - Без гарантій

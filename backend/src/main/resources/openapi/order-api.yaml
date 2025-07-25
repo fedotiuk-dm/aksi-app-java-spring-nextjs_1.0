@@ -77,8 +77,8 @@ components:
     # Response schemas
     OrderResponse:
       $ref: "order/schemas/order-responses.yaml#/OrderResponse"
-    OrderPageResponse:
-      $ref: "order/schemas/order-responses.yaml#/OrderPageResponse"
+    OrderListResponse:
+      $ref: "order/schemas/order-responses.yaml#/OrderListResponse"
     OrderItemResponse:
       $ref: "order/schemas/order-responses.yaml#/OrderItemResponse"
     ClientSummary:

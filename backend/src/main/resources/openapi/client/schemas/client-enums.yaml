@@ -34,22 +34,3 @@ ClientSourceType:
     * WALKING_BY - Проходив повз
     * REPEAT_CUSTOMER - Постійний клієнт
     * OTHER - Інше
-
-ClientSortField:
-  type: string
-  enum:
-    - firstName
-    - lastName
-    - phone
-    - createdAt
-    - totalOrders
-    - totalSpent
-  default: lastName
-  description: |
-    Поля для сортування списку клієнтів:
-    * firstName - За ім'ям
-    * lastName - За прізвищем
-    * phone - За телефоном
-    * createdAt - За датою реєстрації
-    * totalOrders - За кількістю замовлень
-    * totalSpent - За сумою витрат

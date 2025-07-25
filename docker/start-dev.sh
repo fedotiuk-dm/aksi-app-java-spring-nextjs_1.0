@@ -2,7 +2,7 @@
 
 # 🚀 Скрипт для запуску Aksi-app у режимі розробки
 # Використання:
-#   ./start-dev.sh [clean|fast|turbo|reset|clean-volumes|logs|stop|status|shell] [--silent]
+#   ./start-dev.sh [clean|fast|turbo|reset|clean-volumes|logs|stop|status|shell|db] [--silent]
 #   clean        - повна перебудова (повільно)
 #   fast         - швидкий запуск з кешем (за замовчуванням)
 #   turbo        - максимально швидкий запуск (очищує npm кеші для уникнення провірки provenance)
@@ -12,6 +12,7 @@
 #   stop         - зупинити всі контейнери
 #   status       - показати статус контейнерів
 #   shell        - підключитися до backend контейнера
+#   db           - запустити тільки базу даних PostgreSQL з PgAdmin
 #   --silent     - приховати логи запуску (за замовчуванням показуються)
 
 set -e
@@ -250,6 +251,69 @@ reset_database() {
     fi
 }
 
+# Функція для запуску тільки бази даних
+db_only_start() {
+    log_info "🗄️ Запуск тільки бази даних (PostgreSQL + PgAdmin)..."
+
+    check_docker
+    create_volumes
+
+    # Зупиняємо тільки якщо контейнери запущені
+    if docker-compose -f $COMPOSE_FILE ps -q | grep -q .; then
+        log_info "Зупиняємо попередні контейнери..."
+        docker-compose -f $COMPOSE_FILE down
+    fi
+
+    # Запускаємо тільки PostgreSQL та PgAdmin
+    log_info "Запускаємо PostgreSQL та PgAdmin..."
+    if [ "$SILENT_MODE" = "true" ]; then
+        docker-compose -f $COMPOSE_FILE up -d postgres pgadmin
+        copy_csv_files
+        sleep 3
+    else
+        log_info "📺 Показуємо логи запуску бази даних (Ctrl+C щоб зупинити логи, але залишити контейнери)..."
+        echo ""
+        # Запускаємо тільки БД сервіси
+        docker-compose -f $COMPOSE_FILE up -d postgres pgadmin
+        copy_csv_files
+
+        # Показуємо логи тільки БД сервісів
+        log_info "🔍 Логи запуску бази даних:"
+        timeout 20 docker-compose -f $COMPOSE_FILE logs -f postgres pgadmin || true
+        echo ""
+        log_info "⏱️  Логи бази даних завершені (20 сек). Контейнери продовжують працювати."
+    fi
+
+    # Показуємо статус тільки БД сервісів
+    log_info "Статус бази даних:"
+    docker-compose -f $COMPOSE_FILE ps postgres pgadmin
+    echo ""
+    log_info "Активні порти бази даних:"
+    docker-compose -f $COMPOSE_FILE port postgres 5432 2>/dev/null && echo "PostgreSQL: localhost:5432" || echo "PostgreSQL: не запущений"
+    docker-compose -f $COMPOSE_FILE port pgadmin 80 2>/dev/null && echo "PgAdmin: http://localhost:5050" || echo "PgAdmin: не запущений"
+
+    log_success "База даних запущена!"
+    show_db_usage_info
+}
+
+# Функція для показу інформації про використання тільки БД
+show_db_usage_info() {
+    echo ""
+    log_success "🗄️ База даних запущена:"
+    echo "   PgAdmin:                http://localhost:5050 (admin@aksi.com / admin)"
+    echo "   PostgreSQL:             localhost:5432"
+    echo "   Database:               aksi_cleaners_db_v5"
+    echo "   User:                   aksi_user / Pass: 1911"
+    echo ""
+    log_success "🛠️  Корисні команди:"
+    echo "   ./start-dev.sh logs              - переглянути логи"
+    echo "   ./start-dev.sh stop              - зупинити контейнери"
+    echo "   ./start-dev.sh status            - статус контейнерів"
+    echo "   ./start-dev.sh fast              - запустити весь проект"
+    echo "   ./start-dev.sh reset             - очищення БД (вирішує Liquibase конфлікти)"
+    echo ""
+}
+
 # Функція для показу інформації про використання
 show_usage_info() {
     echo ""
@@ -269,7 +333,8 @@ show_usage_info() {
     echo "   ./start-dev.sh stop              - зупинити контейнери"
     echo "   ./start-dev.sh status            - статус контейнерів"
     echo "   ./start-dev.sh shell             - підключитися до backend"
-    echo "   ./start-dev.sh turbo             - швидкий запуск (очищує npm кеші)"
+    echo "   ./start-dev.sh db                - запустити тільки базу даних"
+    echo "   ./start-dev.sh turbo             - швидкий запуск (очищає npm кеші)"
     echo "   ./start-dev.sh reset             - очищення БД (вирішує Liquibase конфлікти)"
     echo "   ./start-dev.sh clean-volumes     - очищення volumes (вирішує WARN про volumes)"
     echo "   ./start-dev.sh clean             - повна перебудова"
@@ -324,8 +389,11 @@ case $MODE in
     "shell")
         connect_shell "$@"
         ;;
+    "db")
+        db_only_start
+        ;;
     *)
-        echo "Використання: $0 [clean|fast|turbo|reset|clean-volumes|logs|stop|status|shell] [--silent]"
+        echo "Використання: $0 [clean|fast|turbo|reset|clean-volumes|logs|stop|status|shell|db] [--silent]"
         echo ""
         echo "Команди:"
         echo "  clean        - повна перебудова (повільно, ~5-10 хвилин)"
@@ -337,6 +405,7 @@ case $MODE in
         echo "  stop         - зупинити всі контейнери"
         echo "  status       - показати статус контейнерів та портів"
         echo "  shell        - підключитися до backend контейнера"
+        echo "  db           - запустити тільки базу даних PostgreSQL з PgAdmin"
         echo ""
         echo "Опції:"
         echo "  --silent     - приховати логи запуску (за замовчуванням показуються)"
@@ -345,6 +414,7 @@ case $MODE in
         echo "  $0                    # швидкий запуск з логами"
         echo "  $0 fast --silent     # швидкий запуск без логів"
         echo "  $0 clean             # повна перебудова з логами"
+        echo "  $0 db                # запустити тільки базу даних"
         echo "  $0 clean-volumes     # очистити volumes"
         echo "  $0 logs              # переглянути логи"
         exit 1

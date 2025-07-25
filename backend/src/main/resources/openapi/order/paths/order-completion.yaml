@@ -85,7 +85,12 @@
             example: "<html><body>Receipt content</body></html>"
           application/json:
             schema:
-              $ref: "../schemas/order-responses.yaml#/ReceiptGenerationResponse"
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: URL для завантаження PDF
+                  example: "/api/orders/123e4567-e89b-12d3-a456-426614174000/receipt?format=PDF"
       "404":
         description: Замовлення не знайдене
         content:

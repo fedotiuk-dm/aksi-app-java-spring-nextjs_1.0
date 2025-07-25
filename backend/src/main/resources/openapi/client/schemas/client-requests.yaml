@@ -2,6 +2,7 @@
 CreateClientRequest:
   type: object
   title: CreateClientRequest
+  description: Запит на створення нового клієнта
   required:
     - firstName
     - lastName
@@ -14,165 +15,89 @@ CreateClientRequest:
       maxLength: 50
       description: Ім'я клієнта
       example: Олександр
-      nullable: false
     lastName:
       type: string
       minLength: 2
       maxLength: 50
       description: Прізвище клієнта
       example: Петренко
-      nullable: false
     phone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
-      description: Номер телефону в міжнародному форматі
-      nullable: false
+      description: Номер телефону (обов'язковий)
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
+      description: Email адреса (опційна)
     address:
       $ref: "../../common/schemas/address.yaml#/CreateAddressRequest"
+      description: Адреса клієнта (опційна)
     communicationMethods:
       type: array
       minItems: 1
       items:
         $ref: "./client-enums.yaml#/CommunicationMethod"
-      description: Бажані способи зв'язку (мінімум один)
-      example:
-        - PHONE
-        - SMS
-        - VIBER
-      nullable: false
+      description: Способи зв'язку (мінімум один)
+      example: ["PHONE", "SMS", "VIBER"]
     sourceType:
       $ref: "./client-enums.yaml#/ClientSourceType"
-      description: Джерело надходження клієнта
-    notes:
+      description: Джерело інформації про хімчистку
+    sourceOther:
       type: string
-      maxLength: 500
-      description: Додаткові примітки про клієнта
+      maxLength: 100
+      description: Уточнення якщо sourceType = OTHER
+    preferredBranchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+      description: ID улюбленої філії
 
 UpdateClientRequest:
   type: object
   title: UpdateClientRequest
+  description: Запит на оновлення даних клієнта
   properties:
     firstName:
       type: string
       minLength: 2
       maxLength: 50
       description: Ім'я клієнта
-      nullable: false
     lastName:
       type: string
       minLength: 2
       maxLength: 50
       description: Прізвище клієнта
-      nullable: false
     phone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
-      description: Номер телефону в міжнародному форматі
-      nullable: false
+      description: Номер телефону
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
+      description: Email адреса
     address:
       $ref: "../../common/schemas/address.yaml#/UpdateAddressRequest"
+      description: Адреса клієнта
     communicationMethods:
       type: array
       items:
         $ref: "./client-enums.yaml#/CommunicationMethod"
-      description: Бажані способи зв'язку
+      description: Способи зв'язку
     sourceType:
       $ref: "./client-enums.yaml#/ClientSourceType"
-    notes:
+      description: Джерело інформації
+    sourceOther:
       type: string
-      maxLength: 500
-      description: Додаткові примітки про клієнта
-      nullable: false
+      maxLength: 100
+      description: Уточнення для джерела
+    preferredBranchId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+      description: ID улюбленої філії
 
 ClientSearchRequest:
   type: object
   title: ClientSearchRequest
-  description: Запит на пошук клієнтів (хоча б один пошуковий параметр обов'язковий)
-  anyOf:
-    - required: [query]
-    - required: [firstName]
-    - required: [lastName]
-    - required: [phone]
-    - required: [email]
+  description: Швидкий пошук клієнтів для автозаповнення
+  required:
+    - query
   properties:
     query:
       type: string
       minLength: 2
       maxLength: 100
-      description: Загальний пошуковий запит
-      nullable: false
-    firstName:
-      type: string
-      maxLength: 50
-      description: Фільтр за ім'ям
-      nullable: false
-    lastName:
-      type: string
-      maxLength: 50
-      description: Фільтр за прізвищем
-      nullable: false
-    phone:
-      type: string
-      description: Фільтр за телефоном
-      nullable: false
-    email:
-      type: string
-      description: Фільтр за email
-      nullable: false
-    city:
-      type: string
-      maxLength: 100
-      description: Фільтр за містом
-      nullable: false
-    sourceType:
-      $ref: "./client-enums.yaml#/ClientSourceType"
-    communicationMethods:
-      type: array
-      items:
-        $ref: "./client-enums.yaml#/CommunicationMethod"
-    registrationDateFrom:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      description: Дата реєстрації (від)
-    registrationDateTo:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      description: Дата реєстрації (до)
-    isVip:
-      type: boolean
-      description: Фільтр VIP клієнтів
-    page:
-      type: integer
-      minimum: 0
-      default: 0
-      description: Номер сторінки
-      nullable: false
-    size:
-      type: integer
-      minimum: 1
-      maximum: 100
-      default: 20
-      description: Розмір сторінки
-      nullable: false
-    sort:
-      $ref: "./client-enums.yaml#/ClientSortField"
-      description: Поле для сортування
-      nullable: false
-
-UpdateClientContactsRequest:
-  type: object
-  title: UpdateClientContactsRequest
-  properties:
-    phone:
-      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
-      description: Номер телефону
-      nullable: false
-    email:
-      $ref: "../../common/schemas/base.yaml#/Email"
-    communicationMethods:
-      type: array
-      items:
-        $ref: "./client-enums.yaml#/CommunicationMethod"
-      description: Бажані способи зв'язку
-    address:
-      $ref: "../../common/schemas/address.yaml#/UpdateAddressRequest"
+      description: Пошуковий запит (прізвище, ім'я, телефон, email)
+      example: "Петр"

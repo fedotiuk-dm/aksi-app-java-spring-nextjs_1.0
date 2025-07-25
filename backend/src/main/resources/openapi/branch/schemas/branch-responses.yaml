@@ -2,531 +2,95 @@
 BranchResponse:
   type: object
   title: BranchResponse
+  description: Інформація про філію хімчистки
   required:
     - id
-    - code
     - name
-    - description
+    - receiptPrefix
     - address
-    - contactInfo
-    - status
-    - receiptCounter
+    - phone
+    - isActive
     - createdAt
-    - updatedAt
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    code:
-      type: string
-      description: Унікальний код філії
-      example: AKSI-01
-      nullable: false
     name:
       type: string
-      description: Назва філії
+      description: Назва філії для відображення в дропдауні
       example: Хімчистка AKSI - Центр
-      nullable: false
-    description:
+      minLength: 3
+      maxLength: 100
+    receiptPrefix:
       type: string
-      description: Опис розташування
-      nullable: false
+      description: Префікс для генерації номерів квитанцій
+      example: AKSI-01
+      pattern: ^[A-Z0-9-]+$
+      minLength: 3
+      maxLength: 20
     address:
       $ref: "../../common/schemas/address.yaml#/Address"
-      nullable: false
-    contactInfo:
-      $ref: "#/ContactInfoResponse"
-      nullable: false
-    coordinates:
-      $ref: "#/CoordinatesResponse"
-    status:
-      $ref: "../schemas/branch-enums.yaml#/BranchStatus"
-      nullable: false
+      description: Адреса філії
+    phone:
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
+      description: Контактний телефон філії
+    email:
+      $ref: "../../common/schemas/base.yaml#/Email"
+      description: Email філії
     workingSchedule:
       $ref: "#/WorkingScheduleResponse"
-    receiptCounter:
-      type: integer
-      format: int64
-      description: Поточний лічильник квитанцій
-      nullable: false
+      description: Графік роботи філії
+    isActive:
+      type: boolean
+      description: Чи працює філія
+      example: true
   allOf:
     - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
 
-BranchWithDistanceResponse:
-  allOf:
-    - $ref: "#/BranchResponse"
-    - type: object
-      required:
-        - distance
-      properties:
-        distance:
-          type: number
-          format: double
-          description: Відстань в кілометрах
-          example: 2.5
-          nullable: false
-
-ContactInfoResponse:
+BranchListResponse:
   type: object
-  title: ContactInfoResponse
+  title: BranchListResponse
+  description: Список філій
   required:
-    - phone
-    - email
-    - managerName
+    - items
   properties:
-    phone:
-      type: string
-      description: Основний телефон
-      nullable: false
-    alternativePhone:
-      type: string
-      description: Додатковий телефон
-    email:
-      type: string
-      description: Email філії
-      nullable: false
-    managerName:
-      type: string
-      description: Ім'я менеджера
-      nullable: false
-
-CoordinatesResponse:
-  type: object
-  title: CoordinatesResponse
-  properties:
-    latitude:
-      type: number
-      format: double
-      description: Широта
-      nullable: false
-    longitude:
-      type: number
-      format: double
-      description: Довгота
-      nullable: false
-    mapUrl:
-      type: string
-      format: uri
-      description: Посилання на карту
-      nullable: false
+    items:
+      type: array
+      description: Список філій
+      items:
+        $ref: "#/BranchResponse"
 
 WorkingScheduleResponse:
   type: object
   title: WorkingScheduleResponse
-  required:
-    - id
-    - branchId
-    - workingDays
-    - holidays
-    - timezone
+  description: Графік роботи філії
   properties:
-    id:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    branchId:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
     workingDays:
       type: array
+      description: Робочі дні тижня
       items:
         $ref: "#/WorkingDayResponse"
-      nullable: false
-    holidays:
-      type: array
-      items:
-        $ref: "#/HolidayResponse"
-      nullable: false
-    timezone:
-      type: string
-      description: Часовий пояс
-      nullable: false
 
 WorkingDayResponse:
   type: object
   title: WorkingDayResponse
+  description: Інформація про робочий день
   required:
-    - id
     - dayOfWeek
     - isWorkingDay
   properties:
-    id:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
     dayOfWeek:
       $ref: "../schemas/branch-enums.yaml#/DayOfWeek"
-      nullable: false
-    openTime:
-      type: string
-      format: time
-      description: Час відкриття
-      nullable: false
-    closeTime:
-      type: string
-      format: time
-      description: Час закриття
-      nullable: false
-    isWorkingDay:
-      type: boolean
-      description: Чи є день робочим
-      nullable: false
-    notes:
-      type: string
-      description: Примітки до дня
-      nullable: false
-
-HolidayResponse:
-  type: object
-  title: HolidayResponse
-  required:
-    - id
-    - date
-    - name
-    - isRecurring
-  properties:
-    id:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    date:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      description: Дата свята
-      nullable: false
-    name:
-      type: string
-      description: Назва свята
-      nullable: false
-    isRecurring:
-      type: boolean
-      description: Чи повторюється щороку
-      nullable: false
-
-BranchOpenStatusResponse:
-  type: object
-  title: BranchOpenStatusResponse
-  required:
-    - branchId
-    - isOpen
-    - checkDateTime
-    - currentStatus
-  properties:
-    branchId:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    isOpen:
-      type: boolean
-      description: Чи відкрита філія зараз
-      nullable: false
-    checkDateTime:
-      $ref: "../../common/schemas/base.yaml#/Timestamp"
-      description: Час перевірки
-      nullable: false
-    currentStatus:
-      $ref: "../schemas/branch-enums.yaml#/BranchOpenStatus"
-      description: Поточний статус
-      nullable: false
-    nextOpenTime:
-      $ref: "../../common/schemas/base.yaml#/Timestamp"
-      description: Наступний час відкриття (якщо зачинена)
-      nullable: false
-    todaySchedule:
-      $ref: "#/WorkingDayResponse"
-
-NextWorkingDayResponse:
-  type: object
-  title: NextWorkingDayResponse
-  required:
-    - branchId
-  properties:
-    branchId:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    nextWorkingDate:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      description: Наступна робоча дата
-      nullable: false
-    workingHours:
-      $ref: "#/WorkingHoursInfo"
-      description: Робочі години філії
-    daysUntilNextWorking:
-      type: integer
-      description: Кількість днів до наступного робочого дня
-      nullable: false
-
-ReceiptNumberResponse:
-  type: object
-  title: ReceiptNumberResponse
-  required:
-    - receiptNumber
-    - branchId
-    - branchCode
-    - year
-    - sequenceNumber
-    - generatedAt
-  properties:
-    receiptNumber:
-      type: string
-      description: Згенерований номер квитанції
-      example: AKSI-01-2024-000001
-      nullable: false
-    branchId:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    branchCode:
-      type: string
-      example: AKSI-01
-      nullable: false
-    year:
-      type: integer
-      example: 2024
-      nullable: false
-    sequenceNumber:
-      type: integer
-      example: 1
-      nullable: false
-    generatedAt:
-      $ref: "../../common/schemas/base.yaml#/Timestamp"
-      nullable: false
-
-ReceiptValidationResponse:
-  type: object
-  title: ReceiptValidationResponse
-  required:
-    - receiptNumber
-    - isValid
-    - errors
-  properties:
-    receiptNumber:
-      type: string
-      description: Перевірений номер
-      nullable: false
-    isValid:
-      type: boolean
-      description: Чи правильний формат
-      nullable: false
-    errors:
-      type: array
-      items:
-        type: string
-      description: Список помилок (якщо є)
-      nullable: false
-    branchCode:
-      type: string
-      description: Код філії (якщо валідний)
-      nullable: false
-
-ReceiptNumberParseResponse:
-  type: object
-  title: ReceiptNumberParseResponse
-  required:
-    - receiptNumber
-    - branchCode
-    - year
-    - sequenceNumber
-  properties:
-    receiptNumber:
-      type: string
-      description: Оригінальний номер
-      nullable: false
-    branchCode:
-      type: string
-      description: Код філії
-      example: AKSI-01
-      nullable: false
-    year:
-      type: integer
-      description: Рік
-      example: 2024
-      nullable: false
-    sequenceNumber:
-      type: integer
-      description: Порядковий номер
-      example: 1
-      nullable: false
-    branchInfo:
-      $ref: "#/BranchSummaryResponse"
-
-BranchSummaryResponse:
-  type: object
-  title: BranchSummaryResponse
-  required:
-    - id
-    - code
-    - name
-    - city
-  properties:
-    id:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    code:
-      type: string
-      nullable: false
-    name:
-      type: string
-      nullable: false
-    city:
-      type: string
-      nullable: false
-
-# Statistics Responses
-BranchStatisticsResponse:
-  type: object
-  title: BranchStatisticsResponse
-  required:
-    - branchId
-    - branchName
-    - period
-    - ordersCount
-    - totalRevenue
-    - averageOrderValue
-    - popularServices
-    - dailyStats
-  properties:
-    branchId:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    branchName:
-      type: string
-      nullable: false
-    period:
-      $ref: "#/StatisticsPeriod"
-      description: Період статистики
-      nullable: false
-    ordersCount:
-      type: integer
-      format: int64
-      description: Кількість замовлень
-      nullable: false
-    totalRevenue:
-      $ref: "../../common/schemas/base.yaml#/Money"
-      description: Загальний дохід
-      nullable: false
-    averageOrderValue:
-      $ref: "../../common/schemas/base.yaml#/Money"
-      description: Середня вартість замовлення
-      nullable: false
-    popularServices:
-      type: array
-      items:
-        $ref: "#/ServiceStatisticResponse"
-      nullable: false
-    dailyStats:
-      type: array
-      items:
-        $ref: "#/DailyStatisticResponse"
-      nullable: false
-
-ServiceStatisticResponse:
-  type: object
-  title: ServiceStatisticResponse
-  required:
-    - serviceName
-    - ordersCount
-    - totalRevenue
-    - percentage
-  properties:
-    serviceName:
-      type: string
-      nullable: false
-    ordersCount:
-      type: integer
-      nullable: false
-    totalRevenue:
-      $ref: "../../common/schemas/base.yaml#/Money"
-      nullable: false
-    percentage:
-      type: number
-      format: double
-      description: Відсоток від загального доходу
-      nullable: false
-
-DailyStatisticResponse:
-  type: object
-  title: DailyStatisticResponse
-  required:
-    - date
-    - ordersCount
-    - revenue
-  properties:
-    date:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      nullable: false
-    ordersCount:
-      type: integer
-      nullable: false
-    revenue:
-      $ref: "../../common/schemas/base.yaml#/Money"
-      nullable: false
-
-BranchComparisonResponse:
-  type: object
-  title: BranchComparisonResponse
-  required:
-    - branchId
-    - branchName
-    - branchCode
-    - ordersCount
-    - totalRevenue
-    - averageOrderValue
-    - ranking
-  properties:
-    branchId:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      nullable: false
-    branchName:
-      type: string
-      nullable: false
-    branchCode:
-      type: string
-      nullable: false
-    ordersCount:
-      type: integer
-      format: int64
-      nullable: false
-    totalRevenue:
-      $ref: "../../common/schemas/base.yaml#/Money"
-      nullable: false
-    averageOrderValue:
-      $ref: "../../common/schemas/base.yaml#/Money"
-      nullable: false
-    ranking:
-      type: integer
-      description: Позиція в рейтингу
-      nullable: false
-
-# Extracted Inline Schemas
-WorkingHoursInfo:
-  type: object
-  title: WorkingHoursInfo
-  description: Інформація про робочі години
-  required:
-    - openTime
-    - closeTime
-  properties:
     openTime:
       type: string
       format: time
       description: Час відкриття
       example: "09:00"
-      nullable: false
     closeTime:
       type: string
       format: time
       description: Час закриття
       example: "18:00"
-      nullable: false
-
-StatisticsPeriod:
-  type: object
-  title: StatisticsPeriod
-  description: Період для статистики
-  required:
-    - startDate
-    - endDate
-  properties:
-    startDate:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      description: Дата початку періоду
-      nullable: false
-    endDate:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      description: Дата закінчення періоду
-      nullable: false
+    isWorkingDay:
+      type: boolean
+      description: Чи є день робочим
+      example: true

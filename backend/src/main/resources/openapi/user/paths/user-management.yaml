@@ -1,0 +1,324 @@
+/api/users:
+  get:
+    tags:
+      - users
+    summary: Отримання списку користувачів
+    description: Повертає список всіх користувачів системи з пагінацією (доступно тільки для адміністраторів)
+    operationId: getUsers
+    parameters:
+      - name: page
+        in: query
+        description: Номер сторінки (0-based)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        description: Розмір сторінки
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: branchId
+        in: query
+        description: Фільтр за ID філії
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: role
+        in: query
+        description: Фільтр за роллю
+        required: false
+        schema:
+          $ref: "../../user-api.yaml#/components/schemas/UserRole"
+      - name: isActive
+        in: query
+        description: Фільтр за статусом активності
+        required: false
+        schema:
+          type: boolean
+    responses:
+      "200":
+        description: Список користувачів
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/UserListResponse"
+      "401":
+        $ref: "#/components/responses/UnauthorizedError"
+      "403":
+        $ref: "#/components/responses/ForbiddenError"
+      "500":
+        $ref: "#/components/responses/InternalServerError"
+  
+  post:
+    tags:
+      - users
+    summary: Створення нового користувача
+    description: Створює нового користувача в системі (доступно тільки для адміністраторів)
+    operationId: createUser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/CreateUserRequest"
+    responses:
+      "201":
+        description: Користувач успішно створений
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+      "400":
+        $ref: "#/components/responses/BadRequestError"
+      "401":
+        $ref: "#/components/responses/UnauthorizedError"
+      "403":
+        $ref: "#/components/responses/ForbiddenError"
+      "409":
+        description: Користувач з таким username або email вже існує
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+      "500":
+        $ref: "#/components/responses/InternalServerError"
+
+/api/users/{userId}:
+  get:
+    tags:
+      - users
+    summary: Отримання користувача за ID
+    description: Повертає детальну інформацію про користувача
+    operationId: getUserById
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: ID користувача
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: Інформація про користувача
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+      "401":
+        $ref: "#/components/responses/UnauthorizedError"
+      "403":
+        $ref: "#/components/responses/ForbiddenError"
+      "404":
+        $ref: "#/components/responses/UserNotFoundError"
+      "500":
+        $ref: "#/components/responses/InternalServerError"
+
+  patch:
+    tags:
+      - users
+    summary: Оновлення даних користувача
+    description: Часткове оновлення даних користувача (доступно для адміністраторів та самого користувача)
+    operationId: updateUser
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: ID користувача
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/UpdateUserRequest"
+    responses:
+      "200":
+        description: Користувач успішно оновлений
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+      "400":
+        $ref: "#/components/responses/BadRequestError"
+      "401":
+        $ref: "#/components/responses/UnauthorizedError"
+      "403":
+        $ref: "#/components/responses/ForbiddenError"
+      "404":
+        $ref: "#/components/responses/UserNotFoundError"
+      "500":
+        $ref: "#/components/responses/InternalServerError"
+
+/api/users/{userId}/role:
+  patch:
+    tags:
+      - users
+    summary: Зміна ролі користувача
+    description: Змінює роль користувача (доступно тільки для адміністраторів)
+    operationId: updateUserRole
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: ID користувача
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/UpdateUserRoleRequest"
+    responses:
+      "200":
+        description: Роль успішно змінена
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+      "400":
+        $ref: "#/components/responses/BadRequestError"
+      "401":
+        $ref: "#/components/responses/UnauthorizedError"
+      "403":
+        $ref: "#/components/responses/ForbiddenError"
+      "404":
+        $ref: "#/components/responses/UserNotFoundError"
+      "500":
+        $ref: "#/components/responses/InternalServerError"
+
+/api/users/{userId}/status:
+  patch:
+    tags:
+      - users
+    summary: Зміна статусу користувача
+    description: Активує або деактивує користувача (доступно тільки для адміністраторів)
+    operationId: updateUserStatus
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: ID користувача
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/UpdateUserStatusRequest"
+    responses:
+      "200":
+        description: Статус успішно змінений
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+      "400":
+        $ref: "#/components/responses/BadRequestError"
+      "401":
+        $ref: "#/components/responses/UnauthorizedError"
+      "403":
+        $ref: "#/components/responses/ForbiddenError"
+      "404":
+        $ref: "#/components/responses/UserNotFoundError"
+      "500":
+        $ref: "#/components/responses/InternalServerError"
+
+/api/users/{userId}/password:
+  patch:
+    tags:
+      - users
+    summary: Зміна пароля користувача
+    description: Змінює пароль користувача (доступно для адміністраторів та самого користувача)
+    operationId: changeUserPassword
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: ID користувача
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/ChangePasswordRequest"
+    responses:
+      "204":
+        description: Пароль успішно змінений
+      "400":
+        $ref: "#/components/responses/BadRequestError"
+      "401":
+        $ref: "#/components/responses/UnauthorizedError"
+      "403":
+        $ref: "#/components/responses/ForbiddenError"
+      "404":
+        $ref: "#/components/responses/UserNotFoundError"
+      "500":
+        $ref: "#/components/responses/InternalServerError"
+
+components:
+  responses:
+    UnauthorizedError:
+      description: Невалідний або відсутній токен
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+          example:
+            message: "Токен автентифікації недійсний"
+            code: "INVALID_TOKEN"
+            timestamp: "2024-01-15T10:30:00Z"
+    
+    ForbiddenError:
+      description: Недостатньо прав доступу
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+          example:
+            message: "Недостатньо прав для виконання операції"
+            code: "ACCESS_DENIED"
+            timestamp: "2024-01-15T10:30:00Z"
+    
+    BadRequestError:
+      description: Невалідні дані запиту
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/ValidationErrorResponse"
+    
+    UserNotFoundError:
+      description: Користувач не знайдений
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+          example:
+            message: "Користувач не знайдений"
+            code: "USER_NOT_FOUND"
+            timestamp: "2024-01-15T10:30:00Z"
+    
+    InternalServerError:
+      description: Внутрішня помилка сервера
+      content:
+        application/json:
+          schema:
+            $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"

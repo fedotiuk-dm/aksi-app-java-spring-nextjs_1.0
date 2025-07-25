@@ -1,0 +1,7 @@
+UserRole:
+  type: string
+  description: Ролі користувачів системи хімчистки
+  enum:
+    - ADMIN # Адміністратор системи
+    - OPERATOR # Оператор прийому замовлень
+  example: "OPERATOR"

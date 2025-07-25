@@ -3,39 +3,11 @@ OrderStatus:
   type: string
   description: Статус замовлення
   enum:
-    - DRAFT
     - NEW
     - IN_PROGRESS
     - READY
     - COMPLETED
     - CANCELLED
-  x-enum-varnames:
-    - DRAFT
-    - NEW
-    - IN_PROGRESS
-    - READY
-    - COMPLETED
-    - CANCELLED
-  x-enum-descriptions:
-    - Чернетка
-    - Нове замовлення
-    - В роботі
-    - Готове
-    - Завершене
-    - Скасоване
-
-ReceiptFormat:
-  type: string
-  description: Формат квитанції
-  enum:
-    - PDF
-    - HTML
-  x-enum-varnames:
-    - PDF
-    - HTML
-  x-enum-descriptions:
-    - PDF файл для друку
-    - HTML для перегляду в браузері
 
 UrgencyType:
   type: string
@@ -44,14 +16,6 @@ UrgencyType:
     - NORMAL
     - URGENT_48H
     - URGENT_24H
-  x-enum-varnames:
-    - NORMAL
-    - URGENT_48H
-    - URGENT_24H
-  x-enum-descriptions:
-    - Звичайне виконання
-    - Термінове 48 годин (+50%)
-    - Термінове 24 години (+100%)
 
 DiscountType:
   type: string
@@ -62,18 +26,6 @@ DiscountType:
     - SOCIAL_MEDIA
     - MILITARY
     - OTHER
-  x-enum-varnames:
-    - NONE
-    - EVERCARD
-    - SOCIAL_MEDIA
-    - MILITARY
-    - OTHER
-  x-enum-descriptions:
-    - Без знижки
-    - Еверкард (10%)
-    - Соцмережі (5%)
-    - ЗСУ (10%)
-    - Інша знижка
 
 PaymentMethod:
   type: string
@@ -82,14 +34,6 @@ PaymentMethod:
     - TERMINAL
     - CASH
     - BANK_TRANSFER
-  x-enum-varnames:
-    - TERMINAL
-    - CASH
-    - BANK_TRANSFER
-  x-enum-descriptions:
-    - Термінал
-    - Готівка
-    - На рахунок
 
 ModifierType:
   type: string
@@ -97,12 +41,6 @@ ModifierType:
   enum:
     - PERCENTAGE
     - FIXED_AMOUNT
-  x-enum-varnames:
-    - PERCENTAGE
-    - FIXED_AMOUNT
-  x-enum-descriptions:
-    - Відсотковий модифікатор
-    - Фіксована сума
 
 WearDegreeType:
   type: string
@@ -112,13 +50,29 @@ WearDegreeType:
     - WEAR_30
     - WEAR_50
     - WEAR_75
-  x-enum-varnames:
-    - WEAR_10
-    - WEAR_30
-    - WEAR_50
-    - WEAR_75
-  x-enum-descriptions:
-    - 10% зносу
-    - 30% зносу
-    - 50% зносу
-    - 75% зносу
+
+StainType:
+  type: string
+  description: Тип плями
+  enum:
+    - FAT
+    - BLOOD
+    - PROTEIN
+    - WINE
+    - COFFEE
+    - GRASS
+    - INK
+    - COSMETICS
+    - OTHER
+
+DefectType:
+  type: string
+  description: Тип дефекту
+  enum:
+    - WEAR_SPOTS
+    - TORN
+    - MISSING_ACCESSORIES
+    - DAMAGED_ACCESSORIES
+    - COLOR_CHANGE_RISK
+    - DEFORMATION_RISK
+    - NO_WARRANTY

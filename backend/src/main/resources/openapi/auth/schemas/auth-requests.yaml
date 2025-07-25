@@ -12,7 +12,6 @@ LoginRequest:
       minLength: 3
       maxLength: 100
       example: "admin@aksi.com"
-      nullable: false
     password:
       type: string
       description: Пароль користувача
@@ -20,7 +19,6 @@ LoginRequest:
       maxLength: 128
       format: password
       example: "password123"
-      nullable: false
   additionalProperties: false
 
 RefreshTokenRequest:

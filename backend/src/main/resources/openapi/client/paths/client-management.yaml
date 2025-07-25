@@ -4,29 +4,14 @@
     tags:
       - clients
     summary: Отримати список клієнтів
-    description: Повертає список всіх клієнтів з можливістю пагінації
-    parameters:
-      - $ref: "../../common/parameters/query.yaml#/PageParam"
-      - $ref: "../../common/parameters/query.yaml#/SizeParam"
-      - name: sort
-        in: query
-        description: Поле для сортування
-        required: false
-        schema:
-          type: string
-          enum:
-            - firstName
-            - lastName
-            - phone
-            - createdAt
-          default: lastName
+    description: Повертає список всіх клієнтів
     responses:
       200:
         description: Список клієнтів
         content:
           application/json:
             schema:
-              $ref: "../schemas/client-responses.yaml#/ClientPageResponse"
+              $ref: "../schemas/client-responses.yaml#/ClientListResponse"
       400:
         description: Некоректні параметри запиту
         content:
@@ -123,44 +108,3 @@
             schema:
               $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
     operationId: updateClient
-
-  delete:
-    tags:
-      - clients
-    summary: Видалити клієнта
-    description: Видаляє клієнта (м'яке видалення)
-    parameters:
-      - $ref: "../../common/parameters/path.yaml#/IdParam"
-    responses:
-      204:
-        description: Клієнт успішно видалений
-      404:
-        description: Клієнт не знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-    operationId: deleteClient
-
-/api/clients/{id}/statistics:
-  get:
-    tags:
-      - clients
-    summary: Отримати статистику клієнта
-    description: Повертає статистику замовлень та витрат клієнта
-    parameters:
-      - $ref: "../../common/parameters/path.yaml#/IdParam"
-    responses:
-      200:
-        description: Статистика клієнта
-        content:
-          application/json:
-            schema:
-              $ref: "../schemas/client-responses.yaml#/ClientStatistics"
-      404:
-        description: Клієнт не знайдений
-        content:
-          application/json:
-            schema:
-              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
-    operationId: getClientStatistics

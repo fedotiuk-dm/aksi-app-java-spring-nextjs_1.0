@@ -2,134 +2,71 @@
 CreateBranchRequest:
   type: object
   title: CreateBranchRequest
+  description: Запит на створення нової філії
   required:
-    - code
     - name
+    - receiptPrefix
     - address
-    - contactInfo
+    - phone
   properties:
-    code:
-      type: string
-      pattern: ^[A-Z0-9-]+$
-      minLength: 3
-      maxLength: 20
-      description: Унікальний код філії
-      example: AKSI-01
-      nullable: false
     name:
       type: string
       minLength: 3
       maxLength: 100
       description: Назва філії
       example: Хімчистка AKSI - Центр
-      nullable: false
-    description:
+    receiptPrefix:
       type: string
-      maxLength: 500
-      description: Опис розташування
-      example: ТЦ Глобус, 2 поверх
-      nullable: false
+      description: Префікс для генерації номерів квитанцій
+      example: AKSI-01
+      pattern: ^[A-Z0-9-]+$
+      minLength: 3
+      maxLength: 20
     address:
       $ref: "../../common/schemas/address.yaml#/CreateAddressRequest"
-      nullable: false
-    contactInfo:
-      $ref: "#/ContactInfoRequest"
-      nullable: false
-    coordinates:
-      $ref: "#/CoordinatesRequest"
+      description: Адреса філії
+    phone:
+      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
+      description: Контактний телефон філії
+      example: +380501234567
+    email:
+      $ref: "../../common/schemas/base.yaml#/Email"
+      description: Email філії
+      example: branch01@aksi.com
     workingSchedule:
       $ref: "#/WorkingScheduleRequest"
+      description: Графік роботи
 
 UpdateBranchRequest:
   type: object
   title: UpdateBranchRequest
+  description: Запит на оновлення даних філії
   properties:
     name:
       type: string
       minLength: 3
       maxLength: 100
       description: Назва філії
-      nullable: false
-    description:
-      type: string
-      maxLength: 500
-      description: Опис розташування
-      nullable: false
     address:
       $ref: "../../common/schemas/address.yaml#/UpdateAddressRequest"
-      nullable: false
-    contactInfo:
-      $ref: "#/ContactInfoRequest"
-      nullable: false
-    coordinates:
-      $ref: "#/CoordinatesRequest"
-    status:
-      $ref: "../schemas/branch-enums.yaml#/BranchStatus"
-      nullable: false
-
-ContactInfoRequest:
-  type: object
-  title: ContactInfoRequest
-  required:
-    - phone
-    - email
-    - managerName
-  properties:
+      description: Адреса філії
     phone:
       $ref: "../../common/schemas/base.yaml#/PhoneNumber"
-      description: Основний телефон
-      example: +380501234567
-      nullable: false
-    alternativePhone:
-      $ref: "../../common/schemas/base.yaml#/PhoneNumber"
-      description: Додатковий телефон
-      example: +380991234567
-      nullable: false
+      description: Контактний телефон
     email:
       $ref: "../../common/schemas/base.yaml#/Email"
       description: Email філії
-      example: branch01@aksi.com
-      nullable: false
-    managerName:
-      type: string
-      maxLength: 100
-      description: Ім'я менеджера
-      example: Іванова Марія Петрівна
-      nullable: false
-
-CoordinatesRequest:
-  type: object
-  title: CoordinatesRequest
-  properties:
-    latitude:
-      type: number
-      format: double
-      minimum: -90
-      maximum: 90
-      description: Широта
-      example: 50.4501
-      nullable: false
-    longitude:
-      type: number
-      format: double
-      minimum: -180
-      maximum: 180
-      description: Довгота
-      example: 30.5234
-      nullable: false
-    mapUrl:
-      type: string
-      format: uri
-      description: Посилання на карту
-      example: https://maps.google.com/...
-      nullable: false
+    isActive:
+      type: boolean
+      description: Чи активна філія
+    workingSchedule:
+      $ref: "#/WorkingScheduleRequest"
+      description: Графік роботи
 
 WorkingScheduleRequest:
   type: object
   title: WorkingScheduleRequest
-  required:
-    - workingDays
-    - timezone
+  description: Запит на встановлення графіку роботи
   properties:
     workingDays:
       type: array
@@ -138,132 +75,28 @@ WorkingScheduleRequest:
       minItems: 7
       maxItems: 7
       description: Робочі дні (7 днів тижня)
-      nullable: false
-    holidays:
-      type: array
-      items:
-        $ref: "#/HolidayRequest"
-      description: Святкові дні
-      nullable: false
-    timezone:
-      type: string
-      description: Часовий пояс
-      example: Europe/Kyiv
-      default: Europe/Kyiv
-      nullable: false
 
 WorkingDayRequest:
   type: object
   title: WorkingDayRequest
+  description: Інформація про робочий день
   required:
     - dayOfWeek
     - isWorkingDay
   properties:
     dayOfWeek:
       $ref: "../schemas/branch-enums.yaml#/DayOfWeek"
-      nullable: false
     openTime:
       type: string
       format: time
-      description: Час відкриття (якщо робочий день)
+      description: Час відкриття
       example: "09:00"
-      nullable: false
     closeTime:
       type: string
       format: time
-      description: Час закриття (якщо робочий день)
+      description: Час закриття
       example: "18:00"
-      nullable: false
     isWorkingDay:
       type: boolean
       description: Чи є день робочим
-      nullable: false
-    notes:
-      type: string
-      maxLength: 200
-      description: Примітки до дня
-      nullable: false
-
-HolidayRequest:
-  type: object
-  title: HolidayRequest
-  required:
-    - date
-    - name
-  properties:
-    date:
-      $ref: "../../common/schemas/base.yaml#/Date"
-      description: Дата свята
-      nullable: false
-    name:
-      type: string
-      maxLength: 100
-      description: Назва свята
-      example: Новий рік
-      nullable: false
-    isRecurring:
-      type: boolean
-      description: Чи повторюється щороку
-      default: false
-      nullable: false
-
-UpdateWorkingScheduleRequest:
-  type: object
-  title: UpdateWorkingScheduleRequest
-  properties:
-    workingDays:
-      type: array
-      items:
-        $ref: "#/WorkingDayRequest"
-      minItems: 7
-      maxItems: 7
-      nullable: false
-    holidays:
-      type: array
-      items:
-        $ref: "#/HolidayRequest"
-      nullable: false
-    timezone:
-      type: string
-      example: Europe/Kyiv
-      nullable: false
-
-GenerateReceiptNumberRequest:
-  type: object
-  title: GenerateReceiptNumberRequest
-  required:
-    - branchId
-  properties:
-    branchId:
-      $ref: "../../common/schemas/base.yaml#/UUID"
-      description: Ідентифікатор філії
-      nullable: false
-    branchCode:
-      type: string
-      description: Код філії (альтернатива до branchId)
-      pattern: ^[A-Z0-9-]+$
-      nullable: false
-
-ValidateReceiptNumberRequest:
-  type: object
-  title: ValidateReceiptNumberRequest
-  required:
-    - receiptNumber
-  properties:
-    receiptNumber:
-      type: string
-      description: Номер квитанції для валідації
-      example: AKSI-01-2024-000001
-      nullable: false
-
-ParseReceiptNumberRequest:
-  type: object
-  title: ParseReceiptNumberRequest
-  required:
-    - receiptNumber
-  properties:
-    receiptNumber:
-      type: string
-      description: Номер квитанції для розбору
-      example: AKSI-01-2024-000001
-      nullable: false
+      example: true

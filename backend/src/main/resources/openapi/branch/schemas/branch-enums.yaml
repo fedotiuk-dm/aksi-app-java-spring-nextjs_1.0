@@ -1,18 +1,4 @@
 # Enum схеми для Branch домену
-BranchStatus:
-  type: string
-  enum:
-    - ACTIVE
-    - INACTIVE
-    - TEMPORARILY_CLOSED
-    - UNDER_RENOVATION
-  description: |
-    Статус філії:
-    * ACTIVE - Активна
-    * INACTIVE - Неактивна
-    * TEMPORARILY_CLOSED - Тимчасово закрита
-    * UNDER_RENOVATION - На ремонті
-
 DayOfWeek:
   type: string
   enum:
@@ -32,15 +18,3 @@ DayOfWeek:
     * FRIDAY - П'ятниця
     * SATURDAY - Субота
     * SUNDAY - Неділя
-
-BranchOpenStatus:
-  type: string
-  enum:
-    - OPEN
-    - CLOSED
-    - HOLIDAY
-  description: |
-    Статус роботи філії:
-    * OPEN - Відкрита
-    * CLOSED - Закрита
-    * HOLIDAY - Вихідний день

@@ -1,0 +1,128 @@
+CreateUserRequest:
+  type: object
+  title: CreateUserRequest
+  description: Запит на створення нового користувача
+  required:
+    - username
+    - email
+    - password
+    - firstName
+    - lastName
+    - role
+    - branchId
+  properties:
+    username:
+      type: string
+      description: Ім'я користувача для входу в систему
+      minLength: 3
+      maxLength: 50
+      example: "operator1"
+    email:
+      type: string
+      format: email
+      description: Email користувача
+      example: "operator@aksi.com"
+    password:
+      type: string
+      description: Пароль користувача
+      minLength: 6
+      maxLength: 128
+      format: password
+      example: "password123"
+    firstName:
+      type: string
+      description: Ім'я оператора
+      minLength: 1
+      maxLength: 50
+      example: "Олександр"
+    lastName:
+      type: string
+      description: Прізвище оператора
+      minLength: 1
+      maxLength: 50
+      example: "Петренко"
+    role:
+      $ref: "./user-enums.yaml#/UserRole"
+      description: Роль користувача в системі
+    branchId:
+      type: string
+      format: uuid
+      description: ID філії, до якої прикріплюється оператор
+      example: "456e7890-e89b-12d3-a456-426614174000"
+  additionalProperties: false
+
+UpdateUserRequest:
+  type: object
+  title: UpdateUserRequest
+  description: Запит на оновлення даних користувача
+  properties:
+    email:
+      type: string
+      format: email
+      description: Email користувача
+      example: "operator@aksi.com"
+    firstName:
+      type: string
+      description: Ім'я оператора
+      minLength: 1
+      maxLength: 50
+      example: "Олександр"
+    lastName:
+      type: string
+      description: Прізвище оператора
+      minLength: 1
+      maxLength: 50
+      example: "Петренко"
+    branchId:
+      type: string
+      format: uuid
+      description: ID філії, до якої прикріплюється оператор
+      example: "456e7890-e89b-12d3-a456-426614174000"
+  additionalProperties: false
+
+UpdateUserRoleRequest:
+  type: object
+  title: UpdateUserRoleRequest
+  description: Запит на зміну ролі користувача
+  required:
+    - role
+  properties:
+    role:
+      $ref: "./user-enums.yaml#/UserRole"
+      description: Нова роль користувача
+  additionalProperties: false
+
+UpdateUserStatusRequest:
+  type: object
+  title: UpdateUserStatusRequest
+  description: Запит на зміну статусу користувача
+  required:
+    - isActive
+  properties:
+    isActive:
+      type: boolean
+      description: Новий статус користувача
+      example: true
+  additionalProperties: false
+
+ChangePasswordRequest:
+  type: object
+  title: ChangePasswordRequest
+  description: Запит на зміну пароля
+  required:
+    - currentPassword
+    - newPassword
+  properties:
+    currentPassword:
+      type: string
+      description: Поточний пароль
+      minLength: 6
+      maxLength: 128
+      format: password
+    newPassword:
+      type: string
+      description: Новий пароль
+      minLength: 6
+      maxLength: 128
+      format: password
+  additionalProperties: false

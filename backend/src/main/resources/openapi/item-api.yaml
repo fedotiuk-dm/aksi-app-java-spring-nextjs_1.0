@@ -8,65 +8,26 @@ servers:
     description: Local development server
 tags:
   - name: service-categories
-    description: Управління категоріями послуг
+    description: Категорії послуг
   - name: price-list
-    description: Управління прайс-листом
+    description: Прайс-лист
   - name: price-modifiers
-    description: Управління модифікаторами цін
-  - name: item-calculations
-    description: Розрахунки цін предметів
-  - name: item-photos
-    description: Управління фотографіями предметів
+    description: Модифікатори цін
 
 paths:
   # Service Categories
   /api/service-categories:
     $ref: "item/paths/service-categories.yaml#/~1api~1service-categories"
-  /api/service-categories/{id}:
-    $ref: "item/paths/service-categories.yaml#/~1api~1service-categories~1{id}"
-  /api/service-categories/{id}/items:
-    $ref: "item/paths/service-categories.yaml#/~1api~1service-categories~1{id}~1items"
-
   # Price List
   /api/price-list:
     $ref: "item/paths/price-list.yaml#/~1api~1price-list"
-  /api/price-list/{id}:
-    $ref: "item/paths/price-list.yaml#/~1api~1price-list~1{id}"
-  /api/price-list/search:
-    $ref: "item/paths/price-list.yaml#/~1api~1price-list~1search"
 
   # Price Modifiers
   /api/price-modifiers:
     $ref: "item/paths/price-modifiers.yaml#/~1api~1price-modifiers"
-  /api/price-modifiers/{id}:
-    $ref: "item/paths/price-modifiers.yaml#/~1api~1price-modifiers~1{id}"
-  /api/price-modifiers/by-code/{code}:
-    $ref: "item/paths/price-modifiers.yaml#/~1api~1price-modifiers~1by-code~1{code}"
-
-  # Item Calculations
-  /api/calculate/item:
-    $ref: "item/paths/item-calculations.yaml#/~1api~1calculate~1item"
-  /api/calculate/item/preview:
-    $ref: "item/paths/item-calculations.yaml#/~1api~1calculate~1item~1preview"
-  /api/calculate/order-summary:
-    $ref: "item/paths/item-calculations.yaml#/~1api~1calculate~1order-summary"
-
-  # Item Photos
-  /api/items/{itemId}/photos:
-    $ref: "item/paths/item-photos.yaml#/~1api~1items~1{itemId}~1photos"
-  /api/photos/{photoId}:
-    $ref: "item/paths/item-photos.yaml#/~1api~1photos~1{photoId}"
-  /api/photos/{photoId}/file:
-    $ref: "item/paths/item-photos.yaml#/~1api~1photos~1{photoId}~1file"
 
 components:
   schemas:
-    # Request Schemas
-    ItemCalculationRequest:
-      $ref: "item/schemas/item-requests.yaml#/ItemCalculationRequest"
-    ItemCharacteristicsRequest:
-      $ref: "item/schemas/item-requests.yaml#/ItemCharacteristicsRequest"
-
     # Response Schemas
     ServiceCategoryResponse:
       $ref: "item/schemas/item-responses.yaml#/ServiceCategoryResponse"
@@ -74,38 +35,18 @@ components:
       $ref: "item/schemas/item-responses.yaml#/PriceListItemResponse"
     PriceModifierResponse:
       $ref: "item/schemas/item-responses.yaml#/PriceModifierResponse"
-    ItemCalculationResponse:
-      $ref: "item/schemas/item-responses.yaml#/ItemCalculationResponse"
-    PhotoResponse:
-      $ref: "item/schemas/item-responses.yaml#/PhotoResponse"
-    PriceListPageResponse:
-      $ref: "item/schemas/item-responses.yaml#/PriceListPageResponse"
-    ServiceCategorySummary:
-      $ref: "item/schemas/item-responses.yaml#/ServiceCategorySummary"
-    AppliedModifierResult:
-      $ref: "item/schemas/item-responses.yaml#/AppliedModifierResult"
-    CalculationStep:
-      $ref: "item/schemas/item-responses.yaml#/CalculationStep"
+    PriceListResponse:
+      $ref: "item/schemas/item-responses.yaml#/PriceListResponse"
 
-    # Enums from Order domain (shared)
-    UnitType:
-      $ref: "order/schemas/price-modifiers.yaml#/UnitType"
-    MaterialType:
-      $ref: "order/schemas/price-modifiers.yaml#/MaterialType"
-    FillingType:
-      $ref: "order/schemas/price-modifiers.yaml#/FillingType"
+    # Enums
+    ItemColor:
+      $ref: "item/schemas/item-enums.yaml#/ItemColor"
     ServiceCategory:
       $ref: "order/schemas/price-modifiers.yaml#/ServiceCategory"
+    UnitType:
+      $ref: "order/schemas/price-modifiers.yaml#/UnitType"
     ModifierType:
       $ref: "order/schemas/order-enums.yaml#/ModifierType"
-    UrgencyType:
-      $ref: "order/schemas/order-enums.yaml#/UrgencyType"
-    StainType:
-      $ref: "order/schemas/order-item-schemas.yaml#/StainType"
-    DefectType:
-      $ref: "order/schemas/order-item-schemas.yaml#/DefectType"
-    DiscountType:
-      $ref: "order/schemas/order-enums.yaml#/DiscountType"
 
     # Common Error Schemas
     ErrorResponse:
