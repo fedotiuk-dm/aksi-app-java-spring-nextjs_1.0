@@ -7,9 +7,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,8 +25,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.aksi.config.security.JwtAuthenticationEntryPoint;
-import com.aksi.config.security.JwtAuthenticationFilter;
+import com.aksi.domain.auth.security.JwtAuthenticationEntryPoint;
+import com.aksi.domain.auth.security.JwtAuthenticationFilter;
+import com.aksi.domain.auth.service.UserDetailsProvider;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +40,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
   private final Environment environment;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+  private final UserDetailsProvider userDetailsProvider;
 
   @Value("${cors.allowed-origins:http://localhost:3000,http://localhost:3001}")
   private String corsAllowedOrigins;
@@ -50,7 +61,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, PasswordEncoder passwordEncoder)
+      throws Exception {
     // Перевіряємо чи це dev профіль
     boolean isDevProfile = Arrays.asList(environment.getActiveProfiles()).contains("dev");
 
@@ -81,8 +93,9 @@ public class SecurityConfig {
                 authz
                     // Публічні endpoints (без авторизації)
                     .requestMatchers(
-                        // Auth endpoints (логін, refresh token)
+                        // Auth endpoints (логін, logout, refresh token)
                         "/api/auth/login",
+                        "/api/auth/logout",
                         "/api/auth/refresh-token",
 
                         // OpenAPI документація
@@ -109,13 +122,31 @@ public class SecurityConfig {
 
     // Додаємо JWT фільтр перед UsernamePasswordAuthenticationFilter
     if (!isDevProfile) {
-      http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+      http.authenticationProvider(authenticationProvider(passwordEncoder))
+          .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
           .exceptionHandling(
               exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint));
       log.info("🔑 JWT Authentication filter and entry point added to security chain");
     }
 
     return http.build();
+  }
+
+  /** Configure authentication provider */
+  @Bean
+  public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
+    // Using the recommended constructor-based approach for Spring Security 6.0+
+    DaoAuthenticationProvider authProvider =
+        new DaoAuthenticationProvider((UserDetailsService) userDetailsProvider);
+    authProvider.setPasswordEncoder(passwordEncoder);
+    return authProvider;
+  }
+
+  /** Configure authentication manager */
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+      throws Exception {
+    return config.getAuthenticationManager();
   }
 
   /** CORS конфігурація для роботи з frontend. */

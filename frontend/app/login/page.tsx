@@ -4,7 +4,7 @@ import { Box, Container, Paper, Typography } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 
-import { LoginForm } from '@/features/auth/ui/LoginForm';
+import { LoginForm } from '@/features/auth';
 
 /**
  * Сторінка авторизації
@@ -73,7 +73,7 @@ function LoginPageContent() {
             </Typography>
           </Box>
 
-          <LoginForm redirectTo={safeCallbackUrl} />
+          <LoginForm />
 
           <Box sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">

@@ -37,7 +37,7 @@ import { useState } from 'react';
 // MUI іконки
 
 // Внутрішні залежності
-import { useLogout } from '@/features/auth/hooks/useLogout';
+import { useLogout, useAuth } from '@/features/auth';
 import { useSafeMUIHydration } from '@/shared/lib/hooks';
 
 // Константи
@@ -58,6 +58,7 @@ export default function Header() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pathname = usePathname();
   const { logout, isLoading } = useLogout();
+  const { user } = useAuth();
   const { muiProps } = useSafeMUIHydration();
 
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -97,7 +98,7 @@ export default function Header() {
               color="inherit"
             >
               <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
-                <PersonIcon />
+                {user?.firstName ? user.firstName[0].toUpperCase() : <PersonIcon />}
               </Avatar>
             </IconButton>
             <Menu
@@ -117,6 +118,20 @@ export default function Header() {
                 ...muiProps,
               }}
             >
+              {user && (
+                <Box sx={{ px: 2, py: 1.5 }}>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    {user.firstName} {user.lastName}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {user.email}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {user.role === 'ADMIN' ? 'Адміністратор' : 'Оператор'}
+                  </Typography>
+                </Box>
+              )}
+              <Divider />
               <MenuItem onClick={handleUserMenuClose}>
                 <ListItemIcon>
                   <PersonIcon fontSize="small" />

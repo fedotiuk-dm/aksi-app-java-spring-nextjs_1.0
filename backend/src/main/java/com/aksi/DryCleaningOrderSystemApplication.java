@@ -2,6 +2,7 @@ package com.aksi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Головний клас додатку для односторінкової системи замовлень хімчистки.
@@ -12,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * філіями та їх налаштуваннями - Document Domain: генерація квитанцій та документів
  */
 @SpringBootApplication
+@EnableScheduling
 public class DryCleaningOrderSystemApplication {
 
   public static void main(String[] args) {

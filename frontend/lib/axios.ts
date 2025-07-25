@@ -3,7 +3,7 @@
 import axios from 'axios';
 import type { AxiosError, AxiosResponse, AxiosRequestConfig, AxiosInstance } from 'axios';
 
-import { useAuthStore } from '@/features/auth/store';
+import { useAuthStore } from '@/features/auth';
 
 
 // Розширюємо тип AxiosRequestConfig для власних властивостей
@@ -128,6 +128,8 @@ export const handleApiError = (error: unknown): ApiError => {
 // Отримуємо базовий URL API з змінних середовища
 const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
+console.log('🔧 Axios baseURL:', baseURL);
+
 /**
  * Створення основного екземпляру Axios з базовими налаштуваннями
  */
@@ -184,8 +186,8 @@ let failedQueue: QueueItem[] = [];
  */
 async function refreshToken(): Promise<boolean> {
   try {
-    // Викликаємо Next.js API роут для оновлення токена
-    await axios.post('/api/auth/refresh-token', {}, { withCredentials: true });
+    // Викликаємо backend API для оновлення токена
+    await apiClient.post('/api/auth/refresh-token', {});
     return true;
   } catch (error) {
     console.error('Помилка оновлення токена:', error);

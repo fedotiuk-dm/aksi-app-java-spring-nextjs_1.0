@@ -1,7 +1,7 @@
 services:
   # Traefik - зворотний проксі для production
   traefik:
-    image: traefik:v3.4
+    image: traefik:v3.5
     container_name: traefik-prod
     ports:
       - "80:80"

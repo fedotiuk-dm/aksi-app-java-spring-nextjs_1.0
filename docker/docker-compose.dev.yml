@@ -1,8 +1,8 @@
 services:
   # Traefik - зворотний проксі для маршрутизації
   traefik:
-    image: traefik:v3.4
-    container_name: traefik
+    image: traefik:v3.5
+    container_name: traefik-dev
     ports:
       - "80:80" # HTTP порт
       - "9090:8080" # Traefik Dashboard (змінено з 8080 на 9090, щоб уникнути конфлікту)

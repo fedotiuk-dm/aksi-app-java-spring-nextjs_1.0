@@ -1,7 +1,5 @@
 server:
   port: 8080
-  servlet:
-    context-path: /api
 
 spring:
   application:
@@ -63,12 +61,6 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: method
     tagsSorter: alpha
-  info:
-    title: AKSI Dry Cleaning Order System API
-    description: API для односторінкової системи замовлень хімчистки з DDD архітектурою
-    version: 1.0.0
-    contact:
-      name: AKSI Development Team
 
 # Actuator endpoints
 management:
@@ -85,6 +77,9 @@ logging:
   level:
     com.aksi: DEBUG
     org.springframework.security: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.boot.web.embedded.tomcat: INFO
+    org.springframework.context: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
@@ -97,47 +92,14 @@ logging:
 cors:
   allowed-origins: "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
 
-# Custom application properties
-aksi:
-  order:
-    receipt:
-      number:
-        prefix: "AKSI-"
-        length: 8
-    photo:
-      max-size-mb: 5
-      max-count-per-item: 5
-      upload-path: "uploads/photos/"
-  pdf:
-    output-path: "uploads/receipts/"
-  qr:
-    base-url: "https://aksi.com.ua/track/"
-
-# JWT Configuration
-jwt:
-  secret: eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0
-  expiration: 86400000 # 24 години у мілісекундах
-  refresh:
-    expiration: 604800000 # 7 днів у мілісекундах
-
-# Pricing Configuration (використовується PricingConfiguration компонентом)
-pricing:
-  urgency-charges:
-    coefficients:
-      NORMAL: 0.0
-      URGENT_48H: 0.5
-      URGENT_24H: 1.0
-    descriptions:
-      NORMAL: "Стандартне виконання"
-      URGENT_48H: "Термінове виконання 48 годин (+50%)"
-      URGENT_24H: "Термінове виконання 24 години (+100%)"
-  modifier-rules:
-    max-modifiers-per-item: 10
-    max-total-modifier-increase: 5.0
-  discount-rules:
-    max-order-discount: 0.5
-    member-discount: 0.1
-    military-discount: 0.1
+# Application Configuration
+application:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0}
+      access-token-expiration: PT15M # 15 minutes
+      refresh-token-expiration: P7D # 7 days
+      issuer: AKSI Dry Cleaning System
 
 ---
 # Development profile
@@ -152,8 +114,6 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:1911}
 
   jpa:
-    hibernate:
-#      ddl-auto: validate # Використовуємо тільки Liquibase для міграцій
     show-sql: true
     properties:
       hibernate:
@@ -179,23 +139,19 @@ management:
     health:
       show-details: always
 
-# МАКСИМАЛЬНО ЧИСТІ ЛОГИ - тільки критичні повідомлення
+# DEV РЕЖИМ - докладні логи для діагностики
 logging:
   level:
-    root: ERROR # Тільки помилки для всього
-    com.aksi: ${AKSI_LOG_LEVEL:WARN} # Наш код - керується змінною оточення
-    org.springframework: ERROR # Весь Spring - тільки помилки
-    org.hibernate: ERROR # Hibernate - тільки помилки
-    liquibase: ERROR # Liquibase - тільки помилки
-    org.postgresql: ERROR # PostgreSQL - тільки помилки
-    org.postgresql.Driver: ERROR # PostgreSQL Driver
-    com.zaxxer.hikari: ERROR # HikariCP connection pool
-    org.apache.maven: ERROR # Maven - тільки помилки
-    org.openapitools: ERROR # OpenAPI генератор - тільки помилки
-    org.apache.commons.logging: OFF # Вимкнути Commons Logging попередження
-    org.springframework.jcl: OFF # Вимкнути Spring Commons Logging попередження
-    # Критично важливі логи для діагностики
-    org.springframework.boot.actuator.health: WARN
-    org.springframework.boot.web.embedded.tomcat: WARN # Tomcat startup
+    root: INFO # Показувати основну інформацію
+    com.aksi: DEBUG # Наш код - детальне логування
+    org.springframework.boot: INFO # Spring Boot запуск
+    org.springframework.boot.web.embedded.tomcat: INFO # Tomcat startup
+    org.springframework.context: INFO # Context initialization
+    org.springframework.security: DEBUG # Security налаштування
+    org.hibernate: WARN # Hibernate - тільки попередження
+    liquibase: INFO # Liquibase міграції
+    org.postgresql: WARN # PostgreSQL
+    com.zaxxer.hikari: INFO # HikariCP connection pool
+    org.openapitools: WARN # OpenAPI генератор
   pattern:
     console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr([%t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"

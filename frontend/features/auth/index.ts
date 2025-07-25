@@ -1,40 +1,22 @@
 /**
- * @fileoverview Auth Feature Module з Orval API
- *
- * 🎯 Архітектура: "DDD inside, FSD outside" з Orval First підходом
- *
- * ✅ Структура:
- * - components/ - AuthGuard для захисту маршрутів
- * - ui/ - LoginForm, LogoutButton
- * - hooks/ - useAuth, useLogin, useLogout
- * - api/ - Orval API хуки
- * - server/ - Серверні функції для Next.js API роутів
- * - store/ - Zustand стор
- * - model/ - TypeScript типи та адаптери
+ * @fileoverview Auth Feature Module для HttpOnly cookies
+ * 
+ * Нова архітектура з підтримкою HttpOnly cookies
  */
 
-// 🔐 Auth Components
-export { AuthGuard } from './components/AuthGuard';
+// Components
+export { LoginForm } from './components/LoginForm';
+export { LogoutButton } from './components/LogoutButton';
+export { ProtectedRoute } from './components/ProtectedRoute';
+export { AuthProvider } from './components/AuthProvider';
 
-// 🎨 Auth UI Components
-export { LoginForm, LogoutButton } from './ui';
+// Hooks
+export { useAuth } from './hooks/use-auth';
+export { useLogin } from './hooks/use-login';
+export { useLogout } from './hooks/use-logout';
 
-// 🎯 Auth Hooks
-export { useAuth, useLogin, useLogout } from './hooks';
+// Store
+export { useAuthStore } from './store/auth-store';
 
-// 🌐 Auth API (Orval хуки)
-export {
-  useLogin as useApiLogin,
-  useLogout as useApiLogout,
-  useRefreshToken,
-  useCurrentUser,
-} from './api';
-
-// 🏪 Auth Store
-export { useAuthStore } from './store';
-
-// 🖥️ Server Auth (для Next.js API роутів)
-export { serverAuth } from './server/serverAuth';
-
-// 📝 Auth Types
-export type { AuthUser, UserRole, AuthError } from './model/types';
+// Services
+export { authService } from './api/auth-service';

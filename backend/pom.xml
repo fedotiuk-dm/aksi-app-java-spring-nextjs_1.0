@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
+        <version>3.5.4</version>
         <relativePath/>
     </parent>
 
@@ -297,6 +297,33 @@
                             <generatorName>spring</generatorName>
                             <apiPackage>com.aksi.api.auth</apiPackage>
                             <modelPackage>com.aksi.api.auth.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- User API -->
+                    <execution>
+                        <id>generate-user-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/user-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.user</apiPackage>
+                            <modelPackage>com.aksi.api.user.dto</modelPackage>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>
@@ -601,6 +628,10 @@
                         <executions>
                             <execution>
                                 <id>generate-auth-api</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>generate-user-api</id>
                                 <phase>none</phase>
                             </execution>
                             <execution>

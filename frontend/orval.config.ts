@@ -10,10 +10,17 @@
  *
  * 📁 Результат:
  * shared/api/generated/
+ *   ├── auth/             # Auth Domain
+ *   │   ├── authApi.ts                - хуки (useLogin, useRefreshToken тощо)
+ *   │   ├── index.ts                  - типи + BARREL: export * from './authApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
+ *   ├── user/             # User Domain
+ *   │   ├── userApi.ts                - хуки (useUsers, useCreateUser тощо)
+ *   │   ├── index.ts                  - типи + BARREL: export * from './userApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
  *   ├── client/           # Client Domain
  *   │   ├── clientApi.ts              - хуки (useClients, useCreateClient тощо)
- *   │   ├── index.ts                  - типи + BARREL: export * from './clientApi'
- *   │   └── schemas.zod.ts            - Zod схеми
+ *   │   └── ...
  *   ├── branch/           # Branch Domain
  *   │   ├── branchApi.ts              - хуки (useBranches, useCreateBranch тощо)
  *   │   └── ...
@@ -28,6 +35,8 @@
  *       └── ...
  *
  * 🚀 ПЕРЕВАГИ КОМПОЗИЦІЇ:
+ * ✅ import { useLogin } from '@/shared/api/generated/auth'
+ * ✅ import { useUsers } from '@/shared/api/generated/user'
  * ✅ import { useCreateClient } from '@/shared/api/generated/client'
  * ✅ import { useBranches } from '@/shared/api/generated/branch'
  * ✅ import { useCreateOrder } from '@/shared/api/generated/order'
@@ -39,7 +48,7 @@
 import type { Config } from '@orval/core';
 
 // 🔧 Константи
-const API_BASE_URL = process.env.ORVAL_API_URL || 'http://localhost:8080/api/v3/api-docs';
+const API_BASE_URL = process.env.ORVAL_API_URL || 'http://localhost:8080/v3/api-docs';
 const MUTATOR_PATH = './lib/api/orval-fetcher.ts';
 const MUTATOR_NAME = 'orvalFetcher';
 
@@ -47,6 +56,9 @@ const MUTATOR_NAME = 'orvalFetcher';
 const DOMAIN_TAGS = {
   // 🔐 Auth Domain
   auth: ['auth', 'authentication', 'authorization'],
+
+  // 👥 User Domain
+  user: ['users'],
 
   // 👤 Client Domain
   client: ['clients', 'client-search', 'client-contacts'],
@@ -155,6 +167,9 @@ const createDomainConfig = (name: string, tags: string[]) => ({
 const config: Config = {
   // 🔐 AUTH DOMAIN
   ...createDomainConfig('auth', DOMAIN_TAGS.auth),
+
+  // 👥 USER DOMAIN
+  ...createDomainConfig('user', DOMAIN_TAGS.user),
 
   // 👤 CLIENT DOMAIN
   ...createDomainConfig('client', DOMAIN_TAGS.client),

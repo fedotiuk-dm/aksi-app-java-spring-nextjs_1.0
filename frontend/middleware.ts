@@ -1,20 +1,25 @@
-import { jwtDecode } from 'jwt-decode';
 import { NextRequest, NextResponse } from 'next/server';
-
-import { JwtPayload, UserRole } from '@/features/auth/model/types';
 
 // Маршрути, які потребують авторизації
 const protectedRoutes = [
   '/dashboard',
-  '/clients',
+  '/clients', 
   '/orders',
   '/order-wizard',
   '/price-list',
   '/settings',
+  '/admin',
 ] as const;
 
 // Публічні маршрути (не потребують авторизації)
-const publicRoutes = ['/login', '/register'] as const;
+const publicRoutes = ['/login'] as const;
+
+// API роути, що не потребують перевірки
+const publicApiRoutes = [
+  '/api/auth/login',
+  '/api/auth/refresh-token',
+  '/api/auth/logout',
+] as const;
 
 // Перевірка, чи шлях є публічним
 const isPublic = (path: string): boolean => {
@@ -23,70 +28,44 @@ const isPublic = (path: string): boolean => {
     return true;
   }
 
-  // Додаткова перевірка для API аутентифікації
-  return path.startsWith('/api/auth/');
-};
-
-// Перевірка, чи токен є валідним
-const isTokenValid = (token: string): boolean => {
-  try {
-    const payload = jwtDecode<JwtPayload>(token);
-    // Перевіряємо, чи токен не прострочений
-    const currentTime = Math.floor(Date.now() / 1000);
-    return payload.exp > currentTime;
-  } catch (error) {
-    console.error(
-      'Error decoding token:',
-      error instanceof Error ? error.message : 'Unknown error'
-    );
-    return false;
-  }
-};
-
-// Перевірка, чи користувач має необхідну роль для доступу до маршруту
-const hasRequiredRole = (userRole: UserRole, requiredRoles: UserRole[]): boolean => {
-  return requiredRoles.includes(userRole);
-};
-
-// Отримання ролі з токена
-const getRoleFromToken = (token: string): UserRole | null => {
-  try {
-    const payload = jwtDecode<JwtPayload>(token);
-    return payload.role;
-  } catch (error) {
-    console.error('Error getting role from token:', error);
-    return null;
-  }
+  // Перевірка для публічних API роутів
+  return publicApiRoutes.some((apiRoute) => path === apiRoute);
 };
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  // Перевіряємо наявність токена в cookies (якщо використовуємо cookies)
-  // або пропускаємо перевірку для localStorage (клієнтська перевірка)
 
   // Якщо це публічний маршрут, дозволяємо доступ
   if (isPublic(pathname)) {
     return NextResponse.next();
   }
 
-  // Якщо це захищений маршрут, перевіряємо авторизацію
+  // Перевіряємо наявність auth cookies
+  const accessToken = request.cookies.get('accessToken');
+  const refreshToken = request.cookies.get('refreshToken');
+
+  // Якщо це захищений маршрут
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-    // Тут можна додати перевірку токена в cookies
-    // Наразі пропускаємо, оскільки використовуємо localStorage
+    // Якщо немає токенів - перенаправляємо на логін
+    if (!accessToken && !refreshToken) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
 
-    // Можливо, в майбутньому додамо роль-базовану перевірку:
-    // const token = request.cookies.get('accessToken')?.value;
-    // if (token && isTokenValid(token)) {
-    //   const userRole = getRoleFromToken(token);
-    //   // Перевірка ролей для конкретних маршрутів
-    // }
-
-    return NextResponse.next();
+    // Якщо є тільки refresh token - дозволяємо запит 
+    // (axios interceptor спробує оновити токен)
+    if (!accessToken && refreshToken) {
+      return NextResponse.next();
+    }
   }
 
   // Для кореневого маршруту перенаправляємо на dashboard
   if (pathname === '/') {
+    // Перевіряємо авторизацію
+    if (!accessToken && !refreshToken) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
