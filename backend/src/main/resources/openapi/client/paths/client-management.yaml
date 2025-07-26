@@ -108,3 +108,33 @@
             schema:
               $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
     operationId: updateClient
+
+/api/clients/by-phone/{phone}:
+  get:
+    tags:
+      - clients
+    summary: Отримати клієнта за номером телефону
+    description: Знаходить клієнта за номером телефону
+    parameters:
+      - name: phone
+        in: path
+        required: true
+        description: Номер телефону клієнта
+        schema:
+          type: string
+          pattern: '^\+380[0-9]{9}$'
+          example: "+380501234567"
+    responses:
+      200:
+        description: Інформація про клієнта
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/client-responses.yaml#/ClientResponse"
+      404:
+        description: Клієнт не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: getClientByPhone

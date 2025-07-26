@@ -1,0 +1,41 @@
+# Internal endpoints для роботи з клієнтами (для використання Order доменом)
+/api/clients/{id}/statistics:
+  put:
+    tags:
+      - clients-internal
+    summary: Оновити статистику клієнта
+    description: Оновлює статистику замовлень клієнта (викликається з Order домену)
+    parameters:
+      - $ref: "../../common/parameters/path.yaml#/IdParam"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - orderAmount
+            properties:
+              orderAmount:
+                type: number
+                format: decimal
+                description: Сума замовлення для додавання до статистики
+                example: 150.00
+    responses:
+      200:
+        description: Статистика клієнта успішно оновлена
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Client statistics updated successfully"
+      404:
+        description: Клієнт не знайдений
+        content:
+          application/json:
+            schema:
+              $ref: "../../common/schemas/errors.yaml#/ErrorResponse"
+    operationId: updateClientStatistics

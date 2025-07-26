@@ -12,11 +12,19 @@
         description: Пошуковий запит (ім'я, прізвище, телефон, email)
         schema:
           type: string
-          minLength: 2
+          minLength: 1
           maxLength: 100
+      - name: page
+        in: query
+        description: Номер сторінки (починаючи з 0)
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
       - name: limit
         in: query
-        description: Максимальна кількість результатів (для автозаповнення)
+        description: Максимальна кількість результатів на сторінці
         required: false
         schema:
           type: integer

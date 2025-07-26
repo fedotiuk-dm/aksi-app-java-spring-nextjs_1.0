@@ -56,18 +56,14 @@ public class WorkingScheduleUtils {
    * @param workingDays list of working day requests from API
    * @return true if valid (all 7 days present, no duplicates)
    */
-  public static boolean validateScheduleRequests(
-      List<WorkingDayRequest> workingDays) {
+  public static boolean validateScheduleRequests(List<WorkingDayRequest> workingDays) {
     if (workingDays == null || workingDays.size() != 7) {
       return false;
     }
 
     // Check for duplicates by counting unique days
     long uniqueDaysCount =
-        workingDays.stream()
-            .map(WorkingDayRequest::getDayOfWeek)
-            .distinct()
-            .count();
+        workingDays.stream().map(WorkingDayRequest::getDayOfWeek).distinct().count();
 
     return uniqueDaysCount == 7;
   }

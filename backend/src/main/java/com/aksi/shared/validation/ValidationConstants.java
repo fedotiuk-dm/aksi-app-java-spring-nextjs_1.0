@@ -66,6 +66,45 @@ public final class ValidationConstants {
     public static final int IP_ADDRESS_MAX_LENGTH = 45; // Max IPv6 length
   }
 
+  /** Client validation constants */
+  public static final class Client {
+    /** Minimum length for first name */
+    public static final int FIRST_NAME_MIN_LENGTH = 1;
+
+    /** Maximum length for first name */
+    public static final int FIRST_NAME_MAX_LENGTH = 50;
+
+    /** Minimum length for last name */
+    public static final int LAST_NAME_MIN_LENGTH = 1;
+
+    /** Maximum length for last name */
+    public static final int LAST_NAME_MAX_LENGTH = 50;
+
+    /** Maximum length for phone number */
+    public static final int PHONE_MAX_LENGTH = 20;
+
+    /** Maximum length for email */
+    public static final int EMAIL_MAX_LENGTH = 100;
+
+    /** Maximum length for street address */
+    public static final int STREET_MAX_LENGTH = 200;
+
+    /** Maximum length for city name */
+    public static final int CITY_MAX_LENGTH = 100;
+
+    /** Maximum length for region name */
+    public static final int REGION_MAX_LENGTH = 100;
+
+    /** Maximum length for country name */
+    public static final int COUNTRY_MAX_LENGTH = 100;
+
+    /** Length for postal code */
+    public static final int POSTAL_CODE_LENGTH = 5;
+
+    /** Maximum length for source other field */
+    public static final int SOURCE_OTHER_MAX_LENGTH = 100;
+  }
+
   /** Branch validation constants */
   public static final class Branch {
     /** Minimum length for branch name */
@@ -227,6 +266,21 @@ public final class ValidationConstants {
     public static final String WORKING_SCHEDULE_DUPLICATE_DAYS =
         "Working schedule cannot have duplicate days";
     public static final String WORKING_TIME_INVALID = "Opening time must be before closing time";
+
+    // Client validation messages
+    public static final String CLIENT_PHONE_CANNOT_BE_BLANK = "Phone number cannot be blank";
+    public static final String CLIENT_PHONE_INVALID_FORMAT =
+        "Phone number must be in Ukrainian format";
+    public static final String CLIENT_EXISTS_WITH_PHONE =
+        "Client with this phone number already exists: %s";
+
+    // Client service messages
+    public static final String CLIENT_NOT_FOUND = "Client not found: %s";
+    public static final String CREATING_CLIENT = "Creating new client: {} {}";
+    public static final String GETTING_CLIENT_BY_ID = "Getting client by ID: {}";
+    public static final String UPDATING_CLIENT = "Updating client: {}";
+    public static final String SEARCHING_CLIENTS = "Searching clients with query: {}";
+    public static final String UPDATING_CLIENT_STATISTICS = "Updating statistics for client: {}";
   }
 
   /** Exception handling constants */
@@ -241,6 +295,10 @@ public final class ValidationConstants {
     public static final String DUPLICATE_RECEIPT_PREFIX_CODE = "DUPLICATE_RECEIPT_PREFIX";
     public static final String INVALID_WORKING_SCHEDULE_CODE = "INVALID_WORKING_SCHEDULE";
 
+    // Client error codes
+    public static final String CLIENT_NOT_FOUND_CODE = "CLIENT_NOT_FOUND";
+    public static final String DUPLICATE_CLIENT_CODE = "DUPLICATE_CLIENT";
+
     // Log messages
     public static final String INVALID_CREDENTIALS_LOG = "Invalid credentials error: {}";
     public static final String TOKEN_EXPIRED_LOG = "Token expired error: {}";
@@ -250,6 +308,10 @@ public final class ValidationConstants {
     public static final String BRANCH_NOT_FOUND_LOG = "Branch not found: {}";
     public static final String DUPLICATE_RECEIPT_PREFIX_LOG = "Duplicate receipt prefix: {}";
     public static final String INVALID_WORKING_SCHEDULE_LOG = "Invalid working schedule: {}";
+
+    // Client log messages
+    public static final String CLIENT_NOT_FOUND_LOG = "Client not found: {}";
+    public static final String DUPLICATE_CLIENT_LOG = "Duplicate client with phone: {}";
 
     // Other
     public static final String URI_PREFIX = "uri=";

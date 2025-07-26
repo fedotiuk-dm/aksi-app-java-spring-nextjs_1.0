@@ -16,6 +16,8 @@ tags:
     description: Управління клієнтами
   - name: client-search
     description: Пошук клієнтів
+  - name: clients-internal
+    description: Внутрішні операції з клієнтами
 
 paths:
   # Client Management
@@ -23,9 +25,14 @@ paths:
     $ref: "client/paths/client-management.yaml#/~1api~1clients"
   /api/clients/{id}:
     $ref: "client/paths/client-management.yaml#/~1api~1clients~1{id}"
+  /api/clients/by-phone/{phone}:
+    $ref: "client/paths/client-management.yaml#/~1api~1clients~1by-phone~1{phone}"
   # Client Search
   /api/clients/search:
     $ref: "client/paths/client-search.yaml#/~1api~1clients~1search"
+  # Internal Operations
+  /api/clients/{id}/statistics:
+    $ref: "client/paths/client-internal.yaml#/~1api~1clients~1{id}~1statistics"
 
 components:
   schemas:

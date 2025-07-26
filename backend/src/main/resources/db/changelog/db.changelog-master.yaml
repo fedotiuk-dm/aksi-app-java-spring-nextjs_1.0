@@ -22,3 +22,9 @@ databaseChangeLog:
       file: db/changelog/branch/002-create-working-schedules-table.yaml
   - include:
       file: db/changelog/branch/003-add-version-to-branches.yaml
+
+  # Client Domain міграції
+  - include:
+      file: db/changelog/client/001-create-clients-table.yaml
+  - include:
+      file: db/changelog/client/002-create-client-communication-methods-table.yaml
