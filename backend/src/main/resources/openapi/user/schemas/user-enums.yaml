@@ -3,5 +3,6 @@ UserRole:
   description: Ролі користувачів системи хімчистки
   enum:
     - ADMIN # Адміністратор системи
+    - MANAGER # Менеджер філії
     - OPERATOR # Оператор прийому замовлень
   example: "OPERATOR"

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.aksi.shared.validation.ValidationConstants;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -32,7 +34,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
       AuthenticationException authException)
       throws IOException {
 
-    log.error("Unauthorized error: {}", authException.getMessage());
+    log.error(ValidationConstants.Exceptions.UNAUTHORIZED_ERROR, authException.getMessage());
 
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -40,7 +42,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     // Create error response
     ErrorResponse errorResponse = new ErrorResponse();
     errorResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    errorResponse.setError("Unauthorized");
+    errorResponse.setError(ValidationConstants.Exceptions.UNAUTHORIZED_CODE);
     errorResponse.setMessage(authException.getMessage());
     errorResponse.setPath(request.getRequestURI());
     errorResponse.setTimestamp(Instant.now());

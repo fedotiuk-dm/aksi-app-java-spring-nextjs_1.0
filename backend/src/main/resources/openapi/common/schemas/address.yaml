@@ -2,6 +2,9 @@
 Address:
   type: object
   title: Address
+  required:
+    - street
+    - city
   properties:
     street:
       type: string
@@ -20,8 +23,8 @@ Address:
       example: Київська область
     postalCode:
       type: string
-      maxLength: 10
-      description: Поштовий індекс
+      pattern: '^\d{5}$'
+      description: Поштовий індекс (5 цифр)
       example: "01001"
     country:
       type: string
@@ -32,6 +35,9 @@ Address:
 CreateAddressRequest:
   type: object
   title: CreateAddressRequest
+  required:
+    - street
+    - city
   properties:
     street:
       type: string
@@ -50,8 +56,8 @@ CreateAddressRequest:
       example: Київська область
     postalCode:
       type: string
-      maxLength: 10
-      description: Поштовий індекс
+      pattern: '^\d{5}$'
+      description: Поштовий індекс (5 цифр)
       example: "01001"
     country:
       type: string

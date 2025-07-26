@@ -21,6 +21,7 @@ import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserResponse;
 import com.aksi.api.user.dto.UserRole;
 import com.aksi.domain.user.service.UserService;
+import com.aksi.shared.validation.ValidationConstants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,27 +35,25 @@ public class UserController implements UsersApi {
   private final UserService userService;
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize(ValidationConstants.Controllers.HAS_ROLE_ADMIN)
   public ResponseEntity<UserResponse> createUser(CreateUserRequest createUserRequest) {
-    log.info("Creating new user with username: {}", createUserRequest.getUsername());
+    log.info(ValidationConstants.Controllers.CREATING_USER, createUserRequest.getUsername());
     UserResponse response = userService.createUser(createUserRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize(ValidationConstants.Controllers.HAS_ROLE_ADMIN)
   public ResponseEntity<UserListResponse> getUsers(
       Integer page, Integer size, UUID branchId, UserRole role, Boolean isActive) {
     log.info(
-        "Getting users list with filters - page: {}, size: {}, branchId: {}, role: {}, isActive: {}",
-        page,
-        size,
-        branchId,
-        role,
-        isActive);
+        ValidationConstants.Controllers.GETTING_USERS_LIST, page, size, branchId, role, isActive);
 
     // Create pageable
-    Pageable pageable = PageRequest.of(page != null ? page : 0, size != null ? size : 20);
+    Pageable pageable =
+        PageRequest.of(
+            page != null ? page : ValidationConstants.Controllers.DEFAULT_PAGE,
+            size != null ? size : ValidationConstants.Controllers.DEFAULT_PAGE_SIZE);
 
     UserListResponse response = userService.listUsers(pageable, branchId, role, isActive);
     return ResponseEntity.ok(response);
@@ -67,57 +66,62 @@ public class UserController implements UsersApi {
 
     if (authentication == null
         || !authentication.isAuthenticated()
-        || "anonymousUser".equals(authentication.getName())) {
-      log.warn("Unauthorized access attempt to getCurrentUser endpoint");
+        || ValidationConstants.Messages.ANONYMOUS_USER.equals(authentication.getName())) {
+      log.warn(ValidationConstants.Controllers.UNAUTHORIZED_ACCESS_ATTEMPT);
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     String username = authentication.getName();
-    log.info("Getting current user info for: {}", username);
+    log.info(ValidationConstants.Controllers.GETTING_CURRENT_USER, username);
     UserResponse response = userService.getUserByUsername(username);
     return ResponseEntity.ok(response);
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize(ValidationConstants.Controllers.HAS_ROLE_ADMIN)
   public ResponseEntity<UserResponse> getUserById(UUID userId) {
-    log.info("Getting user by ID: {}", userId);
+    log.info(ValidationConstants.Controllers.GETTING_USER_BY_ID, userId);
     UserResponse response = userService.getUserById(userId);
     return ResponseEntity.ok(response);
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize(ValidationConstants.Controllers.HAS_ROLE_ADMIN)
   public ResponseEntity<UserResponse> updateUser(UUID userId, UpdateUserRequest updateUserRequest) {
-    log.info("Updating user: {}", userId);
+    log.info(ValidationConstants.Controllers.UPDATING_USER, userId);
     UserResponse response = userService.updateUser(userId, updateUserRequest);
     return ResponseEntity.ok(response);
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize(ValidationConstants.Controllers.HAS_ROLE_ADMIN)
   public ResponseEntity<Void> changeUserPassword(
       UUID userId, ChangePasswordRequest changePasswordRequest) {
-    log.info("Changing password for user: {}", userId);
+    log.info(ValidationConstants.Controllers.CHANGING_PASSWORD, userId);
     userService.changePassword(userId, changePasswordRequest);
     return ResponseEntity.noContent().build();
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize(ValidationConstants.Controllers.HAS_ROLE_ADMIN)
   public ResponseEntity<UserResponse> updateUserRole(
       UUID userId, UpdateUserRoleRequest updateUserRoleRequest) {
-    log.info("Updating role for user: {} to {}", userId, updateUserRoleRequest.getRole());
+    log.info(
+        ValidationConstants.Controllers.UPDATING_USER_ROLE,
+        userId,
+        updateUserRoleRequest.getRole());
     UserResponse response = userService.updateUserRole(userId, updateUserRoleRequest);
     return ResponseEntity.ok(response);
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize(ValidationConstants.Controllers.HAS_ROLE_ADMIN)
   public ResponseEntity<UserResponse> updateUserStatus(
       UUID userId, UpdateUserStatusRequest updateUserStatusRequest) {
     log.info(
-        "Updating status for user: {} to active={}", userId, updateUserStatusRequest.getIsActive());
+        ValidationConstants.Controllers.UPDATING_USER_STATUS,
+        userId,
+        updateUserStatusRequest.getIsActive());
     UserResponse response = userService.updateUserStatus(userId, updateUserStatusRequest);
     return ResponseEntity.ok(response);
   }

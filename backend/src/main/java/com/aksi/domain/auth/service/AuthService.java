@@ -16,6 +16,8 @@ import com.aksi.domain.auth.entity.RefreshTokenEntity;
 import com.aksi.domain.auth.exception.InvalidCredentialsException;
 import com.aksi.domain.auth.exception.InvalidTokenException;
 import com.aksi.domain.user.service.UserService;
+import com.aksi.shared.validation.ValidationConstants;
+import com.aksi.shared.validation.ValidationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +36,19 @@ public class AuthService {
   private final JwtProperties jwtProperties;
   private final UserService userService;
   private final AuthEventLogger eventLogger;
+  private final ValidationService validationService;
 
   /** Authenticate user and generate tokens */
   public InternalAuthResponse authenticate(LoginRequest request) {
+    // Validate input
+    validateLoginRequest(request);
+
     try {
       // Check if user exists
       if (!userDetailsProvider.existsByUsername(request.getUsername())) {
-        eventLogger.logLoginFailure(request.getUsername(), "Non-existent user");
-        throw new InvalidCredentialsException("Invalid username or password");
+        eventLogger.logLoginFailure(
+            request.getUsername(), ValidationConstants.Messages.NON_EXISTENT_USER);
+        throw new InvalidCredentialsException(ValidationConstants.Messages.INVALID_CREDENTIALS);
       }
 
       // Authenticate user
@@ -57,8 +64,8 @@ public class AuthService {
           .findActiveByUsername(userDetails.getUsername())
           .ifPresent(
               existingToken ->
-                  log.info(
-                      "User {} has existing active refresh token, revoking it",
+                  eventLogger.logDebug(
+                      ValidationConstants.Messages.USER_HAS_EXISTING_TOKEN,
                       userDetails.getUsername()));
 
       // Generate tokens
@@ -93,17 +100,35 @@ public class AuthService {
         userService.handleFailedLogin(request.getUsername());
       }
 
-      throw new InvalidCredentialsException("Invalid username or password");
+      throw new InvalidCredentialsException(ValidationConstants.Messages.INVALID_CREDENTIALS);
+    }
+  }
+
+  private void validateLoginRequest(LoginRequest request) {
+    // Basic credentials validation
+    String error =
+        validationService.validateLoginCredentials(request.getUsername(), request.getPassword());
+    if (error != null) {
+      throw new InvalidCredentialsException(error);
+    }
+
+    // Additional validation for email format if username looks like email
+    if (request.getUsername().contains("@")) {
+      String emailError = validationService.validateEmail(request.getUsername());
+      if (emailError != null) {
+        throw new InvalidCredentialsException(emailError);
+      }
     }
   }
 
   /** Logout user and revoke tokens */
   public void logout(String accessToken) {
     eventLogger.logDebug(
-        "Logout initiated - Token present: {}", accessToken != null && !accessToken.isEmpty());
+        ValidationConstants.Messages.LOGOUT_INITIATED,
+        accessToken != null && !accessToken.isEmpty());
 
-    if (accessToken == null || accessToken.isEmpty()) {
-      eventLogger.logDebug("No token provided for logout");
+    if (ValidationService.isNullOrEmpty(accessToken)) {
+      eventLogger.logDebug(ValidationConstants.Messages.NO_TOKEN_FOR_LOGOUT);
       return;
     }
 
@@ -111,7 +136,7 @@ public class AuthService {
       // Extract username from token
       String username = jwtTokenService.extractUsername(accessToken);
 
-      eventLogger.logDebug("Logout processing for user: {}", username);
+      eventLogger.logDebug(ValidationConstants.Messages.LOGOUT_PROCESSING_FOR_USER, username);
 
       // Revoke all user tokens
       refreshTokenService.revokeUserTokens(username);
@@ -152,8 +177,8 @@ public class AuthService {
           (int) jwtProperties.getAccessTokenExpirationSeconds());
 
     } catch (Exception e) {
-      log.error("Token refresh failed", e);
-      throw new InvalidTokenException("Invalid refresh token");
+      log.error(ValidationConstants.Messages.TOKEN_REFRESH_FAILED, e);
+      throw new InvalidTokenException(ValidationConstants.Messages.INVALID_REFRESH_TOKEN);
     }
   }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import com.aksi.api.auth.dto.ErrorResponse;
 import com.aksi.api.auth.dto.FieldError;
 import com.aksi.api.auth.dto.ValidationErrorResponse;
+import com.aksi.shared.validation.ValidationConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +32,7 @@ public class ExceptionHandler {
   public ResponseEntity<ValidationErrorResponse> handleValidationExceptions(
       MethodArgumentNotValidException ex, WebRequest request) {
 
-    log.warn("Validation failed: {}", ex.getMessage());
+    log.warn(ValidationConstants.ExceptionHandlers.VALIDATION_FAILED_LOG, ex.getMessage());
 
     // Collect all field validation errors
     List<FieldError> fieldErrors = extractFieldErrors(ex.getBindingResult());
@@ -40,10 +41,13 @@ public class ExceptionHandler {
         new ValidationErrorResponse()
             .timestamp(Instant.now())
             .status(HttpStatus.BAD_REQUEST.value())
-            .error("VALIDATION_FAILED")
-            .message("Validation failed for one or more fields")
+            .error(ValidationConstants.ExceptionHandlers.VALIDATION_FAILED_CODE)
+            .message(ValidationConstants.ExceptionHandlers.VALIDATION_FAILED_MESSAGE)
             .errors(fieldErrors)
-            .path(request.getDescription(false).replace("uri=", ""));
+            .path(
+                request
+                    .getDescription(false)
+                    .replace(ValidationConstants.Exceptions.URI_PREFIX, ""));
 
     return ResponseEntity.badRequest().body(response);
   }
@@ -53,15 +57,18 @@ public class ExceptionHandler {
   public ResponseEntity<ErrorResponse> handleRuntimeException(
       RuntimeException ex, WebRequest request) {
 
-    log.error("Unhandled runtime exception", ex);
+    log.error(ValidationConstants.ExceptionHandlers.UNHANDLED_RUNTIME_EXCEPTION_LOG, ex);
 
     ErrorResponse errorResponse =
         new ErrorResponse()
             .timestamp(Instant.now())
             .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-            .error("INTERNAL_SERVER_ERROR")
-            .message("An unexpected error occurred")
-            .path(request.getDescription(false).replace("uri=", ""));
+            .error(ValidationConstants.ExceptionHandlers.INTERNAL_SERVER_ERROR_CODE)
+            .message(ValidationConstants.ExceptionHandlers.INTERNAL_SERVER_ERROR_MESSAGE)
+            .path(
+                request
+                    .getDescription(false)
+                    .replace(ValidationConstants.Exceptions.URI_PREFIX, ""));
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
   }

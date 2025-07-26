@@ -19,6 +19,7 @@ import com.aksi.domain.auth.config.JwtProperties;
 import com.aksi.domain.auth.service.AuthEventLogger;
 import com.aksi.domain.auth.service.AuthService;
 import com.aksi.domain.auth.util.CookieUtils;
+import com.aksi.shared.validation.ValidationConstants;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,7 +47,9 @@ public class AuthController {
 
     eventLogger.logAuthenticationAttempt();
     eventLogger.logLoginRequest(
-        loginRequest.getUsername(), request.getRemoteAddr(), request.getHeader("User-Agent"));
+        loginRequest.getUsername(),
+        request.getRemoteAddr(),
+        request.getHeader(ValidationConstants.Web.USER_AGENT_HEADER));
 
     InternalAuthResponse internalAuthResponse = authService.authenticate(loginRequest);
 
@@ -57,7 +60,9 @@ public class AuthController {
         Duration.ofSeconds(jwtProperties.getAccessTokenExpirationSeconds()));
 
     eventLogger.logCookieSet(
-        "accessToken", cookieUtils.isSecureCookies(), cookieUtils.getCookieDomain());
+        ValidationConstants.Web.ACCESS_TOKEN_COOKIE,
+        cookieUtils.isSecureCookies(),
+        cookieUtils.getCookieDomain());
 
     cookieUtils.createRefreshTokenCookie(
         response,
@@ -65,7 +70,9 @@ public class AuthController {
         Duration.ofSeconds(jwtProperties.getRefreshTokenExpirationSeconds()));
 
     eventLogger.logCookieSet(
-        "refreshToken", cookieUtils.isSecureCookies(), cookieUtils.getCookieDomain());
+        ValidationConstants.Web.REFRESH_TOKEN_COOKIE,
+        cookieUtils.isSecureCookies(),
+        cookieUtils.getCookieDomain());
 
     // Return response without tokens (they are in httpOnly cookies)
     AuthResponse safeResponse = new AuthResponse(internalAuthResponse.getExpiresIn());
@@ -81,25 +88,30 @@ public class AuthController {
     String username =
         SecurityContextHolder.getContext().getAuthentication() != null
             ? SecurityContextHolder.getContext().getAuthentication().getName()
-            : "Unknown";
+            : ValidationConstants.Web.UNKNOWN_USER;
 
     eventLogger.logLogoutRequest(
-        username, request.getRemoteAddr(), request.getHeader("User-Agent"));
+        username,
+        request.getRemoteAddr(),
+        request.getHeader(ValidationConstants.Web.USER_AGENT_HEADER));
 
     // Get access token from cookies
     String accessToken = cookieUtils.getAccessTokenFromCookies(request);
 
     if (accessToken == null) {
-      eventLogger.logCookieNotFound("accessToken");
+      eventLogger.logCookieNotFound(ValidationConstants.Web.ACCESS_TOKEN_COOKIE);
     }
 
     eventLogger.logDebug(
-        "LOGOUT - Access token from cookies: {}", accessToken != null ? "present" : "missing");
+        ValidationConstants.Web.LOGOUT_TOKEN_CHECK,
+        accessToken != null
+            ? ValidationConstants.Web.TOKEN_PRESENT
+            : ValidationConstants.Web.TOKEN_MISSING);
 
     if (accessToken != null) {
       authService.logout(accessToken);
     } else {
-      eventLogger.logDebug("No access token found in cookies, skipping token revocation");
+      eventLogger.logDebug(ValidationConstants.Web.NO_ACCESS_TOKEN_IN_COOKIES);
     }
 
     // Clear all auth cookies
@@ -108,11 +120,11 @@ public class AuthController {
     // Clear security context
     SecurityContextHolder.clearContext();
 
-    eventLogger.logDebug("Cookies cleared for user: {}", username);
+    eventLogger.logDebug(ValidationConstants.Web.COOKIES_CLEARED_FOR_USER, username);
 
     LogoutResponse logoutResponse = new LogoutResponse();
     logoutResponse.setSuccess(true);
-    logoutResponse.setMessage("Successfully logged out");
+    logoutResponse.setMessage(ValidationConstants.Messages.LOGOUT_SUCCESS_MESSAGE);
 
     return ResponseEntity.ok(logoutResponse);
   }
@@ -125,7 +137,7 @@ public class AuthController {
     String refreshToken = cookieUtils.getRefreshTokenFromCookies(request);
 
     if (refreshToken == null) {
-      eventLogger.logCookieNotFound("refreshToken");
+      eventLogger.logCookieNotFound(ValidationConstants.Web.REFRESH_TOKEN_COOKIE);
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
@@ -144,7 +156,7 @@ public class AuthController {
 
     // Refresh token stays the same in this implementation
 
-    eventLogger.logDebug("Tokens refreshed successfully, cookies updated");
+    eventLogger.logDebug(ValidationConstants.Web.TOKENS_REFRESHED_COOKIES_UPDATED);
 
     // Return response without tokens (they are in httpOnly cookies)
     AuthResponse safeResponse = new AuthResponse(internalAuthResponse.getExpiresIn());

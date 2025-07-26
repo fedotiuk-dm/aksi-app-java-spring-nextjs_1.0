@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import com.aksi.api.user.dto.ErrorResponse;
+import com.aksi.shared.validation.ValidationConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,63 +22,75 @@ public class UserExceptionHandler {
   @ExceptionHandler(UserNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleUserNotFoundException(
       UserNotFoundException ex, WebRequest request) {
-    log.error("User not found: {}", ex.getMessage());
+    log.error(ValidationConstants.ExceptionHandlers.USER_NOT_FOUND_LOG, ex.getMessage());
 
     ErrorResponse errorResponse =
         new ErrorResponse()
             .timestamp(Instant.now())
             .status(HttpStatus.NOT_FOUND.value())
-            .error("USER_NOT_FOUND")
+            .error(ValidationConstants.ExceptionHandlers.USER_NOT_FOUND_CODE)
             .message(ex.getMessage())
-            .path(request.getDescription(false).replace("uri=", ""));
+            .path(
+                request
+                    .getDescription(false)
+                    .replace(ValidationConstants.Exceptions.URI_PREFIX, ""));
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
 
   @ExceptionHandler(UserAlreadyExistsException.class)
   public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(
       UserAlreadyExistsException ex, WebRequest request) {
-    log.warn("User already exists: {}", ex.getMessage());
+    log.warn(ValidationConstants.ExceptionHandlers.USER_ALREADY_EXISTS_LOG, ex.getMessage());
 
     ErrorResponse errorResponse =
         new ErrorResponse()
             .timestamp(Instant.now())
             .status(HttpStatus.CONFLICT.value())
-            .error("USER_ALREADY_EXISTS")
+            .error(ValidationConstants.ExceptionHandlers.USER_ALREADY_EXISTS_CODE)
             .message(ex.getMessage())
-            .path(request.getDescription(false).replace("uri=", ""));
+            .path(
+                request
+                    .getDescription(false)
+                    .replace(ValidationConstants.Exceptions.URI_PREFIX, ""));
     return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 
   @ExceptionHandler(AccessDeniedException.class)
   public ResponseEntity<ErrorResponse> handleAccessDeniedException(
       AccessDeniedException ex, WebRequest request) {
-    log.warn("Access denied: {}", ex.getMessage());
+    log.warn(ValidationConstants.ExceptionHandlers.ACCESS_DENIED_LOG, ex.getMessage());
 
     ErrorResponse errorResponse =
         new ErrorResponse()
             .timestamp(Instant.now())
             .status(HttpStatus.FORBIDDEN.value())
-            .error("ACCESS_DENIED")
+            .error(ValidationConstants.ExceptionHandlers.ACCESS_DENIED_CODE)
             .message(
                 ex.getMessage() != null
                     ? ex.getMessage()
-                    : "You don't have permission to perform this action")
-            .path(request.getDescription(false).replace("uri=", ""));
+                    : ValidationConstants.ExceptionHandlers.ACCESS_DENIED_DEFAULT_MESSAGE)
+            .path(
+                request
+                    .getDescription(false)
+                    .replace(ValidationConstants.Exceptions.URI_PREFIX, ""));
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
       IllegalArgumentException ex, WebRequest request) {
-    log.error("Invalid argument: {}", ex.getMessage());
+    log.error(ValidationConstants.ExceptionHandlers.INVALID_ARGUMENT_LOG, ex.getMessage());
 
     ErrorResponse errorResponse =
         new ErrorResponse()
             .timestamp(Instant.now())
             .status(HttpStatus.BAD_REQUEST.value())
-            .error("INVALID_ARGUMENT")
+            .error(ValidationConstants.ExceptionHandlers.INVALID_ARGUMENT_CODE)
             .message(ex.getMessage())
-            .path(request.getDescription(false).replace("uri=", ""));
+            .path(
+                request
+                    .getDescription(false)
+                    .replace(ValidationConstants.Exceptions.URI_PREFIX, ""));
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
   }
 }

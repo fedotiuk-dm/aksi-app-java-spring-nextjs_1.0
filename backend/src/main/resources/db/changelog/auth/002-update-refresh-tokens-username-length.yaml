@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: auth-002-update-refresh-tokens-username-length
+      author: system
+      comment: Update username column length to match User entity constraints
+      changes:
+        - modifyDataType:
+            tableName: refresh_tokens
+            columnName: username
+            newDataType: VARCHAR(50)
+      rollback:
+        - modifyDataType:
+            tableName: refresh_tokens
+            columnName: username
+            newDataType: VARCHAR(100)

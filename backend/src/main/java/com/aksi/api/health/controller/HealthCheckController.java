@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.domain.auth.service.AuthEventLogger;
+import com.aksi.domain.user.util.UserSecurityUtils;
+import com.aksi.shared.validation.ValidationConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,41 +40,41 @@ public class HealthCheckController {
 
   @GetMapping("/check")
   public ResponseEntity<Map<String, Object>> healthCheck() {
-    log.info("=== HEALTH CHECK STARTED ===");
+    log.info(ValidationConstants.Controllers.HEALTH_CHECK_STARTED);
 
     Map<String, Object> response = new HashMap<>();
-    response.put("status", "UP");
-    response.put("timestamp", Instant.now());
-    response.put("activeProfiles", Arrays.asList(environment.getActiveProfiles()));
+    response.put(
+        ValidationConstants.Controllers.HEALTH_STATUS,
+        ValidationConstants.Controllers.HEALTH_STATUS_UP);
+    response.put(ValidationConstants.Controllers.HEALTH_TIMESTAMP, Instant.now());
+    response.put(
+        ValidationConstants.Controllers.HEALTH_ACTIVE_PROFILES,
+        Arrays.asList(environment.getActiveProfiles()));
 
     // Test logging
-    log.info("INFO log test - This should be visible");
-    log.debug("DEBUG log test - This may not be visible");
-    log.warn("WARN log test - This should be visible");
+    log.info(ValidationConstants.Controllers.INFO_LOG_TEST);
+    log.debug(ValidationConstants.Controllers.DEBUG_LOG_TEST);
+    log.warn(ValidationConstants.Controllers.WARN_LOG_TEST);
 
     // Test AuthEventLogger
     eventLogger.logAuthenticationAttempt();
-    eventLogger.logDebug("Health check debug message");
+    eventLogger.logDebug(ValidationConstants.Controllers.HEALTH_CHECK_DEBUG_MESSAGE);
 
     // Add build info if available
     if (buildProperties != null) {
-      response.put("version", buildProperties.getVersion());
-      response.put("name", buildProperties.getName());
+      response.put(ValidationConstants.Controllers.HEALTH_VERSION, buildProperties.getVersion());
+      response.put(ValidationConstants.Controllers.HEALTH_NAME, buildProperties.getName());
     }
 
     // Log current user
-    String username =
-        org.springframework.security.core.context.SecurityContextHolder.getContext()
-                    .getAuthentication()
-                != null
-            ? org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getName()
-            : "Anonymous";
+    response.put(
+        ValidationConstants.Controllers.HEALTH_CURRENT_USER,
+        UserSecurityUtils.getCurrentUsername());
+    response.put(
+        ValidationConstants.Controllers.HEALTH_IS_AUTHENTICATED,
+        UserSecurityUtils.isAuthenticated());
 
-    response.put("currentUser", username);
-
-    log.info("=== HEALTH CHECK COMPLETED ===");
+    log.info(ValidationConstants.Controllers.HEALTH_CHECK_COMPLETED);
 
     return ResponseEntity.ok(response);
   }

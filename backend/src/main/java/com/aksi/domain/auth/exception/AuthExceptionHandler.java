@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import com.aksi.api.auth.dto.ErrorResponse;
+import com.aksi.shared.validation.ValidationConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,15 +21,18 @@ public class AuthExceptionHandler {
   @ExceptionHandler(InvalidCredentialsException.class)
   public ResponseEntity<ErrorResponse> handleInvalidCredentials(
       InvalidCredentialsException ex, WebRequest request) {
-    log.error("Invalid credentials error: {}", ex.getMessage());
+    log.error(ValidationConstants.Exceptions.INVALID_CREDENTIALS_LOG, ex.getMessage());
 
     ErrorResponse errorResponse =
         new ErrorResponse()
             .timestamp(Instant.now())
             .status(HttpStatus.UNAUTHORIZED.value())
-            .error("INVALID_CREDENTIALS")
+            .error(ValidationConstants.Exceptions.INVALID_CREDENTIALS_CODE)
             .message(ex.getMessage())
-            .path(request.getDescription(false).replace("uri=", ""));
+            .path(
+                request
+                    .getDescription(false)
+                    .replace(ValidationConstants.Exceptions.URI_PREFIX, ""));
 
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
   }
@@ -36,15 +40,18 @@ public class AuthExceptionHandler {
   @ExceptionHandler(TokenExpiredException.class)
   public ResponseEntity<ErrorResponse> handleTokenExpired(
       TokenExpiredException ex, WebRequest request) {
-    log.error("Token expired error: {}", ex.getMessage());
+    log.error(ValidationConstants.Exceptions.TOKEN_EXPIRED_LOG, ex.getMessage());
 
     ErrorResponse errorResponse =
         new ErrorResponse()
             .timestamp(Instant.now())
             .status(HttpStatus.UNAUTHORIZED.value())
-            .error("TOKEN_EXPIRED")
+            .error(ValidationConstants.Exceptions.TOKEN_EXPIRED_CODE)
             .message(ex.getMessage())
-            .path(request.getDescription(false).replace("uri=", ""));
+            .path(
+                request
+                    .getDescription(false)
+                    .replace(ValidationConstants.Exceptions.URI_PREFIX, ""));
 
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
   }
@@ -52,15 +59,18 @@ public class AuthExceptionHandler {
   @ExceptionHandler(InvalidTokenException.class)
   public ResponseEntity<ErrorResponse> handleInvalidToken(
       InvalidTokenException ex, WebRequest request) {
-    log.error("Invalid token error: {}", ex.getMessage());
+    log.error(ValidationConstants.Exceptions.INVALID_TOKEN_LOG, ex.getMessage());
 
     ErrorResponse errorResponse =
         new ErrorResponse()
             .timestamp(Instant.now())
             .status(HttpStatus.UNAUTHORIZED.value())
-            .error("INVALID_TOKEN")
+            .error(ValidationConstants.Exceptions.INVALID_TOKEN_CODE)
             .message(ex.getMessage())
-            .path(request.getDescription(false).replace("uri=", ""));
+            .path(
+                request
+                    .getDescription(false)
+                    .replace(ValidationConstants.Exceptions.URI_PREFIX, ""));
 
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
   }

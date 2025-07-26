@@ -14,6 +14,7 @@ import com.aksi.domain.auth.service.AuthEventLogger;
 import com.aksi.domain.auth.service.JwtTokenService;
 import com.aksi.domain.auth.service.UserDetailsProvider;
 import com.aksi.domain.auth.util.CookieUtils;
+import com.aksi.shared.validation.ValidationConstants;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -51,41 +52,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     if (log.isDebugEnabled()) {
       if (request.getCookies() != null) {
         log.debug(
-            "JwtAuthFilter - Cookies found: {} for path: {}",
+            ValidationConstants.JwtFilter.COOKIES_FOUND,
             request.getCookies().length,
             request.getRequestURI());
         for (Cookie cookie : request.getCookies()) {
           log.debug(
-              "Cookie: {} = {}...",
+              ValidationConstants.JwtFilter.COOKIE_DEBUG,
               cookie.getName(),
-              cookie.getValue().substring(0, Math.min(20, cookie.getValue().length())));
+              cookie
+                  .getValue()
+                  .substring(
+                      0,
+                      Math.min(
+                          ValidationConstants.JwtFilter.COOKIE_VALUE_PREFIX_LENGTH,
+                          cookie.getValue().length())));
         }
       } else {
-        log.debug("JwtAuthFilter - No cookies in request for path: {}", request.getRequestURI());
+        log.debug(ValidationConstants.JwtFilter.NO_COOKIES, request.getRequestURI());
       }
     }
 
     // If no token found in cookies, continue filter chain
     if (jwt == null) {
-      log.debug(
-          "JwtAuthFilter - No JWT token found in cookies for path: {}", request.getRequestURI());
+      log.debug(ValidationConstants.JwtFilter.NO_JWT_TOKEN, request.getRequestURI());
       filterChain.doFilter(request, response);
       return;
     }
 
-    log.debug("JwtAuthFilter - JWT token found for path: {}", request.getRequestURI());
+    log.debug(ValidationConstants.JwtFilter.JWT_TOKEN_FOUND, request.getRequestURI());
 
     try {
       // Extract username from token
       username = jwtTokenService.extractUsername(jwt);
-      log.debug("JwtAuthFilter - Username from token: {}", username);
+      log.debug(ValidationConstants.JwtFilter.USERNAME_FROM_TOKEN, username);
 
       // If username exists and no authentication in context
       if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
         // Load user details
         UserDetails userDetails = userDetailsProvider.loadUserByUsername(username);
-        log.debug("JwtAuthFilter - User details loaded for: {}", username);
+        log.debug(ValidationConstants.JwtFilter.USER_DETAILS_LOADED, username);
 
         // Validate token
         if (jwtTokenService.isTokenValid(jwt, userDetails)) {
@@ -104,13 +110,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
           eventLogger.logSecurityContextSet(username, userDetails.getAuthorities());
         } else {
-          eventLogger.logDebug("Token is INVALID for user: {}", username);
+          eventLogger.logDebug(ValidationConstants.JwtFilter.TOKEN_INVALID, username);
         }
       } else {
-        log.debug("JwtAuthFilter - Username is null or auth already exists");
+        log.debug(ValidationConstants.JwtFilter.USERNAME_NULL_OR_AUTH_EXISTS);
       }
     } catch (Exception e) {
-      log.error("JwtAuthFilter - Authentication error: {}", e.getMessage(), e);
+      log.error(ValidationConstants.JwtFilter.AUTHENTICATION_ERROR, e.getMessage(), e);
     }
 
     filterChain.doFilter(request, response);

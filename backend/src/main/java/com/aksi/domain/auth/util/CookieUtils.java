@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import com.aksi.shared.validation.ValidationConstants;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,9 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class CookieUtils {
 
-  private static final String ACCESS_TOKEN_COOKIE = "accessToken";
-  private static final String REFRESH_TOKEN_COOKIE = "refreshToken";
-  private static final String COOKIE_PATH = "/";
+  // Constants moved to ValidationConstants.Web
 
   /** -- GETTER -- Get configured secure cookie setting */
   @Getter
@@ -35,9 +35,9 @@ public class CookieUtils {
   /** Create httpOnly cookie for access token */
   public void createAccessTokenCookie(
       HttpServletResponse response, String token, Duration expiration) {
-    createAuthCookie(response, ACCESS_TOKEN_COOKIE, token, expiration);
+    createAuthCookie(response, ValidationConstants.Web.ACCESS_TOKEN_COOKIE, token, expiration);
     log.debug(
-        "Access token cookie created | Expiration: {} | Secure: {} | Domain: {} | SameSite: {}",
+        ValidationConstants.Web.ACCESS_TOKEN_COOKIE_CREATED,
         expiration,
         secureCookies,
         cookieDomain,
@@ -47,9 +47,9 @@ public class CookieUtils {
   /** Create httpOnly cookie for refresh token */
   public void createRefreshTokenCookie(
       HttpServletResponse response, String token, Duration expiration) {
-    createAuthCookie(response, REFRESH_TOKEN_COOKIE, token, expiration);
+    createAuthCookie(response, ValidationConstants.Web.REFRESH_TOKEN_COOKIE, token, expiration);
     log.debug(
-        "Refresh token cookie created | Expiration: {} | Secure: {} | Domain: {} | SameSite: {}",
+        ValidationConstants.Web.REFRESH_TOKEN_COOKIE_CREATED,
         expiration,
         secureCookies,
         cookieDomain,
@@ -63,7 +63,7 @@ public class CookieUtils {
         ResponseCookie.from(cookieName, token)
             .httpOnly(true)
             .secure(secureCookies)
-            .path(COOKIE_PATH)
+            .path(ValidationConstants.Web.COOKIE_PATH)
             .maxAge(expiration)
             .sameSite(sameSite);
 
@@ -73,34 +73,34 @@ public class CookieUtils {
     }
 
     ResponseCookie cookie = cookieBuilder.build();
-    response.addHeader("Set-Cookie", cookie.toString());
+    response.addHeader(ValidationConstants.Web.SET_COOKIE_HEADER, cookie.toString());
   }
 
   /** Extract access token from cookies */
   public String getAccessTokenFromCookies(HttpServletRequest request) {
-    return getCookieValue(request, ACCESS_TOKEN_COOKIE);
+    return getCookieValue(request, ValidationConstants.Web.ACCESS_TOKEN_COOKIE);
   }
 
   /** Extract refresh token from cookies */
   public String getRefreshTokenFromCookies(HttpServletRequest request) {
-    return getCookieValue(request, REFRESH_TOKEN_COOKIE);
+    return getCookieValue(request, ValidationConstants.Web.REFRESH_TOKEN_COOKIE);
   }
 
   /** Clear access token cookie */
   public void clearAccessTokenCookie(HttpServletResponse response) {
-    clearCookie(response, ACCESS_TOKEN_COOKIE);
+    clearCookie(response, ValidationConstants.Web.ACCESS_TOKEN_COOKIE);
   }
 
   /** Clear refresh token cookie */
   public void clearRefreshTokenCookie(HttpServletResponse response) {
-    clearCookie(response, REFRESH_TOKEN_COOKIE);
+    clearCookie(response, ValidationConstants.Web.REFRESH_TOKEN_COOKIE);
   }
 
   /** Clear all authentication cookies */
   public void clearAllAuthCookies(HttpServletResponse response) {
     clearAccessTokenCookie(response);
     clearRefreshTokenCookie(response);
-    log.debug("All authentication cookies cleared");
+    log.debug(ValidationConstants.Web.ALL_AUTH_COOKIES_CLEARED);
   }
 
   /** Get cookie value by name */
@@ -118,7 +118,7 @@ public class CookieUtils {
   /** Clear specific cookie */
   private void clearCookie(HttpServletResponse response, String cookieName) {
     createAuthCookie(response, cookieName, "", Duration.ZERO);
-    log.debug("Cookie {} cleared", cookieName);
+    log.debug(ValidationConstants.Web.COOKIE_CLEARED, cookieName);
   }
 
   /** Get configured cookie domain */

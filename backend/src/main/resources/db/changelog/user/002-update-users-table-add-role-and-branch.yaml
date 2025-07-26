@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: user-002-update-users-table-add-role-and-branch
+      author: system
+      comment: Add role and branch_id columns to users table, rename active to is_active
+      changes:
+        # Rename active column to is_active
+        - renameColumn:
+            tableName: users
+            oldColumnName: active
+            newColumnName: is_active
+            columnDataType: BOOLEAN
+            remarks: Flag indicating if user account is active
+            
+        # Add role column
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: role
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                  defaultValue: OPERATOR
+                  remarks: User role in the system (OPERATOR, MANAGER, ADMIN)
+                  
+        # Add branch_id column
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: branch_id
+                  type: UUID
+                  remarks: ID of the branch where the user works
+                  
+  - changeSet:
+      id: user-002-create-users-role-check
+      author: system
+      comment: Add check constraint for user role
+      changes:
+        - sql:
+            sql: ALTER TABLE users ADD CONSTRAINT chk_users_role CHECK (role IN ('OPERATOR', 'MANAGER', 'ADMIN'));
+            
+  - changeSet:
+      id: user-002-create-users-branch-index
+      author: system
+      comment: Create index on branch_id
+      changes:
+        - createIndex:
+            tableName: users
+            indexName: idx_users_branch_id
+            columns:
+              - column:
+                  name: branch_id

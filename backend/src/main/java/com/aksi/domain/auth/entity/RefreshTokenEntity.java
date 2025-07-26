@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.aksi.shared.validation.ValidationConstants;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,10 +33,13 @@ public class RefreshTokenEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @Column(nullable = false, unique = true)
+  @Column(
+      nullable = false,
+      unique = true,
+      length = ValidationConstants.RefreshToken.TOKEN_MAX_LENGTH)
   private String token;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = ValidationConstants.RefreshToken.USERNAME_MAX_LENGTH)
   private String username;
 
   @Column(nullable = false)
@@ -44,17 +49,15 @@ public class RefreshTokenEntity {
   @Builder.Default
   private boolean revoked = false;
 
+  @Column private String deviceInfo; // Hibernate auto-converts to device_info, default length 255
+
+  @Column(length = ValidationConstants.RefreshToken.IP_ADDRESS_MAX_LENGTH)
+  private String ipAddress; // Hibernate auto-converts to ip_address
+
   @CreationTimestamp
   @Column(updatable = false)
   private Instant createdAt;
 
-  /** Check if token is expired */
-  public boolean isExpired() {
-    return Instant.now().isAfter(expiryDate);
-  }
-
-  /** Check if token is valid (not expired and not revoked) */
-  public boolean isValid() {
-    return !isExpired() && !revoked;
-  }
+  @Column(name = "revoked_at")
+  private Instant revokedAt;
 }

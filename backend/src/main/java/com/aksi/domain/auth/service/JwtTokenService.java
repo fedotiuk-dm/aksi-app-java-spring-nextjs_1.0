@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.auth.config.JwtProperties;
+import com.aksi.shared.validation.ValidationConstants;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -35,8 +36,11 @@ public class JwtTokenService {
   /** Generate refresh token */
   public String generateRefreshToken() {
     Map<String, Object> claims = new HashMap<>();
-    claims.put("type", "refresh");
-    return createToken(claims, "refresh", jwtProperties.getRefreshTokenExpirationSeconds());
+    claims.put(ValidationConstants.Jwt.CLAIM_TYPE, ValidationConstants.Jwt.TOKEN_TYPE_REFRESH);
+    return createToken(
+        claims,
+        ValidationConstants.Jwt.TOKEN_TYPE_REFRESH,
+        jwtProperties.getRefreshTokenExpirationSeconds());
   }
 
   /** Extract username from token */
@@ -64,7 +68,7 @@ public class JwtTokenService {
   /** Generate token with user details */
   private String generateToken(UserDetails userDetails, long expirationSeconds) {
     Map<String, Object> claims = new HashMap<>();
-    claims.put("authorities", userDetails.getAuthorities());
+    claims.put(ValidationConstants.Jwt.CLAIM_AUTHORITIES, userDetails.getAuthorities());
     return createToken(claims, userDetails.getUsername(), expirationSeconds);
   }
 
@@ -97,8 +101,8 @@ public class JwtTokenService {
           .parseSignedClaims(token)
           .getPayload();
     } catch (JwtException e) {
-      log.error("JWT token parsing error: {}", e.getMessage());
-      throw new IllegalArgumentException("Invalid JWT token", e);
+      log.error(ValidationConstants.Jwt.JWT_PARSING_ERROR, e.getMessage());
+      throw new IllegalArgumentException(ValidationConstants.Messages.INVALID_JWT_TOKEN, e);
     }
   }
 

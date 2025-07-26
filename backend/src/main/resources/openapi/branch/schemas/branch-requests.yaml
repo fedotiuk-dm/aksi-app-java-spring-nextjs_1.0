@@ -17,9 +17,9 @@ CreateBranchRequest:
       example: Хімчистка AKSI - Центр
     receiptPrefix:
       type: string
-      description: Префікс для генерації номерів квитанцій
+      description: Префікс для генерації номерів квитанцій (починається з літер)
       example: AKSI-01
-      pattern: ^[A-Z0-9-]+$
+      pattern: ^[A-Z]+(-[A-Z0-9]+)?$
       minLength: 3
       maxLength: 20
     address:

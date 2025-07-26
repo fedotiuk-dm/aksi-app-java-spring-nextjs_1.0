@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.domain.auth.config.JwtProperties;
 import com.aksi.domain.auth.entity.RefreshTokenEntity;
 import com.aksi.domain.auth.repository.RefreshTokenRepository;
+import com.aksi.domain.auth.util.RefreshTokenUtils;
+import com.aksi.shared.validation.ValidationConstants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +40,7 @@ public class RefreshTokenService {
             .build();
 
     refreshToken = refreshTokenRepository.save(refreshToken);
-    log.info("Created new refresh token for user: {}", username);
+    log.info(ValidationConstants.Messages.REFRESH_TOKEN_CREATED, username);
 
     return refreshToken;
   }
@@ -49,22 +51,24 @@ public class RefreshTokenService {
         .findByToken(token)
         .orElseThrow(
             () -> {
-              log.error("Refresh token not found: {}", token);
-              return new IllegalArgumentException("Invalid refresh token");
+              log.error(ValidationConstants.Messages.REFRESH_TOKEN_NOT_FOUND, token);
+              return new IllegalArgumentException(
+                  ValidationConstants.Messages.INVALID_REFRESH_TOKEN_ERROR);
             });
   }
 
   /** Verify token expiration */
   public RefreshTokenEntity verifyExpiration(RefreshTokenEntity token) {
-    if (token.isExpired()) {
-      refreshTokenRepository.delete(token);
-      log.error("Refresh token expired for user: {}", token.getUsername());
-      throw new IllegalArgumentException("Refresh token expired");
-    }
-
-    if (token.isRevoked()) {
-      log.error("Refresh token revoked for user: {}", token.getUsername());
-      throw new IllegalArgumentException("Refresh token revoked");
+    if (!RefreshTokenUtils.isValid(token)) {
+      if (RefreshTokenUtils.isExpired(token)) {
+        refreshTokenRepository.delete(token);
+        log.error(ValidationConstants.Messages.REFRESH_TOKEN_EXPIRED_FOR_USER, token.getUsername());
+        throw new IllegalArgumentException(ValidationConstants.Messages.REFRESH_TOKEN_EXPIRED);
+      }
+      if (token.isRevoked()) {
+        log.error(ValidationConstants.Messages.REFRESH_TOKEN_REVOKED_FOR_USER, token.getUsername());
+        throw new IllegalArgumentException(ValidationConstants.Messages.REFRESH_TOKEN_REVOKED);
+      }
     }
 
     return token;
@@ -73,14 +77,14 @@ public class RefreshTokenService {
   /** Revoke all tokens for user */
   public void revokeUserTokens(String username) {
     refreshTokenRepository.revokeAllUserTokens(username);
-    log.info("Revoked all refresh tokens for user: {}", username);
+    log.info(ValidationConstants.Messages.REFRESH_TOKENS_REVOKED_FOR_USER, username);
   }
 
   /** Delete expired tokens (cleanup job) */
   @Transactional
   public void deleteExpiredTokens() {
     refreshTokenRepository.deleteExpiredTokens(Instant.now());
-    log.info("Cleaned up expired refresh tokens");
+    log.info(ValidationConstants.Messages.EXPIRED_TOKENS_CLEANED);
   }
 
   /** Count active tokens for user */

@@ -15,6 +15,8 @@ import com.aksi.domain.auth.service.UserDetailsProvider;
 import com.aksi.domain.user.entity.UserEntity;
 import com.aksi.domain.user.entity.UserRole;
 import com.aksi.domain.user.repository.UserRepository;
+import com.aksi.domain.user.util.UserSecurityUtils;
+import com.aksi.shared.validation.ValidationConstants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +36,20 @@ public class UserDetailsServiceImpl implements UserDetailsProvider {
         userRepository
             .findByUsername(username)
             .or(() -> userRepository.findByEmail(username))
-            .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+            .orElseThrow(
+                () ->
+                    new UsernameNotFoundException(
+                        String.format(ValidationConstants.Messages.USER_NOT_FOUND, username)));
 
-    if (!user.isActive()) {
-      throw new UsernameNotFoundException("User is not active: " + username);
-    }
-
-    if (user.isLocked()) {
-      throw new UsernameNotFoundException("User is locked until: " + user.getLockedUntil());
+    // Check if user can login
+    if (!UserSecurityUtils.canLogin(user)) {
+      if (!user.isActive()) {
+        throw new UsernameNotFoundException(
+            String.format(ValidationConstants.Messages.USER_NOT_ACTIVE, username));
+      } else {
+        throw new UsernameNotFoundException(
+            String.format(ValidationConstants.Messages.USER_LOCKED, user.getLockedUntil()));
+      }
     }
 
     UserDetails userDetails =
@@ -50,7 +58,7 @@ public class UserDetailsServiceImpl implements UserDetailsProvider {
             .password(user.getPasswordHash())
             .authorities(mapRoleToAuthorities(user.getRole()))
             .accountExpired(false)
-            .accountLocked(user.isLocked())
+            .accountLocked(UserSecurityUtils.isAccountLocked(user))
             .credentialsExpired(false)
             .disabled(!user.isActive())
             .build();
@@ -68,7 +76,7 @@ public class UserDetailsServiceImpl implements UserDetailsProvider {
 
   /** Map user role to Spring Security authorities */
   private Collection<? extends GrantedAuthority> mapRoleToAuthorities(UserRole role) {
-    String authority = "ROLE_" + role.name();
+    String authority = ValidationConstants.Messages.ROLE_PREFIX + role.name();
     return Collections.singletonList(new SimpleGrantedAuthority(authority));
   }
 }

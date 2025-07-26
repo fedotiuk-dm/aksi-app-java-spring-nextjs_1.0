@@ -1,7 +1,5 @@
 package com.aksi.domain.user.service;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -22,6 +20,9 @@ import com.aksi.domain.user.exception.UserAlreadyExistsException;
 import com.aksi.domain.user.exception.UserNotFoundException;
 import com.aksi.domain.user.mapper.UserMapper;
 import com.aksi.domain.user.repository.UserRepository;
+import com.aksi.domain.user.util.UserSecurityUtils;
+import com.aksi.shared.validation.ValidationConstants;
+import com.aksi.shared.validation.ValidationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,13 +36,15 @@ public class UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
-
-  private static final int MAX_FAILED_ATTEMPTS = 5;
-  private static final Duration LOCK_DURATION = Duration.ofMinutes(30);
+  private final ValidationService validationService;
 
   /** Create a new user */
   @Transactional
   public UserResponse createUser(CreateUserRequest request) {
+    // Validate input using ValidationService
+    validationService.validateUserCreation(
+        request.getUsername(), request.getEmail(), request.getPassword());
+
     // Check if username already exists
     if (userRepository.existsByUsername(request.getUsername())) {
       throw new UserAlreadyExistsException("username", request.getUsername());
@@ -88,8 +91,10 @@ public class UserService {
   public UserResponse updateUser(UUID id, UpdateUserRequest request) {
     UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 
-    // Check if new email already exists (if changing email)
+    // Validate and check if new email already exists (if changing email)
     if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
+      validationService.requireValid(request.getEmail(), validationService::validateEmail);
+
       if (userRepository.existsByEmail(request.getEmail())) {
         throw new UserAlreadyExistsException("email", request.getEmail());
       }
@@ -112,8 +117,11 @@ public class UserService {
 
     // Verify current password
     if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
-      throw new IllegalArgumentException("Current password is incorrect");
+      throw new IllegalArgumentException(ValidationConstants.Messages.PASSWORD_INCORRECT);
     }
+
+    // Validate new password
+    validationService.requireValid(request.getNewPassword(), validationService::validatePassword);
 
     // Update password
     user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
@@ -145,8 +153,8 @@ public class UserService {
     user.setActive(request.getIsActive());
 
     // If activating, also unlock the user
-    if (request.getIsActive() && user.isLocked()) {
-      user.unlock();
+    if (request.getIsActive() && UserSecurityUtils.isAccountLocked(user)) {
+      UserSecurityUtils.unlockAccount(user);
     }
 
     user = userRepository.save(user);
@@ -187,15 +195,15 @@ public class UserService {
         .or(() -> userRepository.findByEmail(username))
         .ifPresent(
             user -> {
-              user.incrementFailedAttempts();
+              boolean wasLocked =
+                  UserSecurityUtils.handleFailedLoginAttempt(
+                      user, ValidationConstants.User.MAX_FAILED_LOGIN_ATTEMPTS);
 
-              // Lock user if exceeded max attempts
-              if (user.getFailedLoginAttempts() >= MAX_FAILED_ATTEMPTS) {
-                user.lockUntil(Instant.now().plus(LOCK_DURATION));
+              if (wasLocked) {
                 log.warn(
                     "User {} locked after {} failed attempts",
                     user.getUsername(),
-                    MAX_FAILED_ATTEMPTS);
+                    ValidationConstants.User.MAX_FAILED_LOGIN_ATTEMPTS);
               }
 
               userRepository.save(user);
@@ -210,7 +218,7 @@ public class UserService {
         .or(() -> userRepository.findByEmail(username))
         .ifPresent(
             user -> {
-              user.updateLastLogin();
+              UserSecurityUtils.handleSuccessfulLogin(user);
               userRepository.save(user);
               log.info(
                   "User {} (role: {}) logged in successfully from branch: {}",
