@@ -11,6 +11,7 @@ export type UserResponseRole = typeof UserResponseRole[keyof typeof UserResponse
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UserResponseRole = {
   ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
   OPERATOR: 'OPERATOR',
 } as const;
 
@@ -100,6 +101,7 @@ export type CreateUserRequestRole = typeof CreateUserRequestRole[keyof typeof Cr
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateUserRequestRole = {
   ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
   OPERATOR: 'OPERATOR',
 } as const;
 
@@ -113,7 +115,12 @@ export interface CreateUserRequest {
    * @maxLength 50
    */
   username: string;
-  /** Email користувача */
+  /**
+   * Email користувача
+   * @minLength 3
+   * @maxLength 100
+   * @pattern ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+   */
   email: string;
   /**
    * Пароль користувача
@@ -182,7 +189,12 @@ export interface LoginRequest {
  * Запит на оновлення даних користувача
  */
 export interface UpdateUserRequest {
-  /** Email користувача */
+  /**
+   * Email користувача
+   * @minLength 3
+   * @maxLength 100
+   * @pattern ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+   */
   email?: string;
   /**
    * Ім'я оператора
@@ -214,6 +226,7 @@ export type UpdateUserRoleRequestRole = typeof UpdateUserRoleRequestRole[keyof t
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateUserRoleRequestRole = {
   ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
   OPERATOR: 'OPERATOR',
 } as const;
 
@@ -290,6 +303,7 @@ export type GetUsersRole = typeof GetUsersRole[keyof typeof GetUsersRole];
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const GetUsersRole = {
   ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
   OPERATOR: 'OPERATOR',
 } as const;
 

@@ -23,7 +23,7 @@ export const getUsersQueryParams = zod.object({
   "page": zod.number().min(getUsersQueryPageMin).optional().describe('Номер сторінки (0-based)'),
   "size": zod.number().min(1).max(getUsersQuerySizeMax).default(getUsersQuerySizeDefault).describe('Розмір сторінки'),
   "branchId": zod.uuid().optional().describe('Фільтр за ID філії'),
-  "role": zod.enum(['ADMIN', 'OPERATOR']).optional().describe('Фільтр за роллю'),
+  "role": zod.enum(['ADMIN', 'MANAGER', 'OPERATOR']).optional().describe('Фільтр за роллю'),
   "isActive": zod.boolean().optional().describe('Фільтр за статусом активності')
 })
 
@@ -41,7 +41,7 @@ export const getUsersResponse = zod.object({
   "email": zod.string().describe('Email користувача'),
   "firstName": zod.string().min(1).max(getUsersResponseItemsItemFirstNameMax).describe('Ім\'я оператора'),
   "lastName": zod.string().min(1).max(getUsersResponseItemsItemLastNameMax).describe('Прізвище оператора'),
-  "role": zod.enum(['ADMIN', 'OPERATOR']),
+  "role": zod.enum(['ADMIN', 'MANAGER', 'OPERATOR']),
   "isActive": zod.boolean().describe('Чи активний користувач'),
   "createdAt": zod.iso.datetime({}).describe('Дата створення користувача'),
   "branchId": zod.uuid().optional().describe('ID філії, до якої прикріплений оператор')
@@ -60,6 +60,11 @@ export const getUsersResponse = zod.object({
 export const createUserBodyUsernameMin = 3;
 
 export const createUserBodyUsernameMax = 50;
+export const createUserBodyEmailMin = 3;
+
+export const createUserBodyEmailMax = 100;
+
+export const createUserBodyEmailRegExp = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
 export const createUserBodyPasswordMin = 6;
 
 export const createUserBodyPasswordMax = 128;
@@ -69,11 +74,11 @@ export const createUserBodyLastNameMax = 50;
 
 export const createUserBody = zod.object({
   "username": zod.string().min(createUserBodyUsernameMin).max(createUserBodyUsernameMax).describe('Ім\'я користувача для входу в систему'),
-  "email": zod.string().describe('Email користувача'),
+  "email": zod.string().min(createUserBodyEmailMin).max(createUserBodyEmailMax).regex(createUserBodyEmailRegExp).describe('Email користувача'),
   "password": zod.string().min(createUserBodyPasswordMin).max(createUserBodyPasswordMax).describe('Пароль користувача'),
   "firstName": zod.string().min(1).max(createUserBodyFirstNameMax).describe('Ім\'я оператора'),
   "lastName": zod.string().min(1).max(createUserBodyLastNameMax).describe('Прізвище оператора'),
-  "role": zod.enum(['ADMIN', 'OPERATOR']),
+  "role": zod.enum(['ADMIN', 'MANAGER', 'OPERATOR']),
   "branchId": zod.uuid().describe('ID філії, до якої прикріплюється оператор')
 }).describe('Запит на створення нового користувача')
 
@@ -99,7 +104,7 @@ export const getUserByIdResponse = zod.object({
   "email": zod.string().describe('Email користувача'),
   "firstName": zod.string().min(1).max(getUserByIdResponseFirstNameMax).describe('Ім\'я оператора'),
   "lastName": zod.string().min(1).max(getUserByIdResponseLastNameMax).describe('Прізвище оператора'),
-  "role": zod.enum(['ADMIN', 'OPERATOR']),
+  "role": zod.enum(['ADMIN', 'MANAGER', 'OPERATOR']),
   "isActive": zod.boolean().describe('Чи активний користувач'),
   "createdAt": zod.iso.datetime({}).describe('Дата створення користувача'),
   "branchId": zod.uuid().optional().describe('ID філії, до якої прикріплений оператор')
@@ -114,12 +119,17 @@ export const updateUserParams = zod.object({
   "userId": zod.uuid().describe('ID користувача')
 })
 
+export const updateUserBodyEmailMin = 3;
+
+export const updateUserBodyEmailMax = 100;
+
+export const updateUserBodyEmailRegExp = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
 export const updateUserBodyFirstNameMax = 50;
 export const updateUserBodyLastNameMax = 50;
 
 
 export const updateUserBody = zod.object({
-  "email": zod.string().optional().describe('Email користувача'),
+  "email": zod.string().min(updateUserBodyEmailMin).max(updateUserBodyEmailMax).regex(updateUserBodyEmailRegExp).optional().describe('Email користувача'),
   "firstName": zod.string().min(1).max(updateUserBodyFirstNameMax).optional().describe('Ім\'я оператора'),
   "lastName": zod.string().min(1).max(updateUserBodyLastNameMax).optional().describe('Прізвище оператора'),
   "branchId": zod.uuid().optional().describe('ID філії, до якої прикріплюється оператор')
@@ -138,7 +148,7 @@ export const updateUserResponse = zod.object({
   "email": zod.string().describe('Email користувача'),
   "firstName": zod.string().min(1).max(updateUserResponseFirstNameMax).describe('Ім\'я оператора'),
   "lastName": zod.string().min(1).max(updateUserResponseLastNameMax).describe('Прізвище оператора'),
-  "role": zod.enum(['ADMIN', 'OPERATOR']),
+  "role": zod.enum(['ADMIN', 'MANAGER', 'OPERATOR']),
   "isActive": zod.boolean().describe('Чи активний користувач'),
   "createdAt": zod.iso.datetime({}).describe('Дата створення користувача'),
   "branchId": zod.uuid().optional().describe('ID філії, до якої прикріплений оператор')
@@ -170,7 +180,7 @@ export const updateUserStatusResponse = zod.object({
   "email": zod.string().describe('Email користувача'),
   "firstName": zod.string().min(1).max(updateUserStatusResponseFirstNameMax).describe('Ім\'я оператора'),
   "lastName": zod.string().min(1).max(updateUserStatusResponseLastNameMax).describe('Прізвище оператора'),
-  "role": zod.enum(['ADMIN', 'OPERATOR']),
+  "role": zod.enum(['ADMIN', 'MANAGER', 'OPERATOR']),
   "isActive": zod.boolean().describe('Чи активний користувач'),
   "createdAt": zod.iso.datetime({}).describe('Дата створення користувача'),
   "branchId": zod.uuid().optional().describe('ID філії, до якої прикріплений оператор')
@@ -186,7 +196,7 @@ export const updateUserRoleParams = zod.object({
 })
 
 export const updateUserRoleBody = zod.object({
-  "role": zod.enum(['ADMIN', 'OPERATOR'])
+  "role": zod.enum(['ADMIN', 'MANAGER', 'OPERATOR'])
 }).describe('Запит на зміну ролі користувача')
 
 export const updateUserRoleResponseUsernameMin = 3;
@@ -202,7 +212,7 @@ export const updateUserRoleResponse = zod.object({
   "email": zod.string().describe('Email користувача'),
   "firstName": zod.string().min(1).max(updateUserRoleResponseFirstNameMax).describe('Ім\'я оператора'),
   "lastName": zod.string().min(1).max(updateUserRoleResponseLastNameMax).describe('Прізвище оператора'),
-  "role": zod.enum(['ADMIN', 'OPERATOR']),
+  "role": zod.enum(['ADMIN', 'MANAGER', 'OPERATOR']),
   "isActive": zod.boolean().describe('Чи активний користувач'),
   "createdAt": zod.iso.datetime({}).describe('Дата створення користувача'),
   "branchId": zod.uuid().optional().describe('ID філії, до якої прикріплений оператор')
@@ -248,7 +258,7 @@ export const getCurrentUserResponse = zod.object({
   "email": zod.string().describe('Email користувача'),
   "firstName": zod.string().min(1).max(getCurrentUserResponseFirstNameMax).describe('Ім\'я оператора'),
   "lastName": zod.string().min(1).max(getCurrentUserResponseLastNameMax).describe('Прізвище оператора'),
-  "role": zod.enum(['ADMIN', 'OPERATOR']),
+  "role": zod.enum(['ADMIN', 'MANAGER', 'OPERATOR']),
   "isActive": zod.boolean().describe('Чи активний користувач'),
   "createdAt": zod.iso.datetime({}).describe('Дата створення користувача'),
   "branchId": zod.uuid().optional().describe('ID філії, до якої прикріплений оператор')
