@@ -4,10 +4,10 @@ databaseChangeLog:
       author: system
       comment: Remove old active column and update role constraint to include MANAGER
       preConditions:
-        onFail: MARK_RAN
-        columnExists:
-          tableName: users
-          columnName: active
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: users
+            columnName: active
       changes:
         # First drop the index on active column if exists
         - dropIndex:
