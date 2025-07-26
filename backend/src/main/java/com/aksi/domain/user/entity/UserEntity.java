@@ -96,7 +96,7 @@ public class UserEntity extends BaseEntity {
   private Instant lastLoginAt;
 
   @Column(name = "failed_login_attempts", nullable = false)
-  private int failedLoginAttempts = 0;
+  private int failedLoginAttempts;
 
   @Column(name = "locked_until")
   private Instant lockedUntil;

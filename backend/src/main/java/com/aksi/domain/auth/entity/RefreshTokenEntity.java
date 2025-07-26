@@ -46,8 +46,7 @@ public class RefreshTokenEntity {
   private Instant expiryDate;
 
   @Column(nullable = false)
-  @Builder.Default
-  private boolean revoked = false;
+  private boolean revoked;
 
   @Column private String deviceInfo; // Hibernate auto-converts to device_info, default length 255
 

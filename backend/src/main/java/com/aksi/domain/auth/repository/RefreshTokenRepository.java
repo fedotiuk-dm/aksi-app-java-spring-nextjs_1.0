@@ -21,7 +21,10 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
 
   /** Find active refresh token by username */
   @Query(
-      "SELECT rt FROM RefreshTokenEntity rt WHERE rt.username = :username AND rt.revoked = false AND rt.expiryDate > :now")
+      "SELECT rt FROM RefreshTokenEntity rt "
+          + "WHERE rt.username = :username "
+          + "AND rt.revoked = false "
+          + "AND rt.expiryDate > :now")
   Optional<RefreshTokenEntity> findActiveByUsername(
       @Param("username") String username, @Param("now") Instant now);
 
@@ -38,6 +41,9 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
 
   /** Count active tokens for user */
   @Query(
-      "SELECT COUNT(rt) FROM RefreshTokenEntity rt WHERE rt.username = :username AND rt.revoked = false AND rt.expiryDate > :now")
+      "SELECT COUNT(rt) FROM RefreshTokenEntity rt "
+          + "WHERE rt.username = :username "
+          + "AND rt.revoked = false "
+          + "AND rt.expiryDate > :now")
   long countActiveTokensByUsername(@Param("username") String username, @Param("now") Instant now);
 }

@@ -41,4 +41,7 @@
     <suppress checks="HideUtilityClassConstructor" files=".*Util(s)?\.java"/>
     <suppress checks="DesignForExtension" files=".*Service\.java"/>
     <suppress checks="NewlineAtEndOfFile" files="[\\/]src[\\/]main[\\/]resources[\\/].*\.(properties|xml|yml|yaml)"/>
+    
+    <!-- Придушення для ValidationConstants.java - файл містить велику кількість констант -->
+    <suppress checks="JavadocVariable" files=".*ValidationConstants\.java"/>
 </suppressions>

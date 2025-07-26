@@ -8,48 +8,88 @@ public final class ValidationConstants {
 
   /** User field validation constants */
   public static final class User {
+    /** Minimum length for username */
     public static final int USERNAME_MIN_LENGTH = 3;
+
+    /** Maximum length for username */
     public static final int USERNAME_MAX_LENGTH = 50;
 
+    /** Minimum length for email */
     public static final int EMAIL_MIN_LENGTH = 3;
+
+    /** Maximum length for email */
     public static final int EMAIL_MAX_LENGTH = 100;
+
+    /** Regular expression pattern for email validation */
     public static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
+    /** Minimum length for password */
     public static final int PASSWORD_MIN_LENGTH = 6;
+
+    /** Maximum length for password */
     public static final int PASSWORD_MAX_LENGTH = 128;
 
+    /** Minimum length for first name */
     public static final int FIRST_NAME_MIN_LENGTH = 1;
+
+    /** Maximum length for first name */
     public static final int FIRST_NAME_MAX_LENGTH = 50;
 
+    /** Minimum length for last name */
     public static final int LAST_NAME_MIN_LENGTH = 1;
+
+    /** Maximum length for last name */
     public static final int LAST_NAME_MAX_LENGTH = 50;
 
+    /** Maximum length for user role */
     public static final int ROLE_MAX_LENGTH = 20;
 
+    /** Maximum number of failed login attempts before account lock */
     public static final int MAX_FAILED_LOGIN_ATTEMPTS = 5;
+
+    /** Duration in minutes for account lock after exceeding failed attempts */
     public static final int ACCOUNT_LOCK_DURATION_MINUTES = 30;
   }
 
   /** Refresh token validation constants */
   public static final class RefreshToken {
+    /** Maximum length for refresh token */
     public static final int TOKEN_MAX_LENGTH = 500;
+
+    /** Maximum length for username in refresh token */
     public static final int USERNAME_MAX_LENGTH = User.USERNAME_MAX_LENGTH; // Use same as User
+
+    /** Maximum length for device info */
     public static final int DEVICE_INFO_MAX_LENGTH = 255;
+
+    /** Maximum length for IP address (supports IPv6) */
     public static final int IP_ADDRESS_MAX_LENGTH = 45; // Max IPv6 length
   }
 
   /** JWT token constants */
   public static final class Jwt {
+    /** JWT claim key for token type */
     public static final String CLAIM_TYPE = "type";
+
+    /** JWT claim key for user authorities */
     public static final String CLAIM_AUTHORITIES = "authorities";
+
+    /** Token type value for refresh tokens */
     public static final String TOKEN_TYPE_REFRESH = "refresh";
+
+    /** Log message template for JWT parsing errors */
     public static final String JWT_PARSING_ERROR = "JWT token parsing error: {}";
   }
 
   /** Validation error messages */
   public static final class Messages {
+    /** Error message for empty username */
     public static final String USERNAME_EMPTY = "Username cannot be empty";
+
+    /** Error message for username too short */
     public static final String USERNAME_TOO_SHORT = "Username must be at least %d characters long";
+
+    /** Error message for username too long */
     public static final String USERNAME_TOO_LONG = "Username must not exceed %d characters";
 
     public static final String EMAIL_EMPTY = "Email cannot be empty";
