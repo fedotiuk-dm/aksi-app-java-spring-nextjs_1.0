@@ -57,29 +57,29 @@ const DOMAIN_TAGS = {
   // 🔐 Auth Domain
   auth: ['auth-controller'],
 
-  // 👥 User Domain  
-  user: ['user-controller'],
+  // 👥 User Domain
+  user: ['users'],
 
   // 👤 Client Domain
-  client: ['client-controller'],
+  client: ['clients'],
 
   // 🏢 Branch Domain
-  branch: ['branch-controller'],
+  branch: ['branches'],
 
   // 📦 Order Domain
-  order: ['order-controller'],
+  order: ['orders'],
 
   // 🏷️ Item Domain
-  item: ['item-controller', 'service-category-controller', 'price-list-controller'],
+  item: ['items', 'service-categories', 'price-list'],
 
   // 📄 Document Domain
-  document: ['document-controller', 'receipt-controller'],
+  document: ['documents', 'receipts'],
 };
 
 // 🏭 Фабрика для створення доменних конфігурацій
 const createDomainConfig = (name: string, tags: string[]) => ({
-  // React Query хуки + типи для домену
-  [`${name}-api`]: {
+  // React Query хуки
+  [`${name}-hooks`]: {
     input: {
       target: API_BASE_URL,
       filters: {
@@ -114,8 +114,7 @@ const createDomainConfig = (name: string, tags: string[]) => ({
       },
     },
   },
-
-  // Zod схеми для домену
+  // Zod схеми
   [`${name}-zod`]: {
     input: {
       target: API_BASE_URL,
@@ -129,31 +128,6 @@ const createDomainConfig = (name: string, tags: string[]) => ({
       client: 'zod' as const,
       mode: 'single' as const,
       override: {
-        zod: {
-          generate: {
-            body: true,
-            param: true,
-            query: true,
-            header: true,
-            response: true,
-          },
-          // 🛡️ Zod strict режим для "zero trust" API
-          strict: {
-            param: true,
-            query: true,
-            header: true,
-            body: true,
-            response: true,
-          },
-          // 🔧 Автоматичне перетворення типів
-          coerce: {
-            param: true,
-            query: true,
-            body: true,
-            response: true,
-          },
-          generateEachHttpStatus: true,
-        },
         // 🔐 Basic Auth для доступу до OpenAPI
         requestConfig: {
           auth: {

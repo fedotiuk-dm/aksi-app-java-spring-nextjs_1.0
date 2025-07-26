@@ -17,7 +17,7 @@ export const loginBodyPasswordMin = 6;
 export const loginBodyPasswordMax = 128;
 
 
-export const loginBody = zod.strictObject({
-  "username": zod.coerce.string().min(loginBodyUsernameMin).max(loginBodyUsernameMax).describe('Ім\'я користувача або email'),
-  "password": zod.coerce.string().min(loginBodyPasswordMin).max(loginBodyPasswordMax).describe('Пароль користувача')
+export const loginBody = zod.object({
+  "username": zod.string().min(loginBodyUsernameMin).max(loginBodyUsernameMax).describe('Ім\'я користувача або email'),
+  "password": zod.string().min(loginBodyPasswordMin).max(loginBodyPasswordMax).describe('Пароль користувача')
 }).describe('Запит на автентифікацію користувача')

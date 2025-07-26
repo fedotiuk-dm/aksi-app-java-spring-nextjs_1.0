@@ -258,3 +258,38 @@ export interface UserListResponse {
   pageSize: number;
 }
 
+export type GetUsersParams = {
+/**
+ * Номер сторінки (0-based)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * Розмір сторінки
+ * @minimum 1
+ * @maximum 100
+ */
+size?: number;
+/**
+ * Фільтр за ID філії
+ */
+branchId?: string;
+/**
+ * Фільтр за роллю
+ */
+role?: GetUsersRole;
+/**
+ * Фільтр за статусом активності
+ */
+isActive?: boolean;
+};
+
+export type GetUsersRole = typeof GetUsersRole[keyof typeof GetUsersRole];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetUsersRole = {
+  ADMIN: 'ADMIN',
+  OPERATOR: 'OPERATOR',
+} as const;
+

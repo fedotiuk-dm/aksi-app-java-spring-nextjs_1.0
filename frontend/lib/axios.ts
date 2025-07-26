@@ -126,7 +126,7 @@ export const handleApiError = (error: unknown): ApiError => {
 };
 
 // Отримуємо базовий URL API з змінних середовища
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 console.log('🔧 Axios baseURL:', baseURL);
 

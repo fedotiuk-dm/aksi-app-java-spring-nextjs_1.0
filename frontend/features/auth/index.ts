@@ -12,11 +12,10 @@ export { AuthProvider } from './components/AuthProvider';
 
 // Hooks
 export { useAuth } from './hooks/use-auth';
-export { useLogin } from './hooks/use-login';
+export { useLoginForm } from './hooks/use-login';
 export { useLogout } from './hooks/use-logout';
+export { useRefreshToken } from './hooks/use-refresh-token';
+export { useChangePassword } from './hooks/use-change-password';
 
 // Store
 export { useAuthStore } from './store/auth-store';
-
-// Services
-export { authService } from './api/auth-service';

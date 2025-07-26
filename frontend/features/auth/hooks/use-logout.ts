@@ -2,46 +2,50 @@
  * @fileoverview Хук для виходу з системи
  */
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../store/auth-store';
-import { authService } from '../api/auth-service';
+import { useLogout as useLogoutMutation } from '@/shared/api/generated/auth';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useLogout = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const logout = useAuthStore((state) => state.logout);
+  const queryClient = useQueryClient();
+  const clearAuthStore = useAuthStore((state) => state.logout);
+
+  const logoutMutation = useLogoutMutation({
+    mutation: {
+      onSuccess: () => {
+        // Clear local auth state
+        clearAuthStore();
+
+        // Clear all cached queries
+        queryClient.clear();
+
+        // Show success message
+        toast.success('Ви успішно вийшли з системи');
+
+        // Redirect to login page
+        router.push('/login');
+      },
+      onError: (error) => {
+        console.error('Logout error:', error);
+        toast.error('Помилка при виході з системи');
+
+        // Even on error - clear local state and redirect
+        clearAuthStore();
+        queryClient.clear();
+        router.push('/login');
+      },
+    },
+  });
 
   const handleLogout = async () => {
-    setIsLoading(true);
-    
-    try {
-      // Викликаємо API для очищення cookies на сервері
-      await authService.logout();
-      
-      // Очищаємо локальний стан
-      logout();
-      
-      // Показуємо повідомлення
-      toast.success('Ви успішно вийшли з системи');
-      
-      // Перенаправляємо на сторінку логіну
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast.error('Помилка при виході з системи');
-      
-      // Навіть при помилці - очищаємо локальний стан і перенаправляємо
-      logout();
-      router.push('/login');
-    } finally {
-      setIsLoading(false);
-    }
+    await logoutMutation.mutateAsync();
   };
 
   return {
     logout: handleLogout,
-    isLoading,
+    isLoading: logoutMutation.isPending,
   };
 };

@@ -22,11 +22,11 @@ import {
   AccountCircle,
   Lock,
 } from '@mui/icons-material';
-import { useLogin } from '../hooks/use-login';
+import { useLoginForm } from '../hooks/use-login';
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { form, onSubmit, isLoading } = useLogin();
+  const { form, onSubmit, isLoading } = useLoginForm();
   
   const {
     register,

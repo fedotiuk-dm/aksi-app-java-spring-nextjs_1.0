@@ -159,9 +159,9 @@ services:
     environment:
       NODE_ENV: development
       # API URL для клієнтської частини (browser) - прямі запити до backend
-      NEXT_PUBLIC_API_URL: http://localhost:8080/api
+      NEXT_PUBLIC_API_URL: http://localhost:8080
       # API URL для серверної частини (SSR) - прямо до backend контейнера
-      NEXT_SERVER_API_URL: http://backend:8080/api
+      NEXT_SERVER_API_URL: http://backend:8080
       NEXT_TELEMETRY_DISABLED: 1
       # Orval конфігурація для генерації API
       ORVAL_API_URL: http://backend:8080/v3/api-docs

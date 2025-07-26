@@ -7,8 +7,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Box, CircularProgress } from '@mui/material';
-import { useAuthStore } from '../store/auth-store';
-import { authService } from '../api/auth-service';
+import { useAuth } from '../hooks/use-auth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -23,36 +22,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isAuthenticated, isLoading, setUser, setLoading } = useAuthStore();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    // Якщо вже є користувач - не перевіряємо
-    if (user) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const currentUser = await authService.getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
-      } else {
-        // Зберігаємо поточний URL для повернення після логіну
-        const callbackUrl = encodeURIComponent(pathname);
-        router.push(`${redirectTo}?callbackUrl=${callbackUrl}`);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
+    if (!isLoading && !isAuthenticated) {
       const callbackUrl = encodeURIComponent(pathname);
       router.push(`${redirectTo}?callbackUrl=${callbackUrl}`);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [isLoading, isAuthenticated, pathname, redirectTo, router]);
 
   // Показуємо loader під час перевірки
   if (isLoading) {
