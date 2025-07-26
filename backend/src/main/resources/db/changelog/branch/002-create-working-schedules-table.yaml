@@ -71,7 +71,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: BIGINT
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
                   remarks: "Version for optimistic locking"
 
         # Create unique constraint for branch_id + day_of_week

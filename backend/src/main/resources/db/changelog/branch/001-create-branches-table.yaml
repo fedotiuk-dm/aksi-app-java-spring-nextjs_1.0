@@ -101,7 +101,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: BIGINT
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
                   remarks: "Version for optimistic locking"
 
         # Create indexes
