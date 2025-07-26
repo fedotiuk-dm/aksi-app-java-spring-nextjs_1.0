@@ -28,5 +28,5 @@ public class Address {
   private String postalCode;
 
   @Column(name = "country", length = 100)
-  private String country = "Україна";
+  private String country = "Ukraine";
 }
