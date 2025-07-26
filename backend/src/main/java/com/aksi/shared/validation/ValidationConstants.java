@@ -66,6 +66,42 @@ public final class ValidationConstants {
     public static final int IP_ADDRESS_MAX_LENGTH = 45; // Max IPv6 length
   }
 
+  /** Branch validation constants */
+  public static final class Branch {
+    /** Minimum length for branch name */
+    public static final int NAME_MIN_LENGTH = 3;
+
+    /** Maximum length for branch name */
+    public static final int NAME_MAX_LENGTH = 100;
+
+    /** Minimum length for receipt prefix */
+    public static final int RECEIPT_PREFIX_MIN_LENGTH = 3;
+
+    /** Maximum length for receipt prefix */
+    public static final int RECEIPT_PREFIX_MAX_LENGTH = 20;
+
+    /** Maximum length for branch email */
+    public static final int EMAIL_MAX_LENGTH = 100;
+
+    /** Maximum length for phone number */
+    public static final int PHONE_MAX_LENGTH = 20;
+
+    /** Maximum length for street address */
+    public static final int STREET_MAX_LENGTH = 200;
+
+    /** Maximum length for city name */
+    public static final int CITY_MAX_LENGTH = 100;
+
+    /** Maximum length for region name */
+    public static final int REGION_MAX_LENGTH = 100;
+
+    /** Maximum length for country name */
+    public static final int COUNTRY_MAX_LENGTH = 100;
+
+    /** Length for postal code */
+    public static final int POSTAL_CODE_LENGTH = 5;
+  }
+
   /** JWT token constants */
   public static final class Jwt {
     /** JWT claim key for token type */
@@ -161,6 +197,36 @@ public final class ValidationConstants {
     public static final String LAST_NAME_CANNOT_BE_BLANK = "Last name cannot be blank";
     public static final String LAST_NAME_SIZE_MESSAGE =
         "Last name must be between {min} and {max} characters";
+
+    // Branch validation messages
+    public static final String BRANCH_NAME_CANNOT_BE_BLANK = "Branch name cannot be blank";
+    public static final String BRANCH_NAME_SIZE_MESSAGE =
+        "Branch name must be between {min} and {max} characters";
+    public static final String RECEIPT_PREFIX_CANNOT_BE_BLANK = "Receipt prefix cannot be blank";
+    public static final String RECEIPT_PREFIX_INVALID_FORMAT =
+        "Receipt prefix must start with letters and can contain letters, numbers and hyphens";
+    public static final String RECEIPT_PREFIX_EXISTS = "Receipt prefix already exists: %s";
+    public static final String STREET_CANNOT_BE_BLANK = "Street address cannot be blank";
+    public static final String CITY_CANNOT_BE_BLANK = "City cannot be blank";
+    public static final String POSTAL_CODE_INVALID_FORMAT = "Postal code must be 5 digits";
+    public static final String PHONE_INVALID_FORMAT = "Phone number format is invalid";
+
+    // Branch service messages
+    public static final String BRANCH_NOT_FOUND = "Branch not found: %s";
+    public static final String CREATING_BRANCH = "Creating new branch: {}";
+    public static final String GETTING_BRANCHES_LIST =
+        "Getting branches list - search: {}, includeInactive: {}, page: {}, size: {}";
+    public static final String GETTING_BRANCH_BY_ID = "Getting branch by ID: {}";
+    public static final String UPDATING_BRANCH = "Updating branch: {}";
+    public static final String UPDATING_WORKING_SCHEDULE =
+        "Updating working schedule for branch: {}";
+
+    // Working schedule messages
+    public static final String WORKING_SCHEDULE_MUST_HAVE_7_DAYS =
+        "Working schedule must include all 7 days of the week";
+    public static final String WORKING_SCHEDULE_DUPLICATE_DAYS =
+        "Working schedule cannot have duplicate days";
+    public static final String WORKING_TIME_INVALID = "Opening time must be before closing time";
   }
 
   /** Exception handling constants */
@@ -170,10 +236,20 @@ public final class ValidationConstants {
     public static final String TOKEN_EXPIRED_CODE = "TOKEN_EXPIRED";
     public static final String INVALID_TOKEN_CODE = "INVALID_TOKEN";
 
+    // Branch error codes
+    public static final String BRANCH_NOT_FOUND_CODE = "BRANCH_NOT_FOUND";
+    public static final String DUPLICATE_RECEIPT_PREFIX_CODE = "DUPLICATE_RECEIPT_PREFIX";
+    public static final String INVALID_WORKING_SCHEDULE_CODE = "INVALID_WORKING_SCHEDULE";
+
     // Log messages
     public static final String INVALID_CREDENTIALS_LOG = "Invalid credentials error: {}";
     public static final String TOKEN_EXPIRED_LOG = "Token expired error: {}";
     public static final String INVALID_TOKEN_LOG = "Invalid token error: {}";
+
+    // Branch log messages
+    public static final String BRANCH_NOT_FOUND_LOG = "Branch not found: {}";
+    public static final String DUPLICATE_RECEIPT_PREFIX_LOG = "Duplicate receipt prefix: {}";
+    public static final String INVALID_WORKING_SCHEDULE_LOG = "Invalid working schedule: {}";
 
     // Other
     public static final String URI_PREFIX = "uri=";

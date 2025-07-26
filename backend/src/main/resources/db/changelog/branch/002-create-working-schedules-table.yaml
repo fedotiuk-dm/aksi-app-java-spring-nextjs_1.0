@@ -1,0 +1,104 @@
+databaseChangeLog:
+  - changeSet:
+      id: branch-002-create-working-schedules-table
+      author: system
+      comment: Create working_schedules table for branch working hours
+      changes:
+        # Create working_schedules table
+        - createTable:
+            tableName: working_schedules
+            columns:
+              # Primary key
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()
+                  remarks: "Primary key for working schedule entity"
+
+              # Foreign key to branches
+              - column:
+                  name: branch_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_working_schedules_branch
+                    references: branches(id)
+                    deleteCascade: true
+                  remarks: "Reference to the branch"
+
+              # Working day information
+              - column:
+                  name: day_of_week
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+                  remarks: "Day of the week (MONDAY, TUESDAY, etc.)"
+
+              - column:
+                  name: is_working_day
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: false
+                  remarks: "Whether this is a working day"
+
+              - column:
+                  name: open_time
+                  type: TIME
+                  remarks: "Opening time (HH:mm format)"
+
+              - column:
+                  name: close_time
+                  type: TIME
+                  remarks: "Closing time (HH:mm format)"
+
+              # Audit fields (managed by JPA @CreatedDate/@LastModifiedDate)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  remarks: "Creation timestamp (managed by JPA)"
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  remarks: "Last update timestamp (managed by JPA)"
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  remarks: "Version for optimistic locking"
+
+        # Create unique constraint for branch_id + day_of_week
+        - addUniqueConstraint:
+            tableName: working_schedules
+            columnNames: branch_id, day_of_week
+            constraintName: uk_working_schedules_branch_day
+
+        # Create indexes
+        - createIndex:
+            tableName: working_schedules
+            indexName: idx_working_schedules_branch
+            columns:
+              - column:
+                  name: branch_id
+
+        - createIndex:
+            tableName: working_schedules
+            indexName: idx_working_schedules_day
+            columns:
+              - column:
+                  name: day_of_week
+
+        - createIndex:
+            tableName: working_schedules
+            indexName: idx_working_schedules_working_day
+            columns:
+              - column:
+                  name: is_working_day
+

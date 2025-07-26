@@ -14,3 +14,11 @@ databaseChangeLog:
       file: db/changelog/user/002-update-users-table-add-role-and-branch.yaml
   - include:
       file: db/changelog/user/003-fix-column-lengths-to-match-constants.yaml
+
+  # Branch Domain міграції
+  - include:
+      file: db/changelog/branch/001-create-branches-table.yaml
+  - include:
+      file: db/changelog/branch/002-create-working-schedules-table.yaml
+  - include:
+      file: db/changelog/branch/003-add-version-to-branches.yaml
