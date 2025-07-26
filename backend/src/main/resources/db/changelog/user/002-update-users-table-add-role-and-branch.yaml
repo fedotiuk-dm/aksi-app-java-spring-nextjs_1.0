@@ -1,54 +1,43 @@
 databaseChangeLog:
   - changeSet:
-      id: user-002-update-users-table-add-role-and-branch
+      id: user-002-fix-active-column-migration
       author: system
-      comment: Add role and branch_id columns to users table, rename active to is_active
+      comment: Remove old active column and update role constraint to include MANAGER
+      preConditions:
+        onFail: MARK_RAN
+        columnExists:
+          tableName: users
+          columnName: active
       changes:
-        # Rename active column to is_active
-        - renameColumn:
+        # First drop the index on active column if exists
+        - dropIndex:
             tableName: users
-            oldColumnName: active
-            newColumnName: is_active
-            columnDataType: BOOLEAN
-            remarks: Flag indicating if user account is active
-            
-        # Add role column
-        - addColumn:
+            indexName: idx_users_active
+        # Drop old active column (is_active already exists from migration 001)
+        - dropColumn:
             tableName: users
-            columns:
-              - column:
-                  name: role
-                  type: VARCHAR(20)
-                  constraints:
-                    nullable: false
-                  defaultValue: OPERATOR
-                  remarks: User role in the system (OPERATOR, MANAGER, ADMIN)
-                  
-        # Add branch_id column
-        - addColumn:
-            tableName: users
-            columns:
-              - column:
-                  name: branch_id
-                  type: UUID
-                  remarks: ID of the branch where the user works
+            columnName: active
                   
   - changeSet:
-      id: user-002-create-users-role-check
+      id: user-002-update-users-role-check
       author: system
-      comment: Add check constraint for user role
+      comment: Update check constraint for user role to include MANAGER
       changes:
+        # First drop the existing constraint from migration 001
+        - sql:
+            sql: ALTER TABLE users DROP CONSTRAINT IF EXISTS chk_user_role_domain;
+        # Add new constraint with MANAGER role
         - sql:
             sql: ALTER TABLE users ADD CONSTRAINT chk_users_role CHECK (role IN ('OPERATOR', 'MANAGER', 'ADMIN'));
             
   - changeSet:
-      id: user-002-create-users-branch-index
+      id: user-002-create-is-active-index
       author: system
-      comment: Create index on branch_id
+      comment: Create index on is_active column
       changes:
         - createIndex:
             tableName: users
-            indexName: idx_users_branch_id
+            indexName: idx_users_is_active
             columns:
               - column:
-                  name: branch_id
+                  name: is_active
