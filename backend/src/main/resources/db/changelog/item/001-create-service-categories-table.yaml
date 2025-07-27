@@ -1,0 +1,100 @@
+databaseChangeLog:
+  - changeSet:
+      id: item-001-create-service-categories-table
+      author: system
+      comment: Create service categories table for dry cleaning services
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: service_categories
+      changes:
+        # Create service_categories table
+        - createTable:
+            tableName: service_categories
+            columns:
+              # Primary key
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: gen_random_uuid()
+                  remarks: "Primary key for service category entity"
+
+              # Business fields
+              - column:
+                  name: code
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                  remarks: "Unique category code (e.g., CLOTHING, LAUNDRY)"
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                  remarks: "Category name in Ukrainian"
+
+              - column:
+                  name: standard_days
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+                  defaultValue: 2
+                  remarks: "Standard processing days for this category"
+
+              - column:
+                  name: display_order
+                  type: INTEGER
+                  remarks: "Order for display in UI"
+
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValue: true
+                  remarks: "Whether category is active"
+
+              # Audit fields
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: now()
+                  remarks: "Record creation timestamp"
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  remarks: "Record last update timestamp"
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: 0
+                  remarks: "Version for optimistic locking"
+
+        # Create indexes
+        - createIndex:
+            tableName: service_categories
+            indexName: idx_service_category_code
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            tableName: service_categories
+            indexName: idx_service_category_active
+            columns:
+              - column:
+                  name: active
+
+      rollback:
+        - dropTable:
+            tableName: service_categories

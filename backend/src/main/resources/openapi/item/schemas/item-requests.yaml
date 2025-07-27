@@ -1,0 +1,182 @@
+# Схеми запитів для Item домену
+
+# Розрахунок вартості предмета
+ItemCalculationRequest:
+  type: object
+  title: ItemCalculationRequest
+  required:
+    - priceListItemId
+    - quantity
+    - color
+  properties:
+    priceListItemId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+      description: ID предмета з прайс-листу
+    quantity:
+      type: number
+      format: double
+      minimum: 0.01
+      description: Кількість (штуки або кілограми)
+      example: 1.0
+    color:
+      $ref: "./item-enums.yaml#/ItemColor"
+      description: Колір виробу для визначення ціни
+    material:
+      type: string
+      description: Матеріал виробу (бавовна, шерсть, шовк тощо)
+      example: wool
+    modifierCodes:
+      type: array
+      items:
+        type: string
+      description: Коди модифікаторів для застосування
+      example: ["CHILDREN_ITEMS", "MANUAL_CLEANING"]
+    customModifiers:
+      type: array
+      items:
+        $ref: "#/CustomModifierRequest"
+      description: Додаткові модифікатори (знижки, доплати)
+    urgencyType:
+      $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
+      description: Терміновість виконання
+      default: NORMAL
+    attributes:
+      type: object
+      additionalProperties:
+        type: string
+      description: Додаткові атрибути для розрахунку
+      example:
+        stain_type: "wine"
+        fabric_condition: "delicate"
+
+# Кастомний модифікатор
+CustomModifierRequest:
+  type: object
+  title: CustomModifierRequest
+  required:
+    - name
+    - type
+    - value
+  properties:
+    name:
+      type: string
+      description: Назва модифікатора
+      example: Знижка постійного клієнта
+    type:
+      $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
+    value:
+      type: number
+      format: double
+      description: Значення модифікатора
+      example: 10.0
+    reason:
+      type: string
+      description: Причина застосування
+      example: VIP клієнт
+
+# Запит на загальний розрахунок замовлення
+CalculateOrderSummaryRequest:
+  type: object
+  title: CalculateOrderSummaryRequest
+  required:
+    - items
+  properties:
+    items:
+      type: array
+      minItems: 1
+      items:
+        $ref: "#/ItemCalculationRequest"
+      description: Список предметів для розрахунку
+    globalDiscount:
+      $ref: "#/GlobalDiscountRequest"
+      description: Глобальна знижка на все замовлення
+    urgencyType:
+      $ref: "../../order/schemas/order-enums.yaml#/UrgencyType"
+      description: Терміновість для всього замовлення
+      default: NORMAL
+
+# Глобальна знижка
+GlobalDiscountRequest:
+  type: object
+  title: GlobalDiscountRequest
+  required:
+    - type
+    - value
+  properties:
+    type:
+      type: string
+      enum:
+        - EVERCARD
+        - SOCIAL_MEDIA
+        - MILITARY
+        - OTHER
+      description: Тип знижки
+      example: EVERCARD
+    value:
+      type: number
+      format: double
+      minimum: 0
+      maximum: 100
+      description: Відсоток знижки
+      example: 10.0
+    reason:
+      type: string
+      description: Причина знижки (для типу OTHER)
+      example: Акція місяця
+
+# Завантаження фото
+UploadItemPhotoRequest:
+  type: object
+  title: UploadItemPhotoRequest
+  required:
+    - file
+  properties:
+    file:
+      type: string
+      format: binary
+      description: Файл фотографії (JPG, PNG, WEBP)
+    description:
+      type: string
+      maxLength: 500
+      description: Опис фотографії
+      example: Пляма на комірі
+    photoType:
+      type: string
+      enum:
+        - BEFORE_CLEANING
+        - STAIN
+        - DAMAGE
+        - GENERAL
+      description: Тип фотографії
+      default: GENERAL
+    metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: Додаткові метадані
+      example:
+        camera: "iPhone 13"
+        location: "Front desk"
+
+# Оновлення метаданих фото
+UpdatePhotoMetadataRequest:
+  type: object
+  title: UpdatePhotoMetadataRequest
+  properties:
+    description:
+      type: string
+      maxLength: 500
+      description: Новий опис фотографії
+    photoType:
+      type: string
+      enum:
+        - BEFORE_CLEANING
+        - STAIN
+        - DAMAGE
+        - GENERAL
+      description: Новий тип фотографії
+    metadata:
+      type: object
+      additionalProperties:
+        type: string
+      description: Оновлені метадані

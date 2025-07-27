@@ -28,3 +28,25 @@ databaseChangeLog:
       file: db/changelog/client/001-create-clients-table.yaml
   - include:
       file: db/changelog/client/002-create-client-communication-methods-table.yaml
+
+  # Item Domain міграції
+  - include:
+      file: db/changelog/item/001-create-service-categories-table.yaml
+  - include:
+      file: db/changelog/item/002-create-price-list-items-table.yaml
+  - include:
+      file: db/changelog/item/003-create-price-modifiers-table.yaml
+  - include:
+      file: db/changelog/item/004-create-modifier-applicable-categories-table.yaml
+  - include:
+      file: db/changelog/item/005-create-item-photos-table.yaml
+  - include:
+      file: db/changelog/item/006-insert-service-categories-data.yaml
+  - include:
+      file: db/changelog/item/007-load-price-list-data.yaml
+  - include:
+      file: db/changelog/item/008-insert-price-modifiers-data.yaml
+  - include:
+      file: db/changelog/item/009-link-modifiers-to-categories.yaml
+
+

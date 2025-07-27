@@ -13,6 +13,10 @@ tags:
     description: Прайс-лист
   - name: price-modifiers
     description: Модифікатори цін
+  - name: item-calculations
+    description: Розрахунки вартості
+  - name: item-photos
+    description: Фотографії предметів
 
 paths:
   # Service Categories
@@ -26,6 +30,22 @@ paths:
   /api/price-modifiers:
     $ref: "item/paths/price-modifiers.yaml#/~1api~1price-modifiers"
 
+  # Item Calculations
+  /api/calculate/item:
+    $ref: "item/paths/item-calculations.yaml#/~1api~1calculate~1item"
+  /api/calculate/item/preview:
+    $ref: "item/paths/item-calculations.yaml#/~1api~1calculate~1item~1preview"
+  /api/calculate/order-summary:
+    $ref: "item/paths/item-calculations.yaml#/~1api~1calculate~1order-summary"
+
+  # Item Photos
+  /api/items/{itemId}/photos:
+    $ref: "item/paths/item-photos.yaml#/~1api~1items~1{itemId}~1photos"
+  /api/photos/{photoId}:
+    $ref: "item/paths/item-photos.yaml#/~1api~1photos~1{photoId}"
+  /api/photos/{photoId}/file:
+    $ref: "item/paths/item-photos.yaml#/~1api~1photos~1{photoId}~1file"
+
 components:
   schemas:
     # Response Schemas
@@ -37,6 +57,40 @@ components:
       $ref: "item/schemas/item-responses.yaml#/PriceModifierResponse"
     PriceListResponse:
       $ref: "item/schemas/item-responses.yaml#/PriceListResponse"
+    ItemCalculationResponse:
+      $ref: "item/schemas/item-responses.yaml#/ItemCalculationResponse"
+    ItemPricePreviewResponse:
+      $ref: "item/schemas/item-responses.yaml#/ItemPricePreviewResponse"
+    OrderSummaryResponse:
+      $ref: "item/schemas/item-responses.yaml#/OrderSummaryResponse"
+    PhotoResponse:
+      $ref: "item/schemas/item-responses.yaml#/PhotoResponse"
+    PhotoDownloadResponse:
+      $ref: "item/schemas/item-responses.yaml#/PhotoDownloadResponse"
+    AppliedModifierResponse:
+      $ref: "item/schemas/item-responses.yaml#/AppliedModifierResponse"
+    CalculationDetailsResponse:
+      $ref: "item/schemas/item-responses.yaml#/CalculationDetailsResponse"
+    CalculationStepResponse:
+      $ref: "item/schemas/item-responses.yaml#/CalculationStepResponse"
+    PriceBreakdownItem:
+      $ref: "item/schemas/item-responses.yaml#/PriceBreakdownItem"
+    DiscountDetailsResponse:
+      $ref: "item/schemas/item-responses.yaml#/DiscountDetailsResponse"
+
+    # Request Schemas
+    ItemCalculationRequest:
+      $ref: "item/schemas/item-requests.yaml#/ItemCalculationRequest"
+    CustomModifierRequest:
+      $ref: "item/schemas/item-requests.yaml#/CustomModifierRequest"
+    CalculateOrderSummaryRequest:
+      $ref: "item/schemas/item-requests.yaml#/CalculateOrderSummaryRequest"
+    GlobalDiscountRequest:
+      $ref: "item/schemas/item-requests.yaml#/GlobalDiscountRequest"
+    UploadItemPhotoRequest:
+      $ref: "item/schemas/item-requests.yaml#/UploadItemPhotoRequest"
+    UpdatePhotoMetadataRequest:
+      $ref: "item/schemas/item-requests.yaml#/UpdatePhotoMetadataRequest"
 
     # Enums
     ItemColor:

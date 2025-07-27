@@ -1,0 +1,572 @@
+databaseChangeLog:
+  - changeSet:
+      id: item-008-insert-price-modifiers-data
+      author: system
+      comment: Insert price modifiers from OrderWizard specification
+      preConditions:
+        onFail: MARK_RAN
+        sqlCheck:
+          expectedResult: 0
+          sql: SELECT COUNT(*) FROM price_modifiers WHERE code IN ('CHILD_ITEMS', 'MANUAL_CLEANING', 'HEAVILY_SOILED')
+      changes:
+        # ========== ЗАГАЛЬНІ МОДИФІКАТОРИ ==========
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: CHILD_ITEMS
+              - column:
+                  name: name
+                  value: "Дитячі речі (до 30 розміру)"
+              - column:
+                  name: modifier_type
+                  value: DISCOUNT
+              - column:
+                  name: value
+                  valueNumeric: 30.0
+              - column:
+                  name: priority
+                  valueNumeric: 100
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Знижка 30% на дитячі речі до 30 розміру"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: MANUAL_CLEANING
+              - column:
+                  name: name
+                  value: "Ручна чистка"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 20.0
+              - column:
+                  name: priority
+                  valueNumeric: 150
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 20% за ручну чистку"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: HEAVILY_SOILED
+              - column:
+                  name: name
+                  value: "Дуже забруднені речі"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 20.0
+              - column:
+                  name: jexl_formula
+                  value: "basePrice * (0.2 + (soilLevel * 0.8))"
+              - column:
+                  name: priority
+                  valueNumeric: 160
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка від 20% до 100% за сильне забруднення"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: URGENT_48H
+              - column:
+                  name: name
+                  value: "Термінове виконання 48 годин"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 50.0
+              - column:
+                  name: priority
+                  valueNumeric: 200
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 50% за термінове виконання протягом 48 годин"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: URGENT_24H
+              - column:
+                  name: name
+                  value: "Термінове виконання 24 години"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 100.0
+              - column:
+                  name: priority
+                  valueNumeric: 201
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 100% за термінове виконання протягом 24 годин"
+
+        # ========== МОДИФІКАТОРИ ДЛЯ ТЕКСТИЛЮ ==========
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: FUR_COLLAR_CUFFS
+              - column:
+                  name: name
+                  value: "Вироби з хутряними комірами та манжетами"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 30.0
+              - column:
+                  name: priority
+                  valueNumeric: 140
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 30% за чистку виробів з хутряними деталями"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: WATER_REPELLENT
+              - column:
+                  name: name
+                  value: "Водовідштовхуюче покриття"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 30.0
+              - column:
+                  name: priority
+                  valueNumeric: 170
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 30% за нанесення водовідштовхуючого покриття"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: SILK_SATIN_CHIFFON
+              - column:
+                  name: name
+                  value: "Натуральний шовк, атлас, шифон"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 50.0
+              - column:
+                  name: priority
+                  valueNumeric: 130
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 50% за чистку виробів з натурального шовку, атласу, шифону"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: COMBINED_LEATHER_TEXTILE
+              - column:
+                  name: name
+                  value: "Комбіновані вироби (шкіра+текстиль)"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 100.0
+              - column:
+                  name: priority
+                  valueNumeric: 120
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 100% за чистку комбінованих виробів"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: LARGE_TOYS_MANUAL
+              - column:
+                  name: name
+                  value: "Ручна чистка великих м'яких іграшок"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 100.0
+              - column:
+                  name: priority
+                  valueNumeric: 110
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 100% за ручну чистку великих м'яких іграшок"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: BLACK_LIGHT_COLORS
+              - column:
+                  name: name
+                  value: "Вироби чорного та світлих тонів"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 20.0
+              - column:
+                  name: priority
+                  valueNumeric: 145
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 20% за чистку виробів чорного та світлих тонів"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: WEDDING_DRESS_TRAIN
+              - column:
+                  name: name
+                  value: "Весільна сукня зі шлейфом"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 30.0
+              - column:
+                  name: priority
+                  valueNumeric: 135
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 30% за чистку весільної сукні зі шлейфом"
+
+        # ========== МОДИФІКАТОРИ ДЛЯ ШКІРИ ==========
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: LEATHER_IRONING
+              - column:
+                  name: name
+                  value: "Прасування шкіряних виробів"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 70.0
+              - column:
+                  name: priority
+                  valueNumeric: 125
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 70% від вартості чистки за прасування шкіри"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: DYEING_AFTER_OUR_CLEANING
+              - column:
+                  name: name
+                  value: "Фарбування (після нашої чистки)"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 50.0
+              - column:
+                  name: priority
+                  valueNumeric: 175
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 50% за фарбування після нашої чистки"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: DYEING_AFTER_OTHER_CLEANING
+              - column:
+                  name: name
+                  value: "Фарбування (після чистки деінде)"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 100.0
+              - column:
+                  name: priority
+                  valueNumeric: 176
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 100% за фарбування після чистки в іншому місці"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: LEATHER_WITH_INSERTS
+              - column:
+                  name: name
+                  value: "Шкіряні вироби із вставками"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 30.0
+              - column:
+                  name: priority
+                  valueNumeric: 141
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 30% за чистку шкіряних виробів із вставками"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: PEARL_COATING
+              - column:
+                  name: name
+                  value: "Перламутрове покриття"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 30.0
+              - column:
+                  name: priority
+                  valueNumeric: 171
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 30% за нанесення перламутрового покриття"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: SHEEPSKIN_ARTIFICIAL_FUR
+              - column:
+                  name: name
+                  value: "Натуральні дублянки на штучному хутрі"
+              - column:
+                  name: modifier_type
+                  value: DISCOUNT
+              - column:
+                  name: value
+                  valueNumeric: 20.0
+              - column:
+                  name: priority
+                  valueNumeric: 105
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Знижка 20% на чистку натуральних дублянок на штучному хутрі"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: MANUAL_CLEANING_LEATHER
+              - column:
+                  name: name
+                  value: "Ручна чистка виробів зі шкіри"
+              - column:
+                  name: modifier_type
+                  value: SURCHARGE
+              - column:
+                  name: value
+                  valueNumeric: 30.0
+              - column:
+                  name: priority
+                  valueNumeric: 151
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Надбавка 30% за ручну чистку виробів зі шкіри"
+
+        # ========== ЗНИЖКИ ==========
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: EVERCARD_DISCOUNT
+              - column:
+                  name: name
+                  value: "Знижка Еверкард"
+              - column:
+                  name: modifier_type
+                  value: DISCOUNT
+              - column:
+                  name: value
+                  valueNumeric: 10.0
+              - column:
+                  name: priority
+                  valueNumeric: 300
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Знижка 10% для власників картки Еверкард"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: SOCIAL_MEDIA_DISCOUNT
+              - column:
+                  name: name
+                  value: "Знижка соцмережі"
+              - column:
+                  name: modifier_type
+                  value: DISCOUNT
+              - column:
+                  name: value
+                  valueNumeric: 5.0
+              - column:
+                  name: priority
+                  valueNumeric: 301
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Знижка 5% за підписку в соцмережах"
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: MILITARY_DISCOUNT
+              - column:
+                  name: name
+                  value: "Знижка ЗСУ"
+              - column:
+                  name: modifier_type
+                  value: DISCOUNT
+              - column:
+                  name: value
+                  valueNumeric: 10.0
+              - column:
+                  name: priority
+                  valueNumeric: 302
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: description
+                  value: "Знижка 10% для військовослужбовців ЗСУ"
+
+      rollback:
+        - delete:
+            tableName: price_modifiers
+            where: code IS NOT NULL

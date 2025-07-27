@@ -1,0 +1,284 @@
+databaseChangeLog:
+  - changeSet:
+      id: item-006-insert-service-categories-data
+      author: system
+      comment: Insert initial service categories data
+      preConditions:
+        onFail: MARK_RAN
+        sqlCheck:
+          expectedResult: 0
+          sql: SELECT COUNT(*) FROM service_categories
+      changes:
+        # Insert service categories
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: CLOTHING
+              - column:
+                  name: name
+                  value: "Чистка одягу та текстилю"
+              - column:
+                  name: standard_days
+                  valueNumeric: 2
+              - column:
+                  name: display_order
+                  valueNumeric: 1
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: LAUNDRY
+              - column:
+                  name: name
+                  value: "Прання білизни"
+              - column:
+                  name: standard_days
+                  valueNumeric: 2
+              - column:
+                  name: display_order
+                  valueNumeric: 2
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: IRONING
+              - column:
+                  name: name
+                  value: "Прасування"
+              - column:
+                  name: standard_days
+                  valueNumeric: 1
+              - column:
+                  name: display_order
+                  valueNumeric: 3
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: RESTORATION
+              - column:
+                  name: name
+                  value: "Реставрація одягу"
+              - column:
+                  name: standard_days
+                  valueNumeric: 5
+              - column:
+                  name: display_order
+                  valueNumeric: 4
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: STAIN_REMOVAL
+              - column:
+                  name: name
+                  value: "Виведення плям"
+              - column:
+                  name: standard_days
+                  valueNumeric: 3
+              - column:
+                  name: display_order
+                  valueNumeric: 5
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: WET_CLEANING
+              - column:
+                  name: name
+                  value: "Аквачистка"
+              - column:
+                  name: standard_days
+                  valueNumeric: 3
+              - column:
+                  name: display_order
+                  valueNumeric: 6
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: SHOES
+              - column:
+                  name: name
+                  value: "Чистка взуття"
+              - column:
+                  name: standard_days
+                  valueNumeric: 2
+              - column:
+                  name: display_order
+                  valueNumeric: 7
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: CARPETS
+              - column:
+                  name: name
+                  value: "Чистка килимів"
+              - column:
+                  name: standard_days
+                  valueNumeric: 3
+              - column:
+                  name: display_order
+                  valueNumeric: 8
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: FUR
+              - column:
+                  name: name
+                  value: "Чистка хутра"
+              - column:
+                  name: standard_days
+                  valueNumeric: 5
+              - column:
+                  name: display_order
+                  valueNumeric: 9
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: LEATHER
+              - column:
+                  name: name
+                  value: "Чистка шкіри"
+              - column:
+                  name: standard_days
+                  valueNumeric: 5
+              - column:
+                  name: display_order
+                  valueNumeric: 10
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: HOUSEHOLD
+              - column:
+                  name: name
+                  value: "Чистка домашнього текстилю"
+              - column:
+                  name: standard_days
+                  valueNumeric: 3
+              - column:
+                  name: display_order
+                  valueNumeric: 11
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: DYEING
+              - column:
+                  name: name
+                  value: "Фарбування"
+              - column:
+                  name: standard_days
+                  valueNumeric: 5
+              - column:
+                  name: display_order
+                  valueNumeric: 12
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: PADDING
+              - column:
+                  name: name
+                  value: "Робота з наповнювачем"
+              - column:
+                  name: standard_days
+                  valueNumeric: 3
+              - column:
+                  name: display_order
+                  valueNumeric: 13
+              - column:
+                  name: active
+                  valueBoolean: true
+
+        - insert:
+            tableName: service_categories
+            columns:
+              - column:
+                  name: code
+                  value: ADDITIONAL_SERVICES
+              - column:
+                  name: name
+                  value: "Додаткові послуги"
+              - column:
+                  name: standard_days
+                  valueNumeric: 1
+              - column:
+                  name: display_order
+                  valueNumeric: 14
+              - column:
+                  name: active
+                  valueBoolean: true
+
+      rollback:
+        - delete:
+            tableName: service_categories
+            where: code IN ('CLOTHING', 'LAUNDRY', 'IRONING', 'RESTORATION', 'STAIN_REMOVAL', 
+                           'WET_CLEANING', 'SHOES', 'CARPETS', 'FUR', 'LEATHER', 'HOUSEHOLD',
+                           'DYEING', 'PADDING', 'ADDITIONAL_SERVICES')

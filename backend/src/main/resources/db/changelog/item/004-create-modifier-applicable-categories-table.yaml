@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: item-004-create-modifier-applicable-categories-table
+      author: system
+      comment: Create junction table for price modifiers and applicable categories
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: modifier_applicable_categories
+      changes:
+        # Create modifier_applicable_categories table
+        - createTable:
+            tableName: modifier_applicable_categories
+            columns:
+              - column:
+                  name: modifier_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                  remarks: "Reference to price modifier"
+
+              - column:
+                  name: category_code
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  remarks: "Category code this modifier applies to"
+
+        # Create composite primary key
+        - addPrimaryKey:
+            tableName: modifier_applicable_categories
+            columnNames: modifier_id, category_code
+            constraintName: pk_modifier_applicable_categories
+
+        # Create foreign key constraints
+        - addForeignKeyConstraint:
+            baseTableName: modifier_applicable_categories
+            baseColumnNames: modifier_id
+            constraintName: fk_modifier_categories_modifier
+            referencedTableName: price_modifiers
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: modifier_applicable_categories
+            baseColumnNames: category_code
+            constraintName: fk_modifier_categories_category
+            referencedTableName: service_categories
+            referencedColumnNames: code
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+        # Create index for faster queries
+        - createIndex:
+            tableName: modifier_applicable_categories
+            indexName: idx_modifier_categories_category
+            columns:
+              - column:
+                  name: category_code
+
+      rollback:
+        - dropTable:
+            tableName: modifier_applicable_categories
