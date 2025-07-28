@@ -51,6 +51,12 @@ public class ItemPhotoEntity extends BaseEntity {
   @Column(columnDefinition = "TEXT")
   private String description;
 
+  @Column(name = "photo_type", length = 50)
+  private String photoType;
+
+  @Column(name = "metadata", columnDefinition = "JSONB")
+  private String metadata;
+
   @Column(name = "uploaded_by", nullable = false)
   private UUID uploadedBy;
 }

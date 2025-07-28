@@ -40,6 +40,12 @@ spring:
       name: admin
       password: admin123
       roles: ADMIN
+  
+  # File storage configuration
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
 
   mail:
     host: smtp.gmail.com
@@ -108,6 +114,19 @@ application:
       secure: ${COOKIE_SECURE:false}  # true for production (HTTPS only)
       domain: ${COOKIE_DOMAIN:}       # set domain for production
       sameSite: ${COOKIE_SAME_SITE:Lax}  # Strict, Lax, or None
+  
+  # File storage configuration
+  storage:
+    media-root: ${MEDIA_ROOT:./media}  # For Docker: /app/media
+    photos:
+      items: orders/%s/items/%s       # orders/{orderId}/items/{itemId}/
+      thumbnails: orders/%s/items/%s/thumbnails  # thumbnails subdirectory
+    max-photo-size: 5MB
+    allowed-types:
+      - image/jpeg
+      - image/jpg
+      - image/png
+      - image/webp
 
 ---
 # Development profile

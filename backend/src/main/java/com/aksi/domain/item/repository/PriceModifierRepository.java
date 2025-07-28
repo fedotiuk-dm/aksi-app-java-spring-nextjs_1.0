@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.aksi.domain.item.entity.PriceModifierEntity;
+import com.aksi.domain.item.entity.ServiceCategoryEntity;
 
 /** Repository for PriceModifierEntity */
 @Repository
@@ -51,4 +52,24 @@ public interface PriceModifierRepository extends JpaRepository<PriceModifierEnti
    * @return true if exists
    */
   boolean existsByCode(String code);
+
+  /**
+   * Find modifiers that contain a specific category
+   *
+   * @param category the service category entity
+   * @param sort the sort criteria
+   * @return list of modifiers
+   */
+  List<PriceModifierEntity> findByApplicableCategoriesContaining(
+      ServiceCategoryEntity category, Sort sort);
+
+  /**
+   * Find active modifiers that contain a specific category
+   *
+   * @param category the service category entity
+   * @param sort the sort criteria
+   * @return list of active modifiers
+   */
+  List<PriceModifierEntity> findByApplicableCategoriesContainingAndActiveTrue(
+      ServiceCategoryEntity category, Sort sort);
 }

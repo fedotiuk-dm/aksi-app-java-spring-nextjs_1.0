@@ -1,6 +1,7 @@
 package com.aksi.domain.item.constant;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 /** Constants for the item domain */
 public final class ItemConstants {
@@ -13,7 +14,7 @@ public final class ItemConstants {
   public static final BigDecimal DEFAULT_BASE_PRICE = BigDecimal.ZERO;
 
   public static final BigDecimal DEFAULT_MODIFIER_VALUE = BigDecimal.ONE;
-  public static final BigDecimal MIN_PRICE = BigDecimal.ZERO;
+  public static final BigDecimal MIN_PRICE = new BigDecimal("0.01");
   public static final BigDecimal MAX_PRICE = new BigDecimal("999999.99");
   public static final BigDecimal MIN_QUANTITY = BigDecimal.ONE;
   public static final BigDecimal MAX_QUANTITY = new BigDecimal("9999");
@@ -25,6 +26,8 @@ public final class ItemConstants {
   public static final BigDecimal COLOR_PRICE_MULTIPLIER = new BigDecimal("1.5");
 
   public static final BigDecimal BLACK_PRICE_MULTIPLIER = new BigDecimal("1.25");
+  public static final BigDecimal HUNDRED = new BigDecimal("100");
+  public static final BigDecimal ONE_HUNDRED = new BigDecimal("100");
   public static final int PRICE_SCALE = 2;
   public static final int CALCULATION_SCALE = 4;
 
@@ -44,6 +47,8 @@ public final class ItemConstants {
 
   public static final long MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
   public static final String[] ALLOWED_PHOTO_EXTENSIONS = {"jpg", "jpeg", "png", "webp"};
+  public static final Set<String> ALLOWED_PHOTO_TYPES =
+      Set.of("image/jpeg", "image/jpg", "image/png", "image/webp");
 
   /** JEXL context variables */
   public static final String JEXL_VAR_BASE_PRICE = "basePrice";
@@ -58,6 +63,7 @@ public final class ItemConstants {
 
   public static final String ERROR_PRICE_LIST_ITEM_NOT_FOUND = "Price list item not found: %s";
   public static final String ERROR_MODIFIER_NOT_FOUND = "Price modifier not found: %s";
+  public static final String ERROR_PHOTO_NOT_FOUND = "Item photo not found: %d";
   public static final String ERROR_INVALID_FORMULA = "Invalid JEXL formula: %s";
   public static final String ERROR_FORMULA_EVALUATION = "Error evaluating formula: %s";
   public static final String ERROR_INVALID_QUANTITY = "Invalid quantity: %s";

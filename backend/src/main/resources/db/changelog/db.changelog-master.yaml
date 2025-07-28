@@ -48,5 +48,7 @@ databaseChangeLog:
       file: db/changelog/item/008-insert-price-modifiers-data.yaml
   - include:
       file: db/changelog/item/009-link-modifiers-to-categories.yaml
+  - include:
+      file: db/changelog/item/010-add-photo-type-metadata.yaml
 
 

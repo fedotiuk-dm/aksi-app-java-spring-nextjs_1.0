@@ -4,54 +4,43 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
+import com.aksi.api.item.dto.PriceListItem;
+import com.aksi.api.item.dto.PriceListItemListResponse;
 import com.aksi.api.item.dto.PriceListItemResponse;
-import com.aksi.api.item.dto.ServiceCategory;
-import com.aksi.api.item.dto.UnitType;
 import com.aksi.domain.item.entity.PriceListItemEntity;
-import com.aksi.domain.item.enums.UnitOfMeasure;
 
 /** Mapper for PriceListItem entities and DTOs */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface PriceListItemMapper {
 
-  @Mapping(
-      target = "categoryCode",
-      source = "category.code",
-      qualifiedByName = "mapEntityCategoryToApiCategory")
+  // Map entity to DTO for list responses
+  @Mapping(target = "categoryCode", source = "category.code")
   @Mapping(target = "basePrice", source = "priceDetails.basePrice")
-  @Mapping(target = "priceBlack", source = "priceDetails.priceBlack")
-  @Mapping(target = "priceColor", source = "priceDetails.priceColor")
-  @Mapping(target = "isActive", source = "active")
-  @Mapping(
-      target = "unitOfMeasure",
-      source = "unitOfMeasure",
-      qualifiedByName = "mapEntityUnitToApiUnit")
-  PriceListItemResponse toResponse(PriceListItemEntity entity);
+  @Mapping(target = "blackPrice", source = "priceDetails.priceBlack")
+  @Mapping(target = "colorPrice", source = "priceDetails.priceColor")
+  @Mapping(target = "active", source = "active")
+  @Mapping(target = "unitOfMeasure", source = "unitOfMeasure")
+  @Mapping(target = "description", ignore = true)
+  @Mapping(target = "displayOrder", ignore = true)
+  PriceListItem toDto(PriceListItemEntity entity);
 
-  List<PriceListItemResponse> toResponseList(List<PriceListItemEntity> entities);
+  List<PriceListItem> toDtoList(List<PriceListItemEntity> entities);
 
-  /** Map from String category code to API enum */
-  @Named("mapEntityCategoryToApiCategory")
-  default ServiceCategory mapEntityCategoryToApiCategory(String code) {
-    if (code == null) {
-      return null;
-    }
-    try {
-      return ServiceCategory.valueOf(code);
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
+  // Create list response from entities with pagination support
+  default PriceListItemListResponse toListResponse(List<PriceListItemEntity> entities, long total) {
+    List<PriceListItem> items = toDtoList(entities);
+    PriceListItemListResponse response = new PriceListItemListResponse();
+    response.setItems(items);
+    response.setTotal((int) total);
+    return response;
   }
 
-  /** Map from domain unit enum to API enum */
-  @Named("mapEntityUnitToApiUnit")
-  default UnitType mapEntityUnitToApiUnit(UnitOfMeasure entityEnum) {
-    if (entityEnum == null) {
-      return null;
-    }
-    return UnitType.valueOf(entityEnum.name());
+  // Create single item response
+  default PriceListItemResponse toItemResponse(PriceListItemEntity entity) {
+    PriceListItemResponse response = new PriceListItemResponse();
+    response.setItem(toDto(entity));
+    return response;
   }
 }

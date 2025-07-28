@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,9 @@ import com.aksi.domain.item.entity.PriceListItemEntity;
 
 /** Repository for PriceListItemEntity */
 @Repository
-public interface PriceListItemRepository extends JpaRepository<PriceListItemEntity, UUID> {
+public interface PriceListItemRepository
+    extends JpaRepository<PriceListItemEntity, UUID>,
+        JpaSpecificationExecutor<PriceListItemEntity> {
 
   /**
    * Find active items by category code
@@ -55,4 +58,21 @@ public interface PriceListItemRepository extends JpaRepository<PriceListItemEnti
    * @return list of active items
    */
   List<PriceListItemEntity> findByActiveTrue();
+
+  /**
+   * Find items by category code
+   *
+   * @param categoryCode the category code
+   * @return list of price list items
+   */
+  @Query("SELECT p FROM PriceListItemEntity p WHERE p.category.code = :categoryCode")
+  List<PriceListItemEntity> findByCategoryCategoryCode(@Param("categoryCode") String categoryCode);
+
+  /**
+   * Find active items by category code using property path
+   *
+   * @param categoryCode the category code
+   * @return list of active price list items
+   */
+  List<PriceListItemEntity> findByCategoryCategoryCodeAndActiveTrue(String categoryCode);
 }

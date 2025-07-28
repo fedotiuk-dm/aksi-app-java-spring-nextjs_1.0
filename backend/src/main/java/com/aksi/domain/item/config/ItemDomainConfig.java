@@ -22,10 +22,6 @@ public class ItemDomainConfig {
    */
   @Bean
   public JexlEngine jexlEngine() {
-    return new JexlBuilder()
-        .strict(true)
-        .silent(false)
-        .cache(512)
-        .create();
+    return new JexlBuilder().strict(true).silent(false).cache(512).create();
   }
 }

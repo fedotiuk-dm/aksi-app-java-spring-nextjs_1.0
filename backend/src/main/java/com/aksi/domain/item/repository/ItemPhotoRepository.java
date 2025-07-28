@@ -3,6 +3,7 @@ package com.aksi.domain.item.repository;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,9 +19,10 @@ public interface ItemPhotoRepository extends JpaRepository<ItemPhotoEntity, UUID
    * Find all photos for a specific order item
    *
    * @param orderItemId the order item ID
+   * @param sort the sort criteria
    * @return list of photos
    */
-  List<ItemPhotoEntity> findByOrderItemIdOrderByCreatedAtAsc(UUID orderItemId);
+  List<ItemPhotoEntity> findByOrderItemId(UUID orderItemId, Sort sort);
 
   /**
    * Count photos for a specific order item
