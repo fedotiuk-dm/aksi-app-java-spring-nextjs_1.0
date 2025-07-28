@@ -12,26 +12,14 @@
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - orderAmount
-            properties:
-              orderAmount:
-                type: number
-                format: decimal
-                description: Сума замовлення для додавання до статистики
-                example: 150.00
+            $ref: "../schemas/client-requests.yaml#/UpdateClientStatisticsRequest"
     responses:
       200:
         description: Статистика клієнта успішно оновлена
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  example: "Client statistics updated successfully"
+              $ref: "../schemas/client-responses.yaml#/UpdateClientStatisticsResponse"
       404:
         description: Клієнт не знайдений
         content:

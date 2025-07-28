@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.4
 info:
   title: Branch Domain API
   description: API для управління філіями хімчистки

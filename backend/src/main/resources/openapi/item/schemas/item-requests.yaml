@@ -180,3 +180,56 @@ UpdatePhotoMetadataRequest:
       additionalProperties:
         type: string
       description: Оновлені метадані
+
+# Пошук в прайс-листі
+PriceListSearchRequest:
+  type: object
+  title: PriceListSearchRequest
+  properties:
+    categoryCode:
+      type: string
+      description: Фільтр за кодом категорії
+      example: CLOTHING
+    searchTerm:
+      type: string
+      description: Пошуковий термін для назви або опису
+      example: піджак
+    minPrice:
+      type: number
+      format: double
+      description: Мінімальна ціна
+      example: 100.0
+    maxPrice:
+      type: number
+      format: double
+      description: Максимальна ціна
+      example: 1000.0
+    unitOfMeasure:
+      type: string
+      description: Фільтр за одиницею виміру
+      example: PIECE
+    onlyActive:
+      type: boolean
+      description: Показувати тільки активні елементи
+      default: true
+    sortBy:
+      type: string
+      enum:
+        - NAME
+        - PRICE_ASC
+        - PRICE_DESC
+        - CATALOG_NUMBER
+        - DISPLAY_ORDER
+      description: Поле для сортування
+      default: DISPLAY_ORDER
+    page:
+      type: integer
+      description: Номер сторінки
+      default: 0
+      minimum: 0
+    size:
+      type: integer
+      description: Кількість елементів на сторінці
+      default: 20
+      minimum: 1
+      maximum: 100

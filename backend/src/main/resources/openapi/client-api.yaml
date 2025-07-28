@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.4
 info:
   title: Client Domain API
   description: API для управління клієнтами хімчистки
@@ -43,6 +43,8 @@ components:
       $ref: "client/schemas/client-requests.yaml#/UpdateClientRequest"
     ClientSearchRequest:
       $ref: "client/schemas/client-requests.yaml#/ClientSearchRequest"
+    UpdateClientStatisticsRequest:
+      $ref: "client/schemas/client-requests.yaml#/UpdateClientStatisticsRequest"
     # Response Schemas
     ClientResponse:
       $ref: "client/schemas/client-responses.yaml#/ClientResponse"
@@ -52,6 +54,8 @@ components:
       $ref: "client/schemas/client-responses.yaml#/ClientSearchResponse"
     ClientSearchResult:
       $ref: "client/schemas/client-responses.yaml#/ClientSearchResult"
+    UpdateClientStatisticsResponse:
+      $ref: "client/schemas/client-responses.yaml#/UpdateClientStatisticsResponse"
 
     # Enums
     CommunicationMethod:

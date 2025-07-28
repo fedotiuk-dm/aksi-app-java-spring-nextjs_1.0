@@ -1,14 +1,36 @@
 # Response схеми для Item домену
-ServiceCategoryResponse:
+
+# Список категорій послуг
+ServiceCategoryListResponse:
   type: object
-  title: ServiceCategoryResponse
+  title: ServiceCategoryListResponse
+  required:
+    - categories
+    - total
+  properties:
+    categories:
+      type: array
+      items:
+        $ref: "#/ServiceCategory"
+      description: Список категорій
+    total:
+      type: integer
+      description: Загальна кількість категорій
+      example: 11
+
+# Категорія послуги
+ServiceCategory:
+  type: object
+  title: ServiceCategory
   required:
     - code
     - name
     - standardDays
+    - displayOrder
+    - active
   properties:
     code:
-      $ref: "../../order/schemas/price-modifiers.yaml#/ServiceCategory"
+      type: string
       description: Код категорії
       example: CLOTHING
     name:
@@ -19,10 +41,29 @@ ServiceCategoryResponse:
       type: integer
       description: Стандартний термін виконання в днях
       example: 2
+    displayOrder:
+      type: integer
+      description: Порядок відображення
+      example: 1
+    active:
+      type: boolean
+      description: Чи активна категорія
+      example: true
 
-PriceListItemResponse:
+ServiceCategoryResponse:
   type: object
-  title: PriceListItemResponse
+  title: ServiceCategoryResponse
+  required:
+    - category
+  properties:
+    category:
+      $ref: "#/ServiceCategory"
+      description: Інформація про категорію
+
+# Елемент прайс-листу
+PriceListItem:
+  type: object
+  title: PriceListItem
   required:
     - id
     - categoryCode
@@ -30,14 +71,14 @@ PriceListItemResponse:
     - name
     - unitOfMeasure
     - basePrice
-    - isActive
-    - createdAt
-    - updatedAt
+    - blackPrice
+    - colorPrice
+    - active
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
     categoryCode:
-      $ref: "../../order/schemas/price-modifiers.yaml#/ServiceCategory"
+      type: string
       description: Код категорії послуги
       example: CLOTHING
     catalogNumber:
@@ -48,8 +89,11 @@ PriceListItemResponse:
       type: string
       description: Назва предмета
       example: "Піджак, кітель"
+    description:
+      type: string
+      description: Опис предмета
     unitOfMeasure:
-      $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
+      type: string
       description: Одиниця виміру
       example: PIECE
     basePrice:
@@ -57,21 +101,52 @@ PriceListItemResponse:
       format: double
       description: Базова ціна
       example: 480.0
-    priceBlack:
+    blackPrice:
       type: number
       format: double
-      description: Ціна для чорних речей (може бути null)
-      example: null
-    priceColor:
+      description: Ціна для чорних речей
+      example: 480.0
+    colorPrice:
       type: number
       format: double
-      description: Ціна для кольорових речей (може бути null)
+      description: Ціна для кольорових речей
       example: 700.0
-    isActive:
+    active:
       type: boolean
       description: Чи активний предмет
-  allOf:
-    - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
+      example: true
+    displayOrder:
+      type: integer
+      description: Порядок відображення
+      example: 1
+
+# Відповідь зі списком елементів прайс-листу
+PriceListItemListResponse:
+  type: object
+  title: PriceListItemListResponse
+  required:
+    - items
+    - total
+  properties:
+    items:
+      type: array
+      items:
+        $ref: "#/PriceListItem"
+      description: Список елементів прайс-листу
+    total:
+      type: integer
+      description: Загальна кількість елементів
+      example: 150
+
+PriceListItemResponse:
+  type: object
+  title: PriceListItemResponse
+  required:
+    - item
+  properties:
+    item:
+      $ref: "#/PriceListItem"
+      description: Інформація про елемент прайс-листу
 
 PriceModifierResponse:
   type: object
@@ -106,8 +181,8 @@ PriceModifierResponse:
       type: array
       items:
         type: string
-        format: uuid
-      description: Категорії, до яких застосовується
+      description: Коди категорій, до яких застосовується
+      example: ["CLOTHING", "HOME_TEXTILE"]
     isActive:
       type: boolean
       description: Чи активний модифікатор
@@ -132,7 +207,6 @@ ItemCalculationResponse:
   type: object
   title: ItemCalculationResponse
   required:
-    - itemId
     - priceListItemId
     - quantity
     - basePrice
@@ -149,12 +223,23 @@ ItemCalculationResponse:
       type: string
       description: Назва предмета
       example: "Піджак, кітель"
+    categoryCode:
+      type: string
+      description: Код категорії послуги
+      example: CLOTHING
+    categoryName:
+      type: string
+      description: Назва категорії
+      example: Чистка одягу та текстилю
     quantity:
       type: number
       format: double
       example: 1.0
     unitOfMeasure:
       $ref: "../../order/schemas/price-modifiers.yaml#/UnitType"
+    color:
+      $ref: "./item-enums.yaml#/ItemColor"
+      description: Колір предмета
     basePrice:
       type: number
       format: double
@@ -178,8 +263,11 @@ ItemCalculationResponse:
     calculationDetails:
       $ref: "#/CalculationDetailsResponse"
       description: Детальний розрахунок
-  allOf:
-    - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
+    warnings:
+      type: array
+      items:
+        type: string
+      description: Попередження про розрахунок
 
 # Попередній розрахунок (без збереження)
 ItemPricePreviewResponse:
@@ -267,9 +355,9 @@ OrderSummaryResponse:
           description: Середня ціна за предмет
 
 # Інформація про фотографію
-PhotoResponse:
+ItemPhotoResponse:
   type: object
-  title: PhotoResponse
+  title: ItemPhotoResponse
   required:
     - id
     - orderItemId
@@ -277,7 +365,6 @@ PhotoResponse:
     - fileType
     - fileSize
     - storagePath
-    - createdAt
   properties:
     id:
       $ref: "../../common/schemas/base.yaml#/UUID"
@@ -332,8 +419,14 @@ PhotoResponse:
       type: string
       description: URL мініатюри
       example: "/api/photos/123e4567-e89b-12d3-a456-426614174000/file?thumbnail=true"
-  allOf:
-    - $ref: "../../common/schemas/base.yaml#/TimestampProperties"
+    createdAt:
+      type: string
+      format: date-time
+      description: Дата створення
+    updatedAt:
+      type: string
+      format: date-time
+      description: Дата оновлення
 
 # Відповідь на завантаження файлу фотографії
 PhotoDownloadResponse:
@@ -507,4 +600,191 @@ DiscountDetailsResponse:
         type: string
       description: Предмети, виключені зі знижки
       example: ["Прасування", "Прання"]
+
+# Модифікатор ціни 
+PriceModifier:
+  type: object
+  title: PriceModifier
+  required:
+    - id
+    - code
+    - name
+    - type
+    - value
+    - active
+    - applicableCategories
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    code:
+      type: string
+      description: Код модифікатора
+      example: CHILDREN_ITEMS
+    name:
+      type: string
+      description: Назва модифікатора
+      example: Дитячі речі (до 30 розміру)
+    type:
+      $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
+    value:
+      type: number
+      format: double
+      description: Значення модифікатора
+      example: 30.0
+    active:
+      type: boolean
+      description: Чи активний модифікатор
+      example: true
+    applicableCategories:
+      type: array
+      items:
+        type: string
+      description: Категорії до яких застосовується
+      example: ["CLOTHING", "HOME_TEXTILE"]
+    description:
+      type: string
+      description: Опис модифікатора
+
+# Список модифікаторів
+PriceModifierListResponse:
+  type: object
+  title: PriceModifierListResponse
+  required:
+    - modifiers
+    - total
+  properties:
+    modifiers:
+      type: array
+      items:
+        $ref: "#/PriceModifier"
+      description: Список модифікаторів
+    total:
+      type: integer
+      description: Загальна кількість модифікаторів
+      example: 15
+
+# Фотографія предмета
+ItemPhoto:
+  type: object
+  title: ItemPhoto
+  required:
+    - id
+    - orderItemId
+    - fileName
+    - fileType
+    - fileSize
+    - uploadedAt
+  properties:
+    id:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    orderItemId:
+      $ref: "../../common/schemas/base.yaml#/UUID"
+    fileName:
+      type: string
+      description: Назва файлу
+      example: IMG_1234.jpg
+    fileType:
+      type: string
+      description: MIME тип файлу
+      example: image/jpeg
+    fileSize:
+      type: integer
+      format: int64
+      description: Розмір файлу в байтах
+      example: 1048576
+    description:
+      type: string
+      description: Опис фотографії
+      example: Пляма на комірі
+    photoType:
+      type: string
+      enum:
+        - BEFORE_CLEANING
+        - STAIN
+        - DAMAGE
+        - GENERAL
+      example: STAIN
+    uploadedAt:
+      type: string
+      format: date-time
+      description: Дата завантаження
+    thumbnailUrl:
+      type: string
+      description: URL мініатюри
+      example: /photos/2025/01/123e4567-e89b_thumb.jpg
+    downloadUrl:
+      type: string
+      description: URL для завантаження
+      example: /photos/2025/01/123e4567-e89b.jpg
+
+# Список фотографій
+ItemPhotoListResponse:
+  type: object
+  title: ItemPhotoListResponse
+  required:
+    - photos
+    - total
+  properties:
+    photos:
+      type: array
+      items:
+        $ref: "#/ItemPhoto"
+      description: Список фотографій
+    total:
+      type: integer
+      description: Загальна кількість фотографій
+      example: 5
+
+# Відповідь на завантаження фотографії
+ItemPhotoUploadResponse:
+  type: object
+  title: ItemPhotoUploadResponse
+  required:
+    - photo
+    - message
+  properties:
+    photo:
+      $ref: "#/ItemPhoto"
+      description: Інформація про завантажену фотографію
+    message:
+      type: string
+      description: Повідомлення про результат
+      example: Фотографію успішно завантажено
+
+# Розрахунок модифікатора
+ModifierCalculation:
+  type: object
+  title: ModifierCalculation
+  required:
+    - modifierCode
+    - modifierName
+    - type
+    - value
+    - calculatedAmount
+  properties:
+    modifierCode:
+      type: string
+      description: Код модифікатора
+      example: CHILDREN_ITEMS
+    modifierName:
+      type: string
+      description: Назва модифікатора
+      example: Дитячі речі (до 30 розміру)
+    type:
+      $ref: "../../order/schemas/order-enums.yaml#/ModifierType"
+    value:
+      type: number
+      format: double
+      description: Значення модифікатора
+      example: 30.0
+    calculatedAmount:
+      type: number
+      format: double
+      description: Розрахована сума впливу на ціну
+      example: -144.0
+    priceAfterModifier:
+      type: number
+      format: double
+      description: Ціна після застосування модифікатора
+      example: 336.0
 

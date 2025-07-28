@@ -1,3 +1,55 @@
+# Combined user paths
+/api/users/me:
+  get:
+    tags:
+      - users
+    summary: Отримання інформації про поточного користувача
+    description: Повертає інформацію про автентифікованого користувача (оператора)
+    operationId: getCurrentUser
+    responses:
+      "200":
+        description: Інформація про користувача
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+            example:
+              id: "123e4567-e89b-12d3-a456-426614174000"
+              username: "operator1"
+              email: "operator@aksi.com"
+              firstName: "Олександр"
+              lastName: "Петренко"
+              role: "OPERATOR"
+              isActive: true
+              createdAt: "2024-01-15T10:30:00Z"
+              branchId: "456e7890-e89b-12d3-a456-426614174000"
+      "401":
+        description: Невалідний або відсутній токен
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+            example:
+              message: "Токен автентифікації недійсний"
+              code: "INVALID_TOKEN"
+              timestamp: "2024-01-15T10:30:00Z"
+      "403":
+        description: Користувач неактивний
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+            example:
+              message: "Користувач неактивний"
+              code: "USER_INACTIVE"
+              timestamp: "2024-01-15T10:30:00Z"
+      "500":
+        description: Внутрішня помилка сервера
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+
 /api/users:
   get:
     tags:
@@ -50,49 +102,83 @@
         content:
           application/json:
             schema:
-              $ref: "../../user-api.yaml#/components/schemas/UserListResponse"
+              $ref: "../schemas/user-responses.yaml#/UserListResponse"
+      "400":
+        description: Неправильні параметри запиту
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "401":
-        $ref: "#/components/responses/UnauthorizedError"
+        description: Не авторизовано
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "403":
-        $ref: "#/components/responses/ForbiddenError"
+        description: Доступ заборонено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "500":
-        $ref: "#/components/responses/InternalServerError"
-  
+        description: Внутрішня помилка сервера
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+
   post:
     tags:
       - users
     summary: Створення нового користувача
-    description: Створює нового користувача в системі (доступно тільки для адміністраторів)
+    description: Створює нового користувача системи (доступно тільки для адміністраторів)
     operationId: createUser
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: "../../user-api.yaml#/components/schemas/CreateUserRequest"
+            $ref: "../schemas/user-requests.yaml#/CreateUserRequest"
     responses:
       "201":
-        description: Користувач успішно створений
+        description: Користувача створено успішно
         content:
           application/json:
             schema:
-              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+              $ref: "../schemas/user-responses.yaml#/UserResponse"
       "400":
-        $ref: "#/components/responses/BadRequestError"
+        description: Неправильні дані запиту
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ValidationErrorResponse"
       "401":
-        $ref: "#/components/responses/UnauthorizedError"
+        description: Не авторизовано
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "403":
-        $ref: "#/components/responses/ForbiddenError"
+        description: Доступ заборонено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "409":
-        description: Користувач з таким username або email вже існує
+        description: Користувач з таким email вже існує
         content:
           application/json:
             schema:
               $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "500":
-        $ref: "#/components/responses/InternalServerError"
+        description: Внутрішня помилка сервера
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
 
-/api/users/{userId}:
+/api/users/{id}:
   get:
     tags:
       - users
@@ -100,7 +186,7 @@
     description: Повертає детальну інформацію про користувача
     operationId: getUserById
     parameters:
-      - name: userId
+      - name: id
         in: path
         required: true
         description: ID користувача
@@ -113,24 +199,40 @@
         content:
           application/json:
             schema:
-              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+              $ref: "../schemas/user-responses.yaml#/UserResponse"
       "401":
-        $ref: "#/components/responses/UnauthorizedError"
+        description: Не авторизовано
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "403":
-        $ref: "#/components/responses/ForbiddenError"
+        description: Доступ заборонено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "404":
-        $ref: "#/components/responses/UserNotFoundError"
+        description: Користувача не знайдено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "500":
-        $ref: "#/components/responses/InternalServerError"
+        description: Внутрішня помилка сервера
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
 
   patch:
     tags:
       - users
     summary: Оновлення даних користувача
-    description: Часткове оновлення даних користувача (доступно для адміністраторів та самого користувача)
+    description: Часткове оновлення даних користувача (доступно для адміністраторів або самого користувача)
     operationId: updateUser
     parameters:
-      - name: userId
+      - name: id
         in: path
         required: true
         description: ID користувача
@@ -142,34 +244,60 @@
       content:
         application/json:
           schema:
-            $ref: "../../user-api.yaml#/components/schemas/UpdateUserRequest"
+            $ref: "../schemas/user-requests.yaml#/UpdateUserRequest"
     responses:
       "200":
-        description: Користувач успішно оновлений
+        description: Дані користувача оновлено
         content:
           application/json:
             schema:
-              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+              $ref: "../schemas/user-responses.yaml#/UserResponse"
       "400":
-        $ref: "#/components/responses/BadRequestError"
+        description: Неправильні дані запиту
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ValidationErrorResponse"
       "401":
-        $ref: "#/components/responses/UnauthorizedError"
+        description: Не авторизовано
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "403":
-        $ref: "#/components/responses/ForbiddenError"
+        description: Доступ заборонено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "404":
-        $ref: "#/components/responses/UserNotFoundError"
+        description: Користувача не знайдено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+      "409":
+        description: Email вже використовується
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "500":
-        $ref: "#/components/responses/InternalServerError"
+        description: Внутрішня помилка сервера
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
 
-/api/users/{userId}/role:
-  patch:
+/api/users/{id}/role:
+  put:
     tags:
       - users
     summary: Зміна ролі користувача
     description: Змінює роль користувача (доступно тільки для адміністраторів)
     operationId: updateUserRole
     parameters:
-      - name: userId
+      - name: id
         in: path
         required: true
         description: ID користувача
@@ -181,34 +309,54 @@
       content:
         application/json:
           schema:
-            $ref: "../../user-api.yaml#/components/schemas/UpdateUserRoleRequest"
+            $ref: "../schemas/user-requests.yaml#/UpdateUserRoleRequest"
     responses:
       "200":
-        description: Роль успішно змінена
+        description: Роль користувача змінено
         content:
           application/json:
             schema:
-              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+              $ref: "../schemas/user-responses.yaml#/UserResponse"
       "400":
-        $ref: "#/components/responses/BadRequestError"
+        description: Неправильні дані запиту
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ValidationErrorResponse"
       "401":
-        $ref: "#/components/responses/UnauthorizedError"
+        description: Не авторизовано
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "403":
-        $ref: "#/components/responses/ForbiddenError"
+        description: Доступ заборонено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "404":
-        $ref: "#/components/responses/UserNotFoundError"
+        description: Користувача не знайдено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "500":
-        $ref: "#/components/responses/InternalServerError"
+        description: Внутрішня помилка сервера
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
 
-/api/users/{userId}/status:
-  patch:
+/api/users/{id}/status:
+  put:
     tags:
       - users
     summary: Зміна статусу користувача
     description: Активує або деактивує користувача (доступно тільки для адміністраторів)
     operationId: updateUserStatus
     parameters:
-      - name: userId
+      - name: id
         in: path
         required: true
         description: ID користувача
@@ -220,34 +368,54 @@
       content:
         application/json:
           schema:
-            $ref: "../../user-api.yaml#/components/schemas/UpdateUserStatusRequest"
+            $ref: "../schemas/user-requests.yaml#/UpdateUserStatusRequest"
     responses:
       "200":
-        description: Статус успішно змінений
+        description: Статус користувача змінено
         content:
           application/json:
             schema:
-              $ref: "../../user-api.yaml#/components/schemas/UserResponse"
+              $ref: "../schemas/user-responses.yaml#/UserResponse"
       "400":
-        $ref: "#/components/responses/BadRequestError"
+        description: Неправильні дані запиту
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ValidationErrorResponse"
       "401":
-        $ref: "#/components/responses/UnauthorizedError"
+        description: Не авторизовано
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "403":
-        $ref: "#/components/responses/ForbiddenError"
+        description: Доступ заборонено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "404":
-        $ref: "#/components/responses/UserNotFoundError"
+        description: Користувача не знайдено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "500":
-        $ref: "#/components/responses/InternalServerError"
+        description: Внутрішня помилка сервера
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
 
-/api/users/{userId}/password:
-  patch:
+/api/users/{id}/password:
+  put:
     tags:
       - users
     summary: Зміна пароля користувача
-    description: Змінює пароль користувача (доступно для адміністраторів та самого користувача)
-    operationId: changeUserPassword
+    description: Змінює пароль користувача (доступно для адміністраторів або самого користувача)
+    operationId: updateUserPassword
     parameters:
-      - name: userId
+      - name: id
         in: path
         required: true
         description: ID користувача
@@ -259,66 +427,37 @@
       content:
         application/json:
           schema:
-            $ref: "../../user-api.yaml#/components/schemas/ChangePasswordRequest"
+            $ref: "../schemas/user-requests.yaml#/ChangePasswordRequest"
     responses:
       "204":
-        description: Пароль успішно змінений
+        description: Пароль успішно змінено
       "400":
-        $ref: "#/components/responses/BadRequestError"
+        description: Неправильні дані запиту
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ValidationErrorResponse"
       "401":
-        $ref: "#/components/responses/UnauthorizedError"
+        description: Не авторизовано
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "403":
-        $ref: "#/components/responses/ForbiddenError"
+        description: Доступ заборонено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "404":
-        $ref: "#/components/responses/UserNotFoundError"
+        description: Користувача не знайдено
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
       "500":
-        $ref: "#/components/responses/InternalServerError"
-
-components:
-  responses:
-    UnauthorizedError:
-      description: Невалідний або відсутній токен
-      content:
-        application/json:
-          schema:
-            $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
-          example:
-            message: "Токен автентифікації недійсний"
-            code: "INVALID_TOKEN"
-            timestamp: "2024-01-15T10:30:00Z"
-    
-    ForbiddenError:
-      description: Недостатньо прав доступу
-      content:
-        application/json:
-          schema:
-            $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
-          example:
-            message: "Недостатньо прав для виконання операції"
-            code: "ACCESS_DENIED"
-            timestamp: "2024-01-15T10:30:00Z"
-    
-    BadRequestError:
-      description: Невалідні дані запиту
-      content:
-        application/json:
-          schema:
-            $ref: "../../user-api.yaml#/components/schemas/ValidationErrorResponse"
-    
-    UserNotFoundError:
-      description: Користувач не знайдений
-      content:
-        application/json:
-          schema:
-            $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
-          example:
-            message: "Користувач не знайдений"
-            code: "USER_NOT_FOUND"
-            timestamp: "2024-01-15T10:30:00Z"
-    
-    InternalServerError:
-      description: Внутрішня помилка сервера
-      content:
-        application/json:
-          schema:
-            $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"
+        description: Внутрішня помилка сервера
+        content:
+          application/json:
+            schema:
+              $ref: "../../user-api.yaml#/components/schemas/ErrorResponse"

@@ -126,3 +126,12 @@ ClientSearchResult:
       type: string
       description: Підсвічений текст збігу пошуку
       example: "Петренко <mark>Олександр</mark>"
+
+UpdateClientStatisticsResponse:
+  type: object
+  title: UpdateClientStatisticsResponse
+  description: Відповідь на оновлення статистики клієнта
+  properties:
+    message:
+      type: string
+      example: "Client statistics updated successfully"

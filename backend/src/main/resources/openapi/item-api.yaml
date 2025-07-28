@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.4
 info:
   title: Dry Cleaning Item Management API
   description: API для управління категоріями послуг, прайс-листом, модифікаторами цін та розрахунками
@@ -51,20 +51,32 @@ components:
     # Response Schemas
     ServiceCategoryResponse:
       $ref: "item/schemas/item-responses.yaml#/ServiceCategoryResponse"
+    ServiceCategoryListResponse:
+      $ref: "item/schemas/item-responses.yaml#/ServiceCategoryListResponse"
     PriceListItemResponse:
       $ref: "item/schemas/item-responses.yaml#/PriceListItemResponse"
+    PriceListItem:
+      $ref: "item/schemas/item-responses.yaml#/PriceListItem"
+    PriceListItemListResponse:
+      $ref: "item/schemas/item-responses.yaml#/PriceListItemListResponse"
     PriceModifierResponse:
       $ref: "item/schemas/item-responses.yaml#/PriceModifierResponse"
+    PriceModifier:
+      $ref: "item/schemas/item-responses.yaml#/PriceModifier"
+    PriceModifierListResponse:
+      $ref: "item/schemas/item-responses.yaml#/PriceModifierListResponse"
     PriceListResponse:
       $ref: "item/schemas/item-responses.yaml#/PriceListResponse"
     ItemCalculationResponse:
+      $ref: "item/schemas/item-responses.yaml#/ItemCalculationResponse"
+    ItemCalculationsResponse:
       $ref: "item/schemas/item-responses.yaml#/ItemCalculationResponse"
     ItemPricePreviewResponse:
       $ref: "item/schemas/item-responses.yaml#/ItemPricePreviewResponse"
     OrderSummaryResponse:
       $ref: "item/schemas/item-responses.yaml#/OrderSummaryResponse"
     PhotoResponse:
-      $ref: "item/schemas/item-responses.yaml#/PhotoResponse"
+      $ref: "item/schemas/item-responses.yaml#/ItemPhotoResponse"
     PhotoDownloadResponse:
       $ref: "item/schemas/item-responses.yaml#/PhotoDownloadResponse"
     AppliedModifierResponse:
@@ -77,9 +89,21 @@ components:
       $ref: "item/schemas/item-responses.yaml#/PriceBreakdownItem"
     DiscountDetailsResponse:
       $ref: "item/schemas/item-responses.yaml#/DiscountDetailsResponse"
+    ItemPhoto:
+      $ref: "item/schemas/item-responses.yaml#/ItemPhoto"
+    ItemPhotoListResponse:
+      $ref: "item/schemas/item-responses.yaml#/ItemPhotoListResponse"
+    ItemPhotoUploadResponse:
+      $ref: "item/schemas/item-responses.yaml#/ItemPhotoUploadResponse"
+    ItemPhotoResponse:
+      $ref: "item/schemas/item-responses.yaml#/ItemPhotoResponse"
+    ModifierCalculation:
+      $ref: "item/schemas/item-responses.yaml#/ModifierCalculation"
 
     # Request Schemas
     ItemCalculationRequest:
+      $ref: "item/schemas/item-requests.yaml#/ItemCalculationRequest"
+    ItemCalculationsRequest:
       $ref: "item/schemas/item-requests.yaml#/ItemCalculationRequest"
     CustomModifierRequest:
       $ref: "item/schemas/item-requests.yaml#/CustomModifierRequest"
@@ -89,8 +113,12 @@ components:
       $ref: "item/schemas/item-requests.yaml#/GlobalDiscountRequest"
     UploadItemPhotoRequest:
       $ref: "item/schemas/item-requests.yaml#/UploadItemPhotoRequest"
+    ItemPhotoUploadRequest:
+      $ref: "item/schemas/item-requests.yaml#/UploadItemPhotoRequest"
     UpdatePhotoMetadataRequest:
       $ref: "item/schemas/item-requests.yaml#/UpdatePhotoMetadataRequest"
+    PriceListSearchRequest:
+      $ref: "item/schemas/item-requests.yaml#/PriceListSearchRequest"
 
     # Enums
     ItemColor:

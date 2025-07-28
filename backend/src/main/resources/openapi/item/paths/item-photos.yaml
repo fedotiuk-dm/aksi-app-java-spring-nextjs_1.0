@@ -20,7 +20,7 @@
             schema:
               type: array
               items:
-                $ref: "../schemas/item-responses.yaml#/PhotoResponse"
+                $ref: "../schemas/item-responses.yaml#/ItemPhotoResponse"
       404:
         description: Предмет не знайдено
         content:
@@ -52,7 +52,7 @@
         content:
           application/json:
             schema:
-              $ref: "../schemas/item-responses.yaml#/PhotoResponse"
+              $ref: "../schemas/item-responses.yaml#/ItemPhotoResponse"
       400:
         description: Помилка валідації
         content:
@@ -91,7 +91,7 @@
         content:
           application/json:
             schema:
-              $ref: "../schemas/item-responses.yaml#/PhotoResponse"
+              $ref: "../schemas/item-responses.yaml#/ItemPhotoResponse"
       404:
         description: Фотографія не знайдена
         content:
@@ -123,7 +123,7 @@
         content:
           application/json:
             schema:
-              $ref: "../schemas/item-responses.yaml#/PhotoResponse"
+              $ref: "../schemas/item-responses.yaml#/ItemPhotoResponse"
       404:
         description: Фотографія не знайдена
         content:

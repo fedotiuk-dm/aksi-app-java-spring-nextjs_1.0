@@ -101,3 +101,16 @@ ClientSearchRequest:
       maxLength: 100
       description: Пошуковий запит (прізвище, ім'я, телефон, email)
       example: "Петр"
+
+UpdateClientStatisticsRequest:
+  type: object
+  title: UpdateClientStatisticsRequest
+  description: Запит на оновлення статистики клієнта
+  required:
+    - orderAmount
+  properties:
+    orderAmount:
+      type: number
+      format: double
+      description: Сума замовлення для додавання до статистики
+      example: 150.00
