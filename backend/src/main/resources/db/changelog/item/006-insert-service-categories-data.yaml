@@ -4,10 +4,10 @@ databaseChangeLog:
       author: system
       comment: Insert initial service categories data
       preConditions:
-        onFail: MARK_RAN
-        sqlCheck:
-          expectedResult: 0
-          sql: SELECT COUNT(*) FROM service_categories
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM service_categories
       changes:
         # Insert service categories
         - insert:
@@ -21,13 +21,13 @@ databaseChangeLog:
                   value: "Чистка одягу та текстилю"
               - column:
                   name: standard_days
-                  valueNumeric: 2
+                  value: "2"
               - column:
                   name: display_order
-                  valueNumeric: 1
+                  value: "1"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -40,13 +40,13 @@ databaseChangeLog:
                   value: "Прання білизни"
               - column:
                   name: standard_days
-                  valueNumeric: 2
+                  value: "2"
               - column:
                   name: display_order
-                  valueNumeric: 2
+                  value: "2"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -59,13 +59,13 @@ databaseChangeLog:
                   value: "Прасування"
               - column:
                   name: standard_days
-                  valueNumeric: 1
+                  value: "1"
               - column:
                   name: display_order
-                  valueNumeric: 3
+                  value: "3"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -78,13 +78,13 @@ databaseChangeLog:
                   value: "Реставрація одягу"
               - column:
                   name: standard_days
-                  valueNumeric: 5
+                  value: "5"
               - column:
                   name: display_order
-                  valueNumeric: 4
+                  value: "4"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -97,13 +97,13 @@ databaseChangeLog:
                   value: "Виведення плям"
               - column:
                   name: standard_days
-                  valueNumeric: 3
+                  value: "3"
               - column:
                   name: display_order
-                  valueNumeric: 5
+                  value: "5"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -116,13 +116,13 @@ databaseChangeLog:
                   value: "Аквачистка"
               - column:
                   name: standard_days
-                  valueNumeric: 3
+                  value: "3"
               - column:
                   name: display_order
-                  valueNumeric: 6
+                  value: "6"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -135,13 +135,13 @@ databaseChangeLog:
                   value: "Чистка взуття"
               - column:
                   name: standard_days
-                  valueNumeric: 2
+                  value: "2"
               - column:
                   name: display_order
-                  valueNumeric: 7
+                  value: "7"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -154,13 +154,13 @@ databaseChangeLog:
                   value: "Чистка килимів"
               - column:
                   name: standard_days
-                  valueNumeric: 3
+                  value: "3"
               - column:
                   name: display_order
-                  valueNumeric: 8
+                  value: "8"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -173,13 +173,13 @@ databaseChangeLog:
                   value: "Чистка хутра"
               - column:
                   name: standard_days
-                  valueNumeric: 5
+                  value: "5"
               - column:
                   name: display_order
-                  valueNumeric: 9
+                  value: "9"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -192,13 +192,13 @@ databaseChangeLog:
                   value: "Чистка шкіри"
               - column:
                   name: standard_days
-                  valueNumeric: 5
+                  value: "5"
               - column:
                   name: display_order
-                  valueNumeric: 10
+                  value: "10"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -211,13 +211,13 @@ databaseChangeLog:
                   value: "Чистка домашнього текстилю"
               - column:
                   name: standard_days
-                  valueNumeric: 3
+                  value: "3"
               - column:
                   name: display_order
-                  valueNumeric: 11
+                  value: "11"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -230,13 +230,13 @@ databaseChangeLog:
                   value: "Фарбування"
               - column:
                   name: standard_days
-                  valueNumeric: 5
+                  value: "5"
               - column:
                   name: display_order
-                  valueNumeric: 12
+                  value: "12"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -249,13 +249,13 @@ databaseChangeLog:
                   value: "Робота з наповнювачем"
               - column:
                   name: standard_days
-                  valueNumeric: 3
+                  value: "3"
               - column:
                   name: display_order
-                  valueNumeric: 13
+                  value: "13"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
         - insert:
             tableName: service_categories
@@ -268,13 +268,13 @@ databaseChangeLog:
                   value: "Додаткові послуги"
               - column:
                   name: standard_days
-                  valueNumeric: 1
+                  value: "1"
               - column:
                   name: display_order
-                  valueNumeric: 14
+                  value: "14"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
 
       rollback:
         - delete:

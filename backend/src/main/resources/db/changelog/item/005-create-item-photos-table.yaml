@@ -4,10 +4,10 @@ databaseChangeLog:
       author: system
       comment: Create item photos table for storing order item photographs
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: item_photos
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: item_photos
       changes:
         # Create item_photos table
         - createTable:
@@ -94,7 +94,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: BIGINT
-                  defaultValue: 0
+                  defaultValue: "0"
                   remarks: "Version for optimistic locking"
 
         # Create indexes

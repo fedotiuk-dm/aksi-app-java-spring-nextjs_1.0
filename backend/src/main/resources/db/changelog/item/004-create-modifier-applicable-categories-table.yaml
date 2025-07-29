@@ -4,10 +4,10 @@ databaseChangeLog:
       author: system
       comment: Create junction table for price modifiers and applicable categories
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: modifier_applicable_categories
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: modifier_applicable_categories
       changes:
         # Create modifier_applicable_categories table
         - createTable:

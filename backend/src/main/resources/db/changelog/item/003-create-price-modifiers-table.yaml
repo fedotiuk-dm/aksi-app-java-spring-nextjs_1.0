@@ -4,10 +4,10 @@ databaseChangeLog:
       author: system
       comment: Create price modifiers table for discounts and surcharges
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: price_modifiers
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: price_modifiers
       changes:
         # Create price_modifiers table
         - createTable:
@@ -63,7 +63,7 @@ databaseChangeLog:
                   type: INTEGER
                   constraints:
                     nullable: false
-                  defaultValue: 0
+                  defaultValue: "0"
                   remarks: "Application priority (higher applies first)"
 
               - column:
@@ -71,7 +71,7 @@ databaseChangeLog:
                   type: BOOLEAN
                   constraints:
                     nullable: false
-                  defaultValue: true
+                  defaultValue: "true"
                   remarks: "Whether modifier is active"
 
               - column:
@@ -96,7 +96,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: BIGINT
-                  defaultValue: 0
+                  defaultValue: "0"
                   remarks: "Version for optimistic locking"
 
         # Create indexes

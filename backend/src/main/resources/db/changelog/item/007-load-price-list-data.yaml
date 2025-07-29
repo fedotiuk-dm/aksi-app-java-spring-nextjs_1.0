@@ -4,9 +4,9 @@ databaseChangeLog:
       author: system
       comment: Load initial price list data from CSV file
       preConditions:
-        onFail: MARK_RAN
-        tableExists:
-          tableName: price_list_items
+        - onFail: MARK_RAN
+          tableExists:
+            tableName: price_list_items
       changes:
         # First, create a temporary table for CSV data
         - createTable:

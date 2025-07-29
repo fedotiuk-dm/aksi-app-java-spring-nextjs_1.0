@@ -4,10 +4,10 @@ databaseChangeLog:
       author: system
       comment: Insert price modifiers from OrderWizard specification
       preConditions:
-        onFail: MARK_RAN
-        sqlCheck:
-          expectedResult: 0
-          sql: SELECT COUNT(*) FROM price_modifiers WHERE code IN ('CHILD_ITEMS', 'MANUAL_CLEANING', 'HEAVILY_SOILED')
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM price_modifiers WHERE code IN ('CHILD_ITEMS', 'MANUAL_CLEANING', 'HEAVILY_SOILED')
       changes:
         # ========== ЗАГАЛЬНІ МОДИФІКАТОРИ ==========
         - insert:
@@ -24,13 +24,13 @@ databaseChangeLog:
                   value: DISCOUNT
               - column:
                   name: value
-                  valueNumeric: 30.0
+                  value: "30.0"
               - column:
                   name: priority
-                  valueNumeric: 100
+                  value: "100"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Знижка 30% на дитячі речі до 30 розміру"
@@ -49,13 +49,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 20.0
+                  value: "20.0"
               - column:
                   name: priority
-                  valueNumeric: 150
+                  value: "150"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 20% за ручну чистку"
@@ -74,16 +74,16 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 20.0
+                  value: "20.0"
               - column:
                   name: jexl_formula
                   value: "basePrice * (0.2 + (soilLevel * 0.8))"
               - column:
                   name: priority
-                  valueNumeric: 160
+                  value: "160"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка від 20% до 100% за сильне забруднення"
@@ -102,13 +102,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 50.0
+                  value: "50.0"
               - column:
                   name: priority
-                  valueNumeric: 200
+                  value: "200"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 50% за термінове виконання протягом 48 годин"
@@ -127,13 +127,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 100.0
+                  value: "100.0"
               - column:
                   name: priority
-                  valueNumeric: 201
+                  value: "201"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 100% за термінове виконання протягом 24 годин"
@@ -153,13 +153,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 30.0
+                  value: "30.0"
               - column:
                   name: priority
-                  valueNumeric: 140
+                  value: "140"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 30% за чистку виробів з хутряними деталями"
@@ -178,13 +178,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 30.0
+                  value: "30.0"
               - column:
                   name: priority
-                  valueNumeric: 170
+                  value: "170"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 30% за нанесення водовідштовхуючого покриття"
@@ -203,13 +203,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 50.0
+                  value: "50.0"
               - column:
                   name: priority
-                  valueNumeric: 130
+                  value: "130"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 50% за чистку виробів з натурального шовку, атласу, шифону"
@@ -228,13 +228,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 100.0
+                  value: "100.0"
               - column:
                   name: priority
-                  valueNumeric: 120
+                  value: "120"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 100% за чистку комбінованих виробів"
@@ -253,13 +253,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 100.0
+                  value: "100.0"
               - column:
                   name: priority
-                  valueNumeric: 110
+                  value: "110"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 100% за ручну чистку великих м'яких іграшок"
@@ -278,13 +278,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 20.0
+                  value: "20.0"
               - column:
                   name: priority
-                  valueNumeric: 145
+                  value: "145"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 20% за чистку виробів чорного та світлих тонів"
@@ -303,13 +303,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 30.0
+                  value: "30.0"
               - column:
                   name: priority
-                  valueNumeric: 135
+                  value: "135"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 30% за чистку весільної сукні зі шлейфом"
@@ -329,13 +329,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 70.0
+                  value: "70.0"
               - column:
                   name: priority
-                  valueNumeric: 125
+                  value: "125"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 70% від вартості чистки за прасування шкіри"
@@ -354,13 +354,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 50.0
+                  value: "50.0"
               - column:
                   name: priority
-                  valueNumeric: 175
+                  value: "175"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 50% за фарбування після нашої чистки"
@@ -379,13 +379,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 100.0
+                  value: "100.0"
               - column:
                   name: priority
-                  valueNumeric: 176
+                  value: "176"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 100% за фарбування після чистки в іншому місці"
@@ -404,13 +404,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 30.0
+                  value: "30.0"
               - column:
                   name: priority
-                  valueNumeric: 141
+                  value: "141"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 30% за чистку шкіряних виробів із вставками"
@@ -429,13 +429,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 30.0
+                  value: "30.0"
               - column:
                   name: priority
-                  valueNumeric: 171
+                  value: "171"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 30% за нанесення перламутрового покриття"
@@ -454,13 +454,13 @@ databaseChangeLog:
                   value: DISCOUNT
               - column:
                   name: value
-                  valueNumeric: 20.0
+                  value: "20.0"
               - column:
                   name: priority
-                  valueNumeric: 105
+                  value: "105"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Знижка 20% на чистку натуральних дублянок на штучному хутрі"
@@ -479,13 +479,13 @@ databaseChangeLog:
                   value: SURCHARGE
               - column:
                   name: value
-                  valueNumeric: 30.0
+                  value: "30.0"
               - column:
                   name: priority
-                  valueNumeric: 151
+                  value: "151"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Надбавка 30% за ручну чистку виробів зі шкіри"
@@ -505,13 +505,13 @@ databaseChangeLog:
                   value: DISCOUNT
               - column:
                   name: value
-                  valueNumeric: 10.0
+                  value: "10.0"
               - column:
                   name: priority
-                  valueNumeric: 300
+                  value: "300"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Знижка 10% для власників картки Еверкард"
@@ -530,13 +530,13 @@ databaseChangeLog:
                   value: DISCOUNT
               - column:
                   name: value
-                  valueNumeric: 5.0
+                  value: "5.0"
               - column:
                   name: priority
-                  valueNumeric: 301
+                  value: "301"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Знижка 5% за підписку в соцмережах"
@@ -555,13 +555,13 @@ databaseChangeLog:
                   value: DISCOUNT
               - column:
                   name: value
-                  valueNumeric: 10.0
+                  value: "10.0"
               - column:
                   name: priority
-                  valueNumeric: 302
+                  value: "302"
               - column:
                   name: active
-                  valueBoolean: true
+                  value: "true"
               - column:
                   name: description
                   value: "Знижка 10% для військовослужбовців ЗСУ"

@@ -4,10 +4,10 @@ databaseChangeLog:
       author: system
       comment: Create price list items table for service pricing
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: price_list_items
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: price_list_items
       changes:
         # Create price_list_items table
         - createTable:
@@ -76,7 +76,7 @@ databaseChangeLog:
                   type: BOOLEAN
                   constraints:
                     nullable: false
-                  defaultValue: true
+                  defaultValue: "true"
                   remarks: "Whether item is active"
 
               # Audit fields
@@ -96,7 +96,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: BIGINT
-                  defaultValue: 0
+                  defaultValue: "0"
                   remarks: "Version for optimistic locking"
 
         # Create foreign key constraint

@@ -4,10 +4,10 @@ databaseChangeLog:
       author: system
       comment: Create service categories table for dry cleaning services
       preConditions:
-        onFail: MARK_RAN
-        not:
-          tableExists:
-            tableName: service_categories
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: service_categories
       changes:
         # Create service_categories table
         - createTable:
@@ -44,7 +44,7 @@ databaseChangeLog:
                   type: INTEGER
                   constraints:
                     nullable: false
-                  defaultValue: 2
+                  defaultValue: "2"
                   remarks: "Standard processing days for this category"
 
               - column:
@@ -57,7 +57,7 @@ databaseChangeLog:
                   type: BOOLEAN
                   constraints:
                     nullable: false
-                  defaultValue: true
+                  defaultValue: "true"
                   remarks: "Whether category is active"
 
               # Audit fields
@@ -77,7 +77,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: BIGINT
-                  defaultValue: 0
+                  defaultValue: "0"
                   remarks: "Version for optimistic locking"
 
         # Create indexes

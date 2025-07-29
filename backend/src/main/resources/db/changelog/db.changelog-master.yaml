@@ -50,5 +50,11 @@ databaseChangeLog:
       file: db/changelog/item/009-link-modifiers-to-categories.yaml
   - include:
       file: db/changelog/item/010-add-photo-type-metadata.yaml
+  - include:
+      file: db/changelog/item/011-add-discount-restrictions.yaml
+  - include:
+      file: db/changelog/item/012-add-jexl-formulas-to-modifiers.yaml
+  - include:
+      file: db/changelog/item/013-update-modifier-category-links.yaml
 
 
