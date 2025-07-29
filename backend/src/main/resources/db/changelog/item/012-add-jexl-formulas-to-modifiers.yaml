@@ -1,0 +1,142 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-add-jexl-formulas-to-modifiers
+      author: system
+      comment: Add JEXL formulas for dynamic modifiers according to OrderWizard requirements
+      changes:
+        # Update HEAVILY_SOILED modifier to use JEXL formula (from 20% to 100%)
+        - update:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: modifier_type
+                  value: "FORMULA"
+              - column:
+                  name: jexl_formula
+                  value: "basePrice * (1 + (soilLevel >= 80 ? 1.0 : soilLevel >= 60 ? 0.6 : soilLevel >= 40 ? 0.4 : 0.2))"
+              - column:
+                  name: description
+                  value: "Дуже забруднені речі: від +20% до +100% залежно від рівня забруднення (soilLevel: 0-100)"
+            where: code = 'HEAVILY_SOILED'
+        
+        # Add dynamic formula for stain removal based on stain count
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "gen_random_uuid()"
+              - column:
+                  name: code
+                  value: "STAIN_REMOVAL_DYNAMIC"
+              - column:
+                  name: name
+                  value: "Видалення плям (динамічне)"
+              - column:
+                  name: modifier_type
+                  value: "FORMULA"
+              - column:
+                  name: value
+                  value: "0"
+              - column:
+                  name: jexl_formula
+                  value: "stainCount > 0 ? (basePrice * (0.1 * stainCount)) : 0"
+              - column:
+                  name: priority
+                  value: "60"
+              - column:
+                  name: active
+                  value: "true"
+              - column:
+                  name: description
+                  value: "Додаткова вартість за кожну пляму: +10% від базової ціни за пляму"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: updated_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+        
+        # Add formula for combined leather products
+        - update:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: jexl_formula
+                  value: "hasTextileInserts ? (basePrice * 2.0) : basePrice"
+              - column:
+                  name: description
+                  value: "Чистка комбінованих виробів (шкіра+текстиль): +100% якщо є текстильні вставки"
+            where: code = 'LEATHER_TEXTILE_COMBINED'
+        
+        # Add formula for delicate fabrics
+        - update:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: modifier_type
+                  value: "FORMULA"
+              - column:
+                  name: jexl_formula
+                  value: "fabricType == 'SILK' || fabricType == 'SATIN' || fabricType == 'CHIFFON' ? (basePrice * 1.5) : basePrice"
+              - column:
+                  name: description
+                  value: "Чистка виробів із натурального шовку, атласу, шифону: +50% для делікатних тканин"
+            where: code = 'SILK_SATIN_CHIFFON'
+        
+        # Add conditional modifier for buttons
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "gen_random_uuid()"
+              - column:
+                  name: code
+                  value: "BUTTON_SEWING_DYNAMIC"
+              - column:
+                  name: name
+                  value: "Пришивання гудзиків (динамічне)"
+              - column:
+                  name: modifier_type
+                  value: "FORMULA"
+              - column:
+                  name: value
+                  value: "0"
+              - column:
+                  name: jexl_formula
+                  value: "buttonCount > 0 ? (10 * buttonCount) : 0"
+              - column:
+                  name: priority
+                  value: "90"
+              - column:
+                  name: active
+                  value: "true"
+              - column:
+                  name: description
+                  value: "Пришивання гудзиків: 10 грн за кожен гудзик"
+              - column:
+                  name: exclude_from_discounts
+                  value: "true"
+              - column:
+                  name: created_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: updated_at
+                  valueComputed: "CURRENT_TIMESTAMP"
+        
+      rollback:
+        - delete:
+            tableName: price_modifiers
+            where: code IN ('STAIN_REMOVAL_DYNAMIC', 'BUTTON_SEWING_DYNAMIC')
+        
+        - update:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: modifier_type
+                  value: "PERCENTAGE"
+              - column:
+                  name: jexl_formula
+                  valueComputed: "NULL"
+            where: code IN ('HEAVILY_SOILED', 'LEATHER_TEXTILE_COMBINED', 'SILK_SATIN_CHIFFON')
