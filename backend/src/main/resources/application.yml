@@ -3,6 +3,15 @@ spring:
     active: dev  # Default profile
   application:
     name: AKSI-Dry-Cleaning-Backend
+  # Force English locale for validation messages
+  web:
+    locale: en_US
+    locale-resolver: fixed
+  # Messages configuration
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
     
 # Base configuration that applies to all profiles
 server:

@@ -416,8 +416,6 @@ sortBy?: string;
 sortOrder?: string;
 /**
  * Search by username, first name, or last name
- * @minLength 2
- * @maxLength 2147483647
  */
 search?: string;
 /**

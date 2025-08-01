@@ -109,6 +109,9 @@ services:
       SPRING_DATASOURCE_USERNAME: aksi_user
       SPRING_DATASOURCE_PASSWORD: 1911
       SPRING_PROFILES_ACTIVE: dev
+      # Force English locale for Java
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
       # Redis configuration
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
