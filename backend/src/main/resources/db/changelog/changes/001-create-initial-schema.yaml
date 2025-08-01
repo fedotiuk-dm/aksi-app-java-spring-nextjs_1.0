@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-1
+      author: aksi
+      comment: Enable PostgreSQL extensions
+      changes:
+        - sql:
+            sql: |
+              CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+              CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+  - changeSet:
+      id: 001-2
+      author: aksi
+      comment: Create audit columns function
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE OR REPLACE FUNCTION update_updated_at_column()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                  NEW.updated_at = CURRENT_TIMESTAMP;
+                  RETURN NEW;
+              END;
+              $$ language 'plpgsql';
+
+  - changeSet:
+      id: 001-3
+      author: aksi
+      comment: Create common types
+      changes:
+        - sql:
+            sql: |
+              -- Phone number type with validation
+              CREATE DOMAIN phone_number AS VARCHAR(20)
+              CHECK (VALUE ~ '^\+?[0-9\s\-\(\)]+$');
+              
+              -- Email type with validation
+              CREATE DOMAIN email AS VARCHAR(255)
+              CHECK (VALUE ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+              
+              -- Positive decimal for prices
+              CREATE DOMAIN positive_decimal AS DECIMAL(10,2)
+              CHECK (VALUE >= 0);
+              
+              -- Percentage type (0-100)
+              CREATE DOMAIN percentage AS DECIMAL(5,2)
+              CHECK (VALUE >= 0 AND VALUE <= 100);

@@ -6,201 +6,150 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.aksi.domain.auth.security.JwtAuthenticationEntryPoint;
-import com.aksi.domain.auth.security.JwtAuthenticationFilter;
-import com.aksi.domain.auth.service.UserDetailsProvider;
-
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Конфігурація Spring Security для AKSI Dry Cleaning Order System.
- *
- * <p>Особливості: - OpenAPI документація доступна без авторизації - CORS налаштований для frontend
- * - Профіль розробки (dev) має мінімальну безпеку - Production використовує JWT авторизацію
+ * Security configuration for the application. - Development profile: security disabled for easier
+ * development - Production profile: cookie-based authentication with session storage
  */
 @Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final Environment environment;
-  private final JwtAuthenticationFilter jwtAuthenticationFilter;
-  private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-  private final UserDetailsProvider userDetailsProvider;
+  @Value("${app.cors.allowed-origins:http://localhost:3000}")
+  private String allowedOrigins;
 
-  @Value("${cors.allowed-origins:http://localhost:3000,http://localhost:3001,http://localhost}")
-  private String corsAllowedOrigins;
-
-  /** Password encoder для хешування паролів Використовує BCrypt algorithm з силою 12. */
   @Bean
   public PasswordEncoder passwordEncoder() {
-    log.info("🔐 Configuring BCrypt PasswordEncoder with strength 12");
-    return new BCryptPasswordEncoder(12);
+    return new BCryptPasswordEncoder();
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, PasswordEncoder passwordEncoder)
-      throws Exception {
-    // Перевіряємо чи це dev профіль
-    boolean isDevProfile = Arrays.asList(environment.getActiveProfiles()).contains("dev");
+  @Profile("dev")
+  public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
+    log.info("🔓 DEV Security: All endpoints are open without authentication");
 
-    log.info(
-        "🔒 Configuring Security for profiles: {}",
-        Arrays.toString(environment.getActiveProfiles()));
+    return http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+        .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+        .build();
+  }
+
+  @Bean
+  @Profile("!dev")
+  public SecurityFilterChain prodFilterChain(HttpSecurity http) throws Exception {
+    log.info("🔒 PROD Security: Authentication required for protected endpoints");
 
     http
-        // CORS конфігурація
+        // CORS configuration
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-        // CSRF конфігурація для cookie-based auth
-        .csrf(
-            csrf -> {
-              if (isDevProfile) {
-                // DEV профіль - CSRF відключено для зручності розробки
-                csrf.disable();
-                log.info("🔓 DEV mode: CSRF protection disabled");
-              } else {
-                // PRODUCTION профіль - CSRF увімкнено з cookie repository
-                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                    // Виключаємо деякі endpoints від CSRF перевірки
-                    .ignoringRequestMatchers(
-                        "/api/auth/login", // Login не потребує CSRF токену
-                        "/api/auth/refresh-token", // Refresh використовує свій токен
-                        "/v3/api-docs/**", // OpenAPI
-                        "/swagger-ui/**", // Swagger UI
-                        "/actuator/**" // Actuator endpoints
-                        );
-                log.info("🔒 PROD mode: CSRF protection enabled with cookie repository");
-              }
-            })
-
-        // Session management - stateless для REST API
+        // Session management
         .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            session ->
+                session
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                    .maximumSessions(1)
+                    .maxSessionsPreventsLogin(false))
 
-        // Авторизація запитів
+        // CSRF protection with cookie repository
+        .csrf(
+            csrf ->
+                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    .ignoringRequestMatchers("/api/auth/login"))
+
+        // Authorization rules
         .authorizeHttpRequests(
-            authz -> {
-              if (isDevProfile) {
-                // DEV профіль - дозволяємо все для розробки
-                log.info("🔓 DEV mode: allowing all requests");
-                authz.anyRequest().permitAll();
-              } else {
-                // PRODUCTION профіль - налаштована безпека
-                authz
-                    // Публічні endpoints (без авторизації)
-                    .requestMatchers(
-                        // Auth endpoints (логін, logout, refresh token)
-                        "/api/auth/login",
-                        "/api/auth/logout",
-                        "/api/auth/refresh-token",
-
-                        // OpenAPI документація
-                        "/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/swagger-resources/**",
-                        "/webjars/**",
-
-                        // Health checks
-                        "/actuator/health/**",
-                        "/actuator/info",
-
-                        // Статичні ресурси
-                        "/favicon.ico",
-                        "/error")
+            auth ->
+                auth
+                    // Public API endpoints
+                    .requestMatchers("/api/auth/login")
                     .permitAll()
 
-                    // Всі інші requests потребують авторизації
-                    .anyRequest()
-                    .authenticated();
-              }
-            });
+                    // OpenAPI documentation
+                    .requestMatchers(
+                        "/v3/api-docs/**", "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                    .permitAll()
 
-    // Додаємо JWT фільтр перед UsernamePasswordAuthenticationFilter
-    http.authenticationProvider(authenticationProvider(passwordEncoder))
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .exceptionHandling(
-            exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint));
-    log.info(
-        "🔑 JWT Authentication filter and entry point added to security chain (profile: {})",
-        isDevProfile ? "dev" : "prod");
+                    // Actuator endpoints
+                    .requestMatchers("/management/**")
+                    .hasRole("ADMIN")
+
+                    // Admin endpoints
+                    .requestMatchers("/api/users/**")
+                    .hasRole("ADMIN")
+
+                    // All other API endpoints require authentication
+                    .requestMatchers("/api/**")
+                    .authenticated()
+
+                    // Everything else
+                    .anyRequest()
+                    .authenticated())
+
+        // Logout configuration
+        .logout(
+            logout ->
+                logout
+                    .logoutUrl("/api/auth/logout")
+                    .deleteCookies("AKSISESSIONID", "XSRF-TOKEN")
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true));
 
     return http.build();
   }
 
-  /** Configure authentication provider */
-  @Bean
-  public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
-    // Using the recommended constructor-based approach for Spring Security 6.0+
-    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsProvider);
-    authProvider.setPasswordEncoder(passwordEncoder);
-    return authProvider;
-  }
-
-  /** Configure authentication manager */
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-      throws Exception {
-    return config.getAuthenticationManager();
-  }
-
-  /** CORS конфігурація для роботи з frontend. */
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    // Дозволені origins (frontend URLs) - винесено в окремий метод
-    configuration.setAllowedOriginPatterns(getAllowedOrigins());
+    // Parse allowed origins from comma-separated string
+    List<String> origins = Arrays.asList(allowedOrigins.split(","));
+    configuration.setAllowedOrigins(origins);
 
-    // Дозволені HTTP методи
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+    // Allow all standard HTTP methods
+    configuration.setAllowedMethods(
+        Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
-    // Дозволені headers
-    configuration.setAllowedHeaders(List.of("*"));
+    // Allow common headers
+    configuration.setAllowedHeaders(
+        Arrays.asList(
+            "Authorization", "Content-Type", "Accept", "X-Requested-With", "X-XSRF-TOKEN"));
 
-    // Дозволяємо credentials (cookies, authorization headers)
+    // Expose headers that frontend might need
+    configuration.setExposedHeaders(
+        Arrays.asList("X-Total-Count", "X-Page-Number", "X-Page-Size", "X-Total-Pages"));
+
+    // Allow credentials (cookies)
     configuration.setAllowCredentials(true);
 
-    // Кешування preflight запитів
+    // Cache preflight response for 1 hour
     configuration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
 
-    log.info("🌐 CORS configured for origins: {}", configuration.getAllowedOriginPatterns());
+    log.info("🌐 CORS configured for origins: {}", origins);
+    log.info("🍪 CORS allows credentials: {}", configuration.getAllowCredentials());
 
     return source;
-  }
-
-  /** Отримання дозволених origins для CORS. */
-  private List<String> getAllowedOrigins() {
-    String[] origins = corsAllowedOrigins.split(",");
-    return Arrays.stream(origins)
-        .map(String::trim) // Видаляємо пробіли
-        .toList();
   }
 }

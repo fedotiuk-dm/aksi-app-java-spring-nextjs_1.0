@@ -1,61 +1,71 @@
-# Спільні схеми пагінації
-PageableInfo:
+PageRequest:
   type: object
-  title: PageableInfo
-  required:
-    - page
-    - size
-    - totalElements
-    - totalPages
-    - last
-    - first
-    - numberOfElements
   properties:
     page:
       type: integer
       minimum: 0
-      description: Номер поточної сторінки (починаючи з 0)
-      nullable: false
+      default: 0
+      description: Page number (0-based)
     size:
       type: integer
       minimum: 1
-      description: Розмір сторінки
-      nullable: false
+      maximum: 100
+      default: 20
+      description: Page size
+    sort:
+      type: array
+      items:
+        type: string
+        pattern: '^[a-zA-Z0-9]+,(asc|desc)$'
+      description: Sort parameters (e.g., ["createdAt,desc", "name,asc"])
+
+PaginatedResponse:
+  type: object
+  required:
+    - data
+    - totalElements
+    - totalPages
+    - size
+    - number
+    - numberOfElements
+    - first
+    - last
+    - empty
+  properties:
+    data:
+      type: array
+      items: {}
+      description: Page content
     totalElements:
       type: integer
       format: int64
-      description: Загальна кількість елементів
-      nullable: false
+      description: Total number of elements
+      example: 100
     totalPages:
       type: integer
-      description: Загальна кількість сторінок
-      nullable: false
-    last:
-      type: boolean
-      description: Чи є поточна сторінка останньою
-      nullable: false
-    first:
-      type: boolean
-      description: Чи є поточна сторінка першою
-      nullable: false
+      description: Total number of pages
+      example: 5
+    size:
+      type: integer
+      description: Page size
+      example: 20
+    number:
+      type: integer
+      description: Current page number (0-based)
+      example: 0
     numberOfElements:
       type: integer
-      description: Кількість елементів на поточній сторінці
-      nullable: false
-    sort:
-      type: object
-      title: SortInfo
-      description: Інформація про сортування
-      properties:
-        sorted:
-          type: boolean
-          description: Чи застосовано сортування
-          nullable: false
-        unsorted:
-          type: boolean
-          description: Чи не застосовано сортування
-          nullable: false
-        empty:
-          type: boolean
-          description: Чи відсутнє сортування
-          nullable: false
+      description: Number of elements in current page
+      example: 20
+    first:
+      type: boolean
+      description: Is first page
+      example: true
+    last:
+      type: boolean
+      description: Is last page
+      example: false
+    empty:
+      type: boolean
+      description: Is page empty
+      example: false

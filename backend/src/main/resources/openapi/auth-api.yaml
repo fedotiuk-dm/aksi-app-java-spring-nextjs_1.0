@@ -1,58 +1,279 @@
-openapi: 3.0.4
+openapi: 3.1.1
 info:
-  title: Auth Domain API
-  description: API для JWT автентифікації користувачів системи хімчистки
+  title: Auth API
+  description: Authentication API for dry cleaning management system operators
   version: 1.0.0
   contact:
-    name: AKSI Development Team
-    email: dev@aksi.com
+    name: API Support
+    email: support@dryclean.example.com
+
 servers:
   - url: http://localhost:8080
-    description: Development server
-  - url: https://api.aksi.com
-    description: Production server
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
 tags:
   - name: auth
-    description: JWT автентифікація користувачів (логін, логаут, оновлення токенів)
+    description: Authentication and session management
 
 paths:
-  # Authentication
   /api/auth/login:
-    $ref: "auth/paths/authentication.yaml#/~1api~1auth~1login"
+    post:
+      operationId: login
+      summary: Login to system
+      description: Authenticate operator and return session cookie
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          headers:
+            Set-Cookie:
+              description: Session cookie for authentication (e.g., SESSION=abc123xyz; Path=/; HttpOnly; Secure; SameSite=Strict)
+              schema:
+                type: string
+            X-CSRF-TOKEN:
+              description: CSRF token for protection
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '429':
+          $ref: 'common/responses/common.yaml#/TooManyRequests'
+  
   /api/auth/logout:
-    $ref: "auth/paths/authentication.yaml#/~1api~1auth~1logout"
-  /api/auth/refresh-token:
-    $ref: "auth/paths/authentication.yaml#/~1api~1auth~1refresh-token"
+    post:
+      operationId: logout
+      summary: Logout from system
+      description: Terminate current session
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Successful logout
+          headers:
+            Set-Cookie:
+              description: Clear session cookie (e.g., SESSION=; Path=/; Max-Age=0)
+              schema:
+                type: string
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+  
+  /api/auth/session:
+    get:
+      operationId: getCurrentSession
+      summary: Get current session info
+      description: Information about current user and session
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Session information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInfo'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+    
+    delete:
+      operationId: invalidateAllSessions
+      summary: Terminate all sessions for user
+      description: Logout user from all devices (admin only)
+      tags:
+        - auth
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: User ID to invalidate sessions for
+          schema:
+            type: string
+            format: uuid
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: All sessions terminated
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
 
 components:
-  schemas:
-    # Request Schemas
-    LoginRequest:
-      $ref: "auth/schemas/auth-requests.yaml#/LoginRequest"
-    RefreshTokenRequest:
-      $ref: "auth/schemas/auth-requests.yaml#/RefreshTokenRequest"
-
-    # Response Schemas
-    AuthResponse:
-      $ref: "auth/schemas/auth-responses.yaml#/AuthResponse"
-    InternalAuthResponse:
-      $ref: "auth/schemas/auth-responses.yaml#/InternalAuthResponse"
-    LogoutResponse:
-      $ref: "auth/schemas/auth-responses.yaml#/LogoutResponse"
-
-
-    # Common Schemas (використовуємо спільні)
-    ErrorResponse:
-      $ref: "common/schemas/errors.yaml#/ErrorResponse"
-    ValidationErrorResponse:
-      $ref: "common/schemas/errors.yaml#/ValidationErrorResponse"
-    FieldError:
-      $ref: "common/schemas/errors.yaml#/FieldError"
-
   securitySchemes:
-    CookieAuth:
-      $ref: "common/security.yaml#/securitySchemes/CookieAuth"
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie for authentication
 
-# Більшість endpoints потребують автентифікації, крім login
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          pattern: '^[a-zA-Z0-9_]+$'
+          description: Operator username
+          example: operator1
+        password:
+          type: string
+          minLength: 8
+          maxLength: 100
+          description: Password
+          example: SecurePassword123!
+        rememberMe:
+          type: boolean
+          default: false
+          description: Remember session for 30 days
+        branchId:
+          type: ['string', 'null']
+          format: uuid
+          description: Branch ID for login (optional, can be selected later)
+          example: '550e8400-e29b-41d4-a716-446655440000'
+    
+    LoginResponse:
+      type: object
+      required:
+        - userId
+        - username
+        - roles
+        - requiresBranchSelection
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User ID
+          example: '660e8400-e29b-41d4-a716-446655440001'
+        username:
+          type: string
+          description: Username
+          example: operator1
+        firstName:
+          type: string
+          description: First name
+          example: Ivan
+        lastName:
+          type: string
+          description: Last name
+          example: Petrenko
+        roles:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/UserRole'
+          description: User roles
+        permissions:
+          type: array
+          items:
+            type: string
+          description: User permissions
+          example: ['CREATE_ORDER', 'VIEW_CUSTOMERS', 'EDIT_ORDER']
+        branchId:
+          type: ['string', 'null']
+          format: uuid
+          description: Current branch ID
+        branchName:
+          type: ['string', 'null']
+          description: Current branch name
+          example: Main Street Branch
+        requiresBranchSelection:
+          type: boolean
+          description: Whether branch selection is required
+    
+    SessionInfo:
+      type: object
+      required:
+        - sessionId
+        - userId
+        - username
+        - createdAt
+        - lastAccessedAt
+      properties:
+        sessionId:
+          type: string
+          description: Session ID
+          example: 'KJ3h4k2j3h4k23j4h23k4j'
+        userId:
+          type: string
+          format: uuid
+          description: User ID
+        username:
+          type: string
+          description: Username
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+        branchId:
+          type: ['string', 'null']
+          format: uuid
+          description: Current branch ID
+        branchName:
+          type: ['string', 'null']
+          description: Current branch name
+        createdAt:
+          type: string
+          format: date-time
+          description: Session creation time
+        lastAccessedAt:
+          type: string
+          format: date-time
+          description: Last access time
+        expiresAt:
+          type: string
+          format: date-time
+          description: Session expiration time
+        ipAddress:
+          type: string
+          description: IP address
+          example: '192.168.1.1'
+        userAgent:
+          type: string
+          description: Browser user agent
+    
+    UserRole:
+      type: string
+      enum:
+        - OPERATOR
+        - MANAGER
+        - ADMIN
+        - CLEANER
+        - DRIVER
+        - ACCOUNTANT
+      description: |
+        User roles:
+        * `OPERATOR` - Order acceptance operator
+        * `MANAGER` - Branch manager
+        * `ADMIN` - System administrator
+        * `CLEANER` - Cleaning specialist
+        * `DRIVER` - Delivery driver
+        * `ACCOUNTANT` - Financial specialist
+
 security:
-  - CookieAuth: []
+  - cookieAuth: []

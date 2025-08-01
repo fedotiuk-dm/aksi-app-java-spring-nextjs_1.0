@@ -12,11 +12,8 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 
 /**
- * Конфігурація OpenAPI документації для односторінкової системи замовлень хімчистки.
- *
- * <p>Система включає 5 основних доменів: - Client: управління клієнтами - Order: управління
- * замовленнями - Item: управління предметами та послугами - Branch: управління філіями - Document:
- * генерація документів та квитанцій
+ * OpenAPI configuration for AKSI Dry Cleaning Order System. Provides API documentation and Swagger
+ * UI.
  */
 @Configuration
 public class OpenApiConfig {
@@ -24,7 +21,7 @@ public class OpenApiConfig {
   @Value("${app.contact-url:https://aksi.vn.ua}")
   private String contactUrl;
 
-  @Value("${app.dev-server-url:http://localhost:8080/api}")
+  @Value("${app.dev-server-url:http://localhost:8080}")
   private String devServerUrl;
 
   @Value("${app.prod-server-url:https://api.aksi.vn.ua}")
@@ -37,7 +34,9 @@ public class OpenApiConfig {
             new Info()
                 .title("AKSI Dry Cleaning Order System API")
                 .description(
-                    "API для односторінкової системи замовлень хімчистки з DDD архітектурою")
+                    "API for dry cleaning order management system with Domain-Driven Design architecture. "
+                        + "The system includes 13 domains: Auth, User, Customer, Branch, Employee, Order, "
+                        + "OrderItem, Service, Garment, Pricing, Payment, Notification, and Analytics.")
                 .version("1.0.0")
                 .contact(
                     new Contact()

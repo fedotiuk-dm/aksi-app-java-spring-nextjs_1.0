@@ -1,7 +1,0 @@
-# Спільні налаштування безпеки
-securitySchemes:
-  CookieAuth:
-    type: apiKey
-    in: cookie
-    name: accessToken
-    description: JWT токен в httpOnly cookie

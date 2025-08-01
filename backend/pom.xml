@@ -16,7 +16,7 @@
     <artifactId>dry-cleaning-order-system</artifactId>
     <version>1.0.0</version>
     <name>AKSI Dry Cleaning Order System</name>
-    <description>Односторінкова система замовлень хімчистки з DDD архітектурою</description>
+    <description>Система управління замовленнями хімчистки з DDD архітектурою та cookie-based аутентифікацією</description>
 
     <properties>
         <java.version>21</java.version>
@@ -25,11 +25,24 @@
         <zxing.version>3.5.3</zxing.version>
         <springdoc.version>2.8.9</springdoc.version>
         <lombok.version>1.18.38</lombok.version>
-        <jjwt.version>0.12.6</jjwt.version>
+        <!-- JWT видалено - використовуємо cookie-based auth -->
         <maven-pmd-plugin.version>3.27.0</maven-pmd-plugin.version>
     </properties>
 
     <dependencies>
+        <!-- Security fixes for transitive dependencies -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.18.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.28.0</version>
+        </dependency>
+
         <!-- Spring Boot Starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -51,36 +64,27 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- JWT Tokens -->
+        <!-- Redis for Session Management -->
         <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>${jjwt.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>${jjwt.version}</version>
-            <scope>runtime</scope>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>${jjwt.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-mail</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-mail</artifactId>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
 
         <!-- Database -->
         <dependency>
@@ -116,13 +120,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- DevTools for hot reload in development -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
 
         <!-- PDF Generation -->
         <dependency>
@@ -195,9 +192,35 @@
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
         </dependency>
+
+
+        <!-- Live reload for development -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
     <build>
-        
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>application*.yml</include>
+                    <include>application*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>application*.yml</exclude>
+                    <exclude>application*.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -269,7 +292,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>7.13.0</version>
+                <version>7.14.0</version>
                 <configuration>
                     <!-- Вимикаємо post-processing - використовуємо Spotless замість цього -->
                     <enablePostProcessFile>false</enablePostProcessFile>
@@ -277,11 +300,13 @@
                     <typeMappings>
                         <typeMapping>OffsetDateTime=Instant</typeMapping>
                         <typeMapping>LocalDateTime=Instant</typeMapping>
+                        <typeMapping>number+decimal=BigDecimal</typeMapping>
                     </typeMappings>
                     <importMappings>
                         <importMapping>Instant=java.time.Instant</importMapping>
                         <importMapping>OffsetDateTime=java.time.Instant</importMapping>
                         <importMapping>LocalDateTime=java.time.Instant</importMapping>
+                        <importMapping>BigDecimal=java.math.BigDecimal</importMapping>
                     </importMappings>
                 </configuration>
                 <executions>
@@ -339,18 +364,18 @@
                         </configuration>
                     </execution>
 
-                    <!-- Client API -->
+                    <!-- Customer API -->
                     <execution>
-                        <id>generate-client-api</id>
+                        <id>generate-customer-api</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/client-api.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/customer-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.client</apiPackage>
-                            <modelPackage>com.aksi.api.client.dto</modelPackage>
+                            <apiPackage>com.aksi.api.customer</apiPackage>
+                            <modelPackage>com.aksi.api.customer.dto</modelPackage>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>
@@ -366,18 +391,18 @@
                         </configuration>
                     </execution>
 
-                    <!-- Order API -->
+                    <!-- Service & Item API -->
                     <execution>
-                        <id>generate-order-api</id>
+                        <id>generate-service-item-api</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/order-api.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/service-item-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.order</apiPackage>
-                            <modelPackage>com.aksi.api.order.dto</modelPackage>
+                            <apiPackage>com.aksi.api.service</apiPackage>
+                            <modelPackage>com.aksi.api.service.dto</modelPackage>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>
@@ -393,86 +418,6 @@
                         </configuration>
                     </execution>
 
-                    <!-- Item API -->
-                    <execution>
-                        <id>generate-item-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/item-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.item</apiPackage>
-                            <modelPackage>com.aksi.api.item.dto</modelPackage>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
-                    <!-- Branch API -->
-                    <execution>
-                        <id>generate-branch-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/branch-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.branch</apiPackage>
-                            <modelPackage>com.aksi.api.branch.dto</modelPackage>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
-                    <!-- Document API -->
-                    <execution>
-                        <id>generate-document-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/document-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.document</apiPackage>
-                            <modelPackage>com.aksi.api.document.dto</modelPackage>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-                            </configOptions>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 
@@ -635,23 +580,11 @@
                                 <phase>none</phase>
                             </execution>
                             <execution>
-                                <id>generate-client-api</id>
+                                <id>generate-customer-api</id>
                                 <phase>none</phase>
                             </execution>
                             <execution>
-                                <id>generate-order-api</id>
-                                <phase>none</phase>
-                            </execution>
-                            <execution>
-                                <id>generate-item-api</id>
-                                <phase>none</phase>
-                            </execution>
-                            <execution>
-                                <id>generate-branch-api</id>
-                                <phase>none</phase>
-                            </execution>
-                            <execution>
-                                <id>generate-document-api</id>
+                                <id>generate-service-item-api</id>
                                 <phase>none</phase>
                             </execution>
                         </executions>

@@ -1,0 +1,439 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-1-v2
+      author: aksi
+      comment: Create customers table v2
+      changes:
+        - createTable:
+            tableName: customers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone_primary
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: birth_date
+                  type: date
+              - column:
+                  name: discount_percentage
+                  type: decimal(5,2)
+                  defaultValueNumeric: 0
+              - column:
+                  name: discount_card_number
+                  type: varchar(20)
+                  constraints:
+                    unique: true
+              - column:
+                  name: loyalty_points
+                  type: int
+                  defaultValueNumeric: 0
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: blacklisted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: blacklist_reason
+                  type: varchar(255)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-2-v2
+      author: aksi
+      comment: Create customer addresses table v2
+      changes:
+        - createTable:
+            tableName: customer_addresses
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address_type
+                  type: varchar(20)
+                  defaultValue: HOME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: building
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: apartment
+                  type: varchar(20)
+              - column:
+                  name: entrance
+                  type: varchar(10)
+              - column:
+                  name: floor
+                  type: varchar(10)
+              - column:
+                  name: intercom_code
+                  type: varchar(20)
+              - column:
+                  name: district
+                  type: varchar(100)
+              - column:
+                  name: city
+                  type: varchar(100)
+                  defaultValue: Київ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: postal_code
+                  type: varchar(10)
+              - column:
+                  name: is_primary
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: latitude
+                  type: decimal(10,8)
+              - column:
+                  name: longitude
+                  type: decimal(11,8)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-3-v2
+      author: aksi
+      comment: Create customer phones table v2
+      changes:
+        - createTable:
+            tableName: customer_phones
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone_number
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: label
+                  type: varchar(50)
+              - column:
+                  name: is_primary
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-4-v2
+      author: aksi
+      comment: Create customer preferences table v2
+      changes:
+        - createTable:
+            tableName: customer_preferences
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email_notifications
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sms_notifications
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: marketing_emails
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: preferred_language
+                  type: varchar(5)
+                  defaultValue: uk
+                  constraints:
+                    nullable: false
+              - column:
+                  name: preferred_contact_method
+                  type: varchar(20)
+                  defaultValue: PHONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: preferred_pickup_time
+                  type: varchar(50)
+              - column:
+                  name: preferred_delivery_time
+                  type: varchar(50)
+              - column:
+                  name: special_instructions
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-5-v2
+      author: aksi
+      comment: Add foreign key constraints to customer tables v2
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: customer_addresses
+            baseColumnNames: customer_id
+            referencedTableName: customers
+            referencedColumnNames: id
+            constraintName: fk_customer_addresses_customer
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: customer_phones
+            baseColumnNames: customer_id
+            referencedTableName: customers
+            referencedColumnNames: id
+            constraintName: fk_customer_phones_customer
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: customer_preferences
+            baseColumnNames: customer_id
+            referencedTableName: customers
+            referencedColumnNames: id
+            constraintName: fk_customer_preferences_customer
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 003-6-v2
+      author: aksi
+      comment: Add indices to customer tables v2
+      changes:
+        - createIndex:
+            tableName: customers
+            indexName: idx_customer_phone
+            columns:
+              - column:
+                  name: phone_primary
+        - createIndex:
+            tableName: customers
+            indexName: idx_customer_email
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            tableName: customers
+            indexName: idx_customer_name
+            columns:
+              - column:
+                  name: first_name
+              - column:
+                  name: last_name
+        - createIndex:
+            tableName: customers
+            indexName: idx_customer_discount_card
+            unique: true
+            columns:
+              - column:
+                  name: discount_card_number
+        - createIndex:
+            tableName: customer_addresses
+            indexName: idx_customer_addresses_customer
+            columns:
+              - column:
+                  name: customer_id
+        - createIndex:
+            tableName: customer_addresses
+            indexName: idx_customer_addresses_primary
+            columns:
+              - column:
+                  name: customer_id
+              - column:
+                  name: is_primary
+        - createIndex:
+            tableName: customer_phones
+            indexName: idx_customer_phones_customer
+            columns:
+              - column:
+                  name: customer_id
+        - createIndex:
+            tableName: customer_phones
+            indexName: idx_customer_phones_primary
+            columns:
+              - column:
+                  name: customer_id
+              - column:
+                  name: is_primary
+
+  - changeSet:
+      id: 003-7-v2
+      author: aksi
+      comment: Add triggers for updated_at v2
+      changes:
+        - sql:
+            sql: |
+              CREATE TRIGGER update_customers_updated_at
+              BEFORE UPDATE ON customers
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();
+              
+              CREATE TRIGGER update_customer_addresses_updated_at
+              BEFORE UPDATE ON customer_addresses
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();
+              
+              CREATE TRIGGER update_customer_preferences_updated_at
+              BEFORE UPDATE ON customer_preferences
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();
+              
+              CREATE TRIGGER update_customer_phones_updated_at
+              BEFORE UPDATE ON customer_phones
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();

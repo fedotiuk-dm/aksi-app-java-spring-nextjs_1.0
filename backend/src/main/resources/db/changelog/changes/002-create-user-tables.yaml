@@ -1,0 +1,283 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-1
+      author: aksi
+      comment: Create users table
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password_hash
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(20)
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email_verified
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: verification_token
+                  type: varchar(255)
+              - column:
+                  name: password_reset_token
+                  type: varchar(255)
+              - column:
+                  name: password_reset_expires
+                  type: timestamp
+              - column:
+                  name: failed_login_attempts
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: locked_until
+                  type: timestamp
+              - column:
+                  name: last_login_at
+                  type: timestamp
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002-2
+      author: aksi
+      comment: Create users indices
+      changes:
+        - createIndex:
+            tableName: users
+            indexName: idx_users_email
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            tableName: users
+            indexName: idx_users_username
+            columns:
+              - column:
+                  name: username
+        - createIndex:
+            tableName: users
+            indexName: idx_users_active
+            columns:
+              - column:
+                  name: active
+
+  - changeSet:
+      id: 002-3
+      author: aksi
+      comment: Add trigger for updated_at
+      changes:
+        - sql:
+            sql: |
+              CREATE TRIGGER update_users_updated_at
+              BEFORE UPDATE ON users
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();
+
+  - changeSet:
+      id: 002-4
+      author: aksi
+      comment: Create user_roles table for ElementCollection
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002-5
+      author: aksi
+      comment: Add constraints to user_roles
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_roles_user
+            onDelete: CASCADE
+        - createIndex:
+            tableName: user_roles
+            indexName: idx_user_roles_user_id
+            columns:
+              - column:
+                  name: user_id
+
+  - changeSet:
+      id: 002-6
+      author: aksi
+      comment: Create user_branch_assignments table
+      changes:
+        - createTable:
+            tableName: user_branch_assignments
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: branch_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_primary
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assigned_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assigned_by
+                  type: uuid
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002-7
+      author: aksi
+      comment: Add trigger for user_branch_assignments updated_at
+      changes:
+        - sql:
+            sql: |
+              CREATE TRIGGER update_user_branch_assignments_updated_at
+              BEFORE UPDATE ON user_branch_assignments
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();
+
+  - changeSet:
+      id: 002-8
+      author: aksi
+      comment: Add constraints and indices to user_branch_assignments
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: user_branch_assignments
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_branch_user
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: user_branch_assignments
+            baseColumnNames: assigned_by
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_branch_assigned_by
+        - createIndex:
+            tableName: user_branch_assignments
+            indexName: idx_user_branch_user_id
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: user_branch_assignments
+            indexName: idx_user_branch_primary
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: is_primary
+            unique: true
+            where: is_primary = true

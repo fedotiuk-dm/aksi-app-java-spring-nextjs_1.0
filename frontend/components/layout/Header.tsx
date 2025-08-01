@@ -29,7 +29,7 @@ import {
   Avatar,
 } from '@mui/material';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 // MUI компоненти
@@ -57,6 +57,7 @@ export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
   const { logout, isLoading } = useLogout();
   const { user } = useAuth();
   const { muiProps } = useSafeMUIHydration();
@@ -138,7 +139,10 @@ export default function Header() {
                 </ListItemIcon>
                 <ListItemText>Профіль</ListItemText>
               </MenuItem>
-              <MenuItem onClick={handleUserMenuClose}>
+              <MenuItem onClick={() => {
+                handleUserMenuClose();
+                router.push('/settings');
+              }}>
                 <ListItemIcon>
                   <SettingsIcon fontSize="small" />
                 </ListItemIcon>

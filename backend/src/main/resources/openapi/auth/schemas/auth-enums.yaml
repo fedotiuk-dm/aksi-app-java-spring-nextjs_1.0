@@ -1,6 +1,0 @@
-TokenType:
-  type: string
-  description: Типи токенів автентифікації
-  enum:
-    - Bearer # Bearer токен (JWT)
-  example: "Bearer"

@@ -8,7 +8,6 @@ const protectedRoutes = [
   '/order-wizard',
   '/price-list',
   '/settings',
-  '/admin',
 ] as const;
 
 // Публічні маршрути (не потребують авторизації)

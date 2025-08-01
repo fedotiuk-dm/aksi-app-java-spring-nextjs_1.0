@@ -1,0 +1,336 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-1
+      author: aksi
+      comment: Create services table
+      changes:
+        - createTable:
+            tableName: services
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: category
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: processing_time_days
+                  type: int
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+              - column:
+                  name: express_available
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: express_time_hours
+                  type: int
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 004-2
+      author: aksi
+      comment: Create items table
+      changes:
+        - createTable:
+            tableName: items
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: category
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: material
+                  type: varchar(100)
+              - column:
+                  name: care_instructions
+                  type: text
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 004-3
+      author: aksi
+      comment: Create service_items junction table
+      changes:
+        - createTable:
+            tableName: service_items
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: service_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: item_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: base_price
+                  type: decimal(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: express_price
+                  type: decimal(10,2)
+              - column:
+                  name: processing_time_days
+                  type: int
+              - column:
+                  name: express_time_hours
+                  type: int
+              - column:
+                  name: complexity_factor
+                  type: decimal(3,2)
+                  defaultValueNumeric: 1.0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: available_for_order
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 004-4
+      author: aksi
+      comment: Add constraints to service_items
+      changes:
+        - addUniqueConstraint:
+            tableName: service_items
+            columnNames: service_id, item_id
+            constraintName: uk_service_items_service_item
+        - addForeignKeyConstraint:
+            baseTableName: service_items
+            baseColumnNames: service_id
+            referencedTableName: services
+            referencedColumnNames: id
+            constraintName: fk_service_items_service
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: service_items
+            baseColumnNames: item_id
+            referencedTableName: items
+            referencedColumnNames: id
+            constraintName: fk_service_items_item
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 004-5
+      author: aksi
+      comment: Add indices to service tables
+      changes:
+        - createIndex:
+            tableName: services
+            indexName: idx_services_code
+            columns:
+              - column:
+                  name: code
+        - createIndex:
+            tableName: services
+            indexName: idx_services_category
+            columns:
+              - column:
+                  name: category
+        - createIndex:
+            tableName: services
+            indexName: idx_services_active
+            columns:
+              - column:
+                  name: active
+        - createIndex:
+            tableName: items
+            indexName: idx_items_code
+            columns:
+              - column:
+                  name: code
+        - createIndex:
+            tableName: items
+            indexName: idx_items_category
+            columns:
+              - column:
+                  name: category
+        - createIndex:
+            tableName: items
+            indexName: idx_items_active
+            columns:
+              - column:
+                  name: active
+        - createIndex:
+            tableName: service_items
+            indexName: idx_service_items_service
+            columns:
+              - column:
+                  name: service_id
+        - createIndex:
+            tableName: service_items
+            indexName: idx_service_items_item
+            columns:
+              - column:
+                  name: item_id
+        - createIndex:
+            tableName: service_items
+            indexName: idx_service_items_active
+            columns:
+              - column:
+                  name: active
+
+  - changeSet:
+      id: 004-6
+      author: aksi
+      comment: Add triggers for updated_at
+      changes:
+        - sql:
+            sql: |
+              CREATE TRIGGER update_services_updated_at
+              BEFORE UPDATE ON services
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();
+              
+              CREATE TRIGGER update_items_updated_at
+              BEFORE UPDATE ON items
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();
+              
+              CREATE TRIGGER update_service_items_updated_at
+              BEFORE UPDATE ON service_items
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();

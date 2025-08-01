@@ -1,0 +1,98 @@
+Address:
+  type: object
+  properties:
+    street:
+      type: string
+      maxLength: 100
+      description: Street name
+      example: Khreschatyk
+    building:
+      type: string
+      maxLength: 20
+      description: Building number
+      example: 22A
+    apartment:
+      type: ['string', 'null']
+      maxLength: 20
+      description: Apartment number
+      example: 10
+    city:
+      type: string
+      maxLength: 50
+      description: City
+      example: Kyiv
+    postalCode:
+      type: ['string', 'null']
+      pattern: '^\d{5}$'
+      description: Postal code
+      example: 01001
+
+PhoneNumber:
+  type: string
+  pattern: '^\+380\d{9}$'
+  description: Ukrainian phone number format
+  example: '+380501234567'
+
+Email:
+  type: string
+  format: email
+  maxLength: 100
+  description: Email address
+  example: 'customer@example.com'
+
+Money:
+  type: object
+  required:
+    - amount
+    - currency
+  properties:
+    amount:
+      type: number
+      format: double
+      minimum: 0
+      multipleOf: 0.01
+      description: Amount in currency units
+      example: 150.50
+    currency:
+      type: string
+      pattern: '^[A-Z]{3}$'
+      default: UAH
+      description: ISO 4217 currency code
+      example: UAH
+
+DateRange:
+  type: object
+  required:
+    - startDate
+    - endDate
+  properties:
+    startDate:
+      type: string
+      format: date-time
+      description: Start date
+    endDate:
+      type: string
+      format: date-time
+      description: End date
+
+AuditInfo:
+  type: object
+  properties:
+    createdAt:
+      type: string
+      format: date-time
+      readOnly: true
+      description: Creation timestamp
+    createdBy:
+      type: ['string', 'null']
+      readOnly: true
+      description: Creator ID
+    updatedAt:
+      type: ['string', 'null']
+      format: date-time
+      readOnly: true
+      description: Last update timestamp
+    updatedBy:
+      type: ['string', 'null']
+      readOnly: true
+      description: Last updater ID

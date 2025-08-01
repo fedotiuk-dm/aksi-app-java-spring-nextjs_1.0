@@ -1,13 +1,31 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
 Always answer in Ukrainian, comments in programed files write in English.
 
 Don't create non-existent functionality, it should be implemented, not highlighted by the linter as not implemented in our IDE.
 
----
-description:
-globs:
-alwaysApply: true
----
 You are an expert in Java programming, Spring Boot, Spring Framework, Maven, JUnit, and related Java technologies.
+
+## Architecture Documentation
+
+The project has comprehensive architecture documentation in the `/architecture/` folder:
+- **DOMAIN_ARCHITECTURE.md** - 13 domains with Auth/User separation
+- **PROJECT_STRUCTURE.md** - Module organization
+- **API_CONTRACTS.md** - REST API specifications
+- **OPENAPI_FIRST_APPROACH.md** - OpenAPI code generation
+- **COOKIE_BASED_AUTH.md** - Session-based authentication
+- **NEXT_STEPS.md** - Implementation roadmap
+
+## Key Architectural Decisions
+
+1. **OpenAPI-First**: Generate DTOs and controllers from OpenAPI specs
+2. **Cookie-Based Auth**: Use httpOnly cookies instead of JWT headers
+3. **Domain-Driven Design**: 13 separate domains with clear boundaries
+4. **Modular Structure**: Start with monolith, evolve to modules
 
 Code Style and Structure
 - Write clean, efficient, and well-documented Java code with accurate Spring Boot examples.
@@ -82,100 +100,3 @@ Follow best practices for:
 - Asynchronous processing using Spring's @Async or reactive programming with Spring WebFlux.
 
 Adhere to DDD SOLID principles and maintain high cohesion and low coupling in your Spring Boot application design.
-
-# AKSI Dry Cleaning Order System - Project Overview
-
-## Architecture & Technologies
-
-**Main Architecture:** DDD (Domain-Driven Design) with clear domain separation
-
-**Technology Stack:**
-- **Backend:** Java 21, Spring Boot 3.5.3, Spring Security, Spring Data JPA
-- **Database:** PostgreSQL with Liquibase migrations
-- **API Documentation:** OpenAPI 3.0 with auto-generated controllers
-- **Validation:** Jakarta Bean Validation
-- **Mapping:** MapStruct
-- **Authentication:** JWT (jjwt 0.12.6)
-- **PDF Generation:** iText 5.5.13
-- **QR Codes:** ZXing 3.5.3
-- **Dynamic Formulas:** Apache Commons JEXL 3.5.0
-- **Testing:** Spring Boot Test, TestContainers
-
-## Domain Structure
-
-### 1. Auth Domain (`com.aksi.domain.auth`)
-- JWT authentication with refresh tokens
-- User management and roles (UserEntity, RefreshTokenEntity)
-- Authentication validation and error handling
-- Services: AuthService, JwtTokenService
-
-### 2. Client Domain (`com.aksi.domain.client`)
-- Client management and contacts (ClientEntity, Address)
-- Order statistics and VIP status calculation
-- Communication methods (phone, email)
-- Service: ClientService
-
-### 3. Order Domain (`com.aksi.domain.order`)
-- Order lifecycle with status control (OrderEntity, OrderStatus)
-- Price calculations with modifiers (OrderCalculationEntity)
-- Discounts and urgency charges (DiscountEntity, UrgencyType)
-- Digital client signatures
-- Entities: OrderEntity, OrderItemEntity, OrderItemModifierEntity
-
-### 4. Item Domain (`com.aksi.domain.item`)
-- Price list with service categories (PriceListItemEntity, ServiceCategoryEntity)
-- Dynamic pricing with JEXL formulas (JexlCalculator)
-- Price modifiers for different materials (PriceModifierEntity)
-- Item photos support (ItemPhotoEntity)
-- Services: ItemCalculationService, PriceListItemService
-
-### 5. Branch Domain (`com.aksi.domain.branch`)
-- Branch management (BranchEntity, ContactInfo, Coordinates)
-- Working schedules and holidays (WorkingScheduleEntity, HolidayEntity)
-- Receipt number generation (ReceiptNumberService)
-- Branch statistics
-- Services: BranchService, WorkingScheduleService
-
-### 6. Document Domain (`com.aksi.domain.document`)
-- PDF receipt generation (ReceiptPdfRenderer)
-- QR code generation for tracking
-- Digital signatures (DigitalSignatureEntity)
-- Document management (DocumentEntity)
-- Services: PdfService, QrCodeService
-
-## Key Features
-
-**OpenAPI First:** All API controllers are generated from OpenAPI specifications
-**Multi-profile Build:** dev-fast, dev-no-api, full-build profiles for different development needs
-**Code Quality:** Checkstyle, PMD, Spotless formatting
-**Security:** JWT tokens, Spring Security, data validation
-**Database Migrations:** Liquibase with detailed changelog files
-**Flexible Pricing:** JEXL formulas and modifiers system
-**Document Generation:** PDF receipts with QR codes
-**Photo Support:** Item photos with validation
-
-## Database Configuration
-- **URL:** jdbc:postgresql://localhost:5432/aksi_cleaners_db_v5
-- **User:** aksi_user
-- **Password:** 1911
-- **Port:** 8080 (API context: /api)
-
-## Business Logic Highlights
-- Order status transitions with validation
-- VIP client calculation (10+ orders or 5000+ UAH spent)
-- Urgency pricing (NORMAL, URGENT_48H +50%, URGENT_24H +100%)
-- Color-specific pricing for items (base, black, color prices)
-- JEXL formula-based price calculations
-- Client signature validation for order completion
-
-## API Structure
-- Auth API: authentication, user info
-- Client API: client management, search, contacts
-- Order API: order management, calculations, completion
-- Item API: price list, modifiers, categories, photos
-- Branch API: branch management, schedules, statistics
-- Document API: PDF generation, QR codes, signatures
-
-System is production-ready for dry cleaning business operations.
-
-

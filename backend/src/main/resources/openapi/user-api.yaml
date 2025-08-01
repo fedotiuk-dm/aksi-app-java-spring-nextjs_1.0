@@ -1,71 +1,665 @@
-openapi: 3.0.4
+openapi: 3.1.1
 info:
-  title: User Domain API
-  description: API для управління користувачами (операторами) системи хімчистки
+  title: User API
+  description: User management API for system operators
   version: 1.0.0
   contact:
-    name: AKSI Development Team
-    email: dev@aksi.com
+    name: API Support
+    email: support@dryclean.example.com
+
 servers:
   - url: http://localhost:8080
-    description: Development server
-  - url: https://api.aksi.com
-    description: Production server
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
 tags:
   - name: users
-    description: Управління користувачами системи
+    description: User management operations
 
 paths:
-  # User Management
-  /api/users/me:
-    $ref: "user/paths/user-management.yaml#/~1api~1users~1me"
   /api/users:
-    $ref: "user/paths/user-management.yaml#/~1api~1users"
-  /api/users/{id}:
-    $ref: "user/paths/user-management.yaml#/~1api~1users~1{id}"
-  /api/users/{id}/role:
-    $ref: "user/paths/user-management.yaml#/~1api~1users~1{id}~1role"
-  /api/users/{id}/status:
-    $ref: "user/paths/user-management.yaml#/~1api~1users~1{id}~1status"
-  /api/users/{id}/password:
-    $ref: "user/paths/user-management.yaml#/~1api~1users~1{id}~1password"
+    get:
+      operationId: listUsers
+      summary: List users
+      description: Get paginated list of users with filtering
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: 'common/parameters/common.yaml#/PageNumber'
+        - $ref: 'common/parameters/common.yaml#/PageSize'
+        - $ref: 'common/parameters/common.yaml#/SortBy'
+        - $ref: 'common/parameters/common.yaml#/SortOrder'
+        - name: search
+          in: query
+          description: Search by username, first name, or last name
+          required: false
+          schema:
+            type: string
+            minLength: 2
+            example: ivan
+        - name: role
+          in: query
+          description: Filter by role
+          required: false
+          schema:
+            $ref: '#/components/schemas/UserRole'
+        - name: branchId
+          in: query
+          description: Filter by branch
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: 'common/schemas/pagination.yaml#/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/UserSummary'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+    
+    post:
+      operationId: createUser
+      summary: Create new user
+      description: Create a new system user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '409':
+          $ref: 'common/responses/common.yaml#/Conflict'
+
+  /api/users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      operationId: getUserById
+      summary: Get user details
+      description: Get detailed information about a user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+    
+    patch:
+      operationId: updateUser
+      summary: Update user
+      description: Update user information
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+        '409':
+          $ref: 'common/responses/common.yaml#/Conflict'
+  
+  /api/users/{userId}/password:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+    
+    put:
+      operationId: changePassword
+      summary: Change user password
+      description: Change password for a user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '204':
+          description: Password changed successfully
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+  
+  /api/users/{userId}/activate:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+    
+    post:
+      operationId: activateUser
+      summary: Activate user
+      description: Activate a deactivated user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+        '409':
+          $ref: 'common/responses/common.yaml#/Conflict'
+  
+  /api/users/{userId}/deactivate:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+    
+    post:
+      operationId: deactivateUser
+      summary: Deactivate user
+      description: Deactivate an active user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User deactivated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+        '409':
+          $ref: 'common/responses/common.yaml#/Conflict'
+  
+  /api/users/{userId}/roles:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+    
+    put:
+      operationId: updateUserRoles
+      summary: Update user roles
+      description: Replace user roles with new set
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRolesRequest'
+      responses:
+        '200':
+          description: Roles updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+  
+  /api/users/{userId}/branches:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      operationId: getUserBranches
+      summary: Get user branches
+      description: List branches assigned to user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: List of branches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  branches:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BranchAssignment'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+    
+    put:
+      operationId: updateUserBranches
+      summary: Update user branches
+      description: Replace user branch assignments
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBranchesRequest'
+      responses:
+        '200':
+          description: Branches updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  branches:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BranchAssignment'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
 
 components:
   schemas:
-    # Request Schemas
-    CreateUserRequest:
-      $ref: "user/schemas/user-requests.yaml#/CreateUserRequest"
-    UpdateUserRequest:
-      $ref: "user/schemas/user-requests.yaml#/UpdateUserRequest"
-    UpdateUserRoleRequest:
-      $ref: "user/schemas/user-requests.yaml#/UpdateUserRoleRequest"
-    UpdateUserStatusRequest:
-      $ref: "user/schemas/user-requests.yaml#/UpdateUserStatusRequest"
-    ChangePasswordRequest:
-      $ref: "user/schemas/user-requests.yaml#/ChangePasswordRequest"
-    
-    # Response Schemas
-    UserResponse:
-      $ref: "user/schemas/user-responses.yaml#/UserResponse"
-    UserListResponse:
-      $ref: "user/schemas/user-responses.yaml#/UserListResponse"
-    
-    # Enums
     UserRole:
-      $ref: "user/schemas/user-enums.yaml#/UserRole"
+      type: string
+      enum:
+        - OPERATOR
+        - MANAGER
+        - ADMIN
+        - CLEANER
+        - DRIVER
+        - ACCOUNTANT
+      description: |
+        User roles:
+        * `OPERATOR` - Order acceptance operator
+        * `MANAGER` - Branch manager
+        * `ADMIN` - System administrator
+        * `CLEANER` - Cleaning specialist
+        * `DRIVER` - Delivery driver
+        * `ACCOUNTANT` - Financial specialist
+    
+    UserSummary:
+      type: object
+      required:
+        - id
+        - username
+        - firstName
+        - lastName
+        - email
+        - roles
+        - active
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User ID
+        username:
+          type: string
+          description: Username
+          example: operator1
+        firstName:
+          type: string
+          description: First name
+          example: Ivan
+        lastName:
+          type: string
+          description: Last name
+          example: Petrenko
+        email:
+          type: string
+          format: email
+          description: Email address
+          example: ivan.petrenko@example.com
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          minItems: 1
+        active:
+          type: boolean
+          description: Is user active
+        primaryBranchId:
+          type: string
+          nullable: true
+          format: uuid
+          description: Primary branch ID
+        primaryBranchName:
+          type: string
+          nullable: true
+          description: Primary branch name
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        lastLoginAt:
+          type: string
+          nullable: true
+          format: date-time
+          description: Last login timestamp
+    
+    UserDetail:
+      allOf:
+        - $ref: '#/components/schemas/UserSummary'
+        - type: object
+          required:
+            - permissions
+            - branches
+            - updatedAt
+          properties:
+            phone:
+              type: string
+              nullable: true
+              pattern: '^\+?[0-9]{10,15}$'
+              description: Phone number
+              example: '+380501234567'
+            permissions:
+              type: array
+              items:
+                type: string
+              description: Calculated permissions based on roles
+              example: ['CREATE_ORDER', 'VIEW_CUSTOMERS', 'EDIT_ORDER']
+            branches:
+              type: array
+              items:
+                $ref: '#/components/schemas/BranchAssignment'
+              description: Assigned branches
+            updatedAt:
+              type: string
+              format: date-time
+              description: Last update timestamp
+            createdBy:
+              type: string
+              format: uuid
+              description: ID of user who created this user
+            updatedBy:
+              type: string
+              nullable: true
+              format: uuid
+              description: ID of user who last updated this user
+    
+    BranchAssignment:
+      type: object
+      required:
+        - branchId
+        - branchName
+        - isPrimary
+      properties:
+        branchId:
+          type: string
+          format: uuid
+          description: Branch ID
+        branchName:
+          type: string
+          description: Branch name
+          example: Main Street Branch
+        isPrimary:
+          type: boolean
+          description: Is this the primary branch
+    
+    CreateUserRequest:
+      type: object
+      required:
+        - username
+        - password
+        - firstName
+        - lastName
+        - email
+        - roles
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          pattern: '^[a-zA-Z0-9_]+$'
+          description: Username
+          example: operator1
+        password:
+          type: string
+          minLength: 8
+          maxLength: 100
+          description: Password
+          example: SecurePassword123!
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: First name
+          example: Ivan
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Last name
+          example: Petrenko
+        email:
+          type: string
+          format: email
+          description: Email address
+          example: ivan.petrenko@example.com
+        phone:
+          type: string
+          nullable: true
+          pattern: '^\+?[0-9]{10,15}$'
+          description: Phone number
+          example: '+380501234567'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          minItems: 1
+          description: User roles
+        branchIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Branch IDs to assign
+        primaryBranchId:
+          type: string
+          nullable: true
+          format: uuid
+          description: Primary branch ID (must be in branchIds if provided)
+    
+    UpdateUserRequest:
+      type: object
+      minProperties: 1
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: First name
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Last name
+        email:
+          type: string
+          format: email
+          description: Email address
+        phone:
+          type: string
+          nullable: true
+          pattern: '^\+?[0-9]{10,15}$'
+          description: Phone number
+    
+    ChangePasswordRequest:
+      type: object
+      required:
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+          description: Current password (required if changing own password)
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 100
+          description: New password
+          example: NewSecurePassword123!
+    
+    UpdateRolesRequest:
+      type: object
+      required:
+        - roles
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          minItems: 1
+          description: New set of roles
+    
+    UpdateBranchesRequest:
+      type: object
+      required:
+        - branchIds
+      properties:
+        branchIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Branch IDs to assign
+        primaryBranchId:
+          type: string
+          nullable: true
+          format: uuid
+          description: Primary branch ID (must be in branchIds if provided)
 
-    # Common Schemas (використовуємо спільні)
-    ErrorResponse:
-      $ref: "common/schemas/errors.yaml#/ErrorResponse"
-    ValidationErrorResponse:
-      $ref: "common/schemas/errors.yaml#/ValidationErrorResponse"
-    FieldError:
-      $ref: "common/schemas/errors.yaml#/FieldError"
-
-  securitySchemes:
-    CookieAuth:
-      $ref: "common/security.yaml#/securitySchemes/CookieAuth"
-
-# Всі endpoints потребують автентифікації
 security:
-  - CookieAuth: []
+  - cookieAuth: []

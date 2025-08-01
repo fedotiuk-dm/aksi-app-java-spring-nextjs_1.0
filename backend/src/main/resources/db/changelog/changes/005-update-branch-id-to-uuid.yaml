@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-1
+      author: aksi
+      comment: Change branch_id from bigint to uuid in user_branch_assignments
+      preConditions:
+        - onFail: MARK_RAN
+          tableExists:
+              tableName: user_branch_assignments
+      changes:
+        # First, we need to drop any data since we can't convert bigint to uuid
+        - sql:
+            sql: DELETE FROM user_branch_assignments
+        
+        # Drop the old column
+        - dropColumn:
+            tableName: user_branch_assignments
+            columnName: branch_id
+        
+        # Add new column with uuid type
+        - addColumn:
+            tableName: user_branch_assignments
+            columns:
+              - column:
+                  name: branch_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        
+        # Create index for branch_id
+        - createIndex:
+            tableName: user_branch_assignments
+            indexName: idx_assignment_branch
+            columns:
+              - column:
+                  name: branch_id
+        
+        # Recreate the unique constraint that was deleted with the column
+        - addUniqueConstraint:
+            tableName: user_branch_assignments
+            columnNames: user_id, branch_id
+            constraintName: user_branch_assignments_user_id_branch_id_key

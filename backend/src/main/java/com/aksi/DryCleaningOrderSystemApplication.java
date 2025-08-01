@@ -2,18 +2,14 @@ package com.aksi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /**
- * Головний клас додатку для односторінкової системи замовлень хімчистки.
- *
- * <p>Система реалізує принципи DDD (Domain Driven Design) з чітким розділенням доменів: - Client
- * Domain: управління клієнтами та їх даними - Order Domain: управління замовленнями та їх станами -
- * Item Domain: управління предметами, послугами та ціноутворенням - Branch Domain: управління
- * філіями та їх налаштуваннями - Document Domain: генерація квитанцій та документів
+ * Main application class for AKSI Dry Cleaning Order System. This system manages dry cleaning
+ * orders with Domain-Driven Design architecture and cookie-based authentication.
  */
 @SpringBootApplication
-@EnableScheduling
+@EnableJpaAuditing
 public class DryCleaningOrderSystemApplication {
 
   public static void main(String[] args) {

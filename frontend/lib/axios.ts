@@ -75,8 +75,8 @@ export class ApiError extends Error {
    * Вивести детальну інформацію про помилку у консоль
    */
   logToConsole(): void {
-    // Не логуємо Network Error - це зазвичай означає, що сервер недоступний
-    if (this.message === 'Network Error') {
+    // Не логуємо Network Error та canceled - це нормальні ситуації
+    if (this.message === 'Network Error' || this.message === 'canceled') {
       return;
     }
     console.error(`🔴 API Error [${this.status}] ${this.errorId || ''}: ${this.message}`);
@@ -134,7 +134,7 @@ const AXIOS_CONFIG = {
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
   timeout: 30000,
   // Шляхи, для яких не логуємо помилки
-  silentPaths: ['/users/me', '/api/auth/session', '/api/auth/refresh-token', '/test-headers'],
+  silentPaths: ['/users/me', '/api/auth/session', '/api/auth/refresh-token', '/test-headers', '/api/users'],
   // Типи помилок, які не логуємо
   silentErrors: ['Network Error', 'timeout', 'ECONNABORTED', 'canceled'],
 };
@@ -282,14 +282,20 @@ function logApiError(error: AxiosError) {
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
+    // Перевіряємо чи запит був скасований
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
+    
     // Створюємо розширену помилку API для кращого логування
     const apiError = ApiError.fromAxiosError(error);
 
     // Логуємо помилку у режимі розробки (крім деяких маршрутів та типів помилок)
     const isNetworkError = error.message === 'Network Error';
+    const isCancelError = error.message === 'canceled';
     const isSilentPath = AXIOS_CONFIG.silentPaths.some(path => error.config?.url?.includes(path));
     
-    if (process.env.NODE_ENV === 'development' && !isSilentPath && !isNetworkError) {
+    if (process.env.NODE_ENV === 'development' && !isSilentPath && !isNetworkError && !isCancelError) {
       apiError.logToConsole();
     }
 
@@ -317,7 +323,6 @@ apiClient.interceptors.response.use(
       }
 
       // Для інших 500 помилок
-      console.error('🔴 Server error:', error.response.data);
       return Promise.reject(apiError);
     }
 

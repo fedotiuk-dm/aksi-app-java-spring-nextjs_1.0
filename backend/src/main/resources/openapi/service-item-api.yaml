@@ -1,0 +1,941 @@
+openapi: 3.1.1
+info:
+  title: Service & Item API
+  description: Service and item catalog management API
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: services
+    description: Service catalog operations
+  - name: items
+    description: Item catalog operations
+  - name: service-items
+    description: Service-item combination operations
+
+paths:
+  /api/services:
+    get:
+      operationId: listServices
+      summary: List services
+      description: Get list of available services
+      tags:
+        - services
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: category
+          in: query
+          description: Filter by category
+          required: false
+          schema:
+            $ref: '#/components/schemas/ServiceCategory'
+      responses:
+        '200':
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  services:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+    
+    post:
+      operationId: createService
+      summary: Create service
+      description: Create new service type
+      tags:
+        - services
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateServiceRequest'
+      responses:
+        '201':
+          description: Service created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '409':
+          $ref: 'common/responses/common.yaml#/Conflict'
+
+  /api/services/{serviceId}:
+    parameters:
+      - name: serviceId
+        in: path
+        required: true
+        description: Service ID
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      operationId: getServiceById
+      summary: Get service details
+      description: Get detailed service information
+      tags:
+        - services
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Service details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+    
+    patch:
+      operationId: updateService
+      summary: Update service
+      description: Update service information
+      tags:
+        - services
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateServiceRequest'
+      responses:
+        '200':
+          description: Service updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+
+  /api/items:
+    get:
+      operationId: listItems
+      summary: List items
+      description: Get list of available item types
+      tags:
+        - items
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: category
+          in: query
+          description: Filter by category
+          required: false
+          schema:
+            $ref: '#/components/schemas/ItemCategory'
+        - name: search
+          in: query
+          description: Search by name
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Item'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+    
+    post:
+      operationId: createItem
+      summary: Create item
+      description: Create new item type
+      tags:
+        - items
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateItemRequest'
+      responses:
+        '201':
+          description: Item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '409':
+          $ref: 'common/responses/common.yaml#/Conflict'
+
+  /api/items/{itemId}:
+    parameters:
+      - name: itemId
+        in: path
+        required: true
+        description: Item ID
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      operationId: getItemById
+      summary: Get item details
+      description: Get detailed item information
+      tags:
+        - items
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+    
+    patch:
+      operationId: updateItem
+      summary: Update item
+      description: Update item information
+      tags:
+        - items
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateItemRequest'
+      responses:
+        '200':
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+
+  /api/service-items:
+    get:
+      operationId: listServiceItems
+      summary: List service-item combinations
+      description: Get available service-item combinations with pricing
+      tags:
+        - service-items
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: serviceId
+          in: query
+          description: Filter by service
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: query
+          description: Filter by item
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: branchId
+          in: query
+          description: Get branch-specific pricing
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: List of service-item combinations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  serviceItems:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ServiceItem'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+    
+    post:
+      operationId: createServiceItem
+      summary: Create service-item combination
+      description: Create new service-item combination with base pricing
+      tags:
+        - service-items
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateServiceItemRequest'
+      responses:
+        '201':
+          description: Service-item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceItem'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '409':
+          $ref: 'common/responses/common.yaml#/Conflict'
+
+  /api/service-items/{serviceItemId}:
+    parameters:
+      - name: serviceItemId
+        in: path
+        required: true
+        description: Service-item ID
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      operationId: getServiceItemById
+      summary: Get service-item details
+      description: Get detailed service-item combination
+      tags:
+        - service-items
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: branchId
+          in: query
+          description: Get branch-specific pricing
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Service-item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceItem'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+    
+    patch:
+      operationId: updateServiceItem
+      summary: Update service-item
+      description: Update service-item combination
+      tags:
+        - service-items
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateServiceItemRequest'
+      responses:
+        '200':
+          description: Service-item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceItem'
+        '400':
+          $ref: 'common/responses/common.yaml#/BadRequest'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '403':
+          $ref: 'common/responses/common.yaml#/Forbidden'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+
+components:
+  schemas:
+    ServiceCategory:
+      type: string
+      enum:
+        - DRY_CLEANING
+        - LAUNDRY
+        - IRONING
+        - REPAIR
+        - SPECIAL
+      description: |
+        Service categories:
+        * `DRY_CLEANING` - Dry cleaning services
+        * `LAUNDRY` - Washing services
+        * `IRONING` - Ironing and pressing
+        * `REPAIR` - Repair and alteration
+        * `SPECIAL` - Special treatment services
+    
+    ItemCategory:
+      type: string
+      enum:
+        - CLOTHING_UPPER
+        - CLOTHING_LOWER
+        - CLOTHING_FULL
+        - ACCESSORIES
+        - HOUSEHOLD
+        - SPECIAL
+      description: |
+        Item categories:
+        * `CLOTHING_UPPER` - Upper body clothing (shirts, jackets)
+        * `CLOTHING_LOWER` - Lower body clothing (pants, skirts)
+        * `CLOTHING_FULL` - Full body clothing (dresses, suits)
+        * `ACCESSORIES` - Accessories (ties, scarves)
+        * `HOUSEHOLD` - Household items (curtains, bedding)
+        * `SPECIAL` - Special items
+    
+    ProcessingTime:
+      type: string
+      enum:
+        - EXPRESS_1H
+        - EXPRESS_4H
+        - SAME_DAY
+        - NEXT_DAY
+        - STANDARD_2D
+        - STANDARD_3D
+        - EXTENDED
+      description: |
+        Processing time options:
+        * `EXPRESS_1H` - 1 hour express
+        * `EXPRESS_4H` - 4 hour express
+        * `SAME_DAY` - Same day
+        * `NEXT_DAY` - Next day
+        * `STANDARD_2D` - 2 days standard
+        * `STANDARD_3D` - 3 days standard
+        * `EXTENDED` - Extended time (5+ days)
+    
+    Service:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - category
+        - active
+        - sortOrder
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Service ID
+        code:
+          type: string
+          description: Service code
+          example: DRY_CLEAN
+        name:
+          type: string
+          description: Service name
+          example: Dry Cleaning
+        nameUa:
+          type: string
+          description: Ukrainian name
+          example: Хімчистка
+        description:
+          type: ['string', 'null']
+          description: Service description
+        category:
+          $ref: '#/components/schemas/ServiceCategory'
+        icon:
+          type: ['string', 'null']
+          description: Icon identifier
+        color:
+          type: ['string', 'null']
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          description: Display color
+          example: '#4A90E2'
+        active:
+          type: boolean
+          description: Is service active
+        sortOrder:
+          type: integer
+          description: Display sort order
+        allowedProcessingTimes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProcessingTime'
+          description: Available processing times
+        requiresSpecialHandling:
+          type: boolean
+          default: false
+          description: Requires special handling
+        tags:
+          type: array
+          items:
+            type: string
+          description: Service tags
+    
+    Item:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - category
+        - active
+        - sortOrder
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Item ID
+        code:
+          type: string
+          description: Item code
+          example: SHIRT
+        name:
+          type: string
+          description: Item name
+          example: Shirt
+        nameUa:
+          type: string
+          description: Ukrainian name
+          example: Сорочка
+        pluralName:
+          type: string
+          description: Plural form
+          example: Shirts
+        pluralNameUa:
+          type: string
+          description: Ukrainian plural form
+          example: Сорочки
+        description:
+          type: ['string', 'null']
+          description: Item description
+        category:
+          $ref: '#/components/schemas/ItemCategory'
+        icon:
+          type: ['string', 'null']
+          description: Icon identifier
+        active:
+          type: boolean
+          description: Is item active
+        sortOrder:
+          type: integer
+          description: Display sort order
+        attributes:
+          type: array
+          items:
+            type: string
+          description: Available attributes (material, color, etc.)
+          example: ['cotton', 'silk', 'white', 'colored']
+        tags:
+          type: array
+          items:
+            type: string
+          description: Item tags
+    
+    ServiceItem:
+      type: object
+      required:
+        - id
+        - serviceId
+        - itemId
+        - service
+        - item
+        - basePrice
+        - processingTime
+        - active
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Service-item combination ID
+        serviceId:
+          type: string
+          format: uuid
+          description: Service ID
+        itemId:
+          type: string
+          format: uuid
+          description: Item ID
+        service:
+          $ref: '#/components/schemas/Service'
+        item:
+          $ref: '#/components/schemas/Item'
+        basePrice:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Base price
+          example: 50.00
+        branchPrice:
+          type: ['number', 'null']
+          format: decimal
+          description: Branch-specific price (if applicable)
+        processingTime:
+          $ref: '#/components/schemas/ProcessingTime'
+        expressAvailable:
+          type: boolean
+          default: false
+          description: Express service available
+        expressMultiplier:
+          type: number
+          format: decimal
+          default: 1.5
+          description: Express price multiplier
+        active:
+          type: boolean
+          description: Is combination active
+        minQuantity:
+          type: integer
+          default: 1
+          description: Minimum order quantity
+        maxQuantity:
+          type: ['integer', 'null']
+          description: Maximum order quantity
+        specialInstructions:
+          type: ['string', 'null']
+          description: Special handling instructions
+        popularityScore:
+          type: integer
+          default: 0
+          description: Popularity score for sorting
+    
+    CreateServiceRequest:
+      type: object
+      required:
+        - code
+        - name
+        - nameUa
+        - category
+      properties:
+        code:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[A-Z_]+$'
+          description: Service code
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Service name
+        nameUa:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Ukrainian name
+        description:
+          type: ['string', 'null']
+          maxLength: 500
+          description: Service description
+        category:
+          $ref: '#/components/schemas/ServiceCategory'
+        icon:
+          type: ['string', 'null']
+          description: Icon identifier
+        color:
+          type: ['string', 'null']
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          description: Display color
+        sortOrder:
+          type: integer
+          default: 0
+          description: Display sort order
+        allowedProcessingTimes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProcessingTime'
+          default: ['STANDARD_2D']
+        requiresSpecialHandling:
+          type: boolean
+          default: false
+        tags:
+          type: array
+          items:
+            type: string
+    
+    UpdateServiceRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        nameUa:
+          type: string
+          minLength: 2
+          maxLength: 100
+        description:
+          type: ['string', 'null']
+          maxLength: 500
+        icon:
+          type: ['string', 'null']
+        color:
+          type: ['string', 'null']
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+        allowedProcessingTimes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProcessingTime'
+        requiresSpecialHandling:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+    
+    CreateItemRequest:
+      type: object
+      required:
+        - code
+        - name
+        - nameUa
+        - category
+      properties:
+        code:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[A-Z_]+$'
+          description: Item code
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Item name
+        nameUa:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Ukrainian name
+        pluralName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Plural form
+        pluralNameUa:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Ukrainian plural form
+        description:
+          type: ['string', 'null']
+          maxLength: 500
+          description: Item description
+        category:
+          $ref: '#/components/schemas/ItemCategory'
+        icon:
+          type: ['string', 'null']
+          description: Icon identifier
+        sortOrder:
+          type: integer
+          default: 0
+          description: Display sort order
+        attributes:
+          type: array
+          items:
+            type: string
+          default: []
+        tags:
+          type: array
+          items:
+            type: string
+    
+    UpdateItemRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        nameUa:
+          type: string
+          minLength: 2
+          maxLength: 100
+        pluralName:
+          type: string
+          minLength: 2
+          maxLength: 100
+        pluralNameUa:
+          type: string
+          minLength: 2
+          maxLength: 100
+        description:
+          type: ['string', 'null']
+          maxLength: 500
+        icon:
+          type: ['string', 'null']
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+        attributes:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+    
+    CreateServiceItemRequest:
+      type: object
+      required:
+        - serviceId
+        - itemId
+        - basePrice
+        - processingTime
+      properties:
+        serviceId:
+          type: string
+          format: uuid
+          description: Service ID
+        itemId:
+          type: string
+          format: uuid
+          description: Item ID
+        basePrice:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Base price
+        processingTime:
+          $ref: '#/components/schemas/ProcessingTime'
+        expressAvailable:
+          type: boolean
+          default: false
+        expressMultiplier:
+          type: number
+          format: decimal
+          minimum: 1
+          default: 1.5
+        minQuantity:
+          type: integer
+          minimum: 1
+          default: 1
+        maxQuantity:
+          type: ['integer', 'null']
+          minimum: 1
+        specialInstructions:
+          type: ['string', 'null']
+          maxLength: 500
+    
+    UpdateServiceItemRequest:
+      type: object
+      minProperties: 1
+      properties:
+        basePrice:
+          type: number
+          format: decimal
+          minimum: 0
+        processingTime:
+          $ref: '#/components/schemas/ProcessingTime'
+        expressAvailable:
+          type: boolean
+        expressMultiplier:
+          type: number
+          format: decimal
+          minimum: 1
+        active:
+          type: boolean
+        minQuantity:
+          type: integer
+          minimum: 1
+        maxQuantity:
+          type: ['integer', 'null']
+          minimum: 1
+        specialInstructions:
+          type: ['string', 'null']
+          maxLength: 500
+        popularityScore:
+          type: integer
+          minimum: 0
+
+security:
+  - cookieAuth: []

@@ -1,13 +1,18 @@
-HELP.md
+target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### Папка з логами ###
-logs/
-*.log
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
 
-### STS ###
+### Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -15,12 +20,6 @@ logs/
 .settings
 .springBeans
 .sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,7 +34,13 @@ build/
 ### VS Code ###
 .vscode/
 
-### Локальні налаштування ###
-**/application-local.yml
-**/application-local.properties
+### Mac OS ###
+.DS_Store
+node_modules
 
+### Prevent compiled classes in resources ###
+src/main/resources/**/*.class
+src/main/resources/com/
+src/main/resources/org/
+
+logs
