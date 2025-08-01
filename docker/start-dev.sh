@@ -142,8 +142,27 @@ stop_containers() {
 
 # Функція для показу логів
 show_logs() {
-    log_info "Показуємо логи контейнерів (Ctrl+C для виходу)..."
-    docker-compose -f $COMPOSE_FILE logs -f
+    local service="${2:-}"
+    local tail_lines="${3:-1000}"
+    
+    # Якщо передано "all" як кількість рядків, показуємо всі логи
+    if [ "$tail_lines" = "all" ]; then
+        if [ -n "$service" ]; then
+            log_info "Показуємо ВСІ логи для $service (Ctrl+C для виходу)..."
+            docker-compose -f $COMPOSE_FILE logs -f "$service"
+        else
+            log_info "Показуємо ВСІ логи всіх контейнерів (Ctrl+C для виходу)..."
+            docker-compose -f $COMPOSE_FILE logs -f
+        fi
+    else
+        if [ -n "$service" ]; then
+            log_info "Показуємо логи для $service (останні $tail_lines рядків, Ctrl+C для виходу)..."
+            docker-compose -f $COMPOSE_FILE logs -f --tail="$tail_lines" "$service"
+        else
+            log_info "Показуємо логи всіх контейнерів (останні $tail_lines рядків, Ctrl+C для виходу)..."
+            docker-compose -f $COMPOSE_FILE logs -f --tail="$tail_lines"
+        fi
+    fi
     echo ""
     show_usage_info
 }
@@ -306,7 +325,10 @@ show_db_usage_info() {
     echo "   User:                   aksi_user / Pass: 1911"
     echo ""
     log_success "🛠️  Корисні команди:"
-    echo "   ./start-dev.sh logs              - переглянути логи"
+    echo "   ./start-dev.sh logs              - переглянути логи всіх контейнерів"
+    echo "   ./start-dev.sh logs backend      - логи тільки backend контейнера"
+    echo "   ./start-dev.sh logs backend 2000 - логи backend (останні 2000 рядків)"
+    echo "   ./start-dev.sh logs backend all  - ВСІ логи backend (без обмежень)"
     echo "   ./start-dev.sh stop              - зупинити контейнери"
     echo "   ./start-dev.sh status            - статус контейнерів"
     echo "   ./start-dev.sh fast              - запустити весь проект"
@@ -329,7 +351,10 @@ show_usage_info() {
     echo "   Backend API:            http://localhost/api"
     echo ""
     log_success "🛠️  Корисні команди:"
-    echo "   ./start-dev.sh logs              - переглянути логи"
+    echo "   ./start-dev.sh logs              - переглянути логи всіх контейнерів"
+    echo "   ./start-dev.sh logs backend      - логи тільки backend контейнера"
+    echo "   ./start-dev.sh logs backend 2000 - логи backend (останні 2000 рядків)"
+    echo "   ./start-dev.sh logs backend all  - ВСІ логи backend (без обмежень)"
     echo "   ./start-dev.sh stop              - зупинити контейнери"
     echo "   ./start-dev.sh status            - статус контейнерів"
     echo "   ./start-dev.sh shell             - підключитися до backend"
@@ -378,7 +403,7 @@ case $MODE in
         fi
         ;;
     "logs")
-        show_logs
+        show_logs "$@"
         ;;
     "stop")
         stop_containers
@@ -401,7 +426,7 @@ case $MODE in
         echo "  turbo        - максимально швидкий запуск (очищує npm кеші)"
         echo "  reset        - повне очищення бази даних (вирішує Liquibase конфлікти)"
         echo "  clean-volumes - очищує всі Docker volumes (вирішує WARN про існуючі volumes)"
-        echo "  logs         - показати логи запущених контейнерів"
+        echo "  logs [service] [lines] - показати логи (напр. logs backend 2000)"
         echo "  stop         - зупинити всі контейнери"
         echo "  status       - показати статус контейнерів та портів"
         echo "  shell        - підключитися до backend контейнера"
@@ -416,7 +441,10 @@ case $MODE in
         echo "  $0 clean             # повна перебудова з логами"
         echo "  $0 db                # запустити тільки базу даних"
         echo "  $0 clean-volumes     # очистити volumes"
-        echo "  $0 logs              # переглянути логи"
+        echo "  $0 logs              # переглянути логи всіх контейнерів"
+        echo "  $0 logs backend      # логи тільки backend"
+        echo "  $0 logs backend 5000 # останні 5000 рядків логів backend"
+        echo "  $0 logs backend all  # ВСІ логи backend (повна історія)"
         exit 1
         ;;
 esac
