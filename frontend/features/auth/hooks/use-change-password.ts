@@ -6,16 +6,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { useChangeUserPassword, changeUserPasswordBody } from '@/shared/api/generated/user';
-import { useAuthStore } from '../store/auth-store';
+import { useChangePassword, changePasswordBody, type ChangePasswordRequest } from '@/shared/api/generated/user';
+import { useAuthStore } from '@/features/auth';
 
 // Use generated schema for validation
-type ChangePasswordFormData = z.infer<typeof changeUserPasswordBody>;
+type ChangePasswordFormData = z.infer<typeof changePasswordBody>;
 
-export const useChangePassword = () => {
+export const useChangePasswordForm = () => {
   const user = useAuthStore((state) => state.user);
 
-  const changePasswordMutation = useChangeUserPassword({
+  const changePasswordMutation = useChangePassword({
     mutation: {
       onSuccess: () => {
         toast.success('Пароль успішно змінено');
@@ -33,7 +33,7 @@ export const useChangePassword = () => {
   });
 
   const form = useForm<ChangePasswordFormData>({
-    resolver: zodResolver(changeUserPasswordBody),
+    resolver: zodResolver(changePasswordBody),
     defaultValues: {
       currentPassword: '',
       newPassword: '',
@@ -41,13 +41,13 @@ export const useChangePassword = () => {
   });
 
   const onSubmit = async (data: ChangePasswordFormData) => {
-    if (!user?.id) {
+    if (!user?.userId) {
       toast.error('Користувач не авторизований');
       return;
     }
 
     await changePasswordMutation.mutateAsync({
-      userId: user.id,
+      userId: user.userId,
       data,
     });
   };

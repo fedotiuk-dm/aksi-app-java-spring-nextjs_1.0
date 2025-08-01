@@ -4,14 +4,14 @@
 
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { useAuthStore } from '../store/auth-store';
+import { useAuthStore } from '@/features/auth';
 import { useLogout as useLogoutMutation } from '@/shared/api/generated/auth';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const useLogout = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const clearAuthStore = useAuthStore((state) => state.logout);
+  const clearAuthStore = useAuthStore.getState().logout;
 
   const logoutMutation = useLogoutMutation({
     mutation: {

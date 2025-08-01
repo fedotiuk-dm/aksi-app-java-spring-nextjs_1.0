@@ -5,18 +5,19 @@
  */
 
 import { useEffect } from 'react';
-import { useAuthStore } from '../store/auth-store';
-import { useGetCurrentUser } from '@/shared/api/generated/user';
+import { useAuthStore } from '@/features/auth';
+import { useGetCurrentSession } from '@/shared/api/generated/auth';
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const { setUser, setLoading } = useAuthStore();
+  const setSession = useAuthStore((state) => state.setSession);
+  const setLoading = useAuthStore((state) => state.setLoading);
   const isLoginPage = typeof window !== 'undefined' && window.location.pathname === '/login';
 
-  const { data: currentUser, error } = useGetCurrentUser({
+  const { data: currentSession, error } = useGetCurrentSession({
     query: {
       enabled: !isLoginPage,
       retry: false,
@@ -25,14 +26,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
 
   useEffect(() => {
-    if (currentUser) {
-      setUser(currentUser);
+    if (currentSession) {
+      setSession(currentSession);
       setLoading(false);
     } else if (error || isLoginPage) {
-      setUser(null);
+      setSession(null);
       setLoading(false);
     }
-  }, [currentUser, error, setUser, setLoading, isLoginPage]);
+  }, [currentSession, error, setSession, setLoading, isLoginPage]);
 
   return <>{children}</>;
 };

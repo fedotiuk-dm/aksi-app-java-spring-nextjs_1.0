@@ -44,6 +44,16 @@ services:
     networks:
       - aksi-network-dev
 
+  # Redis for session management
+  redis:
+    image: redis:8-alpine
+    container_name: redis-dev
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - aksi-network-dev
+
   # PgAdmin - зберігаємо однаковий з основним compose файлом
   pgadmin:
     image: dpage/pgadmin4:9.5
@@ -99,6 +109,9 @@ services:
       SPRING_DATASOURCE_USERNAME: aksi_user
       SPRING_DATASOURCE_PASSWORD: 1911
       SPRING_PROFILES_ACTIVE: dev
+      # Redis configuration
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
       # Відключаємо поштовий сервер для розробки
       SPRING_MAIL_HOST: localhost
       SPRING_MAIL_PORT: 3025
@@ -118,6 +131,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_started
       # traefik:
       #   condition: service_started
     restart: unless-stopped
@@ -130,7 +145,7 @@ services:
           "wget",
           "-q",
           "--spider",
-          "http://localhost:8080/actuator/health",
+          "http://localhost:8080/management/health",
         ]
       interval: 30s
       timeout: 10s

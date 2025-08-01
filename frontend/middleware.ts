@@ -12,7 +12,7 @@ const protectedRoutes = [
 ] as const;
 
 // Публічні маршрути (не потребують авторизації)
-const publicRoutes = ['/login'] as const;
+const publicRoutes = ['/login', '/test-api'] as const;
 
 // API роути, що не потребують перевірки
 const publicApiRoutes = [
@@ -40,30 +40,23 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Перевіряємо наявність auth cookies
-  const accessToken = request.cookies.get('accessToken');
-  const refreshToken = request.cookies.get('refreshToken');
+  // Перевіряємо наявність session cookie
+  const sessionCookie = request.cookies.get('AKSISESSIONID');
 
   // Якщо це захищений маршрут
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-    // Якщо немає токенів - перенаправляємо на логін
-    if (!accessToken && !refreshToken) {
+    // Якщо немає сесії - перенаправляємо на логін
+    if (!sessionCookie) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);
-    }
-
-    // Якщо є тільки refresh token - дозволяємо запит 
-    // (axios interceptor спробує оновити токен)
-    if (!accessToken && refreshToken) {
-      return NextResponse.next();
     }
   }
 
   // Для кореневого маршруту перенаправляємо на dashboard
   if (pathname === '/') {
     // Перевіряємо авторизацію
-    if (!accessToken && !refreshToken) {
+    if (!sessionCookie) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
     return NextResponse.redirect(new URL('/dashboard', request.url));

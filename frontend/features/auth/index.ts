@@ -15,7 +15,35 @@ export { useAuth } from './hooks/use-auth';
 export { useLoginForm } from './hooks/use-login';
 export { useLogout } from './hooks/use-logout';
 export { useRefreshToken } from './hooks/use-refresh-token';
-export { useChangePassword } from './hooks/use-change-password';
+export { useChangePasswordForm } from './hooks/use-change-password';
 
-// Store
-export { useAuthStore } from './store/auth-store';
+// Store and selectors
+export { 
+  useAuthStore,
+  // Basic selectors
+  selectUser,
+  selectSession,
+  selectIsAuthenticated,
+  selectIsLoading,
+  selectError,
+  // Role selectors
+  selectUserRoles,
+  selectHasRole,
+  selectIsAdmin,
+  selectIsManager,
+  selectIsOperator,
+  selectIsCleaner,
+  selectIsDriver,
+  selectIsAccountant,
+  // Permission selectors
+  selectPermissions,
+  selectHasPermission,
+  // Branch selectors
+  selectCurrentBranchId,
+  selectCurrentBranchName,
+  selectRequiresBranchSelection
+} from './store/auth-store';
+
+// Constants
+export { ROLES, PERMISSIONS, ROLE_DISPLAY_NAMES, hasHigherOrEqualRole } from './constants/auth.constants';
+export type { UserRole, Permission } from './constants/auth.constants';

@@ -15,20 +15,16 @@ const customInstance = async <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig
 ): Promise<T> => {
-  try {
-    const mergedConfig: AxiosRequestConfig = {
-      ...config,
-      ...options,
-      // Забезпечуємо, що withCredentials завжди true для cookies
-      withCredentials: true,
-    };
+  const mergedConfig: AxiosRequestConfig = {
+    ...config,
+    ...options,
+    // Забезпечуємо, що withCredentials завжди true для cookies
+    withCredentials: true,
+  };
 
-    const { data } = await apiClient.request<T>(mergedConfig);
-    return data;
-  } catch (error) {
-    // Передаємо помилку далі для обробки Orval
-    throw error;
-  }
+  // Просто повертаємо результат - всі помилки обробляються в axios interceptors
+  const { data } = await apiClient.request<T>(mergedConfig);
+  return data;
 };
 
 // Default export для Orval

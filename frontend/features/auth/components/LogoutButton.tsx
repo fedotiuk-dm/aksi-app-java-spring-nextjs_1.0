@@ -4,7 +4,7 @@
  * @fileoverview Кнопка виходу з системи
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   IconButton,
@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import type { ButtonProps, IconButtonProps } from '@mui/material';
 import { Logout as LogoutIcon } from '@mui/icons-material';
-import { useAuth } from '../hooks/use-auth';
+import { useAuth } from '@/features/auth';
 
 interface LogoutButtonProps {
   variant?: 'button' | 'icon';

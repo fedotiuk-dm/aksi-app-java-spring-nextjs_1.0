@@ -37,7 +37,7 @@ import { useState } from 'react';
 // MUI іконки
 
 // Внутрішні залежності
-import { useLogout, useAuth } from '@/features/auth';
+import { useLogout, useAuth, ROLE_DISPLAY_NAMES } from '@/features/auth';
 import { useSafeMUIHydration } from '@/shared/lib/hooks';
 
 // Константи
@@ -124,10 +124,10 @@ export default function Header() {
                     {user.firstName} {user.lastName}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {user.email}
+                    @{user.username}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {user.role === 'ADMIN' ? 'Адміністратор' : 'Оператор'}
+                    {user.roles?.[0] && ROLE_DISPLAY_NAMES[user.roles[0]]}
                   </Typography>
                 </Box>
               )}

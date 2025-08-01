@@ -3,30 +3,46 @@
  */
 
 import { useEffect } from 'react';
-import { useAuthStore } from '../store/auth-store';
-import { useGetCurrentUser } from '@/shared/api/generated/user';
+import { 
+  useAuthStore,
+  selectIsAdmin,
+  selectIsManager,
+  selectIsOperator,
+  selectIsCleaner,
+  selectIsDriver,
+  selectIsAccountant,
+  selectHasPermission,
+  selectPermissions,
+  selectCurrentBranchId,
+  selectCurrentBranchName
+} from '@/features/auth';
+import { useGetCurrentSession } from '@/shared/api/generated/auth';
 import { useLogout } from './use-logout';
 
 export const useAuth = () => {
-  const { user, isAuthenticated, setUser } = useAuthStore();
+  const store = useAuthStore();
+  const user = store.user;
+  const session = store.session;
+  const isAuthenticated = store.isAuthenticated;
+  const setSession = store.setSession;
   const { logout: logoutAction } = useLogout();
 
-  // Use generated hook to get current user
-  const { data: currentUser, isLoading, error, refetch } = useGetCurrentUser({
+  // Use generated hook to get current session
+  const { data: currentSession, isLoading, error, refetch } = useGetCurrentSession({
     query: {
       staleTime: 5 * 60 * 1000, // 5 minutes
       retry: false,
     },
   });
 
-  // Sync user data with store
+  // Sync session data with store
   useEffect(() => {
-    if (currentUser) {
-      setUser(currentUser);
+    if (currentSession) {
+      setSession(currentSession);
     } else if (error) {
-      setUser(null);
+      setSession(null);
     }
-  }, [currentUser, error, setUser]);
+  }, [currentSession, error, setSession]);
 
   const checkAuth = async () => {
     const { data } = await refetch();
@@ -35,19 +51,31 @@ export const useAuth = () => {
 
   return {
     // State
-    user: user || currentUser || null,
-    isAuthenticated: isAuthenticated || !!currentUser,
+    user,
+    session: session || currentSession || null,
+    isAuthenticated: isAuthenticated || !!currentSession,
     isLoading,
     error: error ? String(error) : null,
 
     // Actions
     logout: logoutAction,
     checkAuth,
-    refetchUser: refetch,
+    refetchSession: refetch,
 
-    // Role checks
-    isAdmin: (user || currentUser)?.role === 'ADMIN',
-    isOperator: (user || currentUser)?.role === 'OPERATOR',
-    canManageUsers: (user || currentUser)?.role === 'ADMIN',
+    // Role checks using selectors
+    isAdmin: selectIsAdmin(store),
+    isManager: selectIsManager(store),
+    isOperator: selectIsOperator(store),
+    isCleaner: selectIsCleaner(store),
+    isDriver: selectIsDriver(store),
+    isAccountant: selectIsAccountant(store),
+    
+    // Permission checks
+    permissions: selectPermissions(store),
+    hasPermission: (permission: string) => selectHasPermission(store, permission),
+    
+    // Branch info
+    currentBranchId: selectCurrentBranchId(store),
+    currentBranchName: selectCurrentBranchName(store),
   };
 };

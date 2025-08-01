@@ -75,6 +75,10 @@ export class ApiError extends Error {
    * Вивести детальну інформацію про помилку у консоль
    */
   logToConsole(): void {
+    // Не логуємо Network Error - це зазвичай означає, що сервер недоступний
+    if (this.message === 'Network Error') {
+      return;
+    }
     console.error(`🔴 API Error [${this.status}] ${this.errorId || ''}: ${this.message}`);
     console.error(this.getConsoleData());
   }
@@ -125,45 +129,59 @@ export const handleApiError = (error: unknown): ApiError => {
   });
 };
 
-// Отримуємо базовий URL API з змінних середовища
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+// Конфігурація axios
+const AXIOS_CONFIG = {
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
+  timeout: 30000,
+  // Шляхи, для яких не логуємо помилки
+  silentPaths: ['/users/me', '/api/auth/session', '/api/auth/refresh-token', '/test-headers'],
+  // Типи помилок, які не логуємо
+  silentErrors: ['Network Error', 'timeout', 'ECONNABORTED', 'canceled'],
+};
 
-console.log('🔧 Axios baseURL:', baseURL);
+// Логування конфігурації тільки в development
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔧 Axios configuration:', {
+    baseURL: AXIOS_CONFIG.baseURL,
+    timeout: AXIOS_CONFIG.timeout,
+    withCredentials: true,
+    currentOrigin: typeof window !== 'undefined' ? window.location.origin : 'SSR',
+  });
+}
 
 /**
  * Створення основного екземпляру Axios з базовими налаштуваннями
  */
 export const apiClient: AxiosInstance = axios.create({
-  baseURL,
+  baseURL: AXIOS_CONFIG.baseURL,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
-  timeout: 10000, // Таймаут запиту 10 секунд
+  timeout: AXIOS_CONFIG.timeout,
   withCredentials: true, // Завжди передавати cookies в запитах
 });
 
 // Логування запитів у режимі розробки
 if (process.env.NODE_ENV === 'development') {
   apiClient.interceptors.request.use((config) => {
-    // Фільтруємо чутливі маршрути
+    // Не логуємо чутливі маршрути
     const url = config.url || '';
-    const isSensitive = url.includes('/auth/') || url.includes('/users/');
+    const isSilentPath = AXIOS_CONFIG.silentPaths.some(path => url.includes(path));
 
-    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
-      withCredentials: config.withCredentials,
-      headers: config.headers,
-    });
+    if (!isSilentPath) {
+      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
+    }
 
     return config;
   });
 
   apiClient.interceptors.response.use((response) => {
-    // Фільтруємо чутливі маршрути
+    // Не логуємо чутливі маршрути
     const url = response.config.url || '';
-    const isSensitive = url.includes('/auth/') || url.includes('/users/');
+    const isSilentPath = AXIOS_CONFIG.silentPaths.some(path => url.includes(path));
 
-    if (!isSensitive) {
+    if (!isSilentPath) {
       console.log(`[API Response] ${response.status} ${response.config.url}`);
     }
     return response;
@@ -189,7 +207,7 @@ let failedQueue: QueueItem[] = [];
 async function refreshToken(): Promise<boolean> {
   try {
     // Викликаємо backend API для оновлення токена
-    await apiClient.post('/auth/refresh-token', {});
+    await apiClient.post('/api/auth/refresh-token', {});
     return true;
   } catch (error) {
     console.error('Помилка оновлення токена:', error);
@@ -216,14 +234,25 @@ function processQueue(success: boolean) {
  * Детальне логування помилок API
  */
 function logApiError(error: AxiosError) {
+  // Не логуємо Network Error і деякі інші помилки
+  if (AXIOS_CONFIG.silentErrors.some(msg => error.message?.includes(msg))) {
+    return;
+  }
+
   if (!error.response?.data) {
     if (error.request) {
       // Запит був зроблений, але відповіді немає
-      console.error('Немає відповіді від сервера', {
-        url: error.config?.url,
-        method: error.config?.method?.toUpperCase(),
-        message: error.message,
-      });
+      // Перевіряємо чи це silent path
+      const isSilentPath = AXIOS_CONFIG.silentPaths.some(path => error.config?.url?.includes(path));
+      
+      // Логуємо тільки в development режимі і якщо це не silent path
+      if (process.env.NODE_ENV === 'development' && !isSilentPath) {
+        console.error('Немає відповіді від сервера', {
+          url: error.config?.url,
+          method: error.config?.method?.toUpperCase(),
+          message: error.message,
+        });
+      }
     } else {
       // Помилка налаштування запиту
       console.error('Помилка налаштування запиту:', error.message);
@@ -256,8 +285,11 @@ apiClient.interceptors.response.use(
     // Створюємо розширену помилку API для кращого логування
     const apiError = ApiError.fromAxiosError(error);
 
-    // Логуємо помилку у режимі розробки (крім /users/me)
-    if (process.env.NODE_ENV === 'development' && !error.config?.url?.includes('/users/me')) {
+    // Логуємо помилку у режимі розробки (крім деяких маршрутів та типів помилок)
+    const isNetworkError = error.message === 'Network Error';
+    const isSilentPath = AXIOS_CONFIG.silentPaths.some(path => error.config?.url?.includes(path));
+    
+    if (process.env.NODE_ENV === 'development' && !isSilentPath && !isNetworkError) {
       apiError.logToConsole();
     }
 

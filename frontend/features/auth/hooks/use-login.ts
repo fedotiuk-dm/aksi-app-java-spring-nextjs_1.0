@@ -6,9 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { useAuthStore } from '../store/auth-store';
-import { useLogin, loginBody } from '@/shared/api/generated/auth';
-import { useGetCurrentUser } from '@/shared/api/generated/user';
+import { useAuthStore } from '@/features/auth';
+import { useLogin, loginBody, useGetCurrentSession } from '@/shared/api/generated/auth';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -19,7 +18,8 @@ export const useLoginForm = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const setUser = useAuthStore((state) => state.setUser);
-  const { refetch: refetchUser } = useGetCurrentUser({
+  const setSession = useAuthStore((state) => state.setSession);
+  const { refetch: refetchSession } = useGetCurrentSession({
     query: {
       enabled: false,
     },
@@ -27,28 +27,50 @@ export const useLoginForm = () => {
 
   const loginMutation = useLogin({
     mutation: {
-      onSuccess: async () => {
+      onSuccess: async (loginResponse) => {
         try {
-          // Refetch current user after successful login
-          const { data: user } = await refetchUser();
-          if (user) {
-            setUser(user);
-            toast.success(`Вітаємо, ${user.firstName}!`);
-          } else {
-            toast.success('Вхід успішний!');
+          console.log('Login response:', loginResponse);
+          console.log('firstName:', loginResponse.firstName);
+          console.log('username:', loginResponse.username);
+          
+          // Set user data from login response
+          setUser(loginResponse);
+          
+          // Fetch current session info
+          const { data: session } = await refetchSession();
+          if (session) {
+            setSession(session);
           }
+          
+          const displayName = loginResponse.firstName || loginResponse.username || 'Користувач';
+          toast.success(`Вітаємо, ${displayName}!`);
 
           // Invalidate all queries to refresh data
           await queryClient.invalidateQueries();
 
-          // Redirect to dashboard or saved page
+          // Check if branch selection is required
+          // Handle JsonNullable objects from Java backend
+          const hasBranchId = loginResponse.branchId && 
+                              (typeof loginResponse.branchId === 'string' || 
+                               (loginResponse.branchId as any).present === true);
+          
+          if (loginResponse.requiresBranchSelection && !hasBranchId) {
+            console.log('Redirecting to branch selection');
+            router.push('/branch-selection');
+          } else {
+            // Redirect to dashboard or saved page
+            const params = new URLSearchParams(window.location.search);
+            const callbackUrl = params.get('callbackUrl') || '/dashboard';
+            console.log('Redirecting to:', callbackUrl);
+            // Use window.location for guaranteed redirect
+            window.location.href = callbackUrl;
+          }
+        } catch (error) {
+          console.error('Error fetching session after login:', error);
+          // Still proceed with navigation
           const params = new URLSearchParams(window.location.search);
           const callbackUrl = params.get('callbackUrl') || '/dashboard';
           router.push(callbackUrl);
-        } catch (error) {
-          console.error('Error fetching user after login:', error);
-          toast.success('Вхід успішний!');
-          router.push('/dashboard');
         }
       },
       onError: (error: Error) => {
@@ -67,11 +89,14 @@ export const useLoginForm = () => {
     defaultValues: {
       username: '',
       password: '',
+      rememberMe: false,
     },
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    await loginMutation.mutateAsync({ data });
+    // Remove branchId from form data if not needed
+    const { branchId, ...loginData } = data;
+    await loginMutation.mutateAsync({ data: loginData });
   };
 
   return {

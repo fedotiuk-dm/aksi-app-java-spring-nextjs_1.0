@@ -15,6 +15,8 @@ import {
   InputAdornment,
   IconButton,
   CircularProgress,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import {
   Visibility,
@@ -22,7 +24,7 @@ import {
   AccountCircle,
   Lock,
 } from '@mui/icons-material';
-import { useLoginForm } from '../hooks/use-login';
+import { useLoginForm } from '@/features/auth';
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -101,6 +103,17 @@ export const LoginForm = () => {
             ),
           }}
           {...register('password')}
+        />
+        
+        <FormControlLabel
+          control={
+            <Checkbox 
+              {...register('rememberMe')}
+              color="primary"
+            />
+          }
+          label="Запам'ятати мене на 30 днів"
+          sx={{ mt: 1 }}
         />
 
         <Button

@@ -11,36 +11,27 @@
  * 📁 Результат:
  * shared/api/generated/
  *   ├── auth/             # Auth Domain
- *   │   ├── authApi.ts                - хуки (useLogin, useRefreshToken тощо)
+ *   │   ├── authApi.ts                - хуки (useLogin, useLogout, useGetSessionInfo тощо)
  *   │   ├── index.ts                  - типи + BARREL: export * from './authApi'
  *   │   └── schemas.zod.ts            - Zod схеми
  *   ├── user/             # User Domain
- *   │   ├── userApi.ts                - хуки (useUsers, useCreateUser тощо)
+ *   │   ├── userApi.ts                - хуки (useListUsers, useCreateUser, useUpdateUser тощо)
  *   │   ├── index.ts                  - типи + BARREL: export * from './userApi'
  *   │   └── schemas.zod.ts            - Zod схеми
- *   ├── client/           # Client Domain
- *   │   ├── clientApi.ts              - хуки (useClients, useCreateClient тощо)
- *   │   └── ...
- *   ├── branch/           # Branch Domain
- *   │   ├── branchApi.ts              - хуки (useBranches, useCreateBranch тощо)
- *   │   └── ...
- *   ├── order/            # Order Domain
- *   │   ├── orderApi.ts               - хуки (useOrders, useCreateOrder тощо)
- *   │   └── ...
- *   ├── item/             # Item Domain
- *   │   ├── itemApi.ts                - хуки (useServiceCategories, usePriceList тощо)
- *   │   └── ...
- *   └── document/         # Document Domain
- *       ├── documentApi.ts            - хуки (useReceipts, useDocuments тощо)
- *       └── ...
+ *   ├── customer/         # Customer Domain
+ *   │   ├── customerApi.ts            - хуки (useListCustomers, useCreateCustomer тощо)
+ *   │   ├── index.ts                  - типи + BARREL: export * from './customerApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
+ *   └── serviceItem/      # Service Item Domain
+ *       ├── serviceItemApi.ts         - хуки (useListServices, useListItems, useGetServiceItemPrice тощо)
+ *       ├── index.ts                  - типи + BARREL: export * from './serviceItemApi'
+ *       └── schemas.zod.ts            - Zod схеми
  *
  * 🚀 ПЕРЕВАГИ КОМПОЗИЦІЇ:
  * ✅ import { useLogin } from '@/shared/api/generated/auth'
- * ✅ import { useUsers } from '@/shared/api/generated/user'
- * ✅ import { useCreateClient } from '@/shared/api/generated/client'
- * ✅ import { useBranches } from '@/shared/api/generated/branch'
- * ✅ import { useCreateOrder } from '@/shared/api/generated/order'
- * ✅ import { useServiceCategories } from '@/shared/api/generated/item'
+ * ✅ import { useListUsers } from '@/shared/api/generated/user'
+ * ✅ import { useCreateCustomer } from '@/shared/api/generated/customer'
+ * ✅ import { useListServices } from '@/shared/api/generated/serviceItem'
  *
  * 🎯 ORDER WIZARD: UI компоненти використовують композицію доменних API
  */
@@ -55,25 +46,16 @@ const MUTATOR_NAME = 'orvalFetcher';
 // 🎯 ДОМЕННІ ТЕГИ (синхронізовані з backend OpenAPI)
 const DOMAIN_TAGS = {
   // 🔐 Auth Domain
-  auth: ['auth-controller'],
+  auth: ['auth'],
 
   // 👥 User Domain
   user: ['users'],
 
-  // 👤 Client Domain
-  client: ['clients'],
+  // 👤 Customer Domain
+  customer: ['customers'],
 
-  // 🏢 Branch Domain
-  branch: ['branches'],
-
-  // 📦 Order Domain
-  order: ['orders'],
-
-  // 🏷️ Item Domain
-  item: ['items', 'service-categories', 'price-list'],
-
-  // 📄 Document Domain
-  document: ['documents', 'receipts'],
+  // 🏷️ Service Item Domain
+  serviceItem: ['services', 'items', 'service-items'],
 };
 
 // 🏭 Фабрика для створення доменних конфігурацій
@@ -147,20 +129,11 @@ const config: Config = {
   // 👥 USER DOMAIN
   ...createDomainConfig('user', DOMAIN_TAGS.user),
 
-  // 👤 CLIENT DOMAIN
-  ...createDomainConfig('client', DOMAIN_TAGS.client),
+  // 👤 CUSTOMER DOMAIN
+  ...createDomainConfig('customer', DOMAIN_TAGS.customer),
 
-  // 🏢 BRANCH DOMAIN
-  ...createDomainConfig('branch', DOMAIN_TAGS.branch),
-
-  // 📦 ORDER DOMAIN
-  ...createDomainConfig('order', DOMAIN_TAGS.order),
-
-  // 🏷️ ITEM DOMAIN
-  ...createDomainConfig('item', DOMAIN_TAGS.item),
-
-  // 📄 DOCUMENT DOMAIN
-  ...createDomainConfig('document', DOMAIN_TAGS.document),
+  // 🏷️ SERVICE ITEM DOMAIN
+  ...createDomainConfig('serviceItem', DOMAIN_TAGS.serviceItem),
 };
 
 export default config;

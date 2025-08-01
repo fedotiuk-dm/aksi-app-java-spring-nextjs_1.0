@@ -152,7 +152,7 @@ show_logs() {
 connect_shell() {
     local service="${2:-backend}"
     log_info "Підключаємося до $service контейнера..."
-    docker-compose -f $COMPOSE_FILE exec $service bash
+    docker-compose -f $COMPOSE_FILE exec "$service" bash
 }
 
 # Функція для створення volumes

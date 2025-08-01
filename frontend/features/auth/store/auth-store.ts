@@ -10,17 +10,20 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { UserResponse } from '@/shared/api/generated/user';
+import type { LoginResponse, SessionInfo } from '@/shared/api/generated/auth';
+import { ROLES, type UserRole } from '@/features/auth';
 
 interface AuthState {
   // User data
-  user: UserResponse | null;
+  user: LoginResponse | null;
+  session: SessionInfo | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
   
   // Actions
-  setUser: (user: UserResponse | null) => void;
+  setUser: (user: LoginResponse | null) => void;
+  setSession: (session: SessionInfo | null) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
   logout: () => void;
@@ -29,6 +32,7 @@ interface AuthState {
 
 const initialState = {
   user: null,
+  session: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
@@ -47,6 +51,12 @@ export const useAuthStore = create<AuthState>()(
             state.error = null;
           }),
 
+        setSession: (session) =>
+          set((state) => {
+            state.session = session;
+            state.isAuthenticated = !!session;
+          }),
+
         setLoading: (isLoading) =>
           set((state) => {
             state.isLoading = isLoading;
@@ -61,6 +71,7 @@ export const useAuthStore = create<AuthState>()(
         logout: () =>
           set((state) => {
             state.user = null;
+            state.session = null;
             state.isAuthenticated = false;
             state.error = null;
             state.isLoading = false;
@@ -73,6 +84,7 @@ export const useAuthStore = create<AuthState>()(
         // Зберігаємо тільки базову інформацію (не токени!)
         partialize: (state) => ({
           user: state.user,
+          session: state.session,
           isAuthenticated: state.isAuthenticated,
         }),
       }
@@ -85,17 +97,36 @@ export const useAuthStore = create<AuthState>()(
 
 // Selectors
 export const selectUser = (state: AuthState) => state.user;
+export const selectSession = (state: AuthState) => state.session;
 export const selectIsAuthenticated = (state: AuthState) => state.isAuthenticated;
 export const selectIsLoading = (state: AuthState) => state.isLoading;
 export const selectError = (state: AuthState) => state.error;
 
-// Role-based selectors (UserResponseRole має тільки ADMIN та OPERATOR)
-export const selectIsAdmin = (state: AuthState) => state.user?.role === 'ADMIN';
-export const selectIsOperator = (state: AuthState) => state.user?.role === 'OPERATOR';
+// Role-based selectors
+export const selectUserRoles = (state: AuthState) => state.user?.roles || [];
+export const selectHasRole = (state: AuthState, role: UserRole) => 
+  state.user?.roles?.includes(role) || false;
+
+export const selectIsAdmin = (state: AuthState) => 
+  state.user?.roles?.includes(ROLES.ADMIN) || false;
+export const selectIsManager = (state: AuthState) => 
+  state.user?.roles?.includes(ROLES.MANAGER) || false;
+export const selectIsOperator = (state: AuthState) => 
+  state.user?.roles?.includes(ROLES.OPERATOR) || false;
+export const selectIsCleaner = (state: AuthState) => 
+  state.user?.roles?.includes(ROLES.CLEANER) || false;
+export const selectIsDriver = (state: AuthState) => 
+  state.user?.roles?.includes(ROLES.DRIVER) || false;
+export const selectIsAccountant = (state: AuthState) => 
+  state.user?.roles?.includes(ROLES.ACCOUNTANT) || false;
 
 // Permission selectors
-export const selectCanManageUsers = (state: AuthState) => 
-  state.user?.role === 'ADMIN';
+export const selectPermissions = (state: AuthState) => state.user?.permissions || [];
+export const selectHasPermission = (state: AuthState, permission: string) => 
+  state.user?.permissions?.includes(permission) || false;
 
-export const selectCanTakeOrders = (state: AuthState) =>
-  state.user?.role === 'ADMIN' || state.user?.role === 'OPERATOR';
+// Branch selectors
+export const selectCurrentBranchId = (state: AuthState) => state.user?.branchId;
+export const selectCurrentBranchName = (state: AuthState) => state.user?.branchName;
+export const selectRequiresBranchSelection = (state: AuthState) => 
+  state.user?.requiresBranchSelection || false;

@@ -1,10 +1,10 @@
-// 🔥 AUTO-GENERATED BARREL EXPORT for DOCUMENT DOMAIN
-// 📄 Document Domain - квитанції, документи, цифрові підписи
-// Згенеровано: 2025-07-26T12:38:22.965Z
+// 🔥 AUTO-GENERATED BARREL EXPORT for SERVICEITEM DOMAIN
+// Домен serviceItem
+// Згенеровано: 2025-08-01T20:06:56.586Z
 // Не редагуйте вручну - файл буде перезаписаний при наступній генерації
 //
 // 💡 Це дозволяє використовувати чисті імпорти:
-// import { useClients, ClientResponse, clientSchema } from '@/shared/api/generated/document';
+// import { useClients, ClientResponse, clientSchema } from '@/shared/api/generated/serviceItem';
 //
 // 🎯 Доступні експорти:
 // - з aKSIDryCleaningOrderSystemAPI.ts: React Query хуки (useQuery, useMutation)
