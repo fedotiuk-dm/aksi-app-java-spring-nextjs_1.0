@@ -111,23 +111,8 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * Функція-утиліта для обробки помилок в реакт-компонентах
- */
-export const handleApiError = (error: unknown): ApiError => {
-  if (error instanceof ApiError) {
-    return error;
-  }
-
-  if (axios.isAxiosError(error)) {
-    return ApiError.fromAxiosError(error);
-  }
-
-  return new ApiError({
-    status: 500,
-    message: error instanceof Error ? error.message : 'Невідома помилка',
-  });
-};
+// Функція handleApiError була видалена, бо не використовується
+// В проекті використовується обробка помилок через React Query та axios interceptors
 
 // Конфігурація axios
 const AXIOS_CONFIG = {
@@ -281,36 +266,45 @@ function logApiError(error: AxiosError) {
 // Обробка помилок відповіді
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
-  async (error: AxiosError) => {
+  async (error: unknown) => {
     // Перевіряємо чи запит був скасований
     if (axios.isCancel(error)) {
+      // Для скасованих запитів просто відхиляємо без логування
       return Promise.reject(error);
     }
     
+    // Перевіряємо чи це помилка Axios
+    if (!axios.isAxiosError(error)) {
+      return Promise.reject(error);
+    }
+    
+    // Тепер TypeScript знає, що error є AxiosError
+    const axiosError = error as AxiosError;
+    
+    // Без доступу до window на сервері пропускаємо решту обробки
+    if (typeof window === 'undefined') {
+      return Promise.reject(axiosError);
+    }
+
+    const originalRequest = axiosError.config as ExtendedAxiosRequestConfig;
+    if (!originalRequest) {
+      return Promise.reject(axiosError);
+    }
+
     // Створюємо розширену помилку API для кращого логування
-    const apiError = ApiError.fromAxiosError(error);
+    const apiError = ApiError.fromAxiosError(axiosError);
 
     // Логуємо помилку у режимі розробки (крім деяких маршрутів та типів помилок)
-    const isNetworkError = error.message === 'Network Error';
-    const isCancelError = error.message === 'canceled';
-    const isSilentPath = AXIOS_CONFIG.silentPaths.some(path => error.config?.url?.includes(path));
+    const isNetworkError = axiosError.message === 'Network Error';
+    const isCancelError = axiosError.message === 'canceled';
+    const isSilentPath = AXIOS_CONFIG.silentPaths.some(path => originalRequest.url?.includes(path));
     
     if (process.env.NODE_ENV === 'development' && !isSilentPath && !isNetworkError && !isCancelError) {
       apiError.logToConsole();
     }
 
-    // Без доступу до window на сервері пропускаємо решту обробки
-    if (typeof window === 'undefined') {
-      return Promise.reject(error);
-    }
-
-    const originalRequest = error.config as ExtendedAxiosRequestConfig;
-    if (!originalRequest) {
-      return Promise.reject(error);
-    }
-
     // Обробка 500 Internal Server Error
-    if (error.response?.status === 500) {
+    if (axiosError.response?.status === 500) {
       // Особлива обробка для /users/me - це може означати, що користувач не авторизований
       if (originalRequest.url?.includes('/users/me')) {
         console.log('📌 500 error on /users/me - user might not be authenticated');
@@ -328,19 +322,20 @@ apiClient.interceptors.response.use(
 
     // Спеціальна обробка для /users/me - не логуємо і не показуємо помилки
     if (originalRequest.url?.includes('/users/me')) {
-      if (error.response?.status === 401 || error.response?.status === 404 || error.response?.status === 500) {
+      const status = axiosError.response?.status;
+      if (status === 401 || status === 404 || status === 500) {
         // Тихо повертаємо помилку без логування
         return Promise.reject(new Error('User not authenticated'));
       }
     }
 
     // Обробка 401 Unauthorized помилки - спроба оновити токен
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (axiosError.response?.status === 401 && !originalRequest._retry) {
       // Ігноруємо, якщо це вже запит на оновлення токена
       if (originalRequest.url?.includes('/auth/refresh-token')) {
         useAuthStore.getState().logout();
         window.location.href = '/login';
-        return Promise.reject(error);
+        return Promise.reject(axiosError);
       }
 
       // Якщо вже відбувається оновлення токена, додаємо запит у чергу
@@ -369,7 +364,7 @@ apiClient.interceptors.response.use(
           useAuthStore.getState().logout();
           const callbackUrl = window.location.pathname + window.location.search;
           window.location.href = `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`;
-          return Promise.reject(error);
+          return Promise.reject(axiosError);
         }
       } catch (refreshError) {
         processQueue(false);
@@ -382,7 +377,7 @@ apiClient.interceptors.response.use(
     }
 
     // Обробка 403 Forbidden
-    if (error.response?.status === 403) {
+    if (axiosError.response?.status === 403) {
       // Не перенаправляємо на логін для /users/me
       if (!originalRequest.url?.includes('/users/me')) {
         useAuthStore.getState().logout();
@@ -392,45 +387,10 @@ apiClient.interceptors.response.use(
     }
 
     // Логування деталей помилки
-    logApiError(error);
+    logApiError(axiosError);
 
-    return Promise.reject(error);
+    return Promise.reject(axiosError);
   }
 );
-
-/**
- * Типізовані методи для зручної роботи з API
- */
-export const api = {
-  get: <T>(
-    url: string,
-    params?: Record<string, unknown>,
-    config: Omit<AxiosRequestConfig, 'params'> = {}
-  ) => apiClient.get<T>(url, { params, ...config }).then((response) => response.data),
-
-  post: <T>(url: string, data?: unknown, config: AxiosRequestConfig = {}) =>
-    apiClient.post<T>(url, data, config).then((response) => response.data),
-
-  put: <T>(url: string, data?: unknown, config: AxiosRequestConfig = {}) =>
-    apiClient.put<T>(url, data, config).then((response) => response.data),
-
-  delete: <T>(url: string, config: AxiosRequestConfig = {}) =>
-    apiClient.delete<T>(url, config).then((response) => response.data),
-
-  patch: <T>(url: string, data?: unknown, config: AxiosRequestConfig = {}) =>
-    apiClient.patch<T>(url, data, config).then((response) => response.data),
-
-  /**
-   * Створює контролер скасування запиту та токен
-   * @returns { AbortController, signal } - контролер і сигнал для скасування запиту
-   */
-  createAbortController: () => {
-    const controller = new AbortController();
-    return {
-      controller,
-      signal: controller.signal,
-    };
-  },
-};
 
 export default apiClient;
