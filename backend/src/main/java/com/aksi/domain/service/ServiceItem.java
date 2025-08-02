@@ -46,6 +46,12 @@ public class ServiceItem extends BaseEntity {
   @Column(name = "express_price", precision = 10, scale = 2)
   private BigDecimal expressPrice;
 
+  @Column(name = "price_black", precision = 10, scale = 2)
+  private BigDecimal priceBlack;
+
+  @Column(name = "price_color", precision = 10, scale = 2)
+  private BigDecimal priceColor;
+
   @Column(name = "processing_time_days")
   private Integer processingTimeDays;
 

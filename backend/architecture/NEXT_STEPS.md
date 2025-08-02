@@ -52,20 +52,28 @@
    - Історія замовлень
    - Комунікаційні налаштування
 
-2. **Item/Service Domain** 
+2. **Service Domain** 
    - Каталог послуг (чистка, прання, прасування)
-   - Типи предметів та їх характеристики
-   - Базові ціни (прайс-лист)
+   - Каталог предметів та зв'язок з послугами
+   - Базові ціни з прайс-листа (CSV)
 
-3. **Order Domain**
-   - Створення замовлень
-   - Додавання предметів з каталогу
-   - Статуси
+3. **Order Domain з Cart функціональністю**
+   - **Cart (корзина)**:
+     - Тимчасове зберігання предметів до створення замовлення
+     - Інтерактивний розрахунок цін в реальному часі
+     - Застосування глобальних параметрів (терміновість, знижки)
+     - TTL механізм (автовидалення через 1 годину)
+   - **Order (замовлення)**:
+     - Створення замовлень з готової корзини
+     - Фіксація характеристик предметів (матеріал, колір, дефекти)
+     - Фотографування предметів
+     - Статуси
 
 4. **Pricing Domain**
-   - Калькулятор на основі Item/Service
+   - Калькулятор на основі ServiceItem та характеристик
    - Модифікатори та правила
    - API для розрахунків
+   - Інтеграція з Cart для real-time обчислень
 
 5. **Receipt Domain**
    - PDF генерація
@@ -87,9 +95,11 @@ src/main/java/org/example/dryclean/
 ├── auth/          # Authentication
 ├── user/          # User management  
 ├── customer/      # Customers
-├── item/          # Items catalog
-├── service/       # Services catalog
-├── order/         # Orders
+├── service/       # Services catalog (включає предмети)
+├── order/         # Orders (включає корзину та характеристики)
+│   ├── cart/      # Cart functionality
+│   ├── order/     # Order management
+│   └── storage/   # Photo storage
 ├── pricing/       # Price calculation
 ├── receipt/       # Receipts
 └── common/        # Shared components
@@ -102,11 +112,11 @@ api-specs/
 ├── auth-api.yaml
 ├── user-api.yaml
 ├── customer-api.yaml
-├── item-api.yaml
-├── service-api.yaml
-├── order-api.yaml
+├── service-api.yaml    # Послуги та предмети
+├── cart-api.yaml       # Корзина
+├── order-api.yaml      # Замовлення
 ├── pricing-api.yaml
-└── main-api.yaml  # Aggregates all APIs
+└── main-api.yaml      # Aggregates all APIs
 ```
 
 ## Ключові технології
@@ -115,7 +125,7 @@ api-specs/
 - **API**: OpenAPI 3.0, генерація коду
 - **Auth**: Cookie-based, Spring Security
 - **Database**: PostgreSQL, Flyway migrations
-- **Sessions**: Redis
+- **Sessions & Cache**: Redis (сесії та корзина з TTL)
 - **Testing**: JUnit 5, Testcontainers
 - **Deploy**: Docker, Docker Compose
 
@@ -151,8 +161,16 @@ api-specs/
 
 ### Week 2
 - [ ] Customer management
-- [ ] Item/Service catalog
-- [ ] Order creation flow
+- [ ] Service catalog (послуги та предмети)
+- [ ] Cart implementation:
+  - [ ] Cart REST API
+  - [ ] Real-time price calculation
+  - [ ] TTL mechanism with Redis
+  - [ ] Urgency and discount handling
+- [ ] Order creation flow (з характеристиками):
+  - [ ] Create order from cart
+  - [ ] Item characteristics capture
+  - [ ] Photo upload
 
 ### Week 3
 - [ ] Pricing calculator
@@ -168,6 +186,7 @@ api-specs/
 3. **Модульність** - домени максимально незалежні
 4. **PostgreSQL + Redis** - основне сховище + сесії
 5. **Docker** - все працює в контейнерах
+6. **Cart-based Order Flow** - корзина для інтерактивного розрахунку перед створенням замовлення
 
 ## Quick Start
 

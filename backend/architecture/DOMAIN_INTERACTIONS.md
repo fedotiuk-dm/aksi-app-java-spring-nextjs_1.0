@@ -13,37 +13,66 @@
 ┌─────────────┐     ┌──────────────┐     ┌─────────────┐
 │    Auth     │────▶│   Customer   │◀────│   Branch    │
 └──────┬──────┘     └──────┬───────┘     └──────┬──────┘
-       │                   │                     │
-       ▼                   ▼                     ▼
+       │                   │                    │
+       ▼                   ▼                    ▼
 ┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│    Order    │────▶│     Item     │◀────│  Service    │
+│    Cart     │────▶│   Service    │◀────│   Pricing   │
+└──────┬──────┘     └──────┬───────┘     └──────┬──────┘
+       │                   │                    │
+       ▼                   ▼                    ▼
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│    Order    │────▶│   Payment    │────▶│   Receipt   │
 └──────┬──────┘     └──────────────┘     └──────┬──────┘
-       │                                         │
-       ▼                                         ▼
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Pricing   │────▶│   Payment    │────▶│  Receipt    │
-└─────────────┘     └──────┬───────┘     └─────────────┘
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │ Notification │
-                    └──────────────┘
+       │                                        │
+       └────────────────▶┌──────────────┐◀──────┘
+                         │ Notification │
+                         └──────────────┘
 ```
 
 ## Детальний опис взаємодій
 
-### 1. Order Domain - центральний домен
+### 1. Cart Domain - інтерактивна корзина для розрахунків
+
+**Призначення:**
+- Тимчасове зберігання предметів до створення замовлення
+- Інтерактивний розрахунок цін в реальному часі
+- Застосування глобальних параметрів (терміновість, знижки)
 
 **Залежності:**
+- Customer (для прив'язки корзини)
+- Service (для отримання базових цін)
+- Pricing (для розрахунку з модифікаторами)
+
+**API endpoints:**
+```
+POST   /api/cart                    - створити корзину
+GET    /api/cart/{cartId}          - отримати корзину
+POST   /api/cart/{cartId}/items    - додати предмет
+PUT    /api/cart/{cartId}/items/{itemId} - оновити предмет
+DELETE /api/cart/{cartId}/items/{itemId} - видалити предмет
+PUT    /api/cart/{cartId}/urgency  - змінити терміновість
+PUT    /api/cart/{cartId}/discount - застосувати знижку
+POST   /api/cart/{cartId}/calculate - перерахувати всі ціни
+POST   /api/cart/{cartId}/checkout - створити замовлення з корзини
+```
+
+### 2. Order Domain - центральний домен
+
+**Залежності:**
+- Cart (створюється з готової корзини)
 - Customer (для прив'язки замовлення)
 - Branch (для визначення місця прийому)
-- Item (для характеристик предметів)
-- Service (для вибору послуг)
+- Service (для вибору послуг та предметів з каталогу)
 - Pricing (для розрахунку вартості)
+
+**Особливості:**
+- Характеристики предметів (матеріал, колір, дефекти) фіксуються в OrderItem
+- Фотографії робляться при створенні замовлення
+- Замовлення створюється з готової корзини з усіма розрахунками
 
 **Події, які генерує:**
 - `OrderCreatedEvent`
-- `OrderItemAddedEvent`
+- `OrderItemAddedEvent` (включає всі характеристики)
 - `OrderStatusChangedEvent`
 - `OrderCompletedEvent`
 
@@ -51,11 +80,33 @@
 ```
 POST /api/orders - створити замовлення
 GET /api/orders/{id} - отримати замовлення
-PUT /api/orders/{id}/items - додати предмет
+PUT /api/orders/{id}/items - додати предмет з характеристиками
 PUT /api/orders/{id}/status - змінити статус
 ```
 
-### 2. Customer → Order
+### 3. Cart → Service + Pricing
+
+**Взаємодія:**
+- Cart використовує Service domain для отримання базових цін
+- Cart викликає Pricing для кожного предмета з усіма характеристиками
+- При зміні глобальних параметрів (терміновість, знижка) - перераховується вся корзина
+- Всі розрахунки зберігаються в корзині до створення замовлення
+
+**Особливості розрахунку:**
+- Кожен предмет розраховується окремо з усіма модифікаторами
+- Терміновість застосовується до всіх предметів
+- Знижки застосовуються вибірково (не на прання, прасування, фарбування)
+- Детальний breakdown зберігається для прозорості
+
+### 4. Cart → Order
+
+**Взаємодія:**
+- Order створюється з готової корзини через checkout
+- Всі розрахунки та характеристики переносяться з Cart
+- Cart зберігає TTL (time to live) та автоматично видаляється після checkout
+- Можливість відновити корзину з Order для редагування
+
+### 5. Customer → Order
 
 **Взаємодія:**
 - Order отримує customer ID при створенні
@@ -79,11 +130,37 @@ GET /api/customers/search?phone={phone} - List<CustomerDTO>
 }
 ```
 
-### 3. Order → Pricing
+### 3. Order → Service
 
 **Взаємодія:**
-- Pricing domain розраховує вартість на основі предметів
-- Order викликає Pricing API для кожного предмета
+- Service domain надає каталог послуг та предметів
+- Order використовує ServiceItem для визначення базової ціни
+- Характеристики предметів зберігаються в OrderItem
+
+**API Contract:**
+```java
+// Service API
+GET /api/services/items/{serviceItemId} - ServiceItemDTO
+GET /api/services/categories - List<ServiceCategoryDTO>
+GET /api/services/items/search?category={cat} - List<ServiceItemDTO>
+
+// ServiceItemDTO
+{
+  "id": "uuid",
+  "serviceId": "uuid", 
+  "itemId": "uuid",
+  "name": "string",
+  "category": "CLOTHING",
+  "basePrice": 100.00,
+  "unitOfMeasure": "PIECE"
+}
+```
+
+### 4. Order → Pricing
+
+**Взаємодія:**
+- Pricing domain розраховує вартість на основі ServiceItem та характеристик
+- Order викликає Pricing API для кожного OrderItem
 - Pricing враховує всі модифікатори та правила
 
 **API Contract:**
@@ -93,11 +170,12 @@ POST /api/pricing/calculate - PriceCalculationDTO
 
 // Request
 {
-  "serviceId": "uuid",
+  "serviceItemId": "uuid",
   "itemCharacteristics": {
     "material": "string",
     "color": "string",
     "stains": [],
+    "defects": [],
     "modifiers": []
   },
   "quantity": 1,
@@ -115,7 +193,7 @@ POST /api/pricing/calculate - PriceCalculationDTO
 }
 ```
 
-### 4. Order → Payment
+### 5. Order → Payment
 
 **Взаємодія:**
 - Payment domain обробляє платежі для замовлення
@@ -127,7 +205,7 @@ POST /api/pricing/calculate - PriceCalculationDTO
 - `PaymentRefundedEvent`
 - `OrderFullyPaidEvent`
 
-### 5. Order → Receipt
+### 6. Order → Receipt
 
 **Взаємодія:**
 - Receipt генерується при створенні замовлення
@@ -147,7 +225,7 @@ GET /api/receipts/{orderId}/pdf - PDF file
 }
 ```
 
-### 6. Customer → Notification
+### 7. Customer → Notification
 
 **Взаємодія:**
 - Notification domain підписаний на події замовлень
@@ -159,7 +237,7 @@ GET /api/receipts/{orderId}/pdf - PDF file
 - `OrderReadyEvent` → повідомлення про готовність
 - `PaymentReceivedEvent` → підтвердження оплати
 
-### 7. Auth → All Domains
+### 8. Auth → All Domains
 
 **Взаємодія:**
 - Auth надає JWT токени для авторизації
@@ -187,16 +265,30 @@ GET /api/receipts/{orderId}/pdf - PDF file
 
 Приклад:
 ```java
-// OrderService викликає PricingService
+// OrderService викликає Service і Pricing
 @Service
 public class OrderService {
+    @Autowired
+    private ServiceClient serviceClient;
     @Autowired
     private PricingClient pricingClient;
     
     public OrderItem addItem(OrderItemRequest request) {
+        // Отримати інформацію про ServiceItem
+        ServiceItemDTO serviceItem = serviceClient.getServiceItem(request.getServiceItemId());
+        
         // Синхронний виклик для розрахунку ціни
         PriceCalculation price = pricingClient.calculate(request);
-        // Створення OrderItem з розрахованою ціною
+        
+        // Створення OrderItem з всіма характеристиками
+        OrderItem orderItem = new OrderItem();
+        orderItem.setServiceItemId(serviceItem.getId());
+        orderItem.setMaterial(request.getMaterial());
+        orderItem.setColor(request.getColor());
+        orderItem.setStains(request.getStains());
+        orderItem.setDefects(request.getDefects());
+        orderItem.setCalculatedPrice(price.getTotalPrice());
+        // ...
     }
 }
 ```

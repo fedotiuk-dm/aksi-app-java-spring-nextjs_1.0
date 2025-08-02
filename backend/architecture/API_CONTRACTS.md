@@ -101,6 +101,283 @@ Response: 200 OK
 }
 ```
 
+## Cart Domain API
+
+### 1. Create Cart
+```http
+POST /api/v1/cart
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "customerId": "550e8400-e29b-41d4-a716-446655440000",
+  "branchId": "660e8400-e29b-41d4-a716-446655440001"
+}
+
+Response: 201 Created
+{
+  "id": "cart_8400-e29b-41d4-a716-446655440000",
+  "customerId": "550e8400-e29b-41d4-a716-446655440000",
+  "branchId": "660e8400-e29b-41d4-a716-446655440001",
+  "createdAt": "2024-01-30T10:15:30",
+  "expiresAt": "2024-01-30T11:15:30",
+  "items": [],
+  "totals": {
+    "subtotal": 0.00,
+    "discountAmount": 0.00,
+    "urgencyAmount": 0.00,
+    "total": 0.00
+  }
+}
+```
+
+### 2. Get Cart
+```http
+GET /api/v1/cart/{cartId}
+Authorization: Bearer {token}
+
+Response: 200 OK
+{
+  "id": "cart_8400-e29b-41d4-a716-446655440000",
+  "customerId": "550e8400-e29b-41d4-a716-446655440000",
+  "branchId": "660e8400-e29b-41d4-a716-446655440001",
+  "urgency": "NORMAL",
+  "discount": {
+    "type": "SOCIAL_MEDIA",
+    "percentage": 5
+  },
+  "items": [
+    {
+      "id": "item_123",
+      "serviceItemId": "880e8400-e29b-41d4-a716-446655440003",
+      "itemName": "Пальто жіноче",
+      "quantity": 1,
+      "unit": "PIECE",
+      "characteristics": {
+        "material": "WOOL",
+        "color": "BLACK",
+        "wearDegree": 30
+      },
+      "stains": ["GREASE", "COFFEE"],
+      "defects": ["WORN_AREAS"],
+      "modifiers": ["HAND_CLEANING"],
+      "pricing": {
+        "basePrice": 350.00,
+        "modifierDetails": [
+          {"name": "Ручна чистка", "percentage": 20, "amount": 70.00},
+          {"name": "Чорний колір", "percentage": 20, "amount": 70.00}
+        ],
+        "urgencyAmount": 0.00,
+        "subtotal": 490.00,
+        "discountAmount": 24.50,
+        "itemTotal": 465.50
+      }
+    }
+  ],
+  "totals": {
+    "subtotal": 490.00,
+    "discountAmount": 24.50,
+    "urgencyAmount": 0.00,
+    "total": 465.50
+  }
+}
+```
+
+### 3. Add Item to Cart
+```http
+POST /api/v1/cart/{cartId}/items
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "serviceItemId": "880e8400-e29b-41d4-a716-446655440003",
+  "itemName": "Пальто жіноче",
+  "quantity": 1,
+  "unit": "PIECE",
+  "characteristics": {
+    "material": "WOOL",
+    "color": "BLACK",
+    "filler": null,
+    "wearDegree": 30
+  },
+  "stains": ["GREASE", "COFFEE"],
+  "defects": ["WORN_AREAS"],
+  "modifiers": ["HAND_CLEANING"],
+  "photos": [
+    "base64_encoded_image_1",
+    "base64_encoded_image_2"
+  ]
+}
+
+Response: 201 Created
+{
+  "id": "item_123",
+  "cartId": "cart_8400-e29b-41d4-a716-446655440000",
+  "serviceItemId": "880e8400-e29b-41d4-a716-446655440003",
+  "itemName": "Пальто жіноче",
+  "quantity": 1,
+  "pricing": {
+    "basePrice": 350.00,
+    "modifierDetails": [
+      {"name": "Ручна чистка", "percentage": 20, "amount": 70.00},
+      {"name": "Чорний колір", "percentage": 20, "amount": 70.00}
+    ],
+    "urgencyAmount": 0.00,
+    "subtotal": 490.00,
+    "discountAmount": 24.50,
+    "itemTotal": 465.50
+  }
+}
+```
+
+### 4. Update Cart Item
+```http
+PUT /api/v1/cart/{cartId}/items/{itemId}
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "quantity": 2,
+  "modifiers": ["HAND_CLEANING", "WATER_REPELLENT"],
+  "stains": ["GREASE", "COFFEE", "WINE"]
+}
+
+Response: 200 OK
+{
+  "id": "item_123",
+  "quantity": 2,
+  "modifiers": ["HAND_CLEANING", "WATER_REPELLENT"],
+  "pricing": {
+    "basePrice": 350.00,
+    "modifierDetails": [
+      {"name": "Ручна чистка", "percentage": 20, "amount": 70.00},
+      {"name": "Водовідштовхувальне покриття", "percentage": 30, "amount": 105.00},
+      {"name": "Чорний колір", "percentage": 20, "amount": 70.00}
+    ],
+    "urgencyAmount": 0.00,
+    "subtotal": 595.00,
+    "discountAmount": 29.75,
+    "itemTotal": 565.25,
+    "totalForQuantity": 1130.50
+  }
+}
+```
+
+### 5. Delete Cart Item
+```http
+DELETE /api/v1/cart/{cartId}/items/{itemId}
+Authorization: Bearer {token}
+
+Response: 204 No Content
+```
+
+### 6. Update Cart Urgency
+```http
+PUT /api/v1/cart/{cartId}/urgency
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "urgency": "URGENT_24H"
+}
+
+Response: 200 OK
+{
+  "cartId": "cart_8400-e29b-41d4-a716-446655440000",
+  "urgency": "URGENT_24H",
+  "urgencyPercentage": 100,
+  "totals": {
+    "subtotal": 490.00,
+    "discountAmount": 24.50,
+    "urgencyAmount": 465.50,
+    "total": 931.00
+  }
+}
+```
+
+### 7. Apply Cart Discount
+```http
+PUT /api/v1/cart/{cartId}/discount
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "discountType": "EVERCARD",
+  "percentage": 10
+}
+
+Response: 200 OK
+{
+  "cartId": "cart_8400-e29b-41d4-a716-446655440000",
+  "discount": {
+    "type": "EVERCARD",
+    "percentage": 10,
+    "applicableCategories": ["CLOTHING", "LEATHER", "FUR"]
+  },
+  "totals": {
+    "subtotal": 490.00,
+    "discountAmount": 49.00,
+    "urgencyAmount": 0.00,
+    "total": 441.00
+  }
+}
+```
+
+### 8. Recalculate Cart
+```http
+POST /api/v1/cart/{cartId}/calculate
+Authorization: Bearer {token}
+
+Response: 200 OK
+{
+  "cartId": "cart_8400-e29b-41d4-a716-446655440000",
+  "calculationDetails": [
+    {
+      "itemId": "item_123",
+      "itemName": "Пальто жіноче",
+      "breakdown": [
+        {"step": "Базова ціна", "amount": 350.00},
+        {"step": "Ручна чистка (+20%)", "amount": 70.00},
+        {"step": "Чорний колір (+20%)", "amount": 70.00},
+        {"step": "Підсумок до знижок", "amount": 490.00},
+        {"step": "Знижка Еверкард (-10%)", "amount": -49.00},
+        {"step": "Ціна за одиницю", "amount": 441.00}
+      ]
+    }
+  ],
+  "totals": {
+    "subtotal": 490.00,
+    "discountAmount": 49.00,
+    "urgencyAmount": 0.00,
+    "total": 441.00
+  }
+}
+```
+
+### 9. Checkout Cart
+```http
+POST /api/v1/cart/{cartId}/checkout
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "notes": "Обережно з пуговицями",
+  "paymentAmount": 300.00,
+  "paymentMethod": "CARD"
+}
+
+Response: 201 Created
+{
+  "orderId": "770e8400-e29b-41d4-a716-446655440002",
+  "orderNumber": "2024-001234",
+  "totalAmount": 441.00,
+  "paidAmount": 300.00,
+  "dueAmount": 141.00,
+  "estimatedCompletionDate": "2024-02-01T14:00:00",
+  "receiptUrl": "/api/v1/receipts/770e8400-e29b-41d4-a716-446655440002/pdf"
+}
+```
+
 ## Order Domain API
 
 ### 1. Create Order

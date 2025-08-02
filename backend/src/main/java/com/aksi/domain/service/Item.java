@@ -31,7 +31,7 @@ import lombok.ToString;
 @ToString(exclude = "serviceItems")
 public class Item extends BaseEntity {
 
-  @Column(name = "code", nullable = false, unique = true, length = 20)
+  @Column(name = "code", nullable = false, unique = true, length = 50)
   private String code;
 
   @Column(name = "name", nullable = false, length = 100)
@@ -42,13 +42,20 @@ public class Item extends BaseEntity {
 
   @Column(name = "category", nullable = false, length = 50)
   @Enumerated(EnumType.STRING)
-  private ItemCategory category;
+  private ServiceCategoryType category;
 
   @Column(name = "material", length = 100)
   private String material;
 
   @Column(name = "care_instructions", columnDefinition = "TEXT")
   private String careInstructions;
+
+  @Column(name = "catalog_number")
+  private Integer catalogNumber;
+
+  @Column(name = "unit_of_measure", length = 20)
+  @Enumerated(EnumType.STRING)
+  private UnitOfMeasure unitOfMeasure;
 
   @Column(name = "active", nullable = false)
   private boolean active;
@@ -58,15 +65,4 @@ public class Item extends BaseEntity {
 
   @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<ServiceItem> serviceItems = new HashSet<>();
-
-  public enum ItemCategory {
-    CLOTHING,
-    FOOTWEAR,
-    ACCESSORIES,
-    HOME_TEXTILES,
-    LEATHER_GOODS,
-    FUR,
-    WEDDING,
-    SPECIAL
-  }
 }

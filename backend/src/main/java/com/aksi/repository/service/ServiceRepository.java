@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.aksi.domain.service.Service;
+import com.aksi.domain.service.ServiceCategoryType;
 
 /** Repository interface for Service entity. */
 @Repository
@@ -20,5 +21,5 @@ public interface ServiceRepository extends JpaRepository<Service, UUID> {
 
   Page<Service> findByActiveTrue(Pageable pageable);
 
-  Page<Service> findByCategoryAndActiveTrue(Service.ServiceCategory category, Pageable pageable);
+  Page<Service> findByCategoryAndActiveTrue(ServiceCategoryType category, Pageable pageable);
 }

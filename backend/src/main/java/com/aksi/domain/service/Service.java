@@ -42,7 +42,7 @@ public class Service extends BaseEntity {
 
   @Column(name = "category", nullable = false, length = 50)
   @Enumerated(EnumType.STRING)
-  private ServiceCategory category;
+  private ServiceCategoryType category;
 
   @Column(name = "processing_time_days", nullable = false)
   private Integer processingTimeDays;
@@ -61,14 +61,4 @@ public class Service extends BaseEntity {
 
   @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<ServiceItem> serviceItems = new HashSet<>();
-
-  public enum ServiceCategory {
-    DRY_CLEANING,
-    WASHING,
-    IRONING,
-    REPAIR,
-    DYEING,
-    SPECIAL,
-    OTHER
-  }
 }

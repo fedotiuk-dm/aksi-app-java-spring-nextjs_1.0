@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-5-1
+      author: aksi
+      comment: Increase unit_of_measure field size in items table
+      changes:
+        - modifyDataType:
+            tableName: items
+            columnName: unit_of_measure
+            newDataType: varchar(20)

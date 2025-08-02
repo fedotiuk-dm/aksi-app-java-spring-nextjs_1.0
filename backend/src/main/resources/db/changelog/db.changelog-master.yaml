@@ -22,6 +22,24 @@ databaseChangeLog:
       file: db/changelog/changes/004-create-service-item-tables.yaml
   - include:
       file: db/changelog/changes/005-update-branch-id-to-uuid.yaml
+  - include:
+      file: db/changelog/changes/006-update-service-item-fields.yaml
+  - include:
+      file: db/changelog/changes/006-5-alter-unit-of-measure-size.yaml
+  - include:
+      file: db/changelog/changes/007-load-price-list-data.yaml
+  - include:
+      file: db/changelog/changes/008-increase-code-field-size.yaml
+  - include:
+      file: db/changelog/changes/009-add-item-fields.yaml
+  - include:
+      file: db/changelog/changes/009-5-increase-unit-of-measure-size.yaml
+  - include:
+      file: db/changelog/changes/010-create-services-from-price-list.yaml
+  - include:
+      file: db/changelog/changes/011-create-items-from-price-list.yaml
+  - include:
+      file: db/changelog/changes/012-create-service-items-from-price-list.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:

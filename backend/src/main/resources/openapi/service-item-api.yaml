@@ -20,6 +20,8 @@ tags:
     description: Item catalog operations
   - name: service-items
     description: Service-item combination operations
+  - name: price-list
+    description: Price list operations
 
 paths:
   /api/services:
@@ -437,41 +439,162 @@ paths:
         '404':
           $ref: 'common/responses/common.yaml#/NotFound'
 
+  /api/price-list:
+    get:
+      operationId: listPriceListItems
+      summary: List price list items
+      description: Get list of price list items
+      tags:
+        - price-list
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: categoryCode
+          in: query
+          description: Filter by category code
+          required: false
+          schema:
+            type: string
+            enum:
+              - CLOTHING
+              - LAUNDRY
+              - IRONING
+              - LEATHER
+              - PADDING
+              - FUR
+              - DYEING
+              - ADDITIONAL_SERVICES
+        - name: active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: List of price list items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  priceListItems:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PriceListItem'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+
+  /api/price-list/{priceListItemId}:
+    parameters:
+      - name: priceListItemId
+        in: path
+        required: true
+        description: Price list item ID
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      operationId: getPriceListItemById
+      summary: Get price list item details
+      description: Get detailed price list item information
+      tags:
+        - price-list
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Price list item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceListItem'
+        '401':
+          $ref: 'common/responses/common.yaml#/Unauthorized'
+        '404':
+          $ref: 'common/responses/common.yaml#/NotFound'
+
 components:
   schemas:
     ServiceCategory:
       type: string
       enum:
         - DRY_CLEANING
-        - LAUNDRY
+        - WASHING
         - IRONING
         - REPAIR
+        - DYEING
         - SPECIAL
+        - OTHER
       description: |
         Service categories:
         * `DRY_CLEANING` - Dry cleaning services
-        * `LAUNDRY` - Washing services
+        * `WASHING` - Washing services
         * `IRONING` - Ironing and pressing
         * `REPAIR` - Repair and alteration
+        * `DYEING` - Dyeing services
         * `SPECIAL` - Special treatment services
+        * `OTHER` - Other services
+    
+    ServiceCategoryType:
+      type: string
+      enum:
+        - CLOTHING
+        - LAUNDRY
+        - IRONING
+        - LEATHER
+        - PADDING
+        - FUR
+        - DYEING
+        - ADDITIONAL_SERVICES
+      description: |
+        Service category types from price list:
+        * `CLOTHING` - Clothing and textile items
+        * `LAUNDRY` - Washing services
+        * `IRONING` - Ironing services
+        * `LEATHER` - Leather items
+        * `PADDING` - Padded items
+        * `FUR` - Fur items
+        * `DYEING` - Dyeing services
+        * `ADDITIONAL_SERVICES` - Additional services
     
     ItemCategory:
       type: string
       enum:
-        - CLOTHING_UPPER
-        - CLOTHING_LOWER
-        - CLOTHING_FULL
+        - CLOTHING
+        - FOOTWEAR
         - ACCESSORIES
-        - HOUSEHOLD
+        - HOME_TEXTILES
+        - LEATHER_GOODS
+        - FUR
+        - WEDDING
         - SPECIAL
       description: |
         Item categories:
-        * `CLOTHING_UPPER` - Upper body clothing (shirts, jackets)
-        * `CLOTHING_LOWER` - Lower body clothing (pants, skirts)
-        * `CLOTHING_FULL` - Full body clothing (dresses, suits)
-        * `ACCESSORIES` - Accessories (ties, scarves)
-        * `HOUSEHOLD` - Household items (curtains, bedding)
+        * `CLOTHING` - Clothing items
+        * `FOOTWEAR` - Footwear items
+        * `ACCESSORIES` - Accessories
+        * `HOME_TEXTILES` - Home textiles (curtains, bedding)
+        * `LEATHER_GOODS` - Leather goods
+        * `FUR` - Fur items
+        * `WEDDING` - Wedding items
         * `SPECIAL` - Special items
+    
+    UnitOfMeasure:
+      type: string
+      enum:
+        - PIECE
+        - KILOGRAM
+        - PAIR
+        - SQUARE_METER
+      description: |
+        Unit of measure:
+        * `PIECE` - Piece (шт)
+        * `KILOGRAM` - Kilogram (кг)
+        * `PAIR` - Pair (пара)
+        * `SQUARE_METER` - Square meter (кв.м)
     
     ProcessingTime:
       type: string
@@ -524,6 +647,9 @@ components:
           description: Service description
         category:
           $ref: '#/components/schemas/ServiceCategory'
+        categoryCode:
+          type: ['string', 'null']
+          description: Category code from price list
         icon:
           type: ['string', 'null']
           description: Icon identifier
@@ -592,6 +718,27 @@ components:
           description: Item description
         category:
           $ref: '#/components/schemas/ItemCategory'
+        catalogNumber:
+          type: ['integer', 'null']
+          description: Catalog number from price list
+        serviceCategoryCode:
+          type: ['string', 'null']
+          description: Service category code from price list
+        unitOfMeasure:
+          type: ['string', 'null']
+          description: Unit of measure
+        basePrice:
+          type: ['number', 'null']
+          format: decimal
+          description: Base price from price list
+        priceBlack:
+          type: ['number', 'null']
+          format: decimal
+          description: Price for black dyeing
+        priceColor:
+          type: ['number', 'null']
+          format: decimal
+          description: Price for color dyeing
         icon:
           type: ['string', 'null']
           description: Icon identifier
@@ -662,6 +809,14 @@ components:
           format: decimal
           default: 1.5
           description: Express price multiplier
+        priceBlack:
+          type: ['number', 'null']
+          format: decimal
+          description: Price for black dyeing
+        priceColor:
+          type: ['number', 'null']
+          format: decimal
+          description: Price for color dyeing
         active:
           type: boolean
           description: Is combination active
@@ -936,6 +1091,76 @@ components:
         popularityScore:
           type: integer
           minimum: 0
+    
+    PriceListItem:
+      type: object
+      required:
+        - id
+        - categoryCode
+        - catalogNumber
+        - name
+        - unitOfMeasure
+        - basePrice
+        - active
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Price list item ID
+        categoryCode:
+          type: string
+          enum:
+            - CLOTHING
+            - LAUNDRY
+            - IRONING
+            - LEATHER
+            - PADDING
+            - FUR
+            - DYEING
+            - ADDITIONAL_SERVICES
+          description: Service category code
+        catalogNumber:
+          type: integer
+          description: Catalog number
+        name:
+          type: string
+          description: Item name
+        unitOfMeasure:
+          type: string
+          enum:
+            - PIECE
+            - KILOGRAM
+            - PAIR
+            - SQUARE_METER
+          description: Unit of measure
+        basePrice:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Base price
+        priceBlack:
+          type: ['number', 'null']
+          format: decimal
+          minimum: 0
+          description: Price for black dyeing
+        priceColor:
+          type: ['number', 'null']
+          format: decimal
+          minimum: 0
+          description: Price for color dyeing
+        active:
+          type: boolean
+          description: Is item active
+    
+    PriceListItemsResponse:
+      type: object
+      required:
+        - priceListItems
+      properties:
+        priceListItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceListItem'
 
 security:
   - cookieAuth: []

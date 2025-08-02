@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-1
+      author: aksi
+      comment: Increase code field size in items table
+      changes:
+        - modifyDataType:
+            tableName: items
+            columnName: code
+            newDataType: varchar(50)

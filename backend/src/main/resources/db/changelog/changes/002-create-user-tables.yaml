@@ -68,7 +68,7 @@ databaseChangeLog:
               - column:
                   name: failed_login_attempts
                   type: int
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
                   constraints:
                     nullable: false
               - column:
@@ -92,7 +92,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: bigint
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
                   constraints:
                     nullable: false
 
@@ -231,7 +231,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: bigint
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
                   constraints:
                     nullable: false
 
@@ -280,4 +280,4 @@ databaseChangeLog:
               - column:
                   name: is_primary
             unique: true
-            where: is_primary = true
+

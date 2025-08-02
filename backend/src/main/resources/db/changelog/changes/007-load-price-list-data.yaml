@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-1
+      author: aksi
+      comment: Load price list data from CSV
+      changes:
+        - loadData:
+            file: db/changelog/pricelist/price_list.csv
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: category_code
+                  type: string
+              - column:
+                  name: catalog_number
+                  type: numeric
+              - column:
+                  name: name
+                  type: string
+              - column:
+                  name: unit_of_measure
+                  type: string
+              - column:
+                  name: base_price
+                  type: numeric
+              - column:
+                  name: price_black
+                  type: numeric
+              - column:
+                  name: price_color
+                  type: numeric
+              - column:
+                  name: active
+                  type: boolean
+        - sql:
+            comment: Convert unit_of_measure codes to enum values
+            sql: |
+              UPDATE price_list_items SET unit_of_measure = 'PIECE' WHERE unit_of_measure = 'шт';
+              UPDATE price_list_items SET unit_of_measure = 'KILOGRAM' WHERE unit_of_measure = 'кг';
+              UPDATE price_list_items SET unit_of_measure = 'PAIR' WHERE unit_of_measure = 'пара';
+              UPDATE price_list_items SET unit_of_measure = 'SQUARE_METER' WHERE unit_of_measure = 'кв.м';

@@ -1,0 +1,111 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-1
+      author: aksi
+      comment: Create price_list_items table
+      changes:
+        - createTable:
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category_code
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: catalog_number
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_of_measure
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: base_price
+                  type: decimal(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price_black
+                  type: decimal(10,2)
+              - column:
+                  name: price_color
+                  type: decimal(10,2)
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 006-2
+      author: aksi
+      comment: Add constraints to price_list_items
+      changes:
+        - addUniqueConstraint:
+            tableName: price_list_items
+            columnNames: category_code, catalog_number
+            constraintName: uk_price_list_category_catalog
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_category
+            columns:
+              - column:
+                  name: category_code
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_catalog_number
+            columns:
+              - column:
+                  name: catalog_number
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_active
+            columns:
+              - column:
+                  name: active
+
+  - changeSet:
+      id: 006-3
+      author: aksi
+      comment: Add trigger for price_list_items updated_at
+      changes:
+        - sql:
+            sql: |
+              CREATE TRIGGER update_price_list_items_updated_at
+              BEFORE UPDATE ON price_list_items
+              FOR EACH ROW
+              EXECUTE FUNCTION update_updated_at_column();

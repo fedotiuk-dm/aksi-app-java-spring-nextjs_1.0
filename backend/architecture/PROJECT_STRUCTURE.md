@@ -53,24 +53,23 @@ JavaSpringDryCleaning/
 │       ├── domain/
 │       └── dto/
 │
-├── dry-cleaning-item/        # Item домен
-│   ├── pom.xml
-│   └── src/main/java/org/example/dryclean/item/
-│       ├── controller/
-│       ├── service/
-│       ├── repository/
-│       ├── domain/
-│       ├── dto/
-│       └── storage/         # Для роботи з фото
-│
-├── dry-cleaning-service/     # Service домен
+├── dry-cleaning-service/     # Service домен (включає каталог послуг та предметів)
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/service/
 │       ├── controller/
 │       ├── service/
+│       │   ├── ServiceCatalogService.java
+│       │   ├── ItemService.java
+│       │   └── ServiceItemService.java
 │       ├── repository/
 │       ├── domain/
-│       └── dto/
+│       │   ├── Service.java
+│       │   ├── Item.java
+│       │   ├── ServiceItem.java
+│       │   ├── ServiceCategoryType.java
+│       │   └── UnitOfMeasure.java
+│       ├── dto/
+│       └── loader/            # Завантаження CSV
 │
 ├── dry-cleaning-pricing/     # Pricing домен
 │   ├── pom.xml
@@ -84,16 +83,39 @@ JavaSpringDryCleaning/
 │       ├── dto/
 │       └── rules/          # Бізнес правила
 │
-├── dry-cleaning-order/       # Order домен
+├── dry-cleaning-order/       # Order домен (включає корзину та характеристики предметів)
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/order/
 │       ├── controller/
+│       │   ├── CartController.java
+│       │   └── OrderController.java
 │       ├── service/
+│       │   ├── CartService.java
+│       │   ├── CartCalculationService.java
+│       │   ├── OrderService.java
+│       │   └── OrderItemService.java
 │       ├── repository/
+│       │   ├── CartRepository.java
+│       │   └── OrderRepository.java
 │       ├── domain/
+│       │   ├── cart/
+│       │   │   ├── OrderCart.java
+│       │   │   ├── CartItem.java
+│       │   │   ├── CartItemPricing.java
+│       │   │   └── CartPricing.java
+│       │   ├── order/
+│       │   │   ├── Order.java
+│       │   │   ├── OrderItem.java
+│       │   │   ├── OrderItemCharacteristics.java
+│       │   │   ├── OrderItemPhoto.java
+│       │   │   ├── OrderItemDefect.java
+│       │   │   └── OrderItemStain.java
 │       ├── dto/
+│       │   ├── cart/
+│       │   └── order/
 │       ├── saga/           # Order saga
-│       └── event/          # Domain events
+│       ├── event/          # Domain events
+│       └── storage/        # Для роботи з фото
 │
 ├── dry-cleaning-payment/     # Payment домен
 │   ├── pom.xml
@@ -282,10 +304,9 @@ src/main/java/org/example/dryclean/
 ├── auth/
 ├── customer/
 ├── branch/
-├── item/
-├── service/
+├── service/         # Каталог послуг та предметів
 ├── pricing/
-├── order/
+├── order/          # Замовлення з характеристиками
 ├── payment/
 ├── receipt/
 ├── notification/

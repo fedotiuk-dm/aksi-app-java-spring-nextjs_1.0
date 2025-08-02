@@ -38,7 +38,7 @@ databaseChangeLog:
               - column:
                   name: discount_percentage
                   type: decimal(5,2)
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
               - column:
                   name: discount_card_number
                   type: varchar(20)
@@ -47,7 +47,7 @@ databaseChangeLog:
               - column:
                   name: loyalty_points
                   type: int
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
               - column:
                   name: notes
                   type: text
@@ -81,7 +81,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: bigint
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
                   constraints:
                     nullable: false
 
@@ -181,7 +181,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: bigint
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
                   constraints:
                     nullable: false
 
@@ -240,7 +240,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: bigint
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
                   constraints:
                     nullable: false
 
@@ -319,7 +319,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: bigint
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: "0"
                   constraints:
                     nullable: false
 

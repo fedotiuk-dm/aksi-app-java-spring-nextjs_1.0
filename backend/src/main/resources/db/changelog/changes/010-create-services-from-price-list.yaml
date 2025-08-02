@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010-1
+      author: aksi
+      comment: Create services from unique categories in price_list_items
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO services (id, code, name, category, processing_time_days, express_available, active, sort_order)
+              SELECT DISTINCT 
+                gen_random_uuid(),
+                category_code,
+                category_code,
+                category_code,
+                2,
+                true,
+                true,
+                ROW_NUMBER() OVER (ORDER BY category_code)
+              FROM price_list_items
+              ON CONFLICT DO NOTHING;

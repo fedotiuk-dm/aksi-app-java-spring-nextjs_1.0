@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-1
+      author: aksi
+      comment: Create service-item relations from price_list_items
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO service_items (id, service_id, item_id, base_price, price_black, price_color, active, available_for_order)
+              SELECT 
+                gen_random_uuid(),
+                s.id,
+                i.id,
+                pl.base_price,
+                pl.price_black,
+                pl.price_color,
+                pl.active,
+                true
+              FROM price_list_items pl
+              JOIN services s ON s.code = pl.category_code
+              JOIN items i ON i.code = CONCAT(pl.category_code, '_', pl.catalog_number);

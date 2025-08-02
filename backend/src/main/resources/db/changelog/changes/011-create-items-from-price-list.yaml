@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-1
+      author: aksi
+      comment: Create items from price_list_items
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO items (id, code, name, category, catalog_number, unit_of_measure, active, sort_order)
+              SELECT 
+                gen_random_uuid(),
+                CONCAT(category_code, '_', catalog_number),
+                name,
+                category_code,
+                catalog_number,
+                unit_of_measure,
+                active,
+                catalog_number
+              FROM price_list_items;

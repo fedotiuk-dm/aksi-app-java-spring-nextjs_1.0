@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-5-1
+      author: aksi
+      comment: Increase unit_of_measure column size before loading data
+      changes:
+        - modifyDataType:
+            tableName: price_list_items
+            columnName: unit_of_measure
+            newDataType: varchar(20)
