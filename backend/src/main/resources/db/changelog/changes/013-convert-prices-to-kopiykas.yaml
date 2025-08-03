@@ -43,7 +43,7 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: price_list_items
             columnName: base_price_kopiykas
-            defaultNullValue: 0
+            defaultNullValue: "0"
         
         # Step 4: Drop old DECIMAL columns
         - dropColumn:
@@ -132,7 +132,7 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: service_items
             columnName: base_price_kopiykas
-            defaultNullValue: 0
+            defaultNullValue: "0"
         
         # Set default complexity_factor to 100 (equivalent to 1.0)
         - sql:
@@ -144,7 +144,7 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: service_items
             columnName: complexity_factor_kopiykas
-            defaultNullValue: 100
+            defaultNullValue: "100"
         
         # Step 4: Drop old DECIMAL columns
         - dropColumn:
