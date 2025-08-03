@@ -49,12 +49,22 @@ public class ServiceItemController implements ServiceItemsApi {
 
   @Override
   public ResponseEntity<ListServiceItemsResponse> listServiceItems(
-      @Nullable UUID serviceId, @Nullable UUID itemId, @Nullable UUID branchId,
-      Boolean active, Integer offset, Integer limit) {
+      @Nullable UUID serviceId,
+      @Nullable UUID itemId,
+      @Nullable UUID branchId,
+      Boolean active,
+      Integer offset,
+      Integer limit) {
     log.debug(
         "Listing service-items with serviceId: {}, itemId: {}, branchId: {}, active: {}, offset: {}, limit: {}",
-        serviceId, itemId, branchId, active, offset, limit);
-    return ResponseEntity.ok(serviceItemService.listServiceItems(serviceId, itemId, branchId, active, offset, limit));
+        serviceId,
+        itemId,
+        branchId,
+        active,
+        offset,
+        limit);
+    return ResponseEntity.ok(
+        serviceItemService.listServiceItems(serviceId, itemId, branchId, active, offset, limit));
   }
 
   @Override

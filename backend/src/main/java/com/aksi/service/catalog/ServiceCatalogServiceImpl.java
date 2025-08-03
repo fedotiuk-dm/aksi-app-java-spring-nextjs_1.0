@@ -73,7 +73,6 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
     return updated;
   }
 
-
   // DTO methods for controller
 
   @Override

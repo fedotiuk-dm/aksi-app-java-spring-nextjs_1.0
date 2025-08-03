@@ -1,5 +1,6 @@
 package com.aksi.service.catalog;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,7 +11,6 @@ import com.aksi.api.service.dto.UpdateServiceItemInfoRequest;
 
 /** Service for managing service-item combinations with pricing */
 public interface ServiceItemService {
-
 
   /**
    * Get service-item combination by ID
@@ -38,7 +38,6 @@ public interface ServiceItemService {
    */
   ServiceItemInfo updateServiceItem(UUID serviceItemId, UpdateServiceItemInfoRequest request);
 
-
   /**
    * List service items with response DTO
    *
@@ -52,30 +51,49 @@ public interface ServiceItemService {
    */
   ListServiceItemsResponse listServiceItems(
       UUID serviceId, UUID itemId, UUID branchId, Boolean active, Integer offset, Integer limit);
-  
+
   // Internal methods for business logic - essential for order processing
-  
+
   /**
    * Get all service-items for a specific service
-   * Used in order wizard to show available items for selected service
+   * Used in OrderWizardService.getAllServiceItems() for admin view
+   * Endpoint: GET /api/order-wizard/services/{serviceId}/all-items
+   *
    * @param serviceId Service ID
    * @return List of service-items
    */
   List<ServiceItemInfo> getServiceItemsByService(UUID serviceId);
-  
+
   /**
    * Get all service-items for a specific item
-   * Used for price comparison across services
+   * Used in PriceListServiceImpl.synchronizePrices() for price updates
+   *
    * @param itemId Item ID
    * @return List of service-items
    */
   List<ServiceItemInfo> getServiceItemsByItem(UUID itemId);
-  
+
   /**
    * Get available items for a service (active and available for order)
    * Critical for order wizard functionality
+   * Used in OrderWizardService.getAvailableItemsForOrder()
+   * Endpoint: GET /api/order-wizard/services/{serviceId}/available-items
+   *
    * @param serviceId Service ID
    * @return List of available service-items
    */
   List<ServiceItemInfo> getAvailableItemsForService(UUID serviceId);
+  
+  /**
+   * Update service item prices from price list
+   * Used in PriceListServiceImpl.synchronizePrices() during price synchronization
+   * Called from admin endpoint: POST /api/admin/price-list/sync
+   * 
+   * @param serviceItemId Service item ID
+   * @param basePrice New base price
+   * @param priceBlack New black price (optional)
+   * @param priceColor New color price (optional)
+   * @return true if prices were updated
+   */
+  boolean updateServiceItemPrices(UUID serviceItemId, BigDecimal basePrice, BigDecimal priceBlack, BigDecimal priceColor);
 }

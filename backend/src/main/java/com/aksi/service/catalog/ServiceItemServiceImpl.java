@@ -1,5 +1,6 @@
 package com.aksi.service.catalog;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -145,7 +146,6 @@ public class ServiceItemServiceImpl implements ServiceItemService {
     return serviceItemMapper.toServiceItemResponse(updated);
   }
 
-
   @Override
   @Transactional(readOnly = true)
   public ListServiceItemsResponse listServiceItems(
@@ -166,7 +166,7 @@ public class ServiceItemServiceImpl implements ServiceItemService {
     response.setTotalCount((int) page.getTotalElements());
     return response;
   }
-  
+
   @Override
   @Transactional(readOnly = true)
   public List<ServiceItemInfo> getServiceItemsByService(UUID serviceId) {
@@ -205,5 +205,45 @@ public class ServiceItemServiceImpl implements ServiceItemService {
     return items.stream()
         .map(serviceItemMapper::toServiceItemResponse)
         .collect(Collectors.toList());
+  }
+  
+  @Override
+  @Transactional
+  public boolean updateServiceItemPrices(UUID serviceItemId, BigDecimal basePrice, BigDecimal priceBlack, BigDecimal priceColor) {
+    log.debug("Updating service item {} prices: base={}, black={}, color={}", 
+        serviceItemId, basePrice, priceBlack, priceColor);
+    
+    ServiceItem serviceItem = serviceItemRepository.findById(serviceItemId).orElse(null);
+    if (serviceItem == null) {
+      log.warn("Service item not found: {}", serviceItemId);
+      return false;
+    }
+    
+    boolean updated = false;
+    
+    // Update base price
+    if (basePrice != null && !basePrice.equals(serviceItem.getBasePrice())) {
+      serviceItem.setBasePrice(basePrice);
+      updated = true;
+    }
+    
+    // Update black price
+    if (priceBlack != null && !priceBlack.equals(serviceItem.getPriceBlack())) {
+      serviceItem.setPriceBlack(priceBlack);
+      updated = true;
+    }
+    
+    // Update color price
+    if (priceColor != null && !priceColor.equals(serviceItem.getPriceColor())) {
+      serviceItem.setPriceColor(priceColor);
+      updated = true;
+    }
+    
+    if (updated) {
+      serviceItemRepository.save(serviceItem);
+      log.debug("Updated prices for service item: {}", serviceItemId);
+    }
+    
+    return updated;
   }
 }

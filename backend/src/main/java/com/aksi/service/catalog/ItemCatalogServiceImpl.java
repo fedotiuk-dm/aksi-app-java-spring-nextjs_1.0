@@ -114,7 +114,6 @@ public class ItemCatalogServiceImpl implements ItemCatalogService {
     return itemRepository.existsByCode(code);
   }
 
-
   @Override
   @Transactional(readOnly = true)
   public ItemInfo getItemByCode(String code) {

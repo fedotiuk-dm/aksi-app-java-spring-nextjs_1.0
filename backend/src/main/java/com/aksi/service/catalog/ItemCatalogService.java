@@ -50,10 +50,8 @@ public interface ItemCatalogService {
    */
   ItemInfo updateItem(UUID itemId, UpdateItemInfoRequest request);
 
-
   /**
-   * Get item by code
-   * TODO: Add REST endpoint in future if needed for API access
+   * Get item by code TODO: Add REST endpoint in future if needed for API access
    *
    * @param code Item code
    * @return Item details
@@ -61,8 +59,7 @@ public interface ItemCatalogService {
   ItemInfo getItemByCode(String code);
 
   /**
-   * Get item by catalog number
-   * Used for price synchronization from PriceListService
+   * Get item by catalog number Used for price synchronization from PriceListService
    *
    * @param catalogNumber Catalog number
    * @return Item details

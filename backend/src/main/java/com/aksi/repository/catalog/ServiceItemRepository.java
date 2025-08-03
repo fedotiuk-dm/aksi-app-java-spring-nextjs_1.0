@@ -15,7 +15,6 @@ import com.aksi.domain.catalog.ServiceItem;
 @Repository
 public interface ServiceItemRepository extends JpaRepository<ServiceItem, UUID> {
 
-
   Page<ServiceItem> findByServiceCatalogId(UUID serviceId, Pageable pageable);
 
   Page<ServiceItem> findByItemCatalogId(UUID itemId, Pageable pageable);

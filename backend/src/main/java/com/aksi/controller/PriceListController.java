@@ -40,7 +40,8 @@ public class PriceListController implements PriceListApi {
         active,
         offset,
         limit);
-    ServiceCategoryType categoryType = categoryCode != null ? ServiceCategoryType.valueOf(categoryCode) : null;
+    ServiceCategoryType categoryType =
+        categoryCode != null ? ServiceCategoryType.valueOf(categoryCode) : null;
     return ResponseEntity.ok(
         priceListService.listPriceListItems(categoryType, active, offset, limit));
   }
