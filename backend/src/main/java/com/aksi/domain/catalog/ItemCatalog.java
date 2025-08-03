@@ -65,6 +65,6 @@ public class ItemCatalog extends BaseEntity {
   @Column(name = "sort_order")
   private Integer sortOrder;
 
-  @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "itemCatalog", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<ServiceItem> serviceItems = new HashSet<>();
 }

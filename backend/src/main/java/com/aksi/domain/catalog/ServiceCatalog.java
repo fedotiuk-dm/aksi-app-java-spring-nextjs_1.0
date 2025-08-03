@@ -60,6 +60,6 @@ public class ServiceCatalog extends BaseEntity {
   @Column(name = "sort_order")
   private Integer sortOrder;
 
-  @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "serviceCatalog", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<ServiceItem> serviceItems = new HashSet<>();
 }

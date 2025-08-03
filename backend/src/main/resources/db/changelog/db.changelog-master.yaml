@@ -40,6 +40,8 @@ databaseChangeLog:
       file: db/changelog/changes/011-create-items-from-price-list.yaml
   - include:
       file: db/changelog/changes/012-create-service-items-from-price-list.yaml
+  - include:
+      file: db/changelog/changes/013-convert-prices-to-kopiykas.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:

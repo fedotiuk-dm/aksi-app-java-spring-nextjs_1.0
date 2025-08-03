@@ -1,0 +1,186 @@
+databaseChangeLog:
+  - changeSet:
+      id: convert-price-list-items-to-kopiykas
+      author: claude
+      comment: Convert price_list_items table from DECIMAL to INT kopiykas
+      changes:
+        # Step 1: Add new kopiykas columns
+        - addColumn:
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: base_price_kopiykas
+                  type: INT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: price_black_kopiykas
+                  type: INT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: price_color_kopiykas
+                  type: INT
+                  constraints:
+                    nullable: true
+        
+        # Step 2: Convert existing data (multiply by 100 and round)
+        - sql:
+            sql: |
+              UPDATE price_list_items 
+              SET base_price_kopiykas = ROUND(base_price * 100)
+              WHERE base_price IS NOT NULL;
+              
+              UPDATE price_list_items 
+              SET price_black_kopiykas = ROUND(price_black * 100)
+              WHERE price_black IS NOT NULL;
+              
+              UPDATE price_list_items 
+              SET price_color_kopiykas = ROUND(price_color * 100)
+              WHERE price_color IS NOT NULL;
+        
+        # Step 3: Make base_price_kopiykas NOT NULL (it's required)
+        - addNotNullConstraint:
+            tableName: price_list_items
+            columnName: base_price_kopiykas
+            defaultNullValue: 0
+        
+        # Step 4: Drop old DECIMAL columns
+        - dropColumn:
+            tableName: price_list_items
+            columnName: base_price
+        - dropColumn:
+            tableName: price_list_items
+            columnName: price_black
+        - dropColumn:
+            tableName: price_list_items
+            columnName: price_color
+        
+        # Step 5: Rename new columns to original names
+        - renameColumn:
+            tableName: price_list_items
+            oldColumnName: base_price_kopiykas
+            newColumnName: base_price
+        - renameColumn:
+            tableName: price_list_items
+            oldColumnName: price_black_kopiykas
+            newColumnName: price_black
+        - renameColumn:
+            tableName: price_list_items
+            oldColumnName: price_color_kopiykas
+            newColumnName: price_color
+
+  - changeSet:
+      id: convert-service-items-to-kopiykas
+      author: claude
+      comment: Convert service_items table from DECIMAL to INT kopiykas
+      changes:
+        # Step 1: Add new kopiykas columns
+        - addColumn:
+            tableName: service_items
+            columns:
+              - column:
+                  name: base_price_kopiykas
+                  type: INT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: express_price_kopiykas
+                  type: INT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: price_black_kopiykas
+                  type: INT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: price_color_kopiykas
+                  type: INT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: complexity_factor_kopiykas
+                  type: INT
+                  constraints:
+                    nullable: true
+        
+        # Step 2: Convert existing data
+        - sql:
+            sql: |
+              UPDATE service_items 
+              SET base_price_kopiykas = ROUND(base_price * 100)
+              WHERE base_price IS NOT NULL;
+              
+              UPDATE service_items 
+              SET express_price_kopiykas = ROUND(express_price * 100)
+              WHERE express_price IS NOT NULL;
+              
+              UPDATE service_items 
+              SET price_black_kopiykas = ROUND(price_black * 100)
+              WHERE price_black IS NOT NULL;
+              
+              UPDATE service_items 
+              SET price_color_kopiykas = ROUND(price_color * 100)
+              WHERE price_color IS NOT NULL;
+              
+              UPDATE service_items 
+              SET complexity_factor_kopiykas = ROUND(complexity_factor * 100)
+              WHERE complexity_factor IS NOT NULL;
+        
+        # Step 3: Make base_price_kopiykas NOT NULL and set default complexity_factor
+        - addNotNullConstraint:
+            tableName: service_items
+            columnName: base_price_kopiykas
+            defaultNullValue: 0
+        
+        # Set default complexity_factor to 100 (equivalent to 1.0)
+        - sql:
+            sql: |
+              UPDATE service_items 
+              SET complexity_factor_kopiykas = 100
+              WHERE complexity_factor_kopiykas IS NULL;
+        
+        - addNotNullConstraint:
+            tableName: service_items
+            columnName: complexity_factor_kopiykas
+            defaultNullValue: 100
+        
+        # Step 4: Drop old DECIMAL columns
+        - dropColumn:
+            tableName: service_items
+            columnName: base_price
+        - dropColumn:
+            tableName: service_items
+            columnName: express_price
+        - dropColumn:
+            tableName: service_items
+            columnName: price_black
+        - dropColumn:
+            tableName: service_items
+            columnName: price_color
+        - dropColumn:
+            tableName: service_items
+            columnName: complexity_factor
+        
+        # Step 5: Rename new columns to original names
+        - renameColumn:
+            tableName: service_items
+            oldColumnName: base_price_kopiykas
+            newColumnName: base_price
+        - renameColumn:
+            tableName: service_items
+            oldColumnName: express_price_kopiykas
+            newColumnName: express_price
+        - renameColumn:
+            tableName: service_items
+            oldColumnName: price_black_kopiykas
+            newColumnName: price_black
+        - renameColumn:
+            tableName: service_items
+            oldColumnName: price_color_kopiykas
+            newColumnName: price_color
+        - renameColumn:
+            tableName: service_items
+            oldColumnName: complexity_factor_kopiykas
+            newColumnName: complexity_factor
