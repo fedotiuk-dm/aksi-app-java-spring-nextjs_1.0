@@ -5,4 +5,696 @@
  * API for dry cleaning order management system with Domain-Driven Design architecture. The system includes 13 domains: Auth, User, Customer, Branch, Employee, Order, OrderItem, Service, Garment, Pricing, Payment, Notification, and Analytics.
  * OpenAPI spec version: 1.0.0
  */
+import {
+  z as zod
+} from 'zod';
 
+/**
+ * Get list of available services
+ * @summary List services
+ */
+export const listServicesQueryActiveDefault = true;
+
+export const listServicesQueryParams = zod.object({
+  "active": zod.boolean().default(listServicesQueryActiveDefault).describe('Filter by active status'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).optional().describe('Filter by category')
+})
+
+export const listServicesResponseServicesItemColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
+
+
+export const listServicesResponse = zod.object({
+  "services": zod.array(zod.object({
+  "id": zod.uuid().describe('Service ID'),
+  "code": zod.string().describe('Service code'),
+  "name": zod.string().describe('Service name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "description": zod.string().optional().describe('Service description'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.string().optional().describe('Category code from price list'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "color": zod.string().regex(listServicesResponseServicesItemColorRegExp).optional().describe('Display color'),
+  "active": zod.boolean().describe('Is service active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "allowedProcessingTimes": zod.array(zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED'])).optional().describe('Available processing times'),
+  "requiresSpecialHandling": zod.boolean().optional().describe('Requires special handling'),
+  "tags": zod.array(zod.string()).optional().describe('Service tags')
+}))
+})
+
+
+/**
+ * Create new service type
+ * @summary Create service
+ */
+export const createServiceBodyCodeMin = 2;
+
+export const createServiceBodyCodeMax = 50;
+
+export const createServiceBodyCodeRegExp = new RegExp('^[A-Z_]+$');
+export const createServiceBodyNameMin = 2;
+
+export const createServiceBodyNameMax = 100;
+export const createServiceBodyNameUaMin = 2;
+
+export const createServiceBodyNameUaMax = 100;
+export const createServiceBodyDescriptionMin = 0;
+
+export const createServiceBodyDescriptionMax = 500;
+export const createServiceBodyColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
+
+
+export const createServiceBody = zod.object({
+  "code": zod.string().min(createServiceBodyCodeMin).max(createServiceBodyCodeMax).regex(createServiceBodyCodeRegExp).describe('Service code'),
+  "name": zod.string().min(createServiceBodyNameMin).max(createServiceBodyNameMax).describe('Service name'),
+  "nameUa": zod.string().min(createServiceBodyNameUaMin).max(createServiceBodyNameUaMax).describe('Ukrainian name'),
+  "description": zod.string().min(createServiceBodyDescriptionMin).max(createServiceBodyDescriptionMax).optional().describe('Service description'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "color": zod.string().regex(createServiceBodyColorRegExp).optional().describe('Display color'),
+  "sortOrder": zod.number().optional().describe('Display sort order'),
+  "allowedProcessingTimes": zod.array(zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED'])).optional(),
+  "requiresSpecialHandling": zod.boolean().optional(),
+  "tags": zod.array(zod.string()).optional()
+})
+
+
+/**
+ * Get available service-item combinations with pricing
+ * @summary List service-item combinations
+ */
+export const listServiceItemsQueryActiveDefault = true;export const listServiceItemsQueryOffsetDefault = 0;
+export const listServiceItemsQueryOffsetMin = 0;
+export const listServiceItemsQueryLimitDefault = 20;
+export const listServiceItemsQueryLimitMax = 100;
+
+
+export const listServiceItemsQueryParams = zod.object({
+  "serviceId": zod.uuid().optional().describe('Filter by service'),
+  "itemId": zod.uuid().optional().describe('Filter by item'),
+  "branchId": zod.uuid().optional().describe('Get branch-specific pricing'),
+  "active": zod.boolean().default(listServiceItemsQueryActiveDefault).describe('Filter by active status'),
+  "offset": zod.number().min(listServiceItemsQueryOffsetMin).optional().describe('Number of items to skip'),
+  "limit": zod.number().min(1).max(listServiceItemsQueryLimitMax).default(listServiceItemsQueryLimitDefault).describe('Number of items to return')
+})
+
+export const listServiceItemsResponseServiceItemsItemServiceColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
+export const listServiceItemsResponseServiceItemsItemItemBasePriceMin = 0;
+
+export const listServiceItemsResponseServiceItemsItemItemBasePriceMax = 999999999;
+export const listServiceItemsResponseServiceItemsItemItemPriceBlackMin = 0;
+
+export const listServiceItemsResponseServiceItemsItemItemPriceBlackMax = 999999999;
+export const listServiceItemsResponseServiceItemsItemItemPriceColorMin = 0;
+
+export const listServiceItemsResponseServiceItemsItemItemPriceColorMax = 999999999;
+export const listServiceItemsResponseServiceItemsItemBasePriceMin = 0;
+
+export const listServiceItemsResponseServiceItemsItemBasePriceMax = 999999999;
+export const listServiceItemsResponseServiceItemsItemBranchPriceMin = 0;
+
+export const listServiceItemsResponseServiceItemsItemBranchPriceMax = 999999999;
+export const listServiceItemsResponseServiceItemsItemPriceBlackMin = 0;
+
+export const listServiceItemsResponseServiceItemsItemPriceBlackMax = 999999999;
+export const listServiceItemsResponseServiceItemsItemPriceColorMin = 0;
+
+export const listServiceItemsResponseServiceItemsItemPriceColorMax = 999999999;
+export const listServiceItemsResponseTotalCountMin = 0;
+
+
+export const listServiceItemsResponse = zod.object({
+  "serviceItems": zod.array(zod.object({
+  "id": zod.uuid().describe('Service-item combination ID'),
+  "serviceId": zod.uuid().describe('Service ID'),
+  "itemId": zod.uuid().describe('Item ID'),
+  "service": zod.object({
+  "id": zod.uuid().describe('Service ID'),
+  "code": zod.string().describe('Service code'),
+  "name": zod.string().describe('Service name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "description": zod.string().optional().describe('Service description'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.string().optional().describe('Category code from price list'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "color": zod.string().regex(listServiceItemsResponseServiceItemsItemServiceColorRegExp).optional().describe('Display color'),
+  "active": zod.boolean().describe('Is service active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "allowedProcessingTimes": zod.array(zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED'])).optional().describe('Available processing times'),
+  "requiresSpecialHandling": zod.boolean().optional().describe('Requires special handling'),
+  "tags": zod.array(zod.string()).optional().describe('Service tags')
+}),
+  "item": zod.object({
+  "id": zod.uuid().describe('Item ID'),
+  "code": zod.string().describe('Item code'),
+  "name": zod.string().describe('Item name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "pluralName": zod.string().optional().describe('Plural form'),
+  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
+  "description": zod.string().optional().describe('Item description'),
+  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
+  "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
+  "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
+  "basePrice": zod.number().min(listServiceItemsResponseServiceItemsItemItemBasePriceMin).max(listServiceItemsResponseServiceItemsItemItemBasePriceMax).optional().describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceBlack": zod.number().min(listServiceItemsResponseServiceItemsItemItemPriceBlackMin).max(listServiceItemsResponseServiceItemsItemItemPriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(listServiceItemsResponseServiceItemsItemItemPriceColorMin).max(listServiceItemsResponseServiceItemsItemItemPriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "active": zod.boolean().describe('Is item active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "attributes": zod.array(zod.string()).optional().describe('Available attributes (material, color, etc.)'),
+  "tags": zod.array(zod.string()).optional().describe('Item tags')
+}),
+  "basePrice": zod.number().min(listServiceItemsResponseServiceItemsItemBasePriceMin).max(listServiceItemsResponseServiceItemsItemBasePriceMax).describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "branchPrice": zod.number().min(listServiceItemsResponseServiceItemsItemBranchPriceMin).max(listServiceItemsResponseServiceItemsItemBranchPriceMax).optional().describe('Branch-specific price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "processingTime": zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED']),
+  "expressAvailable": zod.boolean().optional().describe('Express service available'),
+  "expressMultiplier": zod.number().optional().describe('Express price multiplier'),
+  "priceBlack": zod.number().min(listServiceItemsResponseServiceItemsItemPriceBlackMin).max(listServiceItemsResponseServiceItemsItemPriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(listServiceItemsResponseServiceItemsItemPriceColorMin).max(listServiceItemsResponseServiceItemsItemPriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "active": zod.boolean().describe('Is combination active'),
+  "minQuantity": zod.number().optional().describe('Minimum order quantity'),
+  "maxQuantity": zod.number().optional().describe('Maximum order quantity'),
+  "specialInstructions": zod.string().optional().describe('Special handling instructions'),
+  "popularityScore": zod.number().optional().describe('Popularity score for sorting')
+})),
+  "totalCount": zod.number().min(listServiceItemsResponseTotalCountMin).describe('Total number of service items available')
+})
+
+
+/**
+ * Create new service-item combination with base pricing
+ * @summary Create service-item combination
+ */
+export const createServiceItemBodyBasePriceMin = 0;
+
+export const createServiceItemBodyBasePriceMax = 999999999;
+export const createServiceItemBodySpecialInstructionsMin = 0;
+
+export const createServiceItemBodySpecialInstructionsMax = 500;
+
+
+export const createServiceItemBody = zod.object({
+  "serviceId": zod.uuid().describe('Service ID'),
+  "itemId": zod.uuid().describe('Item ID'),
+  "basePrice": zod.number().min(createServiceItemBodyBasePriceMin).max(createServiceItemBodyBasePriceMax).describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "processingTime": zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED']),
+  "expressAvailable": zod.boolean().optional(),
+  "expressMultiplier": zod.number().min(1).optional(),
+  "minQuantity": zod.number().min(1).optional(),
+  "maxQuantity": zod.number().min(1).optional(),
+  "specialInstructions": zod.string().min(createServiceItemBodySpecialInstructionsMin).max(createServiceItemBodySpecialInstructionsMax).optional()
+})
+
+
+/**
+ * Get list of available item types
+ * @summary List items
+ */
+export const listItemsQueryActiveDefault = true;export const listItemsQueryOffsetDefault = 0;
+export const listItemsQueryOffsetMin = 0;
+export const listItemsQueryLimitDefault = 20;
+export const listItemsQueryLimitMax = 100;
+
+
+export const listItemsQueryParams = zod.object({
+  "active": zod.boolean().default(listItemsQueryActiveDefault).describe('Filter by active status'),
+  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']).optional().describe('Filter by category'),
+  "search": zod.string().optional().describe('Search by name'),
+  "offset": zod.number().min(listItemsQueryOffsetMin).optional().describe('Number of items to skip'),
+  "limit": zod.number().min(1).max(listItemsQueryLimitMax).default(listItemsQueryLimitDefault).describe('Number of items to return')
+})
+
+export const listItemsResponseItemsItemBasePriceMin = 0;
+
+export const listItemsResponseItemsItemBasePriceMax = 999999999;
+export const listItemsResponseItemsItemPriceBlackMin = 0;
+
+export const listItemsResponseItemsItemPriceBlackMax = 999999999;
+export const listItemsResponseItemsItemPriceColorMin = 0;
+
+export const listItemsResponseItemsItemPriceColorMax = 999999999;
+export const listItemsResponseTotalCountMin = 0;
+
+
+export const listItemsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.uuid().describe('Item ID'),
+  "code": zod.string().describe('Item code'),
+  "name": zod.string().describe('Item name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "pluralName": zod.string().optional().describe('Plural form'),
+  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
+  "description": zod.string().optional().describe('Item description'),
+  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
+  "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
+  "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
+  "basePrice": zod.number().min(listItemsResponseItemsItemBasePriceMin).max(listItemsResponseItemsItemBasePriceMax).optional().describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceBlack": zod.number().min(listItemsResponseItemsItemPriceBlackMin).max(listItemsResponseItemsItemPriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(listItemsResponseItemsItemPriceColorMin).max(listItemsResponseItemsItemPriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "active": zod.boolean().describe('Is item active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "attributes": zod.array(zod.string()).optional().describe('Available attributes (material, color, etc.)'),
+  "tags": zod.array(zod.string()).optional().describe('Item tags')
+})),
+  "totalCount": zod.number().min(listItemsResponseTotalCountMin).describe('Total number of items available')
+})
+
+
+/**
+ * Create new item type
+ * @summary Create item
+ */
+export const createItemBodyCodeMin = 2;
+
+export const createItemBodyCodeMax = 50;
+
+export const createItemBodyCodeRegExp = new RegExp('^[A-Z_]+$');
+export const createItemBodyNameMin = 2;
+
+export const createItemBodyNameMax = 100;
+export const createItemBodyNameUaMin = 2;
+
+export const createItemBodyNameUaMax = 100;
+export const createItemBodyPluralNameMin = 2;
+
+export const createItemBodyPluralNameMax = 100;
+export const createItemBodyPluralNameUaMin = 2;
+
+export const createItemBodyPluralNameUaMax = 100;
+export const createItemBodyDescriptionMin = 0;
+
+export const createItemBodyDescriptionMax = 500;
+
+
+export const createItemBody = zod.object({
+  "code": zod.string().min(createItemBodyCodeMin).max(createItemBodyCodeMax).regex(createItemBodyCodeRegExp).describe('Item code'),
+  "name": zod.string().min(createItemBodyNameMin).max(createItemBodyNameMax).describe('Item name'),
+  "nameUa": zod.string().min(createItemBodyNameUaMin).max(createItemBodyNameUaMax).describe('Ukrainian name'),
+  "pluralName": zod.string().min(createItemBodyPluralNameMin).max(createItemBodyPluralNameMax).optional().describe('Plural form'),
+  "pluralNameUa": zod.string().min(createItemBodyPluralNameUaMin).max(createItemBodyPluralNameUaMax).optional().describe('Ukrainian plural form'),
+  "description": zod.string().min(createItemBodyDescriptionMin).max(createItemBodyDescriptionMax).optional().describe('Item description'),
+  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "sortOrder": zod.number().optional().describe('Display sort order'),
+  "attributes": zod.array(zod.string()).optional(),
+  "tags": zod.array(zod.string()).optional()
+})
+
+
+/**
+ * Get detailed service information
+ * @summary Get service details
+ */
+export const getServiceByIdParams = zod.object({
+  "serviceId": zod.uuid().describe('Service ID')
+})
+
+export const getServiceByIdResponseColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
+
+
+export const getServiceByIdResponse = zod.object({
+  "id": zod.uuid().describe('Service ID'),
+  "code": zod.string().describe('Service code'),
+  "name": zod.string().describe('Service name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "description": zod.string().optional().describe('Service description'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.string().optional().describe('Category code from price list'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "color": zod.string().regex(getServiceByIdResponseColorRegExp).optional().describe('Display color'),
+  "active": zod.boolean().describe('Is service active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "allowedProcessingTimes": zod.array(zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED'])).optional().describe('Available processing times'),
+  "requiresSpecialHandling": zod.boolean().optional().describe('Requires special handling'),
+  "tags": zod.array(zod.string()).optional().describe('Service tags')
+})
+
+
+/**
+ * Update service information
+ * @summary Update service
+ */
+export const updateServiceParams = zod.object({
+  "serviceId": zod.uuid().describe('Service ID')
+})
+
+export const updateServiceBodyNameMin = 2;
+
+export const updateServiceBodyNameMax = 100;
+export const updateServiceBodyNameUaMin = 2;
+
+export const updateServiceBodyNameUaMax = 100;
+export const updateServiceBodyDescriptionMin = 0;
+
+export const updateServiceBodyDescriptionMax = 500;
+export const updateServiceBodyColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
+
+
+export const updateServiceBody = zod.object({
+  "name": zod.string().min(updateServiceBodyNameMin).max(updateServiceBodyNameMax).optional(),
+  "nameUa": zod.string().min(updateServiceBodyNameUaMin).max(updateServiceBodyNameUaMax).optional(),
+  "description": zod.string().min(updateServiceBodyDescriptionMin).max(updateServiceBodyDescriptionMax).optional(),
+  "icon": zod.string().optional(),
+  "color": zod.string().regex(updateServiceBodyColorRegExp).optional(),
+  "active": zod.boolean().optional(),
+  "sortOrder": zod.number().optional(),
+  "allowedProcessingTimes": zod.array(zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED'])).optional(),
+  "requiresSpecialHandling": zod.boolean().optional(),
+  "tags": zod.array(zod.string()).optional()
+})
+
+export const updateServiceResponseColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
+
+
+export const updateServiceResponse = zod.object({
+  "id": zod.uuid().describe('Service ID'),
+  "code": zod.string().describe('Service code'),
+  "name": zod.string().describe('Service name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "description": zod.string().optional().describe('Service description'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.string().optional().describe('Category code from price list'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "color": zod.string().regex(updateServiceResponseColorRegExp).optional().describe('Display color'),
+  "active": zod.boolean().describe('Is service active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "allowedProcessingTimes": zod.array(zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED'])).optional().describe('Available processing times'),
+  "requiresSpecialHandling": zod.boolean().optional().describe('Requires special handling'),
+  "tags": zod.array(zod.string()).optional().describe('Service tags')
+})
+
+
+/**
+ * Get detailed service-item combination
+ * @summary Get service-item details
+ */
+export const getServiceItemByIdParams = zod.object({
+  "serviceItemId": zod.uuid().describe('Service-item ID')
+})
+
+export const getServiceItemByIdQueryParams = zod.object({
+  "branchId": zod.uuid().optional().describe('Get branch-specific pricing')
+})
+
+export const getServiceItemByIdResponseServiceColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
+export const getServiceItemByIdResponseItemBasePriceMin = 0;
+
+export const getServiceItemByIdResponseItemBasePriceMax = 999999999;
+export const getServiceItemByIdResponseItemPriceBlackMin = 0;
+
+export const getServiceItemByIdResponseItemPriceBlackMax = 999999999;
+export const getServiceItemByIdResponseItemPriceColorMin = 0;
+
+export const getServiceItemByIdResponseItemPriceColorMax = 999999999;
+export const getServiceItemByIdResponseBasePriceMin = 0;
+
+export const getServiceItemByIdResponseBasePriceMax = 999999999;
+export const getServiceItemByIdResponseBranchPriceMin = 0;
+
+export const getServiceItemByIdResponseBranchPriceMax = 999999999;
+export const getServiceItemByIdResponsePriceBlackMin = 0;
+
+export const getServiceItemByIdResponsePriceBlackMax = 999999999;
+export const getServiceItemByIdResponsePriceColorMin = 0;
+
+export const getServiceItemByIdResponsePriceColorMax = 999999999;
+
+
+export const getServiceItemByIdResponse = zod.object({
+  "id": zod.uuid().describe('Service-item combination ID'),
+  "serviceId": zod.uuid().describe('Service ID'),
+  "itemId": zod.uuid().describe('Item ID'),
+  "service": zod.object({
+  "id": zod.uuid().describe('Service ID'),
+  "code": zod.string().describe('Service code'),
+  "name": zod.string().describe('Service name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "description": zod.string().optional().describe('Service description'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.string().optional().describe('Category code from price list'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "color": zod.string().regex(getServiceItemByIdResponseServiceColorRegExp).optional().describe('Display color'),
+  "active": zod.boolean().describe('Is service active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "allowedProcessingTimes": zod.array(zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED'])).optional().describe('Available processing times'),
+  "requiresSpecialHandling": zod.boolean().optional().describe('Requires special handling'),
+  "tags": zod.array(zod.string()).optional().describe('Service tags')
+}),
+  "item": zod.object({
+  "id": zod.uuid().describe('Item ID'),
+  "code": zod.string().describe('Item code'),
+  "name": zod.string().describe('Item name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "pluralName": zod.string().optional().describe('Plural form'),
+  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
+  "description": zod.string().optional().describe('Item description'),
+  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
+  "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
+  "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
+  "basePrice": zod.number().min(getServiceItemByIdResponseItemBasePriceMin).max(getServiceItemByIdResponseItemBasePriceMax).optional().describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceBlack": zod.number().min(getServiceItemByIdResponseItemPriceBlackMin).max(getServiceItemByIdResponseItemPriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(getServiceItemByIdResponseItemPriceColorMin).max(getServiceItemByIdResponseItemPriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "active": zod.boolean().describe('Is item active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "attributes": zod.array(zod.string()).optional().describe('Available attributes (material, color, etc.)'),
+  "tags": zod.array(zod.string()).optional().describe('Item tags')
+}),
+  "basePrice": zod.number().min(getServiceItemByIdResponseBasePriceMin).max(getServiceItemByIdResponseBasePriceMax).describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "branchPrice": zod.number().min(getServiceItemByIdResponseBranchPriceMin).max(getServiceItemByIdResponseBranchPriceMax).optional().describe('Branch-specific price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "processingTime": zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED']),
+  "expressAvailable": zod.boolean().optional().describe('Express service available'),
+  "expressMultiplier": zod.number().optional().describe('Express price multiplier'),
+  "priceBlack": zod.number().min(getServiceItemByIdResponsePriceBlackMin).max(getServiceItemByIdResponsePriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(getServiceItemByIdResponsePriceColorMin).max(getServiceItemByIdResponsePriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "active": zod.boolean().describe('Is combination active'),
+  "minQuantity": zod.number().optional().describe('Minimum order quantity'),
+  "maxQuantity": zod.number().optional().describe('Maximum order quantity'),
+  "specialInstructions": zod.string().optional().describe('Special handling instructions'),
+  "popularityScore": zod.number().optional().describe('Popularity score for sorting')
+})
+
+
+/**
+ * Update service-item combination
+ * @summary Update service-item
+ */
+export const updateServiceItemParams = zod.object({
+  "serviceItemId": zod.uuid().describe('Service-item ID')
+})
+
+export const updateServiceItemBodyBasePriceMin = 0;
+export const updateServiceItemBodySpecialInstructionsMin = 0;
+
+export const updateServiceItemBodySpecialInstructionsMax = 500;
+export const updateServiceItemBodyPopularityScoreMin = 0;
+
+
+export const updateServiceItemBody = zod.object({
+  "basePrice": zod.number().min(updateServiceItemBodyBasePriceMin).optional(),
+  "processingTime": zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED']).optional(),
+  "expressAvailable": zod.boolean().optional(),
+  "expressMultiplier": zod.number().min(1).optional(),
+  "active": zod.boolean().optional(),
+  "minQuantity": zod.number().min(1).optional(),
+  "maxQuantity": zod.number().min(1).optional(),
+  "specialInstructions": zod.string().min(updateServiceItemBodySpecialInstructionsMin).max(updateServiceItemBodySpecialInstructionsMax).optional(),
+  "popularityScore": zod.number().min(updateServiceItemBodyPopularityScoreMin).optional()
+})
+
+export const updateServiceItemResponseServiceColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
+export const updateServiceItemResponseItemBasePriceMin = 0;
+
+export const updateServiceItemResponseItemBasePriceMax = 999999999;
+export const updateServiceItemResponseItemPriceBlackMin = 0;
+
+export const updateServiceItemResponseItemPriceBlackMax = 999999999;
+export const updateServiceItemResponseItemPriceColorMin = 0;
+
+export const updateServiceItemResponseItemPriceColorMax = 999999999;
+export const updateServiceItemResponseBasePriceMin = 0;
+
+export const updateServiceItemResponseBasePriceMax = 999999999;
+export const updateServiceItemResponseBranchPriceMin = 0;
+
+export const updateServiceItemResponseBranchPriceMax = 999999999;
+export const updateServiceItemResponsePriceBlackMin = 0;
+
+export const updateServiceItemResponsePriceBlackMax = 999999999;
+export const updateServiceItemResponsePriceColorMin = 0;
+
+export const updateServiceItemResponsePriceColorMax = 999999999;
+
+
+export const updateServiceItemResponse = zod.object({
+  "id": zod.uuid().describe('Service-item combination ID'),
+  "serviceId": zod.uuid().describe('Service ID'),
+  "itemId": zod.uuid().describe('Item ID'),
+  "service": zod.object({
+  "id": zod.uuid().describe('Service ID'),
+  "code": zod.string().describe('Service code'),
+  "name": zod.string().describe('Service name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "description": zod.string().optional().describe('Service description'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.string().optional().describe('Category code from price list'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "color": zod.string().regex(updateServiceItemResponseServiceColorRegExp).optional().describe('Display color'),
+  "active": zod.boolean().describe('Is service active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "allowedProcessingTimes": zod.array(zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED'])).optional().describe('Available processing times'),
+  "requiresSpecialHandling": zod.boolean().optional().describe('Requires special handling'),
+  "tags": zod.array(zod.string()).optional().describe('Service tags')
+}),
+  "item": zod.object({
+  "id": zod.uuid().describe('Item ID'),
+  "code": zod.string().describe('Item code'),
+  "name": zod.string().describe('Item name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "pluralName": zod.string().optional().describe('Plural form'),
+  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
+  "description": zod.string().optional().describe('Item description'),
+  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
+  "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
+  "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
+  "basePrice": zod.number().min(updateServiceItemResponseItemBasePriceMin).max(updateServiceItemResponseItemBasePriceMax).optional().describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceBlack": zod.number().min(updateServiceItemResponseItemPriceBlackMin).max(updateServiceItemResponseItemPriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(updateServiceItemResponseItemPriceColorMin).max(updateServiceItemResponseItemPriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "active": zod.boolean().describe('Is item active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "attributes": zod.array(zod.string()).optional().describe('Available attributes (material, color, etc.)'),
+  "tags": zod.array(zod.string()).optional().describe('Item tags')
+}),
+  "basePrice": zod.number().min(updateServiceItemResponseBasePriceMin).max(updateServiceItemResponseBasePriceMax).describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "branchPrice": zod.number().min(updateServiceItemResponseBranchPriceMin).max(updateServiceItemResponseBranchPriceMax).optional().describe('Branch-specific price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "processingTime": zod.enum(['EXPRESS_1H', 'EXPRESS_4H', 'SAME_DAY', 'NEXT_DAY', 'STANDARD_2D', 'STANDARD_3D', 'EXTENDED']),
+  "expressAvailable": zod.boolean().optional().describe('Express service available'),
+  "expressMultiplier": zod.number().optional().describe('Express price multiplier'),
+  "priceBlack": zod.number().min(updateServiceItemResponsePriceBlackMin).max(updateServiceItemResponsePriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(updateServiceItemResponsePriceColorMin).max(updateServiceItemResponsePriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "active": zod.boolean().describe('Is combination active'),
+  "minQuantity": zod.number().optional().describe('Minimum order quantity'),
+  "maxQuantity": zod.number().optional().describe('Maximum order quantity'),
+  "specialInstructions": zod.string().optional().describe('Special handling instructions'),
+  "popularityScore": zod.number().optional().describe('Popularity score for sorting')
+})
+
+
+/**
+ * Get detailed item information
+ * @summary Get item details
+ */
+export const getItemByIdParams = zod.object({
+  "itemId": zod.uuid().describe('Item ID')
+})
+
+export const getItemByIdResponseBasePriceMin = 0;
+
+export const getItemByIdResponseBasePriceMax = 999999999;
+export const getItemByIdResponsePriceBlackMin = 0;
+
+export const getItemByIdResponsePriceBlackMax = 999999999;
+export const getItemByIdResponsePriceColorMin = 0;
+
+export const getItemByIdResponsePriceColorMax = 999999999;
+
+
+export const getItemByIdResponse = zod.object({
+  "id": zod.uuid().describe('Item ID'),
+  "code": zod.string().describe('Item code'),
+  "name": zod.string().describe('Item name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "pluralName": zod.string().optional().describe('Plural form'),
+  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
+  "description": zod.string().optional().describe('Item description'),
+  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
+  "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
+  "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
+  "basePrice": zod.number().min(getItemByIdResponseBasePriceMin).max(getItemByIdResponseBasePriceMax).optional().describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceBlack": zod.number().min(getItemByIdResponsePriceBlackMin).max(getItemByIdResponsePriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(getItemByIdResponsePriceColorMin).max(getItemByIdResponsePriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "active": zod.boolean().describe('Is item active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "attributes": zod.array(zod.string()).optional().describe('Available attributes (material, color, etc.)'),
+  "tags": zod.array(zod.string()).optional().describe('Item tags')
+})
+
+
+/**
+ * Update item information
+ * @summary Update item
+ */
+export const updateItemParams = zod.object({
+  "itemId": zod.uuid().describe('Item ID')
+})
+
+export const updateItemBodyNameMin = 2;
+
+export const updateItemBodyNameMax = 100;
+export const updateItemBodyNameUaMin = 2;
+
+export const updateItemBodyNameUaMax = 100;
+export const updateItemBodyPluralNameMin = 2;
+
+export const updateItemBodyPluralNameMax = 100;
+export const updateItemBodyPluralNameUaMin = 2;
+
+export const updateItemBodyPluralNameUaMax = 100;
+export const updateItemBodyDescriptionMin = 0;
+
+export const updateItemBodyDescriptionMax = 500;
+
+
+export const updateItemBody = zod.object({
+  "name": zod.string().min(updateItemBodyNameMin).max(updateItemBodyNameMax).optional(),
+  "nameUa": zod.string().min(updateItemBodyNameUaMin).max(updateItemBodyNameUaMax).optional(),
+  "pluralName": zod.string().min(updateItemBodyPluralNameMin).max(updateItemBodyPluralNameMax).optional(),
+  "pluralNameUa": zod.string().min(updateItemBodyPluralNameUaMin).max(updateItemBodyPluralNameUaMax).optional(),
+  "description": zod.string().min(updateItemBodyDescriptionMin).max(updateItemBodyDescriptionMax).optional(),
+  "icon": zod.string().optional(),
+  "active": zod.boolean().optional(),
+  "sortOrder": zod.number().optional(),
+  "attributes": zod.array(zod.string()).optional(),
+  "tags": zod.array(zod.string()).optional()
+})
+
+export const updateItemResponseBasePriceMin = 0;
+
+export const updateItemResponseBasePriceMax = 999999999;
+export const updateItemResponsePriceBlackMin = 0;
+
+export const updateItemResponsePriceBlackMax = 999999999;
+export const updateItemResponsePriceColorMin = 0;
+
+export const updateItemResponsePriceColorMax = 999999999;
+
+
+export const updateItemResponse = zod.object({
+  "id": zod.uuid().describe('Item ID'),
+  "code": zod.string().describe('Item code'),
+  "name": zod.string().describe('Item name'),
+  "nameUa": zod.string().optional().describe('Ukrainian name'),
+  "pluralName": zod.string().optional().describe('Plural form'),
+  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
+  "description": zod.string().optional().describe('Item description'),
+  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
+  "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
+  "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
+  "basePrice": zod.number().min(updateItemResponseBasePriceMin).max(updateItemResponseBasePriceMax).optional().describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceBlack": zod.number().min(updateItemResponsePriceBlackMin).max(updateItemResponsePriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(updateItemResponsePriceColorMin).max(updateItemResponsePriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "icon": zod.string().optional().describe('Icon identifier'),
+  "active": zod.boolean().describe('Is item active'),
+  "sortOrder": zod.number().describe('Display sort order'),
+  "attributes": zod.array(zod.string()).optional().describe('Available attributes (material, color, etc.)'),
+  "tags": zod.array(zod.string()).optional().describe('Item tags')
+})

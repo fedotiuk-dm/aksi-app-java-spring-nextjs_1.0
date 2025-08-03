@@ -3,7 +3,6 @@ package com.aksi.service.user;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +21,6 @@ import com.aksi.api.user.dto.UserBranchesResponse;
 import com.aksi.api.user.dto.UserDetail;
 import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
-import com.aksi.domain.user.Role;
 import com.aksi.domain.user.User;
 import com.aksi.mapper.UserMapper;
 import com.aksi.repository.user.UserRepository;
@@ -108,7 +106,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User updateUserRoles(UUID userId, Set<Role> roles) {
+  public User updateUserRoles(UUID userId, Set<UserRole> roles) {
     log.info("Updating roles for user: {}", userId);
 
     User user =
@@ -239,12 +237,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDetail updateUserRolesAndReturnDetail(UUID userId, UpdateRolesRequest request) {
-    Set<Role> roles =
-        request.getRoles().stream()
-            .map(userRole -> Role.valueOf(userRole.name()))
-            .collect(Collectors.toSet());
-
-    User user = updateUserRoles(userId, roles);
+    User user = updateUserRoles(userId, Set.copyOf(request.getRoles()));
     return userMapper.toUserDetail(user);
   }
 

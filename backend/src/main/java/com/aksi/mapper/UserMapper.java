@@ -17,7 +17,6 @@ import com.aksi.api.user.dto.UserDetail;
 import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
 import com.aksi.api.user.dto.UserSummary;
-import com.aksi.domain.user.Role;
 import com.aksi.domain.user.User;
 import com.aksi.domain.user.UserBranchAssignment;
 
@@ -91,20 +90,12 @@ public interface UserMapper {
   BranchAssignment toBranchAssignment(UserBranchAssignment assignment);
 
   // Helper methods
-  default List<UserRole> mapRoles(Set<Role> roles) {
-    return roles.stream().map(this::mapRole).collect(Collectors.toList());
+  default List<UserRole> mapRoles(Set<UserRole> roles) {
+    return roles.stream().collect(Collectors.toList());
   }
 
-  default UserRole mapRole(Role role) {
-    return UserRole.valueOf(role.name());
-  }
-
-  default Set<Role> mapRolesFromDto(List<UserRole> roles) {
-    return roles.stream().map(this::mapRoleFromDto).collect(Collectors.toSet());
-  }
-
-  default Role mapRoleFromDto(UserRole role) {
-    return Role.valueOf(role.name());
+  default Set<UserRole> mapRolesFromDto(List<UserRole> roles) {
+    return roles.stream().collect(Collectors.toSet());
   }
 
   default List<BranchAssignment> mapBranchAssignments(Set<UserBranchAssignment> assignments) {
@@ -133,7 +124,7 @@ public interface UserMapper {
     return "Branch " + branchId;
   }
 
-  default List<String> calculatePermissions(Set<Role> roles) {
+  default List<String> calculatePermissions(Set<UserRole> roles) {
     // Simple permission calculation based on roles
     // In real implementation, this would be more sophisticated
     return roles.stream()
@@ -142,7 +133,7 @@ public interface UserMapper {
         .collect(Collectors.toList());
   }
 
-  default List<String> getPermissionsForRole(Role role) {
+  default List<String> getPermissionsForRole(UserRole role) {
     return switch (role) {
       case ADMIN ->
           List.of(

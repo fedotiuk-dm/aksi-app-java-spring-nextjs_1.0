@@ -2,14 +2,14 @@
  * @fileoverview Auth constants and enums
  */
 
-// Import generated role types
-import { LoginResponseRolesItem } from '@/shared/api/generated/auth';
+// Import generated role types from user API (single source of truth)
+import { UserDetailRolesItem } from '@/shared/api/generated/user';
 
 // Re-export roles from generated API for convenience
-export const ROLES = LoginResponseRolesItem;
+export const ROLES = UserDetailRolesItem;
 
 // Type for role
-export type UserRole = typeof LoginResponseRolesItem[keyof typeof LoginResponseRolesItem];
+export type UserRole = typeof UserDetailRolesItem[keyof typeof UserDetailRolesItem];
 
 // Permissions constants
 export const PERMISSIONS = {

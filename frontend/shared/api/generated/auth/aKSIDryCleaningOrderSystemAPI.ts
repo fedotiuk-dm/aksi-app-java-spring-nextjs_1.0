@@ -25,8 +25,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ErrorResponse,
   InvalidateAllSessionsParams,
-  Login400Response,
   LoginRequest,
   LoginResponse,
   SessionInfo
@@ -57,7 +57,7 @@ export const logout = (
   
 
 
-export const getLogoutMutationOptions = <TError = Login400Response,
+export const getLogoutMutationOptions = <TError = ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext> => {
 
@@ -84,12 +84,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type LogoutMutationResult = NonNullable<Awaited<ReturnType<typeof logout>>>
     
-    export type LogoutMutationError = Login400Response
+    export type LogoutMutationError = ErrorResponse
 
     /**
  * @summary Logout from system
  */
-export const useLogout = <TError = Login400Response,
+export const useLogout = <TError = ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof logout>>,
@@ -123,7 +123,7 @@ export const login = (
   
 
 
-export const getLoginMutationOptions = <TError = Login400Response | Login400Response | Login400Response,
+export const getLoginMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: LoginRequest}, TContext> => {
 
@@ -150,12 +150,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
     export type LoginMutationBody = LoginRequest
-    export type LoginMutationError = Login400Response | Login400Response | Login400Response
+    export type LoginMutationError = ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Login to system
  */
-export const useLogin = <TError = Login400Response | Login400Response | Login400Response,
+export const useLogin = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: LoginRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof login>>,
@@ -191,7 +191,7 @@ export const getGetCurrentSessionQueryKey = () => {
     }
 
     
-export const getGetCurrentSessionQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = Login400Response>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentSession>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetCurrentSessionQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentSession>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -210,10 +210,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetCurrentSessionQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentSession>>>
-export type GetCurrentSessionQueryError = Login400Response
+export type GetCurrentSessionQueryError = ErrorResponse
 
 
-export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = Login400Response>(
+export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = ErrorResponse>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentSession>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCurrentSession>>,
@@ -223,7 +223,7 @@ export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurren
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = Login400Response>(
+export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentSession>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCurrentSession>>,
@@ -233,7 +233,7 @@ export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurren
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = Login400Response>(
+export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentSession>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -241,7 +241,7 @@ export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurren
  * @summary Get current session info
  */
 
-export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = Login400Response>(
+export function useGetCurrentSession<TData = Awaited<ReturnType<typeof getCurrentSession>>, TError = ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentSession>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -276,7 +276,7 @@ export const invalidateAllSessions = (
   
 
 
-export const getInvalidateAllSessionsMutationOptions = <TError = Login400Response | Login400Response | Login400Response,
+export const getInvalidateAllSessionsMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof invalidateAllSessions>>, TError,{params: InvalidateAllSessionsParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof invalidateAllSessions>>, TError,{params: InvalidateAllSessionsParams}, TContext> => {
 
@@ -303,12 +303,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type InvalidateAllSessionsMutationResult = NonNullable<Awaited<ReturnType<typeof invalidateAllSessions>>>
     
-    export type InvalidateAllSessionsMutationError = Login400Response | Login400Response | Login400Response
+    export type InvalidateAllSessionsMutationError = ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Terminate all sessions for user
  */
-export const useInvalidateAllSessions = <TError = Login400Response | Login400Response | Login400Response,
+export const useInvalidateAllSessions = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof invalidateAllSessions>>, TError,{params: InvalidateAllSessionsParams}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof invalidateAllSessions>>,

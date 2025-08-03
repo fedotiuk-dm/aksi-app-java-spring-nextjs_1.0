@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { useChangePassword, changePasswordBody, type ChangePasswordRequest } from '@/shared/api/generated/user';
+import { useChangePassword, changePasswordBody } from '@/shared/api/generated/user';
 import { useAuthStore } from '@/features/auth';
 
 // Use generated schema for validation

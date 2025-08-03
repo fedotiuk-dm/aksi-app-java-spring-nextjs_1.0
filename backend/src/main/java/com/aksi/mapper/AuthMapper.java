@@ -9,8 +9,7 @@ import org.mapstruct.Mapping;
 
 import com.aksi.api.auth.dto.LoginResponse;
 import com.aksi.api.auth.dto.SessionInfo;
-import com.aksi.api.auth.dto.UserRole;
-import com.aksi.domain.user.Role;
+import com.aksi.api.user.dto.UserRole;
 import com.aksi.domain.user.User;
 
 /** MapStruct mapper for Auth DTOs. */
@@ -46,11 +45,11 @@ public interface AuthMapper {
       java.time.Instant lastAccessedAt,
       java.time.Instant expiresAt);
 
-  default List<UserRole> mapRoles(Set<Role> roles) {
+  default List<String> mapRoles(Set<UserRole> roles) {
     return roles.stream().map(this::mapRole).collect(Collectors.toList());
   }
 
-  default UserRole mapRole(Role role) {
-    return UserRole.valueOf(role.name());
+  default String mapRole(UserRole role) {
+    return role.name();
   }
 }

@@ -35,11 +35,11 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
   const [open, setOpen] = useState(false);
   const { logout, isLoading } = useAuth();
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (showConfirmation) {
       setOpen(true);
     } else {
-      handleLogout();
+      await handleLogout();
     }
   };
 

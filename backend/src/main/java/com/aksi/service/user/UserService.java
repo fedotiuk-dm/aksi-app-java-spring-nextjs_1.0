@@ -16,7 +16,6 @@ import com.aksi.api.user.dto.UserBranchesResponse;
 import com.aksi.api.user.dto.UserDetail;
 import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
-import com.aksi.domain.user.Role;
 import com.aksi.domain.user.User;
 
 /** Service interface for user management operations. */
@@ -41,7 +40,7 @@ public interface UserService {
 
   void changePassword(UUID userId, String currentPassword, String newPassword);
 
-  User updateUserRoles(UUID userId, Set<Role> roles);
+  User updateUserRoles(UUID userId, Set<UserRole> roles);
 
   User activateUser(UUID userId);
 

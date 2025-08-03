@@ -70,11 +70,7 @@ export interface UserDetail {
   updatedBy?: string;
 }
 
-export interface JsonNullableListListUsers400ResponseErrorsInner {
-  present?: boolean;
-}
-
-export interface ListUsers400Response {
+export interface ErrorResponse {
   /** Error timestamp */
   timestamp: string;
   /** HTTP status code */
@@ -85,7 +81,11 @@ export interface ListUsers400Response {
   message: string;
   /** Request path */
   path: string;
-  errors?: JsonNullableListListUsers400ResponseErrorsInner;
+  errors?: JsonNullableListErrorDetail;
+}
+
+export interface JsonNullableListErrorDetail {
+  present?: boolean;
 }
 
 export type UpdateRolesRequestRolesItem = typeof UpdateRolesRequestRolesItem[keyof typeof UpdateRolesRequestRolesItem];
@@ -121,8 +121,8 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
-export interface GetUserBranches200Response {
-  branches?: BranchAssignment[];
+export interface UserBranchesResponse {
+  branches: BranchAssignment[];
 }
 
 export interface UpdateBranchesRequest {
@@ -190,22 +190,369 @@ export interface CreateUserRequest {
   primaryBranchId?: string;
 }
 
-export interface JsonNullableListLogin400ResponseErrorsInner {
-  present?: boolean;
+export type ServiceInfoCategory = typeof ServiceInfoCategory[keyof typeof ServiceInfoCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ServiceInfoCategory = {
+  CLOTHING: 'CLOTHING',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
+  FUR: 'FUR',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+} as const;
+
+export type ServiceInfoAllowedProcessingTimesItem = typeof ServiceInfoAllowedProcessingTimesItem[keyof typeof ServiceInfoAllowedProcessingTimesItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ServiceInfoAllowedProcessingTimesItem = {
+  EXPRESS_1H: 'EXPRESS_1H',
+  EXPRESS_4H: 'EXPRESS_4H',
+  SAME_DAY: 'SAME_DAY',
+  NEXT_DAY: 'NEXT_DAY',
+  STANDARD_2D: 'STANDARD_2D',
+  STANDARD_3D: 'STANDARD_3D',
+  EXTENDED: 'EXTENDED',
+} as const;
+
+export interface ServiceInfo {
+  /** Service ID */
+  id: string;
+  /** Service code */
+  code: string;
+  /** Service name */
+  name: string;
+  /** Ukrainian name */
+  nameUa?: string;
+  /** Service description */
+  description?: string;
+  category: ServiceInfoCategory;
+  /** Category code from price list */
+  categoryCode?: string;
+  /** Icon identifier */
+  icon?: string;
+  /**
+   * Display color
+   * @pattern ^#[0-9A-Fa-f]{6}$
+   */
+  color?: string;
+  /** Is service active */
+  active: boolean;
+  /** Display sort order */
+  sortOrder: number;
+  /** Available processing times */
+  allowedProcessingTimes?: ServiceInfoAllowedProcessingTimesItem[];
+  /** Requires special handling */
+  requiresSpecialHandling?: boolean;
+  /** Service tags */
+  tags?: string[];
 }
 
-export interface Login400Response {
-  /** Error timestamp */
-  timestamp: string;
-  /** HTTP status code */
-  status: number;
-  /** Error name */
-  error: string;
-  /** Error message */
-  message: string;
-  /** Request path */
-  path: string;
-  errors?: JsonNullableListLogin400ResponseErrorsInner;
+export type CreateServiceInfoRequestCategory = typeof CreateServiceInfoRequestCategory[keyof typeof CreateServiceInfoRequestCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateServiceInfoRequestCategory = {
+  CLOTHING: 'CLOTHING',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
+  FUR: 'FUR',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+} as const;
+
+export type CreateServiceInfoRequestAllowedProcessingTimesItem = typeof CreateServiceInfoRequestAllowedProcessingTimesItem[keyof typeof CreateServiceInfoRequestAllowedProcessingTimesItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateServiceInfoRequestAllowedProcessingTimesItem = {
+  EXPRESS_1H: 'EXPRESS_1H',
+  EXPRESS_4H: 'EXPRESS_4H',
+  SAME_DAY: 'SAME_DAY',
+  NEXT_DAY: 'NEXT_DAY',
+  STANDARD_2D: 'STANDARD_2D',
+  STANDARD_3D: 'STANDARD_3D',
+  EXTENDED: 'EXTENDED',
+} as const;
+
+export interface CreateServiceInfoRequest {
+  /**
+   * Service code
+   * @minLength 2
+   * @maxLength 50
+   * @pattern ^[A-Z_]+$
+   */
+  code: string;
+  /**
+   * Service name
+   * @minLength 2
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * Ukrainian name
+   * @minLength 2
+   * @maxLength 100
+   */
+  nameUa: string;
+  /**
+   * Service description
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  category: CreateServiceInfoRequestCategory;
+  /** Icon identifier */
+  icon?: string;
+  /**
+   * Display color
+   * @pattern ^#[0-9A-Fa-f]{6}$
+   */
+  color?: string;
+  /** Display sort order */
+  sortOrder?: number;
+  allowedProcessingTimes?: CreateServiceInfoRequestAllowedProcessingTimesItem[];
+  requiresSpecialHandling?: boolean;
+  tags?: string[];
+}
+
+export type ItemInfoCategory = typeof ItemInfoCategory[keyof typeof ItemInfoCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemInfoCategory = {
+  CLOTHING: 'CLOTHING',
+  FOOTWEAR: 'FOOTWEAR',
+  ACCESSORIES: 'ACCESSORIES',
+  HOME_TEXTILES: 'HOME_TEXTILES',
+  LEATHER_GOODS: 'LEATHER_GOODS',
+  FUR: 'FUR',
+  WEDDING: 'WEDDING',
+  SPECIAL: 'SPECIAL',
+} as const;
+
+export interface ItemInfo {
+  /** Item ID */
+  id: string;
+  /** Item code */
+  code: string;
+  /** Item name */
+  name: string;
+  /** Ukrainian name */
+  nameUa?: string;
+  /** Plural form */
+  pluralName?: string;
+  /** Ukrainian plural form */
+  pluralNameUa?: string;
+  /** Item description */
+  description?: string;
+  category: ItemInfoCategory;
+  /** Catalog number from price list */
+  catalogNumber?: number;
+  /** Service category code from price list */
+  serviceCategoryCode?: string;
+  /** Unit of measure */
+  unitOfMeasure?: string;
+  /**
+   * Base price in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  basePrice?: number;
+  /**
+   * Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceBlack?: number;
+  /**
+   * Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceColor?: number;
+  /** Icon identifier */
+  icon?: string;
+  /** Is item active */
+  active: boolean;
+  /** Display sort order */
+  sortOrder: number;
+  /** Available attributes (material, color, etc.) */
+  attributes?: string[];
+  /** Item tags */
+  tags?: string[];
+}
+
+export type ServiceItemInfoProcessingTime = typeof ServiceItemInfoProcessingTime[keyof typeof ServiceItemInfoProcessingTime];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ServiceItemInfoProcessingTime = {
+  EXPRESS_1H: 'EXPRESS_1H',
+  EXPRESS_4H: 'EXPRESS_4H',
+  SAME_DAY: 'SAME_DAY',
+  NEXT_DAY: 'NEXT_DAY',
+  STANDARD_2D: 'STANDARD_2D',
+  STANDARD_3D: 'STANDARD_3D',
+  EXTENDED: 'EXTENDED',
+} as const;
+
+export interface ServiceItemInfo {
+  /** Service-item combination ID */
+  id: string;
+  /** Service ID */
+  serviceId: string;
+  /** Item ID */
+  itemId: string;
+  service: ServiceInfo;
+  item: ItemInfo;
+  /**
+   * Base price in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  basePrice: number;
+  /**
+   * Branch-specific price in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  branchPrice?: number;
+  processingTime: ServiceItemInfoProcessingTime;
+  /** Express service available */
+  expressAvailable?: boolean;
+  /** Express price multiplier */
+  expressMultiplier?: number;
+  /**
+   * Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceBlack?: number;
+  /**
+   * Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceColor?: number;
+  /** Is combination active */
+  active: boolean;
+  /** Minimum order quantity */
+  minQuantity?: number;
+  /** Maximum order quantity */
+  maxQuantity?: number;
+  /** Special handling instructions */
+  specialInstructions?: string;
+  /** Popularity score for sorting */
+  popularityScore?: number;
+}
+
+export type CreateServiceItemInfoRequestProcessingTime = typeof CreateServiceItemInfoRequestProcessingTime[keyof typeof CreateServiceItemInfoRequestProcessingTime];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateServiceItemInfoRequestProcessingTime = {
+  EXPRESS_1H: 'EXPRESS_1H',
+  EXPRESS_4H: 'EXPRESS_4H',
+  SAME_DAY: 'SAME_DAY',
+  NEXT_DAY: 'NEXT_DAY',
+  STANDARD_2D: 'STANDARD_2D',
+  STANDARD_3D: 'STANDARD_3D',
+  EXTENDED: 'EXTENDED',
+} as const;
+
+export interface CreateServiceItemInfoRequest {
+  /** Service ID */
+  serviceId: string;
+  /** Item ID */
+  itemId: string;
+  /**
+   * Base price in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  basePrice: number;
+  processingTime: CreateServiceItemInfoRequestProcessingTime;
+  expressAvailable?: boolean;
+  /** @minimum 1 */
+  expressMultiplier?: number;
+  /** @minimum 1 */
+  minQuantity?: number;
+  /** @minimum 1 */
+  maxQuantity?: number;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  specialInstructions?: string;
+}
+
+export type CreateItemInfoRequestCategory = typeof CreateItemInfoRequestCategory[keyof typeof CreateItemInfoRequestCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateItemInfoRequestCategory = {
+  CLOTHING: 'CLOTHING',
+  FOOTWEAR: 'FOOTWEAR',
+  ACCESSORIES: 'ACCESSORIES',
+  HOME_TEXTILES: 'HOME_TEXTILES',
+  LEATHER_GOODS: 'LEATHER_GOODS',
+  FUR: 'FUR',
+  WEDDING: 'WEDDING',
+  SPECIAL: 'SPECIAL',
+} as const;
+
+export interface CreateItemInfoRequest {
+  /**
+   * Item code
+   * @minLength 2
+   * @maxLength 50
+   * @pattern ^[A-Z_]+$
+   */
+  code: string;
+  /**
+   * Item name
+   * @minLength 2
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * Ukrainian name
+   * @minLength 2
+   * @maxLength 100
+   */
+  nameUa: string;
+  /**
+   * Plural form
+   * @minLength 2
+   * @maxLength 100
+   */
+  pluralName?: string;
+  /**
+   * Ukrainian plural form
+   * @minLength 2
+   * @maxLength 100
+   */
+  pluralNameUa?: string;
+  /**
+   * Item description
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  category: CreateItemInfoRequestCategory;
+  /** Icon identifier */
+  icon?: string;
+  /** Display sort order */
+  sortOrder?: number;
+  attributes?: string[];
+  tags?: string[];
 }
 
 export interface JsonNullableString {
@@ -215,19 +562,6 @@ export interface JsonNullableString {
 export interface JsonNullableUUID {
   present?: boolean;
 }
-
-export type LoginResponseRolesItem = typeof LoginResponseRolesItem[keyof typeof LoginResponseRolesItem];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LoginResponseRolesItem = {
-  OPERATOR: 'OPERATOR',
-  MANAGER: 'MANAGER',
-  ADMIN: 'ADMIN',
-  CLEANER: 'CLEANER',
-  DRIVER: 'DRIVER',
-  ACCOUNTANT: 'ACCOUNTANT',
-} as const;
 
 export interface LoginResponse {
   /** User ID */
@@ -243,7 +577,7 @@ export interface LoginResponse {
    * @minItems 1
    * @maxItems 2147483647
    */
-  roles: LoginResponseRolesItem[];
+  roles: string[];
   /** User permissions */
   permissions?: string[];
   /** Current branch ID */
@@ -296,7 +630,115 @@ export interface UpdateUserRequest {
   phone?: string;
 }
 
-export interface ListUsers200Response {
+export type UpdateServiceInfoRequestAllowedProcessingTimesItem = typeof UpdateServiceInfoRequestAllowedProcessingTimesItem[keyof typeof UpdateServiceInfoRequestAllowedProcessingTimesItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateServiceInfoRequestAllowedProcessingTimesItem = {
+  EXPRESS_1H: 'EXPRESS_1H',
+  EXPRESS_4H: 'EXPRESS_4H',
+  SAME_DAY: 'SAME_DAY',
+  NEXT_DAY: 'NEXT_DAY',
+  STANDARD_2D: 'STANDARD_2D',
+  STANDARD_3D: 'STANDARD_3D',
+  EXTENDED: 'EXTENDED',
+} as const;
+
+export interface UpdateServiceInfoRequest {
+  /**
+   * @minLength 2
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * @minLength 2
+   * @maxLength 100
+   */
+  nameUa?: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  icon?: string;
+  /** @pattern ^#[0-9A-Fa-f]{6}$ */
+  color?: string;
+  active?: boolean;
+  sortOrder?: number;
+  allowedProcessingTimes?: UpdateServiceInfoRequestAllowedProcessingTimesItem[];
+  requiresSpecialHandling?: boolean;
+  tags?: string[];
+}
+
+export type UpdateServiceItemInfoRequestProcessingTime = typeof UpdateServiceItemInfoRequestProcessingTime[keyof typeof UpdateServiceItemInfoRequestProcessingTime];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateServiceItemInfoRequestProcessingTime = {
+  EXPRESS_1H: 'EXPRESS_1H',
+  EXPRESS_4H: 'EXPRESS_4H',
+  SAME_DAY: 'SAME_DAY',
+  NEXT_DAY: 'NEXT_DAY',
+  STANDARD_2D: 'STANDARD_2D',
+  STANDARD_3D: 'STANDARD_3D',
+  EXTENDED: 'EXTENDED',
+} as const;
+
+export interface UpdateServiceItemInfoRequest {
+  /** @minimum 0 */
+  basePrice?: number;
+  processingTime?: UpdateServiceItemInfoRequestProcessingTime;
+  expressAvailable?: boolean;
+  /** @minimum 1 */
+  expressMultiplier?: number;
+  active?: boolean;
+  /** @minimum 1 */
+  minQuantity?: number;
+  /** @minimum 1 */
+  maxQuantity?: number;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  specialInstructions?: string;
+  /** @minimum 0 */
+  popularityScore?: number;
+}
+
+export interface UpdateItemInfoRequest {
+  /**
+   * @minLength 2
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * @minLength 2
+   * @maxLength 100
+   */
+  nameUa?: string;
+  /**
+   * @minLength 2
+   * @maxLength 100
+   */
+  pluralName?: string;
+  /**
+   * @minLength 2
+   * @maxLength 100
+   */
+  pluralNameUa?: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  icon?: string;
+  active?: boolean;
+  sortOrder?: number;
+  attributes?: string[];
+  tags?: string[];
+}
+
+export interface UserListResponse {
   data: UserSummary[];
   /** Total number of elements */
   totalElements: number;
@@ -357,18 +799,101 @@ export interface UserSummary {
   lastLoginAt?: string;
 }
 
-export type SessionInfoRolesItem = typeof SessionInfoRolesItem[keyof typeof SessionInfoRolesItem];
+export interface ListServicesResponse {
+  services: ServiceInfo[];
+}
+
+export interface ListServiceItemsResponse {
+  serviceItems: ServiceItemInfo[];
+  /**
+   * Total number of service items available
+   * @minimum 0
+   */
+  totalCount: number;
+}
+
+/**
+ * Service category code
+ */
+export type PriceListItemInfoCategoryCode = typeof PriceListItemInfoCategoryCode[keyof typeof PriceListItemInfoCategoryCode];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionInfoRolesItem = {
-  OPERATOR: 'OPERATOR',
-  MANAGER: 'MANAGER',
-  ADMIN: 'ADMIN',
-  CLEANER: 'CLEANER',
-  DRIVER: 'DRIVER',
-  ACCOUNTANT: 'ACCOUNTANT',
+export const PriceListItemInfoCategoryCode = {
+  CLOTHING: 'CLOTHING',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
+  FUR: 'FUR',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
 } as const;
+
+/**
+ * Unit of measure
+ */
+export type PriceListItemInfoUnitOfMeasure = typeof PriceListItemInfoUnitOfMeasure[keyof typeof PriceListItemInfoUnitOfMeasure];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceListItemInfoUnitOfMeasure = {
+  PIECE: 'PIECE',
+  KILOGRAM: 'KILOGRAM',
+  PAIR: 'PAIR',
+  SQUARE_METER: 'SQUARE_METER',
+} as const;
+
+export interface PriceListItemInfo {
+  /** Price list item ID */
+  id: string;
+  /** Service category code */
+  categoryCode: PriceListItemInfoCategoryCode;
+  /** Catalog number */
+  catalogNumber: number;
+  /** Item name */
+  name: string;
+  /** Unit of measure */
+  unitOfMeasure: PriceListItemInfoUnitOfMeasure;
+  /**
+   * Base price in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  basePrice: number;
+  /**
+   * Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceBlack?: number;
+  /**
+   * Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceColor?: number;
+  /** Is item active */
+  active: boolean;
+}
+
+export interface PriceListItemsResponse {
+  priceListItems: PriceListItemInfo[];
+  /**
+   * Total number of price list items available
+   * @minimum 0
+   */
+  totalCount: number;
+}
+
+export interface ListItemsResponse {
+  items: ItemInfo[];
+  /**
+   * Total number of items available
+   * @minimum 0
+   */
+  totalCount: number;
+}
 
 export interface SessionInfo {
   /** Session ID */
@@ -377,7 +902,7 @@ export interface SessionInfo {
   userId: string;
   /** Username */
   username: string;
-  roles?: SessionInfoRolesItem[];
+  roles?: string[];
   /** Current branch ID */
   branchId?: JsonNullableUUID;
   /** Current branch name */

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import com.aksi.domain.user.Role;
+import com.aksi.api.user.dto.UserRole;
 import com.aksi.service.user.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class DataInitializer {
         var admin =
             userService.createUser(
                 "admin", "admin@aksi.com", "admin123", "System", "Administrator", "+380501234567");
-        userService.updateUserRoles(admin.getId(), Set.of(Role.ADMIN));
+        userService.updateUserRoles(admin.getId(), Set.of(UserRole.ADMIN));
         log.info("Created admin user");
       }
 
@@ -41,7 +41,7 @@ public class DataInitializer {
         var manager =
             userService.createUser(
                 "manager", "manager@aksi.com", "manager123", "John", "Manager", "+380501234568");
-        userService.updateUserRoles(manager.getId(), Set.of(Role.MANAGER));
+        userService.updateUserRoles(manager.getId(), Set.of(UserRole.MANAGER));
         log.info("Created manager user");
       }
 

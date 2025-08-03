@@ -40,7 +40,7 @@ export const loginResponse = zod.object({
   "username": zod.string().describe('Username'),
   "firstName": zod.string().optional().describe('First name'),
   "lastName": zod.string().optional().describe('Last name'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(loginResponseRolesMax).describe('User roles'),
+  "roles": zod.array(zod.string()).min(1).max(loginResponseRolesMax).describe('User roles'),
   "permissions": zod.array(zod.string()).optional().describe('User permissions'),
   "branchId": zod.object({
   "present": zod.boolean().optional()
@@ -60,7 +60,7 @@ export const getCurrentSessionResponse = zod.object({
   "sessionId": zod.string().describe('Session ID'),
   "userId": zod.uuid().describe('User ID'),
   "username": zod.string().describe('Username'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).optional(),
+  "roles": zod.array(zod.string()).optional(),
   "branchId": zod.object({
   "present": zod.boolean().optional()
 }).optional(),

@@ -3,6 +3,7 @@ package com.aksi.domain.user;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.aksi.api.user.dto.UserRole;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
@@ -68,16 +69,16 @@ public class User extends BaseEntity {
   @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
   @Column(name = "role")
   @Enumerated(EnumType.STRING)
-  private Set<Role> roles = new HashSet<>();
+  private Set<UserRole> roles = new HashSet<>();
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<UserBranchAssignment> branchAssignments = new HashSet<>();
 
-  public void addRole(Role role) {
+  public void addRole(UserRole role) {
     roles.add(role);
   }
 
-  public void setRoles(Set<Role> roles) {
+  public void setRoles(Set<UserRole> roles) {
     this.roles.clear();
     this.roles.addAll(roles);
   }
@@ -100,7 +101,7 @@ public class User extends BaseEntity {
     user.active = true;
     user.emailVerified = false;
     user.failedLoginAttempts = 0;
-    user.addRole(Role.OPERATOR); // Default role
+    user.addRole(UserRole.OPERATOR); // Default role
     return user;
   }
 

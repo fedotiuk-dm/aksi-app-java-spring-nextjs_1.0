@@ -4,7 +4,7 @@
  * @fileoverview Provider для ініціалізації auth при завантаженні додатку
  */
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAuthStore } from '@/features/auth';
 import { useGetCurrentSession } from '@/shared/api/generated/auth';
 

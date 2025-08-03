@@ -222,7 +222,7 @@ components:
           type: array
           minItems: 1
           items:
-            $ref: '#/components/schemas/UserRole'
+            type: string
           description: User roles
         permissions:
           type: array
@@ -265,7 +265,7 @@ components:
         roles:
           type: array
           items:
-            $ref: '#/components/schemas/UserRole'
+            type: string
         branchId:
           type: ['string', 'null']
           format: uuid
@@ -292,24 +292,6 @@ components:
         userAgent:
           type: string
           description: Browser user agent
-    
-    UserRole:
-      type: string
-      enum:
-        - OPERATOR
-        - MANAGER
-        - ADMIN
-        - CLEANER
-        - DRIVER
-        - ACCOUNTANT
-      description: |
-        User roles:
-        * `OPERATOR` - Order acceptance operator
-        * `MANAGER` - Branch manager
-        * `ADMIN` - System administrator
-        * `CLEANER` - Cleaning specialist
-        * `DRIVER` - Delivery driver
-        * `ACCOUNTANT` - Financial specialist
     
     # Error schemas
     ErrorDetail:

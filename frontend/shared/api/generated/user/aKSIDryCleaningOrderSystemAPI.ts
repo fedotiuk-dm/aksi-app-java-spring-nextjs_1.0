@@ -27,14 +27,14 @@ import type {
 import type {
   ChangePasswordRequest,
   CreateUserRequest,
-  GetUserBranches200Response,
-  ListUsers200Response,
-  ListUsers400Response,
+  ErrorResponse,
   ListUsersParams,
   UpdateBranchesRequest,
   UpdateRolesRequest,
   UpdateUserRequest,
-  UserDetail
+  UserBranchesResponse,
+  UserDetail,
+  UserListResponse
 } from './aKSIDryCleaningOrderSystemAPI.schemas';
 
 import orvalFetcher from '../../../../lib/api/orval-fetcher';
@@ -64,7 +64,7 @@ export const updateUserRoles = (
   
 
 
-export const getUpdateUserRolesMutationOptions = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const getUpdateUserRolesMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserRoles>>, TError,{userId: string;data: UpdateRolesRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateUserRoles>>, TError,{userId: string;data: UpdateRolesRequest}, TContext> => {
 
@@ -91,12 +91,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateUserRolesMutationResult = NonNullable<Awaited<ReturnType<typeof updateUserRoles>>>
     export type UpdateUserRolesMutationBody = UpdateRolesRequest
-    export type UpdateUserRolesMutationError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response
+    export type UpdateUserRolesMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Update user roles
  */
-export const useUpdateUserRoles = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const useUpdateUserRoles = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserRoles>>, TError,{userId: string;data: UpdateRolesRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateUserRoles>>,
@@ -130,7 +130,7 @@ export const changePassword = (
   
 
 
-export const getChangePasswordMutationOptions = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const getChangePasswordMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof changePassword>>, TError,{userId: string;data: ChangePasswordRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof changePassword>>, TError,{userId: string;data: ChangePasswordRequest}, TContext> => {
 
@@ -157,12 +157,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type ChangePasswordMutationResult = NonNullable<Awaited<ReturnType<typeof changePassword>>>
     export type ChangePasswordMutationBody = ChangePasswordRequest
-    export type ChangePasswordMutationError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response
+    export type ChangePasswordMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Change user password
  */
-export const useChangePassword = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const useChangePassword = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof changePassword>>, TError,{userId: string;data: ChangePasswordRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof changePassword>>,
@@ -186,7 +186,7 @@ export const getUserBranches = (
 ) => {
       
       
-      return orvalFetcher<GetUserBranches200Response>(
+      return orvalFetcher<UserBranchesResponse>(
       {url: `/api/users/${userId}/branches`, method: 'GET', signal
     },
       options);
@@ -198,7 +198,7 @@ export const getGetUserBranchesQueryKey = (userId?: string,) => {
     }
 
     
-export const getGetUserBranchesQueryOptions = <TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserBranches>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetUserBranchesQueryOptions = <TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserBranches>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -217,10 +217,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetUserBranchesQueryResult = NonNullable<Awaited<ReturnType<typeof getUserBranches>>>
-export type GetUserBranchesQueryError = ListUsers400Response | ListUsers400Response | ListUsers400Response
+export type GetUserBranchesQueryError = ErrorResponse | ErrorResponse | ErrorResponse
 
 
-export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserBranches>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUserBranches>>,
@@ -230,7 +230,7 @@ export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBran
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserBranches>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUserBranches>>,
@@ -240,7 +240,7 @@ export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBran
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserBranches>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -248,7 +248,7 @@ export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBran
  * @summary Get user branches
  */
 
-export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useGetUserBranches<TData = Awaited<ReturnType<typeof getUserBranches>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserBranches>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -275,7 +275,7 @@ export const updateUserBranches = (
  options?: SecondParameter<typeof orvalFetcher>,) => {
       
       
-      return orvalFetcher<GetUserBranches200Response>(
+      return orvalFetcher<UserBranchesResponse>(
       {url: `/api/users/${userId}/branches`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: updateBranchesRequest
@@ -285,7 +285,7 @@ export const updateUserBranches = (
   
 
 
-export const getUpdateUserBranchesMutationOptions = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const getUpdateUserBranchesMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserBranches>>, TError,{userId: string;data: UpdateBranchesRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateUserBranches>>, TError,{userId: string;data: UpdateBranchesRequest}, TContext> => {
 
@@ -312,12 +312,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateUserBranchesMutationResult = NonNullable<Awaited<ReturnType<typeof updateUserBranches>>>
     export type UpdateUserBranchesMutationBody = UpdateBranchesRequest
-    export type UpdateUserBranchesMutationError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response
+    export type UpdateUserBranchesMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Update user branches
  */
-export const useUpdateUserBranches = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const useUpdateUserBranches = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserBranches>>, TError,{userId: string;data: UpdateBranchesRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateUserBranches>>,
@@ -341,7 +341,7 @@ export const listUsers = (
 ) => {
       
       
-      return orvalFetcher<ListUsers200Response>(
+      return orvalFetcher<UserListResponse>(
       {url: `/api/users`, method: 'GET',
         params, signal
     },
@@ -354,7 +354,7 @@ export const getListUsersQueryKey = (params?: ListUsersParams,) => {
     }
 
     
-export const getListUsersQueryOptions = <TData = Awaited<ReturnType<typeof listUsers>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getListUsersQueryOptions = <TData = Awaited<ReturnType<typeof listUsers>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -373,10 +373,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListUsersQueryResult = NonNullable<Awaited<ReturnType<typeof listUsers>>>
-export type ListUsersQueryError = ListUsers400Response | ListUsers400Response | ListUsers400Response
+export type ListUsersQueryError = ErrorResponse | ErrorResponse | ErrorResponse
 
 
-export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  params: undefined |  ListUsersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsers>>,
@@ -386,7 +386,7 @@ export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TErr
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsers>>,
@@ -396,7 +396,7 @@ export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TErr
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -404,7 +404,7 @@ export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TErr
  * @summary List users
  */
 
-export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useListUsers<TData = Awaited<ReturnType<typeof listUsers>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  params?: ListUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsers>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -441,7 +441,7 @@ export const createUser = (
   
 
 
-export const getCreateUserMutationOptions = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const getCreateUserMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserRequest}, TContext> => {
 
@@ -468,12 +468,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreateUserMutationResult = NonNullable<Awaited<ReturnType<typeof createUser>>>
     export type CreateUserMutationBody = CreateUserRequest
-    export type CreateUserMutationError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response
+    export type CreateUserMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Create new user
  */
-export const useCreateUser = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const useCreateUser = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUser>>, TError,{data: CreateUserRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createUser>>,
@@ -505,7 +505,7 @@ export const deactivateUser = (
   
 
 
-export const getDeactivateUserMutationOptions = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const getDeactivateUserMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateUser>>, TError,{userId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deactivateUser>>, TError,{userId: string}, TContext> => {
 
@@ -532,12 +532,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DeactivateUserMutationResult = NonNullable<Awaited<ReturnType<typeof deactivateUser>>>
     
-    export type DeactivateUserMutationError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response
+    export type DeactivateUserMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Deactivate user
  */
-export const useDeactivateUser = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const useDeactivateUser = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateUser>>, TError,{userId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deactivateUser>>,
@@ -569,7 +569,7 @@ export const activateUser = (
   
 
 
-export const getActivateUserMutationOptions = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const getActivateUserMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateUser>>, TError,{userId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof activateUser>>, TError,{userId: string}, TContext> => {
 
@@ -596,12 +596,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type ActivateUserMutationResult = NonNullable<Awaited<ReturnType<typeof activateUser>>>
     
-    export type ActivateUserMutationError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response
+    export type ActivateUserMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Activate user
  */
-export const useActivateUser = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const useActivateUser = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateUser>>, TError,{userId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof activateUser>>,
@@ -637,7 +637,7 @@ export const getGetUserByIdQueryKey = (userId?: string,) => {
     }
 
     
-export const getGetUserByIdQueryOptions = <TData = Awaited<ReturnType<typeof getUserById>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetUserByIdQueryOptions = <TData = Awaited<ReturnType<typeof getUserById>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -656,10 +656,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetUserByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getUserById>>>
-export type GetUserByIdQueryError = ListUsers400Response | ListUsers400Response | ListUsers400Response
+export type GetUserByIdQueryError = ErrorResponse | ErrorResponse | ErrorResponse
 
 
-export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUserById>>,
@@ -669,7 +669,7 @@ export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, 
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUserById>>,
@@ -679,7 +679,7 @@ export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, 
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -687,7 +687,7 @@ export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, 
  * @summary Get user details
  */
 
-export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = ListUsers400Response | ListUsers400Response | ListUsers400Response>(
+export function useGetUserById<TData = Awaited<ReturnType<typeof getUserById>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -724,7 +724,7 @@ export const updateUser = (
   
 
 
-export const getUpdateUserMutationOptions = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const getUpdateUserMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{userId: string;data: UpdateUserRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{userId: string;data: UpdateUserRequest}, TContext> => {
 
@@ -751,12 +751,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateUserMutationResult = NonNullable<Awaited<ReturnType<typeof updateUser>>>
     export type UpdateUserMutationBody = UpdateUserRequest
-    export type UpdateUserMutationError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response
+    export type UpdateUserMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Update user
  */
-export const useUpdateUser = <TError = ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response | ListUsers400Response,
+export const useUpdateUser = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{userId: string;data: UpdateUserRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateUser>>,

@@ -85,7 +85,7 @@ export const getUserBranchesResponse = zod.object({
   "branchId": zod.uuid().describe('Branch ID'),
   "branchName": zod.string().describe('Branch name'),
   "isPrimary": zod.boolean().describe('Is this the primary branch')
-})).optional()
+}))
 })
 
 
@@ -107,7 +107,7 @@ export const updateUserBranchesResponse = zod.object({
   "branchId": zod.uuid().describe('Branch ID'),
   "branchName": zod.string().describe('Branch name'),
   "isPrimary": zod.boolean().describe('Is this the primary branch')
-})).optional()
+}))
 })
 
 
