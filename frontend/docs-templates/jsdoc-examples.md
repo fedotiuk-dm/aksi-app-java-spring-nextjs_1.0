@@ -305,10 +305,10 @@ interface ClientValidationResult {
  * Всі методи чисті функції без побічних ефектів.
  *
  * @example
- * const service = new ClientDomainService();
- * const validation = service.validateClient(clientData);
+ * const serviceCatalog = new ClientDomainService();
+ * const validation = serviceCatalog.validateClient(clientData);
  * if (validation.isValid) {
- *   const client = service.createClient(clientData);
+ *   const client = serviceCatalog.createClient(clientData);
  * }
  *
  * @since 1.0.0
@@ -322,7 +322,7 @@ export class ClientDomainService {
    * @returns {ClientValidationResult} Результат валідації
    *
    * @example
-   * const result = service.validateClient({
+   * const result = serviceCatalog.validateClient({
    *   firstName: 'Іван',
    *   lastName: 'Петренко',
    *   phone: '+380501234567'
@@ -348,7 +348,7 @@ export class ClientDomainService {
    *
    * @example
    * try {
-   *   const client = service.createClient({
+   *   const client = serviceCatalog.createClient({
    *     firstName: 'Іван',
    *     lastName: 'Петренко',
    *     phone: '+380501234567',
@@ -765,8 +765,8 @@ import { useClientStep, Client, ClientDomainService } from '@/domain/client';
 const { selectClient, searchResults } = useClientStep();
 
 // В бізнес-логіці
-const service = new ClientDomainService();
-const isValid = service.validateClient(clientData);
+const serviceCatalog = new ClientDomainService();
+const isValid = serviceCatalog.validateClient(clientData);
 \`\`\`
 
 ## 📚 Документація

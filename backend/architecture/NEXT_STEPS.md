@@ -95,7 +95,7 @@ src/main/java/org/example/dryclean/
 ├── auth/          # Authentication
 ├── user/          # User management  
 ├── customer/      # Customers
-├── service/       # Services catalog (включає предмети)
+├── serviceCatalog/       # Services catalog (включає предмети)
 ├── order/         # Orders (включає корзину та характеристики)
 │   ├── cart/      # Cart functionality
 │   ├── order/     # Order management
@@ -112,7 +112,7 @@ api-specs/
 ├── auth-api.yaml
 ├── user-api.yaml
 ├── customer-api.yaml
-├── service-api.yaml    # Послуги та предмети
+├── serviceCatalog-api.yaml    # Послуги та предмети
 ├── cart-api.yaml       # Корзина
 ├── order-api.yaml      # Замовлення
 ├── pricing-api.yaml

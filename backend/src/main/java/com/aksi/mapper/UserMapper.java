@@ -12,9 +12,9 @@ import org.springframework.data.domain.Page;
 
 import com.aksi.api.user.dto.BranchAssignment;
 import com.aksi.api.user.dto.CreateUserRequest;
-import com.aksi.api.user.dto.ListUsers200Response;
 import com.aksi.api.user.dto.UpdateUserRequest;
 import com.aksi.api.user.dto.UserDetail;
+import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
 import com.aksi.api.user.dto.UserSummary;
 import com.aksi.domain.user.Role;
@@ -68,12 +68,11 @@ public interface UserMapper {
 
   List<UserSummary> toUserSummaryList(List<User> users);
 
-  default ListUsers200Response toListUsersResponse(
-      Page<User> userPage, int pageNumber, int pageSize) {
-    ListUsers200Response response = new ListUsers200Response();
+  default UserListResponse toUserListResponse(Page<User> userPage) {
+    UserListResponse response = new UserListResponse();
     response.setData(toUserSummaryList(userPage.getContent()));
-    response.setNumber(pageNumber);
-    response.setSize(pageSize);
+    response.setNumber(userPage.getNumber());
+    response.setSize(userPage.getSize());
     response.setTotalElements(userPage.getTotalElements());
     response.setTotalPages(userPage.getTotalPages());
     response.setNumberOfElements(userPage.getNumberOfElements());

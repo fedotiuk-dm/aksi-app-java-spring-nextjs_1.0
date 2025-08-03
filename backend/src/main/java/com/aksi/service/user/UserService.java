@@ -9,12 +9,12 @@ import org.springframework.data.domain.Pageable;
 
 import com.aksi.api.user.dto.ChangePasswordRequest;
 import com.aksi.api.user.dto.CreateUserRequest;
-import com.aksi.api.user.dto.GetUserBranches200Response;
-import com.aksi.api.user.dto.ListUsers200Response;
 import com.aksi.api.user.dto.UpdateBranchesRequest;
 import com.aksi.api.user.dto.UpdateRolesRequest;
 import com.aksi.api.user.dto.UpdateUserRequest;
+import com.aksi.api.user.dto.UserBranchesResponse;
 import com.aksi.api.user.dto.UserDetail;
+import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
 import com.aksi.domain.user.Role;
 import com.aksi.domain.user.User;
@@ -68,7 +68,7 @@ public interface UserService {
 
   void changePassword(UUID userId, ChangePasswordRequest request);
 
-  ListUsers200Response listUsers(
+  UserListResponse listUsers(
       Integer page,
       Integer size,
       String sortBy,
@@ -78,7 +78,7 @@ public interface UserService {
       UUID branchId,
       Boolean active);
 
-  GetUserBranches200Response getUserBranches(UUID userId);
+  UserBranchesResponse getUserBranches(UUID userId);
 
-  GetUserBranches200Response updateUserBranches(UUID userId, UpdateBranchesRequest request);
+  UserBranchesResponse updateUserBranches(UUID userId, UpdateBranchesRequest request);
 }

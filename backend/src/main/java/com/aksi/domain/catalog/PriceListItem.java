@@ -1,4 +1,4 @@
-package com.aksi.domain.service;
+package com.aksi.domain.catalog;
 
 import java.math.BigDecimal;
 

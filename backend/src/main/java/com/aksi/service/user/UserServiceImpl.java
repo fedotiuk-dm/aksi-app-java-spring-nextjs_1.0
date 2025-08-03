@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.user.dto.ChangePasswordRequest;
 import com.aksi.api.user.dto.CreateUserRequest;
-import com.aksi.api.user.dto.GetUserBranches200Response;
-import com.aksi.api.user.dto.ListUsers200Response;
 import com.aksi.api.user.dto.UpdateBranchesRequest;
 import com.aksi.api.user.dto.UpdateRolesRequest;
 import com.aksi.api.user.dto.UpdateUserRequest;
+import com.aksi.api.user.dto.UserBranchesResponse;
 import com.aksi.api.user.dto.UserDetail;
+import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
 import com.aksi.domain.user.Role;
 import com.aksi.domain.user.User;
@@ -255,7 +255,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional(readOnly = true)
-  public ListUsers200Response listUsers(
+  public UserListResponse listUsers(
       Integer page,
       Integer size,
       String sortBy,
@@ -277,29 +277,29 @@ public class UserServiceImpl implements UserService {
 
     // TODO: Implement filtering by search, role, branchId, active
 
-    return userMapper.toListUsersResponse(userPage, pageNumber, pageSize);
+    return userMapper.toUserListResponse(userPage);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public GetUserBranches200Response getUserBranches(UUID userId) {
+  public UserBranchesResponse getUserBranches(UUID userId) {
     User user =
         findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
-    GetUserBranches200Response response = new GetUserBranches200Response();
+    UserBranchesResponse response = new UserBranchesResponse();
     response.setBranches(userMapper.mapBranchAssignments(user.getBranchAssignments()));
 
     return response;
   }
 
   @Override
-  public GetUserBranches200Response updateUserBranches(UUID userId, UpdateBranchesRequest request) {
+  public UserBranchesResponse updateUserBranches(UUID userId, UpdateBranchesRequest request) {
     // TODO: Implement branch assignment update
     // This requires Branch entity and UserBranchAssignment management
 
     log.warn("Branch assignment update not yet implemented for user ID: {}", userId);
 
-    return new GetUserBranches200Response();
+    return new UserBranchesResponse();
   }
 }

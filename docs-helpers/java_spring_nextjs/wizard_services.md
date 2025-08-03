@@ -11,37 +11,37 @@
 ```
 /domain/wizard/services/
   /client-selection/
-    client-search.service.ts
-    client-creation.service.ts
-    client-validation.service.ts
+    client-search.serviceCatalog.ts
+    client-creation.serviceCatalog.ts
+    client-validation.serviceCatalog.ts
     index.ts
   /branch-selection/
-    branch-search.service.ts
-    order-initialization.service.ts
+    branch-search.serviceCatalog.ts
+    order-initialization.serviceCatalog.ts
     index.ts
-  /item-manager/
-    item-list.service.ts
+  /itemCatalog-manager/
+    itemCatalog-list.serviceCatalog.ts
     index.ts
-  /item-wizard/
-    basic-info.service.ts
-    properties.service.ts
-    defects.service.ts
-    pricing.service.ts
-    photo-documentation.service.ts
+  /itemCatalog-wizard/
+    basic-info.serviceCatalog.ts
+    properties.serviceCatalog.ts
+    defects.serviceCatalog.ts
+    pricing.serviceCatalog.ts
+    photo-documentation.serviceCatalog.ts
     index.ts
   /order-parameters/
-    order-timing.service.ts
-    discount.service.ts
-    payment.service.ts
+    order-timing.serviceCatalog.ts
+    discount.serviceCatalog.ts
+    payment.serviceCatalog.ts
     index.ts
   /confirmation/
-    order-summary.service.ts
-    receipt-generation.service.ts
+    order-summary.serviceCatalog.ts
+    receipt-generation.serviceCatalog.ts
     index.ts
   /shared/
-    base.service.ts
+    base.serviceCatalog.ts
     operation-result.factory.ts
-    validation.service.ts
+    validation.serviceCatalog.ts
     index.ts
 ```
 
@@ -319,14 +319,14 @@ export const orderInitializationService = new OrderInitializationService();
 ```typescript
 /**
  * @fileoverview Сервіс управління списком предметів
- * @module domain/wizard/services/item-manager/item-list
+ * @module domain/wizard/services/itemCatalog-manager/itemCatalog-list
  */
 
 import { z } from 'zod';
 import {
   getOrderItems,
   deleteOrderItem
-} from '../../adapters/order-item';
+} from '../../adapters/order-itemCatalog';
 import { OperationResultFactory } from '../shared/operation-result.factory';
 
 import type { OrderItem } from '../../types';
@@ -392,7 +392,7 @@ export const itemListService = new ItemListService();
 ```typescript
 /**
  * @fileoverview Сервіс базової інформації предмета
- * @module domain/wizard/services/item-wizard/basic-info
+ * @module domain/wizard/services/itemCatalog-wizard/basic-info
  */
 
 import { z } from 'zod';
@@ -490,7 +490,7 @@ export const basicInfoService = new BasicInfoService();
 ```typescript
 /**
  * @fileoverview Сервіс характеристик предмета
- * @module domain/wizard/services/item-wizard/properties
+ * @module domain/wizard/services/itemCatalog-wizard/properties
  */
 
 import { z } from 'zod';
@@ -574,7 +574,7 @@ export const propertiesService = new PropertiesService();
 ```typescript
 /**
  * @fileoverview Сервіс дефектів та забруднень
- * @module domain/wizard/services/item-wizard/defects
+ * @module domain/wizard/services/itemCatalog-wizard/defects
  */
 
 import { z } from 'zod';
@@ -673,7 +673,7 @@ export const defectsService = new DefectsService();
 ```typescript
 /**
  * @fileoverview Сервіс ціноутворення
- * @module domain/wizard/services/item-wizard/pricing
+ * @module domain/wizard/services/itemCatalog-wizard/pricing
  */
 
 import { z } from 'zod';
@@ -761,7 +761,7 @@ export const pricingService = new PricingService();
 ```typescript
 /**
  * @fileoverview Сервіс фотодокументації
- * @module domain/wizard/services/item-wizard/photo-documentation
+ * @module domain/wizard/services/itemCatalog-wizard/photo-documentation
  */
 
 import { z } from 'zod';
@@ -769,7 +769,7 @@ import {
   uploadItemPhoto,
   getItemPhotos,
   deleteItemPhoto
-} from '../../adapters/order-item';
+} from '../../adapters/order-itemCatalog';
 import { OperationResultFactory } from '../shared/operation-result.factory';
 
 import type { ItemPhoto } from '../../types';
@@ -913,11 +913,11 @@ export const photoDocumentationService = new PhotoDocumentationService();
 ```typescript
 /**
  * @fileoverview Сервіс створення предмета
- * @module domain/wizard/services/item-wizard/item-creation
+ * @module domain/wizard/services/itemCatalog-wizard/itemCatalog-creation
  */
 
 import { z } from 'zod';
-import { createOrderItem, updateOrderItem } from '../../adapters/order-item';
+import { createOrderItem, updateOrderItem } from '../../adapters/order-itemCatalog';
 import { OperationResultFactory } from '../shared/operation-result.factory';
 
 import type { OrderItem } from '../../types';
@@ -972,9 +972,9 @@ export class ItemCreationService {
       }
 
       // Виклик адаптера для створення предмета
-      const item = await createOrderItem(orderId, itemData);
+      const itemCatalog = await createOrderItem(orderId, itemData);
 
-      return OperationResultFactory.success(item);
+      return OperationResultFactory.success(itemCatalog);
     } catch (error) {
       return OperationResultFactory.error(
         `Помилка створення предмета: ${error instanceof Error ? error.message : 'Невідома помилка'}`
@@ -1009,9 +1009,9 @@ export class ItemCreationService {
       }
 
       // Виклик адаптера для оновлення предмета
-      const item = await updateOrderItem(orderId, itemId, itemData);
+      const itemCatalog = await updateOrderItem(orderId, itemId, itemData);
 
-      return OperationResultFactory.success(item);
+      return OperationResultFactory.success(itemCatalog);
     } catch (error) {
       return OperationResultFactory.error(
         `Помилка оновлення предмета: ${error instanceof Error ? error.message : 'Невідома помилка'}`
@@ -1291,7 +1291,7 @@ export const paymentService = new PaymentService();
  */
 
 import { getOrderById } from '../../adapters/order';
-import { getOrderItems } from '../../adapters/order-item';
+import { getOrderItems } from '../../adapters/order-itemCatalog';
 import { getClientById } from '../../adapters/client';
 import { OperationResultFactory } from '../shared/operation-result.factory';
 

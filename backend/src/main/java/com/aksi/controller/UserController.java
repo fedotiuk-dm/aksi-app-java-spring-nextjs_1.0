@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aksi.api.user.UsersApi;
 import com.aksi.api.user.dto.ChangePasswordRequest;
 import com.aksi.api.user.dto.CreateUserRequest;
-import com.aksi.api.user.dto.GetUserBranches200Response;
-import com.aksi.api.user.dto.ListUsers200Response;
 import com.aksi.api.user.dto.UpdateBranchesRequest;
 import com.aksi.api.user.dto.UpdateRolesRequest;
 import com.aksi.api.user.dto.UpdateUserRequest;
+import com.aksi.api.user.dto.UserBranchesResponse;
 import com.aksi.api.user.dto.UserDetail;
+import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
 import com.aksi.service.user.UserService;
 
@@ -65,9 +65,9 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  public ResponseEntity<GetUserBranches200Response> getUserBranches(UUID userId) {
+  public ResponseEntity<UserBranchesResponse> getUserBranches(UUID userId) {
     log.info("Getting branches for user ID: {}", userId);
-    GetUserBranches200Response response = userService.getUserBranches(userId);
+    UserBranchesResponse response = userService.getUserBranches(userId);
     log.info("Retrieved branches for user ID: {}", userId);
     return ResponseEntity.ok(response);
   }
@@ -81,7 +81,7 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  public ResponseEntity<ListUsers200Response> listUsers(
+  public ResponseEntity<UserListResponse> listUsers(
       Integer page,
       Integer size,
       String sortBy,
@@ -99,7 +99,7 @@ public class UserController implements UsersApi {
         role,
         active);
 
-    ListUsers200Response response =
+    UserListResponse response =
         userService.listUsers(page, size, sortBy, sortOrder, search, role, branchId, active);
 
     log.info("Listed users successfully");
@@ -107,12 +107,11 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  public ResponseEntity<GetUserBranches200Response> updateUserBranches(
+  public ResponseEntity<UserBranchesResponse> updateUserBranches(
       UUID userId, UpdateBranchesRequest updateBranchesRequest) {
 
     log.info("Updating branches for user ID: {}", userId);
-    GetUserBranches200Response response =
-        userService.updateUserBranches(userId, updateBranchesRequest);
+    UserBranchesResponse response = userService.updateUserBranches(userId, updateBranchesRequest);
     log.info("Updated branches for user ID: {}", userId);
     return ResponseEntity.ok(response);
   }

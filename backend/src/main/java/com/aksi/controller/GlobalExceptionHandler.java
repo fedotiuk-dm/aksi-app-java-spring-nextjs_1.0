@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import com.aksi.exception.ConflictException;
+import com.aksi.exception.NotFoundException;
 import com.aksi.exception.UnauthorizedException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,18 @@ public class GlobalExceptionHandler {
   public ResponseEntity<Map<String, Object>> handleUnauthorized(UnauthorizedException e) {
     log.warn("Unauthorized access: {}", e.getMessage());
     return createErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage(), null);
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException e) {
+    log.warn("Resource not found: {}", e.getMessage());
+    return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage(), null);
+  }
+
+  @ExceptionHandler(ConflictException.class)
+  public ResponseEntity<Map<String, Object>> handleConflict(ConflictException e) {
+    log.warn("Resource conflict: {}", e.getMessage());
+    return createErrorResponse(HttpStatus.CONFLICT, e.getMessage(), null);
   }
 
   @ExceptionHandler(BadCredentialsException.class)

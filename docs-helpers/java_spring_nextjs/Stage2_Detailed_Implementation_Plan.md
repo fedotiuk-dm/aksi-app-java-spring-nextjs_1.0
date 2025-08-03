@@ -7,7 +7,7 @@ backend/src/main/java/com/aksi/domain/order/statemachine/stage2/
 ├── adapter/                    # State Machine адаптери
 ├── actions/                    # State Machine дії
 ├── guards/                     # State Machine гарди
-├── service/                    # Координаційні сервіси
+├── serviceCatalog/                    # Координаційні сервіси
 ├── dto/                        # DTO для етапу 2
 ├── mapper/                     # Маппери ✅ ГОТОВО
 ├── validator/                  # Валідатори
@@ -251,7 +251,7 @@ substep1/
 │   ├── BasicInfoDTO.java
 │   ├── ServiceCategoryDTO.java
 │   └── PriceListItemDTO.java
-├── service/
+├── serviceCatalog/
 │   ├── BasicInfoStepService.java
 │   └── BasicInfoValidationService.java
 ├── mapper/
@@ -287,7 +287,7 @@ public class BasicInfoDTO {
 ### Крок 2: Сервіс підетапу
 
 ```java
-// substep1/service/BasicInfoStepService.java
+// substep1/serviceCatalog/BasicInfoStepService.java
 public class BasicInfoStepService {
 
     private final ServiceCategoryRepository serviceCategoryRepository;
@@ -340,7 +340,7 @@ substep2/
 ├── dto/
 │   ├── CharacteristicsDTO.java
 │   └── MaterialOptionDTO.java
-├── service/
+├── serviceCatalog/
 │   ├── CharacteristicsStepService.java
 │   └── MaterialsService.java
 ├── mapper/
@@ -387,7 +387,7 @@ DOWN, SYNTHETIC, OTHER
 ### Крок 2: Сервіс характеристик
 
 ```java
-// substep2/service/CharacteristicsStepService.java
+// substep2/serviceCatalog/CharacteristicsStepService.java
 public class CharacteristicsStepService {
 
     // Методи:
@@ -423,7 +423,7 @@ substep3/
 │   ├── DefectsStainsDTO.java
 │   ├── StainSelectionDTO.java
 │   └── DefectSelectionDTO.java
-├── service/
+├── serviceCatalog/
 │   ├── DefectsStainsStepService.java
 │   ├── StainTypesService.java
 │   └── DefectTypesService.java
@@ -459,7 +459,7 @@ public class DefectsStainsDTO {
 ### Крок 2: Сервіс дефектів та плям
 
 ```java
-// substep3/service/DefectsStainsStepService.java
+// substep3/serviceCatalog/DefectsStainsStepService.java
 public class DefectsStainsStepService {
 
     private final StainTypeRepository stainTypeRepository;
@@ -499,7 +499,7 @@ substep4/
 │   ├── PricingCalculationDTO.java
 │   ├── ModifierSelectionDTO.java
 │   └── PriceBreakdownDTO.java
-├── service/
+├── serviceCatalog/
 │   ├── PricingStepService.java
 │   ├── InteractivePriceCalculationService.java
 │   └── ModifierRecommendationService.java
@@ -544,7 +544,7 @@ public class PriceBreakdownDTO {
 ### Крок 2: Інтерактивний сервіс розрахунку
 
 ```java
-// substep4/service/InteractivePriceCalculationService.java
+// substep4/serviceCatalog/InteractivePriceCalculationService.java
 public class InteractivePriceCalculationService {
 
     private final PriceCalculationService priceCalculationService;
@@ -563,7 +563,7 @@ public class InteractivePriceCalculationService {
 ### Крок 3: Real-time розрахунки
 
 ```java
-// substep4/service/PricingStepService.java
+// substep4/serviceCatalog/PricingStepService.java
 - реалізація інтерактивного калькулятора
 - збереження/завантаження розрахунків
 - валідація розумності модифікаторів
@@ -592,7 +592,7 @@ substep5/
 │   ├── PhotoDocumentationDTO.java
 │   ├── PhotoUploadDTO.java
 │   └── PhotoMetadataDTO.java
-├── service/
+├── serviceCatalog/
 │   ├── PhotosStepService.java
 │   ├── PhotoStorageService.java
 │   └── PhotoCompressionService.java
@@ -636,7 +636,7 @@ public class PhotoMetadataDTO {
 ### Крок 2: Сервіс фотодокументації
 
 ```java
-// substep5/service/PhotosStepService.java
+// substep5/serviceCatalog/PhotosStepService.java
 public class PhotosStepService {
 
     private final PhotoStorageService storageService;
@@ -655,12 +655,12 @@ public class PhotosStepService {
 ### Крок 3: Технічна реалізація
 
 ```java
-// substep5/service/PhotoStorageService.java
+// substep5/serviceCatalog/PhotoStorageService.java
 - збереження файлів на диск або cloud storage
 - генерування унікальних імен файлів
 - управління шляхами до файлів
 
-// substep5/service/PhotoCompressionService.java
+// substep5/serviceCatalog/PhotoCompressionService.java
 - автоматичне стиснення зображень
 - створення мініатюр
 - оптимізація розмірів файлів

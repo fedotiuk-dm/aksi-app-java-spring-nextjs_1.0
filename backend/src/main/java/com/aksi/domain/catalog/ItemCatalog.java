@@ -1,4 +1,4 @@
-package com.aksi.domain.service;
+package com.aksi.domain.catalog;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,21 +17,21 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-/** Service entity representing types of cleaning services. */
+/** Item entity representing types of items that can be cleaned. */
 @Entity
 @Table(
-    name = "services",
+    name = "items",
     indexes = {
-      @Index(name = "idx_service_code", columnList = "code", unique = true),
-      @Index(name = "idx_service_category", columnList = "category"),
-      @Index(name = "idx_service_active", columnList = "active")
+      @Index(name = "idx_item_code", columnList = "code", unique = true),
+      @Index(name = "idx_item_category", columnList = "category"),
+      @Index(name = "idx_item_active", columnList = "active")
     })
 @Getter
 @Setter
 @ToString(exclude = "serviceItems")
-public class Service extends BaseEntity {
+public class ItemCatalog extends BaseEntity {
 
-  @Column(name = "code", nullable = false, unique = true, length = 20)
+  @Column(name = "code", nullable = false, unique = true, length = 50)
   private String code;
 
   @Column(name = "name", nullable = false, length = 100)
@@ -44,14 +44,18 @@ public class Service extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private ServiceCategoryType category;
 
-  @Column(name = "processing_time_days", nullable = false)
-  private Integer processingTimeDays;
+  @Column(name = "material", length = 100)
+  private String material;
 
-  @Column(name = "express_available", nullable = false)
-  private boolean expressAvailable;
+  @Column(name = "care_instructions", columnDefinition = "TEXT")
+  private String careInstructions;
 
-  @Column(name = "express_time_hours")
-  private Integer expressTimeHours;
+  @Column(name = "catalog_number")
+  private Integer catalogNumber;
+
+  @Column(name = "unit_of_measure", length = 20)
+  @Enumerated(EnumType.STRING)
+  private UnitOfMeasure unitOfMeasure;
 
   @Column(name = "active", nullable = false)
   private boolean active;
@@ -59,6 +63,6 @@ public class Service extends BaseEntity {
   @Column(name = "sort_order")
   private Integer sortOrder;
 
-  @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<ServiceItem> serviceItems = new HashSet<>();
 }

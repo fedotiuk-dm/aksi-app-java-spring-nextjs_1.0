@@ -1,4 +1,4 @@
-package com.aksi.domain.service;
+package com.aksi.domain.catalog;
 
 import java.math.BigDecimal;
 
@@ -34,11 +34,11 @@ public class ServiceItem extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "service_id", nullable = false)
-  private Service service;
+  private ServiceCatalog serviceCatalog;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "item_id", nullable = false)
-  private Item item;
+  private ItemCatalog itemCatalog;
 
   @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
   private BigDecimal basePrice;
