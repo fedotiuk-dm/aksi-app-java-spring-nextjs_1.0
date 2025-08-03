@@ -28,8 +28,7 @@ export const listServicesResponse = zod.object({
   "id": zod.uuid().describe('Service ID'),
   "code": zod.string().describe('Service code'),
   "name": zod.string().describe('Service name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
-  "description": zod.string().optional().describe('Service description'),
+  "description": zod.string().optional().describe('Service description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "categoryCode": zod.string().optional().describe('Category code from price list'),
   "icon": zod.string().optional().describe('Icon identifier'),
@@ -55,9 +54,6 @@ export const createServiceBodyCodeRegExp = new RegExp('^[A-Z_]+$');
 export const createServiceBodyNameMin = 2;
 
 export const createServiceBodyNameMax = 100;
-export const createServiceBodyNameUaMin = 2;
-
-export const createServiceBodyNameUaMax = 100;
 export const createServiceBodyDescriptionMin = 0;
 
 export const createServiceBodyDescriptionMax = 500;
@@ -66,9 +62,8 @@ export const createServiceBodyColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
 
 export const createServiceBody = zod.object({
   "code": zod.string().min(createServiceBodyCodeMin).max(createServiceBodyCodeMax).regex(createServiceBodyCodeRegExp).describe('Service code'),
-  "name": zod.string().min(createServiceBodyNameMin).max(createServiceBodyNameMax).describe('Service name'),
-  "nameUa": zod.string().min(createServiceBodyNameUaMin).max(createServiceBodyNameUaMax).describe('Ukrainian name'),
-  "description": zod.string().min(createServiceBodyDescriptionMin).max(createServiceBodyDescriptionMax).optional().describe('Service description'),
+  "name": zod.string().min(createServiceBodyNameMin).max(createServiceBodyNameMax).describe('Service name (Ukrainian)'),
+  "description": zod.string().min(createServiceBodyDescriptionMin).max(createServiceBodyDescriptionMax).optional().describe('Service description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "icon": zod.string().optional().describe('Icon identifier'),
   "color": zod.string().regex(createServiceBodyColorRegExp).optional().describe('Display color'),
@@ -132,8 +127,7 @@ export const listServiceItemsResponse = zod.object({
   "id": zod.uuid().describe('Service ID'),
   "code": zod.string().describe('Service code'),
   "name": zod.string().describe('Service name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
-  "description": zod.string().optional().describe('Service description'),
+  "description": zod.string().optional().describe('Service description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "categoryCode": zod.string().optional().describe('Category code from price list'),
   "icon": zod.string().optional().describe('Icon identifier'),
@@ -148,10 +142,8 @@ export const listServiceItemsResponse = zod.object({
   "id": zod.uuid().describe('Item ID'),
   "code": zod.string().describe('Item code'),
   "name": zod.string().describe('Item name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
   "pluralName": zod.string().optional().describe('Plural form'),
-  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
-  "description": zod.string().optional().describe('Item description'),
+  "description": zod.string().optional().describe('Item description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
@@ -242,10 +234,8 @@ export const listItemsResponse = zod.object({
   "id": zod.uuid().describe('Item ID'),
   "code": zod.string().describe('Item code'),
   "name": zod.string().describe('Item name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
   "pluralName": zod.string().optional().describe('Plural form'),
-  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
-  "description": zod.string().optional().describe('Item description'),
+  "description": zod.string().optional().describe('Item description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
@@ -275,15 +265,9 @@ export const createItemBodyCodeRegExp = new RegExp('^[A-Z_]+$');
 export const createItemBodyNameMin = 2;
 
 export const createItemBodyNameMax = 100;
-export const createItemBodyNameUaMin = 2;
-
-export const createItemBodyNameUaMax = 100;
 export const createItemBodyPluralNameMin = 2;
 
 export const createItemBodyPluralNameMax = 100;
-export const createItemBodyPluralNameUaMin = 2;
-
-export const createItemBodyPluralNameUaMax = 100;
 export const createItemBodyDescriptionMin = 0;
 
 export const createItemBodyDescriptionMax = 500;
@@ -291,11 +275,9 @@ export const createItemBodyDescriptionMax = 500;
 
 export const createItemBody = zod.object({
   "code": zod.string().min(createItemBodyCodeMin).max(createItemBodyCodeMax).regex(createItemBodyCodeRegExp).describe('Item code'),
-  "name": zod.string().min(createItemBodyNameMin).max(createItemBodyNameMax).describe('Item name'),
-  "nameUa": zod.string().min(createItemBodyNameUaMin).max(createItemBodyNameUaMax).describe('Ukrainian name'),
-  "pluralName": zod.string().min(createItemBodyPluralNameMin).max(createItemBodyPluralNameMax).optional().describe('Plural form'),
-  "pluralNameUa": zod.string().min(createItemBodyPluralNameUaMin).max(createItemBodyPluralNameUaMax).optional().describe('Ukrainian plural form'),
-  "description": zod.string().min(createItemBodyDescriptionMin).max(createItemBodyDescriptionMax).optional().describe('Item description'),
+  "name": zod.string().min(createItemBodyNameMin).max(createItemBodyNameMax).describe('Item name (Ukrainian)'),
+  "pluralName": zod.string().min(createItemBodyPluralNameMin).max(createItemBodyPluralNameMax).optional().describe('Plural form (Ukrainian)'),
+  "description": zod.string().min(createItemBodyDescriptionMin).max(createItemBodyDescriptionMax).optional().describe('Item description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
   "icon": zod.string().optional().describe('Icon identifier'),
   "sortOrder": zod.number().optional().describe('Display sort order'),
@@ -319,8 +301,7 @@ export const getServiceByIdResponse = zod.object({
   "id": zod.uuid().describe('Service ID'),
   "code": zod.string().describe('Service code'),
   "name": zod.string().describe('Service name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
-  "description": zod.string().optional().describe('Service description'),
+  "description": zod.string().optional().describe('Service description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "categoryCode": zod.string().optional().describe('Category code from price list'),
   "icon": zod.string().optional().describe('Icon identifier'),
@@ -344,9 +325,6 @@ export const updateServiceParams = zod.object({
 export const updateServiceBodyNameMin = 2;
 
 export const updateServiceBodyNameMax = 100;
-export const updateServiceBodyNameUaMin = 2;
-
-export const updateServiceBodyNameUaMax = 100;
 export const updateServiceBodyDescriptionMin = 0;
 
 export const updateServiceBodyDescriptionMax = 500;
@@ -354,8 +332,7 @@ export const updateServiceBodyColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
 
 
 export const updateServiceBody = zod.object({
-  "name": zod.string().min(updateServiceBodyNameMin).max(updateServiceBodyNameMax).optional(),
-  "nameUa": zod.string().min(updateServiceBodyNameUaMin).max(updateServiceBodyNameUaMax).optional(),
+  "name": zod.string().min(updateServiceBodyNameMin).max(updateServiceBodyNameMax).optional().describe('Service name (Ukrainian)'),
   "description": zod.string().min(updateServiceBodyDescriptionMin).max(updateServiceBodyDescriptionMax).optional(),
   "icon": zod.string().optional(),
   "color": zod.string().regex(updateServiceBodyColorRegExp).optional(),
@@ -373,8 +350,7 @@ export const updateServiceResponse = zod.object({
   "id": zod.uuid().describe('Service ID'),
   "code": zod.string().describe('Service code'),
   "name": zod.string().describe('Service name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
-  "description": zod.string().optional().describe('Service description'),
+  "description": zod.string().optional().describe('Service description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "categoryCode": zod.string().optional().describe('Category code from price list'),
   "icon": zod.string().optional().describe('Icon identifier'),
@@ -431,8 +407,7 @@ export const getServiceItemByIdResponse = zod.object({
   "id": zod.uuid().describe('Service ID'),
   "code": zod.string().describe('Service code'),
   "name": zod.string().describe('Service name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
-  "description": zod.string().optional().describe('Service description'),
+  "description": zod.string().optional().describe('Service description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "categoryCode": zod.string().optional().describe('Category code from price list'),
   "icon": zod.string().optional().describe('Icon identifier'),
@@ -447,10 +422,8 @@ export const getServiceItemByIdResponse = zod.object({
   "id": zod.uuid().describe('Item ID'),
   "code": zod.string().describe('Item code'),
   "name": zod.string().describe('Item name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
   "pluralName": zod.string().optional().describe('Plural form'),
-  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
-  "description": zod.string().optional().describe('Item description'),
+  "description": zod.string().optional().describe('Item description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
@@ -538,8 +511,7 @@ export const updateServiceItemResponse = zod.object({
   "id": zod.uuid().describe('Service ID'),
   "code": zod.string().describe('Service code'),
   "name": zod.string().describe('Service name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
-  "description": zod.string().optional().describe('Service description'),
+  "description": zod.string().optional().describe('Service description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "categoryCode": zod.string().optional().describe('Category code from price list'),
   "icon": zod.string().optional().describe('Icon identifier'),
@@ -554,10 +526,8 @@ export const updateServiceItemResponse = zod.object({
   "id": zod.uuid().describe('Item ID'),
   "code": zod.string().describe('Item code'),
   "name": zod.string().describe('Item name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
   "pluralName": zod.string().optional().describe('Plural form'),
-  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
-  "description": zod.string().optional().describe('Item description'),
+  "description": zod.string().optional().describe('Item description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
@@ -609,10 +579,8 @@ export const getItemByIdResponse = zod.object({
   "id": zod.uuid().describe('Item ID'),
   "code": zod.string().describe('Item code'),
   "name": zod.string().describe('Item name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
   "pluralName": zod.string().optional().describe('Plural form'),
-  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
-  "description": zod.string().optional().describe('Item description'),
+  "description": zod.string().optional().describe('Item description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
@@ -639,25 +607,17 @@ export const updateItemParams = zod.object({
 export const updateItemBodyNameMin = 2;
 
 export const updateItemBodyNameMax = 100;
-export const updateItemBodyNameUaMin = 2;
-
-export const updateItemBodyNameUaMax = 100;
 export const updateItemBodyPluralNameMin = 2;
 
 export const updateItemBodyPluralNameMax = 100;
-export const updateItemBodyPluralNameUaMin = 2;
-
-export const updateItemBodyPluralNameUaMax = 100;
 export const updateItemBodyDescriptionMin = 0;
 
 export const updateItemBodyDescriptionMax = 500;
 
 
 export const updateItemBody = zod.object({
-  "name": zod.string().min(updateItemBodyNameMin).max(updateItemBodyNameMax).optional(),
-  "nameUa": zod.string().min(updateItemBodyNameUaMin).max(updateItemBodyNameUaMax).optional(),
+  "name": zod.string().min(updateItemBodyNameMin).max(updateItemBodyNameMax).optional().describe('Service name (Ukrainian)'),
   "pluralName": zod.string().min(updateItemBodyPluralNameMin).max(updateItemBodyPluralNameMax).optional(),
-  "pluralNameUa": zod.string().min(updateItemBodyPluralNameUaMin).max(updateItemBodyPluralNameUaMax).optional(),
   "description": zod.string().min(updateItemBodyDescriptionMin).max(updateItemBodyDescriptionMax).optional(),
   "icon": zod.string().optional(),
   "active": zod.boolean().optional(),
@@ -681,10 +641,8 @@ export const updateItemResponse = zod.object({
   "id": zod.uuid().describe('Item ID'),
   "code": zod.string().describe('Item code'),
   "name": zod.string().describe('Item name'),
-  "nameUa": zod.string().optional().describe('Ukrainian name'),
   "pluralName": zod.string().optional().describe('Plural form'),
-  "pluralNameUa": zod.string().optional().describe('Ukrainian plural form'),
-  "description": zod.string().optional().describe('Item description'),
+  "description": zod.string().optional().describe('Item description (Ukrainian)'),
   "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),

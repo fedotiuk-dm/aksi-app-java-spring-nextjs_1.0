@@ -18,9 +18,7 @@ public interface ItemCatalogMapper {
 
   @Mapping(target = "serviceCategoryCode", expression = "java(item.getCategory().name())")
   @Mapping(target = "icon", ignore = true)
-  @Mapping(target = "nameUa", ignore = true)
   @Mapping(target = "pluralName", ignore = true)
-  @Mapping(target = "pluralNameUa", ignore = true)
   @Mapping(target = "basePrice", ignore = true)
   @Mapping(target = "priceBlack", ignore = true)
   @Mapping(target = "priceColor", ignore = true)

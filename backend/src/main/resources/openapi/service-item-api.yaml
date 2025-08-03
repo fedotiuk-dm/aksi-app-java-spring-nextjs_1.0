@@ -684,15 +684,11 @@ components:
         name:
           type: string
           description: Service name
-          example: Dry Cleaning
-        nameUa:
-          type: string
-          description: Ukrainian name
           example: Хімчистка
         description:
           type: string
           nullable: true
-          description: Service description
+          description: Service description (Ukrainian)
         category:
           $ref: '#/components/schemas/ServiceCategoryType'
         categoryCode:
@@ -751,23 +747,15 @@ components:
         name:
           type: string
           description: Item name
-          example: Shirt
-        nameUa:
-          type: string
-          description: Ukrainian name
           example: Сорочка
         pluralName:
           type: string
           description: Plural form
-          example: Shirts
-        pluralNameUa:
-          type: string
-          description: Ukrainian plural form
           example: Сорочки
         description:
           type: string
           nullable: true
-          description: Item description
+          description: Item description (Ukrainian)
         category:
           $ref: '#/components/schemas/ItemCategory'
         catalogNumber:
@@ -903,7 +891,6 @@ components:
       required:
         - code
         - name
-        - nameUa
         - category
       properties:
         code:
@@ -912,21 +899,18 @@ components:
           maxLength: 50
           pattern: '^[A-Z_]+$'
           description: Service code
+          example: DRY_CLEAN
         name:
           type: string
           minLength: 2
           maxLength: 100
-          description: Service name
-        nameUa:
-          type: string
-          minLength: 2
-          maxLength: 100
-          description: Ukrainian name
+          description: Service name (Ukrainian)
+          example: Хімчистка
         description:
           type: string
           nullable: true
           maxLength: 500
-          description: Service description
+          description: Service description (Ukrainian)
         category:
           $ref: '#/components/schemas/ServiceCategoryType'
         icon:
@@ -963,10 +947,7 @@ components:
           type: string
           minLength: 2
           maxLength: 100
-        nameUa:
-          type: string
-          minLength: 2
-          maxLength: 100
+          description: Service name (Ukrainian)
         description:
           type: string
           nullable: true
@@ -998,7 +979,6 @@ components:
       required:
         - code
         - name
-        - nameUa
         - category
       properties:
         code:
@@ -1007,31 +987,24 @@ components:
           maxLength: 50
           pattern: '^[A-Z_]+$'
           description: Item code
+          example: SHIRT
         name:
           type: string
           minLength: 2
           maxLength: 100
-          description: Item name
-        nameUa:
-          type: string
-          minLength: 2
-          maxLength: 100
-          description: Ukrainian name
+          description: Item name (Ukrainian)
+          example: Сорочка
         pluralName:
           type: string
           minLength: 2
           maxLength: 100
-          description: Plural form
-        pluralNameUa:
-          type: string
-          minLength: 2
-          maxLength: 100
-          description: Ukrainian plural form
+          description: Plural form (Ukrainian)
+          example: Сорочки
         description:
           type: string
           nullable: true
           maxLength: 500
-          description: Item description
+          description: Item description (Ukrainian)
         category:
           $ref: '#/components/schemas/ItemCategory'
         icon:
@@ -1060,15 +1033,8 @@ components:
           type: string
           minLength: 2
           maxLength: 100
-        nameUa:
-          type: string
-          minLength: 2
-          maxLength: 100
+          description: Service name (Ukrainian)
         pluralName:
-          type: string
-          minLength: 2
-          maxLength: 100
-        pluralNameUa:
           type: string
           minLength: 2
           maxLength: 100

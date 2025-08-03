@@ -226,9 +226,7 @@ export interface ServiceInfo {
   code: string;
   /** Service name */
   name: string;
-  /** Ukrainian name */
-  nameUa?: string;
-  /** Service description */
+  /** Service description (Ukrainian) */
   description?: string;
   category: ServiceInfoCategory;
   /** Category code from price list */
@@ -290,19 +288,13 @@ export interface CreateServiceInfoRequest {
    */
   code: string;
   /**
-   * Service name
+   * Service name (Ukrainian)
    * @minLength 2
    * @maxLength 100
    */
   name: string;
   /**
-   * Ukrainian name
-   * @minLength 2
-   * @maxLength 100
-   */
-  nameUa: string;
-  /**
-   * Service description
+   * Service description (Ukrainian)
    * @minLength 0
    * @maxLength 500
    */
@@ -344,13 +336,9 @@ export interface ItemInfo {
   code: string;
   /** Item name */
   name: string;
-  /** Ukrainian name */
-  nameUa?: string;
   /** Plural form */
   pluralName?: string;
-  /** Ukrainian plural form */
-  pluralNameUa?: string;
-  /** Item description */
+  /** Item description (Ukrainian) */
   description?: string;
   category: ItemInfoCategory;
   /** Catalog number from price list */
@@ -517,31 +505,19 @@ export interface CreateItemInfoRequest {
    */
   code: string;
   /**
-   * Item name
+   * Item name (Ukrainian)
    * @minLength 2
    * @maxLength 100
    */
   name: string;
   /**
-   * Ukrainian name
-   * @minLength 2
-   * @maxLength 100
-   */
-  nameUa: string;
-  /**
-   * Plural form
+   * Plural form (Ukrainian)
    * @minLength 2
    * @maxLength 100
    */
   pluralName?: string;
   /**
-   * Ukrainian plural form
-   * @minLength 2
-   * @maxLength 100
-   */
-  pluralNameUa?: string;
-  /**
-   * Item description
+   * Item description (Ukrainian)
    * @minLength 0
    * @maxLength 500
    */
@@ -646,15 +622,11 @@ export const UpdateServiceInfoRequestAllowedProcessingTimesItem = {
 
 export interface UpdateServiceInfoRequest {
   /**
+   * Service name (Ukrainian)
    * @minLength 2
    * @maxLength 100
    */
   name?: string;
-  /**
-   * @minLength 2
-   * @maxLength 100
-   */
-  nameUa?: string;
   /**
    * @minLength 0
    * @maxLength 500
@@ -707,6 +679,7 @@ export interface UpdateServiceItemInfoRequest {
 
 export interface UpdateItemInfoRequest {
   /**
+   * Service name (Ukrainian)
    * @minLength 2
    * @maxLength 100
    */
@@ -715,17 +688,7 @@ export interface UpdateItemInfoRequest {
    * @minLength 2
    * @maxLength 100
    */
-  nameUa?: string;
-  /**
-   * @minLength 2
-   * @maxLength 100
-   */
   pluralName?: string;
-  /**
-   * @minLength 2
-   * @maxLength 100
-   */
-  pluralNameUa?: string;
   /**
    * @minLength 0
    * @maxLength 500

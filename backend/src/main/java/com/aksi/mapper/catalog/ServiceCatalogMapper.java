@@ -19,7 +19,6 @@ public interface ServiceCatalogMapper {
   @Mapping(target = "categoryCode", expression = "java(service.getCategory().name())")
   @Mapping(target = "icon", ignore = true)
   @Mapping(target = "color", ignore = true)
-  @Mapping(target = "nameUa", ignore = true)
   @Mapping(target = "allowedProcessingTimes", ignore = true) // Handled in service layer
   @Mapping(target = "requiresSpecialHandling", constant = "false")
   @Mapping(target = "tags", ignore = true)
