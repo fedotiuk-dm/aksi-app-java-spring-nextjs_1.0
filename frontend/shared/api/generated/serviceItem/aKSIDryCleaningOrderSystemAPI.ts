@@ -33,10 +33,13 @@ import type {
   ItemInfo,
   ListItemsParams,
   ListItemsResponse,
+  ListPriceListItemsParams,
   ListServiceItemsParams,
   ListServiceItemsResponse,
   ListServicesParams,
   ListServicesResponse,
+  PriceListItemInfo,
+  PriceListItemsResponse,
   ServiceInfo,
   ServiceItemInfo,
   UpdateItemInfoRequest,
@@ -992,3 +995,182 @@ export const useUpdateItem = <TError = ErrorResponse | ErrorResponse | ErrorResp
       return useMutation(mutationOptions , queryClient);
     }
     
+/**
+ * Get list of price list items
+ * @summary List price list items
+ */
+export const listPriceListItems = (
+    params?: ListPriceListItemsParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceListItemsResponse>(
+      {url: `/api/price-list`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getListPriceListItemsQueryKey = (params?: ListPriceListItemsParams,) => {
+    return [`/api/price-list`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getListPriceListItemsQueryOptions = <TData = Awaited<ReturnType<typeof listPriceListItems>>, TError = ErrorResponse>(params?: ListPriceListItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceListItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPriceListItemsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPriceListItems>>> = ({ signal }) => listPriceListItems(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPriceListItems>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListPriceListItemsQueryResult = NonNullable<Awaited<ReturnType<typeof listPriceListItems>>>
+export type ListPriceListItemsQueryError = ErrorResponse
+
+
+export function useListPriceListItems<TData = Awaited<ReturnType<typeof listPriceListItems>>, TError = ErrorResponse>(
+ params: undefined |  ListPriceListItemsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceListItems>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPriceListItems>>,
+          TError,
+          Awaited<ReturnType<typeof listPriceListItems>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPriceListItems<TData = Awaited<ReturnType<typeof listPriceListItems>>, TError = ErrorResponse>(
+ params?: ListPriceListItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceListItems>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPriceListItems>>,
+          TError,
+          Awaited<ReturnType<typeof listPriceListItems>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPriceListItems<TData = Awaited<ReturnType<typeof listPriceListItems>>, TError = ErrorResponse>(
+ params?: ListPriceListItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceListItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List price list items
+ */
+
+export function useListPriceListItems<TData = Awaited<ReturnType<typeof listPriceListItems>>, TError = ErrorResponse>(
+ params?: ListPriceListItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceListItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListPriceListItemsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Get detailed price list item information
+ * @summary Get price list item details
+ */
+export const getPriceListItemById = (
+    priceListItemId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceListItemInfo>(
+      {url: `/api/price-list/${priceListItemId}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetPriceListItemByIdQueryKey = (priceListItemId?: string,) => {
+    return [`/api/price-list/${priceListItemId}`] as const;
+    }
+
+    
+export const getGetPriceListItemByIdQueryOptions = <TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPriceListItemByIdQueryKey(priceListItemId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPriceListItemById>>> = ({ signal }) => getPriceListItemById(priceListItemId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(priceListItemId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPriceListItemByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getPriceListItemById>>>
+export type GetPriceListItemByIdQueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
+ priceListItemId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPriceListItemById>>,
+          TError,
+          Awaited<ReturnType<typeof getPriceListItemById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
+ priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPriceListItemById>>,
+          TError,
+          Awaited<ReturnType<typeof getPriceListItemById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
+ priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get price list item details
+ */
+
+export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
+ priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetPriceListItemByIdQueryOptions(priceListItemId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

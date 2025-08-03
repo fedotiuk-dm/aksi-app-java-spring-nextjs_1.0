@@ -11,7 +11,7 @@ import {
   updateItemBody,
   type ItemInfo
 } from '@/shared/api/generated/serviceItem';
-import { useCreateItemMutation, useUpdateItemMutation } from './use-items';
+import { useCreateItem, useUpdateItem } from '@/shared/api/generated/serviceItem';
 import { CATALOG_DEFAULTS } from '@/features/catalog';
 
 // Form schemas using generated zod schemas
@@ -22,7 +22,7 @@ type UpdateItemFormData = z.infer<typeof updateItemBody>;
  * Hook for create item form
  */
 export const useCreateItemForm = () => {
-  const createMutation = useCreateItemMutation();
+  const createMutation = useCreateItem();
   
   const form = useForm<CreateItemFormData>({
     resolver: zodResolver(createItemBody),
@@ -54,7 +54,7 @@ export const useCreateItemForm = () => {
  * Hook for update item form
  */
 export const useUpdateItemForm = (item?: ItemInfo) => {
-  const updateMutation = useUpdateItemMutation();
+  const updateMutation = useUpdateItem();
   
   const form = useForm<UpdateItemFormData>({
     resolver: zodResolver(updateItemBody),

@@ -986,3 +986,25 @@ export type GetServiceItemByIdParams = {
 branchId?: string;
 };
 
+export type ListPriceListItemsParams = {
+/**
+ * Filter by category code
+ */
+categoryCode?: string;
+/**
+ * Filter by active status
+ */
+active?: boolean;
+/**
+ * Number of items to skip
+ * @minimum 0
+ */
+offset?: number;
+/**
+ * Number of items to return
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+};
+

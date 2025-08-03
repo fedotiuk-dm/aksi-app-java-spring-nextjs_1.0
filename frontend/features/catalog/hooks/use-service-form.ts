@@ -11,7 +11,7 @@ import {
   updateServiceBody,
   type ServiceInfo
 } from '@/shared/api/generated/serviceItem';
-import { useCreateServiceMutation, useUpdateServiceMutation } from './use-services';
+import { useCreateService, useUpdateService } from '@/shared/api/generated/serviceItem';
 import { CATALOG_DEFAULTS } from '@/features/catalog';
 
 // Form schemas using generated zod schemas
@@ -22,7 +22,7 @@ type UpdateServiceFormData = z.infer<typeof updateServiceBody>;
  * Hook for create service form
  */
 export const useCreateServiceForm = () => {
-  const createMutation = useCreateServiceMutation();
+  const createMutation = useCreateService();
   
   const form = useForm<CreateServiceFormData>({
     resolver: zodResolver(createServiceBody),
@@ -55,7 +55,7 @@ export const useCreateServiceForm = () => {
  * Hook for update service form
  */
 export const useUpdateServiceForm = (service?: ServiceInfo) => {
-  const updateMutation = useUpdateServiceMutation();
+  const updateMutation = useUpdateService();
   
   const form = useForm<UpdateServiceFormData>({
     resolver: zodResolver(updateServiceBody),
@@ -91,9 +91,9 @@ export const useUpdateServiceForm = (service?: ServiceInfo) => {
   
   const onSubmit = async (data: UpdateServiceFormData) => {
     if (!service?.id) return;
-    await updateMutation.mutateAsync({ 
-      serviceId: service.id, 
-      data 
+    await updateMutation.mutateAsync({
+      serviceId: service.id,
+      data
     });
   };
   

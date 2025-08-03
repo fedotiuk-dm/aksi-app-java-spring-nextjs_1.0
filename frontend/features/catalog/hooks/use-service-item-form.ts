@@ -11,8 +11,8 @@ import {
   updateServiceItemBody,
   type ServiceItemInfo
 } from '@/shared/api/generated/serviceItem';
-import { useCreateServiceItemMutation, useUpdateServiceItemMutation } from './use-service-items';
-import { CATALOG_DEFAULTS, PROCESSING_TIMES } from '@/features/catalog';
+import { useCreateServiceItem, useUpdateServiceItem } from '@/shared/api/generated/serviceItem';
+import { CATALOG_DEFAULTS } from '@/features/catalog';
 
 // Form schemas using generated zod schemas
 type CreateServiceItemFormData = z.infer<typeof createServiceItemBody>;
@@ -22,7 +22,7 @@ type UpdateServiceItemFormData = z.infer<typeof updateServiceItemBody>;
  * Hook for create service-item form
  */
 export const useCreateServiceItemForm = () => {
-  const createMutation = useCreateServiceItemMutation();
+  const createMutation = useCreateServiceItem();
   
   const form = useForm<CreateServiceItemFormData>({
     resolver: zodResolver(createServiceItemBody),
@@ -54,7 +54,7 @@ export const useCreateServiceItemForm = () => {
  * Hook for update service-item form
  */
 export const useUpdateServiceItemForm = (serviceItem?: ServiceItemInfo) => {
-  const updateMutation = useUpdateServiceItemMutation();
+  const updateMutation = useUpdateServiceItem();
   
   const form = useForm<UpdateServiceItemFormData>({
     resolver: zodResolver(updateServiceItemBody),

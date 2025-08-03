@@ -55,7 +55,7 @@ const DOMAIN_TAGS = {
   customer: ['customers'],
 
   // 🏷️ Service Item Domain
-  serviceItem: ['services', 'items', 'service-items'],
+  serviceItem: ['services', 'items', 'service-items', 'price-list'],
 };
 
 // 🏭 Фабрика для створення доменних конфігурацій

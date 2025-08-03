@@ -656,3 +656,80 @@ export const updateItemResponse = zod.object({
   "attributes": zod.array(zod.string()).optional().describe('Available attributes (material, color, etc.)'),
   "tags": zod.array(zod.string()).optional().describe('Item tags')
 })
+
+
+/**
+ * Get list of price list items
+ * @summary List price list items
+ */
+export const listPriceListItemsQueryActiveDefault = true;export const listPriceListItemsQueryOffsetDefault = 0;
+export const listPriceListItemsQueryOffsetMin = 0;
+export const listPriceListItemsQueryLimitDefault = 20;
+export const listPriceListItemsQueryLimitMax = 100;
+
+
+export const listPriceListItemsQueryParams = zod.object({
+  "categoryCode": zod.string().optional().describe('Filter by category code'),
+  "active": zod.boolean().default(listPriceListItemsQueryActiveDefault).describe('Filter by active status'),
+  "offset": zod.number().min(listPriceListItemsQueryOffsetMin).optional().describe('Number of items to skip'),
+  "limit": zod.number().min(1).max(listPriceListItemsQueryLimitMax).default(listPriceListItemsQueryLimitDefault).describe('Number of items to return')
+})
+
+export const listPriceListItemsResponsePriceListItemsItemBasePriceMin = 0;
+
+export const listPriceListItemsResponsePriceListItemsItemBasePriceMax = 999999999;
+export const listPriceListItemsResponsePriceListItemsItemPriceBlackMin = 0;
+
+export const listPriceListItemsResponsePriceListItemsItemPriceBlackMax = 999999999;
+export const listPriceListItemsResponsePriceListItemsItemPriceColorMin = 0;
+
+export const listPriceListItemsResponsePriceListItemsItemPriceColorMax = 999999999;
+export const listPriceListItemsResponseTotalCountMin = 0;
+
+
+export const listPriceListItemsResponse = zod.object({
+  "priceListItems": zod.array(zod.object({
+  "id": zod.uuid().describe('Price list item ID'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).describe('Service category code'),
+  "catalogNumber": zod.number().describe('Catalog number'),
+  "name": zod.string().describe('Item name'),
+  "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']).describe('Unit of measure'),
+  "basePrice": zod.number().min(listPriceListItemsResponsePriceListItemsItemBasePriceMin).max(listPriceListItemsResponsePriceListItemsItemBasePriceMax).describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceBlack": zod.number().min(listPriceListItemsResponsePriceListItemsItemPriceBlackMin).max(listPriceListItemsResponsePriceListItemsItemPriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(listPriceListItemsResponsePriceListItemsItemPriceColorMin).max(listPriceListItemsResponsePriceListItemsItemPriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "active": zod.boolean().describe('Is item active')
+})),
+  "totalCount": zod.number().min(listPriceListItemsResponseTotalCountMin).describe('Total number of price list items available')
+})
+
+
+/**
+ * Get detailed price list item information
+ * @summary Get price list item details
+ */
+export const getPriceListItemByIdParams = zod.object({
+  "priceListItemId": zod.uuid().describe('Price list item ID')
+})
+
+export const getPriceListItemByIdResponseBasePriceMin = 0;
+
+export const getPriceListItemByIdResponseBasePriceMax = 999999999;
+export const getPriceListItemByIdResponsePriceBlackMin = 0;
+
+export const getPriceListItemByIdResponsePriceBlackMax = 999999999;
+export const getPriceListItemByIdResponsePriceColorMin = 0;
+
+export const getPriceListItemByIdResponsePriceColorMax = 999999999;
+
+
+export const getPriceListItemByIdResponse = zod.object({
+  "id": zod.uuid().describe('Price list item ID'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).describe('Service category code'),
+  "catalogNumber": zod.number().describe('Catalog number'),
+  "name": zod.string().describe('Item name'),
+  "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']).describe('Unit of measure'),
+  "basePrice": zod.number().min(getPriceListItemByIdResponseBasePriceMin).max(getPriceListItemByIdResponseBasePriceMax).describe('Base price in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceBlack": zod.number().min(getPriceListItemByIdResponsePriceBlackMin).max(getPriceListItemByIdResponsePriceBlackMax).optional().describe('Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "priceColor": zod.number().min(getPriceListItemByIdResponsePriceColorMin).max(getPriceListItemByIdResponsePriceColorMax).optional().describe('Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)'),
+  "active": zod.boolean().describe('Is item active')
+})

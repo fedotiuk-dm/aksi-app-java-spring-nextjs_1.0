@@ -65,6 +65,9 @@ export const UNIT_NAMES: Record<UnitOfMeasure, string> = {
   [UNITS_OF_MEASURE.SQUARE_METER]: 'м²',
 };
 
+// Price list category names (same as service categories)
+export const PRICE_LIST_CATEGORY_NAMES = SERVICE_CATEGORY_NAMES;
+
 // Price formatting
 export const formatPrice = (kopiykas: number): string => {
   const uah = kopiykas / 100;
