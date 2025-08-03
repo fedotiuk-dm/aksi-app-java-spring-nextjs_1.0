@@ -1,5 +1,7 @@
 package com.aksi.mapper;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -91,11 +93,11 @@ public interface UserMapper {
 
   // Helper methods
   default List<UserRole> mapRoles(Set<UserRole> roles) {
-    return roles.stream().collect(Collectors.toList());
+    return new ArrayList<>(roles);
   }
 
   default Set<UserRole> mapRolesFromDto(List<UserRole> roles) {
-    return roles.stream().collect(Collectors.toSet());
+    return new HashSet<>(roles);
   }
 
   default List<BranchAssignment> mapBranchAssignments(Set<UserBranchAssignment> assignments) {
