@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.aksi.api.service.dto.CreateServiceInfoRequest;
 import com.aksi.api.service.dto.ListServicesResponse;
-import com.aksi.api.service.dto.ServiceCategory;
+import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.ServiceInfo;
 import com.aksi.api.service.dto.UpdateServiceInfoRequest;
 
@@ -28,7 +28,7 @@ public interface ServiceCatalogService {
    * @param category Filter by category
    * @return List services response
    */
-  ListServicesResponse listServicesDto(Boolean active, ServiceCategory category);
+  ListServicesResponse listServicesDto(Boolean active, ServiceCategoryType category);
 
   /**
    * Create service from request and return DTO

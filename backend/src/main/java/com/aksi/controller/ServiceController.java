@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aksi.api.service.ServicesApi;
 import com.aksi.api.service.dto.CreateServiceInfoRequest;
 import com.aksi.api.service.dto.ListServicesResponse;
-import com.aksi.api.service.dto.ServiceCategory;
+import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.ServiceInfo;
 import com.aksi.api.service.dto.UpdateServiceInfoRequest;
 import com.aksi.service.catalog.ServiceCatalogService;
@@ -46,7 +46,7 @@ public class ServiceController implements ServicesApi {
 
   @Override
   public ResponseEntity<ListServicesResponse> listServices(
-      Boolean active, @Nullable ServiceCategory category) {
+      Boolean active, @Nullable ServiceCategoryType category) {
     log.debug("Listing services with active: {}, category: {}", active, category);
     ListServicesResponse response = serviceCatalogService.listServicesDto(active, category);
     log.debug("Listed services successfully");

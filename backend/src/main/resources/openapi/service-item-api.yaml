@@ -46,7 +46,7 @@ paths:
           description: Filter by category
           required: false
           schema:
-            $ref: '#/components/schemas/ServiceCategory'
+            $ref: '#/components/schemas/ServiceCategoryType'
       responses:
         '200':
           description: List of services
@@ -585,26 +585,6 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
 
   schemas:
-    ServiceCategory:
-      type: string
-      enum:
-        - DRY_CLEANING
-        - WASHING
-        - IRONING
-        - REPAIR
-        - DYEING
-        - SPECIAL
-        - OTHER
-      description: |
-        Service categories:
-        * `DRY_CLEANING` - Dry cleaning services
-        * `WASHING` - Washing services
-        * `IRONING` - Ironing and pressing
-        * `REPAIR` - Repair and alteration
-        * `DYEING` - Dyeing services
-        * `SPECIAL` - Special treatment services
-        * `OTHER` - Other services
-    
     ServiceCategoryType:
       type: string
       enum:
@@ -714,7 +694,7 @@ components:
           nullable: true
           description: Service description
         category:
-          $ref: '#/components/schemas/ServiceCategory'
+          $ref: '#/components/schemas/ServiceCategoryType'
         categoryCode:
           type: string
           nullable: true
@@ -948,7 +928,7 @@ components:
           maxLength: 500
           description: Service description
         category:
-          $ref: '#/components/schemas/ServiceCategory'
+          $ref: '#/components/schemas/ServiceCategoryType'
         icon:
           type: string
           nullable: true
