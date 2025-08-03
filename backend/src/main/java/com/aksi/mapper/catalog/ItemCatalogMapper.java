@@ -26,6 +26,9 @@ public interface ItemCatalogMapper {
   @Mapping(target = "priceColor", ignore = true)
   @Mapping(target = "attributes", ignore = true)
   @Mapping(target = "tags", ignore = true)
+  @Mapping(target = "description", ignore = true) // Handled in service
+  @Mapping(target = "catalogNumber", ignore = true) // Handled in service
+  @Mapping(target = "unitOfMeasure", ignore = true) // Handled in service
   ItemInfo toItemResponse(ItemCatalog item);
 
   @Mapping(target = "id", ignore = true)
@@ -35,6 +38,11 @@ public interface ItemCatalogMapper {
   @Mapping(target = "careInstructions", ignore = true)
   @Mapping(target = "sortOrder", ignore = true)
   @Mapping(target = "serviceItems", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "catalogNumber", ignore = true)
+  @Mapping(target = "unitOfMeasure", ignore = true)
+  @Mapping(target = "active", ignore = true)
+  @Mapping(target = "description", ignore = true) // Handled in service
   ItemCatalog toEntity(CreateItemInfoRequest request);
 
   @Mapping(target = "id", ignore = true)
@@ -45,6 +53,11 @@ public interface ItemCatalogMapper {
   @Mapping(target = "careInstructions", ignore = true)
   @Mapping(target = "sortOrder", ignore = true)
   @Mapping(target = "serviceItems", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "category", ignore = true)
+  @Mapping(target = "catalogNumber", ignore = true)
+  @Mapping(target = "unitOfMeasure", ignore = true)
+  @Mapping(target = "description", ignore = true) // Handled in service
   void updateEntityFromDto(UpdateItemInfoRequest request, @MappingTarget ItemCatalog item);
 
   List<ItemInfo> toItemList(List<ItemCatalog> items);

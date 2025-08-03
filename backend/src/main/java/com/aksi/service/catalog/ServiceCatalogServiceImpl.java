@@ -1,6 +1,8 @@
 package com.aksi.service.catalog;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.service.dto.CreateServiceInfoRequest;
 import com.aksi.api.service.dto.ListServicesResponse;
+import com.aksi.api.service.dto.ProcessingTime;
 import com.aksi.api.service.dto.ServiceCategory;
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.ServiceInfo;
@@ -85,7 +88,7 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
             .findById(serviceId)
             .orElseThrow(() -> new NotFoundException("Service not found with id: " + serviceId));
 
-    return serviceCatalogMapper.toServiceResponse(serviceCatalog);
+    return mapToServiceInfo(serviceCatalog);
   }
 
   @Override
@@ -104,7 +107,12 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
 
     Page<ServiceCatalog> servicesPage = listServices(active, categoryType, pageable);
 
-    return serviceCatalogMapper.toServiceListResponse(servicesPage.getContent());
+    List<ServiceInfo> serviceInfos =
+        servicesPage.getContent().stream().map(this::mapToServiceInfo).collect(Collectors.toList());
+
+    ListServicesResponse response = new ListServicesResponse();
+    response.setServices(serviceInfos);
+    return response;
   }
 
   @Override
@@ -113,10 +121,14 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
 
     ServiceCatalog serviceCatalog = serviceCatalogMapper.toEntity(request);
     serviceCatalog.setActive(true);
+    // Map category
+    if (request.getCategory() != null) {
+      serviceCatalog.setCategory(mapServiceCategoryToType(request.getCategory()));
+    }
 
     ServiceCatalog saved = createService(serviceCatalog);
 
-    return serviceCatalogMapper.toServiceResponse(saved);
+    return mapToServiceInfo(saved);
   }
 
   @Override
@@ -132,7 +144,7 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
 
     ServiceCatalog updated = updateService(serviceCatalog);
 
-    return serviceCatalogMapper.toServiceResponse(updated);
+    return mapToServiceInfo(updated);
   }
 
   /** Maps ServiceCategory to ServiceCategoryType */
@@ -145,5 +157,42 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
       case SPECIAL -> ServiceCategoryType.LEATHER;
       case REPAIR, OTHER -> ServiceCategoryType.ADDITIONAL_SERVICES;
     };
+  }
+
+  // Business logic for mapping processing days to allowed processing times
+  private List<ProcessingTime> mapProcessingTimesToList(Integer processingTimeDays) {
+    if (processingTimeDays == null) {
+      return List.of(ProcessingTime.STANDARD_2_D);
+    }
+    return switch (processingTimeDays) {
+      case 0 ->
+          List.of(ProcessingTime.EXPRESS_1_H, ProcessingTime.EXPRESS_4_H, ProcessingTime.SAME_DAY);
+      case 1 -> List.of(ProcessingTime.NEXT_DAY);
+      case 2 -> List.of(ProcessingTime.STANDARD_2_D);
+      case 3 -> List.of(ProcessingTime.STANDARD_3_D);
+      default -> List.of(ProcessingTime.EXTENDED);
+    };
+  }
+
+  // Map from internal type to API category
+  private ServiceCategory mapServiceCategoryTypeToCategory(ServiceCategoryType categoryType) {
+    if (categoryType == null) return null;
+    return switch (categoryType) {
+      case CLOTHING -> ServiceCategory.DRY_CLEANING;
+      case LAUNDRY -> ServiceCategory.WASHING;
+      case IRONING -> ServiceCategory.IRONING;
+      case DYEING -> ServiceCategory.DYEING;
+      case LEATHER -> ServiceCategory.SPECIAL;
+      case PADDING, FUR, ADDITIONAL_SERVICES -> ServiceCategory.OTHER;
+    };
+  }
+
+  // Helper method to map ServiceCatalog to ServiceInfo with all processing
+  private ServiceInfo mapToServiceInfo(ServiceCatalog serviceCatalog) {
+    ServiceInfo info = serviceCatalogMapper.toServiceResponse(serviceCatalog);
+    info.setAllowedProcessingTimes(
+        mapProcessingTimesToList(serviceCatalog.getProcessingTimeDays()));
+    info.setCategory(mapServiceCategoryTypeToCategory(serviceCatalog.getCategory()));
+    return info;
   }
 }

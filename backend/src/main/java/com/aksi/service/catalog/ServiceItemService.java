@@ -55,9 +55,8 @@ public interface ServiceItemService {
   // Internal methods for business logic - essential for order processing
 
   /**
-   * Get all service-items for a specific service
-   * Used in OrderWizardService.getAllServiceItems() for admin view
-   * Endpoint: GET /api/order-wizard/services/{serviceId}/all-items
+   * Get all service-items for a specific service Used in OrderWizardService.getAllServiceItems()
+   * for admin view Endpoint: GET /api/order-wizard/services/{serviceId}/all-items
    *
    * @param serviceId Service ID
    * @return List of service-items
@@ -65,8 +64,8 @@ public interface ServiceItemService {
   List<ServiceItemInfo> getServiceItemsByService(UUID serviceId);
 
   /**
-   * Get all service-items for a specific item
-   * Used in PriceListServiceImpl.synchronizePrices() for price updates
+   * Get all service-items for a specific item Used in PriceListServiceImpl.synchronizePrices() for
+   * price updates
    *
    * @param itemId Item ID
    * @return List of service-items
@@ -74,26 +73,25 @@ public interface ServiceItemService {
   List<ServiceItemInfo> getServiceItemsByItem(UUID itemId);
 
   /**
-   * Get available items for a service (active and available for order)
-   * Critical for order wizard functionality
-   * Used in OrderWizardService.getAvailableItemsForOrder()
-   * Endpoint: GET /api/order-wizard/services/{serviceId}/available-items
+   * Get available items for a service (active and available for order) Critical for order wizard
+   * functionality Used in OrderWizardService.getAvailableItemsForOrder() Endpoint: GET
+   * /api/order-wizard/services/{serviceId}/available-items
    *
    * @param serviceId Service ID
    * @return List of available service-items
    */
   List<ServiceItemInfo> getAvailableItemsForService(UUID serviceId);
-  
+
   /**
-   * Update service item prices from price list
-   * Used in PriceListServiceImpl.synchronizePrices() during price synchronization
-   * Called from admin endpoint: POST /api/admin/price-list/sync
-   * 
+   * Update service item prices from price list Used in PriceListServiceImpl.synchronizePrices()
+   * during price synchronization Called from admin endpoint: POST /api/admin/price-list/sync
+   *
    * @param serviceItemId Service item ID
    * @param basePrice New base price
    * @param priceBlack New black price (optional)
    * @param priceColor New color price (optional)
    * @return true if prices were updated
    */
-  boolean updateServiceItemPrices(UUID serviceItemId, BigDecimal basePrice, BigDecimal priceBlack, BigDecimal priceColor);
+  boolean updateServiceItemPrices(
+      UUID serviceItemId, BigDecimal basePrice, BigDecimal priceBlack, BigDecimal priceColor);
 }

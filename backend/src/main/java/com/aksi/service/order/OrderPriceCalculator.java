@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Service for calculating prices during order creation.
- * Demonstrates usage of PriceListService lookup methods.
+ * Service for calculating prices during order creation. Demonstrates usage of PriceListService
+ * lookup methods.
  */
 @Service
 @RequiredArgsConstructor
@@ -23,44 +23,48 @@ public class OrderPriceCalculator {
   private final PriceListService priceListService;
 
   /**
-   * Calculate price for an item based on catalog number
-   * This method demonstrates usage of getPriceListItemByCatalogNumber
+   * Calculate price for an item based on catalog number. Returns price in kopiykas. This method
+   * demonstrates usage of getPriceListItemByCatalogNumber
    */
-  public Double calculateItemPrice(Integer catalogNumber, Integer quantity) {
+  public Integer calculateItemPrice(Integer catalogNumber, Integer quantity) {
     log.debug("Calculating price for catalog number: {}, quantity: {}", catalogNumber, quantity);
-    
+
     PriceListItemInfo priceItem = priceListService.getPriceListItemByCatalogNumber(catalogNumber);
     if (priceItem == null) {
       log.warn("No price found for catalog number: {}", catalogNumber);
       return null;
     }
-    
-    Double basePrice = priceItem.getBasePrice();
+
+    Integer basePrice = priceItem.getBasePrice();
     return basePrice * quantity;
   }
 
   /**
-   * Calculate price for specific category and catalog number
-   * This method demonstrates usage of getPriceListItemByCategoryAndCatalogNumber
+   * Calculate price for specific category and catalog number. Returns price in kopiykas. This
+   * method demonstrates usage of getPriceListItemByCategoryAndCatalogNumber
    */
-  public Double calculateCategoryItemPrice(ServiceCategoryType category, Integer catalogNumber, Integer quantity) {
-    log.debug("Calculating price for category: {}, catalog number: {}, quantity: {}", 
-        category, catalogNumber, quantity);
-    
-    PriceListItemInfo priceItem = priceListService.getPriceListItemByCategoryAndCatalogNumber(category, catalogNumber);
+  public Integer calculateCategoryItemPrice(
+      ServiceCategoryType category, Integer catalogNumber, Integer quantity) {
+    log.debug(
+        "Calculating price for category: {}, catalog number: {}, quantity: {}",
+        category,
+        catalogNumber,
+        quantity);
+
+    PriceListItemInfo priceItem =
+        priceListService.getPriceListItemByCategoryAndCatalogNumber(category, catalogNumber);
     if (priceItem == null) {
       log.warn("No price found for category: {} and catalog number: {}", category, catalogNumber);
       return null;
     }
-    
-    Double basePrice = priceItem.getBasePrice();
+
+    Integer basePrice = priceItem.getBasePrice();
     return basePrice * quantity;
   }
 
-  /**
-   * Example method showing how price calculation would work in order creation
-   */
-  public void calculateOrderItemPrice(UUID orderId, UUID itemId, Integer quantity, boolean isColorItem) {
+  /** Example method showing how price calculation would work in order creation */
+  public void calculateOrderItemPrice(
+      UUID orderId, UUID itemId, Integer quantity, boolean isColorItem) {
     // This is example of how these lookup methods would be used
     // In real implementation, this would:
     // 1. Look up item by ID to get catalog number

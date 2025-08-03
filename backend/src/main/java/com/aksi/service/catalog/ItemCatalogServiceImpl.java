@@ -55,9 +55,7 @@ public class ItemCatalogServiceImpl implements ItemCatalogService {
     }
 
     List<ItemInfo> dtos =
-        page.getContent().stream()
-            .map(itemCatalogMapper::toItemResponse)
-            .collect(Collectors.toList());
+        page.getContent().stream().map(this::mapToItemInfo).collect(Collectors.toList());
 
     return new PageImpl<>(dtos, pageable, page.getTotalElements());
   }
@@ -72,7 +70,7 @@ public class ItemCatalogServiceImpl implements ItemCatalogService {
             .findById(itemId)
             .orElseThrow(() -> new NotFoundException("Item not found with id: " + itemId));
 
-    return itemCatalogMapper.toItemResponse(itemCatalog);
+    return mapToItemInfo(itemCatalog);
   }
 
   @Override
@@ -124,7 +122,7 @@ public class ItemCatalogServiceImpl implements ItemCatalogService {
             .findByCode(code)
             .orElseThrow(() -> new NotFoundException("Item not found with code: " + code));
 
-    return itemCatalogMapper.toItemResponse(itemCatalog);
+    return mapToItemInfo(itemCatalog);
   }
 
   @Override
@@ -139,7 +137,7 @@ public class ItemCatalogServiceImpl implements ItemCatalogService {
                 () ->
                     new NotFoundException("Item not found with catalog number: " + catalogNumber));
 
-    return itemCatalogMapper.toItemResponse(itemCatalog);
+    return mapToItemInfo(itemCatalog);
   }
 
   @Override
@@ -159,5 +157,10 @@ public class ItemCatalogServiceImpl implements ItemCatalogService {
     return new ListItemsResponse()
         .items(page.getContent())
         .totalCount((int) page.getTotalElements());
+  }
+
+  // Helper method for mapping
+  private ItemInfo mapToItemInfo(ItemCatalog item) {
+    return itemCatalogMapper.toItemResponse(item);
   }
 }

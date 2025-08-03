@@ -710,18 +710,22 @@ components:
           description: Ukrainian name
           example: Хімчистка
         description:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Service description
         category:
           $ref: '#/components/schemas/ServiceCategory'
         categoryCode:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Category code from price list
         icon:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Icon identifier
         color:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           pattern: '^#[0-9A-Fa-f]{6}$'
           description: Display color
           example: '#4A90E2'
@@ -781,33 +785,41 @@ components:
           description: Ukrainian plural form
           example: Сорочки
         description:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Item description
         category:
           $ref: '#/components/schemas/ItemCategory'
         catalogNumber:
-          type: ['integer', 'null']
+          type: integer
+          nullable: true
           description: Catalog number from price list
         serviceCategoryCode:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Service category code from price list
         unitOfMeasure:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Unit of measure
         basePrice:
-          type: ['number', 'null']
-          format: decimal
-          description: Base price from price list
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Base price in kopiykas (1 kopiykas = 0.01 UAH)
         priceBlack:
-          type: ['number', 'null']
-          format: decimal
-          description: Price for black dyeing
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
         priceColor:
-          type: ['number', 'null']
-          format: decimal
-          description: Price for color dyeing
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
         icon:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Icon identifier
         active:
           type: boolean
@@ -856,15 +868,16 @@ components:
         item:
           $ref: '#/components/schemas/ItemInfo'
         basePrice:
-          type: number
-          format: decimal
+          type: integer
           minimum: 0
-          description: Base price
-          example: 50.00
+          maximum: 999999999
+          description: Base price in kopiykas (1 kopiykas = 0.01 UAH)
+          example: 5000
         branchPrice:
-          type: ['number', 'null']
-          format: decimal
-          description: Branch-specific price (if applicable)
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Branch-specific price in kopiykas (1 kopiykas = 0.01 UAH)
         processingTime:
           $ref: '#/components/schemas/ProcessingTime'
         expressAvailable:
@@ -873,17 +886,18 @@ components:
           description: Express service available
         expressMultiplier:
           type: number
-          format: decimal
           default: 1.5
           description: Express price multiplier
         priceBlack:
-          type: ['number', 'null']
-          format: decimal
-          description: Price for black dyeing
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
         priceColor:
-          type: ['number', 'null']
-          format: decimal
-          description: Price for color dyeing
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
         active:
           type: boolean
           description: Is combination active
@@ -892,10 +906,12 @@ components:
           default: 1
           description: Minimum order quantity
         maxQuantity:
-          type: ['integer', 'null']
+          type: integer
+          nullable: true
           description: Maximum order quantity
         specialInstructions:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Special handling instructions
         popularityScore:
           type: integer
@@ -927,16 +943,19 @@ components:
           maxLength: 100
           description: Ukrainian name
         description:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           maxLength: 500
           description: Service description
         category:
           $ref: '#/components/schemas/ServiceCategory'
         icon:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Icon identifier
         color:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           pattern: '^#[0-9A-Fa-f]{6}$'
           description: Display color
         sortOrder:
@@ -969,12 +988,15 @@ components:
           minLength: 2
           maxLength: 100
         description:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           maxLength: 500
         icon:
-          type: ['string', 'null']
+          type: string
+          nullable: true
         color:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           pattern: '^#[0-9A-Fa-f]{6}$'
         active:
           type: boolean
@@ -1026,13 +1048,15 @@ components:
           maxLength: 100
           description: Ukrainian plural form
         description:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           maxLength: 500
           description: Item description
         category:
           $ref: '#/components/schemas/ItemCategory'
         icon:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Icon identifier
         sortOrder:
           type: integer
@@ -1069,10 +1093,12 @@ components:
           minLength: 2
           maxLength: 100
         description:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           maxLength: 500
         icon:
-          type: ['string', 'null']
+          type: string
+          nullable: true
         active:
           type: boolean
         sortOrder:
@@ -1103,10 +1129,10 @@ components:
           format: uuid
           description: Item ID
         basePrice:
-          type: number
-          format: decimal
+          type: integer
           minimum: 0
-          description: Base price
+          maximum: 999999999
+          description: Base price in kopiykas (1 kopiykas = 0.01 UAH)
         processingTime:
           $ref: '#/components/schemas/ProcessingTime'
         expressAvailable:
@@ -1114,7 +1140,6 @@ components:
           default: false
         expressMultiplier:
           type: number
-          format: decimal
           minimum: 1
           default: 1.5
         minQuantity:
@@ -1122,10 +1147,12 @@ components:
           minimum: 1
           default: 1
         maxQuantity:
-          type: ['integer', 'null']
+          type: integer
+          nullable: true
           minimum: 1
         specialInstructions:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           maxLength: 500
     
     UpdateServiceItemInfoRequest:
@@ -1133,8 +1160,7 @@ components:
       minProperties: 1
       properties:
         basePrice:
-          type: number
-          format: decimal
+          type: integer
           minimum: 0
         processingTime:
           $ref: '#/components/schemas/ProcessingTime'
@@ -1142,7 +1168,6 @@ components:
           type: boolean
         expressMultiplier:
           type: number
-          format: decimal
           minimum: 1
         active:
           type: boolean
@@ -1150,10 +1175,12 @@ components:
           type: integer
           minimum: 1
         maxQuantity:
-          type: ['integer', 'null']
+          type: integer
+          nullable: true
           minimum: 1
         specialInstructions:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           maxLength: 500
         popularityScore:
           type: integer
@@ -1201,20 +1228,20 @@ components:
             - SQUARE_METER
           description: Unit of measure
         basePrice:
-          type: number
-          format: decimal
+          type: integer
           minimum: 0
-          description: Base price
+          maximum: 999999999
+          description: Base price in kopiykas (1 kopiykas = 0.01 UAH)
         priceBlack:
-          type: ['number', 'null']
-          format: decimal
+          type: integer
           minimum: 0
-          description: Price for black dyeing
+          maximum: 999999999
+          description: Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
         priceColor:
-          type: ['number', 'null']
-          format: decimal
+          type: integer
           minimum: 0
-          description: Price for color dyeing
+          maximum: 999999999
+          description: Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
         active:
           type: boolean
           description: Is item active

@@ -52,6 +52,7 @@ public interface UserMapper {
   @Mapping(target = "failedLoginAttempts", constant = "0")
   @Mapping(target = "roles", expression = "java(mapRolesFromDto(request.getRoles()))")
   @Mapping(target = "branchAssignments", ignore = true)
+  @Mapping(target = "version", ignore = true)
   User toUser(CreateUserRequest request);
 
   @Mapping(target = "id", ignore = true)
@@ -64,6 +65,7 @@ public interface UserMapper {
   @Mapping(target = "failedLoginAttempts", ignore = true)
   @Mapping(target = "roles", ignore = true)
   @Mapping(target = "branchAssignments", ignore = true)
+  @Mapping(target = "version", ignore = true)
   void updateUserFromDto(UpdateUserRequest request, @MappingTarget User user);
 
   List<UserSummary> toUserSummaryList(List<User> users);

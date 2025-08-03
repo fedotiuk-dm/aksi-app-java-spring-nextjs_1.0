@@ -300,13 +300,12 @@
                     <typeMappings>
                         <typeMapping>OffsetDateTime=Instant</typeMapping>
                         <typeMapping>LocalDateTime=Instant</typeMapping>
-                        <typeMapping>number+decimal=BigDecimal</typeMapping>
                     </typeMappings>
                     <importMappings>
                         <importMapping>Instant=java.time.Instant</importMapping>
                         <importMapping>OffsetDateTime=java.time.Instant</importMapping>
                         <importMapping>LocalDateTime=java.time.Instant</importMapping>
-                        <importMapping>BigDecimal=java.math.BigDecimal</importMapping>
+                        <importMapping>Integer=java.lang.Integer</importMapping>
                     </importMappings>
                 </configuration>
                 <executions>

@@ -469,10 +469,11 @@ components:
           description: Total number of orders
           example: 5
         totalSpent:
-          type: number
-          format: decimal
-          description: Total amount spent
-          example: 2500.50
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Total amount spent in kopiykas (1 kopiykas = 0.01 UAH)
+          example: 250050
         preferredBranchId:
           type: ['string', 'null']
           format: uuid
@@ -659,10 +660,11 @@ components:
           format: date-time
           description: Order completion date
         totalAmount:
-          type: number
-          format: decimal
-          description: Total order amount
-          example: 450.00
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Total order amount in kopiykas (1 kopiykas = 0.01 UAH)
+          example: 45000
         itemCount:
           type: integer
           description: Number of items in order

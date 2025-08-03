@@ -66,9 +66,7 @@ public class ServiceItemServiceImpl implements ServiceItemService {
     }
 
     List<ServiceItemInfo> dtos =
-        page.getContent().stream()
-            .map(serviceItemMapper::toServiceItemResponse)
-            .collect(Collectors.toList());
+        page.getContent().stream().map(this::mapToServiceItemInfo).collect(Collectors.toList());
 
     return new PageImpl<>(dtos, pageable, page.getTotalElements());
   }
@@ -84,7 +82,7 @@ public class ServiceItemServiceImpl implements ServiceItemService {
             .orElseThrow(
                 () -> new NotFoundException("ServiceItem not found with id: " + serviceItemId));
 
-    return serviceItemMapper.toServiceItemResponse(serviceItem);
+    return mapToServiceItemInfo(serviceItem);
   }
 
   @Override
@@ -206,44 +204,54 @@ public class ServiceItemServiceImpl implements ServiceItemService {
         .map(serviceItemMapper::toServiceItemResponse)
         .collect(Collectors.toList());
   }
-  
+
   @Override
   @Transactional
-  public boolean updateServiceItemPrices(UUID serviceItemId, BigDecimal basePrice, BigDecimal priceBlack, BigDecimal priceColor) {
-    log.debug("Updating service item {} prices: base={}, black={}, color={}", 
-        serviceItemId, basePrice, priceBlack, priceColor);
-    
+  public boolean updateServiceItemPrices(
+      UUID serviceItemId, BigDecimal basePrice, BigDecimal priceBlack, BigDecimal priceColor) {
+    log.debug(
+        "Updating service item {} prices: base={}, black={}, color={}",
+        serviceItemId,
+        basePrice,
+        priceBlack,
+        priceColor);
+
     ServiceItem serviceItem = serviceItemRepository.findById(serviceItemId).orElse(null);
     if (serviceItem == null) {
       log.warn("Service item not found: {}", serviceItemId);
       return false;
     }
-    
+
     boolean updated = false;
-    
+
     // Update base price
     if (basePrice != null && !basePrice.equals(serviceItem.getBasePrice())) {
       serviceItem.setBasePrice(basePrice);
       updated = true;
     }
-    
+
     // Update black price
     if (priceBlack != null && !priceBlack.equals(serviceItem.getPriceBlack())) {
       serviceItem.setPriceBlack(priceBlack);
       updated = true;
     }
-    
+
     // Update color price
     if (priceColor != null && !priceColor.equals(serviceItem.getPriceColor())) {
       serviceItem.setPriceColor(priceColor);
       updated = true;
     }
-    
+
     if (updated) {
       serviceItemRepository.save(serviceItem);
       log.debug("Updated prices for service item: {}", serviceItemId);
     }
-    
+
     return updated;
+  }
+
+  // Helper method for mapping
+  private ServiceItemInfo mapToServiceItemInfo(ServiceItem serviceItem) {
+    return serviceItemMapper.toServiceItemResponse(serviceItem);
   }
 }

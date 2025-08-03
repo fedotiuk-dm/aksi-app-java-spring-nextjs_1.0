@@ -17,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Admin controller for price list management operations.
- * TODO: Add these endpoints to OpenAPI specification
+ * Admin controller for price list management operations. TODO: Add these endpoints to OpenAPI
+ * specification
  */
 @Slf4j
 @RestController
@@ -29,9 +29,7 @@ public class PriceListAdminController {
 
   private final PriceListService priceListService;
 
-  /**
-   * Synchronize prices from price list to all service items
-   */
+  /** Synchronize prices from price list to all service items */
   @PostMapping("/sync")
   public ResponseEntity<Integer> synchronizePrices() {
     log.info("Admin initiated price synchronization");
@@ -40,9 +38,7 @@ public class PriceListAdminController {
     return ResponseEntity.ok(updatedCount);
   }
 
-  /**
-   * Get distinct active categories for filtering
-   */
+  /** Get distinct active categories for filtering */
   @GetMapping("/categories")
   public ResponseEntity<List<ServiceCategoryType>> getDistinctActiveCategories() {
     log.debug("Getting distinct active categories");
@@ -50,9 +46,7 @@ public class PriceListAdminController {
     return ResponseEntity.ok(categories);
   }
 
-  /**
-   * Export all active price list items
-   */
+  /** Export all active price list items */
   @GetMapping("/export")
   public ResponseEntity<List<PriceListItemInfo>> exportActivePriceList() {
     log.info("Admin initiated price list export");

@@ -54,9 +54,7 @@ public class PriceListServiceImpl implements PriceListService {
     }
 
     List<PriceListItemInfo> dtos =
-        page.getContent().stream()
-            .map(priceListItemMapper::toPriceListItemInfo)
-            .collect(Collectors.toList());
+        page.getContent().stream().map(this::mapToPriceListItemInfo).collect(Collectors.toList());
 
     return new PageImpl<>(dtos, pageable, page.getTotalElements());
   }
@@ -72,7 +70,7 @@ public class PriceListServiceImpl implements PriceListService {
             .orElseThrow(
                 () -> new NotFoundException("PriceListItem not found with id: " + priceListItemId));
 
-    return priceListItemMapper.toPriceListItemInfo(item);
+    return mapToPriceListItemInfo(item);
   }
 
   @Override
@@ -111,15 +109,17 @@ public class PriceListServiceImpl implements PriceListService {
     int updatedCount = 0;
 
     for (PriceListItem priceListItem : priceListItems) {
-      ItemInfo itemInfo = itemCatalogService.getItemByCatalogNumber(priceListItem.getCatalogNumber());
+      ItemInfo itemInfo =
+          itemCatalogService.getItemByCatalogNumber(priceListItem.getCatalogNumber());
       if (itemInfo != null) {
-        List<ServiceItemInfo> serviceItems = serviceItemService.getServiceItemsByItem(itemInfo.getId());
-        
+        List<ServiceItemInfo> serviceItems =
+            serviceItemService.getServiceItemsByItem(itemInfo.getId());
+
         for (ServiceItemInfo serviceItem : serviceItems) {
           if (serviceItemService.updateServiceItemPrices(
-              serviceItem.getId(), 
-              priceListItem.getBasePrice(), 
-              priceListItem.getPriceBlack(), 
+              serviceItem.getId(),
+              priceListItem.getBasePrice(),
+              priceListItem.getPriceBlack(),
               priceListItem.getPriceColor())) {
             updatedCount++;
             log.debug("Updated prices for service item: {}", serviceItem.getId());
@@ -131,7 +131,6 @@ public class PriceListServiceImpl implements PriceListService {
     log.info("Price synchronization completed. Processed {} price list items", updatedCount);
     return updatedCount;
   }
-
 
   /** Get distinct active categories for filtering Used in admin UI for category dropdown */
   @Override
@@ -154,7 +153,7 @@ public class PriceListServiceImpl implements PriceListService {
     List<PriceListItem> items = priceListItemRepository.findAllActiveOrderedByCategoryAndNumber();
 
     List<PriceListItemInfo> dtos =
-        items.stream().map(priceListItemMapper::toPriceListItemInfo).collect(Collectors.toList());
+        items.stream().map(this::mapToPriceListItemInfo).collect(Collectors.toList());
 
     log.info("Exported {} active price list items", dtos.size());
     return dtos;
@@ -178,7 +177,7 @@ public class PriceListServiceImpl implements PriceListService {
             .findByCategoryCodeAndCatalogNumber(categoryCode, catalogNumber)
             .orElse(null);
 
-    return item != null ? priceListItemMapper.toPriceListItemInfo(item) : null;
+    return item != null ? mapToPriceListItemInfo(item) : null;
   }
 
   @Override
@@ -188,6 +187,11 @@ public class PriceListServiceImpl implements PriceListService {
 
     PriceListItem item = priceListItemRepository.findByCatalogNumber(catalogNumber).orElse(null);
 
-    return item != null ? priceListItemMapper.toPriceListItemInfo(item) : null;
+    return item != null ? mapToPriceListItemInfo(item) : null;
+  }
+
+  // Helper method for mapping
+  private PriceListItemInfo mapToPriceListItemInfo(PriceListItem item) {
+    return priceListItemMapper.toPriceListItemInfo(item);
   }
 }

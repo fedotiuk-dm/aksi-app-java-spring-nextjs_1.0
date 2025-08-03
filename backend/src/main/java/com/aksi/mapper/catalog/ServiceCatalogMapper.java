@@ -8,7 +8,6 @@ import org.mapstruct.MappingTarget;
 
 import com.aksi.api.service.dto.CreateServiceInfoRequest;
 import com.aksi.api.service.dto.ListServicesResponse;
-import com.aksi.api.service.dto.ProcessingTime;
 import com.aksi.api.service.dto.ServiceInfo;
 import com.aksi.api.service.dto.UpdateServiceInfoRequest;
 import com.aksi.domain.catalog.ServiceCatalog;
@@ -21,11 +20,10 @@ public interface ServiceCatalogMapper {
   @Mapping(target = "icon", ignore = true)
   @Mapping(target = "color", ignore = true)
   @Mapping(target = "nameUa", ignore = true)
-  @Mapping(
-      target = "allowedProcessingTimes",
-      expression = "java(mapProcessingTimesToList(service.getProcessingTimeDays()))")
+  @Mapping(target = "allowedProcessingTimes", ignore = true) // Handled in service layer
   @Mapping(target = "requiresSpecialHandling", constant = "false")
   @Mapping(target = "tags", ignore = true)
+  @Mapping(target = "category", ignore = true) // Handle in service
   ServiceInfo toServiceResponse(ServiceCatalog service);
 
   @Mapping(target = "id", ignore = true)
@@ -35,6 +33,10 @@ public interface ServiceCatalogMapper {
   @Mapping(target = "expressTimeHours", ignore = true)
   @Mapping(target = "sortOrder", ignore = true)
   @Mapping(target = "serviceItems", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "expressAvailable", ignore = true)
+  @Mapping(target = "active", ignore = true)
+  @Mapping(target = "category", ignore = true) // Handle in service
   ServiceCatalog toEntity(CreateServiceInfoRequest request);
 
   @Mapping(target = "id", ignore = true)
@@ -45,6 +47,9 @@ public interface ServiceCatalogMapper {
   @Mapping(target = "expressTimeHours", ignore = true)
   @Mapping(target = "sortOrder", ignore = true)
   @Mapping(target = "serviceItems", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "category", ignore = true)
+  @Mapping(target = "expressAvailable", ignore = true)
   void updateEntityFromDto(UpdateServiceInfoRequest request, @MappingTarget ServiceCatalog service);
 
   List<ServiceInfo> toServiceList(List<ServiceCatalog> services);
@@ -53,19 +58,5 @@ public interface ServiceCatalogMapper {
     ListServicesResponse response = new ListServicesResponse();
     response.setServices(toServiceList(services));
     return response;
-  }
-
-  default List<ProcessingTime> mapProcessingTimesToList(Integer processingTimeDays) {
-    if (processingTimeDays == null) {
-      return List.of(ProcessingTime.STANDARD_2_D);
-    }
-    return switch (processingTimeDays) {
-      case 0 ->
-          List.of(ProcessingTime.EXPRESS_1_H, ProcessingTime.EXPRESS_4_H, ProcessingTime.SAME_DAY);
-      case 1 -> List.of(ProcessingTime.NEXT_DAY);
-      case 2 -> List.of(ProcessingTime.STANDARD_2_D);
-      case 3 -> List.of(ProcessingTime.STANDARD_3_D);
-      default -> List.of(ProcessingTime.EXTENDED);
-    };
   }
 }
