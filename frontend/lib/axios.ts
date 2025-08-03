@@ -147,6 +147,34 @@ export const apiClient: AxiosInstance = axios.create({
   withCredentials: true, // Завжди передавати cookies в запитах
 });
 
+/**
+ * Функція для читання cookie за назвою
+ */
+function getCookie(name: string): string | null {
+  if (typeof window === 'undefined') return null;
+  
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() || null;
+  }
+  return null;
+}
+
+// Додавання CSRF токену до всіх небезпечних запитів
+apiClient.interceptors.request.use((config) => {
+  // Додаємо CSRF токен для POST, PUT, DELETE, PATCH запитів
+  const method = config.method?.toUpperCase();
+  if (method && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+    const csrfToken = getCookie('XSRF-TOKEN');
+    if (csrfToken) {
+      config.headers['X-XSRF-TOKEN'] = csrfToken;
+    }
+  }
+  
+  return config;
+});
+
 // Логування запитів у режимі розробки
 if (process.env.NODE_ENV === 'development') {
   apiClient.interceptors.request.use((config) => {
