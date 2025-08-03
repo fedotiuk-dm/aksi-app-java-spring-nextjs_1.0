@@ -1,7 +1,5 @@
 package com.aksi.domain.catalog;
 
-import java.math.BigDecimal;
-
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.UnitOfMeasure;
 import com.aksi.domain.common.BaseEntity;
@@ -44,14 +42,14 @@ public class PriceListItem extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private UnitOfMeasure unitOfMeasure;
 
-  @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
-  private BigDecimal basePrice;
+  @Column(name = "base_price", nullable = false)
+  private Integer basePrice;
 
-  @Column(name = "price_black", precision = 10, scale = 2)
-  private BigDecimal priceBlack;
+  @Column(name = "price_black")
+  private Integer priceBlack;
 
-  @Column(name = "price_color", precision = 10, scale = 2)
-  private BigDecimal priceColor;
+  @Column(name = "price_color")
+  private Integer priceColor;
 
   @Column(name = "active", nullable = false)
   private boolean active = true;

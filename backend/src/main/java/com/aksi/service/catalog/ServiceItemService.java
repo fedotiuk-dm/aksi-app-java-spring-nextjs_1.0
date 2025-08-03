@@ -1,6 +1,5 @@
 package com.aksi.service.catalog;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,5 +92,5 @@ public interface ServiceItemService {
    * @return true if prices were updated
    */
   boolean updateServiceItemPrices(
-      UUID serviceItemId, BigDecimal basePrice, BigDecimal priceBlack, BigDecimal priceColor);
+      UUID serviceItemId, Integer basePrice, Integer priceBlack, Integer priceColor);
 }

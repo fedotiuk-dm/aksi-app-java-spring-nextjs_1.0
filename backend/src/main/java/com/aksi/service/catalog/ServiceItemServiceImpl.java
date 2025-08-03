@@ -1,6 +1,5 @@
 package com.aksi.service.catalog;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -208,7 +207,7 @@ public class ServiceItemServiceImpl implements ServiceItemService {
   @Override
   @Transactional
   public boolean updateServiceItemPrices(
-      UUID serviceItemId, BigDecimal basePrice, BigDecimal priceBlack, BigDecimal priceColor) {
+      UUID serviceItemId, Integer basePrice, Integer priceBlack, Integer priceColor) {
     log.debug(
         "Updating service item {} prices: base={}, black={}, color={}",
         serviceItemId,

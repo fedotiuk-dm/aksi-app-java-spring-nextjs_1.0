@@ -1,7 +1,5 @@
 package com.aksi.domain.catalog;
 
-import java.math.BigDecimal;
-
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -40,17 +38,17 @@ public class ServiceItem extends BaseEntity {
   @JoinColumn(name = "item_id", nullable = false)
   private ItemCatalog itemCatalog;
 
-  @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
-  private BigDecimal basePrice;
+  @Column(name = "base_price", nullable = false)
+  private Integer basePrice;
 
-  @Column(name = "express_price", precision = 10, scale = 2)
-  private BigDecimal expressPrice;
+  @Column(name = "express_price")
+  private Integer expressPrice;
 
-  @Column(name = "price_black", precision = 10, scale = 2)
-  private BigDecimal priceBlack;
+  @Column(name = "price_black")
+  private Integer priceBlack;
 
-  @Column(name = "price_color", precision = 10, scale = 2)
-  private BigDecimal priceColor;
+  @Column(name = "price_color")
+  private Integer priceColor;
 
   @Column(name = "processing_time_days")
   private Integer processingTimeDays;
@@ -58,8 +56,8 @@ public class ServiceItem extends BaseEntity {
   @Column(name = "express_time_hours")
   private Integer expressTimeHours;
 
-  @Column(name = "complexity_factor", precision = 3, scale = 2)
-  private BigDecimal complexityFactor = BigDecimal.ONE;
+  @Column(name = "complexity_factor")
+  private Integer complexityFactor = 100; // 100 = 1.0, 150 = 1.5
 
   @Column(name = "notes", columnDefinition = "TEXT")
   private String notes;
