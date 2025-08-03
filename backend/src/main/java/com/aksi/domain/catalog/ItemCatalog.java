@@ -3,6 +3,8 @@ package com.aksi.domain.catalog;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.aksi.api.service.dto.ItemCategory;
+import com.aksi.api.service.dto.UnitOfMeasure;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
@@ -42,7 +44,7 @@ public class ItemCatalog extends BaseEntity {
 
   @Column(name = "category", nullable = false, length = 50)
   @Enumerated(EnumType.STRING)
-  private ServiceCategoryType category;
+  private ItemCategory category;
 
   @Column(name = "material", length = 100)
   private String material;

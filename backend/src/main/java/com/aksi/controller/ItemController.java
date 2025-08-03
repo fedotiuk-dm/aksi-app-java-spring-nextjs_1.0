@@ -2,10 +2,6 @@ package com.aksi.controller;
 
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * REST controller for item catalog operations. Thin layer between OpenAPI and service with
- * logging.
+ * REST controller for item catalog operations. Thin layer between OpenAPI and service with logging.
  */
 @Slf4j
 @RestController
@@ -50,27 +45,23 @@ public class ItemController implements ItemsApi {
 
   @Override
   public ResponseEntity<ListItemsResponse> listItems(
-      Boolean active, @Nullable ItemCategory category, String search, Integer offset, Integer limit) {
-    log.debug("Listing items with active: {}, category: {}, search: {}", active, category, search);
-    
-    // Create pageable from offset and limit
-    int pageNumber = (offset != null && limit != null && limit > 0) ? offset / limit : 0;
-    int pageSize = (limit != null && limit > 0) ? limit : 20;
-    Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("sortOrder").ascending());
-    
-    Page<ItemInfo> itemPage = itemCatalogService.listItems(active, category, search, pageable);
-    
-    ListItemsResponse response = new ListItemsResponse();
-    response.setItems(itemPage.getContent());
-    response.setTotalCount((int) itemPage.getTotalElements());
-    
-    log.debug("Listed {} items successfully", itemPage.getNumberOfElements());
-    return ResponseEntity.ok(response);
+      Boolean active,
+      @Nullable ItemCategory category,
+      @Nullable String search,
+      Integer offset,
+      Integer limit) {
+    log.debug(
+        "Listing items with active: {}, category: {}, search: {}, offset: {}, limit: {}",
+        active,
+        category,
+        search,
+        offset,
+        limit);
+    return ResponseEntity.ok(itemCatalogService.listItems(active, category, search, offset, limit));
   }
 
   @Override
-  public ResponseEntity<ItemInfo> updateItem(
-      UUID itemId, UpdateItemInfoRequest updateItemRequest) {
+  public ResponseEntity<ItemInfo> updateItem(UUID itemId, UpdateItemInfoRequest updateItemRequest) {
     log.info("Updating item with id: {}", itemId);
     ItemInfo updatedItem = itemCatalogService.updateItem(itemId, updateItemRequest);
     log.info("Item updated successfully with id: {}", itemId);

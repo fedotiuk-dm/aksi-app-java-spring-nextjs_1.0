@@ -3,25 +3,13 @@ package com.aksi.service.catalog;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.aksi.api.service.dto.PriceListItemInfo;
-import com.aksi.domain.catalog.ServiceCategoryType;
+import com.aksi.api.service.dto.PriceListItemsResponse;
+import com.aksi.api.service.dto.ServiceCategoryType;
 
 /** Service for managing price list items */
 public interface PriceListService {
 
-  /**
-   * List all price list items with optional filters
-   *
-   * @param categoryCode Filter by category code
-   * @param active Filter by active status
-   * @param pageable Pagination parameters
-   * @return Page of price list items
-   */
-  Page<PriceListItemInfo> listPriceListItems(
-      ServiceCategoryType categoryCode, Boolean active, Pageable pageable);
 
   /**
    * Get price list item by ID
@@ -31,35 +19,57 @@ public interface PriceListService {
    */
   PriceListItemInfo getPriceListItemById(UUID priceListItemId);
 
+  // Admin functionality methods - essential for price management
+  // TODO: Add admin endpoints for these methods:
+  // - Import from CSV: POST /api/admin/price-list/import
+  // - Synchronize prices: POST /api/admin/price-list/sync
+  // - Export price list: GET /api/admin/price-list/export
+  
   /**
-   * Import price list from CSV
-   *
-   * @param csvContent CSV content as string
-   * @return Number of imported items
-   */
-  int importFromCsv(String csvContent);
-
-  /**
-   * Get price list items by category
-   *
-   * @param categoryCode Category code
-   * @return List of price list items
-   */
-  List<PriceListItemInfo> getPriceListItemsByCategory(ServiceCategoryType categoryCode);
-
-  /**
-   * Synchronize price list with service items Updates ServiceItem prices based on PriceListItem
-   * prices
-   *
+   * Synchronize prices from price list to service items
    * @return Number of synchronized items
    */
   int synchronizePrices();
-
+  
+  /**
+   * Get distinct active categories for filtering
+   * @return List of distinct active category types
+   */
+  List<ServiceCategoryType> getDistinctActiveCategories();
+  
+  /**
+   * Export all active price list items
+   * @return List of all active price list items for export
+   */
+  List<PriceListItemInfo> exportActivePriceList();
+  
+  /**
+   * Get price list item by category and catalog number
+   * @param categoryCode Category code
+   * @param catalogNumber Catalog number
+   * @return Price list item or null if not found
+   */
+  PriceListItemInfo getPriceListItemByCategoryAndCatalogNumber(
+      ServiceCategoryType categoryCode, Integer catalogNumber);
+  
   /**
    * Get price list item by catalog number
-   *
+   * Used for quick price lookups
    * @param catalogNumber Catalog number
    * @return Price list item or null if not found
    */
   PriceListItemInfo getPriceListItemByCatalogNumber(Integer catalogNumber);
+
+  /**
+   * List price list items with response DTO
+   *
+   * @param categoryCode Filter by category code
+   * @param active Filter by active status
+   * @param offset Number of items to skip
+   * @param limit Number of items to return
+   * @return Price list items response
+   */
+  PriceListItemsResponse listPriceListItems(
+      ServiceCategoryType categoryCode, Boolean active, Integer offset, Integer limit);
+
 }

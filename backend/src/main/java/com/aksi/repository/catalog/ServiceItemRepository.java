@@ -1,6 +1,5 @@
 package com.aksi.repository.catalog;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -16,20 +15,6 @@ import com.aksi.domain.catalog.ServiceItem;
 @Repository
 public interface ServiceItemRepository extends JpaRepository<ServiceItem, UUID> {
 
-  @Query(
-      "SELECT si FROM ServiceItem si "
-          + "JOIN FETCH si.serviceCatalog s "
-          + "JOIN FETCH si.itemCatalog i "
-          + "WHERE s.id = :serviceId AND i.id = :itemId")
-  Optional<ServiceItem> findByServiceIdAndItemId(
-      @Param("serviceId") UUID serviceId, @Param("itemId") UUID itemId);
-
-  @Query(
-      "SELECT si FROM ServiceItem si "
-          + "JOIN FETCH si.serviceCatalog "
-          + "JOIN FETCH si.itemCatalog "
-          + "WHERE si.active = true AND si.availableForOrder = true")
-  Page<ServiceItem> findActiveAndAvailable(Pageable pageable);
 
   Page<ServiceItem> findByServiceCatalogId(UUID serviceId, Pageable pageable);
 

@@ -10,16 +10,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.domain.catalog.PriceListItem;
-import com.aksi.domain.catalog.ServiceCategoryType;
 
 /** Repository for PriceListItem entity */
 @Repository
 public interface PriceListItemRepository extends JpaRepository<PriceListItem, UUID> {
-
-  List<PriceListItem> findByCategoryCodeAndActiveTrue(ServiceCategoryType categoryCode);
-
-  List<PriceListItem> findByActiveTrue();
 
   Optional<PriceListItem> findByCategoryCodeAndCatalogNumber(
       ServiceCategoryType categoryCode, Integer catalogNumber);

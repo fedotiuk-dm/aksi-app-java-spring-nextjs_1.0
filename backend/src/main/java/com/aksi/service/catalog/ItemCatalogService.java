@@ -1,6 +1,5 @@
 package com.aksi.service.catalog;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import com.aksi.api.service.dto.CreateItemInfoRequest;
 import com.aksi.api.service.dto.ItemCategory;
 import com.aksi.api.service.dto.ItemInfo;
+import com.aksi.api.service.dto.ListItemsResponse;
 import com.aksi.api.service.dto.UpdateItemInfoRequest;
 
 /** Service for managing item catalog */
@@ -50,34 +50,35 @@ public interface ItemCatalogService {
    */
   ItemInfo updateItem(UUID itemId, UpdateItemInfoRequest request);
 
-  /**
-   * Delete item
-   *
-   * @param itemId Item ID
-   */
-  void deleteItem(UUID itemId);
 
   /**
-   * Check if item code exists
+   * Get item by code
+   * TODO: Add REST endpoint in future if needed for API access
    *
    * @param code Item code
-   * @return true if exists
+   * @return Item details
    */
-  boolean existsByCode(String code);
+  ItemInfo getItemByCode(String code);
 
   /**
-   * Get items by category
+   * Get item by catalog number
+   * Used for price synchronization from PriceListService
    *
-   * @param category Item category
-   * @return List of items
+   * @param catalogNumber Catalog number
+   * @return Item details
    */
-  List<ItemInfo> getItemsByCategory(ItemCategory category);
+  ItemInfo getItemByCatalogNumber(Integer catalogNumber);
 
   /**
-   * Search items by name
+   * List items with response DTO
    *
-   * @param searchTerm Search term
-   * @return List of matching items
+   * @param active Filter by active status
+   * @param category Filter by category
+   * @param search Search by name
+   * @param offset Number of items to skip
+   * @param limit Number of items to return
+   * @return List items response
    */
-  List<ItemInfo> searchItems(String searchTerm);
+  ListItemsResponse listItems(
+      Boolean active, ItemCategory category, String search, Integer offset, Integer limit);
 }

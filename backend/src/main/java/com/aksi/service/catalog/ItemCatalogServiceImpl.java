@@ -6,13 +6,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.service.dto.CreateItemInfoRequest;
 import com.aksi.api.service.dto.ItemCategory;
 import com.aksi.api.service.dto.ItemInfo;
+import com.aksi.api.service.dto.ListItemsResponse;
 import com.aksi.api.service.dto.UpdateItemInfoRequest;
 import com.aksi.domain.catalog.ItemCatalog;
 import com.aksi.exception.ConflictException;
@@ -43,6 +46,8 @@ public class ItemCatalogServiceImpl implements ItemCatalogService {
 
     if (search != null && !search.trim().isEmpty()) {
       page = itemRepository.findByNameContainingIgnoreCaseAndActiveTrue(search.trim(), pageable);
+    } else if (category != null && active != null && active) {
+      page = itemRepository.findByCategoryAndActiveTrue(category, pageable);
     } else if (active != null && active) {
       page = itemRepository.findByActiveTrue(pageable);
     } else {
@@ -75,7 +80,7 @@ public class ItemCatalogServiceImpl implements ItemCatalogService {
     log.debug("Creating new item with code: {}", request.getCode());
 
     // Check if code already exists
-    if (itemRepository.existsByCode(request.getCode())) {
+    if (existsByCode(request.getCode())) {
       throw new ConflictException("Item with code already exists: " + request.getCode());
     }
 
@@ -105,49 +110,55 @@ public class ItemCatalogServiceImpl implements ItemCatalogService {
     return itemCatalogMapper.toItemResponse(updated);
   }
 
-  @Override
-  public void deleteItem(UUID itemId) {
-    log.debug("Deleting item with id: {}", itemId);
-
-    if (!itemRepository.existsById(itemId)) {
-      throw new NotFoundException("Item not found with id: " + itemId);
-    }
-
-    itemRepository.deleteById(itemId);
-    log.info("Deleted item with id: {}", itemId);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public boolean existsByCode(String code) {
+  private boolean existsByCode(String code) {
     return itemRepository.existsByCode(code);
   }
 
+
   @Override
   @Transactional(readOnly = true)
-  public List<ItemInfo> getItemsByCategory(ItemCategory category) {
-    log.debug("Getting items by category: {}", category);
+  public ItemInfo getItemByCode(String code) {
+    log.debug("Getting item by code: {}", code);
 
-    // Note: Item entity uses ServiceCategoryType, not ItemCategory
-    // This would need to be mapped properly based on business logic
-    Page<ItemCatalog> items = itemRepository.findByActiveTrue(Pageable.unpaged());
+    ItemCatalog itemCatalog =
+        itemRepository
+            .findByCode(code)
+            .orElseThrow(() -> new NotFoundException("Item not found with code: " + code));
 
-    return items.stream().map(itemCatalogMapper::toItemResponse).collect(Collectors.toList());
+    return itemCatalogMapper.toItemResponse(itemCatalog);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<ItemInfo> searchItems(String searchTerm) {
-    log.debug("Searching items with term: {}", searchTerm);
+  public ItemInfo getItemByCatalogNumber(Integer catalogNumber) {
+    log.debug("Getting item by catalog number: {}", catalogNumber);
 
-    if (searchTerm == null || searchTerm.trim().isEmpty()) {
-      return List.of();
-    }
+    ItemCatalog itemCatalog =
+        itemRepository
+            .findByCatalogNumber(catalogNumber)
+            .orElseThrow(
+                () ->
+                    new NotFoundException("Item not found with catalog number: " + catalogNumber));
 
-    Page<ItemCatalog> items =
-        itemRepository.findByNameContainingIgnoreCaseAndActiveTrue(
-            searchTerm.trim(), Pageable.unpaged());
+    return itemCatalogMapper.toItemResponse(itemCatalog);
+  }
 
-    return items.stream().map(itemCatalogMapper::toItemResponse).collect(Collectors.toList());
+  @Override
+  @Transactional(readOnly = true)
+  public ListItemsResponse listItems(
+      Boolean active, ItemCategory category, String search, Integer offset, Integer limit) {
+    int pageNumber = (offset != null && limit != null && limit > 0) ? offset / limit : 0;
+    int pageSize = (limit != null && limit > 0) ? limit : 20;
+
+    Page<ItemInfo> page =
+        listItems(
+            active,
+            category,
+            search,
+            PageRequest.of(pageNumber, pageSize, Sort.by("sortOrder").ascending()));
+
+    return new ListItemsResponse()
+        .items(page.getContent())
+        .totalCount((int) page.getTotalElements());
   }
 }

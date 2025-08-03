@@ -1,7 +1,5 @@
 package com.aksi.service.catalog;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -14,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.api.service.dto.CreateServiceInfoRequest;
 import com.aksi.api.service.dto.ListServicesResponse;
 import com.aksi.api.service.dto.ServiceCategory;
+import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.ServiceInfo;
 import com.aksi.api.service.dto.UpdateServiceInfoRequest;
 import com.aksi.domain.catalog.ServiceCatalog;
-import com.aksi.domain.catalog.ServiceCategoryType;
 import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.catalog.ServiceCatalogMapper;
@@ -36,17 +34,9 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
   private final ServiceRepository serviceRepository;
   private final ServiceCatalogMapper serviceCatalogMapper;
 
-  // Entity methods
+  // Private helper methods
 
-  @Override
-  @Transactional(readOnly = true)
-  public Optional<ServiceCatalog> findById(UUID id) {
-    return serviceRepository.findById(id);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public Page<ServiceCatalog> listServices(
+  private Page<ServiceCatalog> listServices(
       Boolean active, ServiceCategoryType category, Pageable pageable) {
 
     log.debug("Listing service entities with active: {}, category: {}", active, category);
@@ -60,8 +50,7 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
     }
   }
 
-  @Override
-  public ServiceCatalog createService(ServiceCatalog serviceCatalog) {
+  private ServiceCatalog createService(ServiceCatalog serviceCatalog) {
     log.debug("Creating new service entity with code: {}", serviceCatalog.getCode());
 
     // Check if code already exists
@@ -75,8 +64,7 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
     return saved;
   }
 
-  @Override
-  public ServiceCatalog updateService(ServiceCatalog serviceCatalog) {
+  private ServiceCatalog updateService(ServiceCatalog serviceCatalog) {
     log.debug("Updating service entity with id: {}", serviceCatalog.getId());
 
     ServiceCatalog updated = serviceRepository.save(serviceCatalog);
@@ -85,34 +73,6 @@ public class ServiceCatalogServiceImpl implements ServiceCatalogService {
     return updated;
   }
 
-  @Override
-  public void deleteService(UUID serviceId) {
-    log.debug("Deleting service with id: {}", serviceId);
-
-    if (!serviceRepository.existsById(serviceId)) {
-      throw new NotFoundException("Service not found with id: " + serviceId);
-    }
-
-    serviceRepository.deleteById(serviceId);
-    log.info("Deleted service with id: {}", serviceId);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public boolean existsByCode(String code) {
-    return serviceRepository.existsByCode(code);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public List<ServiceCatalog> getServicesByCategory(ServiceCategoryType category) {
-    log.debug("Getting services by category: {}", category);
-
-    Page<ServiceCatalog> services =
-        serviceRepository.findByCategoryAndActiveTrue(category, Pageable.unpaged());
-
-    return services.getContent();
-  }
 
   // DTO methods for controller
 

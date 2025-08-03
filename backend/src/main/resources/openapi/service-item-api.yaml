@@ -176,6 +176,23 @@ paths:
           required: false
           schema:
             type: string
+        - name: offset
+          in: query
+          description: Number of items to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Number of items to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
         '200':
           description: List of items
@@ -314,6 +331,23 @@ paths:
           schema:
             type: boolean
             default: true
+        - name: offset
+          in: query
+          description: Number of items to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Number of items to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
         '200':
           description: List of service-item combinations
@@ -456,6 +490,23 @@ paths:
           schema:
             type: boolean
             default: true
+        - name: offset
+          in: query
+          description: Number of items to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Number of items to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
         '200':
           description: List of price list items
@@ -1172,11 +1223,16 @@ components:
       type: object
       required:
         - priceListItems
+        - totalCount
       properties:
         priceListItems:
           type: array
           items:
             $ref: '#/components/schemas/PriceListItemInfo'
+        totalCount:
+          type: integer
+          description: Total number of price list items available
+          minimum: 0
     
     ListServicesResponse:
       type: object
@@ -1192,21 +1248,31 @@ components:
       type: object
       required:
         - items
+        - totalCount
       properties:
         items:
           type: array
           items:
             $ref: '#/components/schemas/ItemInfo'
+        totalCount:
+          type: integer
+          description: Total number of items available
+          minimum: 0
     
     ListServiceItemsResponse:
       type: object
       required:
         - serviceItems
+        - totalCount
       properties:
         serviceItems:
           type: array
           items:
             $ref: '#/components/schemas/ServiceItemInfo'
+        totalCount:
+          type: integer
+          description: Total number of service items available
+          minimum: 0
     
     # Error schemas
     ErrorDetail:

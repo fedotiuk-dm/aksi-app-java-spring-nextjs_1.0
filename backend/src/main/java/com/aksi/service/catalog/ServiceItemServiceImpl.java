@@ -6,11 +6,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.service.dto.CreateServiceItemInfoRequest;
+import com.aksi.api.service.dto.ListServiceItemsResponse;
 import com.aksi.api.service.dto.ServiceItemInfo;
 import com.aksi.api.service.dto.UpdateServiceItemInfoRequest;
 import com.aksi.domain.catalog.ItemCatalog;
@@ -38,9 +41,7 @@ public class ServiceItemServiceImpl implements ServiceItemService {
   private final ItemRepository itemRepository;
   private final ServiceItemMapper serviceItemMapper;
 
-  @Override
-  @Transactional(readOnly = true)
-  public Page<ServiceItemInfo> listServiceItems(
+  private Page<ServiceItemInfo> listServiceItems(
       UUID serviceId, UUID itemId, UUID branchId, Boolean active, Pageable pageable) {
     log.debug(
         "Listing service-items with serviceId: {}, itemId: {}, branchId: {}, active: {}",
@@ -144,24 +145,28 @@ public class ServiceItemServiceImpl implements ServiceItemService {
     return serviceItemMapper.toServiceItemResponse(updated);
   }
 
-  @Override
-  public void deleteServiceItem(UUID serviceItemId) {
-    log.debug("Deleting service-item with id: {}", serviceItemId);
-
-    if (!serviceItemRepository.existsById(serviceItemId)) {
-      throw new NotFoundException("ServiceItem not found with id: " + serviceItemId);
-    }
-
-    serviceItemRepository.deleteById(serviceItemId);
-    log.info("Deleted service-item with id: {}", serviceItemId);
-  }
 
   @Override
   @Transactional(readOnly = true)
-  public boolean existsByServiceAndItem(UUID serviceId, UUID itemId) {
-    return serviceItemRepository.existsByServiceCatalogIdAndItemCatalogId(serviceId, itemId);
-  }
+  public ListServiceItemsResponse listServiceItems(
+      UUID serviceId, UUID itemId, UUID branchId, Boolean active, Integer offset, Integer limit) {
+    int pageNumber = (offset != null && limit != null && limit > 0) ? offset / limit : 0;
+    int pageSize = (limit != null && limit > 0) ? limit : 20;
 
+    Page<ServiceItemInfo> page =
+        listServiceItems(
+            serviceId,
+            itemId,
+            branchId,
+            active,
+            PageRequest.of(pageNumber, pageSize, Sort.by("sortOrder").ascending()));
+
+    ListServiceItemsResponse response = new ListServiceItemsResponse();
+    response.setServiceItems(page.getContent());
+    response.setTotalCount((int) page.getTotalElements());
+    return response;
+  }
+  
   @Override
   @Transactional(readOnly = true)
   public List<ServiceItemInfo> getServiceItemsByService(UUID serviceId) {

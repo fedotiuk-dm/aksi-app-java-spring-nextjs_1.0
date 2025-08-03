@@ -3,6 +3,7 @@ package com.aksi.domain.catalog;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;

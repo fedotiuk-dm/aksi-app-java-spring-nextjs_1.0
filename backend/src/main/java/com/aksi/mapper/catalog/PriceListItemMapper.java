@@ -7,9 +7,9 @@ import org.mapstruct.Mapping;
 
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.api.service.dto.PriceListItemsResponse;
+import com.aksi.api.service.dto.ServiceCategoryType;
+import com.aksi.api.service.dto.UnitOfMeasure;
 import com.aksi.domain.catalog.PriceListItem;
-import com.aksi.domain.catalog.ServiceCategoryType;
-import com.aksi.domain.catalog.UnitOfMeasure;
 
 /** MapStruct mapper for Price List Item DTOs. */
 @Mapper(componentModel = "spring")
