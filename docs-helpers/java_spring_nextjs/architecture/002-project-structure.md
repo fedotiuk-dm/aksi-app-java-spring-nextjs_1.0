@@ -35,21 +35,21 @@ com.aksi
 │   ├── client
 │   ├── order
 │   ├── pricing
-│   ├── item
+│   ├── itemCatalog
 │   ├── document
 │   └── branch
 ├── domain              # Доменні моделі та бізнес-логіка
 │   ├── client
 │   ├── order
 │   ├── pricing
-│   ├── item
+│   ├── itemCatalog
 │   ├── document
 │   └── branch
 ├── application         # Сервіси додатку
 │   ├── client
 │   ├── order
 │   ├── pricing
-│   ├── item
+│   ├── itemCatalog
 │   ├── document
 │   └── branch
 ├── infrastructure      # Інфраструктурний код

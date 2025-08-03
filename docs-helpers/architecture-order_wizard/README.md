@@ -38,7 +38,7 @@
 **Ключові entities**: Order, OrderParameters, Payment
 **API endpoints**: `/api/orders/*`
 
-### 3. [Item Domain](domains/03-item-domain.md)
+### 3. [Item Domain](domains/03-itemCatalog-domain.md)
 
 **Відповідальність**: Предмети, прайс-лист, характеристики
 
@@ -121,7 +121,7 @@ backend/
 │   ├── domain/
 │   │   ├── client/          # Client Domain
 │   │   ├── order/           # Order Domain
-│   │   ├── item/            # Item Domain
+│   │   ├── itemCatalog/            # Item Domain
 │   │   ├── branch/          # Branch Domain
 │   │   └── document/        # Document Domain
 │   ├── api/                 # Generated Controllers
@@ -140,7 +140,7 @@ backend/
 
 - [`client-api.yaml`](openapi/client-api.yaml) - Client Domain API
 - [`order-api.yaml`](openapi/order-api.yaml) - Order Domain API
-- [`item-api.yaml`](openapi/item-api.yaml) - Item Domain API
+- [`itemCatalog-api.yaml`](openapi/itemCatalog-api.yaml) - Item Domain API
 - [`branch-api.yaml`](openapi/branch-api.yaml) - Branch Domain API
 - [`document-api.yaml`](openapi/document-api.yaml) - Document Domain API
 
@@ -173,7 +173,7 @@ db/changelog/
 └── domains/
     ├── client/
     ├── order/
-    ├── item/
+    ├── itemCatalog/
     ├── branch/
     └── document/
 ```

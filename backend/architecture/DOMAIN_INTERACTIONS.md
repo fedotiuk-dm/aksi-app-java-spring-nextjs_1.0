@@ -368,10 +368,10 @@ public class NotificationEventHandler {
 ```java
 @Component
 public class PricingServiceClient {
-    @CircuitBreaker(name = "pricing-service")
-    @Retry(name = "pricing-service")
+    @CircuitBreaker(name = "pricing-serviceCatalog")
+    @Retry(name = "pricing-serviceCatalog")
     public PriceCalculation calculate(Request request) {
-        // Виклик external service
+        // Виклик external serviceCatalog
     }
 }
 ```

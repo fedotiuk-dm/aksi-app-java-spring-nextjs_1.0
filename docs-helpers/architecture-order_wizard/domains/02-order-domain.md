@@ -177,7 +177,7 @@ public class OrderService {
     // Управління замовленням
     Order updateOrder(Long id, UpdateOrderRequest request);
     Order getOrderById(Long id);
-    Order addItemToOrder(Long orderId, OrderItem item);
+    Order addItemToOrder(Long orderId, OrderItem itemCatalog);
     Order removeItemFromOrder(Long orderId, Long itemId);
 
     // Фінансові операції
@@ -199,7 +199,7 @@ public class OrderCalculationService {
 
     // Розрахунок вартості
     BigDecimal calculateOrderTotal(Order order);
-    BigDecimal calculateItemPrice(OrderItem item);
+    BigDecimal calculateItemPrice(OrderItem itemCatalog);
     BigDecimal applyModifiers(BigDecimal basePrice, List<PriceModifier> modifiers);
 
     // Знижки та надбавки
@@ -207,7 +207,7 @@ public class OrderCalculationService {
     BigDecimal applyUrgencyCharge(BigDecimal amount, UrgencyType urgency);
 
     // Валідація знижок
-    boolean isDiscountApplicable(OrderItem item, DiscountType discountType);
+    boolean isDiscountApplicable(OrderItem itemCatalog, DiscountType discountType);
     List<OrderItem> getDiscountEligibleItems(List<OrderItem> items);
 }
 ```

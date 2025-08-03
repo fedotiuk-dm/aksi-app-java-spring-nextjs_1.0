@@ -472,7 +472,7 @@ Response: 200 OK
     {
       "id": "990e8400-e29b-41d4-a716-446655440004",
       "itemName": "Пальто жіноче",
-      "service": "Чистка одягу",
+      "serviceCatalog": "Чистка одягу",
       "quantity": 1,
       "price": 595.00
     }
@@ -525,7 +525,7 @@ Response: 200 OK
       "amount": 70.00
     },
     {
-      "step": "Urgent service (+50%)",
+      "step": "Urgent serviceCatalog (+50%)",
       "amount": 175.00
     },
     {

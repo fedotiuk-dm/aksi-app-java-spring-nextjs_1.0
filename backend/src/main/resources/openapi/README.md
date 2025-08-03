@@ -5,7 +5,7 @@
 - `auth-api.yaml` - Authentication endpoints
 - `user-api.yaml` - User management endpoints  
 - `customer-api.yaml` - Customer management endpoints
-- `service-item-api.yaml` - Service and item catalog endpoints
+- `serviceCatalog-itemCatalog-api.yaml` - Service and itemCatalog catalog endpoints
 - `common/` - Shared components (schemas, parameters, responses)
 
 ## Usage with OpenAPI Generator

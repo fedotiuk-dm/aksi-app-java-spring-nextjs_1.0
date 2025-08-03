@@ -28,7 +28,7 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/auth/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       ├── repository/
 │       ├── domain/
 │       ├── dto/
@@ -38,7 +38,7 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/customer/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       ├── repository/
 │       ├── domain/
 │       ├── dto/
@@ -48,16 +48,16 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/branch/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       ├── repository/
 │       ├── domain/
 │       └── dto/
 │
-├── dry-cleaning-service/     # Service домен (включає каталог послуг та предметів)
+├── dry-cleaning-serviceCatalog/     # Service домен (включає каталог послуг та предметів)
 │   ├── pom.xml
-│   └── src/main/java/org/example/dryclean/service/
+│   └── src/main/java/org/example/dryclean/serviceCatalog/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       │   ├── ServiceCatalogService.java
 │       │   ├── ItemService.java
 │       │   └── ServiceItemService.java
@@ -75,7 +75,7 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/pricing/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       │   ├── PriceCalculator.java
 │       │   └── ModifierService.java
 │       ├── repository/
@@ -89,7 +89,7 @@ JavaSpringDryCleaning/
 │       ├── controller/
 │       │   ├── CartController.java
 │       │   └── OrderController.java
-│       ├── service/
+│       ├── serviceCatalog/
 │       │   ├── CartService.java
 │       │   ├── CartCalculationService.java
 │       │   ├── OrderService.java
@@ -121,7 +121,7 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/payment/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       ├── repository/
 │       ├── domain/
 │       ├── dto/
@@ -131,7 +131,7 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/receipt/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       ├── repository/
 │       ├── domain/
 │       ├── dto/
@@ -142,7 +142,7 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/notification/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       ├── repository/
 │       ├── domain/
 │       ├── dto/
@@ -152,7 +152,7 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/config/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       ├── repository/
 │       ├── domain/
 │       └── dto/
@@ -161,7 +161,7 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/reporting/
 │       ├── controller/
-│       ├── service/
+│       ├── serviceCatalog/
 │       ├── repository/
 │       ├── domain/
 │       ├── dto/
@@ -171,7 +171,7 @@ JavaSpringDryCleaning/
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/gateway/
 │       ├── controller/     # Aggregate controllers
-│       ├── service/       # Orchestration
+│       ├── serviceCatalog/       # Orchestration
 │       ├── security/      # Security config
 │       └── config/
 │
@@ -208,7 +208,7 @@ dry-cleaning-{domain}/
     │   ├── java/org/example/dryclean/{domain}/
     │   │   ├── controller/          # REST контролери
     │   │   │   └── {Domain}Controller.java
-    │   │   ├── service/            # Бізнес-логіка
+    │   │   ├── serviceCatalog/            # Бізнес-логіка
     │   │   │   ├── {Domain}Service.java
     │   │   │   └── impl/
     │   │   │       └── {Domain}ServiceImpl.java
@@ -241,7 +241,7 @@ dry-cleaning-{domain}/
 - Бізнес-логіка та правила
 - Value objects та entities
 
-### 2. Service Layer (service/)
+### 2. Service Layer (serviceCatalog/)
 - Spring Service анотації
 - Транзакційна логіка
 - Оркестрація між репозиторіями
@@ -304,7 +304,7 @@ src/main/java/org/example/dryclean/
 ├── auth/
 ├── customer/
 ├── branch/
-├── service/         # Каталог послуг та предметів
+├── serviceCatalog/         # Каталог послуг та предметів
 ├── pricing/
 ├── order/          # Замовлення з характеристиками
 ├── payment/

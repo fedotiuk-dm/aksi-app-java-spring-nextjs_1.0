@@ -103,7 +103,7 @@
    │   ├── client-selection/
    │   │   ├── ui/
    │   │   └── index.ts
-   │   ├── item-wizard/
+   │   ├── itemCatalog-wizard/
    │   │   ├── ui/
    │   │   └── index.ts
    │   └── index.ts

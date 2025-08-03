@@ -77,9 +77,9 @@ class CorrectService {
 ```typescript
 class ItemService {
   async getItemWithPrice(itemId: string) {
-    const item = await this.itemAdapter.getById(itemId);
+    const itemCatalog = await this.itemAdapter.getById(itemId);
     const price = await this.pricingAdapter.getPrice(itemId);
-    return { ...item, price }; // Мінімальна композиція
+    return { ...itemCatalog, price }; // Мінімальна композиція
   }
 }
 ```
@@ -130,27 +130,27 @@ class PricingService {
 ```
 services/
 ├── stage-1-client-and-order/
-│   ├── client-management.service.ts        # 60 рядків
-│   ├── branch-selection.service.ts         # 40 рядків
-│   └── order-initialization.service.ts     # 70 рядків
+│   ├── client-management.serviceCatalog.ts        # 60 рядків
+│   ├── branch-selection.serviceCatalog.ts         # 40 рядків
+│   └── order-initialization.serviceCatalog.ts     # 70 рядків
 │
-├── stage-2-item-management/
-│   ├── item-manager.service.ts             # 50 рядків - координатор
-│   ├── basic-info.service.ts               # 80 рядків - основна інформація
-│   ├── characteristics.service.ts          # 90 рядків - характеристики
-│   ├── defects-stains.service.ts          # 60 рядків - дефекти
-│   ├── pricing-calculation.service.ts      # 70 рядків - розрахунки
-│   └── photo-management.service.ts         # 40 рядків - фото
+├── stage-2-itemCatalog-management/
+│   ├── itemCatalog-manager.serviceCatalog.ts             # 50 рядків - координатор
+│   ├── basic-info.serviceCatalog.ts               # 80 рядків - основна інформація
+│   ├── characteristics.serviceCatalog.ts          # 90 рядків - характеристики
+│   ├── defects-stains.serviceCatalog.ts          # 60 рядків - дефекти
+│   ├── pricing-calculation.serviceCatalog.ts      # 70 рядків - розрахунки
+│   └── photo-management.serviceCatalog.ts         # 40 рядків - фото
 │
 ├── stage-3-order-params/
-│   ├── execution-params.service.ts         # 50 рядків
-│   ├── global-discounts.service.ts         # 60 рядків
-│   └── payment-processing.service.ts       # 70 рядків
+│   ├── execution-params.serviceCatalog.ts         # 50 рядків
+│   ├── global-discounts.serviceCatalog.ts         # 60 рядків
+│   └── payment-processing.serviceCatalog.ts       # 70 рядків
 │
 └── stage-4-confirmation/
-    ├── order-validation.service.ts         # 80 рядків
-    ├── receipt-generation.service.ts       # 90 рядків
-    └── completion.service.ts               # 50 рядків
+    ├── order-validation.serviceCatalog.ts         # 80 рядків
+    ├── receipt-generation.serviceCatalog.ts       # 90 рядків
+    └── completion.serviceCatalog.ts               # 50 рядків
 ```
 
 ## 🔄 Правильний Flow - Без дублювання

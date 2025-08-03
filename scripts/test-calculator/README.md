@@ -154,7 +154,7 @@ chmod +x test-calculator.sh
 
 ```json
 {
-  "error": "Price list item not found",
+  "error": "Price list itemCatalog not found",
   "message": "Item with ID 999 does not exist"
 }
 ```
@@ -217,8 +217,8 @@ base_url = "http://your-server:8080/api"
 # application.yml
 logging:
   level:
-    com.aksi.domain.item.service: DEBUG
-    com.aksi.domain.order.service: DEBUG
+    com.aksi.domain.itemCatalog.serviceCatalog: DEBUG
+    com.aksi.domain.order.serviceCatalog: DEBUG
 ```
 
 Це покаже детальну інформацію про розрахунки в логах Spring Boot.

@@ -9,7 +9,7 @@ domain/client/
 ├── repository/      # Spring Data JPA
 ├── exception/       # Domain exceptions
 ├── validation/      # Business validation
-├── service/         # Business logic + транзакції + DTO конвертація
+├── serviceCatalog/         # Business logic + транзакції + DTO конвертація
 └── mapper/          # Entity ↔ DTO (MapStruct)
 
 api/client/          # Контролери (окремо від domain)
@@ -74,7 +74,7 @@ api/client/          # Контролери (окремо від domain)
 - [ ] Додати @Mapping для ignore полів (id, timestamps)
 - [ ] Обробити enum mappings якщо потрібно
 
-### **Крок 2.2: Service (`/service/`)**
+### **Крок 2.2: Service (`/serviceCatalog/`)**
 
 - [ ] Створити Service клас з @Service та @Transactional
 - [ ] Injecting Repository, Validator та Mapper через @RequiredArgsConstructor
@@ -116,7 +116,7 @@ api/client/          # Контролери (окремо від domain)
   - [ ] ✅ @Controller, @RequiredArgsConstructor
   - [ ] ✅ implements {ApiName}Api
   - [ ] ✅ Простий коментар з відповідальністю
-  - [ ] ✅ Прямі виклики service методів
+  - [ ] ✅ Прямі виклики serviceCatalog методів
 
 **ПРИНЦИП:** OpenAPI робить всю важку роботу (validation, serialization, documentation), контролер - тільки делегація!
 
@@ -177,7 +177,7 @@ domain/client/
 │   └── ClientValidationException.java
 ├── validation/
 │   └── ClientValidator.java
-├── service/
+├── serviceCatalog/
 │   └── ClientService.java            # API + Entity методи
 └── mapper/
     └── ClientMapper.java

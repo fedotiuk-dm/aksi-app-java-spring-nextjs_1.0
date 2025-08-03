@@ -53,14 +53,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  services:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Service'
+                $ref: '#/components/schemas/ListServicesResponse'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
     
     post:
       operationId: createService
@@ -75,22 +70,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateServiceRequest'
+              $ref: '#/components/schemas/CreateServiceInfoRequest'
       responses:
         '201':
           description: Service created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Service'
+                $ref: '#/components/schemas/ServiceInfo'
         '400':
-          $ref: 'common/responses/common.yaml#/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: 'common/responses/common.yaml#/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '409':
-          $ref: 'common/responses/common.yaml#/Conflict'
+          $ref: '#/components/responses/Conflict'
 
   /api/services/{serviceId}:
     parameters:
@@ -116,11 +111,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Service'
+                $ref: '#/components/schemas/ServiceInfo'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          $ref: 'common/responses/common.yaml#/NotFound'
+          $ref: '#/components/responses/NotFound'
     
     patch:
       operationId: updateService
@@ -135,22 +130,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateServiceRequest'
+              $ref: '#/components/schemas/UpdateServiceInfoRequest'
       responses:
         '200':
           description: Service updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Service'
+                $ref: '#/components/schemas/ServiceInfo'
         '400':
-          $ref: 'common/responses/common.yaml#/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: 'common/responses/common.yaml#/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: 'common/responses/common.yaml#/NotFound'
+          $ref: '#/components/responses/NotFound'
 
   /api/items:
     get:
@@ -187,14 +182,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/ListItemsResponse'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
     
     post:
       operationId: createItem
@@ -209,22 +199,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateItemRequest'
+              $ref: '#/components/schemas/CreateItemInfoRequest'
       responses:
         '201':
           description: Item created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/ItemInfo'
         '400':
-          $ref: 'common/responses/common.yaml#/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: 'common/responses/common.yaml#/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '409':
-          $ref: 'common/responses/common.yaml#/Conflict'
+          $ref: '#/components/responses/Conflict'
 
   /api/items/{itemId}:
     parameters:
@@ -250,11 +240,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/ItemInfo'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          $ref: 'common/responses/common.yaml#/NotFound'
+          $ref: '#/components/responses/NotFound'
     
     patch:
       operationId: updateItem
@@ -269,22 +259,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateItemRequest'
+              $ref: '#/components/schemas/UpdateItemInfoRequest'
       responses:
         '200':
           description: Item updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/ItemInfo'
         '400':
-          $ref: 'common/responses/common.yaml#/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: 'common/responses/common.yaml#/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: 'common/responses/common.yaml#/NotFound'
+          $ref: '#/components/responses/NotFound'
 
   /api/service-items:
     get:
@@ -330,16 +320,11 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  serviceItems:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ServiceItem'
+                $ref: '#/components/schemas/ListServiceItemsResponse'
         '400':
-          $ref: 'common/responses/common.yaml#/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
     
     post:
       operationId: createServiceItem
@@ -354,22 +339,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateServiceItemRequest'
+              $ref: '#/components/schemas/CreateServiceItemInfoRequest'
       responses:
         '201':
           description: Service-item created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceItem'
+                $ref: '#/components/schemas/ServiceItemInfo'
         '400':
-          $ref: 'common/responses/common.yaml#/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: 'common/responses/common.yaml#/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '409':
-          $ref: 'common/responses/common.yaml#/Conflict'
+          $ref: '#/components/responses/Conflict'
 
   /api/service-items/{serviceItemId}:
     parameters:
@@ -403,11 +388,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceItem'
+                $ref: '#/components/schemas/ServiceItemInfo'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          $ref: 'common/responses/common.yaml#/NotFound'
+          $ref: '#/components/responses/NotFound'
     
     patch:
       operationId: updateServiceItem
@@ -422,22 +407,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateServiceItemRequest'
+              $ref: '#/components/schemas/UpdateServiceItemInfoRequest'
       responses:
         '200':
           description: Service-item updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ServiceItem'
+                $ref: '#/components/schemas/ServiceItemInfo'
         '400':
-          $ref: 'common/responses/common.yaml#/BadRequest'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: 'common/responses/common.yaml#/Forbidden'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: 'common/responses/common.yaml#/NotFound'
+          $ref: '#/components/responses/NotFound'
 
   /api/price-list:
     get:
@@ -477,14 +462,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  priceListItems:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/PriceListItem'
+                $ref: '#/components/schemas/PriceListItemsResponse'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
 
   /api/price-list/{priceListItemId}:
     parameters:
@@ -510,13 +490,49 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PriceListItem'
+                $ref: '#/components/schemas/PriceListItemInfo'
         '401':
-          $ref: 'common/responses/common.yaml#/Unauthorized'
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          $ref: 'common/responses/common.yaml#/NotFound'
+          $ref: '#/components/responses/NotFound'
 
 components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Unauthorized:
+      description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Forbidden:
+      description: Forbidden access
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
   schemas:
     ServiceCategory:
       type: string
@@ -616,7 +632,7 @@ components:
         * `STANDARD_3D` - 3 days standard
         * `EXTENDED` - Extended time (5+ days)
     
-    Service:
+    ServiceInfo:
       type: object
       required:
         - id
@@ -679,7 +695,7 @@ components:
             type: string
           description: Service tags
     
-    Item:
+    ItemInfo:
       type: object
       required:
         - id
@@ -760,7 +776,7 @@ components:
             type: string
           description: Item tags
     
-    ServiceItem:
+    ServiceItemInfo:
       type: object
       required:
         - id
@@ -785,9 +801,9 @@ components:
           format: uuid
           description: Item ID
         service:
-          $ref: '#/components/schemas/Service'
+          $ref: '#/components/schemas/ServiceInfo'
         item:
-          $ref: '#/components/schemas/Item'
+          $ref: '#/components/schemas/ItemInfo'
         basePrice:
           type: number
           format: decimal
@@ -835,7 +851,7 @@ components:
           default: 0
           description: Popularity score for sorting
     
-    CreateServiceRequest:
+    CreateServiceInfoRequest:
       type: object
       required:
         - code
@@ -889,7 +905,7 @@ components:
           items:
             type: string
     
-    UpdateServiceRequest:
+    UpdateServiceInfoRequest:
       type: object
       minProperties: 1
       properties:
@@ -924,7 +940,7 @@ components:
           items:
             type: string
     
-    CreateItemRequest:
+    CreateItemInfoRequest:
       type: object
       required:
         - code
@@ -981,7 +997,7 @@ components:
           items:
             type: string
     
-    UpdateItemRequest:
+    UpdateItemInfoRequest:
       type: object
       minProperties: 1
       properties:
@@ -1019,7 +1035,7 @@ components:
           items:
             type: string
     
-    CreateServiceItemRequest:
+    CreateServiceItemInfoRequest:
       type: object
       required:
         - serviceId
@@ -1061,7 +1077,7 @@ components:
           type: ['string', 'null']
           maxLength: 500
     
-    UpdateServiceItemRequest:
+    UpdateServiceItemInfoRequest:
       type: object
       minProperties: 1
       properties:
@@ -1092,7 +1108,7 @@ components:
           type: integer
           minimum: 0
     
-    PriceListItem:
+    PriceListItemInfo:
       type: object
       required:
         - id
@@ -1160,7 +1176,87 @@ components:
         priceListItems:
           type: array
           items:
-            $ref: '#/components/schemas/PriceListItem'
+            $ref: '#/components/schemas/PriceListItemInfo'
+    
+    ListServicesResponse:
+      type: object
+      required:
+        - services
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceInfo'
+    
+    ListItemsResponse:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemInfo'
+    
+    ListServiceItemsResponse:
+      type: object
+      required:
+        - serviceItems
+      properties:
+        serviceItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceItemInfo'
+    
+    # Error schemas
+    ErrorDetail:
+      type: object
+      required:
+        - field
+        - message
+      properties:
+        field:
+          type: string
+          description: Field with error
+          example: code
+        message:
+          type: string
+          description: Field error message
+          example: Code already exists
+    
+    ErrorResponse:
+      type: object
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        error:
+          type: string
+          description: Error name
+          example: Bad Request
+        message:
+          type: string
+          description: Error message
+          example: Validation failed
+        path:
+          type: string
+          description: Request path
+          example: /api/v1/services
+        errors:
+          type: ['array', 'null']
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
 
 security:
   - cookieAuth: []
