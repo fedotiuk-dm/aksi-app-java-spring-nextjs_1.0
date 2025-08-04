@@ -311,8 +311,8 @@ components:
           enum: [PERCENTAGE, FIXED]
           description: Modifier type
         value:
-          type: number
-          description: Modifier value (percentage or fixed amount)
+          type: integer
+          description: Modifier value (percentage in basis points *100 or fixed amount in kopiykas)
         amount:
           type: integer
           description: Calculated amount in kopiykas
@@ -371,8 +371,8 @@ components:
           enum: [PERCENTAGE, FIXED]
           description: Modifier type
         value:
-          type: number
-          description: Modifier value
+          type: integer
+          description: Modifier value (percentage in basis points *100 or fixed amount in kopiykas)
         categoryRestrictions:
           type: array
           items:

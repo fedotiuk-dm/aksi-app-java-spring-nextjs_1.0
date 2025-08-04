@@ -1,0 +1,825 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-order-tables
+      author: claude
+      changes:
+        # Create orders table
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_number
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_customer
+                    references: customers(id)
+              - column:
+                  name: branch_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_branch
+                    references: branches(id)
+              - column:
+                  name: unique_label
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notes
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: customer_signature
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_by
+                  type: UUID
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_order_created_by
+                    references: users(id)
+              - column:
+                  name: expected_completion_date
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: actual_completion_date
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: true
+              - column:
+                  name: terms_accepted
+                  type: BOOLEAN
+                  defaultValue: "false"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: items_subtotal
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: urgency_amount
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_amount
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_applicable_amount
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_amount
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Create order_items table
+        - createTable:
+            tableName: order_items
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_item_order
+                    references: orders(id)
+                    deleteCascade: true
+              - column:
+                  name: price_list_item_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_item_price_list
+                    references: price_list_items(id)
+              - column:
+                  name: quantity
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: base_price
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifiers_total_amount
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: subtotal
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: urgency_amount
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_amount
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_amount
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount_eligible
+                  type: BOOLEAN
+                  defaultValue: "true"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Create item_characteristics table
+        - createTable:
+            tableName: item_characteristics
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_item_characteristics_order_item
+                    references: order_items(id)
+                    deleteCascade: true
+              - column:
+                  name: material
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: color
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: filler
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: filler_condition
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: wear_level
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Create item_stains table
+        - createTable:
+            tableName: item_stains
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_item_stain_order_item
+                    references: order_items(id)
+                    deleteCascade: true
+              - column:
+                  name: stain_type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Create item_defects table
+        - createTable:
+            tableName: item_defects
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_item_defect_order_item
+                    references: order_items(id)
+                    deleteCascade: true
+              - column:
+                  name: defect_type
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Create item_risks table
+        - createTable:
+            tableName: item_risks
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_item_risk_order_item
+                    references: order_items(id)
+                    deleteCascade: true
+              - column:
+                  name: risk_type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Create item_photos table
+        - createTable:
+            tableName: item_photos
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_item_photo_order_item
+                    references: order_items(id)
+                    deleteCascade: true
+              - column:
+                  name: url
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: photo_type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: uploaded_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: uploaded_by
+                  type: UUID
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_item_photo_uploaded_by
+                    references: users(id)
+              - column:
+                  name: file_size
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: content_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: original_filename
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Create item_modifiers table
+        - createTable:
+            tableName: item_modifiers
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_item_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_item_modifier_order_item
+                    references: order_items(id)
+                    deleteCascade: true
+              - column:
+                  name: modifier_code
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_value
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: applied_amount
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: jexl_formula
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Create order_payments table
+        - createTable:
+            tableName: order_payments
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_payment_order
+                    references: orders(id)
+                    deleteCascade: true
+              - column:
+                  name: amount
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_method
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: paid_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: paid_by
+                  type: UUID
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_order_payment_paid_by
+                    references: users(id)
+              - column:
+                  name: reference_number
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: notes
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Create indexes for better performance
+        - createIndex:
+            indexName: idx_order_number
+            tableName: orders
+            columns:
+              - column:
+                  name: order_number
+
+        - createIndex:
+            indexName: idx_order_customer
+            tableName: orders
+            columns:
+              - column:
+                  name: customer_id
+
+        - createIndex:
+            indexName: idx_order_branch
+            tableName: orders
+            columns:
+              - column:
+                  name: branch_id
+
+        - createIndex:
+            indexName: idx_order_status
+            tableName: orders
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            indexName: idx_order_created_at
+            tableName: orders
+            columns:
+              - column:
+                  name: created_at
+
+        - createIndex:
+            indexName: idx_order_expected_completion
+            tableName: orders
+            columns:
+              - column:
+                  name: expected_completion_date
+
+        - createIndex:
+            indexName: idx_order_unique_label
+            tableName: orders
+            columns:
+              - column:
+                  name: unique_label
+
+        - createIndex:
+            indexName: idx_order_item_order
+            tableName: order_items
+            columns:
+              - column:
+                  name: order_id
+
+        - createIndex:
+            indexName: idx_order_item_price_list
+            tableName: order_items
+            columns:
+              - column:
+                  name: price_list_item_id
+
+        - createIndex:
+            indexName: idx_item_characteristics_order_item
+            tableName: item_characteristics
+            columns:
+              - column:
+                  name: order_item_id
+
+        - createIndex:
+            indexName: idx_item_stain_order_item
+            tableName: item_stains
+            columns:
+              - column:
+                  name: order_item_id
+
+        - createIndex:
+            indexName: idx_item_stain_type
+            tableName: item_stains
+            columns:
+              - column:
+                  name: stain_type
+
+        - createIndex:
+            indexName: idx_item_defect_order_item
+            tableName: item_defects
+            columns:
+              - column:
+                  name: order_item_id
+
+        - createIndex:
+            indexName: idx_item_defect_type
+            tableName: item_defects
+            columns:
+              - column:
+                  name: defect_type
+
+        - createIndex:
+            indexName: idx_item_risk_order_item
+            tableName: item_risks
+            columns:
+              - column:
+                  name: order_item_id
+
+        - createIndex:
+            indexName: idx_item_risk_type
+            tableName: item_risks
+            columns:
+              - column:
+                  name: risk_type
+
+        - createIndex:
+            indexName: idx_item_photo_order_item
+            tableName: item_photos
+            columns:
+              - column:
+                  name: order_item_id
+
+        - createIndex:
+            indexName: idx_item_photo_type
+            tableName: item_photos
+            columns:
+              - column:
+                  name: photo_type
+
+        - createIndex:
+            indexName: idx_item_photo_uploaded_at
+            tableName: item_photos
+            columns:
+              - column:
+                  name: uploaded_at
+
+        - createIndex:
+            indexName: idx_item_modifier_order_item
+            tableName: item_modifiers
+            columns:
+              - column:
+                  name: order_item_id
+
+        - createIndex:
+            indexName: idx_item_modifier_code
+            tableName: item_modifiers
+            columns:
+              - column:
+                  name: modifier_code
+
+        - createIndex:
+            indexName: idx_order_payment_order
+            tableName: order_payments
+            columns:
+              - column:
+                  name: order_id
+
+        - createIndex:
+            indexName: idx_order_payment_method
+            tableName: order_payments
+            columns:
+              - column:
+                  name: payment_method
+
+        - createIndex:
+            indexName: idx_order_payment_paid_at
+            tableName: order_payments
+            columns:
+              - column:
+                  name: paid_at
+
+      rollback:
+        - dropTable:
+            tableName: order_payments
+        - dropTable:
+            tableName: item_modifiers
+        - dropTable:
+            tableName: item_photos
+        - dropTable:
+            tableName: item_risks
+        - dropTable:
+            tableName: item_defects
+        - dropTable:
+            tableName: item_stains
+        - dropTable:
+            tableName: item_characteristics
+        - dropTable:
+            tableName: order_items
+        - dropTable:
+            tableName: orders
