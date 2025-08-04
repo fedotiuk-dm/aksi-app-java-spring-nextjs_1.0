@@ -606,6 +606,24 @@ export interface UpdateUserRequest {
   phone?: string;
 }
 
+/**
+ * Service category (usually not changed during update)
+ */
+export type UpdateServiceInfoRequestCategory = typeof UpdateServiceInfoRequestCategory[keyof typeof UpdateServiceInfoRequestCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateServiceInfoRequestCategory = {
+  CLOTHING: 'CLOTHING',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
+  FUR: 'FUR',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+} as const;
+
 export type UpdateServiceInfoRequestAllowedProcessingTimesItem = typeof UpdateServiceInfoRequestAllowedProcessingTimesItem[keyof typeof UpdateServiceInfoRequestAllowedProcessingTimesItem];
 
 
@@ -622,11 +640,20 @@ export const UpdateServiceInfoRequestAllowedProcessingTimesItem = {
 
 export interface UpdateServiceInfoRequest {
   /**
+   * Service code (usually not changed during update)
+   * @minLength 2
+   * @maxLength 50
+   * @pattern ^[A-Z_]+$
+   */
+  code?: string;
+  /**
    * Service name (Ukrainian)
    * @minLength 2
    * @maxLength 100
    */
   name?: string;
+  /** Service category (usually not changed during update) */
+  category?: UpdateServiceInfoRequestCategory;
   /**
    * @minLength 0
    * @maxLength 500
@@ -677,13 +704,40 @@ export interface UpdateServiceItemInfoRequest {
   popularityScore?: number;
 }
 
+/**
+ * Item category (usually not changed during update)
+ */
+export type UpdateItemInfoRequestCategory = typeof UpdateItemInfoRequestCategory[keyof typeof UpdateItemInfoRequestCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateItemInfoRequestCategory = {
+  CLOTHING: 'CLOTHING',
+  FOOTWEAR: 'FOOTWEAR',
+  ACCESSORIES: 'ACCESSORIES',
+  HOME_TEXTILES: 'HOME_TEXTILES',
+  LEATHER_GOODS: 'LEATHER_GOODS',
+  FUR: 'FUR',
+  WEDDING: 'WEDDING',
+  SPECIAL: 'SPECIAL',
+} as const;
+
 export interface UpdateItemInfoRequest {
   /**
-   * Service name (Ukrainian)
+   * Item code (usually not changed during update)
+   * @minLength 2
+   * @maxLength 50
+   * @pattern ^[A-Z_]+$
+   */
+  code?: string;
+  /**
+   * Item name (Ukrainian)
    * @minLength 2
    * @maxLength 100
    */
   name?: string;
+  /** Item category (usually not changed during update) */
+  category?: UpdateItemInfoRequestCategory;
   /**
    * @minLength 2
    * @maxLength 100

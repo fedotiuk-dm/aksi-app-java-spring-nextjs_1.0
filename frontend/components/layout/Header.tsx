@@ -11,6 +11,7 @@ import {
   Settings as SettingsIcon,
   Person as PersonIcon,
   Logout as LogoutIcon,
+  Inventory as CatalogIcon,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -48,6 +49,7 @@ const navigationItems = [
   { name: 'Головна', path: '/', icon: <HomeIcon /> },
   { name: 'Клієнти', path: '/clients', icon: <PeopleIcon /> },
   { name: 'Замовлення', path: '/orders', icon: <ReceiptIcon /> },
+  { name: 'Каталог', path: '/catalog', icon: <CatalogIcon /> },
   { name: 'Створити замовлення', path: '/order-wizard', icon: <LaundryIcon /> },
   { name: 'Прайс-лист', path: '/price-list', icon: <PriceIcon /> },
   { name: 'Налаштування', path: '/settings', icon: <SettingsIcon /> },
@@ -128,7 +130,7 @@ export default function Header() {
                     @{user.username}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {user.roles?.[0] && ROLE_DISPLAY_NAMES[user.roles[0]]}
+                    {user.roles?.[0] && ROLE_DISPLAY_NAMES[user.roles[0] as keyof typeof ROLE_DISPLAY_NAMES]}
                   </Typography>
                 </Box>
               )}

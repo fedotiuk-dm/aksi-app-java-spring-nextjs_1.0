@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * @fileoverview Form hooks for item management
  */

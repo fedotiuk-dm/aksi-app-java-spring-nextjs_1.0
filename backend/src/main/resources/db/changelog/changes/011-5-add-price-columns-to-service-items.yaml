@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-5-1
+      author: aksi
+      comment: Add price_black and price_color columns to service_items table
+      changes:
+        - addColumn:
+            tableName: service_items
+            columns:
+              - column:
+                  name: price_black
+                  type: decimal(10,2)
+                  
+  - changeSet:
+      id: 011-5-2
+      author: aksi
+      comment: Add price_color column to service_items table
+      changes:
+        - addColumn:
+            tableName: service_items
+            columns:
+              - column:
+                  name: price_color
+                  type: decimal(10,2)

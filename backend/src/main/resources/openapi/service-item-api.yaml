@@ -943,11 +943,20 @@ components:
       type: object
       minProperties: 1
       properties:
+        code:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[A-Z_]+$'
+          description: Service code (usually not changed during update)
         name:
           type: string
           minLength: 2
           maxLength: 100
           description: Service name (Ukrainian)
+        category:
+          $ref: '#/components/schemas/ServiceCategoryType'
+          description: Service category (usually not changed during update)
         description:
           type: string
           nullable: true
@@ -1029,11 +1038,20 @@ components:
       type: object
       minProperties: 1
       properties:
+        code:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[A-Z_]+$'
+          description: Item code (usually not changed during update)
         name:
           type: string
           minLength: 2
           maxLength: 100
-          description: Service name (Ukrainian)
+          description: Item name (Ukrainian)
+        category:
+          $ref: '#/components/schemas/ItemCategory'
+          description: Item category (usually not changed during update)
         pluralName:
           type: string
           minLength: 2

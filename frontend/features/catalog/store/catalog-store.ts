@@ -4,22 +4,19 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { 
-  ServiceInfo, 
-  ItemInfo, 
-  ServiceItemInfo
-} from '@/shared/api/generated/serviceItem';
+
 import { 
   type ServiceCategory,
   type ItemCategory,
-  type ProcessingTime,
+  type PriceListCategory,
   type CatalogModalType,
   CATALOG_DEFAULTS
-} from '@/features/catalog';
+} from '../constants/catalog.constants';
 
 interface CatalogFilters {
   serviceCategory?: ServiceCategory;
   itemCategory?: ItemCategory;
+  priceListCategory?: PriceListCategory;
   searchQuery?: string;
   activeOnly?: boolean;
 }

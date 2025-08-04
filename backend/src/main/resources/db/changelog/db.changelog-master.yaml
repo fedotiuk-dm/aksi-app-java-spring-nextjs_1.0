@@ -37,7 +37,11 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/010-create-services-from-price-list.yaml
   - include:
+      file: db/changelog/changes/010-7-ensure-items-columns.yaml
+  - include:
       file: db/changelog/changes/011-create-items-from-price-list.yaml
+  - include:
+      file: db/changelog/changes/011-5-add-price-columns-to-service-items.yaml
   - include:
       file: db/changelog/changes/012-create-service-items-from-price-list.yaml
   - include:

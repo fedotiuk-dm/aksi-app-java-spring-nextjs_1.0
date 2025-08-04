@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * @fileoverview Form hooks for service management
  */
@@ -103,3 +105,16 @@ export const useUpdateServiceForm = (service?: ServiceInfo) => {
     isLoading: updateMutation.isPending,
   };
 };
+
+/**
+ * Unified hook for service form - automatically chooses between create/update
+ * Uses function overloads to provide proper typing
+ */
+export function useServiceForm(): ReturnType<typeof useCreateServiceForm>;
+export function useServiceForm(service: ServiceInfo): ReturnType<typeof useUpdateServiceForm>;
+export function useServiceForm(service?: ServiceInfo) {
+  const createForm = useCreateServiceForm();
+  const updateForm = useUpdateServiceForm(service);
+  
+  return service ? updateForm : createForm;
+}

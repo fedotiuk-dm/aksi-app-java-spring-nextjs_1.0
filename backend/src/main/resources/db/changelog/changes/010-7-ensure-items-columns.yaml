@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010-7-1
+      author: aksi
+      comment: Ensure catalog_number column exists before data migration
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+          columnExists:
+            tableName: items
+            columnName: catalog_number
+      changes:
+        - addColumn:
+            tableName: items
+            columns:
+              - column:
+                  name: catalog_number
+                  type: int
+                  
+  - changeSet:
+      id: 010-7-2
+      author: aksi
+      comment: Ensure unit_of_measure column exists before data migration
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+          columnExists:
+            tableName: items
+            columnName: unit_of_measure
+      changes:
+        - addColumn:
+            tableName: items
+            columns:
+              - column:
+                  name: unit_of_measure
+                  type: varchar(20)

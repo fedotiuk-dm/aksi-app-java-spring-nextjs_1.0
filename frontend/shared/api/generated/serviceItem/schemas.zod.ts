@@ -322,6 +322,11 @@ export const updateServiceParams = zod.object({
   "serviceId": zod.uuid().describe('Service ID')
 })
 
+export const updateServiceBodyCodeMin = 2;
+
+export const updateServiceBodyCodeMax = 50;
+
+export const updateServiceBodyCodeRegExp = new RegExp('^[A-Z_]+$');
 export const updateServiceBodyNameMin = 2;
 
 export const updateServiceBodyNameMax = 100;
@@ -332,7 +337,9 @@ export const updateServiceBodyColorRegExp = new RegExp('^#[0-9A-Fa-f]{6}$');
 
 
 export const updateServiceBody = zod.object({
+  "code": zod.string().min(updateServiceBodyCodeMin).max(updateServiceBodyCodeMax).regex(updateServiceBodyCodeRegExp).optional().describe('Service code (usually not changed during update)'),
   "name": zod.string().min(updateServiceBodyNameMin).max(updateServiceBodyNameMax).optional().describe('Service name (Ukrainian)'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).optional().describe('Service category (usually not changed during update)'),
   "description": zod.string().min(updateServiceBodyDescriptionMin).max(updateServiceBodyDescriptionMax).optional(),
   "icon": zod.string().optional(),
   "color": zod.string().regex(updateServiceBodyColorRegExp).optional(),
@@ -604,6 +611,11 @@ export const updateItemParams = zod.object({
   "itemId": zod.uuid().describe('Item ID')
 })
 
+export const updateItemBodyCodeMin = 2;
+
+export const updateItemBodyCodeMax = 50;
+
+export const updateItemBodyCodeRegExp = new RegExp('^[A-Z_]+$');
 export const updateItemBodyNameMin = 2;
 
 export const updateItemBodyNameMax = 100;
@@ -616,7 +628,9 @@ export const updateItemBodyDescriptionMax = 500;
 
 
 export const updateItemBody = zod.object({
-  "name": zod.string().min(updateItemBodyNameMin).max(updateItemBodyNameMax).optional().describe('Service name (Ukrainian)'),
+  "code": zod.string().min(updateItemBodyCodeMin).max(updateItemBodyCodeMax).regex(updateItemBodyCodeRegExp).optional().describe('Item code (usually not changed during update)'),
+  "name": zod.string().min(updateItemBodyNameMin).max(updateItemBodyNameMax).optional().describe('Item name (Ukrainian)'),
+  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']).optional().describe('Item category (usually not changed during update)'),
   "pluralName": zod.string().min(updateItemBodyPluralNameMin).max(updateItemBodyPluralNameMax).optional(),
   "description": zod.string().min(updateItemBodyDescriptionMin).max(updateItemBodyDescriptionMax).optional(),
   "icon": zod.string().optional(),
