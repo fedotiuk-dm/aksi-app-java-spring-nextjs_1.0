@@ -1,4 +1,4 @@
-package com.aksi.controller;
+package com.aksi.controller.admin;
 
 import java.util.Map;
 

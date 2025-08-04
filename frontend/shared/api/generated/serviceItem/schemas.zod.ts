@@ -144,7 +144,7 @@ export const listServiceItemsResponse = zod.object({
   "name": zod.string().describe('Item name'),
   "pluralName": zod.string().optional().describe('Plural form'),
   "description": zod.string().optional().describe('Item description (Ukrainian)'),
-  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
   "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
@@ -211,7 +211,7 @@ export const listItemsQueryLimitMax = 100;
 
 export const listItemsQueryParams = zod.object({
   "active": zod.boolean().default(listItemsQueryActiveDefault).describe('Filter by active status'),
-  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']).optional().describe('Filter by category'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).optional().describe('Filter by category'),
   "search": zod.string().optional().describe('Search by name'),
   "offset": zod.number().min(listItemsQueryOffsetMin).optional().describe('Number of items to skip'),
   "limit": zod.number().min(1).max(listItemsQueryLimitMax).default(listItemsQueryLimitDefault).describe('Number of items to return')
@@ -236,7 +236,7 @@ export const listItemsResponse = zod.object({
   "name": zod.string().describe('Item name'),
   "pluralName": zod.string().optional().describe('Plural form'),
   "description": zod.string().optional().describe('Item description (Ukrainian)'),
-  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
   "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
@@ -278,7 +278,7 @@ export const createItemBody = zod.object({
   "name": zod.string().min(createItemBodyNameMin).max(createItemBodyNameMax).describe('Item name (Ukrainian)'),
   "pluralName": zod.string().min(createItemBodyPluralNameMin).max(createItemBodyPluralNameMax).optional().describe('Plural form (Ukrainian)'),
   "description": zod.string().min(createItemBodyDescriptionMin).max(createItemBodyDescriptionMax).optional().describe('Item description (Ukrainian)'),
-  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "icon": zod.string().optional().describe('Icon identifier'),
   "sortOrder": zod.number().optional().describe('Display sort order'),
   "attributes": zod.array(zod.string()).optional(),
@@ -431,7 +431,7 @@ export const getServiceItemByIdResponse = zod.object({
   "name": zod.string().describe('Item name'),
   "pluralName": zod.string().optional().describe('Plural form'),
   "description": zod.string().optional().describe('Item description (Ukrainian)'),
-  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
   "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
@@ -535,7 +535,7 @@ export const updateServiceItemResponse = zod.object({
   "name": zod.string().describe('Item name'),
   "pluralName": zod.string().optional().describe('Plural form'),
   "description": zod.string().optional().describe('Item description (Ukrainian)'),
-  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
   "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
@@ -588,7 +588,7 @@ export const getItemByIdResponse = zod.object({
   "name": zod.string().describe('Item name'),
   "pluralName": zod.string().optional().describe('Plural form'),
   "description": zod.string().optional().describe('Item description (Ukrainian)'),
-  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
   "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
@@ -630,7 +630,7 @@ export const updateItemBodyDescriptionMax = 500;
 export const updateItemBody = zod.object({
   "code": zod.string().min(updateItemBodyCodeMin).max(updateItemBodyCodeMax).regex(updateItemBodyCodeRegExp).optional().describe('Item code (usually not changed during update)'),
   "name": zod.string().min(updateItemBodyNameMin).max(updateItemBodyNameMax).optional().describe('Item name (Ukrainian)'),
-  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']).optional().describe('Item category (usually not changed during update)'),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).optional().describe('Item category (usually not changed during update)'),
   "pluralName": zod.string().min(updateItemBodyPluralNameMin).max(updateItemBodyPluralNameMax).optional(),
   "description": zod.string().min(updateItemBodyDescriptionMin).max(updateItemBodyDescriptionMax).optional(),
   "icon": zod.string().optional(),
@@ -657,7 +657,7 @@ export const updateItemResponse = zod.object({
   "name": zod.string().describe('Item name'),
   "pluralName": zod.string().optional().describe('Plural form'),
   "description": zod.string().optional().describe('Item description (Ukrainian)'),
-  "category": zod.enum(['CLOTHING', 'FOOTWEAR', 'ACCESSORIES', 'HOME_TEXTILES', 'LEATHER_GOODS', 'FUR', 'WEDDING', 'SPECIAL']),
+  "category": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "catalogNumber": zod.number().optional().describe('Catalog number from price list'),
   "serviceCategoryCode": zod.string().optional().describe('Service category code from price list'),
   "unitOfMeasure": zod.string().optional().describe('Unit of measure'),
@@ -683,7 +683,7 @@ export const listPriceListItemsQueryLimitMax = 100;
 
 
 export const listPriceListItemsQueryParams = zod.object({
-  "categoryCode": zod.string().optional().describe('Filter by category code'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).optional().describe('Filter by category code'),
   "active": zod.boolean().default(listPriceListItemsQueryActiveDefault).describe('Filter by active status'),
   "offset": zod.number().min(listPriceListItemsQueryOffsetMin).optional().describe('Number of items to skip'),
   "limit": zod.number().min(1).max(listPriceListItemsQueryLimitMax).default(listPriceListItemsQueryLimitDefault).describe('Number of items to return')

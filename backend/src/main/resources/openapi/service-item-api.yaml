@@ -473,16 +473,7 @@ paths:
           description: Filter by category code
           required: false
           schema:
-            type: string
-            enum:
-              - CLOTHING
-              - LAUNDRY
-              - IRONING
-              - LEATHER
-              - PADDING
-              - FUR
-              - DYEING
-              - ADDITIONAL_SERVICES
+            $ref: '#/components/schemas/ServiceCategoryType'
         - name: active
           in: query
           description: Filter by active status
@@ -611,23 +602,23 @@ components:
       type: string
       enum:
         - CLOTHING
-        - FOOTWEAR
-        - ACCESSORIES
-        - HOME_TEXTILES
-        - LEATHER_GOODS
+        - LAUNDRY
+        - IRONING
+        - LEATHER
+        - PADDING
         - FUR
-        - WEDDING
-        - SPECIAL
+        - DYEING
+        - ADDITIONAL_SERVICES
       description: |
-        Item categories:
-        * `CLOTHING` - Clothing items
-        * `FOOTWEAR` - Footwear items
-        * `ACCESSORIES` - Accessories
-        * `HOME_TEXTILES` - Home textiles (curtains, bedding)
-        * `LEATHER_GOODS` - Leather goods
+        Item categories from price list:
+        * `CLOTHING` - Clothing and textile items
+        * `LAUNDRY` - Washing services
+        * `IRONING` - Ironing services
+        * `LEATHER` - Leather items
+        * `PADDING` - Padded items
         * `FUR` - Fur items
-        * `WEDDING` - Wedding items
-        * `SPECIAL` - Special items
+        * `DYEING` - Dyeing services
+        * `ADDITIONAL_SERVICES` - Additional services
     
     UnitOfMeasure:
       type: string
@@ -1166,16 +1157,7 @@ components:
           format: uuid
           description: Price list item ID
         categoryCode:
-          type: string
-          enum:
-            - CLOTHING
-            - LAUNDRY
-            - IRONING
-            - LEATHER
-            - PADDING
-            - FUR
-            - DYEING
-            - ADDITIONAL_SERVICES
+          $ref: '#/components/schemas/ServiceCategoryType'
           description: Service category code
         catalogNumber:
           type: integer
@@ -1184,12 +1166,7 @@ components:
           type: string
           description: Item name
         unitOfMeasure:
-          type: string
-          enum:
-            - PIECE
-            - KILOGRAM
-            - PAIR
-            - SQUARE_METER
+          $ref: '#/components/schemas/UnitOfMeasure'
           description: Unit of measure
         basePrice:
           type: integer

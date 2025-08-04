@@ -33,16 +33,14 @@ public class PriceListController implements PriceListApi {
 
   @Override
   public ResponseEntity<PriceListItemsResponse> listPriceListItems(
-      @Nullable String categoryCode, Boolean active, Integer offset, Integer limit) {
+      @Nullable ServiceCategoryType categoryCode, Boolean active, Integer offset, Integer limit) {
     log.debug(
         "Listing price list items with categoryCode: {}, active: {}, offset: {}, limit: {}",
         categoryCode,
         active,
         offset,
         limit);
-    ServiceCategoryType categoryType =
-        categoryCode != null ? ServiceCategoryType.valueOf(categoryCode) : null;
     return ResponseEntity.ok(
-        priceListService.listPriceListItems(categoryType, active, offset, limit));
+        priceListService.listPriceListItems(categoryCode, active, offset, limit));
   }
 }

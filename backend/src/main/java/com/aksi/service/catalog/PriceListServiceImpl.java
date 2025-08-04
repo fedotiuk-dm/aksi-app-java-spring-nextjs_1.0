@@ -84,7 +84,10 @@ public class PriceListServiceImpl implements PriceListService {
         listPriceListItems(
             categoryCode,
             active,
-            PageRequest.of(pageNumber, pageSize, Sort.by("sortOrder").ascending()));
+            PageRequest.of(
+                pageNumber,
+                pageSize,
+                Sort.by("categoryCode").ascending().and(Sort.by("catalogNumber").ascending())));
 
     PriceListItemsResponse response = new PriceListItemsResponse();
     response.setPriceListItems(page.getContent());

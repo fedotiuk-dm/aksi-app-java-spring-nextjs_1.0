@@ -320,13 +320,13 @@ export type ItemInfoCategory = typeof ItemInfoCategory[keyof typeof ItemInfoCate
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ItemInfoCategory = {
   CLOTHING: 'CLOTHING',
-  FOOTWEAR: 'FOOTWEAR',
-  ACCESSORIES: 'ACCESSORIES',
-  HOME_TEXTILES: 'HOME_TEXTILES',
-  LEATHER_GOODS: 'LEATHER_GOODS',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
   FUR: 'FUR',
-  WEDDING: 'WEDDING',
-  SPECIAL: 'SPECIAL',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
 } as const;
 
 export interface ItemInfo {
@@ -487,13 +487,13 @@ export type CreateItemInfoRequestCategory = typeof CreateItemInfoRequestCategory
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateItemInfoRequestCategory = {
   CLOTHING: 'CLOTHING',
-  FOOTWEAR: 'FOOTWEAR',
-  ACCESSORIES: 'ACCESSORIES',
-  HOME_TEXTILES: 'HOME_TEXTILES',
-  LEATHER_GOODS: 'LEATHER_GOODS',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
   FUR: 'FUR',
-  WEDDING: 'WEDDING',
-  SPECIAL: 'SPECIAL',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
 } as const;
 
 export interface CreateItemInfoRequest {
@@ -713,13 +713,13 @@ export type UpdateItemInfoRequestCategory = typeof UpdateItemInfoRequestCategory
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateItemInfoRequestCategory = {
   CLOTHING: 'CLOTHING',
-  FOOTWEAR: 'FOOTWEAR',
-  ACCESSORIES: 'ACCESSORIES',
-  HOME_TEXTILES: 'HOME_TEXTILES',
-  LEATHER_GOODS: 'LEATHER_GOODS',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
   FUR: 'FUR',
-  WEDDING: 'WEDDING',
-  SPECIAL: 'SPECIAL',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
 } as const;
 
 export interface UpdateItemInfoRequest {
@@ -1024,13 +1024,13 @@ export type ListItemsCategory = typeof ListItemsCategory[keyof typeof ListItemsC
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ListItemsCategory = {
   CLOTHING: 'CLOTHING',
-  FOOTWEAR: 'FOOTWEAR',
-  ACCESSORIES: 'ACCESSORIES',
-  HOME_TEXTILES: 'HOME_TEXTILES',
-  LEATHER_GOODS: 'LEATHER_GOODS',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
   FUR: 'FUR',
-  WEDDING: 'WEDDING',
-  SPECIAL: 'SPECIAL',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
 } as const;
 
 export type GetServiceItemByIdParams = {
@@ -1044,7 +1044,7 @@ export type ListPriceListItemsParams = {
 /**
  * Filter by category code
  */
-categoryCode?: string;
+categoryCode?: ListPriceListItemsCategoryCode;
 /**
  * Filter by active status
  */
@@ -1061,4 +1061,19 @@ offset?: number;
  */
 limit?: number;
 };
+
+export type ListPriceListItemsCategoryCode = typeof ListPriceListItemsCategoryCode[keyof typeof ListPriceListItemsCategoryCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ListPriceListItemsCategoryCode = {
+  CLOTHING: 'CLOTHING',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
+  FUR: 'FUR',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+} as const;
 

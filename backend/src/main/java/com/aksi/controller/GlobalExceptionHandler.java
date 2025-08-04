@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.catalina.connector.ClientAbortException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.aksi.exception.ConflictException;
@@ -83,6 +85,39 @@ public class GlobalExceptionHandler {
     return createErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed", errors);
   }
 
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<Map<String, Object>> handleMethodArgumentTypeMismatch(
+      MethodArgumentTypeMismatchException e) {
+    log.warn("Method argument type mismatch: {}", e.getMessage());
+
+    String message = e.getMessage();
+    if (message.contains("No enum constant")) {
+      String parameterName = e.getName();
+      Object invalidValue = e.getValue();
+      
+      // Extract valid enum values from the cause if it's an enum type
+      String validValues = "";
+      if (e.getRequiredType() != null && e.getRequiredType().isEnum()) {
+        Object[] enumConstants = e.getRequiredType().getEnumConstants();
+        if (enumConstants != null) {
+          validValues = " Valid values are: " + 
+            java.util.Arrays.stream(enumConstants)
+              .map(Object::toString)
+              .collect(Collectors.joining(", "));
+        }
+      }
+      
+      message = String.format(
+        "Invalid value '%s' for parameter '%s'.%s", 
+        invalidValue, 
+        parameterName, 
+        validValues
+      );
+    }
+
+    return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
+  }
+
   @ExceptionHandler(NoResourceFoundException.class)
   public ResponseEntity<?> handleNoResourceFound(NoResourceFoundException ex) {
     // Simply return 404 for missing static resources without logging
@@ -115,10 +150,38 @@ public class GlobalExceptionHandler {
     return createErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message, null);
   }
 
+  @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+  public ResponseEntity<Map<String, Object>> handleInvalidDataAccess(
+      InvalidDataAccessApiUsageException e) {
+    log.warn("Invalid data access: {}", e.getMessage());
+
+    // Extract meaningful error message for enum mismatches
+    String message = e.getMessage();
+    if (message != null && message.contains("No enum constant")) {
+      // Extract enum type and value from error message
+      String enumDetails = message.substring(message.indexOf("No enum constant"));
+      message =
+          "Invalid enum value. "
+              + enumDetails
+              + ". Please check valid values in API documentation.";
+    }
+
+    return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
+  }
+
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException e) {
     log.warn("Illegal argument: {}", e.getMessage());
-    return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+
+    // Enhanced error message for enum-related errors
+    String message = e.getMessage();
+    if (message != null && message.contains("No enum constant")) {
+      // Extract the problematic value if possible
+      message =
+          "Invalid enum value. " + message + ". Please check valid values in API documentation.";
+    }
+
+    return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
   }
 
   @ExceptionHandler(Exception.class)
