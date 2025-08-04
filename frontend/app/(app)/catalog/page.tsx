@@ -1,5 +1,5 @@
-import { Catalog } from '@/features/catalog';
+import { PriceList } from '@/features/catalog';
 
-export default function CatalogPage() {
-  return <Catalog />;
+export default function PriceListPage() {
+  return <PriceList />;
 }
