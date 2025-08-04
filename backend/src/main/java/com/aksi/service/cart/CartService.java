@@ -9,14 +9,11 @@ import com.aksi.api.cart.dto.CartPricingInfo;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.api.cart.dto.UpdateCartModifiersRequest;
 
-/**
- * Service interface for managing shopping carts
- */
+/** Service interface for managing shopping carts */
 public interface CartService {
 
   /**
-   * Get current cart for customer
-   * Creates new cart if none exists or existing cart is expired
+   * Get current cart for customer Creates new cart if none exists or existing cart is expired
    *
    * @param customerId Customer ID
    * @return Current cart info

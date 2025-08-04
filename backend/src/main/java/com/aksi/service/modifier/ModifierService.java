@@ -2,9 +2,7 @@ package com.aksi.service.modifier;
 
 import com.aksi.domain.cart.CartItemModifier;
 
-/**
- * Service for managing item modifiers
- */
+/** Service for managing item modifiers */
 public interface ModifierService {
 
   /**

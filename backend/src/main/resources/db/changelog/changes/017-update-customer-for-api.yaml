@@ -1,0 +1,143 @@
+databaseChangeLog:
+  - changeSet:
+      id: 017-1
+      author: aksi
+      comment: Add new columns to customers table for API
+      changes:
+        - addColumn:
+            tableName: customers
+            columns:
+              - column:
+                  name: address
+                  type: text
+              - column:
+                  name: info_source
+                  type: varchar(50)
+              - column:
+                  name: info_source_other
+                  type: varchar(255)
+
+  - changeSet:
+      id: 017-2
+      author: aksi
+      comment: Drop old customer related tables
+      changes:
+        - dropTable:
+            tableName: customer_addresses
+            cascadeConstraints: true
+        - dropTable:
+            tableName: customer_phones
+            cascadeConstraints: true
+        - dropTable:
+            tableName: customer_preferences
+            cascadeConstraints: true
+
+  - changeSet:
+      id: 017-3
+      author: aksi
+      comment: Create customer contact preferences table
+      changes:
+        - createTable:
+            tableName: customer_contact_preferences
+            columns:
+              - column:
+                  name: customer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: preference
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 017-4
+      author: aksi
+      comment: Add foreign key and index for contact preferences
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: customer_contact_preferences
+            baseColumnNames: customer_id
+            referencedTableName: customers
+            referencedColumnNames: id
+            constraintName: fk_customer_contact_preferences_customer
+            onDelete: CASCADE
+        - createIndex:
+            tableName: customer_contact_preferences
+            indexName: idx_customer_contact_preferences_customer
+            columns:
+              - column:
+                  name: customer_id
+
+  - changeSet:
+      id: 017-5
+      author: aksi
+      comment: Drop unnecessary columns from customers
+      changes:
+        - dropColumn:
+            tableName: customers
+            columnName: birth_date
+        - dropColumn:
+            tableName: customers
+            columnName: discount_percentage
+        - dropColumn:
+            tableName: customers
+            columnName: loyalty_points
+        - dropColumn:
+            tableName: customers
+            columnName: blacklisted
+        - dropColumn:
+            tableName: customers
+            columnName: blacklist_reason
+
+  - changeSet:
+      id: 017-6
+      author: aksi
+      comment: Insert test customer with contact preferences
+      changes:
+        - insert:
+            tableName: customers
+            columns:
+              - column:
+                  name: id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: first_name
+                  value: "Test"
+              - column:
+                  name: last_name
+                  value: "Customer"
+              - column:
+                  name: phone_primary
+                  value: "+380501234567"
+              - column:
+                  name: email
+                  value: "test@example.com"
+              - column:
+                  name: address
+                  value: "Test Address, Kyiv"
+              - column:
+                  name: info_source
+                  value: "GOOGLE"
+              - column:
+                  name: active
+                  valueBoolean: "true"
+        - insert:
+            tableName: customer_contact_preferences
+            columns:
+              - column:
+                  name: customer_id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: preference
+                  value: "PHONE"
+        - insert:
+            tableName: customer_contact_preferences
+            columns:
+              - column:
+                  name: customer_id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: preference
+                  value: "SMS"

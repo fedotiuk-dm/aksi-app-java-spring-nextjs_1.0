@@ -13,14 +13,13 @@ import com.aksi.api.cart.dto.CartItemInfo;
 import com.aksi.api.cart.dto.CartPricingInfo;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.api.cart.dto.UpdateCartModifiersRequest;
+import com.aksi.security.SecurityUtils;
 import com.aksi.service.cart.CartService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * REST controller for shopping cart operations
- */
+/** REST controller for shopping cart operations */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class CartController implements CartApi {
   public ResponseEntity<CartInfo> getCart() {
     // TODO: Get customer ID from security context
     UUID customerId = getCurrentCustomerId();
-    
+
     CartInfo cart = cartService.getOrCreateCart(customerId);
     return ResponseEntity.ok(cart);
   }
@@ -40,7 +39,7 @@ public class CartController implements CartApi {
   @Override
   public ResponseEntity<Void> clearCart() {
     UUID customerId = getCurrentCustomerId();
-    
+
     cartService.clearCart(customerId);
     return ResponseEntity.noContent().build();
   }
@@ -48,7 +47,7 @@ public class CartController implements CartApi {
   @Override
   public ResponseEntity<CartItemInfo> addCartItem(AddCartItemRequest addCartItemRequest) {
     UUID customerId = getCurrentCustomerId();
-    
+
     CartItemInfo cartItem = cartService.addItemToCart(customerId, addCartItemRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(cartItem);
   }
@@ -57,7 +56,7 @@ public class CartController implements CartApi {
   public ResponseEntity<CartItemInfo> updateCartItem(
       UUID itemId, UpdateCartItemRequest updateCartItemRequest) {
     UUID customerId = getCurrentCustomerId();
-    
+
     CartItemInfo cartItem = cartService.updateCartItem(customerId, itemId, updateCartItemRequest);
     return ResponseEntity.ok(cartItem);
   }
@@ -65,7 +64,7 @@ public class CartController implements CartApi {
   @Override
   public ResponseEntity<Void> removeCartItem(UUID itemId) {
     UUID customerId = getCurrentCustomerId();
-    
+
     cartService.removeItemFromCart(customerId, itemId);
     return ResponseEntity.noContent().build();
   }
@@ -74,7 +73,7 @@ public class CartController implements CartApi {
   public ResponseEntity<CartInfo> updateCartModifiers(
       UpdateCartModifiersRequest updateCartModifiersRequest) {
     UUID customerId = getCurrentCustomerId();
-    
+
     CartInfo cart = cartService.updateCartModifiers(customerId, updateCartModifiersRequest);
     return ResponseEntity.ok(cart);
   }
@@ -82,15 +81,18 @@ public class CartController implements CartApi {
   @Override
   public ResponseEntity<CartPricingInfo> calculateCart() {
     UUID customerId = getCurrentCustomerId();
-    
+
     CartPricingInfo pricing = cartService.calculateCart(customerId);
     return ResponseEntity.ok(pricing);
   }
 
   private UUID getCurrentCustomerId() {
-    // TODO: Implement proper authentication and get customer ID from security context
-    // For now, return a dummy customer ID for testing
-    log.warn("Using dummy customer ID - implement proper authentication!");
-    return UUID.fromString("00000000-0000-0000-0000-000000000001");
+    try {
+      return SecurityUtils.getCurrentCustomerId();
+    } catch (Exception e) {
+      // Fallback for development/testing
+      log.warn("Cannot get customer ID from security context, using test ID: {}", e.getMessage());
+      return UUID.fromString("00000000-0000-0000-0000-000000000001");
+    }
   }
 }

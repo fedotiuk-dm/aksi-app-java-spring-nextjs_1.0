@@ -3,7 +3,7 @@ package com.aksi.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-/** Exception thrown when user is not authorized. */
+/** Exception thrown when user is not authorized */
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 public class UnauthorizedException extends RuntimeException {
 

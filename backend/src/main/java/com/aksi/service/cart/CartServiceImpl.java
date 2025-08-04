@@ -26,22 +26,20 @@ import com.aksi.repository.cart.CartItemRepository;
 import com.aksi.repository.cart.CartRepository;
 import com.aksi.repository.catalog.PriceListItemRepository;
 import com.aksi.repository.customer.CustomerRepository;
-import com.aksi.service.pricing.CartPricingService;
 import com.aksi.service.modifier.ModifierService;
+import com.aksi.service.pricing.CartPricingService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Implementation of CartService
- */
+/** Implementation of CartService */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
   private static final int CART_TTL_HOURS = 24;
-  
+
   private final CartRepository cartRepository;
   private final CartItemRepository cartItemRepository;
   private final CustomerRepository customerRepository;
@@ -54,12 +52,16 @@ public class CartServiceImpl implements CartService {
   @Override
   @Transactional
   public CartInfo getOrCreateCart(UUID customerId) {
-    Customer customer = customerRepository.findById(customerId)
-        .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + customerId));
+    Customer customer =
+        customerRepository
+            .findById(customerId)
+            .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + customerId));
 
-    Cart cart = cartRepository.findActiveByCustomerId(customerId, Instant.now())
-        .filter(c -> !c.isExpired()) // Additional check using isExpired()
-        .orElseGet(() -> createNewCart(customer));
+    Cart cart =
+        cartRepository
+            .findActiveByCustomerId(customerId, Instant.now())
+            .filter(c -> !c.isExpired()) // Additional check using isExpired()
+            .orElseGet(() -> createNewCart(customer));
 
     // Extend TTL on access to keep cart alive
     if (!cart.isExpired()) {
@@ -69,7 +71,7 @@ public class CartServiceImpl implements CartService {
 
     CartInfo cartInfo = cartMapper.toCartInfo(cart);
     cartInfo.setPricing(cartPricingService.calculateCartPricing(cart));
-    
+
     return cartInfo;
   }
 
@@ -85,18 +87,24 @@ public class CartServiceImpl implements CartService {
   @Transactional
   public CartItemInfo addItemToCart(UUID customerId, AddCartItemRequest request) {
     Cart cart = getActiveCart(customerId);
-    
+
     // Extend cart TTL when adding items
     cart.extendTtl(Instant.now().plus(CART_TTL_HOURS, ChronoUnit.HOURS));
-    
-    PriceListItem priceListItem = priceListItemRepository.findById(request.getPriceListItemId())
-        .orElseThrow(() -> new ResourceNotFoundException("Price list item not found: " + request.getPriceListItemId()));
+
+    PriceListItem priceListItem =
+        priceListItemRepository
+            .findById(request.getPriceListItemId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        "Price list item not found: " + request.getPriceListItemId()));
 
     // Check if item already exists in cart
-    CartItem existingItem = cart.getItems().stream()
-        .filter(item -> item.getPriceListItem().getId().equals(request.getPriceListItemId()))
-        .findFirst()
-        .orElse(null);
+    CartItem existingItem =
+        cart.getItems().stream()
+            .filter(item -> item.getPriceListItem().getId().equals(request.getPriceListItemId()))
+            .findFirst()
+            .orElse(null);
 
     if (existingItem != null) {
       // Update quantity of existing item
@@ -106,14 +114,15 @@ public class CartServiceImpl implements CartService {
       CartItem cartItem = new CartItem();
       cartItem.setPriceListItem(priceListItem);
       cartItem.setQuantity(request.getQuantity());
-      
+
       // Add characteristics if provided
       if (request.getCharacteristics() != null) {
-        CartItemCharacteristics characteristics = cartItemMapper.toEntity(request.getCharacteristics());
+        CartItemCharacteristics characteristics =
+            cartItemMapper.toEntity(request.getCharacteristics());
         characteristics.setCartItem(cartItem);
         cartItem.setCharacteristics(characteristics);
       }
-      
+
       // Add modifiers if provided
       if (request.getModifierCodes() != null) {
         for (String modifierCode : request.getModifierCodes()) {
@@ -125,20 +134,24 @@ public class CartServiceImpl implements CartService {
           }
         }
       }
-      
+
       cart.getItems().add(cartItem);
       cartItem.setCart(cart);
     }
 
     cartRepository.save(cart);
-    
-    CartItem savedItem = existingItem != null ? existingItem : 
-        cart.getItems().get(cart.getItems().size() - 1);
-    
+
+    CartItem savedItem =
+        existingItem != null ? existingItem : cart.getItems().get(cart.getItems().size() - 1);
+
     CartItemInfo itemInfo = cartMapper.toCartItemInfo(savedItem);
-    itemInfo.setPricing(cartPricingService.calculateItemPricing(
-        savedItem, cart.getUrgencyType(), cart.getDiscountType(), cart.getDiscountPercentage()));
-    
+    itemInfo.setPricing(
+        cartPricingService.calculateItemPricing(
+            savedItem,
+            cart.getUrgencyType(),
+            cart.getDiscountType(),
+            cart.getDiscountPercentage()));
+
     return itemInfo;
   }
 
@@ -146,11 +159,12 @@ public class CartServiceImpl implements CartService {
   @Transactional
   public CartItemInfo updateCartItem(UUID customerId, UUID itemId, UpdateCartItemRequest request) {
     Cart cart = getActiveCart(customerId);
-    
-    CartItem cartItem = cart.getItems().stream()
-        .filter(item -> item.getId().equals(itemId))
-        .findFirst()
-        .orElseThrow(() -> new ResourceNotFoundException("Cart item not found: " + itemId));
+
+    CartItem cartItem =
+        cart.getItems().stream()
+            .filter(item -> item.getId().equals(itemId))
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("Cart item not found: " + itemId));
 
     // Update fields if provided
     if (request.getQuantity() != null) {
@@ -158,7 +172,8 @@ public class CartServiceImpl implements CartService {
     }
 
     if (request.getCharacteristics() != null) {
-      CartItemCharacteristics characteristics = cartItemMapper.toEntity(request.getCharacteristics());
+      CartItemCharacteristics characteristics =
+          cartItemMapper.toEntity(request.getCharacteristics());
       characteristics.setCartItem(cartItem);
       cartItem.setCharacteristics(characteristics);
     }
@@ -177,11 +192,12 @@ public class CartServiceImpl implements CartService {
     }
 
     cartRepository.save(cart);
-    
+
     CartItemInfo itemInfo = cartMapper.toCartItemInfo(cartItem);
-    itemInfo.setPricing(cartPricingService.calculateItemPricing(
-        cartItem, cart.getUrgencyType(), cart.getDiscountType(), cart.getDiscountPercentage()));
-    
+    itemInfo.setPricing(
+        cartPricingService.calculateItemPricing(
+            cartItem, cart.getUrgencyType(), cart.getDiscountType(), cart.getDiscountPercentage()));
+
     return itemInfo;
   }
 
@@ -189,11 +205,12 @@ public class CartServiceImpl implements CartService {
   @Transactional
   public void removeItemFromCart(UUID customerId, UUID itemId) {
     Cart cart = getActiveCart(customerId);
-    
-    CartItem cartItem = cart.getItems().stream()
-        .filter(item -> item.getId().equals(itemId))
-        .findFirst()
-        .orElseThrow(() -> new ResourceNotFoundException("Cart item not found: " + itemId));
+
+    CartItem cartItem =
+        cart.getItems().stream()
+            .filter(item -> item.getId().equals(itemId))
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("Cart item not found: " + itemId));
 
     cart.getItems().remove(cartItem);
     cartItem.setCart(null);
@@ -218,14 +235,14 @@ public class CartServiceImpl implements CartService {
     }
 
     if (request.getExpectedCompletionDate() != null) {
-      cart.setExpectedCompletionDate(request.getExpectedCompletionDate().atStartOfDay().toInstant(java.time.ZoneOffset.UTC));
+      cart.setExpectedCompletionDate(request.getExpectedCompletionDate());
     }
 
     cartRepository.save(cart);
-    
+
     CartInfo cartInfo = cartMapper.toCartInfo(cart);
     cartInfo.setPricing(cartPricingService.calculateCartPricing(cart));
-    
+
     return cartInfo;
   }
 
@@ -245,9 +262,12 @@ public class CartServiceImpl implements CartService {
   }
 
   private Cart getActiveCart(UUID customerId) {
-    return cartRepository.findActiveByCustomerId(customerId, Instant.now())
+    return cartRepository
+        .findActiveByCustomerId(customerId, Instant.now())
         .filter(cart -> !cart.isExpired()) // Double-check cart is not expired
-        .orElseThrow(() -> new ResourceNotFoundException("No active cart found for customer: " + customerId));
+        .orElseThrow(
+            () ->
+                new ResourceNotFoundException("No active cart found for customer: " + customerId));
   }
 
   private Cart createNewCart(Customer customer) {
@@ -256,5 +276,4 @@ public class CartServiceImpl implements CartService {
     cart.setExpiresAt(Instant.now().plus(CART_TTL_HOURS, ChronoUnit.HOURS));
     return cartRepository.save(cart);
   }
-
 }

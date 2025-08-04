@@ -17,10 +17,10 @@ import com.aksi.domain.cart.CartItemCharacteristics;
 import com.aksi.domain.cart.CartItemModifier;
 import com.aksi.domain.catalog.PriceListItem;
 
-/**
- * MapStruct mapper for Cart entities and DTOs
- */
-@Mapper(componentModel = "spring", uses = {PriceListItemMapper.class})
+/** MapStruct mapper for Cart entities and DTOs */
+@Mapper(
+    componentModel = "spring",
+    uses = {PriceListItemMapper.class})
 public interface CartMapper {
 
   // Cart to CartInfo

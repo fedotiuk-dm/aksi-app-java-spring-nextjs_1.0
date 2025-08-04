@@ -52,6 +52,8 @@ databaseChangeLog:
       file: db/changelog/changes/015-cleanup-old-catalog-tables.yaml
   - include:
       file: db/changelog/changes/016-create-cart-tables.yaml
+  - include:
+      file: db/changelog/changes/017-update-customer-for-api.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:

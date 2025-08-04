@@ -1,7 +1,7 @@
 openapi: 3.1.1
 info:
   title: Customer API
-  description: Customer management API for dry cleaning system
+  description: Customer management API for dry cleaning service
   version: 1.0.0
   contact:
     name: API Support
@@ -14,102 +14,62 @@ servers:
     description: Production
 
 tags:
-  - name: customers
+  - name: customer
     description: Customer management operations
 
 paths:
-  /api/customers/search:
-    get:
-      operationId: searchCustomers
-      summary: Search customers
-      description: Search customers by phone or name
-      tags:
-        - customers
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: query
-          in: query
-          description: Search query (phone number or name)
-          required: true
-          schema:
-            type: string
-            minLength: 3
-            example: '0501234567'
-        - name: searchType
-          in: query
-          description: Type of search
-          required: false
-          schema:
-            type: string
-            enum: [phone, name, any]
-            default: any
-        - name: limit
-          in: query
-          description: Maximum results to return
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 50
-            default: 10
-      responses:
-        '200':
-          description: Search results
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SearchCustomersResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-
   /api/customers:
     get:
       operationId: listCustomers
       summary: List customers
-      description: Get paginated list of customers
+      description: Search and list customers with optional filters
       tags:
-        - customers
+        - customer
       security:
         - cookieAuth: []
       parameters:
-        - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/SortOrder'
         - name: search
           in: query
-          description: Search by name or phone
-          required: false
+          description: Search by name, phone or email
           schema:
             type: string
-        - name: branchId
+            minLength: 2
+        - name: phone
           in: query
-          description: Filter by branch where customer has orders
-          required: false
+          description: Filter by phone number
           schema:
             type: string
-            format: uuid
+        - name: offset
+          in: query
+          description: Number of items to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Number of items to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
         '200':
           description: List of customers
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomerListResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                $ref: '#/components/schemas/CustomersResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
     
     post:
       operationId: createCustomer
-      summary: Create new customer
-      description: Register a new customer
+      summary: Create customer
+      description: Create a new customer
       tags:
-        - customers
+        - customer
       security:
         - cookieAuth: []
       requestBody:
@@ -120,17 +80,15 @@ paths:
               $ref: '#/components/schemas/CreateCustomerRequest'
       responses:
         '201':
-          description: Customer created
+          description: Customer created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomerDetail'
+                $ref: '#/components/schemas/CustomerInfo'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '409':
-          $ref: '#/components/responses/Conflict'
 
   /api/customers/{customerId}:
     parameters:
@@ -143,39 +101,31 @@ paths:
           format: uuid
     
     get:
-      operationId: getCustomerById
-      summary: Get customer details
-      description: Get detailed customer information
+      operationId: getCustomer
+      summary: Get customer
+      description: Get customer details by ID
       tags:
-        - customers
+        - customer
       security:
         - cookieAuth: []
-      parameters:
-        - name: includeOrders
-          in: query
-          description: Include recent orders in response
-          required: false
-          schema:
-            type: boolean
-            default: false
       responses:
         '200':
           description: Customer details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomerDetail'
+                $ref: '#/components/schemas/CustomerInfo'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     
-    patch:
+    put:
       operationId: updateCustomer
       summary: Update customer
       description: Update customer information
       tags:
-        - customers
+        - customer
       security:
         - cookieAuth: []
       requestBody:
@@ -186,120 +136,11 @@ paths:
               $ref: '#/components/schemas/UpdateCustomerRequest'
       responses:
         '200':
-          description: Customer updated
+          description: Customer updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomerDetail'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-
-  /api/customers/{customerId}/orders:
-    parameters:
-      - name: customerId
-        in: path
-        required: true
-        description: Customer ID
-        schema:
-          type: string
-          format: uuid
-    
-    get:
-      operationId: getCustomerOrders
-      summary: Get customer orders
-      description: Get paginated list of customer orders
-      tags:
-        - customers
-      security:
-        - cookieAuth: []
-      parameters:
-        - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageSize'
-        - name: status
-          in: query
-          description: Filter by order status
-          required: false
-          schema:
-            type: string
-            enum: [NEW, IN_PROGRESS, READY, COMPLETED, CANCELLED]
-        - name: branchId
-          in: query
-          description: Filter by branch
-          required: false
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Customer orders
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomerOrdersResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  /api/customers/{customerId}/preferences:
-    parameters:
-      - name: customerId
-        in: path
-        required: true
-        description: Customer ID
-        schema:
-          type: string
-          format: uuid
-    
-    get:
-      operationId: getCustomerPreferences
-      summary: Get customer preferences
-      description: Get customer service preferences and notes
-      tags:
-        - customers
-      security:
-        - cookieAuth: []
-      responses:
-        '200':
-          description: Customer preferences
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomerPreferences'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    
-    put:
-      operationId: updateCustomerPreferences
-      summary: Update customer preferences
-      description: Update customer service preferences
-      tags:
-        - customers
-      security:
-        - cookieAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CustomerPreferences'
-      responses:
-        '200':
-          description: Preferences updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomerPreferences'
+                $ref: '#/components/schemas/CustomerInfo'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -308,44 +149,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 
 components:
-  parameters:
-    PageNumber:
-      name: page
-      in: query
-      description: Page number (0-based)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-    
-    PageSize:
-      name: size
-      in: query
-      description: Page size
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-    
-    SortBy:
-      name: sortBy
-      in: query
-      description: Field to sort by
-      schema:
-        type: string
-        default: createdAt
-        example: lastName
-    
-    SortOrder:
-      name: sortOrder
-      in: query
-      description: Sort order
-      schema:
-        type: string
-        enum: [asc, desc]
-        default: desc
-
   responses:
     BadRequest:
       description: Bad request
@@ -361,80 +164,23 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     
-    Forbidden:
-      description: Forbidden access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
     NotFound:
       description: Resource not found
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-    
-    Conflict:
-      description: Resource conflict
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
 
   schemas:
-    CustomerSearchResult:
+    CustomerInfo:
       type: object
       required:
         - id
         - firstName
         - lastName
-        - phone
-        - matchType
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Customer ID
-        firstName:
-          type: string
-          description: First name
-          example: Petro
-        lastName:
-          type: string
-          description: Last name
-          example: Ivanov
-        phone:
-          type: string
-          description: Primary phone number
-          example: '+380501234567'
-        email:
-          type: ['string', 'null']
-          format: email
-          description: Email address
-        lastOrderDate:
-          type: ['string', 'null']
-          format: date-time
-          description: Date of last order
-        orderCount:
-          type: integer
-          description: Total number of orders
-          example: 5
-        matchType:
-          type: string
-          enum: [phone, name]
-          description: How the customer matched the search
-    
-    CustomerSummary:
-      type: object
-      required:
-        - id
-        - firstName
-        - lastName
-        - phone
+        - phonePrimary
+        - active
         - createdAt
-        - orderCount
-        - totalSpent
       properties:
         id:
           type: string
@@ -443,301 +189,98 @@ components:
         firstName:
           type: string
           description: First name
-          example: Petro
         lastName:
           type: string
           description: Last name
-          example: Ivanov
-        phone:
+        phonePrimary:
           type: string
           description: Primary phone number
-          example: '+380501234567'
         email:
-          type: ['string', 'null']
+          type: string
           format: email
           description: Email address
+        address:
+          type: string
+          description: Address
+        contactPreferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactPreference'
+          description: Preferred contact methods
+        infoSource:
+          $ref: '#/components/schemas/InfoSource'
+          description: How customer learned about the service
+        infoSourceOther:
+          type: string
+          description: Other info source details
+        notes:
+          type: string
+          description: Internal notes about customer
+        discountCardNumber:
+          type: string
+          description: Discount card number
+        active:
+          type: boolean
+          description: Whether customer is active
         createdAt:
           type: string
           format: date-time
           description: Registration date
-        lastOrderDate:
-          type: ['string', 'null']
-          format: date-time
-          description: Date of last order
-        orderCount:
-          type: integer
-          description: Total number of orders
-          example: 5
-        totalSpent:
-          type: integer
-          minimum: 0
-          maximum: 999999999
-          description: Total amount spent in kopiykas (1 kopiykas = 0.01 UAH)
-          example: 250050
-        preferredBranchId:
-          type: ['string', 'null']
-          format: uuid
-          description: Preferred branch ID
-        loyaltyTier:
-          type: ['string', 'null']
-          enum: [BRONZE, SILVER, GOLD, PLATINUM]
-          description: Loyalty program tier
-    
-    CustomerDetail:
-      allOf:
-        - $ref: '#/components/schemas/CustomerSummary'
-        - type: object
-          required:
-            - addresses
-            - phones
-            - updatedAt
-          properties:
-            middleName:
-              type: ['string', 'null']
-              description: Middle name
-              example: Stepanovich
-            dateOfBirth:
-              type: ['string', 'null']
-              format: date
-              description: Date of birth
-              example: '1985-03-15'
-            addresses:
-              type: array
-              items:
-                $ref: '#/components/schemas/CustomerAddress'
-            phones:
-              type: array
-              items:
-                $ref: '#/components/schemas/CustomerPhone'
-              minItems: 1
-            notes:
-              type: ['string', 'null']
-              description: Internal notes about customer
-            preferences:
-              $ref: '#/components/schemas/CustomerPreferences'
-            tags:
-              type: array
-              items:
-                type: string
-              description: Customer tags for categorization
-              example: ['VIP', 'Corporate']
-            updatedAt:
-              type: string
-              format: date-time
-              description: Last update timestamp
-            recentOrders:
-              type: array
-              items:
-                $ref: '#/components/schemas/OrderSummary'
-              description: Recent orders (only if requested)
-    
-    CustomerAddress:
-      type: object
-      required:
-        - id
-        - type
-        - address
-        - isPrimary
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Address ID
-        type:
-          type: string
-          enum: [HOME, WORK, OTHER]
-          description: Address type
-        address:
-          type: string
-          description: Full address
-          example: 'вул. Хрещатик, 22, кв. 10'
-        city:
-          type: string
-          description: City
-          example: Київ
-        postalCode:
-          type: ['string', 'null']
-          description: Postal code
-          example: '01001'
-        isPrimary:
-          type: boolean
-          description: Is primary address
-        notes:
-          type: ['string', 'null']
-          description: Delivery notes
-    
-    CustomerPhone:
-      type: object
-      required:
-        - id
-        - type
-        - number
-        - isPrimary
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Phone ID
-        type:
-          type: string
-          enum: [MOBILE, HOME, WORK]
-          description: Phone type
-        number:
-          type: string
-          pattern: '^\+?[0-9]{10,15}$'
-          description: Phone number
-          example: '+380501234567'
-        isPrimary:
-          type: boolean
-          description: Is primary phone
-        canReceiveSMS:
-          type: boolean
-          default: true
-          description: Can receive SMS notifications
-    
-    CustomerPreferences:
-      type: object
-      properties:
-        communicationChannel:
-          type: string
-          enum: [SMS, PHONE, EMAIL, NONE]
-          default: SMS
-          description: Preferred communication channel
-        language:
-          type: string
-          enum: [uk, ru, en]
-          default: uk
-          description: Preferred language
-        marketingOptIn:
-          type: boolean
-          default: true
-          description: Opted in for marketing communications
-        smsNotifications:
-          type: boolean
-          default: true
-          description: Receive SMS notifications
-        emailNotifications:
-          type: boolean
-          default: true
-          description: Receive email notifications
-        specialInstructions:
-          type: ['string', 'null']
-          description: Special service instructions
-        allergies:
-          type: array
-          items:
-            type: string
-          description: Known allergies or sensitivities
-    
-    OrderSummary:
-      type: object
-      required:
-        - id
-        - orderNumber
-        - status
-        - createdAt
-        - totalAmount
-        - itemCount
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Order ID
-        orderNumber:
-          type: string
-          description: Order number
-          example: 'ORD-2024-001234'
-        status:
-          type: string
-          enum: [NEW, IN_PROGRESS, READY, COMPLETED, CANCELLED]
-          description: Order status
-        createdAt:
-          type: string
-          format: date-time
-          description: Order creation date
-        completedAt:
-          type: ['string', 'null']
-          format: date-time
-          description: Order completion date
-        totalAmount:
-          type: integer
-          minimum: 0
-          maximum: 999999999
-          description: Total order amount in kopiykas (1 kopiykas = 0.01 UAH)
-          example: 45000
-        itemCount:
-          type: integer
-          description: Number of items in order
-          example: 3
-        branchId:
-          type: string
-          format: uuid
-          description: Branch ID
-        branchName:
-          type: string
-          description: Branch name
-    
+
     CreateCustomerRequest:
       type: object
       required:
         - firstName
         - lastName
-        - phone
+        - phonePrimary
       properties:
         firstName:
           type: string
           minLength: 1
           maxLength: 100
           description: First name
-          example: Petro
         lastName:
           type: string
           minLength: 1
           maxLength: 100
           description: Last name
-          example: Ivanov
-        middleName:
-          type: ['string', 'null']
-          maxLength: 100
-          description: Middle name
-        phone:
+        phonePrimary:
           type: string
-          pattern: '^\+?[0-9]{10,15}$'
-          description: Phone number
-          example: '+380501234567'
-        additionalPhones:
-          type: array
-          items:
-            $ref: '#/components/schemas/AdditionalPhone'
+          pattern: '^\+?[0-9\s\-\(\)]+$'
+          minLength: 10
+          maxLength: 20
+          description: Primary phone number
         email:
-          type: ['string', 'null']
+          type: string
           format: email
           description: Email address
-        dateOfBirth:
-          type: ['string', 'null']
-          format: date
-          description: Date of birth
         address:
-          type: ['string', 'null']
-          description: Primary address
-        city:
-          type: ['string', 'null']
-          description: City
-        postalCode:
-          type: ['string', 'null']
-          description: Postal code
-        notes:
-          type: ['string', 'null']
-          description: Initial notes
-        tags:
+          type: string
+          maxLength: 500
+          description: Address
+        contactPreferences:
           type: array
           items:
-            type: string
-          description: Initial tags
-    
+            $ref: '#/components/schemas/ContactPreference'
+          description: Preferred contact methods
+        infoSource:
+          $ref: '#/components/schemas/InfoSource'
+          description: How customer learned about the service
+        infoSourceOther:
+          type: string
+          maxLength: 200
+          description: Other info source details (required if infoSource is OTHER)
+        notes:
+          type: string
+          maxLength: 1000
+          description: Internal notes about customer
+        discountCardNumber:
+          type: string
+          maxLength: 20
+          description: Discount card number
+
     UpdateCustomerRequest:
       type: object
-      minProperties: 1
       properties:
         firstName:
           type: string
@@ -749,172 +292,101 @@ components:
           minLength: 1
           maxLength: 100
           description: Last name
-        middleName:
-          type: ['string', 'null']
-          maxLength: 100
-          description: Middle name
+        phonePrimary:
+          type: string
+          pattern: '^\+?[0-9\s\-\(\)]+$'
+          minLength: 10
+          maxLength: 20
+          description: Primary phone number
         email:
-          type: ['string', 'null']
+          type: string
           format: email
           description: Email address
-        dateOfBirth:
-          type: ['string', 'null']
-          format: date
-          description: Date of birth
+        address:
+          type: string
+          maxLength: 500
+          description: Address
+        contactPreferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactPreference'
+          description: Preferred contact methods
+        infoSource:
+          $ref: '#/components/schemas/InfoSource'
+          description: How customer learned about the service
+        infoSourceOther:
+          type: string
+          maxLength: 200
+          description: Other info source details
         notes:
-          type: ['string', 'null']
-          description: Internal notes
-        tags:
+          type: string
+          maxLength: 1000
+          description: Internal notes about customer
+        discountCardNumber:
+          type: string
+          maxLength: 20
+          description: Discount card number
+        active:
+          type: boolean
+          description: Whether customer is active
+
+    CustomersResponse:
+      type: object
+      required:
+        - customers
+        - total
+        - offset
+        - limit
+      properties:
+        customers:
           type: array
           items:
-            type: string
-          description: Customer tags
-    
-    # Response schemas
-    SearchCustomersResponse:
-      type: object
-      required:
-        - results
-      properties:
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/CustomerSearchResult'
-    
-    CustomerListResponse:
-      allOf:
-        - $ref: '#/components/schemas/PaginatedResponse'
-        - type: object
-          properties:
-            data:
-              type: array
-              items:
-                $ref: '#/components/schemas/CustomerSummary'
-    
-    CustomerOrdersResponse:
-      allOf:
-        - $ref: '#/components/schemas/PaginatedResponse'
-        - type: object
-          properties:
-            data:
-              type: array
-              items:
-                $ref: '#/components/schemas/OrderSummary'
-    
-    AdditionalPhone:
-      type: object
-      required:
-        - type
-        - number
-      properties:
-        type:
-          type: string
-          enum: [MOBILE, HOME, WORK]
-        number:
-          type: string
-          pattern: '^\+?[0-9]{10,15}$'
-    
-    # Error schemas
-    ErrorDetail:
-      type: object
-      required:
-        - field
-        - message
-      properties:
-        field:
-          type: string
-          description: Field with error
-          example: phone
-        message:
-          type: string
-          description: Field error message
-          example: Invalid phone format
-    
+            $ref: '#/components/schemas/CustomerInfo'
+        total:
+          type: integer
+          description: Total number of customers
+        offset:
+          type: integer
+          description: Number of items skipped
+        limit:
+          type: integer
+          description: Number of items returned
+
+    ContactPreference:
+      type: string
+      enum: [PHONE, SMS, VIBER]
+      description: Contact preference type
+
+    InfoSource:
+      type: string
+      enum: [INSTAGRAM, GOOGLE, RECOMMENDATION, OTHER]
+      description: How customer learned about the service
+
     ErrorResponse:
       type: object
       required:
-        - timestamp
-        - status
         - error
         - message
-        - path
+        - timestamp
       properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message
         timestamp:
           type: string
           format: date-time
           description: Error timestamp
-        status:
-          type: integer
-          description: HTTP status code
-          example: 400
-        error:
-          type: string
-          description: Error name
-          example: Bad Request
-        message:
-          type: string
-          description: Error message
-          example: Validation failed
-        path:
-          type: string
-          description: Request path
-          example: /api/customers
-        errors:
-          type: ['array', 'null']
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-    
-    # Pagination schema
-    PaginatedResponse:
-      type: object
-      required:
-        - data
-        - totalElements
-        - totalPages
-        - size
-        - number
-        - numberOfElements
-        - first
-        - last
-        - empty
-      properties:
-        data:
-          type: array
-          items: {}
-          description: Page content
-        totalElements:
-          type: integer
-          format: int64
-          description: Total number of elements
-          example: 100
-        totalPages:
-          type: integer
-          description: Total number of pages
-          example: 5
-        size:
-          type: integer
-          description: Page size
-          example: 20
-        number:
-          type: integer
-          description: Current page number (0-based)
-          example: 0
-        numberOfElements:
-          type: integer
-          description: Number of elements in current page
-          example: 20
-        first:
-          type: boolean
-          description: Is first page
-          example: true
-        last:
-          type: boolean
-          description: Is last page
-          example: false
-        empty:
-          type: boolean
-          description: Is page empty
-          example: false
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error details
 
-security:
-  - cookieAuth: []
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session-based authentication using httpOnly cookies

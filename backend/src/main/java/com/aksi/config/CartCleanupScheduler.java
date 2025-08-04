@@ -8,9 +8,7 @@ import com.aksi.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Scheduled task for cleaning up expired carts
- */
+/** Scheduled task for cleaning up expired carts */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -18,9 +16,7 @@ public class CartCleanupScheduler {
 
   private final CartService cartService;
 
-  /**
-   * Clean up expired carts every hour
-   */
+  /** Clean up expired carts every hour */
   @Scheduled(fixedDelay = 3600000) // 1 hour in milliseconds
   public void cleanupExpiredCarts() {
     log.info("Starting expired carts cleanup");

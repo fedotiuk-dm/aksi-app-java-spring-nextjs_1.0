@@ -5,9 +5,7 @@ import com.aksi.api.cart.dto.CartPricingInfo;
 import com.aksi.domain.cart.Cart;
 import com.aksi.domain.cart.CartItem;
 
-/**
- * Service for calculating cart prices
- */
+/** Service for calculating cart prices */
 public interface CartPricingService {
 
   /**
@@ -28,10 +26,7 @@ public interface CartPricingService {
    * @return Cart item pricing info
    */
   CartItemPricingInfo calculateItemPricing(
-      CartItem cartItem, 
-      String urgencyType, 
-      String discountType, 
-      Integer discountPercentage);
+      CartItem cartItem, String urgencyType, String discountType, Integer discountPercentage);
 
   /**
    * Check if discount is applicable for given category

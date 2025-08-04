@@ -1,19 +1,21 @@
 package com.aksi.domain.customer;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.aksi.api.customer.dto.ContactPreference;
+import com.aksi.api.customer.dto.InfoSource;
 import com.aksi.domain.common.BaseEntity;
 
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +36,7 @@ import lombok.ToString;
     })
 @Getter
 @Setter
-@ToString(exclude = {"phones", "addresses", "preferences"})
+@ToString
 public class Customer extends BaseEntity {
 
   @Column(name = "first_name", nullable = false, length = 100)
@@ -49,44 +51,30 @@ public class Customer extends BaseEntity {
   @Column(name = "email")
   private String email;
 
-  @Column(name = "birth_date")
-  private LocalDate birthDate;
+  @Column(name = "address", columnDefinition = "TEXT")
+  private String address;
 
-  @Column(name = "discount_percentage", precision = 5, scale = 2)
-  private BigDecimal discountPercentage = BigDecimal.ZERO;
+  @ElementCollection(targetClass = ContactPreference.class, fetch = FetchType.EAGER)
+  @CollectionTable(
+      name = "customer_contact_preferences",
+      joinColumns = @JoinColumn(name = "customer_id"))
+  @Column(name = "preference")
+  @Enumerated(EnumType.STRING)
+  private Set<ContactPreference> contactPreferences = new HashSet<>();
 
-  @Column(name = "discount_card_number", unique = true, length = 20)
-  private String discountCardNumber;
+  @Column(name = "info_source")
+  @Enumerated(EnumType.STRING)
+  private InfoSource infoSource;
 
-  @Column(name = "loyalty_points")
-  private Integer loyaltyPoints;
+  @Column(name = "info_source_other")
+  private String infoSourceOther;
 
   @Column(name = "notes", columnDefinition = "TEXT")
   private String notes;
 
+  @Column(name = "discount_card_number", unique = true, length = 20)
+  private String discountCardNumber;
+
   @Column(name = "active", nullable = false)
-  private boolean active;
-
-  @Column(name = "blacklisted", nullable = false)
-  private boolean blacklisted;
-
-  @Column(name = "blacklist_reason")
-  private String blacklistReason;
-
-  @OneToMany(
-      mappedBy = "customer",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
-      fetch = FetchType.LAZY)
-  private Set<CustomerPhone> phones = new HashSet<>();
-
-  @OneToMany(
-      mappedBy = "customer",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
-      fetch = FetchType.LAZY)
-  private Set<CustomerAddress> addresses = new HashSet<>();
-
-  @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-  private CustomerPreferences preferences;
+  private boolean active = true;
 }

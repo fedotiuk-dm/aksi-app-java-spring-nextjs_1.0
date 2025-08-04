@@ -369,7 +369,7 @@ components:
           description: Discount percentage (for OTHER type)
         expectedCompletionDate:
           type: string
-          format: date
+          format: date-time
           description: Expected completion date
 
     CartItemPricingInfo:
@@ -502,7 +502,7 @@ components:
           description: Discount percentage (required for OTHER type)
         expectedCompletionDate:
           type: string
-          format: date
+          format: date-time
           description: Expected completion date
 
     ErrorResponse:

@@ -9,9 +9,7 @@ import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.cart.CartItemCharacteristics;
 
-/**
- * MapStruct mapper for CartItem related conversions
- */
+/** MapStruct mapper for CartItem related conversions */
 @Mapper(componentModel = "spring")
 public interface CartItemMapper {
 

@@ -13,9 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Physical characteristics of a cart item (material, color, wear level, etc.)
- */
+/** Physical characteristics of a cart item (material, color, wear level, etc.) */
 @Entity
 @Table(name = "cart_item_characteristics")
 @Getter

@@ -20,9 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Cart item entity representing a single product in the shopping cart.
- */
+/** Cart item entity representing a single product in the shopping cart. */
 @Entity
 @Table(name = "cart_items")
 @Getter
@@ -42,11 +40,7 @@ public class CartItem extends BaseEntity {
   @Column(name = "quantity", nullable = false)
   private Integer quantity;
 
-  @OneToOne(
-      mappedBy = "cartItem",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true
-  )
+  @OneToOne(mappedBy = "cartItem", cascade = CascadeType.ALL, orphanRemoval = true)
   private CartItemCharacteristics characteristics;
 
   @OneToMany(
@@ -56,19 +50,15 @@ public class CartItem extends BaseEntity {
       fetch = FetchType.LAZY)
   private List<CartItemModifier> modifiers = new ArrayList<>();
 
-  /**
-   * Add modifier to cart item.
-   * Note: Prefer using CartService for business operations.
-   */
+  /** Add modifier to cart item. Note: Prefer using CartService for business operations. */
   public void addModifier(CartItemModifier modifier) {
     modifiers.add(modifier);
     modifier.setCartItem(this);
   }
 
   /**
-   * Remove modifier from cart item.
-   * Reserved for future use when individual modifier removal is needed.
-   * Currently, update operations replace all modifiers.
+   * Remove modifier from cart item. Reserved for future use when individual modifier removal is
+   * needed. Currently, update operations replace all modifiers.
    */
   public void removeModifier(CartItemModifier modifier) {
     modifiers.remove(modifier);

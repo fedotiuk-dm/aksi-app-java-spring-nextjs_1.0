@@ -1,8 +1,6 @@
 package com.aksi.constants;
 
-/**
- * Constants for modifier codes used in the system
- */
+/** Constants for modifier codes used in the system */
 public final class ModifierCodes {
 
   private ModifierCodes() {

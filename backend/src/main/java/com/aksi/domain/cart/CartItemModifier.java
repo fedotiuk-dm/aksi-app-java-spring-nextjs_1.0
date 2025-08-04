@@ -14,15 +14,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Applied modifiers for cart items (additional services, special handling, etc.)
- */
+/** Applied modifiers for cart items (additional services, special handling, etc.) */
 @Entity
 @Table(
     name = "cart_item_modifiers",
-    indexes = {
-      @Index(name = "idx_cart_item_modifier_code", columnList = "cart_item_id, code")
-    })
+    indexes = {@Index(name = "idx_cart_item_modifier_code", columnList = "cart_item_id, code")})
 @Getter
 @Setter
 @NoArgsConstructor

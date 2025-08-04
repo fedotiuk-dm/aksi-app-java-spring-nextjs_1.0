@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Shopping cart entity for temporary order storage and price calculation.
- * Cart has TTL and automatically expires after certain time.
+ * Shopping cart entity for temporary order storage and price calculation. Cart has TTL and
+ * automatically expires after certain time.
  */
 @Entity
 @Table(
