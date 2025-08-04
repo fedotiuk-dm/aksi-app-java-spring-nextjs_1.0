@@ -39,6 +39,16 @@ paths:
           description: Filter by phone number
           schema:
             type: string
+        - name: email
+          in: query
+          description: Filter by email
+          schema:
+            type: string
+        - name: discountCard
+          in: query
+          description: Filter by discount card number
+          schema:
+            type: string
         - name: offset
           in: query
           description: Number of items to skip
@@ -143,6 +153,32 @@ paths:
                 $ref: '#/components/schemas/CustomerInfo'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/customers/{customerId}/exists:
+    parameters:
+      - name: customerId
+        in: path
+        required: true
+        description: Customer ID
+        schema:
+          type: string
+          format: uuid
+    
+    head:
+      operationId: checkCustomerExists
+      summary: Check if customer exists
+      description: Check if customer exists by ID
+      tags:
+        - customer
+      security:
+        - cookieAuth: []
+      responses:
+        '204':
+          description: Customer exists
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':

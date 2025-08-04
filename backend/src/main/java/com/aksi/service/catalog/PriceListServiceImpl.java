@@ -22,6 +22,7 @@ import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.PriceListItemMapper;
 import com.aksi.repository.catalog.PriceListItemRepository;
 import com.aksi.repository.catalog.PriceListItemSpecification;
+import com.aksi.validator.PriceListItemValidationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

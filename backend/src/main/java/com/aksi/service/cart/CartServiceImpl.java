@@ -19,13 +19,13 @@ import com.aksi.domain.cart.CartItemCharacteristics;
 import com.aksi.domain.cart.CartItemModifier;
 import com.aksi.domain.catalog.PriceListItem;
 import com.aksi.domain.customer.Customer;
-import com.aksi.exception.ResourceNotFoundException;
+import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.CartItemMapper;
 import com.aksi.mapper.CartMapper;
-import com.aksi.repository.cart.CartItemRepository;
 import com.aksi.repository.cart.CartRepository;
 import com.aksi.repository.catalog.PriceListItemRepository;
 import com.aksi.repository.customer.CustomerRepository;
+import com.aksi.service.customer.CustomerService;
 import com.aksi.service.modifier.ModifierService;
 import com.aksi.service.pricing.CartPricingService;
 
@@ -41,8 +41,8 @@ public class CartServiceImpl implements CartService {
   private static final int CART_TTL_HOURS = 24;
 
   private final CartRepository cartRepository;
-  private final CartItemRepository cartItemRepository;
   private final CustomerRepository customerRepository;
+  private final CustomerService customerService;
   private final PriceListItemRepository priceListItemRepository;
   private final CartMapper cartMapper;
   private final CartItemMapper cartItemMapper;
@@ -52,16 +52,24 @@ public class CartServiceImpl implements CartService {
   @Override
   @Transactional
   public CartInfo getOrCreateCart(UUID customerId) {
-    Customer customer =
-        customerRepository
-            .findById(customerId)
-            .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + customerId));
+    // Check if customer exists
+    if (!customerService.existsById(customerId)) {
+      throw new NotFoundException("Customer not found: " + customerId);
+    }
 
     Cart cart =
         cartRepository
             .findActiveByCustomerId(customerId, Instant.now())
             .filter(c -> !c.isExpired()) // Additional check using isExpired()
-            .orElseGet(() -> createNewCart(customer));
+            .orElseGet(
+                () -> {
+                  Customer customer =
+                      customerRepository
+                          .findById(customerId)
+                          .orElseThrow(
+                              () -> new NotFoundException("Customer not found: " + customerId));
+                  return createNewCart(customer);
+                });
 
     // Extend TTL on access to keep cart alive
     if (!cart.isExpired()) {
@@ -96,7 +104,7 @@ public class CartServiceImpl implements CartService {
             .findById(request.getPriceListItemId())
             .orElseThrow(
                 () ->
-                    new ResourceNotFoundException(
+                    new NotFoundException(
                         "Price list item not found: " + request.getPriceListItemId()));
 
     // Check if item already exists in cart
@@ -164,7 +172,7 @@ public class CartServiceImpl implements CartService {
         cart.getItems().stream()
             .filter(item -> item.getId().equals(itemId))
             .findFirst()
-            .orElseThrow(() -> new ResourceNotFoundException("Cart item not found: " + itemId));
+            .orElseThrow(() -> new NotFoundException("Cart item not found: " + itemId));
 
     // Update fields if provided
     if (request.getQuantity() != null) {
@@ -210,7 +218,7 @@ public class CartServiceImpl implements CartService {
         cart.getItems().stream()
             .filter(item -> item.getId().equals(itemId))
             .findFirst()
-            .orElseThrow(() -> new ResourceNotFoundException("Cart item not found: " + itemId));
+            .orElseThrow(() -> new NotFoundException("Cart item not found: " + itemId));
 
     cart.getItems().remove(cartItem);
     cartItem.setCart(null);
@@ -266,8 +274,7 @@ public class CartServiceImpl implements CartService {
         .findActiveByCustomerId(customerId, Instant.now())
         .filter(cart -> !cart.isExpired()) // Double-check cart is not expired
         .orElseThrow(
-            () ->
-                new ResourceNotFoundException("No active cart found for customer: " + customerId));
+            () -> new NotFoundException("No active cart found for customer: " + customerId));
   }
 
   private Cart createNewCart(Customer customer) {

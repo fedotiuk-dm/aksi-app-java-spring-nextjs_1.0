@@ -42,10 +42,13 @@ public interface CustomerService {
    *
    * @param search Search query (optional)
    * @param phone Phone filter (optional)
+   * @param email Email filter (optional)
+   * @param discountCard Discount card filter (optional)
    * @param pageable Pagination parameters
    * @return Page of customers
    */
-  Page<CustomerInfo> searchCustomers(String search, String phone, Pageable pageable);
+  Page<CustomerInfo> searchCustomers(
+      String search, String phone, String email, String discountCard, Pageable pageable);
 
   /**
    * Check if customer exists

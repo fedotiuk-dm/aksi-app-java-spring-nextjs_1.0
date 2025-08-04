@@ -1,4 +1,4 @@
-package com.aksi.service.catalog;
+package com.aksi.validator;
 
 import java.util.UUID;
 
@@ -44,7 +44,7 @@ public class PriceListItemValidationService {
     boolean exists =
         priceListItemRepository
             .findByCategoryCodeAndCatalogNumber(categoryCode, catalogNumber)
-            .filter(item -> excludeId == null || !item.getId().equals(excludeId))
+            .filter(item -> !item.getId().equals(excludeId))
             .isPresent();
 
     if (exists) {

@@ -11,9 +11,11 @@ import com.aksi.api.customer.dto.CreateCustomerRequest;
 import com.aksi.api.customer.dto.CustomerInfo;
 import com.aksi.api.customer.dto.UpdateCustomerRequest;
 import com.aksi.domain.customer.Customer;
-import com.aksi.exception.ResourceNotFoundException;
+import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.CustomerMapper;
-import com.aksi.repository.CustomerRepository;
+import com.aksi.repository.customer.CustomerRepository;
+import com.aksi.repository.customer.CustomerSpecification;
+import com.aksi.validator.CustomerValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +29,20 @@ public class CustomerServiceImpl implements CustomerService {
 
   private final CustomerRepository customerRepository;
   private final CustomerMapper customerMapper;
+  private final CustomerDuplicationChecker duplicationChecker;
+  private final CustomerValidator customerValidator;
 
   @Override
   @Transactional
   public CustomerInfo createCustomer(CreateCustomerRequest request) {
     log.debug("Creating new customer: {} {}", request.getFirstName(), request.getLastName());
+
+    // Validate request
+    customerValidator.validateCreateRequest(request);
+
+    // Check for duplicates
+    duplicationChecker.checkForCreate(
+        request.getPhonePrimary(), request.getEmail(), request.getDiscountCardNumber());
 
     Customer customer = customerMapper.toEntity(request);
     customer = customerRepository.save(customer);
@@ -54,6 +65,14 @@ public class CustomerServiceImpl implements CustomerService {
     log.debug("Updating customer: {}", customerId);
 
     Customer customer = findCustomerById(customerId);
+
+    // Validate request
+    customerValidator.validateUpdateRequest(request);
+
+    // Check for duplicates
+    duplicationChecker.checkForUpdate(
+        customer, request.getPhonePrimary(), request.getEmail(), request.getDiscountCardNumber());
+
     customerMapper.updateEntityFromRequest(request, customer);
     customer = customerRepository.save(customer);
 
@@ -62,17 +81,19 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  public Page<CustomerInfo> searchCustomers(String search, String phone, Pageable pageable) {
-    log.debug("Searching customers - search: {}, phone: {}", search, phone);
+  public Page<CustomerInfo> searchCustomers(
+      String search, String phone, String email, String discountCard, Pageable pageable) {
+    log.debug(
+        "Searching customers - search: {}, phone: {}, email: {}, discountCard: {}",
+        search,
+        phone,
+        email,
+        discountCard);
 
-    Page<Customer> customers;
-    if (phone != null && !phone.isEmpty()) {
-      customers = customerRepository.findByPhonePrimaryContaining(phone, pageable);
-    } else {
-      customers = customerRepository.searchCustomers(search, pageable);
-    }
-
-    return customers.map(customerMapper::toCustomerInfo);
+    return customerRepository
+        .findAll(
+            CustomerSpecification.searchCustomers(search, phone, email, discountCard), pageable)
+        .map(customerMapper::toCustomerInfo);
   }
 
   @Override
@@ -83,6 +104,6 @@ public class CustomerServiceImpl implements CustomerService {
   private Customer findCustomerById(UUID customerId) {
     return customerRepository
         .findById(customerId)
-        .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + customerId));
+        .orElseThrow(() -> new NotFoundException("Customer not found: " + customerId));
   }
 }

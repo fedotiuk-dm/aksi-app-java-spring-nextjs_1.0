@@ -50,16 +50,24 @@ public class CustomerController implements CustomerApi {
 
   @Override
   public ResponseEntity<CustomersResponse> listCustomers(
-      String search, String phone, Integer offset, Integer limit) {
+      String search,
+      String phone,
+      String email,
+      String discountCard,
+      Integer offset,
+      Integer limit) {
     log.info(
-        "Listing customers - search: {}, phone: {}, offset: {}, limit: {}",
+        "Listing customers - search: {}, phone: {}, email: {}, discountCard: {}, offset: {}, limit: {}",
         search,
         phone,
+        email,
+        discountCard,
         offset,
         limit);
 
     PageRequest pageRequest = PageRequest.of(offset / limit, limit);
-    Page<CustomerInfo> page = customerService.searchCustomers(search, phone, pageRequest);
+    Page<CustomerInfo> page =
+        customerService.searchCustomers(search, phone, email, discountCard, pageRequest);
 
     CustomersResponse response = new CustomersResponse();
     response.setCustomers(page.getContent());
@@ -68,5 +76,15 @@ public class CustomerController implements CustomerApi {
     response.setLimit(limit);
 
     return ResponseEntity.ok(response);
+  }
+
+  @Override
+  public ResponseEntity<Void> checkCustomerExists(UUID customerId) {
+    log.info("Checking if customer exists: {}", customerId);
+    if (customerService.existsById(customerId)) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 }
