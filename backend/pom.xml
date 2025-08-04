@@ -444,6 +444,33 @@
                         </configuration>
                     </execution>
 
+                    <!-- Branch API -->
+                    <execution>
+                        <id>generate-branch-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/branch-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.branch</apiPackage>
+                            <modelPackage>com.aksi.api.branch.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
                     <!-- Order API -->
                     <execution>
                         <id>generate-order-api</id>
@@ -669,6 +696,10 @@
                             </execution>
                             <execution>
                                 <id>generate-cart-api</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>generate-branch-api</id>
                                 <phase>none</phase>
                             </execution>
                             <execution>

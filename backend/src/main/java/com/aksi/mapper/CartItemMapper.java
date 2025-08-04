@@ -33,6 +33,15 @@ public interface CartItemMapper {
   @Mapping(target = "modifiers", ignore = true)
   void updateEntityFromRequest(UpdateCartItemRequest request, @MappingTarget CartItem entity);
 
+  // Update characteristics separately
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "cartItem", ignore = true)
+  void updateCharacteristicsFromRequest(
+      ItemCharacteristics dto, @MappingTarget CartItemCharacteristics entity);
+
   // Map enum value
   default String mapFillerConditionEnum(ItemCharacteristics.FillerConditionEnum fillerCondition) {
     if (fillerCondition == null) {

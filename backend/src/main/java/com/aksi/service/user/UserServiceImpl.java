@@ -24,6 +24,7 @@ import com.aksi.api.user.dto.UserRole;
 import com.aksi.domain.user.User;
 import com.aksi.mapper.UserMapper;
 import com.aksi.repository.user.UserRepository;
+import com.aksi.repository.user.UserSpecification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -266,9 +267,18 @@ public class UserServiceImpl implements UserService {
         "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
     Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortField));
-    Page<User> userPage = findAll(pageable);
 
-    // TODO: Implement filtering by search, role, branchId, active
+    log.debug(
+        "Searching users - search: {}, role: {}, branchId: {}, active: {}",
+        search,
+        role,
+        branchId,
+        active);
+
+    Page<User> userPage =
+        userRepository.findAll(
+            UserSpecification.searchUsers(search, null, null, role, branchId, active, null),
+            pageable);
 
     return userMapper.toUserListResponse(userPage);
   }

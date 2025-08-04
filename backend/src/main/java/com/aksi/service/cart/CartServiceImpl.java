@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +39,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
 
-  private static final int CART_TTL_HOURS = 24;
+  @Value("${app.cart.ttl-hours:24}")
+  private int cartTtlHours;
 
   private final CartRepository cartRepository;
   private final CustomerRepository customerRepository;
@@ -73,7 +75,7 @@ public class CartServiceImpl implements CartService {
 
     // Extend TTL on access to keep cart alive
     if (!cart.isExpired()) {
-      cart.extendTtl(Instant.now().plus(CART_TTL_HOURS, ChronoUnit.HOURS));
+      cart.extendTtl(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
       cartRepository.save(cart);
     }
 
@@ -97,7 +99,7 @@ public class CartServiceImpl implements CartService {
     Cart cart = getActiveCart(customerId);
 
     // Extend cart TTL when adding items
-    cart.extendTtl(Instant.now().plus(CART_TTL_HOURS, ChronoUnit.HOURS));
+    cart.extendTtl(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
 
     PriceListItem priceListItem =
         priceListItemRepository
@@ -149,8 +151,7 @@ public class CartServiceImpl implements CartService {
 
     cartRepository.save(cart);
 
-    CartItem savedItem =
-        existingItem != null ? existingItem : cart.getItems().get(cart.getItems().size() - 1);
+    CartItem savedItem = existingItem != null ? existingItem : cart.getItems().getLast();
 
     CartItemInfo itemInfo = cartMapper.toCartItemInfo(savedItem);
     itemInfo.setPricing(
@@ -174,18 +175,25 @@ public class CartServiceImpl implements CartService {
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Cart item not found: " + itemId));
 
-    // Update fields if provided
-    if (request.getQuantity() != null) {
-      cartItem.setQuantity(request.getQuantity());
-    }
+    // Use mapper for basic field updates (quantity)
+    cartItemMapper.updateEntityFromRequest(request, cartItem);
 
+    // Handle characteristics separately if provided
     if (request.getCharacteristics() != null) {
-      CartItemCharacteristics characteristics =
-          cartItemMapper.toEntity(request.getCharacteristics());
-      characteristics.setCartItem(cartItem);
-      cartItem.setCharacteristics(characteristics);
+      if (cartItem.getCharacteristics() == null) {
+        // Create new characteristics
+        CartItemCharacteristics characteristics =
+            cartItemMapper.toEntity(request.getCharacteristics());
+        characteristics.setCartItem(cartItem);
+        cartItem.setCharacteristics(characteristics);
+      } else {
+        // Update existing characteristics
+        cartItemMapper.updateCharacteristicsFromRequest(
+            request.getCharacteristics(), cartItem.getCharacteristics());
+      }
     }
 
+    // Handle modifiers separately if provided
     if (request.getModifierCodes() != null) {
       // Clear existing modifiers and add new ones
       cartItem.getModifiers().clear();
@@ -280,7 +288,7 @@ public class CartServiceImpl implements CartService {
   private Cart createNewCart(Customer customer) {
     Cart cart = new Cart();
     cart.setCustomer(customer);
-    cart.setExpiresAt(Instant.now().plus(CART_TTL_HOURS, ChronoUnit.HOURS));
+    cart.setExpiresAt(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
     return cartRepository.save(cart);
   }
 }

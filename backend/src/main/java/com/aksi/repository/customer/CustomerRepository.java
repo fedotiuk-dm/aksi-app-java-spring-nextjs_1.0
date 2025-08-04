@@ -11,5 +11,4 @@ import com.aksi.domain.customer.Customer;
 /** Repository interface for Customer entity. */
 @Repository
 public interface CustomerRepository
-    extends JpaRepository<Customer, UUID>, JpaSpecificationExecutor<Customer> {
-}
+    extends JpaRepository<Customer, UUID>, JpaSpecificationExecutor<Customer> {}

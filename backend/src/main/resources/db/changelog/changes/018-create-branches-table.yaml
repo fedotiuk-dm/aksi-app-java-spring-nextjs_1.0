@@ -1,0 +1,130 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-branches-table
+      author: claude
+      changes:
+        - createTable:
+            tableName: branches
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: working_hours
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValue: "true"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: sort_order
+                  type: INTEGER
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Add indexes for better performance
+        - createIndex:
+            indexName: idx_branch_name
+            tableName: branches
+            columns:
+              - column:
+                  name: name
+        
+        - createIndex:
+            indexName: idx_branch_active
+            tableName: branches
+            columns:
+              - column:
+                  name: active
+        
+        - createIndex:
+            indexName: idx_branch_sort_order
+            tableName: branches
+            columns:
+              - column:
+                  name: sort_order
+
+        # Add unique constraint on branch name (case-insensitive)
+        - sql:
+            sql: CREATE UNIQUE INDEX idx_branch_name_unique ON branches (LOWER(name));
+
+        # Insert default branch
+        - insert:
+            tableName: branches
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: name
+                  value: "Головна філія"
+              - column:
+                  name: address
+                  value: "м. Київ, вул. Центральна, 1"
+              - column:
+                  name: phone
+                  value: "+380501234567"
+              - column:
+                  name: email
+                  value: "main@dryclean.example.com"
+              - column:
+                  name: working_hours
+                  value: "Пн-Пт 8:00-20:00, Сб 9:00-18:00"
+              - column:
+                  name: active
+                  valueBoolean: "true"
+              - column:
+                  name: description
+                  value: "Головна філія хімчистки AKSI"
+              - column:
+                  name: sort_order
+                  valueNumeric: "1"
+
+      rollback:
+        - dropTable:
+            tableName: branches

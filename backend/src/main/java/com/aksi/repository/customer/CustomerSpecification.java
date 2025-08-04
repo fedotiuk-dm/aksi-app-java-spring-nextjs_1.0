@@ -10,9 +10,7 @@ public class CustomerSpecification {
 
   private CustomerSpecification() {}
 
-  /**
-   * Search by text in firstName, lastName, phonePrimary or email
-   */
+  /** Search by text in firstName, lastName, phonePrimary or email */
   public static Specification<Customer> searchByText(String search) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(search)) {
@@ -29,9 +27,7 @@ public class CustomerSpecification {
     };
   }
 
-  /**
-   * Filter by exact phone number
-   */
+  /** Filter by exact phone number */
   public static Specification<Customer> hasPhone(String phone) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(phone)) {
@@ -41,9 +37,7 @@ public class CustomerSpecification {
     };
   }
 
-  /**
-   * Filter by exact email (case-insensitive)
-   */
+  /** Filter by exact email (case-insensitive) */
   public static Specification<Customer> hasEmail(String email) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(email)) {
@@ -53,9 +47,7 @@ public class CustomerSpecification {
     };
   }
 
-  /**
-   * Filter by exact discount card number
-   */
+  /** Filter by exact discount card number */
   public static Specification<Customer> hasDiscountCard(String discountCard) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(discountCard)) {
@@ -65,16 +57,12 @@ public class CustomerSpecification {
     };
   }
 
-  /**
-   * Filter only active customers
-   */
+  /** Filter only active customers */
   public static Specification<Customer> isActive() {
     return (root, query, cb) -> cb.isTrue(root.get("active"));
   }
 
-  /**
-   * Combine all search criteria
-   */
+  /** Combine all search criteria */
   public static Specification<Customer> searchCustomers(
       String search, String phone, String email, String discountCard) {
     return Specification.allOf(

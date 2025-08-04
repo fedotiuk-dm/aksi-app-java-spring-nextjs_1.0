@@ -102,7 +102,9 @@ public class CustomerDuplicationChecker {
     }
 
     customerRepository
-        .findOne(CustomerSpecification.hasDiscountCard(discountCardNumber).and(CustomerSpecification.isActive()))
+        .findOne(
+            CustomerSpecification.hasDiscountCard(discountCardNumber)
+                .and(CustomerSpecification.isActive()))
         .ifPresent(
             existing -> {
               throw new ConflictException(
@@ -123,7 +125,9 @@ public class CustomerDuplicationChecker {
     }
 
     customerRepository
-        .findOne(CustomerSpecification.hasDiscountCard(discountCardNumber).and(CustomerSpecification.isActive()))
+        .findOne(
+            CustomerSpecification.hasDiscountCard(discountCardNumber)
+                .and(CustomerSpecification.isActive()))
         .filter(existing -> !existing.getId().equals(excludeCustomerId))
         .ifPresent(
             existing -> {

@@ -29,7 +29,6 @@ public class CartController implements CartApi {
 
   @Override
   public ResponseEntity<CartInfo> getCart() {
-    // TODO: Get customer ID from security context
     UUID customerId = getCurrentCustomerId();
 
     CartInfo cart = cartService.getOrCreateCart(customerId);
@@ -90,9 +89,10 @@ public class CartController implements CartApi {
     try {
       return SecurityUtils.getCurrentCustomerId();
     } catch (Exception e) {
-      // Fallback for development/testing
-      log.warn("Cannot get customer ID from security context, using test ID: {}", e.getMessage());
-      return UUID.fromString("00000000-0000-0000-0000-000000000001");
+      // In development/testing, we need to provide customer ID from request header or session
+      log.warn("Cannot get customer ID from security context: {}", e.getMessage());
+      throw new IllegalStateException(
+          "Customer authentication required. Please ensure customer is authenticated.");
     }
   }
 }
