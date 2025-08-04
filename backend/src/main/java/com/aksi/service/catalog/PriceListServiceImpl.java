@@ -2,25 +2,26 @@ package com.aksi.service.catalog;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.api.service.dto.ItemInfo;
+import com.aksi.api.service.dto.CreatePriceListItemRequest;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.api.service.dto.PriceListItemsResponse;
 import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.api.service.dto.ServiceItemInfo;
+import com.aksi.api.service.dto.UpdatePriceListItemRequest;
 import com.aksi.domain.catalog.PriceListItem;
 import com.aksi.exception.NotFoundException;
-import com.aksi.mapper.catalog.PriceListItemMapper;
+import com.aksi.mapper.PriceListItemMapper;
 import com.aksi.repository.catalog.PriceListItemRepository;
+import com.aksi.repository.catalog.PriceListItemSpecification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,27 +35,24 @@ public class PriceListServiceImpl implements PriceListService {
 
   private final PriceListItemRepository priceListItemRepository;
   private final PriceListItemMapper priceListItemMapper;
-  private final ItemCatalogService itemCatalogService;
-  private final ServiceItemService serviceItemService;
+  private final PriceListItemValidationService validationService;
+  private final CategoryManagementService categoryManagementService;
 
   private Page<PriceListItemInfo> listPriceListItems(
       ServiceCategoryType categoryCode, Boolean active, Pageable pageable) {
     log.debug("Listing price list items with categoryCode: {}, active: {}", categoryCode, active);
 
-    Page<PriceListItem> page;
+    // Build specification dynamically based on parameters
+    Specification<PriceListItem> spec =
+        PriceListItemSpecification.hasCategory(categoryCode)
+            .and(PriceListItemSpecification.isActive(active));
 
-    if (categoryCode != null && active != null && active) {
-      page = priceListItemRepository.findByCategoryCodeAndActiveTrue(categoryCode, pageable);
-    } else if (active != null && active) {
-      page = priceListItemRepository.findByActiveTrue(pageable);
-    } else if (categoryCode != null) {
-      page = priceListItemRepository.findByCategoryCode(categoryCode, pageable);
-    } else {
-      page = priceListItemRepository.findAll(pageable);
-    }
+    // Execute query with specification
+    Page<PriceListItem> page = priceListItemRepository.findAll(spec, pageable);
 
+    // Map to DTOs
     List<PriceListItemInfo> dtos =
-        page.getContent().stream().map(this::mapToPriceListItemInfo).collect(Collectors.toList());
+        page.getContent().stream().map(this::mapToPriceListItemInfo).toList();
 
     return new PageImpl<>(dtos, pageable, page.getTotalElements());
   }
@@ -77,8 +75,10 @@ public class PriceListServiceImpl implements PriceListService {
   @Transactional(readOnly = true)
   public PriceListItemsResponse listPriceListItems(
       ServiceCategoryType categoryCode, Boolean active, Integer offset, Integer limit) {
-    int pageNumber = (offset != null && limit != null && limit > 0) ? offset / limit : 0;
-    int pageSize = (limit != null && limit > 0) ? limit : 20;
+    // Improve pagination parameter handling
+    int safeOffset = offset != null && offset >= 0 ? offset : 0;
+    int safeLimit = limit != null && limit > 0 ? Math.min(limit, 100) : 20; // Max 100 items
+    int pageNumber = safeOffset / safeLimit;
 
     Page<PriceListItemInfo> page =
         listPriceListItems(
@@ -86,53 +86,27 @@ public class PriceListServiceImpl implements PriceListService {
             active,
             PageRequest.of(
                 pageNumber,
-                pageSize,
+                safeLimit,
                 Sort.by("categoryCode").ascending().and(Sort.by("catalogNumber").ascending())));
 
     PriceListItemsResponse response = new PriceListItemsResponse();
     response.setPriceListItems(page.getContent());
-    response.setTotalCount((int) page.getTotalElements());
+    response.setTotalItems((int) page.getTotalElements());
+    response.setHasMore(page.hasNext());
     return response;
   }
 
   // Admin functionality methods - kept for future use
   // These methods are essential for price management and synchronization
 
-  /**
-   * Synchronize prices from price list to service items Used by admin to update all service item
-   * prices based on current price list
-   */
+  /** Synchronize prices - deprecated method, no longer needed with simplified catalog */
   @Override
   @Transactional
   public int synchronizePrices() {
-    log.info("Synchronizing prices from price list to service items");
-
-    List<PriceListItem> priceListItems =
-        priceListItemRepository.findAllActiveOrderedByCategoryAndNumber();
-    int updatedCount = 0;
-
-    for (PriceListItem priceListItem : priceListItems) {
-      ItemInfo itemInfo =
-          itemCatalogService.getItemByCatalogNumber(priceListItem.getCatalogNumber());
-      if (itemInfo != null) {
-        List<ServiceItemInfo> serviceItems =
-            serviceItemService.getServiceItemsByItem(itemInfo.getId());
-
-        for (ServiceItemInfo serviceItem : serviceItems) {
-          if (serviceItemService.updateServiceItemPrices(
-              serviceItem.getId(),
-              priceListItem.getBasePrice(),
-              priceListItem.getPriceBlack(),
-              priceListItem.getPriceColor())) {
-            updatedCount++;
-            log.debug("Updated prices for service item: {}", serviceItem.getId());
-          }
-        }
-      }
-    }
-
-    log.info("Price synchronization completed. Processed {} price list items", updatedCount);
-    return updatedCount;
+    log.info("Price synchronization is no longer needed with simplified catalog structure");
+    // With the simplified catalog, prices are managed directly in PriceListItem
+    // No synchronization needed
+    return 0;
   }
 
   /** Get distinct active categories for filtering Used in admin UI for category dropdown */
@@ -155,8 +129,7 @@ public class PriceListServiceImpl implements PriceListService {
 
     List<PriceListItem> items = priceListItemRepository.findAllActiveOrderedByCategoryAndNumber();
 
-    List<PriceListItemInfo> dtos =
-        items.stream().map(this::mapToPriceListItemInfo).collect(Collectors.toList());
+    List<PriceListItemInfo> dtos = items.stream().map(this::mapToPriceListItemInfo).toList();
 
     log.info("Exported {} active price list items", dtos.size());
     return dtos;
@@ -193,8 +166,102 @@ public class PriceListServiceImpl implements PriceListService {
     return item != null ? mapToPriceListItemInfo(item) : null;
   }
 
-  // Helper method for mapping
+  @Override
+  @Transactional
+  public PriceListItemInfo createPriceListItem(CreatePriceListItemRequest request) {
+    log.info(
+        "Creating new price list item: {} - {}",
+        request.getCategoryCode(),
+        request.getCatalogNumber());
+
+    // Validate business rules
+    validationService.validateCreate(request);
+    validationService.validatePrices(request.getBasePrice(), request.getExpressPrice());
+
+    // Map to entity using MapStruct
+    PriceListItem item = priceListItemMapper.toEntity(request);
+
+    // Apply business defaults
+    applySortOrderDefault(item);
+
+    // Save and return
+    PriceListItem saved = priceListItemRepository.save(item);
+    log.info("Created price list item with ID: {}", saved.getId());
+
+    return priceListItemMapper.toPriceListItemInfo(saved);
+  }
+
+  @Override
+  @Transactional
+  public PriceListItemInfo updatePriceListItem(
+      UUID priceListItemId, UpdatePriceListItemRequest request) {
+    log.info("Updating price list item: {}", priceListItemId);
+
+    PriceListItem item =
+        priceListItemRepository
+            .findById(priceListItemId)
+            .orElseThrow(
+                () -> new NotFoundException("Price list item not found: " + priceListItemId));
+
+    // Validate prices using improved validation
+    validationService.validateUpdatePrices(request, item);
+
+    // Update entity using MapStruct (only non-null values)
+    priceListItemMapper.updateEntityFromRequest(request, item);
+
+    PriceListItem updated = priceListItemRepository.save(item);
+    log.info("Updated price list item: {}", priceListItemId);
+
+    return priceListItemMapper.toPriceListItemInfo(updated);
+  }
+
+  @Override
+  @Transactional
+  public void deletePriceListItem(UUID priceListItemId) {
+    log.info("Deleting price list item: {}", priceListItemId);
+
+    if (!priceListItemRepository.existsById(priceListItemId)) {
+      throw new NotFoundException("Price list item not found: " + priceListItemId);
+    }
+
+    priceListItemRepository.deleteById(priceListItemId);
+    log.info("Deleted price list item: {}", priceListItemId);
+  }
+
+  // Category management methods
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<CategoryManagementService.CategoryInfo> getAllCategoriesInfo() {
+    return categoryManagementService.getAllCategories();
+  }
+
+  @Override
+  @Transactional
+  public int deactivateCategory(ServiceCategoryType categoryCode) {
+    return categoryManagementService.deactivateCategory(categoryCode);
+  }
+
+  @Override
+  @Transactional
+  public int activateCategory(ServiceCategoryType categoryCode) {
+    return categoryManagementService.activateCategory(categoryCode);
+  }
+
+  // Helper method for mapping - can be removed if not used elsewhere
   private PriceListItemInfo mapToPriceListItemInfo(PriceListItem item) {
     return priceListItemMapper.toPriceListItemInfo(item);
+  }
+
+  /**
+   * Apply business default values to price list item. Sets sortOrder to catalogNumber if it's 0
+   * (default).
+   *
+   * @param item Price list item to apply defaults to
+   */
+  private void applySortOrderDefault(PriceListItem item) {
+    if (item.getSortOrder() != null && item.getSortOrder() == 0) {
+      item.setSortOrder(item.getCatalogNumber());
+    }
   }
 }

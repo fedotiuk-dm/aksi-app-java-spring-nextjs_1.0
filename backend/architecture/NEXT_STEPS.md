@@ -52,10 +52,10 @@
    - Історія замовлень
    - Комунікаційні налаштування
 
-2. **Service Domain** 
-   - Каталог послуг (чистка, прання, прасування)
-   - Каталог предметів та зв'язок з послугами
-   - Базові ціни з прайс-листа (CSV)
+2. **Price List Domain** (спрощений каталог)
+   - Єдиний прайс-лист замість окремих таблиць
+   - CRUD для управління елементами прайсу
+   - Всі необхідні поля в одній таблиці
 
 3. **Order Domain з Cart функціональністю**
    - **Cart (корзина)**:
@@ -95,7 +95,7 @@ src/main/java/org/example/dryclean/
 ├── auth/          # Authentication
 ├── user/          # User management  
 ├── customer/      # Customers
-├── serviceCatalog/       # Services catalog (включає предмети)
+├── catalog/       # Price list (єдиний каталог)
 ├── order/         # Orders (включає корзину та характеристики)
 │   ├── cart/      # Cart functionality
 │   ├── order/     # Order management
@@ -112,7 +112,7 @@ api-specs/
 ├── auth-api.yaml
 ├── user-api.yaml
 ├── customer-api.yaml
-├── serviceCatalog-api.yaml    # Послуги та предмети
+├── price-list-api.yaml  # Єдиний прайс-лист
 ├── cart-api.yaml       # Корзина
 ├── order-api.yaml      # Замовлення
 ├── pricing-api.yaml
@@ -161,7 +161,7 @@ api-specs/
 
 ### Week 2
 - [ ] Customer management
-- [ ] Service catalog (послуги та предмети)
+- [ ] Price list management (CRUD)
 - [ ] Cart implementation:
   - [ ] Cart REST API
   - [ ] Real-time price calculation

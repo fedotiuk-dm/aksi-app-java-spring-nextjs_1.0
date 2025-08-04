@@ -94,25 +94,23 @@ public class GlobalExceptionHandler {
     if (message.contains("No enum constant")) {
       String parameterName = e.getName();
       Object invalidValue = e.getValue();
-      
+
       // Extract valid enum values from the cause if it's an enum type
       String validValues = "";
       if (e.getRequiredType() != null && e.getRequiredType().isEnum()) {
         Object[] enumConstants = e.getRequiredType().getEnumConstants();
         if (enumConstants != null) {
-          validValues = " Valid values are: " + 
-            java.util.Arrays.stream(enumConstants)
-              .map(Object::toString)
-              .collect(Collectors.joining(", "));
+          validValues =
+              " Valid values are: "
+                  + java.util.Arrays.stream(enumConstants)
+                      .map(Object::toString)
+                      .collect(Collectors.joining(", "));
         }
       }
-      
-      message = String.format(
-        "Invalid value '%s' for parameter '%s'.%s", 
-        invalidValue, 
-        parameterName, 
-        validValues
-      );
+
+      message =
+          String.format(
+              "Invalid value '%s' for parameter '%s'.%s", invalidValue, parameterName, validValues);
     }
 
     return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);

@@ -132,6 +132,132 @@ export interface UpdateBranchesRequest {
   primaryBranchId?: string;
 }
 
+/**
+ * Service category code
+ */
+export type PriceListItemInfoCategoryCode = typeof PriceListItemInfoCategoryCode[keyof typeof PriceListItemInfoCategoryCode];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceListItemInfoCategoryCode = {
+  CLOTHING: 'CLOTHING',
+  LAUNDRY: 'LAUNDRY',
+  IRONING: 'IRONING',
+  LEATHER: 'LEATHER',
+  PADDING: 'PADDING',
+  FUR: 'FUR',
+  DYEING: 'DYEING',
+  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+} as const;
+
+/**
+ * Unit of measure
+ */
+export type PriceListItemInfoUnitOfMeasure = typeof PriceListItemInfoUnitOfMeasure[keyof typeof PriceListItemInfoUnitOfMeasure];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceListItemInfoUnitOfMeasure = {
+  PIECE: 'PIECE',
+  KILOGRAM: 'KILOGRAM',
+  PAIR: 'PAIR',
+  SQUARE_METER: 'SQUARE_METER',
+} as const;
+
+export interface PriceListItemInfo {
+  /** Price list item ID */
+  id: string;
+  /** Service category code */
+  categoryCode: PriceListItemInfoCategoryCode;
+  /** Catalog number */
+  catalogNumber: number;
+  /** Item name */
+  name: string;
+  /** Unit of measure */
+  unitOfMeasure: PriceListItemInfoUnitOfMeasure;
+  /**
+   * Base price in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  basePrice: number;
+  /**
+   * Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceBlack?: number;
+  /**
+   * Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceColor?: number;
+  /** Is item active */
+  active: boolean;
+  /** Processing time in days */
+  processingTimeDays?: number;
+  /** Is express service available */
+  expressAvailable?: boolean;
+  /** Express processing time in hours */
+  expressTimeHours?: number;
+  /**
+   * Express service price in kopiykas
+   * @minimum 0
+   * @maximum 999999999
+   */
+  expressPrice?: number;
+  /** Sort order for display */
+  sortOrder?: number;
+  /** Service/item description */
+  description?: string;
+  /** Ukrainian name */
+  nameUa?: string;
+}
+
+export interface UpdatePriceListItemRequest {
+  /** Item name */
+  name?: string;
+  /**
+   * Base price in kopiykas
+   * @minimum 0
+   * @maximum 999999999
+   */
+  basePrice?: number;
+  /**
+   * Price for black dyeing
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceBlack?: number;
+  /**
+   * Price for color dyeing
+   * @minimum 0
+   * @maximum 999999999
+   */
+  priceColor?: number;
+  /** Is item active */
+  active?: boolean;
+  /** Processing time in days */
+  processingTimeDays?: number;
+  /** Is express service available */
+  expressAvailable?: boolean;
+  /** Express processing time in hours */
+  expressTimeHours?: number;
+  /**
+   * Express service price
+   * @minimum 0
+   * @maximum 999999999
+   */
+  expressPrice?: number;
+  /** Sort order for display */
+  sortOrder?: number;
+  /** Service/item description */
+  description?: string;
+  /** Ukrainian name */
+  nameUa?: string;
+}
+
 export type CreateUserRequestRolesItem = typeof CreateUserRequestRolesItem[keyof typeof CreateUserRequestRolesItem];
 
 
@@ -190,11 +316,14 @@ export interface CreateUserRequest {
   primaryBranchId?: string;
 }
 
-export type ServiceInfoCategory = typeof ServiceInfoCategory[keyof typeof ServiceInfoCategory];
+/**
+ * Service category code
+ */
+export type CreatePriceListItemRequestCategoryCode = typeof CreatePriceListItemRequestCategoryCode[keyof typeof CreatePriceListItemRequestCategoryCode];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ServiceInfoCategory = {
+export const CreatePriceListItemRequestCategoryCode = {
   CLOTHING: 'CLOTHING',
   LAUNDRY: 'LAUNDRY',
   IRONING: 'IRONING',
@@ -205,330 +334,67 @@ export const ServiceInfoCategory = {
   ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
 } as const;
 
-export type ServiceInfoAllowedProcessingTimesItem = typeof ServiceInfoAllowedProcessingTimesItem[keyof typeof ServiceInfoAllowedProcessingTimesItem];
+/**
+ * Unit of measure
+ */
+export type CreatePriceListItemRequestUnitOfMeasure = typeof CreatePriceListItemRequestUnitOfMeasure[keyof typeof CreatePriceListItemRequestUnitOfMeasure];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ServiceInfoAllowedProcessingTimesItem = {
-  EXPRESS_1H: 'EXPRESS_1H',
-  EXPRESS_4H: 'EXPRESS_4H',
-  SAME_DAY: 'SAME_DAY',
-  NEXT_DAY: 'NEXT_DAY',
-  STANDARD_2D: 'STANDARD_2D',
-  STANDARD_3D: 'STANDARD_3D',
-  EXTENDED: 'EXTENDED',
+export const CreatePriceListItemRequestUnitOfMeasure = {
+  PIECE: 'PIECE',
+  KILOGRAM: 'KILOGRAM',
+  PAIR: 'PAIR',
+  SQUARE_METER: 'SQUARE_METER',
 } as const;
 
-export interface ServiceInfo {
-  /** Service ID */
-  id: string;
-  /** Service code */
-  code: string;
-  /** Service name */
-  name: string;
-  /** Service description (Ukrainian) */
-  description?: string;
-  category: ServiceInfoCategory;
-  /** Category code from price list */
-  categoryCode?: string;
-  /** Icon identifier */
-  icon?: string;
-  /**
-   * Display color
-   * @pattern ^#[0-9A-Fa-f]{6}$
-   */
-  color?: string;
-  /** Is service active */
-  active: boolean;
-  /** Display sort order */
-  sortOrder: number;
-  /** Available processing times */
-  allowedProcessingTimes?: ServiceInfoAllowedProcessingTimesItem[];
-  /** Requires special handling */
-  requiresSpecialHandling?: boolean;
-  /** Service tags */
-  tags?: string[];
-}
-
-export type CreateServiceInfoRequestCategory = typeof CreateServiceInfoRequestCategory[keyof typeof CreateServiceInfoRequestCategory];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateServiceInfoRequestCategory = {
-  CLOTHING: 'CLOTHING',
-  LAUNDRY: 'LAUNDRY',
-  IRONING: 'IRONING',
-  LEATHER: 'LEATHER',
-  PADDING: 'PADDING',
-  FUR: 'FUR',
-  DYEING: 'DYEING',
-  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
-} as const;
-
-export type CreateServiceInfoRequestAllowedProcessingTimesItem = typeof CreateServiceInfoRequestAllowedProcessingTimesItem[keyof typeof CreateServiceInfoRequestAllowedProcessingTimesItem];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateServiceInfoRequestAllowedProcessingTimesItem = {
-  EXPRESS_1H: 'EXPRESS_1H',
-  EXPRESS_4H: 'EXPRESS_4H',
-  SAME_DAY: 'SAME_DAY',
-  NEXT_DAY: 'NEXT_DAY',
-  STANDARD_2D: 'STANDARD_2D',
-  STANDARD_3D: 'STANDARD_3D',
-  EXTENDED: 'EXTENDED',
-} as const;
-
-export interface CreateServiceInfoRequest {
-  /**
-   * Service code
-   * @minLength 2
-   * @maxLength 50
-   * @pattern ^[A-Z_]+$
-   */
-  code: string;
-  /**
-   * Service name (Ukrainian)
-   * @minLength 2
-   * @maxLength 100
-   */
-  name: string;
-  /**
-   * Service description (Ukrainian)
-   * @minLength 0
-   * @maxLength 500
-   */
-  description?: string;
-  category: CreateServiceInfoRequestCategory;
-  /** Icon identifier */
-  icon?: string;
-  /**
-   * Display color
-   * @pattern ^#[0-9A-Fa-f]{6}$
-   */
-  color?: string;
-  /** Display sort order */
-  sortOrder?: number;
-  allowedProcessingTimes?: CreateServiceInfoRequestAllowedProcessingTimesItem[];
-  requiresSpecialHandling?: boolean;
-  tags?: string[];
-}
-
-export type ItemInfoCategory = typeof ItemInfoCategory[keyof typeof ItemInfoCategory];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ItemInfoCategory = {
-  CLOTHING: 'CLOTHING',
-  LAUNDRY: 'LAUNDRY',
-  IRONING: 'IRONING',
-  LEATHER: 'LEATHER',
-  PADDING: 'PADDING',
-  FUR: 'FUR',
-  DYEING: 'DYEING',
-  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
-} as const;
-
-export interface ItemInfo {
-  /** Item ID */
-  id: string;
-  /** Item code */
-  code: string;
+export interface CreatePriceListItemRequest {
+  /** Service category code */
+  categoryCode: CreatePriceListItemRequestCategoryCode;
+  /** Catalog number */
+  catalogNumber: number;
   /** Item name */
   name: string;
-  /** Plural form */
-  pluralName?: string;
-  /** Item description (Ukrainian) */
-  description?: string;
-  category: ItemInfoCategory;
-  /** Catalog number from price list */
-  catalogNumber?: number;
-  /** Service category code from price list */
-  serviceCategoryCode?: string;
   /** Unit of measure */
-  unitOfMeasure?: string;
+  unitOfMeasure: CreatePriceListItemRequestUnitOfMeasure;
   /**
-   * Base price in kopiykas (1 kopiykas = 0.01 UAH)
+   * Base price in kopiykas
    * @minimum 0
    * @maximum 999999999
    */
-  basePrice?: number;
+  basePrice: number;
   /**
-   * Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * Price for black dyeing
    * @minimum 0
    * @maximum 999999999
    */
   priceBlack?: number;
   /**
-   * Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * Price for color dyeing
    * @minimum 0
    * @maximum 999999999
    */
   priceColor?: number;
-  /** Icon identifier */
-  icon?: string;
   /** Is item active */
-  active: boolean;
-  /** Display sort order */
-  sortOrder: number;
-  /** Available attributes (material, color, etc.) */
-  attributes?: string[];
-  /** Item tags */
-  tags?: string[];
-}
-
-export type ServiceItemInfoProcessingTime = typeof ServiceItemInfoProcessingTime[keyof typeof ServiceItemInfoProcessingTime];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ServiceItemInfoProcessingTime = {
-  EXPRESS_1H: 'EXPRESS_1H',
-  EXPRESS_4H: 'EXPRESS_4H',
-  SAME_DAY: 'SAME_DAY',
-  NEXT_DAY: 'NEXT_DAY',
-  STANDARD_2D: 'STANDARD_2D',
-  STANDARD_3D: 'STANDARD_3D',
-  EXTENDED: 'EXTENDED',
-} as const;
-
-export interface ServiceItemInfo {
-  /** Service-item combination ID */
-  id: string;
-  /** Service ID */
-  serviceId: string;
-  /** Item ID */
-  itemId: string;
-  service: ServiceInfo;
-  item: ItemInfo;
-  /**
-   * Base price in kopiykas (1 kopiykas = 0.01 UAH)
-   * @minimum 0
-   * @maximum 999999999
-   */
-  basePrice: number;
-  /**
-   * Branch-specific price in kopiykas (1 kopiykas = 0.01 UAH)
-   * @minimum 0
-   * @maximum 999999999
-   */
-  branchPrice?: number;
-  processingTime: ServiceItemInfoProcessingTime;
-  /** Express service available */
+  active?: boolean;
+  /** Processing time in days */
+  processingTimeDays?: number;
+  /** Is express service available */
   expressAvailable?: boolean;
-  /** Express price multiplier */
-  expressMultiplier?: number;
+  /** Express processing time in hours */
+  expressTimeHours?: number;
   /**
-   * Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+   * Express service price
    * @minimum 0
    * @maximum 999999999
    */
-  priceBlack?: number;
-  /**
-   * Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
-   * @minimum 0
-   * @maximum 999999999
-   */
-  priceColor?: number;
-  /** Is combination active */
-  active: boolean;
-  /** Minimum order quantity */
-  minQuantity?: number;
-  /** Maximum order quantity */
-  maxQuantity?: number;
-  /** Special handling instructions */
-  specialInstructions?: string;
-  /** Popularity score for sorting */
-  popularityScore?: number;
-}
-
-export type CreateServiceItemInfoRequestProcessingTime = typeof CreateServiceItemInfoRequestProcessingTime[keyof typeof CreateServiceItemInfoRequestProcessingTime];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateServiceItemInfoRequestProcessingTime = {
-  EXPRESS_1H: 'EXPRESS_1H',
-  EXPRESS_4H: 'EXPRESS_4H',
-  SAME_DAY: 'SAME_DAY',
-  NEXT_DAY: 'NEXT_DAY',
-  STANDARD_2D: 'STANDARD_2D',
-  STANDARD_3D: 'STANDARD_3D',
-  EXTENDED: 'EXTENDED',
-} as const;
-
-export interface CreateServiceItemInfoRequest {
-  /** Service ID */
-  serviceId: string;
-  /** Item ID */
-  itemId: string;
-  /**
-   * Base price in kopiykas (1 kopiykas = 0.01 UAH)
-   * @minimum 0
-   * @maximum 999999999
-   */
-  basePrice: number;
-  processingTime: CreateServiceItemInfoRequestProcessingTime;
-  expressAvailable?: boolean;
-  /** @minimum 1 */
-  expressMultiplier?: number;
-  /** @minimum 1 */
-  minQuantity?: number;
-  /** @minimum 1 */
-  maxQuantity?: number;
-  /**
-   * @minLength 0
-   * @maxLength 500
-   */
-  specialInstructions?: string;
-}
-
-export type CreateItemInfoRequestCategory = typeof CreateItemInfoRequestCategory[keyof typeof CreateItemInfoRequestCategory];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateItemInfoRequestCategory = {
-  CLOTHING: 'CLOTHING',
-  LAUNDRY: 'LAUNDRY',
-  IRONING: 'IRONING',
-  LEATHER: 'LEATHER',
-  PADDING: 'PADDING',
-  FUR: 'FUR',
-  DYEING: 'DYEING',
-  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
-} as const;
-
-export interface CreateItemInfoRequest {
-  /**
-   * Item code
-   * @minLength 2
-   * @maxLength 50
-   * @pattern ^[A-Z_]+$
-   */
-  code: string;
-  /**
-   * Item name (Ukrainian)
-   * @minLength 2
-   * @maxLength 100
-   */
-  name: string;
-  /**
-   * Plural form (Ukrainian)
-   * @minLength 2
-   * @maxLength 100
-   */
-  pluralName?: string;
-  /**
-   * Item description (Ukrainian)
-   * @minLength 0
-   * @maxLength 500
-   */
-  description?: string;
-  category: CreateItemInfoRequestCategory;
-  /** Icon identifier */
-  icon?: string;
-  /** Display sort order */
+  expressPrice?: number;
+  /** Sort order for display */
   sortOrder?: number;
-  attributes?: string[];
-  tags?: string[];
+  /** Service/item description */
+  description?: string;
+  /** Ukrainian name */
+  nameUa?: string;
 }
 
 export interface JsonNullableString {
@@ -606,155 +472,6 @@ export interface UpdateUserRequest {
   phone?: string;
 }
 
-/**
- * Service category (usually not changed during update)
- */
-export type UpdateServiceInfoRequestCategory = typeof UpdateServiceInfoRequestCategory[keyof typeof UpdateServiceInfoRequestCategory];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateServiceInfoRequestCategory = {
-  CLOTHING: 'CLOTHING',
-  LAUNDRY: 'LAUNDRY',
-  IRONING: 'IRONING',
-  LEATHER: 'LEATHER',
-  PADDING: 'PADDING',
-  FUR: 'FUR',
-  DYEING: 'DYEING',
-  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
-} as const;
-
-export type UpdateServiceInfoRequestAllowedProcessingTimesItem = typeof UpdateServiceInfoRequestAllowedProcessingTimesItem[keyof typeof UpdateServiceInfoRequestAllowedProcessingTimesItem];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateServiceInfoRequestAllowedProcessingTimesItem = {
-  EXPRESS_1H: 'EXPRESS_1H',
-  EXPRESS_4H: 'EXPRESS_4H',
-  SAME_DAY: 'SAME_DAY',
-  NEXT_DAY: 'NEXT_DAY',
-  STANDARD_2D: 'STANDARD_2D',
-  STANDARD_3D: 'STANDARD_3D',
-  EXTENDED: 'EXTENDED',
-} as const;
-
-export interface UpdateServiceInfoRequest {
-  /**
-   * Service code (usually not changed during update)
-   * @minLength 2
-   * @maxLength 50
-   * @pattern ^[A-Z_]+$
-   */
-  code?: string;
-  /**
-   * Service name (Ukrainian)
-   * @minLength 2
-   * @maxLength 100
-   */
-  name?: string;
-  /** Service category (usually not changed during update) */
-  category?: UpdateServiceInfoRequestCategory;
-  /**
-   * @minLength 0
-   * @maxLength 500
-   */
-  description?: string;
-  icon?: string;
-  /** @pattern ^#[0-9A-Fa-f]{6}$ */
-  color?: string;
-  active?: boolean;
-  sortOrder?: number;
-  allowedProcessingTimes?: UpdateServiceInfoRequestAllowedProcessingTimesItem[];
-  requiresSpecialHandling?: boolean;
-  tags?: string[];
-}
-
-export type UpdateServiceItemInfoRequestProcessingTime = typeof UpdateServiceItemInfoRequestProcessingTime[keyof typeof UpdateServiceItemInfoRequestProcessingTime];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateServiceItemInfoRequestProcessingTime = {
-  EXPRESS_1H: 'EXPRESS_1H',
-  EXPRESS_4H: 'EXPRESS_4H',
-  SAME_DAY: 'SAME_DAY',
-  NEXT_DAY: 'NEXT_DAY',
-  STANDARD_2D: 'STANDARD_2D',
-  STANDARD_3D: 'STANDARD_3D',
-  EXTENDED: 'EXTENDED',
-} as const;
-
-export interface UpdateServiceItemInfoRequest {
-  /** @minimum 0 */
-  basePrice?: number;
-  processingTime?: UpdateServiceItemInfoRequestProcessingTime;
-  expressAvailable?: boolean;
-  /** @minimum 1 */
-  expressMultiplier?: number;
-  active?: boolean;
-  /** @minimum 1 */
-  minQuantity?: number;
-  /** @minimum 1 */
-  maxQuantity?: number;
-  /**
-   * @minLength 0
-   * @maxLength 500
-   */
-  specialInstructions?: string;
-  /** @minimum 0 */
-  popularityScore?: number;
-}
-
-/**
- * Item category (usually not changed during update)
- */
-export type UpdateItemInfoRequestCategory = typeof UpdateItemInfoRequestCategory[keyof typeof UpdateItemInfoRequestCategory];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateItemInfoRequestCategory = {
-  CLOTHING: 'CLOTHING',
-  LAUNDRY: 'LAUNDRY',
-  IRONING: 'IRONING',
-  LEATHER: 'LEATHER',
-  PADDING: 'PADDING',
-  FUR: 'FUR',
-  DYEING: 'DYEING',
-  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
-} as const;
-
-export interface UpdateItemInfoRequest {
-  /**
-   * Item code (usually not changed during update)
-   * @minLength 2
-   * @maxLength 50
-   * @pattern ^[A-Z_]+$
-   */
-  code?: string;
-  /**
-   * Item name (Ukrainian)
-   * @minLength 2
-   * @maxLength 100
-   */
-  name?: string;
-  /** Item category (usually not changed during update) */
-  category?: UpdateItemInfoRequestCategory;
-  /**
-   * @minLength 2
-   * @maxLength 100
-   */
-  pluralName?: string;
-  /**
-   * @minLength 0
-   * @maxLength 500
-   */
-  description?: string;
-  icon?: string;
-  active?: boolean;
-  sortOrder?: number;
-  attributes?: string[];
-  tags?: string[];
-}
-
 export interface UserListResponse {
   data: UserSummary[];
   /** Total number of elements */
@@ -816,27 +533,20 @@ export interface UserSummary {
   lastLoginAt?: string;
 }
 
-export interface ListServicesResponse {
-  services: ServiceInfo[];
+export interface PriceListItemsResponse {
+  /** List of price list items */
+  priceListItems: PriceListItemInfo[];
+  /** Total number of items matching the filter */
+  totalItems: number;
+  /** Whether there are more items to load */
+  hasMore: boolean;
 }
 
-export interface ListServiceItemsResponse {
-  serviceItems: ServiceItemInfo[];
-  /**
-   * Total number of service items available
-   * @minimum 0
-   */
-  totalCount: number;
-}
-
-/**
- * Service category code
- */
-export type PriceListItemInfoCategoryCode = typeof PriceListItemInfoCategoryCode[keyof typeof PriceListItemInfoCategoryCode];
+export type CategoryInfoCode = typeof CategoryInfoCode[keyof typeof CategoryInfoCode];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PriceListItemInfoCategoryCode = {
+export const CategoryInfoCode = {
   CLOTHING: 'CLOTHING',
   LAUNDRY: 'LAUNDRY',
   IRONING: 'IRONING',
@@ -847,69 +557,12 @@ export const PriceListItemInfoCategoryCode = {
   ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
 } as const;
 
-/**
- * Unit of measure
- */
-export type PriceListItemInfoUnitOfMeasure = typeof PriceListItemInfoUnitOfMeasure[keyof typeof PriceListItemInfoUnitOfMeasure];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PriceListItemInfoUnitOfMeasure = {
-  PIECE: 'PIECE',
-  KILOGRAM: 'KILOGRAM',
-  PAIR: 'PAIR',
-  SQUARE_METER: 'SQUARE_METER',
-} as const;
-
-export interface PriceListItemInfo {
-  /** Price list item ID */
-  id: string;
-  /** Service category code */
-  categoryCode: PriceListItemInfoCategoryCode;
-  /** Catalog number */
-  catalogNumber: number;
-  /** Item name */
-  name: string;
-  /** Unit of measure */
-  unitOfMeasure: PriceListItemInfoUnitOfMeasure;
-  /**
-   * Base price in kopiykas (1 kopiykas = 0.01 UAH)
-   * @minimum 0
-   * @maximum 999999999
-   */
-  basePrice: number;
-  /**
-   * Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
-   * @minimum 0
-   * @maximum 999999999
-   */
-  priceBlack?: number;
-  /**
-   * Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
-   * @minimum 0
-   * @maximum 999999999
-   */
-  priceColor?: number;
-  /** Is item active */
-  active: boolean;
-}
-
-export interface PriceListItemsResponse {
-  priceListItems: PriceListItemInfo[];
-  /**
-   * Total number of price list items available
-   * @minimum 0
-   */
-  totalCount: number;
-}
-
-export interface ListItemsResponse {
-  items: ItemInfo[];
-  /**
-   * Total number of items available
-   * @minimum 0
-   */
-  totalCount: number;
+export interface CategoryInfo {
+  code?: CategoryInfoCode;
+  name?: string;
+  totalItems?: number;
+  activeItems?: number;
+  hasActiveItems?: boolean;
 }
 
 export interface SessionInfo {
@@ -936,109 +589,9 @@ export interface SessionInfo {
   userAgent?: string;
 }
 
-export type ListServicesParams = {
-/**
- * Filter by active status
- */
-active?: boolean;
-/**
- * Filter by category
- */
-category?: ListServicesCategory;
-};
+export type DeactivateCategory200 = {[key: string]: unknown};
 
-export type ListServicesCategory = typeof ListServicesCategory[keyof typeof ListServicesCategory];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListServicesCategory = {
-  CLOTHING: 'CLOTHING',
-  LAUNDRY: 'LAUNDRY',
-  IRONING: 'IRONING',
-  LEATHER: 'LEATHER',
-  PADDING: 'PADDING',
-  FUR: 'FUR',
-  DYEING: 'DYEING',
-  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
-} as const;
-
-export type ListServiceItemsParams = {
-/**
- * Filter by service
- */
-serviceId?: string;
-/**
- * Filter by item
- */
-itemId?: string;
-/**
- * Get branch-specific pricing
- */
-branchId?: string;
-/**
- * Filter by active status
- */
-active?: boolean;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
-/**
- * Number of items to return
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
-};
-
-export type ListItemsParams = {
-/**
- * Filter by active status
- */
-active?: boolean;
-/**
- * Filter by category
- */
-category?: ListItemsCategory;
-/**
- * Search by name
- */
-search?: string;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
-/**
- * Number of items to return
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
-};
-
-export type ListItemsCategory = typeof ListItemsCategory[keyof typeof ListItemsCategory];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListItemsCategory = {
-  CLOTHING: 'CLOTHING',
-  LAUNDRY: 'LAUNDRY',
-  IRONING: 'IRONING',
-  LEATHER: 'LEATHER',
-  PADDING: 'PADDING',
-  FUR: 'FUR',
-  DYEING: 'DYEING',
-  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
-} as const;
-
-export type GetServiceItemByIdParams = {
-/**
- * Get branch-specific pricing
- */
-branchId?: string;
-};
+export type ActivateCategory200 = {[key: string]: unknown};
 
 export type ListPriceListItemsParams = {
 /**

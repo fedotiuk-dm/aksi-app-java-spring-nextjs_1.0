@@ -3,9 +3,11 @@ package com.aksi.service.catalog;
 import java.util.List;
 import java.util.UUID;
 
+import com.aksi.api.service.dto.CreatePriceListItemRequest;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.api.service.dto.PriceListItemsResponse;
 import com.aksi.api.service.dto.ServiceCategoryType;
+import com.aksi.api.service.dto.UpdatePriceListItemRequest;
 
 /** Service for managing price list items */
 public interface PriceListService {
@@ -17,6 +19,30 @@ public interface PriceListService {
    * @return Price list item details
    */
   PriceListItemInfo getPriceListItemById(UUID priceListItemId);
+
+  /**
+   * Create new price list item
+   *
+   * @param request Create price list item request
+   * @return Created price list item
+   */
+  PriceListItemInfo createPriceListItem(CreatePriceListItemRequest request);
+
+  /**
+   * Update existing price list item
+   *
+   * @param priceListItemId Price list item ID
+   * @param request Update price list item request
+   * @return Updated price list item
+   */
+  PriceListItemInfo updatePriceListItem(UUID priceListItemId, UpdatePriceListItemRequest request);
+
+  /**
+   * Delete price list item
+   *
+   * @param priceListItemId Price list item ID
+   */
+  void deletePriceListItem(UUID priceListItemId);
 
   // Admin functionality methods - essential for price management
   // Implemented in PriceListAdminController:
@@ -77,4 +103,29 @@ public interface PriceListService {
    */
   PriceListItemsResponse listPriceListItems(
       ServiceCategoryType categoryCode, Boolean active, Integer offset, Integer limit);
+
+  // Category management functions
+
+  /**
+   * Get all categories with statistics
+   *
+   * @return List of category information
+   */
+  List<CategoryManagementService.CategoryInfo> getAllCategoriesInfo();
+
+  /**
+   * Deactivate all items in a category
+   *
+   * @param categoryCode Category to deactivate
+   * @return Number of deactivated items
+   */
+  int deactivateCategory(ServiceCategoryType categoryCode);
+
+  /**
+   * Activate all items in a category
+   *
+   * @param categoryCode Category to activate
+   * @return Number of activated items
+   */
+  int activateCategory(ServiceCategoryType categoryCode);
 }

@@ -1,0 +1,121 @@
+databaseChangeLog:
+  - changeSet:
+      id: 014-1-add-price-list-extended-fields
+      author: system
+      changes:
+        - addColumn:
+            tableName: price_list_items
+            columns:
+              - column:
+                  name: processing_time_days
+                  type: INTEGER
+                  defaultValue: 3
+                  constraints:
+                    nullable: true
+              - column:
+                  name: express_available
+                  type: BOOLEAN
+                  defaultValue: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: express_time_hours
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: express_price
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: sort_order
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: name_ua
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 014-2-migrate-data-from-service-items
+      author: system
+      changes:
+        - sql:
+            sql: |
+              UPDATE price_list_items pli
+              SET 
+                processing_time_days = COALESCE(
+                  (SELECT AVG(si.processing_time_days)::INTEGER 
+                   FROM service_items si
+                   JOIN items i ON si.item_id = i.id
+                   WHERE i.catalog_number = pli.catalog_number
+                   AND si.processing_time_days IS NOT NULL),
+                  3
+                ),
+                express_available = EXISTS (
+                  SELECT 1 
+                  FROM service_items si
+                  JOIN services s ON si.service_id = s.id
+                  JOIN items i ON si.item_id = i.id
+                  WHERE i.catalog_number = pli.catalog_number
+                  AND s.express_available = true
+                ),
+                express_time_hours = (
+                  SELECT MIN(si.express_time_hours)
+                  FROM service_items si
+                  JOIN services s ON si.service_id = s.id
+                  JOIN items i ON si.item_id = i.id
+                  WHERE i.catalog_number = pli.catalog_number
+                  AND s.express_available = true
+                  AND si.express_time_hours IS NOT NULL
+                ),
+                express_price = (
+                  SELECT AVG(si.express_price)::INTEGER
+                  FROM service_items si
+                  JOIN items i ON si.item_id = i.id
+                  WHERE i.catalog_number = pli.catalog_number
+                  AND si.express_price IS NOT NULL
+                ),
+                description = (
+                  SELECT i.description
+                  FROM items i
+                  WHERE i.catalog_number = pli.catalog_number
+                  LIMIT 1
+                )
+              WHERE EXISTS (
+                SELECT 1 FROM items i WHERE i.catalog_number = pli.catalog_number
+              );
+
+  - changeSet:
+      id: 014-3-set-sort-order-by-catalog-number
+      author: system
+      changes:
+        - sql:
+            sql: |
+              UPDATE price_list_items
+              SET sort_order = catalog_number;
+
+  - changeSet:
+      id: 014-4-add-indexes-for-new-columns
+      author: system
+      changes:
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_sort_order
+            columns:
+              - column:
+                  name: sort_order
+        - createIndex:
+            tableName: price_list_items
+            indexName: idx_price_list_express_available
+            columns:
+              - column:
+                  name: express_available

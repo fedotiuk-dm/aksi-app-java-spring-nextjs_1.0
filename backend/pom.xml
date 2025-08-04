@@ -390,15 +390,15 @@
                         </configuration>
                     </execution>
 
-                    <!-- Service & Item API -->
+                    <!-- Price List API -->
                     <execution>
-                        <id>generate-service-item-api</id>
+                        <id>generate-price-list-api</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/service-item-api.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/price-list-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.aksi.api.service</apiPackage>
                             <modelPackage>com.aksi.api.service.dto</modelPackage>
@@ -583,7 +583,7 @@
                                 <phase>none</phase>
                             </execution>
                             <execution>
-                                <id>generate-service-item-api</id>
+                                <id>generate-price-list-api</id>
                                 <phase>none</phase>
                             </execution>
                         </executions>

@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 015-1-drop-service-items-table
+      author: system
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: service_items
+      changes:
+        - dropTable:
+            tableName: service_items
+            cascadeConstraints: true
+
+  - changeSet:
+      id: 015-2-drop-items-table
+      author: system
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: items
+      changes:
+        - dropTable:
+            tableName: items
+            cascadeConstraints: true
+
+  - changeSet:
+      id: 015-3-drop-services-table
+      author: system
+      preConditions:
+        onFail: MARK_RAN
+        tableExists:
+          tableName: services
+      changes:
+        - dropTable:
+            tableName: services
+            cascadeConstraints: true

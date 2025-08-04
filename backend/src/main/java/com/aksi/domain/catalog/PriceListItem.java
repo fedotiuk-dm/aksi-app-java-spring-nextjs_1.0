@@ -11,7 +11,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /** Price list item entity representing items from price list CSV */
@@ -26,6 +28,8 @@ import lombok.Setter;
     })
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PriceListItem extends BaseEntity {
 
   @Column(name = "category_code", nullable = false, length = 30)
@@ -53,4 +57,25 @@ public class PriceListItem extends BaseEntity {
 
   @Column(name = "active", nullable = false)
   private boolean active = true;
+
+  @Column(name = "processing_time_days")
+  private Integer processingTimeDays = 3;
+
+  @Column(name = "express_available", nullable = false)
+  private boolean expressAvailable = false;
+
+  @Column(name = "express_time_hours")
+  private Integer expressTimeHours;
+
+  @Column(name = "express_price")
+  private Integer expressPrice;
+
+  @Column(name = "sort_order")
+  private Integer sortOrder;
+
+  @Column(name = "description", columnDefinition = "TEXT")
+  private String description;
+
+  @Column(name = "name_ua")
+  private String nameUa;
 }

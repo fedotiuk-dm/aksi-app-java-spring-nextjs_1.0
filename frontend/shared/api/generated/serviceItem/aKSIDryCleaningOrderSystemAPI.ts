@@ -25,26 +25,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  CreateItemInfoRequest,
-  CreateServiceInfoRequest,
-  CreateServiceItemInfoRequest,
+  ActivateCategory200,
+  CategoryInfo,
+  CreatePriceListItemRequest,
+  DeactivateCategory200,
   ErrorResponse,
-  GetServiceItemByIdParams,
-  ItemInfo,
-  ListItemsParams,
-  ListItemsResponse,
   ListPriceListItemsParams,
-  ListServiceItemsParams,
-  ListServiceItemsResponse,
-  ListServicesParams,
-  ListServicesResponse,
   PriceListItemInfo,
   PriceListItemsResponse,
-  ServiceInfo,
-  ServiceItemInfo,
-  UpdateItemInfoRequest,
-  UpdateServiceInfoRequest,
-  UpdateServiceItemInfoRequest
+  UpdatePriceListItemRequest
 } from './aKSIDryCleaningOrderSystemAPI.schemas';
 
 import orvalFetcher from '../../../../lib/api/orval-fetcher';
@@ -55,84 +44,83 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Get list of available services
- * @summary List services
+ * Get detailed price list item information
+ * @summary Get price list item details
  */
-export const listServices = (
-    params?: ListServicesParams,
+export const getPriceListItemById = (
+    priceListItemId: string,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
       
       
-      return orvalFetcher<ListServicesResponse>(
-      {url: `/api/services`, method: 'GET',
-        params, signal
+      return orvalFetcher<PriceListItemInfo>(
+      {url: `/api/price-list/${priceListItemId}`, method: 'GET', signal
     },
       options);
     }
   
 
-export const getListServicesQueryKey = (params?: ListServicesParams,) => {
-    return [`/api/services`, ...(params ? [params]: [])] as const;
+export const getGetPriceListItemByIdQueryKey = (priceListItemId?: string,) => {
+    return [`/api/price-list/${priceListItemId}`] as const;
     }
 
     
-export const getListServicesQueryOptions = <TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorResponse>(params?: ListServicesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetPriceListItemByIdQueryOptions = <TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListServicesQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetPriceListItemByIdQueryKey(priceListItemId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listServices>>> = ({ signal }) => listServices(params, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPriceListItemById>>> = ({ signal }) => getPriceListItemById(priceListItemId, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(priceListItemId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ListServicesQueryResult = NonNullable<Awaited<ReturnType<typeof listServices>>>
-export type ListServicesQueryError = ErrorResponse
+export type GetPriceListItemByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getPriceListItemById>>>
+export type GetPriceListItemByIdQueryError = ErrorResponse | ErrorResponse
 
 
-export function useListServices<TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorResponse>(
- params: undefined |  ListServicesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>> & Pick<
+export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
+ priceListItemId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listServices>>,
+          Awaited<ReturnType<typeof getPriceListItemById>>,
           TError,
-          Awaited<ReturnType<typeof listServices>>
+          Awaited<ReturnType<typeof getPriceListItemById>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListServices<TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorResponse>(
- params?: ListServicesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>> & Pick<
+export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
+ priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listServices>>,
+          Awaited<ReturnType<typeof getPriceListItemById>>,
           TError,
-          Awaited<ReturnType<typeof listServices>>
+          Awaited<ReturnType<typeof getPriceListItemById>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListServices<TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorResponse>(
- params?: ListServicesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
+ priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary List services
+ * @summary Get price list item details
  */
 
-export function useListServices<TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorResponse>(
- params?: ListServicesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
+ priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListServicesQueryOptions(params,options)
+  const queryOptions = getGetPriceListItemByIdQueryOptions(priceListItemId,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -145,497 +133,30 @@ export function useListServices<TData = Awaited<ReturnType<typeof listServices>>
 
 
 /**
- * Create new service type
- * @summary Create service
+ * Update an existing price list item (admin only)
+ * @summary Update price list item
  */
-export const createService = (
-    createServiceInfoRequest: CreateServiceInfoRequest,
- options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
-) => {
-      
-      
-      return orvalFetcher<ServiceInfo>(
-      {url: `/api/services`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createServiceInfoRequest, signal
-    },
-      options);
-    }
-  
-
-
-export const getCreateServiceMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createService>>, TError,{data: CreateServiceInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof createService>>, TError,{data: CreateServiceInfoRequest}, TContext> => {
-
-const mutationKey = ['createService'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createService>>, {data: CreateServiceInfoRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createService(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateServiceMutationResult = NonNullable<Awaited<ReturnType<typeof createService>>>
-    export type CreateServiceMutationBody = CreateServiceInfoRequest
-    export type CreateServiceMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
-
-    /**
- * @summary Create service
- */
-export const useCreateService = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createService>>, TError,{data: CreateServiceInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createService>>,
-        TError,
-        {data: CreateServiceInfoRequest},
-        TContext
-      > => {
-
-      const mutationOptions = getCreateServiceMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    
-/**
- * Get available service-item combinations with pricing
- * @summary List service-item combinations
- */
-export const listServiceItems = (
-    params?: ListServiceItemsParams,
- options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
-) => {
-      
-      
-      return orvalFetcher<ListServiceItemsResponse>(
-      {url: `/api/service-items`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-  
-
-export const getListServiceItemsQueryKey = (params?: ListServiceItemsParams,) => {
-    return [`/api/service-items`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getListServiceItemsQueryOptions = <TData = Awaited<ReturnType<typeof listServiceItems>>, TError = ErrorResponse | ErrorResponse>(params?: ListServiceItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListServiceItemsQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listServiceItems>>> = ({ signal }) => listServiceItems(params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listServiceItems>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListServiceItemsQueryResult = NonNullable<Awaited<ReturnType<typeof listServiceItems>>>
-export type ListServiceItemsQueryError = ErrorResponse | ErrorResponse
-
-
-export function useListServiceItems<TData = Awaited<ReturnType<typeof listServiceItems>>, TError = ErrorResponse | ErrorResponse>(
- params: undefined |  ListServiceItemsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceItems>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listServiceItems>>,
-          TError,
-          Awaited<ReturnType<typeof listServiceItems>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListServiceItems<TData = Awaited<ReturnType<typeof listServiceItems>>, TError = ErrorResponse | ErrorResponse>(
- params?: ListServiceItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceItems>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listServiceItems>>,
-          TError,
-          Awaited<ReturnType<typeof listServiceItems>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListServiceItems<TData = Awaited<ReturnType<typeof listServiceItems>>, TError = ErrorResponse | ErrorResponse>(
- params?: ListServiceItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary List service-item combinations
- */
-
-export function useListServiceItems<TData = Awaited<ReturnType<typeof listServiceItems>>, TError = ErrorResponse | ErrorResponse>(
- params?: ListServiceItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListServiceItemsQueryOptions(params,options)
-
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * Create new service-item combination with base pricing
- * @summary Create service-item combination
- */
-export const createServiceItem = (
-    createServiceItemInfoRequest: CreateServiceItemInfoRequest,
- options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
-) => {
-      
-      
-      return orvalFetcher<ServiceItemInfo>(
-      {url: `/api/service-items`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createServiceItemInfoRequest, signal
-    },
-      options);
-    }
-  
-
-
-export const getCreateServiceItemMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceItem>>, TError,{data: CreateServiceItemInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof createServiceItem>>, TError,{data: CreateServiceItemInfoRequest}, TContext> => {
-
-const mutationKey = ['createServiceItem'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createServiceItem>>, {data: CreateServiceItemInfoRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createServiceItem(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateServiceItemMutationResult = NonNullable<Awaited<ReturnType<typeof createServiceItem>>>
-    export type CreateServiceItemMutationBody = CreateServiceItemInfoRequest
-    export type CreateServiceItemMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
-
-    /**
- * @summary Create service-item combination
- */
-export const useCreateServiceItem = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceItem>>, TError,{data: CreateServiceItemInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createServiceItem>>,
-        TError,
-        {data: CreateServiceItemInfoRequest},
-        TContext
-      > => {
-
-      const mutationOptions = getCreateServiceItemMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    
-/**
- * Get list of available item types
- * @summary List items
- */
-export const listItems = (
-    params?: ListItemsParams,
- options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
-) => {
-      
-      
-      return orvalFetcher<ListItemsResponse>(
-      {url: `/api/items`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-  
-
-export const getListItemsQueryKey = (params?: ListItemsParams,) => {
-    return [`/api/items`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getListItemsQueryOptions = <TData = Awaited<ReturnType<typeof listItems>>, TError = ErrorResponse>(params?: ListItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListItemsQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listItems>>> = ({ signal }) => listItems(params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listItems>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListItemsQueryResult = NonNullable<Awaited<ReturnType<typeof listItems>>>
-export type ListItemsQueryError = ErrorResponse
-
-
-export function useListItems<TData = Awaited<ReturnType<typeof listItems>>, TError = ErrorResponse>(
- params: undefined |  ListItemsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listItems>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listItems>>,
-          TError,
-          Awaited<ReturnType<typeof listItems>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListItems<TData = Awaited<ReturnType<typeof listItems>>, TError = ErrorResponse>(
- params?: ListItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listItems>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listItems>>,
-          TError,
-          Awaited<ReturnType<typeof listItems>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListItems<TData = Awaited<ReturnType<typeof listItems>>, TError = ErrorResponse>(
- params?: ListItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary List items
- */
-
-export function useListItems<TData = Awaited<ReturnType<typeof listItems>>, TError = ErrorResponse>(
- params?: ListItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listItems>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListItemsQueryOptions(params,options)
-
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * Create new item type
- * @summary Create item
- */
-export const createItem = (
-    createItemInfoRequest: CreateItemInfoRequest,
- options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
-) => {
-      
-      
-      return orvalFetcher<ItemInfo>(
-      {url: `/api/items`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createItemInfoRequest, signal
-    },
-      options);
-    }
-  
-
-
-export const getCreateItemMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createItem>>, TError,{data: CreateItemInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof createItem>>, TError,{data: CreateItemInfoRequest}, TContext> => {
-
-const mutationKey = ['createItem'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createItem>>, {data: CreateItemInfoRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createItem(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateItemMutationResult = NonNullable<Awaited<ReturnType<typeof createItem>>>
-    export type CreateItemMutationBody = CreateItemInfoRequest
-    export type CreateItemMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
-
-    /**
- * @summary Create item
- */
-export const useCreateItem = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createItem>>, TError,{data: CreateItemInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createItem>>,
-        TError,
-        {data: CreateItemInfoRequest},
-        TContext
-      > => {
-
-      const mutationOptions = getCreateItemMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    
-/**
- * Get detailed service information
- * @summary Get service details
- */
-export const getServiceById = (
-    serviceId: string,
- options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
-) => {
-      
-      
-      return orvalFetcher<ServiceInfo>(
-      {url: `/api/services/${serviceId}`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getGetServiceByIdQueryKey = (serviceId?: string,) => {
-    return [`/api/services/${serviceId}`] as const;
-    }
-
-    
-export const getGetServiceByIdQueryOptions = <TData = Awaited<ReturnType<typeof getServiceById>>, TError = ErrorResponse | ErrorResponse>(serviceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetServiceByIdQueryKey(serviceId);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceById>>> = ({ signal }) => getServiceById(serviceId, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(serviceId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getServiceById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetServiceByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceById>>>
-export type GetServiceByIdQueryError = ErrorResponse | ErrorResponse
-
-
-export function useGetServiceById<TData = Awaited<ReturnType<typeof getServiceById>>, TError = ErrorResponse | ErrorResponse>(
- serviceId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceById>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getServiceById>>,
-          TError,
-          Awaited<ReturnType<typeof getServiceById>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetServiceById<TData = Awaited<ReturnType<typeof getServiceById>>, TError = ErrorResponse | ErrorResponse>(
- serviceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceById>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getServiceById>>,
-          TError,
-          Awaited<ReturnType<typeof getServiceById>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetServiceById<TData = Awaited<ReturnType<typeof getServiceById>>, TError = ErrorResponse | ErrorResponse>(
- serviceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get service details
- */
-
-export function useGetServiceById<TData = Awaited<ReturnType<typeof getServiceById>>, TError = ErrorResponse | ErrorResponse>(
- serviceId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getGetServiceByIdQueryOptions(serviceId,options)
-
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * Update service information
- * @summary Update service
- */
-export const updateService = (
-    serviceId: string,
-    updateServiceInfoRequest: UpdateServiceInfoRequest,
+export const updatePriceListItem = (
+    priceListItemId: string,
+    updatePriceListItemRequest: UpdatePriceListItemRequest,
  options?: SecondParameter<typeof orvalFetcher>,) => {
       
       
-      return orvalFetcher<ServiceInfo>(
-      {url: `/api/services/${serviceId}`, method: 'PATCH',
+      return orvalFetcher<PriceListItemInfo>(
+      {url: `/api/price-list/${priceListItemId}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: updateServiceInfoRequest
+      data: updatePriceListItemRequest
     },
       options);
     }
   
 
 
-export const getUpdateServiceMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateService>>, TError,{serviceId: string;data: UpdateServiceInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateService>>, TError,{serviceId: string;data: UpdateServiceInfoRequest}, TContext> => {
+export const getUpdatePriceListItemMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePriceListItem>>, TError,{priceListItemId: string;data: UpdatePriceListItemRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePriceListItem>>, TError,{priceListItemId: string;data: UpdatePriceListItemRequest}, TContext> => {
 
-const mutationKey = ['updateService'];
+const mutationKey = ['updatePriceListItem'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -645,10 +166,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateService>>, {serviceId: string;data: UpdateServiceInfoRequest}> = (props) => {
-          const {serviceId,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePriceListItem>>, {priceListItemId: string;data: UpdatePriceListItemRequest}> = (props) => {
+          const {priceListItemId,data} = props ?? {};
 
-          return  updateService(serviceId,data,requestOptions)
+          return  updatePriceListItem(priceListItemId,data,requestOptions)
         }
 
         
@@ -656,149 +177,49 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UpdateServiceMutationResult = NonNullable<Awaited<ReturnType<typeof updateService>>>
-    export type UpdateServiceMutationBody = UpdateServiceInfoRequest
-    export type UpdateServiceMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
+    export type UpdatePriceListItemMutationResult = NonNullable<Awaited<ReturnType<typeof updatePriceListItem>>>
+    export type UpdatePriceListItemMutationBody = UpdatePriceListItemRequest
+    export type UpdatePriceListItemMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
- * @summary Update service
+ * @summary Update price list item
  */
-export const useUpdateService = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateService>>, TError,{serviceId: string;data: UpdateServiceInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+export const useUpdatePriceListItem = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePriceListItem>>, TError,{priceListItemId: string;data: UpdatePriceListItemRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateService>>,
+        Awaited<ReturnType<typeof updatePriceListItem>>,
         TError,
-        {serviceId: string;data: UpdateServiceInfoRequest},
+        {priceListItemId: string;data: UpdatePriceListItemRequest},
         TContext
       > => {
 
-      const mutationOptions = getUpdateServiceMutationOptions(options);
+      const mutationOptions = getUpdatePriceListItemMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
     
 /**
- * Get detailed service-item combination
- * @summary Get service-item details
+ * Delete a price list item (admin only)
+ * @summary Delete price list item
  */
-export const getServiceItemById = (
-    serviceItemId: string,
-    params?: GetServiceItemByIdParams,
- options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
-) => {
-      
-      
-      return orvalFetcher<ServiceItemInfo>(
-      {url: `/api/service-items/${serviceItemId}`, method: 'GET',
-        params, signal
-    },
-      options);
-    }
-  
-
-export const getGetServiceItemByIdQueryKey = (serviceItemId?: string,
-    params?: GetServiceItemByIdParams,) => {
-    return [`/api/service-items/${serviceItemId}`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getGetServiceItemByIdQueryOptions = <TData = Awaited<ReturnType<typeof getServiceItemById>>, TError = ErrorResponse | ErrorResponse>(serviceItemId: string,
-    params?: GetServiceItemByIdParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetServiceItemByIdQueryKey(serviceItemId,params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceItemById>>> = ({ signal }) => getServiceItemById(serviceItemId,params, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(serviceItemId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getServiceItemById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetServiceItemByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceItemById>>>
-export type GetServiceItemByIdQueryError = ErrorResponse | ErrorResponse
-
-
-export function useGetServiceItemById<TData = Awaited<ReturnType<typeof getServiceItemById>>, TError = ErrorResponse | ErrorResponse>(
- serviceItemId: string,
-    params: undefined |  GetServiceItemByIdParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceItemById>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getServiceItemById>>,
-          TError,
-          Awaited<ReturnType<typeof getServiceItemById>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetServiceItemById<TData = Awaited<ReturnType<typeof getServiceItemById>>, TError = ErrorResponse | ErrorResponse>(
- serviceItemId: string,
-    params?: GetServiceItemByIdParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceItemById>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getServiceItemById>>,
-          TError,
-          Awaited<ReturnType<typeof getServiceItemById>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetServiceItemById<TData = Awaited<ReturnType<typeof getServiceItemById>>, TError = ErrorResponse | ErrorResponse>(
- serviceItemId: string,
-    params?: GetServiceItemByIdParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get service-item details
- */
-
-export function useGetServiceItemById<TData = Awaited<ReturnType<typeof getServiceItemById>>, TError = ErrorResponse | ErrorResponse>(
- serviceItemId: string,
-    params?: GetServiceItemByIdParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getGetServiceItemByIdQueryOptions(serviceItemId,params,options)
-
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * Update service-item combination
- * @summary Update service-item
- */
-export const updateServiceItem = (
-    serviceItemId: string,
-    updateServiceItemInfoRequest: UpdateServiceItemInfoRequest,
+export const deletePriceListItem = (
+    priceListItemId: string,
  options?: SecondParameter<typeof orvalFetcher>,) => {
       
       
-      return orvalFetcher<ServiceItemInfo>(
-      {url: `/api/service-items/${serviceItemId}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateServiceItemInfoRequest
+      return orvalFetcher<null>(
+      {url: `/api/price-list/${priceListItemId}`, method: 'DELETE'
     },
       options);
     }
   
 
 
-export const getUpdateServiceItemMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateServiceItem>>, TError,{serviceItemId: string;data: UpdateServiceItemInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateServiceItem>>, TError,{serviceItemId: string;data: UpdateServiceItemInfoRequest}, TContext> => {
+export const getDeletePriceListItemMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePriceListItem>>, TError,{priceListItemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deletePriceListItem>>, TError,{priceListItemId: string}, TContext> => {
 
-const mutationKey = ['updateServiceItem'];
+const mutationKey = ['deletePriceListItem'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -808,10 +229,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateServiceItem>>, {serviceItemId: string;data: UpdateServiceItemInfoRequest}> = (props) => {
-          const {serviceItemId,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePriceListItem>>, {priceListItemId: string}> = (props) => {
+          const {priceListItemId} = props ?? {};
 
-          return  updateServiceItem(serviceItemId,data,requestOptions)
+          return  deletePriceListItem(priceListItemId,requestOptions)
         }
 
         
@@ -819,141 +240,45 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UpdateServiceItemMutationResult = NonNullable<Awaited<ReturnType<typeof updateServiceItem>>>
-    export type UpdateServiceItemMutationBody = UpdateServiceItemInfoRequest
-    export type UpdateServiceItemMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
+    export type DeletePriceListItemMutationResult = NonNullable<Awaited<ReturnType<typeof deletePriceListItem>>>
+    
+    export type DeletePriceListItemMutationError = ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
- * @summary Update service-item
+ * @summary Delete price list item
  */
-export const useUpdateServiceItem = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateServiceItem>>, TError,{serviceItemId: string;data: UpdateServiceItemInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+export const useDeletePriceListItem = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePriceListItem>>, TError,{priceListItemId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateServiceItem>>,
+        Awaited<ReturnType<typeof deletePriceListItem>>,
         TError,
-        {serviceItemId: string;data: UpdateServiceItemInfoRequest},
+        {priceListItemId: string},
         TContext
       > => {
 
-      const mutationOptions = getUpdateServiceItemMutationOptions(options);
+      const mutationOptions = getDeletePriceListItemMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
     
-/**
- * Get detailed item information
- * @summary Get item details
- */
-export const getItemById = (
-    itemId: string,
- options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
-) => {
-      
-      
-      return orvalFetcher<ItemInfo>(
-      {url: `/api/items/${itemId}`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getGetItemByIdQueryKey = (itemId?: string,) => {
-    return [`/api/items/${itemId}`] as const;
-    }
-
-    
-export const getGetItemByIdQueryOptions = <TData = Awaited<ReturnType<typeof getItemById>>, TError = ErrorResponse | ErrorResponse>(itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetItemByIdQueryKey(itemId);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getItemById>>> = ({ signal }) => getItemById(itemId, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(itemId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getItemById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetItemByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getItemById>>>
-export type GetItemByIdQueryError = ErrorResponse | ErrorResponse
-
-
-export function useGetItemById<TData = Awaited<ReturnType<typeof getItemById>>, TError = ErrorResponse | ErrorResponse>(
- itemId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemById>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getItemById>>,
-          TError,
-          Awaited<ReturnType<typeof getItemById>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetItemById<TData = Awaited<ReturnType<typeof getItemById>>, TError = ErrorResponse | ErrorResponse>(
- itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemById>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getItemById>>,
-          TError,
-          Awaited<ReturnType<typeof getItemById>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetItemById<TData = Awaited<ReturnType<typeof getItemById>>, TError = ErrorResponse | ErrorResponse>(
- itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get item details
- */
-
-export function useGetItemById<TData = Awaited<ReturnType<typeof getItemById>>, TError = ErrorResponse | ErrorResponse>(
- itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getGetItemByIdQueryOptions(itemId,options)
-
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-
-/**
- * Update item information
- * @summary Update item
- */
-export const updateItem = (
-    itemId: string,
-    updateItemInfoRequest: UpdateItemInfoRequest,
+export const deactivateCategory = (
+    categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES',
  options?: SecondParameter<typeof orvalFetcher>,) => {
       
       
-      return orvalFetcher<ItemInfo>(
-      {url: `/api/items/${itemId}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateItemInfoRequest
+      return orvalFetcher<DeactivateCategory200>(
+      {url: `/api/price-list/categories/${categoryCode}/deactivate`, method: 'PUT'
     },
       options);
     }
   
 
 
-export const getUpdateItemMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateItem>>, TError,{itemId: string;data: UpdateItemInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateItem>>, TError,{itemId: string;data: UpdateItemInfoRequest}, TContext> => {
+export const getDeactivateCategoryMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deactivateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext> => {
 
-const mutationKey = ['updateItem'];
+const mutationKey = ['deactivateCategory'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -963,10 +288,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateItem>>, {itemId: string;data: UpdateItemInfoRequest}> = (props) => {
-          const {itemId,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deactivateCategory>>, {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}> = (props) => {
+          const {categoryCode} = props ?? {};
 
-          return  updateItem(itemId,data,requestOptions)
+          return  deactivateCategory(categoryCode,requestOptions)
         }
 
         
@@ -974,23 +299,76 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UpdateItemMutationResult = NonNullable<Awaited<ReturnType<typeof updateItem>>>
-    export type UpdateItemMutationBody = UpdateItemInfoRequest
-    export type UpdateItemMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
+    export type DeactivateCategoryMutationResult = NonNullable<Awaited<ReturnType<typeof deactivateCategory>>>
+    
+    export type DeactivateCategoryMutationError = unknown
 
-    /**
- * @summary Update item
- */
-export const useUpdateItem = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateItem>>, TError,{itemId: string;data: UpdateItemInfoRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+    export const useDeactivateCategory = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateItem>>,
+        Awaited<ReturnType<typeof deactivateCategory>>,
         TError,
-        {itemId: string;data: UpdateItemInfoRequest},
+        {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'},
         TContext
       > => {
 
-      const mutationOptions = getUpdateItemMutationOptions(options);
+      const mutationOptions = getDeactivateCategoryMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+export const activateCategory = (
+    categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES',
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<ActivateCategory200>(
+      {url: `/api/price-list/categories/${categoryCode}/activate`, method: 'PUT'
+    },
+      options);
+    }
+  
+
+
+export const getActivateCategoryMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof activateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext> => {
+
+const mutationKey = ['activateCategory'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof activateCategory>>, {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}> = (props) => {
+          const {categoryCode} = props ?? {};
+
+          return  activateCategory(categoryCode,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ActivateCategoryMutationResult = NonNullable<Awaited<ReturnType<typeof activateCategory>>>
+    
+    export type ActivateCategoryMutationError = unknown
+
+    export const useActivateCategory = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof activateCategory>>,
+        TError,
+        {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'},
+        TContext
+      > => {
+
+      const mutationOptions = getActivateCategoryMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
@@ -1086,83 +464,142 @@ export function useListPriceListItems<TData = Awaited<ReturnType<typeof listPric
 
 
 /**
- * Get detailed price list item information
- * @summary Get price list item details
+ * Create a new price list item (admin only)
+ * @summary Create new price list item
  */
-export const getPriceListItemById = (
-    priceListItemId: string,
+export const createPriceListItem = (
+    createPriceListItemRequest: CreatePriceListItemRequest,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
       
       
       return orvalFetcher<PriceListItemInfo>(
-      {url: `/api/price-list/${priceListItemId}`, method: 'GET', signal
+      {url: `/api/price-list`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPriceListItemRequest, signal
     },
       options);
     }
   
 
-export const getGetPriceListItemByIdQueryKey = (priceListItemId?: string,) => {
-    return [`/api/price-list/${priceListItemId}`] as const;
+
+export const getCreatePriceListItemMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPriceListItem>>, TError,{data: CreatePriceListItemRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPriceListItem>>, TError,{data: CreatePriceListItemRequest}, TContext> => {
+
+const mutationKey = ['createPriceListItem'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPriceListItem>>, {data: CreatePriceListItemRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPriceListItem(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePriceListItemMutationResult = NonNullable<Awaited<ReturnType<typeof createPriceListItem>>>
+    export type CreatePriceListItemMutationBody = CreatePriceListItemRequest
+    export type CreatePriceListItemMutationError = ErrorResponse | ErrorResponse | ErrorResponse
+
+    /**
+ * @summary Create new price list item
+ */
+export const useCreatePriceListItem = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPriceListItem>>, TError,{data: CreatePriceListItemRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createPriceListItem>>,
+        TError,
+        {data: CreatePriceListItemRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getCreatePriceListItemMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+export const getAllCategories = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<CategoryInfo[]>(
+      {url: `/api/price-list/categories`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetAllCategoriesQueryKey = () => {
+    return [`/api/price-list/categories`] as const;
     }
 
     
-export const getGetPriceListItemByIdQueryOptions = <TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetAllCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof getAllCategories>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategories>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetPriceListItemByIdQueryKey(priceListItemId);
+  const queryKey =  queryOptions?.queryKey ?? getGetAllCategoriesQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPriceListItemById>>> = ({ signal }) => getPriceListItemById(priceListItemId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllCategories>>> = ({ signal }) => getAllCategories(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(priceListItemId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAllCategories>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetPriceListItemByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getPriceListItemById>>>
-export type GetPriceListItemByIdQueryError = ErrorResponse | ErrorResponse
+export type GetAllCategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof getAllCategories>>>
+export type GetAllCategoriesQueryError = unknown
 
 
-export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
- priceListItemId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>> & Pick<
+export function useGetAllCategories<TData = Awaited<ReturnType<typeof getAllCategories>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategories>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getPriceListItemById>>,
+          Awaited<ReturnType<typeof getAllCategories>>,
           TError,
-          Awaited<ReturnType<typeof getPriceListItemById>>
+          Awaited<ReturnType<typeof getAllCategories>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
- priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>> & Pick<
+export function useGetAllCategories<TData = Awaited<ReturnType<typeof getAllCategories>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategories>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getPriceListItemById>>,
+          Awaited<ReturnType<typeof getAllCategories>>,
           TError,
-          Awaited<ReturnType<typeof getPriceListItemById>>
+          Awaited<ReturnType<typeof getAllCategories>>
         > , 'initialData'
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
- priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGetAllCategories<TData = Awaited<ReturnType<typeof getAllCategories>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategories>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get price list item details
- */
 
-export function useGetPriceListItemById<TData = Awaited<ReturnType<typeof getPriceListItemById>>, TError = ErrorResponse | ErrorResponse>(
- priceListItemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceListItemById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export function useGetAllCategories<TData = Awaited<ReturnType<typeof getAllCategories>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllCategories>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetPriceListItemByIdQueryOptions(priceListItemId,options)
+  const queryOptions = getGetAllCategoriesQueryOptions(options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
