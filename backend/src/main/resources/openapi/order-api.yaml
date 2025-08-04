@@ -250,22 +250,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              type: object
-              required:
-                - file
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: Photo file (max 5MB)
-                type:
-                  type: string
-                  enum: [GENERAL, DEFECT, STAIN, LABEL]
-                  default: GENERAL
-                  description: Photo type
-                description:
-                  type: string
-                  description: Photo description
+              $ref: '#/components/schemas/UploadItemPhotoRequest'
       responses:
         '201':
           description: Photo uploaded successfully
@@ -446,6 +431,21 @@ components:
         * `TERMINAL` - Card terminal
         * `BANK_TRANSFER` - Bank transfer
 
+    PhotoType:
+      type: string
+      enum:
+        - GENERAL
+        - DEFECT
+        - STAIN
+        - LABEL
+      default: GENERAL
+      description: |
+        Photo type:
+        * `GENERAL` - General photo
+        * `DEFECT` - Defect photo
+        * `STAIN` - Stain photo
+        * `LABEL` - Label photo
+
     OrderInfo:
       type: object
       required:
@@ -561,9 +561,8 @@ components:
           $ref: '#/components/schemas/PriceListItemSummary'
           description: Price list item details
         quantity:
-          type: number
-          format: decimal
-          description: Quantity
+          type: integer
+          description: Quantity (in units)
         characteristics:
           $ref: '#/components/schemas/ItemCharacteristics'
           description: Item characteristics
@@ -695,9 +694,7 @@ components:
           type: string
           description: Photo URL
         type:
-          type: string
-          enum: [GENERAL, DEFECT, STAIN, LABEL]
-          description: Photo type
+          $ref: '#/components/schemas/PhotoType'
         description:
           type: string
           description: Photo description
@@ -943,6 +940,21 @@ components:
           type: object
           additionalProperties: true
           description: Additional error details
+
+    UploadItemPhotoRequest:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
+          description: Photo file (max 5MB)
+        photoType:
+          $ref: '#/components/schemas/PhotoType'
+        photoDescription:
+          type: string
+          description: Photo description
 
   securitySchemes:
     cookieAuth:

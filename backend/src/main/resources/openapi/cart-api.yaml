@@ -268,10 +268,9 @@ components:
           $ref: '#/components/schemas/PriceListItemSummary'
           description: Price list item details
         quantity:
-          type: number
-          format: decimal
-          minimum: 0.1
-          description: Quantity (pieces or kilograms)
+          type: integer
+          minimum: 1
+          description: Quantity (in units)
         characteristics:
           $ref: '#/components/schemas/ItemCharacteristics'
           description: Item characteristics
@@ -457,8 +456,7 @@ components:
           format: uuid
           description: Price list item ID
         quantity:
-          type: number
-          format: decimal
+          type: integer
           minimum: 0.1
           description: Quantity
         characteristics:
@@ -474,8 +472,7 @@ components:
       type: object
       properties:
         quantity:
-          type: number
-          format: decimal
+          type: integer
           minimum: 0.1
           description: New quantity
         characteristics:

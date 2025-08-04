@@ -148,10 +148,9 @@ components:
           format: uuid
           description: Price list item ID
         quantity:
-          type: number
-          format: decimal
-          minimum: 0.1
-          description: Quantity (pieces or kilograms)
+          type: integer
+          minimum: 1
+          description: Quantity (in units)
         characteristics:
           $ref: '#/components/schemas/ItemCharacteristics'
           description: Item characteristics
@@ -244,8 +243,7 @@ components:
           type: string
           description: Category code
         quantity:
-          type: number
-          format: decimal
+          type: integer
         basePrice:
           type: integer
           description: Base price per unit in kopiykas
