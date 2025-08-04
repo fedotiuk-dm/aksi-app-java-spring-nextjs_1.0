@@ -1,0 +1,538 @@
+openapi: 3.1.1
+info:
+  title: Cart API
+  description: Shopping cart API for temporary order storage and price calculation
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: cart
+    description: Shopping cart operations
+
+paths:
+  /api/cart:
+    get:
+      operationId: getCart
+      summary: Get current cart
+      description: Get the current user's shopping cart with all items and calculations
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Current cart details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    
+    delete:
+      operationId: clearCart
+      summary: Clear cart
+      description: Remove all items from the cart
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      responses:
+        '204':
+          description: Cart cleared successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/cart/items:
+    post:
+      operationId: addCartItem
+      summary: Add item to cart
+      description: Add a new item to the shopping cart
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCartItemRequest'
+      responses:
+        '201':
+          description: Item added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/cart/items/{itemId}:
+    parameters:
+      - name: itemId
+        in: path
+        required: true
+        description: Cart item ID
+        schema:
+          type: string
+          format: uuid
+    
+    put:
+      operationId: updateCartItem
+      summary: Update cart item
+      description: Update quantity or characteristics of a cart item
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartItemRequest'
+      responses:
+        '200':
+          description: Item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      operationId: removeCartItem
+      summary: Remove item from cart
+      description: Remove an item from the shopping cart
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      responses:
+        '204':
+          description: Item removed successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/cart/modifiers:
+    put:
+      operationId: updateCartModifiers
+      summary: Update cart global modifiers
+      description: Update global modifiers like urgency and discount
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartModifiersRequest'
+      responses:
+        '200':
+          description: Modifiers updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/cart/calculate:
+    post:
+      operationId: calculateCart
+      summary: Calculate cart totals
+      description: Recalculate all prices in the cart
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Cart recalculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartPricingInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Unauthorized:
+      description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    CartInfo:
+      type: object
+      required:
+        - id
+        - customerId
+        - items
+        - pricing
+        - createdAt
+        - expiresAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Cart ID
+        customerId:
+          type: string
+          format: uuid
+          description: Customer ID
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemInfo'
+          description: Cart items
+        globalModifiers:
+          $ref: '#/components/schemas/CartGlobalModifiers'
+          description: Global cart modifiers
+        pricing:
+          $ref: '#/components/schemas/CartPricingInfo'
+          description: Cart pricing details
+        createdAt:
+          type: string
+          format: date-time
+          description: Cart creation time
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update time
+        expiresAt:
+          type: string
+          format: date-time
+          description: Cart expiration time (TTL)
+
+    CartItemInfo:
+      type: object
+      required:
+        - id
+        - priceListItemId
+        - priceListItem
+        - quantity
+        - characteristics
+        - pricing
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Cart item ID
+        priceListItemId:
+          type: string
+          format: uuid
+          description: Price list item ID
+        priceListItem:
+          $ref: '#/components/schemas/PriceListItemSummary'
+          description: Price list item details
+        quantity:
+          type: number
+          format: decimal
+          minimum: 0.1
+          description: Quantity (pieces or kilograms)
+        characteristics:
+          $ref: '#/components/schemas/ItemCharacteristics'
+          description: Item characteristics
+        modifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemModifier'
+          description: Applied modifiers
+        pricing:
+          $ref: '#/components/schemas/CartItemPricingInfo'
+          description: Item pricing details
+
+    PriceListItemSummary:
+      type: object
+      required:
+        - id
+        - name
+        - categoryCode
+        - unitOfMeasure
+        - basePrice
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        categoryCode:
+          type: string
+        unitOfMeasure:
+          type: string
+          enum: [PIECE, KILOGRAM, PAIR, SQUARE_METER]
+        basePrice:
+          type: integer
+          description: Base price in kopiykas
+
+    ItemCharacteristics:
+      type: object
+      properties:
+        material:
+          type: string
+          description: Material type
+        color:
+          type: string
+          description: Item color
+        filler:
+          type: string
+          description: Filler type (for padded items)
+        fillerCondition:
+          type: string
+          enum: [NORMAL, COMPRESSED]
+          description: Filler condition
+        wearLevel:
+          type: integer
+          enum: [10, 30, 50, 75]
+          description: Wear level percentage
+
+    ItemModifier:
+      type: object
+      required:
+        - code
+        - name
+        - type
+        - value
+      properties:
+        code:
+          type: string
+          description: Modifier code
+        name:
+          type: string
+          description: Modifier name
+        type:
+          type: string
+          enum: [PERCENTAGE, FIXED]
+          description: Modifier type
+        value:
+          type: number
+          description: Modifier value (percentage or fixed amount)
+
+    CartGlobalModifiers:
+      type: object
+      properties:
+        urgencyType:
+          type: string
+          enum: [NORMAL, EXPRESS_48H, EXPRESS_24H]
+          default: NORMAL
+          description: Urgency type
+        discountType:
+          type: string
+          enum: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
+          default: NONE
+          description: Discount type
+        discountPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Discount percentage (for OTHER type)
+        expectedCompletionDate:
+          type: string
+          format: date
+          description: Expected completion date
+
+    CartItemPricingInfo:
+      type: object
+      required:
+        - basePrice
+        - modifiersTotalAmount
+        - subtotal
+        - urgencyAmount
+        - discountAmount
+        - total
+      properties:
+        basePrice:
+          type: integer
+          description: Base price in kopiykas
+        modifierDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModifierDetail'
+          description: Applied modifier details
+        modifiersTotalAmount:
+          type: integer
+          description: Total modifiers amount in kopiykas
+        subtotal:
+          type: integer
+          description: Subtotal (base + modifiers) in kopiykas
+        urgencyAmount:
+          type: integer
+          description: Urgency surcharge amount in kopiykas
+        discountAmount:
+          type: integer
+          description: Discount amount in kopiykas
+        total:
+          type: integer
+          description: Total price in kopiykas
+
+    ModifierDetail:
+      type: object
+      required:
+        - code
+        - name
+        - amount
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        amount:
+          type: integer
+          description: Modifier amount in kopiykas
+
+    CartPricingInfo:
+      type: object
+      required:
+        - itemsSubtotal
+        - urgencyAmount
+        - discountAmount
+        - total
+      properties:
+        itemsSubtotal:
+          type: integer
+          description: Sum of all items subtotals in kopiykas
+        urgencyAmount:
+          type: integer
+          description: Total urgency amount in kopiykas
+        discountAmount:
+          type: integer
+          description: Total discount amount in kopiykas
+        discountApplicableAmount:
+          type: integer
+          description: Amount eligible for discount in kopiykas
+        total:
+          type: integer
+          description: Final total in kopiykas
+
+    AddCartItemRequest:
+      type: object
+      required:
+        - priceListItemId
+        - quantity
+      properties:
+        priceListItemId:
+          type: string
+          format: uuid
+          description: Price list item ID
+        quantity:
+          type: number
+          format: decimal
+          minimum: 0.1
+          description: Quantity
+        characteristics:
+          $ref: '#/components/schemas/ItemCharacteristics'
+          description: Item characteristics
+        modifierCodes:
+          type: array
+          items:
+            type: string
+          description: Modifier codes to apply
+
+    UpdateCartItemRequest:
+      type: object
+      properties:
+        quantity:
+          type: number
+          format: decimal
+          minimum: 0.1
+          description: New quantity
+        characteristics:
+          $ref: '#/components/schemas/ItemCharacteristics'
+          description: Updated characteristics
+        modifierCodes:
+          type: array
+          items:
+            type: string
+          description: Updated modifier codes
+
+    UpdateCartModifiersRequest:
+      type: object
+      properties:
+        urgencyType:
+          type: string
+          enum: [NORMAL, EXPRESS_48H, EXPRESS_24H]
+          description: Urgency type
+        discountType:
+          type: string
+          enum: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
+          description: Discount type
+        discountPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Discount percentage (required for OTHER type)
+        expectedCompletionDate:
+          type: string
+          format: date
+          description: Expected completion date
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error details
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session-based authentication using httpOnly cookies

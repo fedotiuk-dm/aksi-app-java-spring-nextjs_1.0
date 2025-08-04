@@ -1,0 +1,952 @@
+openapi: 3.1.1
+info:
+  title: Order API
+  description: Order management API for dry cleaning system
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: orders
+    description: Order management operations
+
+paths:
+  /api/orders:
+    get:
+      operationId: listOrders
+      summary: List orders
+      description: Get paginated list of orders
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: offset
+          in: query
+          description: Number of items to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Number of items to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: customerId
+          in: query
+          description: Filter by customer ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Filter by order status
+          required: false
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+        - name: branchId
+          in: query
+          description: Filter by branch ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: dateFrom
+          in: query
+          description: Filter by creation date from
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          description: Filter by creation date to
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      operationId: createOrder
+      summary: Create order from cart
+      description: Create a new order from the current cart
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/orders/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      operationId: getOrderById
+      summary: Get order details
+      description: Get detailed order information
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    patch:
+      operationId: updateOrderStatus
+      summary: Update order status
+      description: Update the status of an order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatusRequest'
+      responses:
+        '200':
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/orders/{orderId}/items/{itemId}/characteristics:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        description: Order item ID
+        schema:
+          type: string
+          format: uuid
+    
+    put:
+      operationId: updateItemCharacteristics
+      summary: Update item characteristics
+      description: Update characteristics, stains, and defects of an order item
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateItemCharacteristicsRequest'
+      responses:
+        '200':
+          description: Characteristics updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItemInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/orders/{orderId}/items/{itemId}/photos:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        description: Order item ID
+        schema:
+          type: string
+          format: uuid
+    
+    post:
+      operationId: uploadItemPhoto
+      summary: Upload item photo
+      description: Upload a photo for an order item
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Photo file (max 5MB)
+                type:
+                  type: string
+                  enum: [GENERAL, DEFECT, STAIN, LABEL]
+                  default: GENERAL
+                  description: Photo type
+                description:
+                  type: string
+                  description: Photo description
+      responses:
+        '201':
+          description: Photo uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemPhotoInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/orders/{orderId}/items/{itemId}/photos/{photoId}:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: photoId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    delete:
+      operationId: deleteItemPhoto
+      summary: Delete item photo
+      description: Delete a photo from an order item
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      responses:
+        '204':
+          description: Photo deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/orders/{orderId}/receipt:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      operationId: getOrderReceipt
+      summary: Get order receipt
+      description: Get receipt PDF for an order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Receipt PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/orders/{orderId}/payment:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+    
+    post:
+      operationId: addOrderPayment
+      summary: Add payment to order
+      description: Register a payment for an order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddPaymentRequest'
+      responses:
+        '201':
+          description: Payment registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Unauthorized:
+      description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    OrderStatus:
+      type: string
+      enum:
+        - PENDING
+        - ACCEPTED
+        - IN_PROGRESS
+        - READY
+        - COMPLETED
+        - CANCELLED
+      description: |
+        Order status:
+        * `PENDING` - Pending acceptance
+        * `ACCEPTED` - Accepted
+        * `IN_PROGRESS` - In progress
+        * `READY` - Ready for pickup
+        * `COMPLETED` - Completed
+        * `CANCELLED` - Cancelled
+
+    PaymentMethod:
+      type: string
+      enum:
+        - CASH
+        - TERMINAL
+        - BANK_TRANSFER
+      description: |
+        Payment method:
+        * `CASH` - Cash
+        * `TERMINAL` - Card terminal
+        * `BANK_TRANSFER` - Bank transfer
+
+    OrderInfo:
+      type: object
+      required:
+        - id
+        - orderNumber
+        - customerId
+        - customer
+        - branchId
+        - status
+        - items
+        - pricing
+        - createdAt
+        - expectedCompletionDate
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order ID
+        orderNumber:
+          type: string
+          description: Order number
+        customerId:
+          type: string
+          format: uuid
+          description: Customer ID
+        customer:
+          $ref: '#/components/schemas/CustomerSummary'
+          description: Customer information
+        branchId:
+          type: string
+          format: uuid
+          description: Branch ID
+        uniqueLabel:
+          type: string
+          description: Unique label (QR code)
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+          description: Order status
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemInfo'
+          description: Order items
+        pricing:
+          $ref: '#/components/schemas/OrderPricingInfo'
+          description: Order pricing details
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentInfo'
+          description: Order payments
+        notes:
+          type: string
+          description: Order notes
+        customerSignature:
+          type: string
+          description: Customer signature (base64)
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation time
+        createdBy:
+          type: string
+          description: Created by user ID
+        expectedCompletionDate:
+          type: string
+          format: date-time
+          description: Expected completion date
+        actualCompletionDate:
+          type: string
+          format: date-time
+          description: Actual completion date
+
+    CustomerSummary:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - phone
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+
+    OrderItemInfo:
+      type: object
+      required:
+        - id
+        - priceListItemId
+        - priceListItem
+        - quantity
+        - characteristics
+        - pricing
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order item ID
+        priceListItemId:
+          type: string
+          format: uuid
+          description: Price list item ID
+        priceListItem:
+          $ref: '#/components/schemas/PriceListItemSummary'
+          description: Price list item details
+        quantity:
+          type: number
+          format: decimal
+          description: Quantity
+        characteristics:
+          $ref: '#/components/schemas/ItemCharacteristics'
+          description: Item characteristics
+        stains:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemStain'
+          description: Item stains
+        defects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemDefect'
+          description: Item defects
+        risks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemRisk'
+          description: Item risks
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemPhotoInfo'
+          description: Item photos
+        modifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemModifier'
+          description: Applied modifiers
+        pricing:
+          $ref: '#/components/schemas/OrderItemPricingInfo'
+          description: Item pricing details
+
+    PriceListItemSummary:
+      type: object
+      required:
+        - id
+        - name
+        - categoryCode
+        - unitOfMeasure
+        - basePrice
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        categoryCode:
+          type: string
+        unitOfMeasure:
+          type: string
+          enum: [PIECE, KILOGRAM, PAIR, SQUARE_METER]
+        basePrice:
+          type: integer
+          description: Base price in kopiykas
+
+    ItemCharacteristics:
+      type: object
+      properties:
+        material:
+          type: string
+          description: Material type
+        color:
+          type: string
+          description: Item color
+        filler:
+          type: string
+          description: Filler type
+        fillerCondition:
+          type: string
+          enum: [NORMAL, COMPRESSED]
+          description: Filler condition
+        wearLevel:
+          type: integer
+          enum: [10, 30, 50, 75]
+          description: Wear level percentage
+
+    ItemStain:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [GREASE, BLOOD, PROTEIN, WINE, COFFEE, GRASS, INK, COSMETICS, OTHER]
+          description: Stain type
+        description:
+          type: string
+          description: Additional description
+
+    ItemDefect:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [WORN, TORN, MISSING_ACCESSORIES, DAMAGED_ACCESSORIES, OTHER]
+          description: Defect type
+        description:
+          type: string
+          description: Additional description
+
+    ItemRisk:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [COLOR_CHANGE, DEFORMATION, NO_WARRANTY]
+          description: Risk type
+        description:
+          type: string
+          description: Risk description
+
+    ItemPhotoInfo:
+      type: object
+      required:
+        - id
+        - url
+        - type
+        - uploadedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Photo ID
+        url:
+          type: string
+          description: Photo URL
+        type:
+          type: string
+          enum: [GENERAL, DEFECT, STAIN, LABEL]
+          description: Photo type
+        description:
+          type: string
+          description: Photo description
+        uploadedAt:
+          type: string
+          format: date-time
+          description: Upload time
+        uploadedBy:
+          type: string
+          description: Uploaded by user ID
+
+    ItemModifier:
+      type: object
+      required:
+        - code
+        - name
+        - type
+        - value
+      properties:
+        code:
+          type: string
+          description: Modifier code
+        name:
+          type: string
+          description: Modifier name
+        type:
+          type: string
+          enum: [PERCENTAGE, FIXED]
+          description: Modifier type
+        value:
+          type: number
+          description: Modifier value
+
+    OrderItemPricingInfo:
+      type: object
+      required:
+        - basePrice
+        - modifiersTotalAmount
+        - subtotal
+        - urgencyAmount
+        - discountAmount
+        - total
+      properties:
+        basePrice:
+          type: integer
+          description: Base price in kopiykas
+        modifierDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModifierDetail'
+          description: Applied modifier details
+        modifiersTotalAmount:
+          type: integer
+          description: Total modifiers amount
+        subtotal:
+          type: integer
+          description: Subtotal (base + modifiers)
+        urgencyAmount:
+          type: integer
+          description: Urgency surcharge
+        discountAmount:
+          type: integer
+          description: Discount amount
+        total:
+          type: integer
+          description: Total price
+
+    ModifierDetail:
+      type: object
+      required:
+        - code
+        - name
+        - amount
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        amount:
+          type: integer
+
+    OrderPricingInfo:
+      type: object
+      required:
+        - itemsSubtotal
+        - urgencyAmount
+        - discountAmount
+        - total
+        - paidAmount
+        - balanceDue
+      properties:
+        itemsSubtotal:
+          type: integer
+          description: Sum of all items subtotals
+        urgencyAmount:
+          type: integer
+          description: Total urgency amount
+        discountAmount:
+          type: integer
+          description: Total discount amount
+        discountApplicableAmount:
+          type: integer
+          description: Amount eligible for discount
+        total:
+          type: integer
+          description: Final total
+        paidAmount:
+          type: integer
+          description: Total paid amount
+        balanceDue:
+          type: integer
+          description: Balance due
+
+    PaymentInfo:
+      type: object
+      required:
+        - id
+        - amount
+        - method
+        - paidAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: integer
+          description: Payment amount in kopiykas
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        paidAt:
+          type: string
+          format: date-time
+        paidBy:
+          type: string
+          description: User ID who registered payment
+
+    CreateOrderRequest:
+      type: object
+      required:
+        - cartId
+        - branchId
+      properties:
+        cartId:
+          type: string
+          format: uuid
+          description: Cart ID to create order from
+        branchId:
+          type: string
+          format: uuid
+          description: Branch ID
+        uniqueLabel:
+          type: string
+          description: Unique label (QR code)
+        notes:
+          type: string
+          description: Order notes
+        customerSignature:
+          type: string
+          description: Customer signature (base64)
+        termsAccepted:
+          type: boolean
+          description: Terms and conditions accepted
+          default: false
+
+    UpdateOrderStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        notes:
+          type: string
+          description: Status change notes
+
+    UpdateItemCharacteristicsRequest:
+      type: object
+      properties:
+        characteristics:
+          $ref: '#/components/schemas/ItemCharacteristics'
+        stains:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemStain'
+        defects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemDefect'
+        risks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemRisk'
+
+    AddPaymentRequest:
+      type: object
+      required:
+        - amount
+        - method
+      properties:
+        amount:
+          type: integer
+          minimum: 1
+          description: Payment amount in kopiykas
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+
+    OrdersResponse:
+      type: object
+      required:
+        - orders
+        - totalItems
+        - hasMore
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderInfo'
+        totalItems:
+          type: integer
+          description: Total number of items
+        hasMore:
+          type: boolean
+          description: Has more items
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error details
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session-based authentication using httpOnly cookies
