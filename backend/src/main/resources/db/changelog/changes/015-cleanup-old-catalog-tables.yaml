@@ -3,8 +3,8 @@ databaseChangeLog:
       id: 015-1-drop-service-items-table
       author: system
       preConditions:
-        onFail: MARK_RAN
-        tableExists:
+        - onFail: MARK_RAN
+          tableExists:
           tableName: service_items
       changes:
         - dropTable:
@@ -15,8 +15,8 @@ databaseChangeLog:
       id: 015-2-drop-items-table
       author: system
       preConditions:
-        onFail: MARK_RAN
-        tableExists:
+        - onFail: MARK_RAN
+          tableExists:
           tableName: items
       changes:
         - dropTable:
@@ -27,8 +27,8 @@ databaseChangeLog:
       id: 015-3-drop-services-table
       author: system
       preConditions:
-        onFail: MARK_RAN
-        tableExists:
+        - onFail: MARK_RAN
+          tableExists:
           tableName: services
       changes:
         - dropTable:

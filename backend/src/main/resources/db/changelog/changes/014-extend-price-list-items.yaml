@@ -9,13 +9,13 @@ databaseChangeLog:
               - column:
                   name: processing_time_days
                   type: INTEGER
-                  defaultValue: 3
+                  defaultValue: "3"
                   constraints:
                     nullable: true
               - column:
                   name: express_available
                   type: BOOLEAN
-                  defaultValue: false
+                  defaultValue: "false"
                   constraints:
                     nullable: false
               - column:
