@@ -45,8 +45,8 @@ public class CartItem extends BaseEntity {
   @OneToOne(
       mappedBy = "cartItem",
       cascade = CascadeType.ALL,
-      orphanRemoval = true,
-      fetch = FetchType.LAZY)
+      orphanRemoval = true
+  )
   private CartItemCharacteristics characteristics;
 
   @OneToMany(
@@ -56,24 +56,22 @@ public class CartItem extends BaseEntity {
       fetch = FetchType.LAZY)
   private List<CartItemModifier> modifiers = new ArrayList<>();
 
+  /**
+   * Add modifier to cart item.
+   * Note: Prefer using CartService for business operations.
+   */
   public void addModifier(CartItemModifier modifier) {
     modifiers.add(modifier);
     modifier.setCartItem(this);
   }
 
+  /**
+   * Remove modifier from cart item.
+   * Reserved for future use when individual modifier removal is needed.
+   * Currently, update operations replace all modifiers.
+   */
   public void removeModifier(CartItemModifier modifier) {
     modifiers.remove(modifier);
     modifier.setCartItem(null);
-  }
-
-  public void setCharacteristics(CartItemCharacteristics characteristics) {
-    if (characteristics == null) {
-      if (this.characteristics != null) {
-        this.characteristics.setCartItem(null);
-      }
-    } else {
-      characteristics.setCartItem(this);
-    }
-    this.characteristics = characteristics;
   }
 }

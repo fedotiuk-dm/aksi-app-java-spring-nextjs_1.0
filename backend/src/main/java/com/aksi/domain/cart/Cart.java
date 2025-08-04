@@ -65,16 +65,6 @@ public class Cart extends BaseEntity {
   @Column(name = "expires_at", nullable = false)
   private Instant expiresAt;
 
-  public void addItem(CartItem item) {
-    items.add(item);
-    item.setCart(this);
-  }
-
-  public void removeItem(CartItem item) {
-    items.remove(item);
-    item.setCart(null);
-  }
-
   public boolean isExpired() {
     return Instant.now().isAfter(expiresAt);
   }

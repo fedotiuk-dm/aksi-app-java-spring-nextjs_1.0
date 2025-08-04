@@ -3,6 +3,7 @@ package com.aksi;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Main application class for AKSI Dry Cleaning Order System. This system manages dry cleaning
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
  */
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableScheduling
 public class DryCleaningOrderSystemApplication {
 
   public static void main(String[] args) {
