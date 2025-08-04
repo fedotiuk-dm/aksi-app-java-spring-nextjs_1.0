@@ -50,6 +50,8 @@ databaseChangeLog:
       file: db/changelog/changes/014-extend-price-list-items.yaml
   - include:
       file: db/changelog/changes/015-cleanup-old-catalog-tables.yaml
+  - include:
+      file: db/changelog/changes/016-create-cart-tables.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:
