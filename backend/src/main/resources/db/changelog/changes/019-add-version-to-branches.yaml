@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-version-column-to-branches
+      author: claude
+      changes:
+        - addColumn:
+            tableName: branches
+            columns:
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValue: "0"
+                  constraints:
+                    nullable: false
+
+      rollback:
+        - dropColumn:
+            tableName: branches
+            columnName: version

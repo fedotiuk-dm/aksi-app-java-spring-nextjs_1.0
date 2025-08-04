@@ -56,6 +56,8 @@ databaseChangeLog:
       file: db/changelog/changes/017-update-customer-for-api.yaml
   - include:
       file: db/changelog/changes/018-create-branches-table.yaml
+  - include:
+      file: db/changelog/changes/019-add-version-to-branches.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:
