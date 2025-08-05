@@ -1,4 +1,4 @@
-package com.aksi.repository.pricing;
+package com.aksi.repository;
 
 import java.util.List;
 import java.util.Optional;

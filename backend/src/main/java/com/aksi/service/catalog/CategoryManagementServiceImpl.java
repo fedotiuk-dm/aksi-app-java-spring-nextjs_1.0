@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.domain.catalog.PriceListItem;
-import com.aksi.repository.catalog.PriceListItemRepository;
+import com.aksi.repository.PriceListItemRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

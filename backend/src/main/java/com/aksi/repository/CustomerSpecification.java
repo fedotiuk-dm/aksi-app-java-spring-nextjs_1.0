@@ -1,4 +1,4 @@
-package com.aksi.repository.customer;
+package com.aksi.repository;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;

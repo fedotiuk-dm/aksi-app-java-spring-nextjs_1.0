@@ -16,7 +16,9 @@ public interface PricingMapper {
    * @param modifier PriceModifier entity
    * @return PriceModifier DTO
    */
-  @Mapping(target = "type", expression = "java(PriceModifier.TypeEnum.fromValue(modifier.getType().name()))")
+  @Mapping(
+      target = "type",
+      expression = "java(PriceModifier.TypeEnum.fromValue(modifier.getType().name()))")
   PriceModifier toPriceModifierDto(com.aksi.domain.pricing.PriceModifier modifier);
 
   /**

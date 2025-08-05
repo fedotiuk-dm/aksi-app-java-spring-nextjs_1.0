@@ -72,7 +72,8 @@ public class ItemPhoto extends BaseEntity {
   private String originalFilename;
 
   // Convenience constructor
-  public ItemPhoto(OrderItem orderItem, String url, PhotoType type, String description, User uploadedBy) {
+  public ItemPhoto(
+      OrderItem orderItem, String url, PhotoType type, String description, User uploadedBy) {
     this.orderItem = orderItem;
     this.url = url;
     this.type = type;
@@ -83,9 +84,7 @@ public class ItemPhoto extends BaseEntity {
 
   // Business methods
   public boolean isDocumentationPhoto() {
-    return type == PhotoType.DEFECT || 
-           type == PhotoType.STAIN || 
-           type == PhotoType.LABEL;
+    return type == PhotoType.DEFECT || type == PhotoType.STAIN || type == PhotoType.LABEL;
   }
 
   public String getDisplayName() {
@@ -99,7 +98,7 @@ public class ItemPhoto extends BaseEntity {
 
   public String getFormattedFileSize() {
     if (fileSize == null) return "Невідомо";
-    
+
     if (fileSize < 1024) return fileSize + " Б";
     if (fileSize < 1024 * 1024) return (fileSize / 1024) + " КБ";
     return (fileSize / (1024 * 1024)) + " МБ";

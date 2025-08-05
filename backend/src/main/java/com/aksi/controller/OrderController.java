@@ -50,24 +50,28 @@ public class OrderController implements OrderApi {
       @Nullable LocalDate dateFrom,
       @Nullable LocalDate dateTo) {
 
-    log.debug("Listing orders with filters - customer: {}, status: {}, branch: {}", 
-        customerId, status, branchId);
+    log.debug(
+        "Listing orders with filters - customer: {}, status: {}, branch: {}",
+        customerId,
+        status,
+        branchId);
 
     // Create pageable with sorting by creation date descending
-    Pageable pageable = PageRequest.of(
-        offset != null ? offset / (limit != null ? limit : 20) : 0,
-        limit != null ? limit : 20,
-        Sort.by(Sort.Direction.DESC, "createdAt")
-    );
+    Pageable pageable =
+        PageRequest.of(
+            offset != null ? offset / (limit != null ? limit : 20) : 0,
+            limit != null ? limit : 20,
+            Sort.by(Sort.Direction.DESC, "createdAt"));
 
     // Convert string parameters to appropriate types
     UUID customerUuid = customerId != null ? UUID.fromString(customerId) : null;
     UUID branchUuid = branchId != null ? UUID.fromString(branchId) : null;
-    Order.OrderStatus orderStatus = status != null ? 
-        Order.OrderStatus.valueOf(status.getValue()) : null;
+    Order.OrderStatus orderStatus =
+        status != null ? Order.OrderStatus.valueOf(status.getValue()) : null;
 
-    Page<OrderInfo> orders = orderService.listOrders(
-        customerUuid, orderStatus, branchUuid, dateFrom, dateTo, null, pageable);
+    Page<OrderInfo> orders =
+        orderService.listOrders(
+            customerUuid, orderStatus, branchUuid, dateFrom, dateTo, null, pageable);
 
     OrdersResponse response = new OrdersResponse();
     response.setOrders(orders.getContent());
@@ -110,15 +114,18 @@ public class OrderController implements OrderApi {
 
   @Override
   public ResponseEntity<OrderItemInfo> updateItemCharacteristics(
-      String orderId, String itemId, UpdateItemCharacteristicsRequest updateItemCharacteristicsRequest) {
+      String orderId,
+      String itemId,
+      UpdateItemCharacteristicsRequest updateItemCharacteristicsRequest) {
 
     log.debug("Updating characteristics for item {} in order {}", itemId, orderId);
 
     UUID orderUuid = UUID.fromString(orderId);
     UUID itemUuid = UUID.fromString(itemId);
 
-    OrderItemInfo updatedItem = orderService.updateItemCharacteristics(
-        orderUuid, itemUuid, updateItemCharacteristicsRequest);
+    OrderItemInfo updatedItem =
+        orderService.updateItemCharacteristics(
+            orderUuid, itemUuid, updateItemCharacteristicsRequest);
 
     return ResponseEntity.ok(updatedItem);
   }
@@ -158,7 +165,7 @@ public class OrderController implements OrderApi {
     byte[] pdfContent = orderService.getOrderReceipt(orderUuid);
 
     // Create resource from byte array
-    org.springframework.core.io.Resource resource = 
+    org.springframework.core.io.Resource resource =
         new org.springframework.core.io.ByteArrayResource(pdfContent);
 
     HttpHeaders headers = new HttpHeaders();
@@ -166,9 +173,7 @@ public class OrderController implements OrderApi {
     headers.setContentDispositionFormData("attachment", "order-" + orderId + "-receipt.pdf");
     headers.setContentLength(pdfContent.length);
 
-    return ResponseEntity.ok()
-        .headers(headers)
-        .body(resource);
+    return ResponseEntity.ok().headers(headers).body(resource);
   }
 
   @Override

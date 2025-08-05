@@ -176,27 +176,55 @@ components:
 
     GlobalPriceModifiers:
       type: object
+      x-discount-excluded-categories: [LAUNDRY, IRONING, DYEING]
+      x-discount-excluded-categories-description: |
+        Categories excluded from all discounts:
+        * `LAUNDRY` - Прання (Laundry)
+        * `IRONING` - Прасування (Ironing)  
+        * `DYEING` - Фарбування (Dyeing)
       properties:
         urgencyType:
           type: string
           enum: [NORMAL, EXPRESS_48H, EXPRESS_24H]
+          x-enum-varnames: [NORMAL, EXPRESS_48H, EXPRESS_24H]
+          x-enum-descriptions:
+            - Standard processing
+            - Express 48 hours
+            - Express 24 hours
+          x-enum-percentages:
+            - 0
+            - 50
+            - 100
           default: NORMAL
           description: |
             Urgency type:
-            * `NORMAL` - Standard processing
+            * `NORMAL` - Standard processing (0%)
             * `EXPRESS_48H` - Express 48 hours (+50%)
             * `EXPRESS_24H` - Express 24 hours (+100%)
         discountType:
           type: string
           enum: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
+          x-enum-varnames: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
+          x-enum-descriptions:
+            - No discount
+            - Evercard discount
+            - Social media discount  
+            - Military discount
+            - Other discount
+          x-enum-percentages:
+            - 0
+            - 10
+            - 5
+            - 10
+            - null
           default: NONE
           description: |
             Discount type:
-            * `NONE` - No discount
+            * `NONE` - No discount (0%)
             * `EVERCARD` - Evercard discount (10%)
             * `SOCIAL_MEDIA` - Social media discount (5%)
             * `MILITARY` - Military discount (10%)
-            * `OTHER` - Other discount
+            * `OTHER` - Other discount (requires discountPercentage)
         discountPercentage:
           type: integer
           minimum: 0
@@ -369,10 +397,23 @@ components:
         type:
           type: string
           enum: [PERCENTAGE, FIXED]
-          description: Modifier type
+          x-enum-varnames: [PERCENTAGE, FIXED]
+          x-enum-descriptions:
+            - Percentage modifier (value in basis points)
+            - Fixed amount per item
+          x-calculation-formula:
+            PERCENTAGE: (baseAmount * value) / 10000
+            FIXED: value * quantity
+          description: |
+            Modifier type:
+            * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%)
+            * `FIXED` - Fixed amount per item in kopiykas
         value:
           type: integer
-          description: Modifier value (percentage in basis points *100 or fixed amount in kopiykas)
+          description: |
+            Modifier value:
+            - For PERCENTAGE: basis points (e.g., 1550 = 15.5%)
+            - For FIXED: amount in kopiykas per item
         categoryRestrictions:
           type: array
           items:

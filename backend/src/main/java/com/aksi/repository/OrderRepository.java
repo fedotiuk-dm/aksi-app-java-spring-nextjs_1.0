@@ -1,4 +1,4 @@
-package com.aksi.repository.order;
+package com.aksi.repository;
 
 import java.time.Instant;
 import java.util.List;
@@ -17,7 +17,8 @@ import com.aksi.domain.order.Order;
 
 /** Repository interface for Order entity */
 @Repository
-public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
+public interface OrderRepository
+    extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
 
   /** Find order by order number */
   Optional<Order> findByOrderNumber(String orderNumber);
@@ -32,18 +33,21 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
   Page<Order> findByStatusOrderByCreatedAtDesc(Order.OrderStatus status, Pageable pageable);
 
   /** Find orders with balance due */
-  @Query("SELECT o FROM Order o WHERE o.totalAmount > " +
-         "(SELECT COALESCE(SUM(p.amount), 0) FROM OrderPayment p WHERE p.order = o)")
+  @Query(
+      "SELECT o FROM Order o WHERE o.totalAmount > "
+          + "(SELECT COALESCE(SUM(p.amount), 0) FROM OrderPayment p WHERE p.order = o)")
   List<Order> findOrdersWithBalanceDue();
 
   /** Find orders due for completion */
-  @Query("SELECT o FROM Order o WHERE o.expectedCompletionDate <= :date " +
-         "AND o.status IN ('ACCEPTED', 'IN_PROGRESS')")
+  @Query(
+      "SELECT o FROM Order o WHERE o.expectedCompletionDate <= :date "
+          + "AND o.status IN ('ACCEPTED', 'IN_PROGRESS')")
   List<Order> findOrdersDueForCompletion(@Param("date") Instant date);
 
   /** Find overdue orders */
-  @Query("SELECT o FROM Order o WHERE o.expectedCompletionDate < :now " +
-         "AND o.status IN ('ACCEPTED', 'IN_PROGRESS')")
+  @Query(
+      "SELECT o FROM Order o WHERE o.expectedCompletionDate < :now "
+          + "AND o.status IN ('ACCEPTED', 'IN_PROGRESS')")
   List<Order> findOverdueOrders(@Param("now") Instant now);
 
   /** Get count of orders by status */
@@ -56,28 +60,23 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
   boolean existsByOrderNumber(String orderNumber);
 
   /** Find orders created between dates */
-  @Query("SELECT o FROM Order o WHERE o.createdAt >= :from AND o.createdAt <= :to " +
-         "ORDER BY o.createdAt DESC")
+  @Query(
+      "SELECT o FROM Order o WHERE o.createdAt >= :from AND o.createdAt <= :to "
+          + "ORDER BY o.createdAt DESC")
   Page<Order> findOrdersCreatedBetween(
-      @Param("from") Instant from, 
-      @Param("to") Instant to, 
-      Pageable pageable);
+      @Param("from") Instant from, @Param("to") Instant to, Pageable pageable);
 
   /** Find recent orders for customer */
-  @Query("SELECT o FROM Order o WHERE o.customer.id = :customerId " +
-         "ORDER BY o.createdAt DESC")
-  Page<Order> findRecentOrdersByCustomer(
-      @Param("customerId") UUID customerId, 
-      Pageable pageable);
+  @Query("SELECT o FROM Order o WHERE o.customer.id = :customerId " + "ORDER BY o.createdAt DESC")
+  Page<Order> findRecentOrdersByCustomer(@Param("customerId") UUID customerId, Pageable pageable);
 
   /** Get orders statistics for branch */
-  @Query("SELECT " +
-         "COUNT(*) as totalOrders, " +
-         "SUM(CASE WHEN o.status = 'COMPLETED' THEN 1 ELSE 0 END) as completedOrders, " +
-         "SUM(CASE WHEN o.status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelledOrders, " +
-         "SUM(CASE WHEN o.expectedCompletionDate < :now AND o.status IN ('ACCEPTED', 'IN_PROGRESS') THEN 1 ELSE 0 END) as overdueOrders " +
-         "FROM Order o WHERE o.branch.id = :branchId")
-  Object[] getOrderStatisticsForBranch(
-      @Param("branchId") UUID branchId, 
-      @Param("now") Instant now);
+  @Query(
+      "SELECT "
+          + "COUNT(*) as totalOrders, "
+          + "SUM(CASE WHEN o.status = 'COMPLETED' THEN 1 ELSE 0 END) as completedOrders, "
+          + "SUM(CASE WHEN o.status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelledOrders, "
+          + "SUM(CASE WHEN o.expectedCompletionDate < :now AND o.status IN ('ACCEPTED', 'IN_PROGRESS') THEN 1 ELSE 0 END) as overdueOrders "
+          + "FROM Order o WHERE o.branch.id = :branchId")
+  Object[] getOrderStatisticsForBranch(@Param("branchId") UUID branchId, @Param("now") Instant now);
 }

@@ -23,11 +23,11 @@ import com.aksi.domain.customer.Customer;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.CartItemMapper;
 import com.aksi.mapper.CartMapper;
-import com.aksi.repository.cart.CartRepository;
-import com.aksi.repository.catalog.PriceListItemRepository;
-import com.aksi.repository.customer.CustomerRepository;
+import com.aksi.repository.CartRepository;
+import com.aksi.repository.CustomerRepository;
+import com.aksi.repository.PriceListItemRepository;
+import com.aksi.repository.PriceModifierRepository;
 import com.aksi.service.customer.CustomerService;
-import com.aksi.service.modifier.ModifierService;
 import com.aksi.service.pricing.CartPricingService;
 
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class CartServiceImpl implements CartService {
   private final CartMapper cartMapper;
   private final CartItemMapper cartItemMapper;
   private final CartPricingService cartPricingService;
-  private final ModifierService modifierService;
+  private final PriceModifierRepository priceModifierRepository;
 
   @Override
   @Transactional
@@ -136,12 +136,20 @@ public class CartServiceImpl implements CartService {
       // Add modifiers if provided
       if (request.getModifierCodes() != null) {
         for (String modifierCode : request.getModifierCodes()) {
-          CartItemModifier modifier = modifierService.getModifierByCode(modifierCode);
-          if (modifier != null) {
-            cartItem.addModifier(modifier);
-          } else {
-            log.warn("Unknown modifier code: {}", modifierCode);
-          }
+          priceModifierRepository
+              .findByCode(modifierCode)
+              .filter(pm -> pm.isActive())
+              .ifPresentOrElse(
+                  priceModifier -> {
+                    CartItemModifier modifier = new CartItemModifier();
+                    modifier.setCode(priceModifier.getCode());
+                    modifier.setName(priceModifier.getName());
+                    modifier.setType(priceModifier.getType().name());
+                    modifier.setValue(priceModifier.getValue());
+                    modifier.setCartItem(cartItem);
+                    cartItem.addModifier(modifier);
+                  },
+                  () -> log.warn("Unknown or inactive modifier code: {}", modifierCode));
         }
       }
 
@@ -198,12 +206,20 @@ public class CartServiceImpl implements CartService {
       // Clear existing modifiers and add new ones
       cartItem.getModifiers().clear();
       for (String modifierCode : request.getModifierCodes()) {
-        CartItemModifier modifier = modifierService.getModifierByCode(modifierCode);
-        if (modifier != null) {
-          cartItem.addModifier(modifier);
-        } else {
-          log.warn("Unknown modifier code: {}", modifierCode);
-        }
+        priceModifierRepository
+            .findByCode(modifierCode)
+            .filter(pm -> pm.isActive())
+            .ifPresentOrElse(
+                priceModifier -> {
+                  CartItemModifier modifier = new CartItemModifier();
+                  modifier.setCode(priceModifier.getCode());
+                  modifier.setName(priceModifier.getName());
+                  modifier.setType(priceModifier.getType().name());
+                  modifier.setValue(priceModifier.getValue());
+                  modifier.setCartItem(cartItem);
+                  cartItem.addModifier(modifier);
+                },
+                () -> log.warn("Unknown or inactive modifier code: {}", modifierCode));
       }
     }
 

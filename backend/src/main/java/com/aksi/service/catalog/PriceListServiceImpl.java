@@ -20,8 +20,8 @@ import com.aksi.api.service.dto.UpdatePriceListItemRequest;
 import com.aksi.domain.catalog.PriceListItem;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.PriceListItemMapper;
-import com.aksi.repository.catalog.PriceListItemRepository;
-import com.aksi.repository.catalog.PriceListItemSpecification;
+import com.aksi.repository.PriceListItemRepository;
+import com.aksi.repository.PriceListItemSpecification;
 import com.aksi.validator.PriceListItemValidationService;
 
 import lombok.RequiredArgsConstructor;

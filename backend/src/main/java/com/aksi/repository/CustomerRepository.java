@@ -1,4 +1,4 @@
-package com.aksi.repository.customer;
+package com.aksi.repository;
 
 import java.util.UUID;
 

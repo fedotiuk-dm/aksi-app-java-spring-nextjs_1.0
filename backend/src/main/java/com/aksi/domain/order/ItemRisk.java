@@ -56,9 +56,9 @@ public class ItemRisk extends BaseEntity {
 
   // Business methods
   public boolean requiresCustomerAcknowledgment() {
-    return type == RiskType.COLOR_CHANGE || 
-           type == RiskType.DEFORMATION || 
-           type == RiskType.NO_WARRANTY;
+    return type == RiskType.COLOR_CHANGE
+        || type == RiskType.DEFORMATION
+        || type == RiskType.NO_WARRANTY;
   }
 
   public String getDisplayName() {

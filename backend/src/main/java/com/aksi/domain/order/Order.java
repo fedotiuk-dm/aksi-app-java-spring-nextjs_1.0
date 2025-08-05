@@ -3,7 +3,6 @@ package com.aksi.domain.order;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.aksi.domain.branch.Branch;
 import com.aksi.domain.common.BaseEntity;
@@ -123,9 +122,7 @@ public class Order extends BaseEntity {
 
   // Business methods
   public Integer getPaidAmount() {
-    return payments.stream()
-        .mapToInt(OrderPayment::getAmount)
-        .sum();
+    return payments.stream().mapToInt(OrderPayment::getAmount).sum();
   }
 
   public Integer getBalanceDue() {

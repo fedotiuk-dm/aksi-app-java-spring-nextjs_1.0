@@ -1,4 +1,4 @@
-package com.aksi.repository.catalog;
+package com.aksi.repository;
 
 import org.springframework.data.jpa.domain.Specification;
 

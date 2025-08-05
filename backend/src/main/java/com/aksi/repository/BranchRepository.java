@@ -1,4 +1,4 @@
-package com.aksi.repository.branch;
+package com.aksi.repository;
 
 import java.util.List;
 import java.util.UUID;

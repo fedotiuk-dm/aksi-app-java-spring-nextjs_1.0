@@ -1,4 +1,4 @@
-package com.aksi.repository.user;
+package com.aksi.repository;
 
 import java.util.Optional;
 import java.util.UUID;

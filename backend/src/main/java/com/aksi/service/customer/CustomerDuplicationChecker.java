@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 import com.aksi.domain.customer.Customer;
 import com.aksi.exception.ConflictException;
-import com.aksi.repository.customer.CustomerRepository;
-import com.aksi.repository.customer.CustomerSpecification;
+import com.aksi.repository.CustomerRepository;
+import com.aksi.repository.CustomerSpecification;
 
 import lombok.RequiredArgsConstructor;
 

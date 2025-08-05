@@ -9,7 +9,7 @@ import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.UpdatePriceListItemRequest;
 import com.aksi.domain.catalog.PriceListItem;
 import com.aksi.exception.BusinessValidationException;
-import com.aksi.repository.catalog.PriceListItemRepository;
+import com.aksi.repository.PriceListItemRepository;
 
 import lombok.RequiredArgsConstructor;
 

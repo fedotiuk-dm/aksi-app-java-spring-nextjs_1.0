@@ -20,9 +20,7 @@ import lombok.Setter;
 @Entity
 @Table(
     name = "item_characteristics",
-    indexes = {
-      @Index(name = "idx_item_characteristics_order_item", columnList = "order_item_id")
-    })
+    indexes = {@Index(name = "idx_item_characteristics_order_item", columnList = "order_item_id")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -56,8 +54,8 @@ public class ItemCharacteristics extends BaseEntity {
 
   // Validation methods
   public boolean isValidWearLevel() {
-    return wearLevel != null && 
-           (wearLevel == 10 || wearLevel == 30 || wearLevel == 50 || wearLevel == 75);
+    return wearLevel != null
+        && (wearLevel == 10 || wearLevel == 30 || wearLevel == 50 || wearLevel == 75);
   }
 
   public void setWearLevel(Integer wearLevel) {

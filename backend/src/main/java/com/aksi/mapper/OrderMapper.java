@@ -30,22 +30,23 @@ import com.aksi.domain.order.OrderPayment;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
-  /**
-   * Map Order entity to OrderInfo DTO
-   */
+  /** Map Order entity to OrderInfo DTO */
   @Mapping(target = "customer", source = "customer", qualifiedByName = "toCustomerSummary")
   @Mapping(target = "branchId", source = "branch.id")
   @Mapping(target = "items", source = "items")
   @Mapping(target = "pricing", source = ".", qualifiedByName = "toOrderPricingInfo")
   @Mapping(target = "payments", source = "payments")
   @Mapping(target = "createdBy", source = "createdBy.id")
-  @Mapping(target = "status", expression = "java(com.aksi.api.order.dto.OrderStatus.fromValue(order.getStatus().name()))")
+  @Mapping(
+      target = "status",
+      expression = "java(com.aksi.api.order.dto.OrderStatus.fromValue(order.getStatus().name()))")
   OrderInfo toOrderInfo(Order order);
 
-  /**
-   * Map OrderItem entity to OrderItemInfo DTO
-   */
-  @Mapping(target = "priceListItem", source = "priceListItem", qualifiedByName = "toPriceListItemSummary")
+  /** Map OrderItem entity to OrderItemInfo DTO */
+  @Mapping(
+      target = "priceListItem",
+      source = "priceListItem",
+      qualifiedByName = "toPriceListItemSummary")
   @Mapping(target = "characteristics", source = "characteristics")
   @Mapping(target = "stains", source = "stains")
   @Mapping(target = "defects", source = "defects")
@@ -55,110 +56,106 @@ public interface OrderMapper {
   @Mapping(target = "pricing", source = ".", qualifiedByName = "toOrderItemPricingInfo")
   OrderItemInfo toOrderItemInfo(OrderItem orderItem);
 
-  /**
-   * Map Customer entity to CustomerSummary DTO
-   */
+  /** Map Customer entity to CustomerSummary DTO */
   @Named("toCustomerSummary")
   @Mapping(target = "phone", source = "phonePrimary")
   CustomerSummary toCustomerSummary(Customer customer);
 
-  /**
-   * Map Order entity to OrderPricingInfo DTO
-   */
+  /** Map Order entity to OrderPricingInfo DTO */
   @Named("toOrderPricingInfo")
   @Mapping(target = "paidAmount", expression = "java(order.getPaidAmount())")
   @Mapping(target = "balanceDue", expression = "java(order.getBalanceDue())")
   OrderPricingInfo toOrderPricingInfo(Order order);
 
-  /**
-   * Map OrderItem entity to OrderItemPricingInfo DTO
-   */
+  /** Map OrderItem entity to OrderItemPricingInfo DTO */
   @Named("toOrderItemPricingInfo")
   @Mapping(target = "modifierDetails", source = "modifiers", qualifiedByName = "toModifierDetails")
   OrderItemPricingInfo toOrderItemPricingInfo(OrderItem orderItem);
 
-  /**
-   * Map PriceListItem entity to PriceListItemSummary DTO
-   */
+  /** Map PriceListItem entity to PriceListItemSummary DTO */
   @Named("toPriceListItemSummary")
   @Mapping(target = "categoryCode", source = "categoryCode.value")
-  @Mapping(target = "unitOfMeasure", expression = "java(com.aksi.api.order.dto.PriceListItemSummary.UnitOfMeasureEnum.fromValue(priceListItem.getUnitOfMeasure().name()))")
+  @Mapping(
+      target = "unitOfMeasure",
+      expression =
+          "java(com.aksi.api.order.dto.PriceListItemSummary.UnitOfMeasureEnum.fromValue(priceListItem.getUnitOfMeasure().name()))")
   PriceListItemSummary toPriceListItemSummary(com.aksi.domain.catalog.PriceListItem priceListItem);
 
-  /**
-   * Map ItemCharacteristics entity to DTO
-   */
-  @Mapping(target = "fillerCondition", expression = "java(characteristics.getFillerCondition() != null ? com.aksi.api.order.dto.ItemCharacteristics.FillerConditionEnum.fromValue(characteristics.getFillerCondition().name()) : null)")
-  ItemCharacteristics toItemCharacteristics(com.aksi.domain.order.ItemCharacteristics characteristics);
+  /** Map ItemCharacteristics entity to DTO */
+  @Mapping(
+      target = "fillerCondition",
+      expression =
+          "java(characteristics.getFillerCondition() != null ? com.aksi.api.order.dto.ItemCharacteristics.FillerConditionEnum.fromValue(characteristics.getFillerCondition().name()) : null)")
+  ItemCharacteristics toItemCharacteristics(
+      com.aksi.domain.order.ItemCharacteristics characteristics);
 
-  /**
-   * Map ItemStain entity to DTO
-   */
-  @Mapping(target = "type", expression = "java(com.aksi.api.order.dto.ItemStain.TypeEnum.fromValue(stain.getType().name()))")
+  /** Map ItemStain entity to DTO */
+  @Mapping(
+      target = "type",
+      expression =
+          "java(com.aksi.api.order.dto.ItemStain.TypeEnum.fromValue(stain.getType().name()))")
   ItemStain toItemStain(com.aksi.domain.order.ItemStain stain);
 
-  /**
-   * Map ItemDefect entity to DTO
-   */
-  @Mapping(target = "type", expression = "java(com.aksi.api.order.dto.ItemDefect.TypeEnum.fromValue(defect.getType().name()))")
+  /** Map ItemDefect entity to DTO */
+  @Mapping(
+      target = "type",
+      expression =
+          "java(com.aksi.api.order.dto.ItemDefect.TypeEnum.fromValue(defect.getType().name()))")
   ItemDefect toItemDefect(com.aksi.domain.order.ItemDefect defect);
 
-  /**
-   * Map ItemRisk entity to DTO
-   */
-  @Mapping(target = "type", expression = "java(com.aksi.api.order.dto.ItemRisk.TypeEnum.fromValue(risk.getType().name()))")
+  /** Map ItemRisk entity to DTO */
+  @Mapping(
+      target = "type",
+      expression =
+          "java(com.aksi.api.order.dto.ItemRisk.TypeEnum.fromValue(risk.getType().name()))")
   ItemRisk toItemRisk(com.aksi.domain.order.ItemRisk risk);
 
-  /**
-   * Map ItemPhoto entity to ItemPhotoInfo DTO
-   */
-  @Mapping(target = "type", expression = "java(com.aksi.api.order.dto.PhotoType.fromValue(photo.getType().name()))")
+  /** Map ItemPhoto entity to ItemPhotoInfo DTO */
+  @Mapping(
+      target = "type",
+      expression = "java(com.aksi.api.order.dto.PhotoType.fromValue(photo.getType().name()))")
   @Mapping(target = "uploadedBy", source = "uploadedBy.id")
   ItemPhotoInfo toItemPhotoInfo(ItemPhoto photo);
 
-  /**
-   * Map ItemModifier entity to ItemModifier DTO
-   */
-  @Mapping(target = "type", expression = "java(com.aksi.api.order.dto.ItemModifier.TypeEnum.fromValue(modifier.getType().name()))")
+  /** Map ItemModifier entity to ItemModifier DTO */
+  @Mapping(
+      target = "type",
+      expression =
+          "java(com.aksi.api.order.dto.ItemModifier.TypeEnum.fromValue(modifier.getType().name()))")
   ItemModifier toItemModifier(com.aksi.domain.order.ItemModifier modifier);
 
-  /**
-   * Map ItemModifier entities to ModifierDetail DTOs
-   */
+  /** Map ItemModifier entities to ModifierDetail DTOs */
   @Named("toModifierDetails")
-  default List<ModifierDetail> toModifierDetails(List<com.aksi.domain.order.ItemModifier> modifiers) {
+  default List<ModifierDetail> toModifierDetails(
+      List<com.aksi.domain.order.ItemModifier> modifiers) {
     if (modifiers == null) return null;
-    
+
     return modifiers.stream()
-        .map(modifier -> {
-          ModifierDetail detail = new ModifierDetail();
-          detail.setCode(modifier.getCode());
-          detail.setName(modifier.getName());
-          detail.setAmount(modifier.getAppliedAmount());
-          return detail;
-        })
+        .map(
+            modifier -> {
+              ModifierDetail detail = new ModifierDetail();
+              detail.setCode(modifier.getCode());
+              detail.setName(modifier.getName());
+              detail.setAmount(modifier.getAppliedAmount());
+              return detail;
+            })
         .toList();
   }
 
-  /**
-   * Map OrderPayment entity to PaymentInfo DTO
-   */
-  @Mapping(target = "method", expression = "java(com.aksi.api.order.dto.PaymentMethod.fromValue(payment.getMethod().name()))")
+  /** Map OrderPayment entity to PaymentInfo DTO */
+  @Mapping(
+      target = "method",
+      expression =
+          "java(com.aksi.api.order.dto.PaymentMethod.fromValue(payment.getMethod().name()))")
   @Mapping(target = "paidBy", source = "paidBy.id")
   PaymentInfo toPaymentInfo(OrderPayment payment);
 
-  /**
-   * List mapping for OrderInfo
-   */
+  /** List mapping for OrderInfo */
   List<OrderInfo> toOrderInfoList(List<Order> orders);
 
-  /**
-   * List mapping for OrderItemInfo
-   */
+  /** List mapping for OrderItemInfo */
   List<OrderItemInfo> toOrderItemInfoList(List<OrderItem> orderItems);
 
-  /**
-   * List mapping for PaymentInfo
-   */
+  /** List mapping for PaymentInfo */
   List<PaymentInfo> toPaymentInfoList(List<OrderPayment> payments);
 }

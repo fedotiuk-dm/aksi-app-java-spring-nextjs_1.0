@@ -1,4 +1,4 @@
-package com.aksi.repository.cart;
+package com.aksi.repository;
 
 import java.time.Instant;
 import java.util.Optional;

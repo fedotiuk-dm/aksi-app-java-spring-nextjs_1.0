@@ -60,10 +60,10 @@ public class ItemStain extends BaseEntity {
 
   // Business methods
   public boolean requiresSpecialTreatment() {
-    return type == StainType.BLOOD || 
-           type == StainType.PROTEIN || 
-           type == StainType.INK ||
-           type == StainType.WINE;
+    return type == StainType.BLOOD
+        || type == StainType.PROTEIN
+        || type == StainType.INK
+        || type == StainType.WINE;
   }
 
   public String getDisplayName() {

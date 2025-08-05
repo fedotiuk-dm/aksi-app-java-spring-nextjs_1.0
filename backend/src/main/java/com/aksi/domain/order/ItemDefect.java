@@ -56,9 +56,9 @@ public class ItemDefect extends BaseEntity {
 
   // Business methods
   public boolean affectsWarranty() {
-    return type == DefectType.WORN || 
-           type == DefectType.TORN || 
-           type == DefectType.DAMAGED_ACCESSORIES;
+    return type == DefectType.WORN
+        || type == DefectType.TORN
+        || type == DefectType.DAMAGED_ACCESSORIES;
   }
 
   public String getDisplayName() {

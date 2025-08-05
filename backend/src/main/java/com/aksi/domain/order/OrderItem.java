@@ -2,7 +2,6 @@ package com.aksi.domain.order;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.aksi.domain.catalog.PriceListItem;
 import com.aksi.domain.common.BaseEntity;

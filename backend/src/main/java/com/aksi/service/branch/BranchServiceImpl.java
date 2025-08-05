@@ -17,7 +17,7 @@ import com.aksi.domain.branch.Branch;
 import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.BranchMapper;
-import com.aksi.repository.branch.BranchRepository;
+import com.aksi.repository.BranchRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

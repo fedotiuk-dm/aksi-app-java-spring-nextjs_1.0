@@ -60,8 +60,13 @@ public class ItemModifier extends BaseEntity {
   private String jexlFormula;
 
   // Convenience constructor for percentage/fixed modifiers
-  public ItemModifier(OrderItem orderItem, String code, String name, ModifierType type, 
-                      Integer value, Integer appliedAmount) {
+  public ItemModifier(
+      OrderItem orderItem,
+      String code,
+      String name,
+      ModifierType type,
+      Integer value,
+      Integer appliedAmount) {
     this.orderItem = orderItem;
     this.code = code;
     this.name = name;
@@ -71,8 +76,8 @@ public class ItemModifier extends BaseEntity {
   }
 
   // Convenience constructor for formula modifiers
-  public ItemModifier(OrderItem orderItem, String code, String name, String jexlFormula, 
-                      Integer appliedAmount) {
+  public ItemModifier(
+      OrderItem orderItem, String code, String name, String jexlFormula, Integer appliedAmount) {
     this.orderItem = orderItem;
     this.code = code;
     this.name = name;

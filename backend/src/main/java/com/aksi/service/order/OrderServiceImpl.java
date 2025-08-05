@@ -3,9 +3,7 @@ package com.aksi.service.order;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,10 +27,8 @@ import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.domain.branch.Branch;
 import com.aksi.domain.cart.Cart;
 import com.aksi.domain.cart.CartItem;
-import com.aksi.domain.customer.Customer;
 import com.aksi.domain.order.ItemCharacteristics;
 import com.aksi.domain.order.ItemDefect;
-import com.aksi.domain.order.ItemModifier;
 import com.aksi.domain.order.ItemPhoto;
 import com.aksi.domain.order.ItemRisk;
 import com.aksi.domain.order.ItemStain;
@@ -43,12 +39,12 @@ import com.aksi.domain.user.User;
 import com.aksi.exception.BusinessValidationException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.OrderMapper;
-import com.aksi.repository.branch.BranchRepository;
-import com.aksi.repository.cart.CartRepository;
-import com.aksi.repository.customer.CustomerRepository;
-import com.aksi.repository.order.OrderRepository;
-import com.aksi.repository.order.OrderSpecification;
-import com.aksi.repository.user.UserRepository;
+import com.aksi.repository.BranchRepository;
+import com.aksi.repository.CartRepository;
+import com.aksi.repository.CustomerRepository;
+import com.aksi.repository.OrderRepository;
+import com.aksi.repository.OrderSpecification;
+import com.aksi.repository.UserRepository;
 import com.aksi.service.pricing.PricingService;
 import com.aksi.util.SecurityUtils;
 
@@ -82,8 +78,10 @@ public class OrderServiceImpl implements OrderService {
     log.debug("Creating order from cart: {}", request.getCartId());
 
     // Validate and get cart
-    Cart cart = cartRepository.findById(request.getCartId())
-        .orElseThrow(() -> new NotFoundException("Cart not found: " + request.getCartId()));
+    Cart cart =
+        cartRepository
+            .findById(request.getCartId())
+            .orElseThrow(() -> new NotFoundException("Cart not found: " + request.getCartId()));
 
     if (cart.isExpired()) {
       throw new BusinessValidationException("Cart has expired");
@@ -94,8 +92,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     // Validate branch
-    Branch branch = branchRepository.findById(request.getBranchId())
-        .orElseThrow(() -> new NotFoundException("Branch not found: " + request.getBranchId()));
+    Branch branch =
+        branchRepository
+            .findById(request.getBranchId())
+            .orElseThrow(() -> new NotFoundException("Branch not found: " + request.getBranchId()));
 
     if (!branch.isActive()) {
       throw new BusinessValidationException("Branch is not active");
@@ -139,21 +139,26 @@ public class OrderServiceImpl implements OrderService {
     // Clear cart after successful order creation
     cartRepository.delete(cart);
 
-    log.info("Created order {} for customer {}", order.getOrderNumber(), order.getCustomer().getId());
+    log.info(
+        "Created order {} for customer {}", order.getOrderNumber(), order.getCustomer().getId());
     return orderMapper.toOrderInfo(order);
   }
 
   @Override
   public OrderInfo getOrder(UUID orderId) {
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
     return orderMapper.toOrderInfo(order);
   }
 
   @Override
   public OrderInfo getOrderByNumber(String orderNumber) {
-    Order order = orderRepository.findByOrderNumber(orderNumber)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderNumber));
+    Order order =
+        orderRepository
+            .findByOrderNumber(orderNumber)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderNumber));
     return orderMapper.toOrderInfo(order);
   }
 
@@ -167,18 +172,19 @@ public class OrderServiceImpl implements OrderService {
       String search,
       Pageable pageable) {
 
-    var specification = OrderSpecification.searchOrders(
-        customerId, branchId, status, dateFrom, dateTo, search);
+    var specification =
+        OrderSpecification.searchOrders(customerId, branchId, status, dateFrom, dateTo, search);
 
-    return orderRepository.findAll(specification, pageable)
-        .map(orderMapper::toOrderInfo);
+    return orderRepository.findAll(specification, pageable).map(orderMapper::toOrderInfo);
   }
 
   @Override
   @Transactional
   public OrderInfo updateOrderStatus(UUID orderId, UpdateOrderStatusRequest request) {
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
     Order.OrderStatus oldStatus = order.getStatus();
     Order.OrderStatus newStatus = request.getStatus();
@@ -202,17 +208,20 @@ public class OrderServiceImpl implements OrderService {
   public OrderItemInfo updateItemCharacteristics(
       UUID orderId, UUID itemId, UpdateItemCharacteristicsRequest request) {
 
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
     if (!order.canBeModified()) {
       throw new BusinessValidationException("Order cannot be modified in current status");
     }
 
-    OrderItem orderItem = order.getItems().stream()
-        .filter(item -> item.getId().equals(itemId))
-        .findFirst()
-        .orElseThrow(() -> new NotFoundException("Order item not found: " + itemId));
+    OrderItem orderItem =
+        order.getItems().stream()
+            .filter(item -> item.getId().equals(itemId))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Order item not found: " + itemId));
 
     // Update characteristics
     if (request.getCharacteristics() != null) {
@@ -236,29 +245,34 @@ public class OrderServiceImpl implements OrderService {
 
     orderRepository.save(order);
 
-    log.info("Updated characteristics for order item {} in order {}", itemId, order.getOrderNumber());
+    log.info(
+        "Updated characteristics for order item {} in order {}", itemId, order.getOrderNumber());
     return orderMapper.toOrderItemInfo(orderItem);
   }
 
   @Override
   @Transactional
   public ItemPhotoInfo uploadItemPhoto(UUID orderId, UUID itemId, UploadItemPhotoRequest request) {
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
-    OrderItem orderItem = order.getItems().stream()
-        .filter(item -> item.getId().equals(itemId))
-        .findFirst()
-        .orElseThrow(() -> new NotFoundException("Order item not found: " + itemId));
+    OrderItem orderItem =
+        order.getItems().stream()
+            .filter(item -> item.getId().equals(itemId))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Order item not found: " + itemId));
 
     // TODO: Implement file upload logic
     // For now, create a placeholder photo
     ItemPhoto photo = new ItemPhoto();
     photo.setOrderItem(orderItem);
     photo.setUrl("/photos/" + UUID.randomUUID() + ".jpg"); // Placeholder URL
-    photo.setType(request.getPhotoType() != null ? 
-        ItemPhoto.PhotoType.valueOf(request.getPhotoType().name()) : 
-        ItemPhoto.PhotoType.GENERAL);
+    photo.setType(
+        request.getPhotoType() != null
+            ? ItemPhoto.PhotoType.valueOf(request.getPhotoType().name())
+            : ItemPhoto.PhotoType.GENERAL);
     photo.setDescription(request.getPhotoDescription());
     photo.setUploadedBy(getCurrentUser());
     photo.setUploadedAt(Instant.now());
@@ -276,29 +290,36 @@ public class OrderServiceImpl implements OrderService {
   @Override
   @Transactional
   public void deleteItemPhoto(UUID orderId, UUID itemId, UUID photoId) {
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
-    OrderItem orderItem = order.getItems().stream()
-        .filter(item -> item.getId().equals(itemId))
-        .findFirst()
-        .orElseThrow(() -> new NotFoundException("Order item not found: " + itemId));
+    OrderItem orderItem =
+        order.getItems().stream()
+            .filter(item -> item.getId().equals(itemId))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Order item not found: " + itemId));
 
-    ItemPhoto photo = orderItem.getPhotos().stream()
-        .filter(p -> p.getId().equals(photoId))
-        .findFirst()
-        .orElseThrow(() -> new NotFoundException("Photo not found: " + photoId));
+    ItemPhoto photo =
+        orderItem.getPhotos().stream()
+            .filter(p -> p.getId().equals(photoId))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Photo not found: " + photoId));
 
     orderItem.removePhoto(photo);
     orderRepository.save(order);
 
-    log.info("Deleted photo {} from order item {} in order {}", photoId, itemId, order.getOrderNumber());
+    log.info(
+        "Deleted photo {} from order item {} in order {}", photoId, itemId, order.getOrderNumber());
   }
 
   @Override
   public byte[] getOrderReceipt(UUID orderId) {
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
     // TODO: Implement PDF generation
     log.info("Generating receipt for order {}", order.getOrderNumber());
@@ -308,8 +329,10 @@ public class OrderServiceImpl implements OrderService {
   @Override
   @Transactional
   public PaymentInfo addOrderPayment(UUID orderId, AddPaymentRequest request) {
-    Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
     if (order.isCancelled()) {
       throw new BusinessValidationException("Cannot add payment to cancelled order");
@@ -318,7 +341,8 @@ public class OrderServiceImpl implements OrderService {
     Integer remainingBalance = order.getBalanceDue();
     if (request.getAmount() > remainingBalance) {
       throw new BusinessValidationException(
-          String.format("Payment amount (%d) exceeds remaining balance (%d)", 
+          String.format(
+              "Payment amount (%d) exceeds remaining balance (%d)",
               request.getAmount(), remainingBalance));
     }
 
@@ -345,32 +369,36 @@ public class OrderServiceImpl implements OrderService {
   public String generateOrderNumber() {
     String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     String orderNumber;
-    
+
     do {
-      orderNumber = orderNumberPrefix + "-" + timestamp + "-" + 
-          String.format("%03d", (int) (Math.random() * 1000));
+      orderNumber =
+          orderNumberPrefix
+              + "-"
+              + timestamp
+              + "-"
+              + String.format("%03d", (int) (Math.random() * 1000));
     } while (orderRepository.existsByOrderNumber(orderNumber));
-    
+
     return orderNumber;
   }
 
   @Override
   public boolean canModifyOrder(UUID orderId) {
-    return orderRepository.findById(orderId)
-        .map(Order::canBeModified)
-        .orElse(false);
+    return orderRepository.findById(orderId).map(Order::canBeModified).orElse(false);
   }
 
   @Override
   public Integer calculateOrderTotal(UUID orderId) {
-    return orderRepository.findById(orderId)
+    return orderRepository
+        .findById(orderId)
         .map(Order::getTotalAmount)
         .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
   }
 
   @Override
   public Page<OrderInfo> getCustomerOrderHistory(UUID customerId, Pageable pageable) {
-    return orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId, pageable)
+    return orderRepository
+        .findByCustomerIdOrderByCreatedAtDesc(customerId, pageable)
         .map(orderMapper::toOrderInfo);
   }
 
@@ -394,8 +422,7 @@ public class OrderServiceImpl implements OrderService {
   private User getCurrentUser() {
     try {
       UUID userId = SecurityUtils.getCurrentUserId();
-      return userRepository.findById(userId)
-          .orElse(null); // Allow null for system operations
+      return userRepository.findById(userId).orElse(null); // Allow null for system operations
     } catch (Exception e) {
       log.warn("Could not get current user: {}", e.getMessage());
       return null;
@@ -412,23 +439,24 @@ public class OrderServiceImpl implements OrderService {
 
   private Instant calculateExpectedCompletionDate(Cart cart) {
     Instant baseDate = Instant.now().plusSeconds(defaultCompletionHours * 3600);
-    
+
     // Adjust based on urgency
     if ("EXPRESS_24H".equals(cart.getUrgencyType())) {
       return Instant.now().plusSeconds(24 * 3600);
     } else if ("EXPRESS_48H".equals(cart.getUrgencyType())) {
       return Instant.now().plusSeconds(48 * 3600);
     }
-    
+
     return baseDate;
   }
 
-  private OrderItem convertCartItemToOrderItem(CartItem cartItem, Order order, PriceCalculationResponse pricing) {
+  private OrderItem convertCartItemToOrderItem(
+      CartItem cartItem, Order order, PriceCalculationResponse pricing) {
     OrderItem orderItem = new OrderItem();
     orderItem.setOrder(order);
     orderItem.setPriceListItem(cartItem.getPriceListItem());
     orderItem.setQuantity(cartItem.getQuantity());
-    
+
     // TODO: Map pricing details from pricing response
     orderItem.setBasePrice(0); // TODO: Get from pricing
     orderItem.setModifiersTotalAmount(0); // TODO: Get from pricing
@@ -437,19 +465,20 @@ public class OrderServiceImpl implements OrderService {
     orderItem.setDiscountAmount(0); // TODO: Get from pricing
     orderItem.setTotalAmount(0); // TODO: Calculate
     orderItem.setDiscountEligible(true); // TODO: Determine from pricing
-    
+
     return orderItem;
   }
 
   private void validateStatusTransition(Order.OrderStatus from, Order.OrderStatus to) {
     // Define valid transitions
-    boolean isValidTransition = switch (from) {
-      case PENDING -> to == Order.OrderStatus.ACCEPTED || to == Order.OrderStatus.CANCELLED;
-      case ACCEPTED -> to == Order.OrderStatus.IN_PROGRESS || to == Order.OrderStatus.CANCELLED;
-      case IN_PROGRESS -> to == Order.OrderStatus.READY || to == Order.OrderStatus.CANCELLED;
-      case READY -> to == Order.OrderStatus.COMPLETED;
-      case COMPLETED, CANCELLED -> false; // Terminal states
-    };
+    boolean isValidTransition =
+        switch (from) {
+          case PENDING -> to == Order.OrderStatus.ACCEPTED || to == Order.OrderStatus.CANCELLED;
+          case ACCEPTED -> to == Order.OrderStatus.IN_PROGRESS || to == Order.OrderStatus.CANCELLED;
+          case IN_PROGRESS -> to == Order.OrderStatus.READY || to == Order.OrderStatus.CANCELLED;
+          case READY -> to == Order.OrderStatus.COMPLETED;
+          case COMPLETED, CANCELLED -> false; // Terminal states
+        };
 
     if (!isValidTransition) {
       throw new BusinessValidationException(
@@ -457,31 +486,31 @@ public class OrderServiceImpl implements OrderService {
     }
   }
 
-  private void updateOrderItemCharacteristics(OrderItem orderItem, 
-      com.aksi.api.order.dto.ItemCharacteristics characteristics) {
+  private void updateOrderItemCharacteristics(
+      OrderItem orderItem, com.aksi.api.order.dto.ItemCharacteristics characteristics) {
     if (orderItem.getCharacteristics() == null) {
       orderItem.setCharacteristics(new ItemCharacteristics());
       orderItem.getCharacteristics().setOrderItem(orderItem);
     }
-    
+
     ItemCharacteristics itemChar = orderItem.getCharacteristics();
     itemChar.setMaterial(characteristics.getMaterial());
     itemChar.setColor(characteristics.getColor());
     itemChar.setFiller(characteristics.getFiller());
-    
+
     if (characteristics.getFillerCondition() != null) {
       itemChar.setFillerCondition(
           ItemCharacteristics.FillerCondition.valueOf(characteristics.getFillerCondition().name()));
     }
-    
+
     itemChar.setWearLevel(characteristics.getWearLevel());
   }
 
-  private void updateOrderItemStains(OrderItem orderItem, 
-      List<com.aksi.api.order.dto.ItemStain> stains) {
+  private void updateOrderItemStains(
+      OrderItem orderItem, List<com.aksi.api.order.dto.ItemStain> stains) {
     // Clear existing stains
     orderItem.getStains().clear();
-    
+
     // Add new stains
     for (var stainDto : stains) {
       ItemStain stain = new ItemStain();
@@ -492,11 +521,11 @@ public class OrderServiceImpl implements OrderService {
     }
   }
 
-  private void updateOrderItemDefects(OrderItem orderItem, 
-      List<com.aksi.api.order.dto.ItemDefect> defects) {
+  private void updateOrderItemDefects(
+      OrderItem orderItem, List<com.aksi.api.order.dto.ItemDefect> defects) {
     // Clear existing defects
     orderItem.getDefects().clear();
-    
+
     // Add new defects
     for (var defectDto : defects) {
       ItemDefect defect = new ItemDefect();
@@ -507,11 +536,11 @@ public class OrderServiceImpl implements OrderService {
     }
   }
 
-  private void updateOrderItemRisks(OrderItem orderItem, 
-      List<com.aksi.api.order.dto.ItemRisk> risks) {
+  private void updateOrderItemRisks(
+      OrderItem orderItem, List<com.aksi.api.order.dto.ItemRisk> risks) {
     // Clear existing risks
     orderItem.getRisks().clear();
-    
+
     // Add new risks
     for (var riskDto : risks) {
       ItemRisk risk = new ItemRisk();

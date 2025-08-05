@@ -23,8 +23,8 @@ import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
 import com.aksi.domain.user.User;
 import com.aksi.mapper.UserMapper;
-import com.aksi.repository.user.UserRepository;
-import com.aksi.repository.user.UserSpecification;
+import com.aksi.repository.UserRepository;
+import com.aksi.repository.UserSpecification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

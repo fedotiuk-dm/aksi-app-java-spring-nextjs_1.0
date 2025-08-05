@@ -1,4 +1,4 @@
-package com.aksi.repository.order;
+package com.aksi.repository;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -75,16 +75,15 @@ public class OrderSpecification {
       if (!StringUtils.hasText(customerSearch)) {
         return cb.conjunction();
       }
-      
+
       Join<Object, Object> customer = root.join("customer", JoinType.INNER);
       String pattern = "%" + customerSearch.toLowerCase() + "%";
-      
+
       return cb.or(
           cb.like(cb.lower(customer.get("firstName")), pattern),
           cb.like(cb.lower(customer.get("lastName")), pattern),
           cb.like(customer.get("phonePrimary"), pattern),
-          cb.like(cb.lower(customer.get("email")), pattern)
-      );
+          cb.like(cb.lower(customer.get("email")), pattern));
     };
   }
 
@@ -149,10 +148,11 @@ public class OrderSpecification {
       var paymentsSubquery = query.subquery(Long.class);
       var paymentsRoot = paymentsSubquery.from(root.getJavaType());
       var paymentsJoin = paymentsRoot.join("payments", JoinType.LEFT);
-      
-      paymentsSubquery.select(cb.coalesce(cb.sum(paymentsJoin.get("amount")), 0L))
-                     .where(cb.equal(paymentsRoot.get("id"), root.get("id")));
-      
+
+      paymentsSubquery
+          .select(cb.coalesce(cb.sum(paymentsJoin.get("amount")), 0L))
+          .where(cb.equal(paymentsRoot.get("id"), root.get("id")));
+
       return cb.greaterThan(root.get("totalAmount"), paymentsSubquery);
     };
   }
@@ -165,8 +165,7 @@ public class OrderSpecification {
       }
       return cb.and(
           cb.lessThan(root.get("expectedCompletionDate"), now),
-          root.get("status").in(Order.OrderStatus.ACCEPTED, Order.OrderStatus.IN_PROGRESS)
-      );
+          root.get("status").in(Order.OrderStatus.ACCEPTED, Order.OrderStatus.IN_PROGRESS));
     };
   }
 
@@ -177,9 +176,8 @@ public class OrderSpecification {
 
   /** Filter active orders (not completed or cancelled) */
   public static Specification<Order> isActive() {
-    return (root, query, cb) -> cb.not(
-        root.get("status").in(Order.OrderStatus.COMPLETED, Order.OrderStatus.CANCELLED)
-    );
+    return (root, query, cb) ->
+        cb.not(root.get("status").in(Order.OrderStatus.COMPLETED, Order.OrderStatus.CANCELLED));
   }
 
   /** General text search (order number, customer name, phone, unique label) */
@@ -188,36 +186,34 @@ public class OrderSpecification {
       if (!StringUtils.hasText(search)) {
         return cb.conjunction();
       }
-      
+
       Join<Object, Object> customer = root.join("customer", JoinType.INNER);
       String pattern = "%" + search.toLowerCase() + "%";
-      
+
       return cb.or(
           cb.like(cb.lower(root.get("orderNumber")), pattern),
           cb.like(cb.lower(root.get("uniqueLabel")), pattern),
           cb.like(cb.lower(customer.get("firstName")), pattern),
           cb.like(cb.lower(customer.get("lastName")), pattern),
-          cb.like(customer.get("phonePrimary"), pattern)
-      );
+          cb.like(customer.get("phonePrimary"), pattern));
     };
   }
 
   /** Combine all search criteria for order listing */
   public static Specification<Order> searchOrders(
-      UUID customerId, 
-      UUID branchId, 
+      UUID customerId,
+      UUID branchId,
       Order.OrderStatus status,
-      LocalDate dateFrom, 
-      LocalDate dateTo, 
+      LocalDate dateFrom,
+      LocalDate dateTo,
       String search) {
-    
+
     return Specification.allOf(
         hasCustomerId(customerId),
         hasBranchId(branchId),
         hasStatus(status),
         createdFrom(dateFrom),
         createdTo(dateTo),
-        searchByText(search)
-    );
+        searchByText(search));
   }
 }
