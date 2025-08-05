@@ -83,7 +83,8 @@ class PriceCalculationServiceTest {
     void shouldCalculateNormalUrgency() {
       // Given
       int amount = 10000;
-      GlobalPriceModifiers.UrgencyTypeEnum urgencyType = GlobalPriceModifiers.UrgencyTypeEnum.NORMAL;
+      GlobalPriceModifiers.UrgencyTypeEnum urgencyType =
+          GlobalPriceModifiers.UrgencyTypeEnum.NORMAL;
 
       // When
       int result = priceCalculationService.calculateUrgencyAmount(amount, urgencyType);
@@ -97,7 +98,8 @@ class PriceCalculationServiceTest {
     void shouldCalculateExpress48hUrgency() {
       // Given
       int amount = 10000; // 100.00 UAH
-      GlobalPriceModifiers.UrgencyTypeEnum urgencyType = GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H;
+      GlobalPriceModifiers.UrgencyTypeEnum urgencyType =
+          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H;
 
       // When
       int result = priceCalculationService.calculateUrgencyAmount(amount, urgencyType);
@@ -111,7 +113,8 @@ class PriceCalculationServiceTest {
     void shouldCalculateExpress24hUrgency() {
       // Given
       int amount = 10000; // 100.00 UAH
-      GlobalPriceModifiers.UrgencyTypeEnum urgencyType = GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H;
+      GlobalPriceModifiers.UrgencyTypeEnum urgencyType =
+          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H;
 
       // When
       int result = priceCalculationService.calculateUrgencyAmount(amount, urgencyType);
@@ -140,7 +143,8 @@ class PriceCalculationServiceTest {
     void shouldCalculateEvercardDiscount() {
       // Given
       int amount = 10000; // 100.00 UAH
-      GlobalPriceModifiers.DiscountTypeEnum discountType = GlobalPriceModifiers.DiscountTypeEnum.EVERCARD;
+      GlobalPriceModifiers.DiscountTypeEnum discountType =
+          GlobalPriceModifiers.DiscountTypeEnum.EVERCARD;
 
       // When
       int result = priceCalculationService.calculateDiscountAmount(amount, discountType, null);
@@ -154,7 +158,8 @@ class PriceCalculationServiceTest {
     void shouldCalculateMilitaryDiscount() {
       // Given
       int amount = 20000; // 200.00 UAH
-      GlobalPriceModifiers.DiscountTypeEnum discountType = GlobalPriceModifiers.DiscountTypeEnum.MILITARY;
+      GlobalPriceModifiers.DiscountTypeEnum discountType =
+          GlobalPriceModifiers.DiscountTypeEnum.MILITARY;
 
       // When
       int result = priceCalculationService.calculateDiscountAmount(amount, discountType, null);
@@ -168,7 +173,8 @@ class PriceCalculationServiceTest {
     void shouldCalculateSocialMediaDiscount() {
       // Given
       int amount = 10000; // 100.00 UAH
-      GlobalPriceModifiers.DiscountTypeEnum discountType = GlobalPriceModifiers.DiscountTypeEnum.SOCIAL_MEDIA;
+      GlobalPriceModifiers.DiscountTypeEnum discountType =
+          GlobalPriceModifiers.DiscountTypeEnum.SOCIAL_MEDIA;
 
       // When
       int result = priceCalculationService.calculateDiscountAmount(amount, discountType, null);
@@ -182,11 +188,13 @@ class PriceCalculationServiceTest {
     void shouldCalculateCustomDiscount() {
       // Given
       int amount = 10000; // 100.00 UAH
-      GlobalPriceModifiers.DiscountTypeEnum discountType = GlobalPriceModifiers.DiscountTypeEnum.OTHER;
+      GlobalPriceModifiers.DiscountTypeEnum discountType =
+          GlobalPriceModifiers.DiscountTypeEnum.OTHER;
       Integer customPercentage = 15;
 
       // When
-      int result = priceCalculationService.calculateDiscountAmount(amount, discountType, customPercentage);
+      int result =
+          priceCalculationService.calculateDiscountAmount(amount, discountType, customPercentage);
 
       // Then
       assertThat(result).isEqualTo(1500); // 15.00 UAH (15%)
@@ -196,7 +204,8 @@ class PriceCalculationServiceTest {
     @DisplayName("Should return 0 for OTHER type without custom percentage")
     void shouldReturnZeroForOtherTypeWithoutCustomPercentage() {
       // Given
-      GlobalPriceModifiers.DiscountTypeEnum discountType = GlobalPriceModifiers.DiscountTypeEnum.OTHER;
+      GlobalPriceModifiers.DiscountTypeEnum discountType =
+          GlobalPriceModifiers.DiscountTypeEnum.OTHER;
 
       // When
       int result = priceCalculationService.calculateDiscountAmount(10000, discountType, null);
@@ -209,7 +218,8 @@ class PriceCalculationServiceTest {
     @DisplayName("Should return 0 for NONE discount type")
     void shouldReturnZeroForNoneDiscountType() {
       // Given
-      GlobalPriceModifiers.DiscountTypeEnum discountType = GlobalPriceModifiers.DiscountTypeEnum.NONE;
+      GlobalPriceModifiers.DiscountTypeEnum discountType =
+          GlobalPriceModifiers.DiscountTypeEnum.NONE;
 
       // When
       int result = priceCalculationService.calculateDiscountAmount(10000, discountType, null);
@@ -275,31 +285,45 @@ class PriceCalculationServiceTest {
     @Test
     @DisplayName("Should return correct urgency percentages")
     void shouldReturnCorrectUrgencyPercentages() {
-      assertThat(priceCalculationService.getUrgencyPercentage(GlobalPriceModifiers.UrgencyTypeEnum.NORMAL))
+      assertThat(
+              priceCalculationService.getUrgencyPercentage(
+                  GlobalPriceModifiers.UrgencyTypeEnum.NORMAL))
           .isEqualTo(0);
-      assertThat(priceCalculationService.getUrgencyPercentage(GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H))
+      assertThat(
+              priceCalculationService.getUrgencyPercentage(
+                  GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H))
           .isEqualTo(50);
-      assertThat(priceCalculationService.getUrgencyPercentage(GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H))
+      assertThat(
+              priceCalculationService.getUrgencyPercentage(
+                  GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H))
           .isEqualTo(100);
-      assertThat(priceCalculationService.getUrgencyPercentage(null))
-          .isEqualTo(0);
+      assertThat(priceCalculationService.getUrgencyPercentage(null)).isEqualTo(0);
     }
 
     @Test
     @DisplayName("Should return correct discount percentages")
     void shouldReturnCorrectDiscountPercentages() {
-      assertThat(priceCalculationService.getDiscountPercentage(GlobalPriceModifiers.DiscountTypeEnum.NONE, null))
+      assertThat(
+              priceCalculationService.getDiscountPercentage(
+                  GlobalPriceModifiers.DiscountTypeEnum.NONE, null))
           .isEqualTo(0);
-      assertThat(priceCalculationService.getDiscountPercentage(GlobalPriceModifiers.DiscountTypeEnum.EVERCARD, null))
+      assertThat(
+              priceCalculationService.getDiscountPercentage(
+                  GlobalPriceModifiers.DiscountTypeEnum.EVERCARD, null))
           .isEqualTo(10);
-      assertThat(priceCalculationService.getDiscountPercentage(GlobalPriceModifiers.DiscountTypeEnum.MILITARY, null))
+      assertThat(
+              priceCalculationService.getDiscountPercentage(
+                  GlobalPriceModifiers.DiscountTypeEnum.MILITARY, null))
           .isEqualTo(10);
-      assertThat(priceCalculationService.getDiscountPercentage(GlobalPriceModifiers.DiscountTypeEnum.SOCIAL_MEDIA, null))
+      assertThat(
+              priceCalculationService.getDiscountPercentage(
+                  GlobalPriceModifiers.DiscountTypeEnum.SOCIAL_MEDIA, null))
           .isEqualTo(5);
-      assertThat(priceCalculationService.getDiscountPercentage(GlobalPriceModifiers.DiscountTypeEnum.OTHER, 20))
+      assertThat(
+              priceCalculationService.getDiscountPercentage(
+                  GlobalPriceModifiers.DiscountTypeEnum.OTHER, 20))
           .isEqualTo(20);
-      assertThat(priceCalculationService.getDiscountPercentage(null, null))
-          .isEqualTo(0);
+      assertThat(priceCalculationService.getDiscountPercentage(null, null)).isEqualTo(0);
     }
   }
 
@@ -328,7 +352,8 @@ class PriceCalculationServiceTest {
     void shouldHandleVeryLargeAmounts() {
       // Given
       int largeAmount = 10000000; // 100,000.00 UAH
-      GlobalPriceModifiers.UrgencyTypeEnum urgencyType = GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H;
+      GlobalPriceModifiers.UrgencyTypeEnum urgencyType =
+          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H;
 
       // When
       int result = priceCalculationService.calculateUrgencyAmount(largeAmount, urgencyType);

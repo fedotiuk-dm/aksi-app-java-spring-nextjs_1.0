@@ -1,8 +1,6 @@
 package com.aksi.service.pricing;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -30,45 +28,40 @@ import com.aksi.service.pricing.calculation.PriceCalculationService;
 import com.aksi.service.pricing.calculation.TotalsCalculator;
 import com.aksi.service.pricing.rules.PricingRulesService;
 
-/**
- * Isolated unit tests for pricing calculations only.
- * No Order domain dependencies.
- */
+/** Isolated unit tests for pricing calculations only. No Order domain dependencies. */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pricing Service Calculation Tests")
 class PricingServiceCalculationTest {
 
-  @Mock
-  private PriceModifierRepository priceModifierRepository;
-  
-  @Mock
-  private DiscountRepository discountRepository;
-  
-  @Mock
-  private PriceListService priceListService;
-  
-  @Mock
-  private PricingMapper pricingMapper;
-  
+  @Mock private PriceModifierRepository priceModifierRepository;
+
+  @Mock private DiscountRepository discountRepository;
+
+  @Mock private PriceListService priceListService;
+
+  @Mock private PricingMapper pricingMapper;
+
   private PricingServiceImpl pricingService;
 
   @BeforeEach
   void setUp() {
     // Create real calculation services
     PriceCalculationService priceCalculationService = new PriceCalculationService();
-    PricingRulesService pricingRulesService = new PricingRulesService(priceModifierRepository, priceCalculationService);
-    ItemPriceCalculator itemPriceCalculator = new ItemPriceCalculator(pricingRulesService, priceCalculationService);
+    PricingRulesService pricingRulesService =
+        new PricingRulesService(priceModifierRepository, priceCalculationService);
+    ItemPriceCalculator itemPriceCalculator =
+        new ItemPriceCalculator(pricingRulesService, priceCalculationService);
     TotalsCalculator totalsCalculator = new TotalsCalculator(priceCalculationService);
-    
-    pricingService = new PricingServiceImpl(
-        priceModifierRepository,
-        discountRepository,
-        priceListService,
-        pricingMapper,
-        itemPriceCalculator,
-        pricingRulesService,
-        totalsCalculator
-    );
+
+    pricingService =
+        new PricingServiceImpl(
+            priceModifierRepository,
+            discountRepository,
+            priceListService,
+            pricingMapper,
+            itemPriceCalculator,
+            pricingRulesService,
+            totalsCalculator);
   }
 
   @Test
@@ -77,7 +70,7 @@ class PricingServiceCalculationTest {
     // Given
     UUID itemId = UUID.randomUUID();
     PriceCalculationRequest request = new PriceCalculationRequest();
-    
+
     PriceCalculationItem item = new PriceCalculationItem();
     item.setPriceListItemId(itemId);
     item.setQuantity(2);
@@ -103,7 +96,7 @@ class PricingServiceCalculationTest {
     // Given
     UUID itemId = UUID.randomUUID();
     PriceCalculationRequest request = new PriceCalculationRequest();
-    
+
     PriceCalculationItem item = new PriceCalculationItem();
     item.setPriceListItemId(itemId);
     item.setQuantity(1);
@@ -129,12 +122,12 @@ class PricingServiceCalculationTest {
     // Given
     UUID itemId = UUID.randomUUID();
     PriceCalculationRequest request = new PriceCalculationRequest();
-    
+
     PriceCalculationItem item = new PriceCalculationItem();
     item.setPriceListItemId(itemId);
     item.setQuantity(1);
     request.setItems(List.of(item));
-    
+
     GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
     globalModifiers.setUrgencyType(GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H);
     request.setGlobalModifiers(globalModifiers);
@@ -157,12 +150,12 @@ class PricingServiceCalculationTest {
     // Given
     UUID itemId = UUID.randomUUID();
     PriceCalculationRequest request = new PriceCalculationRequest();
-    
+
     PriceCalculationItem item = new PriceCalculationItem();
     item.setPriceListItemId(itemId);
     item.setQuantity(1);
     request.setItems(List.of(item));
-    
+
     GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
     globalModifiers.setDiscountType(GlobalPriceModifiers.DiscountTypeEnum.EVERCARD);
     request.setGlobalModifiers(globalModifiers);
@@ -186,12 +179,12 @@ class PricingServiceCalculationTest {
     // Given
     UUID itemId = UUID.randomUUID();
     PriceCalculationRequest request = new PriceCalculationRequest();
-    
+
     PriceCalculationItem item = new PriceCalculationItem();
     item.setPriceListItemId(itemId);
     item.setQuantity(1);
     request.setItems(List.of(item));
-    
+
     GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
     globalModifiers.setDiscountType(GlobalPriceModifiers.DiscountTypeEnum.EVERCARD);
     request.setGlobalModifiers(globalModifiers);
@@ -215,17 +208,17 @@ class PricingServiceCalculationTest {
     // Given
     UUID itemId = UUID.randomUUID();
     PriceCalculationRequest request = new PriceCalculationRequest();
-    
+
     PriceCalculationItem item = new PriceCalculationItem();
     item.setPriceListItemId(itemId);
     item.setQuantity(2);
     item.setModifierCodes(List.of("SILK"));
-    
+
     ItemCharacteristics characteristics = new ItemCharacteristics();
     characteristics.setColor("чорний");
     item.setCharacteristics(characteristics);
     request.setItems(List.of(item));
-    
+
     GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
     globalModifiers.setUrgencyType(GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H);
     globalModifiers.setDiscountType(GlobalPriceModifiers.DiscountTypeEnum.MILITARY);
@@ -234,7 +227,7 @@ class PricingServiceCalculationTest {
     PriceListItemInfo priceListItem = createPriceListItem(itemId, "Dress", 10000);
     priceListItem.setPriceBlack(12000); // Black price
     priceListItem.setCategoryCode(ServiceCategoryType.CLOTHING);
-    
+
     PriceModifier silkModifier = createPercentageModifier("SILK", "Silk", 5000); // 50%
 
     when(priceListService.getPriceListItemById(itemId)).thenReturn(priceListItem);
@@ -261,17 +254,17 @@ class PricingServiceCalculationTest {
     // Given
     UUID itemId1 = UUID.randomUUID();
     UUID itemId2 = UUID.randomUUID();
-    
+
     PriceCalculationRequest request = new PriceCalculationRequest();
-    
+
     PriceCalculationItem item1 = new PriceCalculationItem();
     item1.setPriceListItemId(itemId1);
     item1.setQuantity(1);
-    
+
     PriceCalculationItem item2 = new PriceCalculationItem();
     item2.setPriceListItemId(itemId2);
     item2.setQuantity(2);
-    
+
     request.setItems(Arrays.asList(item1, item2));
 
     PriceListItemInfo priceListItem1 = createPriceListItem(itemId1, "Item 1", 10000);
@@ -289,7 +282,7 @@ class PricingServiceCalculationTest {
   }
 
   // Helper methods
-  
+
   private PriceListItemInfo createPriceListItem(UUID id, String name, int basePrice) {
     PriceListItemInfo item = new PriceListItemInfo();
     item.setId(id);

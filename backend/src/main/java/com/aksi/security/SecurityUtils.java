@@ -32,8 +32,7 @@ public final class SecurityUtils {
     // For now, extract customer ID from principal
     Object principal = authentication.getPrincipal();
 
-    if (principal instanceof UserDetails) {
-      UserDetails userDetails = (UserDetails) principal;
+    if (principal instanceof UserDetails userDetails) {
       // Assume username is customer ID for now
       try {
         return UUID.fromString(userDetails.getUsername());
@@ -68,5 +67,17 @@ public final class SecurityUtils {
   public static boolean isAuthenticated() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     return authentication != null && authentication.isAuthenticated();
+  }
+
+  /**
+   * Get current authenticated user's ID
+   *
+   * @return User ID
+   * @throws UnauthorizedException if user is not authenticated
+   */
+  public static UUID getCurrentUserId() {
+    // For now, return the same as customer ID
+    // In a real implementation, this should map to the User entity ID
+    return getCurrentCustomerId();
   }
 }

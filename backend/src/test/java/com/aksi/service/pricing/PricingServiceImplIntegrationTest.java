@@ -39,40 +39,38 @@ import com.aksi.service.pricing.rules.PricingRulesService;
 @DisplayName("PricingServiceImpl Integration Tests")
 class PricingServiceImplIntegrationTest {
 
-  @Mock
-  private PriceModifierRepository priceModifierRepository;
-  
-  @Mock
-  private DiscountRepository discountRepository;
-  
-  @Mock
-  private PriceListService priceListService;
-  
-  @Mock
-  private PricingMapper pricingMapper;
-  
+  @Mock private PriceModifierRepository priceModifierRepository;
+
+  @Mock private DiscountRepository discountRepository;
+
+  @Mock private PriceListService priceListService;
+
+  @Mock private PricingMapper pricingMapper;
+
   // Real services (not mocked) - will be created in setUp
-  
+
   private PricingServiceImpl pricingService;
 
   @BeforeEach
   void setUp() {
     // Create real instances of calculation services
     PriceCalculationService priceCalculationService = new PriceCalculationService();
-    PricingRulesService pricingRulesService = new PricingRulesService(priceModifierRepository, priceCalculationService);
-    ItemPriceCalculator itemPriceCalculator = new ItemPriceCalculator(pricingRulesService, priceCalculationService);
+    PricingRulesService pricingRulesService =
+        new PricingRulesService(priceModifierRepository, priceCalculationService);
+    ItemPriceCalculator itemPriceCalculator =
+        new ItemPriceCalculator(pricingRulesService, priceCalculationService);
     TotalsCalculator totalsCalculator = new TotalsCalculator(priceCalculationService);
-    
+
     // Create service under test with real dependencies
-    pricingService = new PricingServiceImpl(
-        priceModifierRepository,
-        discountRepository,
-        priceListService,
-        pricingMapper,
-        itemPriceCalculator,
-        pricingRulesService,
-        totalsCalculator
-    );
+    pricingService =
+        new PricingServiceImpl(
+            priceModifierRepository,
+            discountRepository,
+            priceListService,
+            pricingMapper,
+            itemPriceCalculator,
+            pricingRulesService,
+            totalsCalculator);
   }
 
   @Nested
@@ -85,7 +83,7 @@ class PricingServiceImplIntegrationTest {
       // Given
       UUID itemId = UUID.randomUUID();
       PriceCalculationRequest request = new PriceCalculationRequest();
-      
+
       PriceCalculationItem item = new PriceCalculationItem();
       item.setPriceListItemId(itemId);
       item.setQuantity(2);
@@ -101,13 +99,13 @@ class PricingServiceImplIntegrationTest {
       // Then
       assertThat(response).isNotNull();
       assertThat(response.getItems()).hasSize(1);
-      
+
       CalculatedItemPrice calculatedItem = response.getItems().getFirst();
       assertThat(calculatedItem.getItemName()).isEqualTo("Пальто");
       assertThat(calculatedItem.getQuantity()).isEqualTo(2);
       assertThat(calculatedItem.getBasePrice()).isEqualTo(15000);
       assertThat(calculatedItem.getTotal()).isEqualTo(30000); // 150.00 * 2
-      
+
       assertThat(response.getTotals().getItemsSubtotal()).isEqualTo(30000);
       assertThat(response.getTotals().getTotal()).isEqualTo(30000);
     }
@@ -118,11 +116,11 @@ class PricingServiceImplIntegrationTest {
       // Given
       UUID itemId = UUID.randomUUID();
       PriceCalculationRequest request = new PriceCalculationRequest();
-      
+
       PriceCalculationItem item = new PriceCalculationItem();
       item.setPriceListItemId(itemId);
       item.setQuantity(1);
-      
+
       ItemCharacteristics characteristics = new ItemCharacteristics();
       characteristics.setColor("чорний");
       item.setCharacteristics(characteristics);
@@ -148,7 +146,7 @@ class PricingServiceImplIntegrationTest {
       // Given
       UUID itemId = UUID.randomUUID();
       PriceCalculationRequest request = new PriceCalculationRequest();
-      
+
       PriceCalculationItem item = new PriceCalculationItem();
       item.setPriceListItemId(itemId);
       item.setQuantity(1);
@@ -159,8 +157,7 @@ class PricingServiceImplIntegrationTest {
       PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000); // 50%
 
       when(priceListService.getPriceListItemById(itemId)).thenReturn(priceListItem);
-      when(priceModifierRepository.findByCode("SILK_FABRIC"))
-          .thenReturn(Optional.of(silkModifier));
+      when(priceModifierRepository.findByCode("SILK_FABRIC")).thenReturn(Optional.of(silkModifier));
 
       // When
       PriceCalculationResponse response = pricingService.calculatePrice(request);
@@ -168,7 +165,8 @@ class PricingServiceImplIntegrationTest {
       // Then
       CalculatedItemPrice calculatedItem = response.getItems().getFirst();
       assertThat(calculatedItem.getCalculations().getModifiers()).hasSize(1);
-      assertThat(calculatedItem.getCalculations().getModifiersTotal()).isEqualTo(4000); // 50% of 80.00
+      assertThat(calculatedItem.getCalculations().getModifiersTotal())
+          .isEqualTo(4000); // 50% of 80.00
       assertThat(calculatedItem.getTotal()).isEqualTo(12000); // 80 + 40
     }
 
@@ -178,12 +176,12 @@ class PricingServiceImplIntegrationTest {
       // Given
       UUID itemId = UUID.randomUUID();
       PriceCalculationRequest request = new PriceCalculationRequest();
-      
+
       PriceCalculationItem item = new PriceCalculationItem();
       item.setPriceListItemId(itemId);
       item.setQuantity(1);
       request.setItems(List.of(item));
-      
+
       GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
       globalModifiers.setUrgencyType(GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H);
       request.setGlobalModifiers(globalModifiers);
@@ -198,9 +196,10 @@ class PricingServiceImplIntegrationTest {
       // Then
       CalculatedItemPrice calculatedItem = response.getItems().getFirst();
       assertThat(calculatedItem.getCalculations().getUrgencyModifier()).isNotNull();
-      assertThat(calculatedItem.getCalculations().getUrgencyModifier().getAmount()).isEqualTo(15000); // 50%
+      assertThat(calculatedItem.getCalculations().getUrgencyModifier().getAmount())
+          .isEqualTo(15000); // 50%
       assertThat(calculatedItem.getTotal()).isEqualTo(45000); // 300 + 150
-      
+
       assertThat(response.getTotals().getUrgencyAmount()).isEqualTo(15000);
       assertThat(response.getTotals().getUrgencyPercentage()).isEqualTo(50);
     }
@@ -211,26 +210,26 @@ class PricingServiceImplIntegrationTest {
       // Given
       UUID clothingId = UUID.randomUUID();
       UUID laundryId = UUID.randomUUID();
-      
+
       PriceCalculationRequest request = new PriceCalculationRequest();
-      
+
       PriceCalculationItem clothingItem = new PriceCalculationItem();
       clothingItem.setPriceListItemId(clothingId);
       clothingItem.setQuantity(1);
-      
+
       PriceCalculationItem laundryItem = new PriceCalculationItem();
       laundryItem.setPriceListItemId(laundryId);
       laundryItem.setQuantity(2);
-      
+
       request.setItems(Arrays.asList(clothingItem, laundryItem));
-      
+
       GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
       globalModifiers.setDiscountType(GlobalPriceModifiers.DiscountTypeEnum.EVERCARD);
       request.setGlobalModifiers(globalModifiers);
 
       PriceListItemInfo clothingInfo = createPriceListItem(clothingId, "Пальто", 20000);
       clothingInfo.setCategoryCode(ServiceCategoryType.CLOTHING);
-      
+
       PriceListItemInfo laundryInfo = createPriceListItem(laundryId, "Прання білизни", 5000);
       laundryInfo.setCategoryCode(ServiceCategoryType.LAUNDRY);
 
@@ -245,18 +244,20 @@ class PricingServiceImplIntegrationTest {
       CalculatedItemPrice clothingCalculated = response.getItems().getFirst();
       assertThat(clothingCalculated.getCalculations().getDiscountEligible()).isTrue();
       assertThat(clothingCalculated.getCalculations().getDiscountModifier()).isNotNull();
-      assertThat(clothingCalculated.getCalculations().getDiscountModifier().getAmount()).isEqualTo(2000); // 10%
+      assertThat(clothingCalculated.getCalculations().getDiscountModifier().getAmount())
+          .isEqualTo(2000); // 10%
       assertThat(clothingCalculated.getTotal()).isEqualTo(18000); // 200 - 20
-      
+
       // Laundry item should NOT have discount
       CalculatedItemPrice laundryCalculated = response.getItems().get(1);
       assertThat(laundryCalculated.getCalculations().getDiscountEligible()).isFalse();
       assertThat(laundryCalculated.getCalculations().getDiscountModifier()).isNull();
       assertThat(laundryCalculated.getTotal()).isEqualTo(10000); // 50 * 2, no discount
-      
+
       // Totals
       assertThat(response.getTotals().getDiscountAmount()).isEqualTo(2000);
-      assertThat(response.getTotals().getDiscountApplicableAmount()).isEqualTo(20000); // Only clothing
+      assertThat(response.getTotals().getDiscountApplicableAmount())
+          .isEqualTo(20000); // Only clothing
       assertThat(response.getTotals().getTotal()).isEqualTo(28000); // 180 + 100
     }
 
@@ -266,9 +267,9 @@ class PricingServiceImplIntegrationTest {
       // Given
       UUID itemId1 = UUID.randomUUID();
       UUID itemId2 = UUID.randomUUID();
-      
+
       PriceCalculationRequest request = new PriceCalculationRequest();
-      
+
       // Item 1: Black silk blouse
       PriceCalculationItem item1 = new PriceCalculationItem();
       item1.setPriceListItemId(itemId1);
@@ -277,15 +278,15 @@ class PricingServiceImplIntegrationTest {
       ItemCharacteristics char1 = new ItemCharacteristics();
       char1.setColor("чорний");
       item1.setCharacteristics(char1);
-      
+
       // Item 2: Regular clothing
       PriceCalculationItem item2 = new PriceCalculationItem();
       item2.setPriceListItemId(itemId2);
       item2.setQuantity(1);
       item2.setModifierCodes(List.of("WATER_REPELLENT"));
-      
+
       request.setItems(Arrays.asList(item1, item2));
-      
+
       // Global modifiers: urgency + discount
       GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
       globalModifiers.setUrgencyType(GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H);
@@ -296,25 +297,27 @@ class PricingServiceImplIntegrationTest {
       PriceListItemInfo item1Info = createPriceListItem(itemId1, "Блуза", 10000);
       item1Info.setPriceBlack(12000);
       item1Info.setCategoryCode(ServiceCategoryType.CLOTHING);
-      
+
       PriceListItemInfo item2Info = createPriceListItem(itemId2, "Куртка", 25000);
       item2Info.setCategoryCode(ServiceCategoryType.CLOTHING);
 
       // Setup modifiers
       PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000); // 50%
-      PriceModifier waterModifier = createModifier("WATER_REPELLENT", "Водовідштовхування", 3000); // 30%
+      PriceModifier waterModifier =
+          createModifier("WATER_REPELLENT", "Водовідштовхування", 3000); // 30%
 
       when(priceListService.getPriceListItemById(itemId1)).thenReturn(item1Info);
       when(priceListService.getPriceListItemById(itemId2)).thenReturn(item2Info);
       when(priceModifierRepository.findByCode("SILK_FABRIC")).thenReturn(Optional.of(silkModifier));
-      when(priceModifierRepository.findByCode("WATER_REPELLENT")).thenReturn(Optional.of(waterModifier));
+      when(priceModifierRepository.findByCode("WATER_REPELLENT"))
+          .thenReturn(Optional.of(waterModifier));
 
       // When
       PriceCalculationResponse response = pricingService.calculatePrice(request);
 
       // Then
       assertThat(response.getItems()).hasSize(2);
-      
+
       // Item 1 calculations
       CalculatedItemPrice item1Calculated = response.getItems().getFirst();
       assertThat(item1Calculated.getBasePrice()).isEqualTo(12000); // Black price
@@ -329,10 +332,12 @@ class PricingServiceImplIntegrationTest {
       assertThat(item1Calculated.getCalculations().getBaseAmount()).isEqualTo(24000);
       assertThat(item1Calculated.getCalculations().getModifiersTotal()).isEqualTo(12000);
       assertThat(item1Calculated.getCalculations().getSubtotal()).isEqualTo(36000);
-      assertThat(item1Calculated.getCalculations().getUrgencyModifier().getAmount()).isEqualTo(36000);
-      assertThat(item1Calculated.getCalculations().getDiscountModifier().getAmount()).isEqualTo(7200);
+      assertThat(item1Calculated.getCalculations().getUrgencyModifier().getAmount())
+          .isEqualTo(36000);
+      assertThat(item1Calculated.getCalculations().getDiscountModifier().getAmount())
+          .isEqualTo(7200);
       assertThat(item1Calculated.getTotal()).isEqualTo(64800);
-      
+
       // Item 2 calculations
       CalculatedItemPrice item2Calculated = response.getItems().get(1);
       assertThat(item2Calculated.getBasePrice()).isEqualTo(25000);
@@ -345,10 +350,12 @@ class PricingServiceImplIntegrationTest {
       // Final: 585
       assertThat(item2Calculated.getCalculations().getModifiersTotal()).isEqualTo(7500);
       assertThat(item2Calculated.getCalculations().getSubtotal()).isEqualTo(32500);
-      assertThat(item2Calculated.getCalculations().getUrgencyModifier().getAmount()).isEqualTo(32500);
-      assertThat(item2Calculated.getCalculations().getDiscountModifier().getAmount()).isEqualTo(6500);
+      assertThat(item2Calculated.getCalculations().getUrgencyModifier().getAmount())
+          .isEqualTo(32500);
+      assertThat(item2Calculated.getCalculations().getDiscountModifier().getAmount())
+          .isEqualTo(6500);
       assertThat(item2Calculated.getTotal()).isEqualTo(58500);
-      
+
       // Totals
       CalculationTotals totals = response.getTotals();
       assertThat(totals.getItemsSubtotal()).isEqualTo(68500); // 360 + 325
@@ -365,7 +372,7 @@ class PricingServiceImplIntegrationTest {
       // Given
       UUID itemId = UUID.randomUUID();
       PriceCalculationRequest request = new PriceCalculationRequest();
-      
+
       PriceCalculationItem item = new PriceCalculationItem();
       item.setPriceListItemId(itemId);
       item.setQuantity(1);
@@ -389,24 +396,29 @@ class PricingServiceImplIntegrationTest {
     @DisplayName("Should list all active modifiers")
     void shouldListAllActiveModifiers() {
       // Given
-      List<PriceModifier> modifiers = Arrays.asList(
-          createModifier("SILK_FABRIC", "Шовк", 5000),
-          createModifier("WATER_REPELLENT", "Водовідштовхування", 3000)
-      );
-      
+      List<PriceModifier> modifiers =
+          Arrays.asList(
+              createModifier("SILK_FABRIC", "Шовк", 5000),
+              createModifier("WATER_REPELLENT", "Водовідштовхування", 3000));
+
       Pageable pageable = Pageable.unpaged();
       Page<PriceModifier> modifierPage = new PageImpl<>(modifiers, pageable, modifiers.size());
-      
+
       when(priceModifierRepository.findAll(any(Pageable.class))).thenReturn(modifierPage);
-      when(pricingMapper.toPriceModifierDto(any())).thenAnswer(invocation -> {
-        com.aksi.domain.pricing.PriceModifier modifier = invocation.getArgument(0);
-        com.aksi.api.pricing.dto.PriceModifier dto = new com.aksi.api.pricing.dto.PriceModifier();
-        dto.setCode(modifier.getCode());
-        dto.setName(modifier.getName());
-        dto.setType(com.aksi.api.pricing.dto.PriceModifier.TypeEnum.valueOf(modifier.getType().name()));
-        dto.setValue(modifier.getValue());
-        return dto;
-      });
+      when(pricingMapper.toPriceModifierDto(any()))
+          .thenAnswer(
+              invocation -> {
+                com.aksi.domain.pricing.PriceModifier modifier = invocation.getArgument(0);
+                com.aksi.api.pricing.dto.PriceModifier dto =
+                    new com.aksi.api.pricing.dto.PriceModifier();
+                dto.setCode(modifier.getCode());
+                dto.setName(modifier.getName());
+                dto.setType(
+                    com.aksi.api.pricing.dto.PriceModifier.TypeEnum.valueOf(
+                        modifier.getType().name()));
+                dto.setValue(modifier.getValue());
+                return dto;
+              });
 
       // When
       PriceModifiersResponse response = pricingService.listPriceModifiers(null, null);
@@ -422,22 +434,23 @@ class PricingServiceImplIntegrationTest {
     void shouldFilterModifiersByCategory() {
       // Given
       String categoryCode = "CLOTHING";
-      
-      List<PriceModifier> modifiers = List.of(
-          createModifier("SILK_FABRIC", "Шовк", 5000)
-      );
-      
+
+      List<PriceModifier> modifiers = List.of(createModifier("SILK_FABRIC", "Шовк", 5000));
+
       when(priceModifierRepository.findActiveByCategoryCode(eq(categoryCode)))
           .thenReturn(modifiers);
-      when(pricingMapper.toPriceModifierDto(any())).thenAnswer(invocation -> {
-        com.aksi.domain.pricing.PriceModifier modifier = invocation.getArgument(0);
-        com.aksi.api.pricing.dto.PriceModifier dto = new com.aksi.api.pricing.dto.PriceModifier();
-        dto.setCode(modifier.getCode());
-        dto.setName(modifier.getName());
-        dto.setType(com.aksi.api.pricing.dto.PriceModifier.TypeEnum.PERCENTAGE);
-        dto.setValue(modifier.getValue());
-        return dto;
-      });
+      when(pricingMapper.toPriceModifierDto(any()))
+          .thenAnswer(
+              invocation -> {
+                com.aksi.domain.pricing.PriceModifier modifier = invocation.getArgument(0);
+                com.aksi.api.pricing.dto.PriceModifier dto =
+                    new com.aksi.api.pricing.dto.PriceModifier();
+                dto.setCode(modifier.getCode());
+                dto.setName(modifier.getName());
+                dto.setType(com.aksi.api.pricing.dto.PriceModifier.TypeEnum.PERCENTAGE);
+                dto.setValue(modifier.getValue());
+                return dto;
+              });
 
       // When
       PriceModifiersResponse response = pricingService.listPriceModifiers(categoryCode, null);
@@ -456,24 +469,25 @@ class PricingServiceImplIntegrationTest {
     @DisplayName("Should list all active discounts")
     void shouldListAllActiveDiscounts() {
       // Given
-      List<com.aksi.domain.pricing.Discount> discounts = Arrays.asList(
-          createDiscount("EVERCARD", "Еверкарт", 10),
-          createDiscount("MILITARY", "Військовий", 10)
-      );
-      
+      List<com.aksi.domain.pricing.Discount> discounts =
+          Arrays.asList(
+              createDiscount("EVERCARD", "Еверкарт", 10),
+              createDiscount("MILITARY", "Військовий", 10));
+
       // No need for Page when using findAllActiveOrderedBySortOrder
-      
-      when(discountRepository.findAllActiveOrderedBySortOrder())
-          .thenReturn(discounts);
-      when(pricingMapper.toDiscountDto(any())).thenAnswer(invocation -> {
-        com.aksi.domain.pricing.Discount discount = invocation.getArgument(0);
-        com.aksi.api.pricing.dto.Discount dto = new com.aksi.api.pricing.dto.Discount();
-        dto.setCode(discount.getCode());
-        dto.setName(discount.getName());
-        dto.setPercentage(discount.getPercentage());
-        dto.setActive(discount.isActive());
-        return dto;
-      });
+
+      when(discountRepository.findAllActiveOrderedBySortOrder()).thenReturn(discounts);
+      when(pricingMapper.toDiscountDto(any()))
+          .thenAnswer(
+              invocation -> {
+                com.aksi.domain.pricing.Discount discount = invocation.getArgument(0);
+                com.aksi.api.pricing.dto.Discount dto = new com.aksi.api.pricing.dto.Discount();
+                dto.setCode(discount.getCode());
+                dto.setName(discount.getName());
+                dto.setPercentage(discount.getPercentage());
+                dto.setActive(discount.isActive());
+                return dto;
+              });
 
       // When
       DiscountsResponse response = pricingService.listDiscounts(true);
@@ -494,14 +508,13 @@ class PricingServiceImplIntegrationTest {
     void shouldGetApplicableModifierCodes() {
       // Given
       String categoryCode = "CLOTHING";
-      
-      List<PriceModifier> modifiers = Arrays.asList(
-          createModifier("SILK_FABRIC", "Шовк", 5000),
-          createModifier("WATER_REPELLENT", "Водовідштовхування", 3000)
-      );
-      
-      when(priceModifierRepository.findActiveByCategoryCode(categoryCode))
-          .thenReturn(modifiers);
+
+      List<PriceModifier> modifiers =
+          Arrays.asList(
+              createModifier("SILK_FABRIC", "Шовк", 5000),
+              createModifier("WATER_REPELLENT", "Водовідштовхування", 3000));
+
+      when(priceModifierRepository.findActiveByCategoryCode(categoryCode)).thenReturn(modifiers);
 
       // When
       List<String> codes = pricingService.getApplicableModifierCodes(categoryCode);
@@ -519,8 +532,10 @@ class PricingServiceImplIntegrationTest {
       String excludedCategory = "LAUNDRY";
 
       // When
-      boolean eligibleResult = pricingService.isDiscountApplicableToCategory(discountCode, eligibleCategory);
-      boolean excludedResult = pricingService.isDiscountApplicableToCategory(discountCode, excludedCategory);
+      boolean eligibleResult =
+          pricingService.isDiscountApplicableToCategory(discountCode, eligibleCategory);
+      boolean excludedResult =
+          pricingService.isDiscountApplicableToCategory(discountCode, excludedCategory);
 
       // Then
       assertThat(eligibleResult).isTrue();
@@ -550,7 +565,8 @@ class PricingServiceImplIntegrationTest {
     return modifier;
   }
 
-  private com.aksi.domain.pricing.Discount createDiscount(String code, String name, int percentage) {
+  private com.aksi.domain.pricing.Discount createDiscount(
+      String code, String name, int percentage) {
     com.aksi.domain.pricing.Discount discount = new com.aksi.domain.pricing.Discount();
     discount.setId(UUID.randomUUID());
     discount.setCode(code);

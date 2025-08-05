@@ -18,7 +18,8 @@ public interface PricingMapper {
    */
   @Mapping(
       target = "type",
-      expression = "java(PriceModifier.TypeEnum.fromValue(modifier.getType().name()))")
+      expression =
+          "java(com.aksi.api.pricing.dto.PriceModifier.TypeEnum.fromValue(modifier.getType().name()))")
   PriceModifier toPriceModifierDto(com.aksi.domain.pricing.PriceModifier modifier);
 
   /**

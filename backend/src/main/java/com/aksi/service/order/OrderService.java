@@ -1,10 +1,11 @@
 package com.aksi.service.order;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aksi.api.order.dto.AddPaymentRequest;
 import com.aksi.api.order.dto.CreateOrderRequest;
@@ -12,9 +13,9 @@ import com.aksi.api.order.dto.ItemPhotoInfo;
 import com.aksi.api.order.dto.OrderInfo;
 import com.aksi.api.order.dto.OrderItemInfo;
 import com.aksi.api.order.dto.PaymentInfo;
+import com.aksi.api.order.dto.PhotoType;
 import com.aksi.api.order.dto.UpdateItemCharacteristicsRequest;
 import com.aksi.api.order.dto.UpdateOrderStatusRequest;
-import com.aksi.api.order.dto.UploadItemPhotoRequest;
 import com.aksi.domain.order.Order;
 
 /** Service interface for managing orders */
@@ -60,8 +61,8 @@ public interface OrderService {
       UUID customerId,
       Order.OrderStatus status,
       UUID branchId,
-      LocalDate dateFrom,
-      LocalDate dateTo,
+      Instant dateFrom,
+      Instant dateTo,
       String search,
       Pageable pageable);
 
@@ -90,10 +91,13 @@ public interface OrderService {
    *
    * @param orderId Order ID
    * @param itemId Order item ID
-   * @param request Upload photo request
+   * @param file Photo file
+   * @param photoType Photo type
+   * @param photoDescription Photo description
    * @return Uploaded photo info
    */
-  ItemPhotoInfo uploadItemPhoto(UUID orderId, UUID itemId, UploadItemPhotoRequest request);
+  ItemPhotoInfo uploadItemPhoto(
+      UUID orderId, UUID itemId, MultipartFile file, PhotoType photoType, String photoDescription);
 
   /**
    * Delete photo from order item

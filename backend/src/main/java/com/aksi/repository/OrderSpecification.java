@@ -1,8 +1,6 @@
 package com.aksi.repository;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -98,46 +96,42 @@ public class OrderSpecification {
   }
 
   /** Filter by creation date from */
-  public static Specification<Order> createdFrom(LocalDate dateFrom) {
+  public static Specification<Order> createdFrom(Instant dateFrom) {
     return (root, query, cb) -> {
       if (dateFrom == null) {
         return cb.conjunction();
       }
-      Instant from = dateFrom.atStartOfDay().toInstant(ZoneOffset.UTC);
-      return cb.greaterThanOrEqualTo(root.get("createdAt"), from);
+      return cb.greaterThanOrEqualTo(root.get("createdAt"), dateFrom);
     };
   }
 
   /** Filter by creation date to */
-  public static Specification<Order> createdTo(LocalDate dateTo) {
+  public static Specification<Order> createdTo(Instant dateTo) {
     return (root, query, cb) -> {
       if (dateTo == null) {
         return cb.conjunction();
       }
-      Instant to = dateTo.plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC);
-      return cb.lessThan(root.get("createdAt"), to);
+      return cb.lessThan(root.get("createdAt"), dateTo);
     };
   }
 
   /** Filter by expected completion date from */
-  public static Specification<Order> expectedCompletionFrom(LocalDate dateFrom) {
+  public static Specification<Order> expectedCompletionFrom(Instant dateFrom) {
     return (root, query, cb) -> {
       if (dateFrom == null) {
         return cb.conjunction();
       }
-      Instant from = dateFrom.atStartOfDay().toInstant(ZoneOffset.UTC);
-      return cb.greaterThanOrEqualTo(root.get("expectedCompletionDate"), from);
+      return cb.greaterThanOrEqualTo(root.get("expectedCompletionDate"), dateFrom);
     };
   }
 
   /** Filter by expected completion date to */
-  public static Specification<Order> expectedCompletionTo(LocalDate dateTo) {
+  public static Specification<Order> expectedCompletionTo(Instant dateTo) {
     return (root, query, cb) -> {
       if (dateTo == null) {
         return cb.conjunction();
       }
-      Instant to = dateTo.plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC);
-      return cb.lessThan(root.get("expectedCompletionDate"), to);
+      return cb.lessThan(root.get("expectedCompletionDate"), dateTo);
     };
   }
 
@@ -145,6 +139,7 @@ public class OrderSpecification {
   public static Specification<Order> hasBalanceDue() {
     return (root, query, cb) -> {
       // Orders where totalAmount > sum of payments
+      assert query != null;
       var paymentsSubquery = query.subquery(Long.class);
       var paymentsRoot = paymentsSubquery.from(root.getJavaType());
       var paymentsJoin = paymentsRoot.join("payments", JoinType.LEFT);
@@ -160,11 +155,9 @@ public class OrderSpecification {
   /** Filter overdue orders */
   public static Specification<Order> isOverdue(Instant now) {
     return (root, query, cb) -> {
-      if (now == null) {
-        now = Instant.now();
-      }
+      Instant effectiveNow = now != null ? now : Instant.now();
       return cb.and(
-          cb.lessThan(root.get("expectedCompletionDate"), now),
+          cb.lessThan(root.get("expectedCompletionDate"), effectiveNow),
           root.get("status").in(Order.OrderStatus.ACCEPTED, Order.OrderStatus.IN_PROGRESS));
     };
   }
@@ -204,8 +197,8 @@ public class OrderSpecification {
       UUID customerId,
       UUID branchId,
       Order.OrderStatus status,
-      LocalDate dateFrom,
-      LocalDate dateTo,
+      Instant dateFrom,
+      Instant dateTo,
       String search) {
 
     return Specification.allOf(

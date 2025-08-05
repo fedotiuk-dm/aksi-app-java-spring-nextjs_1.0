@@ -71,14 +71,14 @@ paths:
           required: false
           schema:
             type: string
-            format: date
+            format: date-time
         - name: dateTo
           in: query
           description: Filter by creation date to
           required: false
           schema:
             type: string
-            format: date
+            format: date-time
       responses:
         '200':
           description: List of orders

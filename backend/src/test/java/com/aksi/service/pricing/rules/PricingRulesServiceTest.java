@@ -24,11 +24,9 @@ import com.aksi.service.pricing.calculation.PriceCalculationService;
 @DisplayName("PricingRulesService Tests")
 class PricingRulesServiceTest {
 
-  @Mock
-  private PriceModifierRepository priceModifierRepository;
+  @Mock private PriceModifierRepository priceModifierRepository;
 
-  @Mock
-  private PriceCalculationService priceCalculationService;
+  @Mock private PriceCalculationService priceCalculationService;
 
   private PricingRulesService pricingRulesService;
 
@@ -162,9 +160,12 @@ class PricingRulesServiceTest {
       when(priceCalculationService.isDiscountApplicableToCategory("DYEING")).thenReturn(false);
 
       // When & Then
-      assertThat(pricingRulesService.isDiscountApplicableToCategory("EVERCARD", "LAUNDRY")).isFalse();
-      assertThat(pricingRulesService.isDiscountApplicableToCategory("MILITARY", "IRONING")).isFalse();
-      assertThat(pricingRulesService.isDiscountApplicableToCategory("SOCIAL_MEDIA", "DYEING")).isFalse();
+      assertThat(pricingRulesService.isDiscountApplicableToCategory("EVERCARD", "LAUNDRY"))
+          .isFalse();
+      assertThat(pricingRulesService.isDiscountApplicableToCategory("MILITARY", "IRONING"))
+          .isFalse();
+      assertThat(pricingRulesService.isDiscountApplicableToCategory("SOCIAL_MEDIA", "DYEING"))
+          .isFalse();
     }
 
     @Test
@@ -176,9 +177,12 @@ class PricingRulesServiceTest {
       when(priceCalculationService.isDiscountApplicableToCategory("FUR")).thenReturn(true);
 
       // When & Then
-      assertThat(pricingRulesService.isDiscountApplicableToCategory("EVERCARD", "CLOTHING")).isTrue();
-      assertThat(pricingRulesService.isDiscountApplicableToCategory("MILITARY", "LEATHER")).isTrue();
-      assertThat(pricingRulesService.isDiscountApplicableToCategory("SOCIAL_MEDIA", "FUR")).isTrue();
+      assertThat(pricingRulesService.isDiscountApplicableToCategory("EVERCARD", "CLOTHING"))
+          .isTrue();
+      assertThat(pricingRulesService.isDiscountApplicableToCategory("MILITARY", "LEATHER"))
+          .isTrue();
+      assertThat(pricingRulesService.isDiscountApplicableToCategory("SOCIAL_MEDIA", "FUR"))
+          .isTrue();
     }
 
     @Test
@@ -219,8 +223,7 @@ class PricingRulesServiceTest {
     void shouldGetActiveModifierByCode() {
       // Given
       PriceModifier modifier = createModifier("SILK_FABRIC", true);
-      when(priceModifierRepository.findByCode("SILK_FABRIC"))
-          .thenReturn(Optional.of(modifier));
+      when(priceModifierRepository.findByCode("SILK_FABRIC")).thenReturn(Optional.of(modifier));
 
       // When
       PriceModifier result = pricingRulesService.getModifier("SILK_FABRIC");
@@ -234,8 +237,7 @@ class PricingRulesServiceTest {
     @DisplayName("Should return null for non-existent modifier")
     void shouldReturnNullForNonExistentModifier() {
       // Given
-      when(priceModifierRepository.findByCode("NON_EXISTENT"))
-          .thenReturn(Optional.empty());
+      when(priceModifierRepository.findByCode("NON_EXISTENT")).thenReturn(Optional.empty());
 
       // When
       PriceModifier result = pricingRulesService.getModifier("NON_EXISTENT");
@@ -249,8 +251,7 @@ class PricingRulesServiceTest {
     void shouldReturnNullForInactiveModifier() {
       // Given
       PriceModifier modifier = createModifier("INACTIVE", false);
-      when(priceModifierRepository.findByCode("INACTIVE"))
-          .thenReturn(Optional.of(modifier));
+      when(priceModifierRepository.findByCode("INACTIVE")).thenReturn(Optional.of(modifier));
 
       // When
       PriceModifier result = pricingRulesService.getModifier("INACTIVE");

@@ -26,11 +26,9 @@ import com.aksi.service.pricing.rules.PricingRulesService;
 @DisplayName("ItemPriceCalculator Tests")
 class ItemPriceCalculatorTest {
 
-  @Mock
-  private PricingRulesService pricingRulesService;
+  @Mock private PricingRulesService pricingRulesService;
 
-  @Mock
-  private PriceCalculationService priceCalculationService;
+  @Mock private PriceCalculationService priceCalculationService;
 
   private ItemPriceCalculator itemPriceCalculator;
 
@@ -54,8 +52,7 @@ class ItemPriceCalculatorTest {
 
       PriceListItemInfo priceListItem = createPriceListItem("Пальто", 15000); // 150.00 UAH
 
-      when(pricingRulesService.determineBasePrice(eq(priceListItem), isNull()))
-          .thenReturn(15000);
+      when(pricingRulesService.determineBasePrice(eq(priceListItem), isNull())).thenReturn(15000);
 
       // When
       CalculatedItemPrice result = itemPriceCalculator.calculate(item, priceListItem, null);
@@ -77,7 +74,7 @@ class ItemPriceCalculatorTest {
       PriceCalculationItem item = new PriceCalculationItem();
       item.setPriceListItemId(UUID.randomUUID());
       item.setQuantity(1);
-      
+
       ItemCharacteristics characteristics = new ItemCharacteristics();
       characteristics.setColor("чорний");
       item.setCharacteristics(characteristics);
@@ -85,8 +82,7 @@ class ItemPriceCalculatorTest {
       PriceListItemInfo priceListItem = createPriceListItem("Сукня", 10000);
       priceListItem.setPriceBlack(12000); // Black items cost more
 
-      when(pricingRulesService.determineBasePrice(priceListItem, "чорний"))
-          .thenReturn(12000);
+      when(pricingRulesService.determineBasePrice(priceListItem, "чорний")).thenReturn(12000);
 
       // When
       CalculatedItemPrice result = itemPriceCalculator.calculate(item, priceListItem, null);
@@ -112,8 +108,7 @@ class ItemPriceCalculatorTest {
 
       PriceListItemInfo priceListItem = createPriceListItem("Блуза", 8000);
 
-      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк",
-          5000); // 50%
+      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000); // 50%
 
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(8000);
       when(pricingRulesService.getModifier("SILK_FABRIC")).thenReturn(silkModifier);
@@ -142,10 +137,9 @@ class ItemPriceCalculatorTest {
 
       PriceListItemInfo priceListItem = createPriceListItem("Куртка", 20000);
 
-      PriceModifier waterModifier = createModifier("WATER_REPELLENT", "Водовідштовхування",
-          3000); // 30%
-      PriceModifier manualModifier = createModifier("MANUAL_CLEAN", "Ручна чистка",
-          2000); // 20%
+      PriceModifier waterModifier =
+          createModifier("WATER_REPELLENT", "Водовідштовхування", 3000); // 30%
+      PriceModifier manualModifier = createModifier("MANUAL_CLEAN", "Ручна чистка", 2000); // 20%
 
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(20000);
       when(pricingRulesService.getModifier("WATER_REPELLENT")).thenReturn(waterModifier);
@@ -183,15 +177,16 @@ class ItemPriceCalculatorTest {
       PriceListItemInfo priceListItem = createPriceListItem("Костюм", 30000);
 
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(30000);
-      when(priceCalculationService.calculateUrgencyAmount(30000, 
-          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H))
+      when(priceCalculationService.calculateUrgencyAmount(
+              30000, GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H))
           .thenReturn(15000); // 50% urgency
       when(priceCalculationService.getUrgencyPercentage(
-          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H))
+              GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H))
           .thenReturn(50);
 
       // When
-      CalculatedItemPrice result = itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
+      CalculatedItemPrice result =
+          itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
 
       // Then
       assertThat(result.getCalculations().getSubtotal()).isEqualTo(30000);
@@ -214,26 +209,27 @@ class ItemPriceCalculatorTest {
 
       PriceListItemInfo priceListItem = createPriceListItem("Сукня", 10000);
 
-      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк",
-          5000);
+      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000);
 
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(10000);
       when(pricingRulesService.getModifier("SILK_FABRIC")).thenReturn(silkModifier);
       when(priceCalculationService.calculateModifierAmount(silkModifier, 10000, 1))
           .thenReturn(5000); // 50% modifier
-      when(priceCalculationService.calculateUrgencyAmount(15000, 
-          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H))
+      when(priceCalculationService.calculateUrgencyAmount(
+              15000, GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H))
           .thenReturn(15000); // 100% urgency on subtotal
       when(priceCalculationService.getUrgencyPercentage(
-          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H))
+              GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H))
           .thenReturn(100);
 
       // When
-      CalculatedItemPrice result = itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
+      CalculatedItemPrice result =
+          itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
 
       // Then
       assertThat(result.getCalculations().getSubtotal()).isEqualTo(15000); // 100 + 50
-      assertThat(result.getCalculations().getUrgencyModifier().getAmount()).isEqualTo(15000); // 100%
+      assertThat(result.getCalculations().getUrgencyModifier().getAmount())
+          .isEqualTo(15000); // 100%
       assertThat(result.getTotal()).isEqualTo(30000); // 150 + 150 = 300
     }
   }
@@ -259,15 +255,16 @@ class ItemPriceCalculatorTest {
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(20000);
       when(pricingRulesService.isDiscountApplicableToCategory("EVERCARD", "CLOTHING"))
           .thenReturn(true);
-      when(priceCalculationService.calculateDiscountAmount(20000, 
-          GlobalPriceModifiers.DiscountTypeEnum.EVERCARD, null))
+      when(priceCalculationService.calculateDiscountAmount(
+              20000, GlobalPriceModifiers.DiscountTypeEnum.EVERCARD, null))
           .thenReturn(2000); // 10% discount
       when(priceCalculationService.getDiscountPercentage(
-          GlobalPriceModifiers.DiscountTypeEnum.EVERCARD, null))
+              GlobalPriceModifiers.DiscountTypeEnum.EVERCARD, null))
           .thenReturn(10);
 
       // When
-      CalculatedItemPrice result = itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
+      CalculatedItemPrice result =
+          itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
 
       // Then
       assertThat(result.getCalculations().getDiscountEligible()).isTrue();
@@ -295,7 +292,8 @@ class ItemPriceCalculatorTest {
           .thenReturn(false);
 
       // When
-      CalculatedItemPrice result = itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
+      CalculatedItemPrice result =
+          itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
 
       // Then
       assertThat(result.getCalculations().getDiscountEligible()).isFalse();
@@ -321,15 +319,16 @@ class ItemPriceCalculatorTest {
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(6000);
       when(pricingRulesService.isDiscountApplicableToCategory("OTHER", "CLOTHING"))
           .thenReturn(true);
-      when(priceCalculationService.calculateDiscountAmount(6000, 
-          GlobalPriceModifiers.DiscountTypeEnum.OTHER, 15))
+      when(priceCalculationService.calculateDiscountAmount(
+              6000, GlobalPriceModifiers.DiscountTypeEnum.OTHER, 15))
           .thenReturn(900); // 15% discount
       when(priceCalculationService.getDiscountPercentage(
-          GlobalPriceModifiers.DiscountTypeEnum.OTHER, 15))
+              GlobalPriceModifiers.DiscountTypeEnum.OTHER, 15))
           .thenReturn(15);
 
       // When
-      CalculatedItemPrice result = itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
+      CalculatedItemPrice result =
+          itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
 
       // Then
       assertThat(result.getCalculations().getDiscountModifier().getAmount()).isEqualTo(900);
@@ -357,27 +356,27 @@ class ItemPriceCalculatorTest {
       PriceListItemInfo priceListItem = createPriceListItem("Блуза", 10000);
       priceListItem.setCategoryCode(ServiceCategoryType.CLOTHING);
 
-      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк",
-          5000);
+      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000);
 
       // Setup mocks
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(10000);
       when(pricingRulesService.getModifier("SILK_FABRIC")).thenReturn(silkModifier);
       when(priceCalculationService.calculateModifierAmount(silkModifier, 20000, 2))
           .thenReturn(10000); // 50% of base amount
-      when(priceCalculationService.calculateUrgencyAmount(30000, 
-          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H))
+      when(priceCalculationService.calculateUrgencyAmount(
+              30000, GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H))
           .thenReturn(15000); // 50% urgency
       when(pricingRulesService.isDiscountApplicableToCategory("SOCIAL_MEDIA", "CLOTHING"))
           .thenReturn(true);
-      when(priceCalculationService.calculateDiscountAmount(45000, 
-          GlobalPriceModifiers.DiscountTypeEnum.SOCIAL_MEDIA, null))
+      when(priceCalculationService.calculateDiscountAmount(
+              45000, GlobalPriceModifiers.DiscountTypeEnum.SOCIAL_MEDIA, null))
           .thenReturn(2250); // 5% discount
       when(priceCalculationService.getUrgencyPercentage(any())).thenReturn(50);
       when(priceCalculationService.getDiscountPercentage(any(), any())).thenReturn(5);
 
       // When
-      CalculatedItemPrice result = itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
+      CalculatedItemPrice result =
+          itemPriceCalculator.calculate(item, priceListItem, globalModifiers);
 
       // Then
       // Base: 100 * 2 = 200
@@ -408,8 +407,7 @@ class ItemPriceCalculatorTest {
     return item;
   }
 
-  private PriceModifier createModifier(String code, String name,
-                                       int value) {
+  private PriceModifier createModifier(String code, String name, int value) {
     PriceModifier modifier = new PriceModifier();
     modifier.setCode(code);
     modifier.setName(name);

@@ -42,13 +42,13 @@ public interface OrderRepository
   @Query(
       "SELECT o FROM Order o WHERE o.expectedCompletionDate <= :date "
           + "AND o.status IN ('ACCEPTED', 'IN_PROGRESS')")
-  List<Order> findOrdersDueForCompletion(@Param("date") Instant date);
+  Page<Order> findOrdersDueForCompletion(@Param("date") Instant date, Pageable pageable);
 
   /** Find overdue orders */
   @Query(
       "SELECT o FROM Order o WHERE o.expectedCompletionDate < :now "
           + "AND o.status IN ('ACCEPTED', 'IN_PROGRESS')")
-  List<Order> findOverdueOrders(@Param("now") Instant now);
+  Page<Order> findOverdueOrders(@Param("now") Instant now, Pageable pageable);
 
   /** Get count of orders by status */
   long countByStatus(Order.OrderStatus status);

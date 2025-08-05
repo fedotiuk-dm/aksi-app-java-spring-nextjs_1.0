@@ -32,6 +32,7 @@ public interface OrderMapper {
 
   /** Map Order entity to OrderInfo DTO */
   @Mapping(target = "customer", source = "customer", qualifiedByName = "toCustomerSummary")
+  @Mapping(target = "customerId", source = "customer.id")
   @Mapping(target = "branchId", source = "branch.id")
   @Mapping(target = "items", source = "items")
   @Mapping(target = "pricing", source = ".", qualifiedByName = "toOrderPricingInfo")
@@ -47,6 +48,7 @@ public interface OrderMapper {
       target = "priceListItem",
       source = "priceListItem",
       qualifiedByName = "toPriceListItemSummary")
+  @Mapping(target = "priceListItemId", source = "priceListItem.id")
   @Mapping(target = "characteristics", source = "characteristics")
   @Mapping(target = "stains", source = "stains")
   @Mapping(target = "defects", source = "defects")
@@ -65,11 +67,13 @@ public interface OrderMapper {
   @Named("toOrderPricingInfo")
   @Mapping(target = "paidAmount", expression = "java(order.getPaidAmount())")
   @Mapping(target = "balanceDue", expression = "java(order.getBalanceDue())")
+  @Mapping(target = "total", source = "totalAmount")
   OrderPricingInfo toOrderPricingInfo(Order order);
 
   /** Map OrderItem entity to OrderItemPricingInfo DTO */
   @Named("toOrderItemPricingInfo")
   @Mapping(target = "modifierDetails", source = "modifiers", qualifiedByName = "toModifierDetails")
+  @Mapping(target = "total", source = "totalAmount")
   OrderItemPricingInfo toOrderItemPricingInfo(OrderItem orderItem);
 
   /** Map PriceListItem entity to PriceListItemSummary DTO */

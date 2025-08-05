@@ -1,9 +1,7 @@
 package com.aksi.service.order;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aksi.api.order.dto.AddPaymentRequest;
 import com.aksi.api.order.dto.CreateOrderRequest;
@@ -19,14 +18,17 @@ import com.aksi.api.order.dto.ItemPhotoInfo;
 import com.aksi.api.order.dto.OrderInfo;
 import com.aksi.api.order.dto.OrderItemInfo;
 import com.aksi.api.order.dto.PaymentInfo;
+import com.aksi.api.order.dto.PhotoType;
 import com.aksi.api.order.dto.UpdateItemCharacteristicsRequest;
 import com.aksi.api.order.dto.UpdateOrderStatusRequest;
-import com.aksi.api.order.dto.UploadItemPhotoRequest;
+import com.aksi.api.pricing.dto.GlobalPriceModifiers;
+import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.domain.branch.Branch;
 import com.aksi.domain.cart.Cart;
 import com.aksi.domain.cart.CartItem;
+import com.aksi.domain.cart.CartItemModifier;
 import com.aksi.domain.order.ItemCharacteristics;
 import com.aksi.domain.order.ItemDefect;
 import com.aksi.domain.order.ItemPhoto;
@@ -45,8 +47,8 @@ import com.aksi.repository.CustomerRepository;
 import com.aksi.repository.OrderRepository;
 import com.aksi.repository.OrderSpecification;
 import com.aksi.repository.UserRepository;
+import com.aksi.security.SecurityUtils;
 import com.aksi.service.pricing.PricingService;
-import com.aksi.util.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -167,8 +169,8 @@ public class OrderServiceImpl implements OrderService {
       UUID customerId,
       Order.OrderStatus status,
       UUID branchId,
-      LocalDate dateFrom,
-      LocalDate dateTo,
+      Instant dateFrom,
+      Instant dateTo,
       String search,
       Pageable pageable) {
 
@@ -187,7 +189,7 @@ public class OrderServiceImpl implements OrderService {
             .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
     Order.OrderStatus oldStatus = order.getStatus();
-    Order.OrderStatus newStatus = request.getStatus();
+    Order.OrderStatus newStatus = Order.OrderStatus.valueOf(request.getStatus().name());
 
     validateStatusTransition(oldStatus, newStatus);
 
@@ -252,7 +254,8 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   @Transactional
-  public ItemPhotoInfo uploadItemPhoto(UUID orderId, UUID itemId, UploadItemPhotoRequest request) {
+  public ItemPhotoInfo uploadItemPhoto(
+      UUID orderId, UUID itemId, MultipartFile file, PhotoType photoType, String photoDescription) {
     Order order =
         orderRepository
             .findById(orderId)
@@ -270,10 +273,10 @@ public class OrderServiceImpl implements OrderService {
     photo.setOrderItem(orderItem);
     photo.setUrl("/photos/" + UUID.randomUUID() + ".jpg"); // Placeholder URL
     photo.setType(
-        request.getPhotoType() != null
-            ? ItemPhoto.PhotoType.valueOf(request.getPhotoType().name())
+        photoType != null
+            ? ItemPhoto.PhotoType.valueOf(photoType.name())
             : ItemPhoto.PhotoType.GENERAL);
-    photo.setDescription(request.getPhotoDescription());
+    photo.setDescription(photoDescription != null ? photoDescription : "Uploaded photo");
     photo.setUploadedBy(getCurrentUser());
     photo.setUploadedAt(Instant.now());
     photo.setOriginalFilename("uploaded-photo.jpg"); // TODO: Get from request
@@ -367,7 +370,8 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public String generateOrderNumber() {
-    String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+    // Use epoch seconds for timestamp
+    long timestamp = Instant.now().getEpochSecond();
     String orderNumber;
 
     do {
@@ -404,17 +408,15 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public Page<OrderInfo> getOrdersDueForCompletion(int days, Pageable pageable) {
-    Instant targetDate = Instant.now().plusSeconds(days * 24 * 60 * 60);
-    List<Order> orders = orderRepository.findOrdersDueForCompletion(targetDate);
-    // TODO: Convert to Page
-    return Page.empty();
+    Instant targetDate = Instant.now().plusSeconds((long) days * 24 * 60 * 60);
+    return orderRepository
+        .findOrdersDueForCompletion(targetDate, pageable)
+        .map(orderMapper::toOrderInfo);
   }
 
   @Override
   public Page<OrderInfo> getOverdueOrders(Pageable pageable) {
-    List<Order> orders = orderRepository.findOverdueOrders(Instant.now());
-    // TODO: Convert to Page
-    return Page.empty();
+    return orderRepository.findOverdueOrders(Instant.now(), pageable).map(orderMapper::toOrderInfo);
   }
 
   // Private helper methods
@@ -430,15 +432,78 @@ public class OrderServiceImpl implements OrderService {
   }
 
   private PriceCalculationResponse calculateCartPricing(Cart cart) {
-    // TODO: Implement proper cart to pricing calculation conversion
-    // This is a placeholder that would integrate with PricingService
     PriceCalculationRequest pricingRequest = new PriceCalculationRequest();
-    // Convert cart items to pricing items
+
+    // Convert cart items to pricing calculation items
+    List<PriceCalculationItem> pricingItems = new ArrayList<>();
+    for (CartItem cartItem : cart.getItems()) {
+      PriceCalculationItem pricingItem = new PriceCalculationItem();
+      pricingItem.setPriceListItemId(cartItem.getPriceListItem().getId());
+      pricingItem.setQuantity(cartItem.getQuantity());
+
+      // Add characteristics if present
+      if (cartItem.getCharacteristics() != null) {
+        com.aksi.api.pricing.dto.ItemCharacteristics characteristics =
+            new com.aksi.api.pricing.dto.ItemCharacteristics();
+        characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());
+        characteristics.setColor(cartItem.getCharacteristics().getColor());
+        // Note: filler and fillerCondition not supported in pricing DTO
+        if (cartItem.getCharacteristics().getWearLevel() != null) {
+          try {
+            characteristics.setWearLevel(
+                com.aksi.api.pricing.dto.ItemCharacteristics.WearLevelEnum.fromValue(
+                    cartItem.getCharacteristics().getWearLevel()));
+          } catch (IllegalArgumentException e) {
+            log.warn("Invalid wear level: {}", cartItem.getCharacteristics().getWearLevel());
+          }
+        }
+        pricingItem.setCharacteristics(characteristics);
+      }
+
+      // Add modifiers
+      List<String> modifierCodes = new ArrayList<>();
+      for (CartItemModifier modifier : cartItem.getModifiers()) {
+        modifierCodes.add(modifier.getCode());
+      }
+      pricingItem.setModifierCodes(modifierCodes);
+
+      pricingItems.add(pricingItem);
+    }
+    pricingRequest.setItems(pricingItems);
+
+    // Set global modifiers
+    GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
+
+    // Set urgency type
+    if (cart.getUrgencyType() != null) {
+      try {
+        globalModifiers.setUrgencyType(
+            GlobalPriceModifiers.UrgencyTypeEnum.fromValue(cart.getUrgencyType()));
+      } catch (IllegalArgumentException e) {
+        log.warn("Invalid urgency type: {}, using NORMAL", cart.getUrgencyType());
+        globalModifiers.setUrgencyType(GlobalPriceModifiers.UrgencyTypeEnum.NORMAL);
+      }
+    }
+
+    // Set discount type
+    if (cart.getDiscountType() != null) {
+      try {
+        globalModifiers.setDiscountType(
+            GlobalPriceModifiers.DiscountTypeEnum.fromValue(cart.getDiscountType()));
+        globalModifiers.setDiscountPercentage(cart.getDiscountPercentage());
+      } catch (IllegalArgumentException e) {
+        log.warn("Invalid discount type: {}, using NONE", cart.getDiscountType());
+        globalModifiers.setDiscountType(GlobalPriceModifiers.DiscountTypeEnum.NONE);
+      }
+    }
+
+    pricingRequest.setGlobalModifiers(globalModifiers);
+
     return pricingService.calculatePrice(pricingRequest);
   }
 
   private Instant calculateExpectedCompletionDate(Cart cart) {
-    Instant baseDate = Instant.now().plusSeconds(defaultCompletionHours * 3600);
+    Instant baseDate = Instant.now().plusSeconds((long) defaultCompletionHours * 3600);
 
     // Adjust based on urgency
     if ("EXPRESS_24H".equals(cart.getUrgencyType())) {
@@ -457,14 +522,47 @@ public class OrderServiceImpl implements OrderService {
     orderItem.setPriceListItem(cartItem.getPriceListItem());
     orderItem.setQuantity(cartItem.getQuantity());
 
-    // TODO: Map pricing details from pricing response
-    orderItem.setBasePrice(0); // TODO: Get from pricing
-    orderItem.setModifiersTotalAmount(0); // TODO: Get from pricing
-    orderItem.setSubtotal(0); // TODO: Calculate
-    orderItem.setUrgencyAmount(0); // TODO: Get from pricing
-    orderItem.setDiscountAmount(0); // TODO: Get from pricing
-    orderItem.setTotalAmount(0); // TODO: Calculate
-    orderItem.setDiscountEligible(true); // TODO: Determine from pricing
+    // Find the corresponding calculated price
+    var calculatedPrice =
+        pricing.getItems().stream()
+            .filter(item -> item.getPriceListItemId().equals(cartItem.getPriceListItem().getId()))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalStateException(
+                        "No pricing found for item: " + cartItem.getPriceListItem().getId()));
+
+    // Map pricing details
+    orderItem.setBasePrice(calculatedPrice.getBasePrice());
+    orderItem.setModifiersTotalAmount(
+        calculatedPrice.getCalculations().getModifiersTotal() != null
+            ? calculatedPrice.getCalculations().getModifiersTotal()
+            : 0);
+    orderItem.setSubtotal(calculatedPrice.getCalculations().getSubtotal());
+    orderItem.setUrgencyAmount(calculatedPrice.getCalculations().getUrgencyModifier().getAmount());
+    orderItem.setDiscountAmount(
+        calculatedPrice.getCalculations().getDiscountModifier().getAmount());
+    orderItem.setTotalAmount(calculatedPrice.getTotal());
+    orderItem.setDiscountEligible(
+        calculatedPrice.getCalculations().getDiscountEligible() != null
+            ? calculatedPrice.getCalculations().getDiscountEligible()
+            : true);
+
+    // Map characteristics if present
+    if (cartItem.getCharacteristics() != null) {
+      ItemCharacteristics characteristics = new ItemCharacteristics();
+      characteristics.setOrderItem(orderItem);
+      characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());
+      characteristics.setColor(cartItem.getCharacteristics().getColor());
+      characteristics.setFiller(cartItem.getCharacteristics().getFiller());
+      if (cartItem.getCharacteristics().getFillerCondition() != null) {
+        characteristics.setFillerCondition(
+            ItemCharacteristics.FillerCondition.valueOf(
+                cartItem.getCharacteristics().getFillerCondition()));
+      }
+      characteristics.setWearLevel(cartItem.getCharacteristics().getWearLevel());
+      orderItem.setCharacteristics(characteristics);
+    }
 
     return orderItem;
   }
@@ -503,7 +601,9 @@ public class OrderServiceImpl implements OrderService {
           ItemCharacteristics.FillerCondition.valueOf(characteristics.getFillerCondition().name()));
     }
 
-    itemChar.setWearLevel(characteristics.getWearLevel());
+    if (characteristics.getWearLevel() != null) {
+      itemChar.setWearLevel(characteristics.getWearLevel().getValue());
+    }
   }
 
   private void updateOrderItemStains(

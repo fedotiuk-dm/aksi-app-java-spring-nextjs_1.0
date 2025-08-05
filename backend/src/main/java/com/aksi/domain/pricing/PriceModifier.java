@@ -74,8 +74,6 @@ public class PriceModifier extends BaseEntity {
     /** Percentage-based modifier (value in basis points: 1550 = 15.5%) */
     PERCENTAGE,
     /** Fixed amount modifier (value in kopiykas) */
-    FIXED,
-    /** JEXL formula-based modifier (uses jexlFormula field) */
-    FORMULA
+    FIXED
   }
 }

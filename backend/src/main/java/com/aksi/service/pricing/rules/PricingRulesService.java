@@ -70,7 +70,7 @@ public class PricingRulesService {
       log.debug("Category {} is globally excluded from discounts", categoryCode);
       return false;
     }
-    
+
     // For specific discount codes, we could check DB for additional restrictions
     // Currently all discounts follow the same global rules
     log.debug("Discount {} is applicable to category {}", discountCode, categoryCode);
