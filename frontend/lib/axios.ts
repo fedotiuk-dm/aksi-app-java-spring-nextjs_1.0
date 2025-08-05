@@ -119,7 +119,7 @@ const AXIOS_CONFIG = {
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
   timeout: 30000,
   // Шляхи, для яких не логуємо помилки
-  silentPaths: ['/users/me', '/api/auth/session', '/api/auth/refresh-token', '/test-headers', '/api/users'],
+  silentPaths: ['/users/me', '/api/auth/session', '/test-headers', '/api/users'],
   // Типи помилок, які не логуємо
   silentErrors: ['Network Error', 'timeout', 'ECONNABORTED', 'canceled'],
 };
@@ -201,47 +201,8 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// Змінна для запобігання паралельному оновленню токена
-let isRefreshing = false;
-
-// Інтерфейс для елементів черги запитів
-interface QueueItem {
-  resolve: (value: unknown) => void;
-  reject: (reason?: unknown) => void;
-  originalRequest: AxiosRequestConfig;
-}
-
-// Черга запитів, що очікують завершення оновлення токена
-let failedQueue: QueueItem[] = [];
-
-/**
- * Оновлення токена авторизації через API роут
- */
-async function refreshToken(): Promise<boolean> {
-  try {
-    // Викликаємо backend API для оновлення токена
-    await apiClient.post('/api/auth/refresh-token', {});
-    return true;
-  } catch (error) {
-    console.error('Помилка оновлення токена:', error);
-    return false;
-  }
-}
-
-/**
- * Обробка запитів у черзі після оновлення токена
- */
-function processQueue(success: boolean) {
-  failedQueue.forEach((item) => {
-    if (success) {
-      item.resolve(apiClient(item.originalRequest));
-    } else {
-      item.reject(new Error('Помилка оновлення токена'));
-    }
-  });
-
-  failedQueue = [];
-}
+// Cookie-based authentication не потребує refresh token логіки
+// Сесія управляється на сервері і автоматично подовжується
 
 /**
  * Детальне логування помилок API
@@ -357,51 +318,19 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Обробка 401 Unauthorized помилки - спроба оновити токен
-    if (axiosError.response?.status === 401 && !originalRequest._retry) {
-      // Ігноруємо, якщо це вже запит на оновлення токена
-      if (originalRequest.url?.includes('/auth/refresh-token')) {
-        useAuthStore.getState().logout();
-        window.location.href = '/login';
+    // Обробка 401 Unauthorized - сесія закінчилась або користувач не авторизований
+    if (axiosError.response?.status === 401) {
+      // Ігноруємо 401 для певних шляхів (logout, session check)
+      const ignorePaths = ['/auth/logout', '/auth/session', '/users/me'];
+      if (ignorePaths.some(path => originalRequest.url?.includes(path))) {
         return Promise.reject(axiosError);
       }
 
-      // Якщо вже відбувається оновлення токена, додаємо запит у чергу
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject, originalRequest });
-        });
-      }
-
-      // Позначаємо, що запит вже був повторений після оновлення токену
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        // Оновлюємо токен через API роут
-        const success = await refreshToken();
-
-        // Обробляємо чергу запитів
-        processQueue(success);
-
-        if (success) {
-          // Повторюємо оригінальний запит
-          return apiClient(originalRequest);
-        } else {
-          // Перенаправляємо на логін
-          useAuthStore.getState().logout();
-          const callbackUrl = window.location.pathname + window.location.search;
-          window.location.href = `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`;
-          return Promise.reject(axiosError);
-        }
-      } catch (refreshError) {
-        processQueue(false);
-        useAuthStore.getState().logout();
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
+      // Для інших запитів - перенаправляємо на логін
+      useAuthStore.getState().logout();
+      const callbackUrl = window.location.pathname + window.location.search;
+      window.location.href = `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+      return Promise.reject(axiosError);
     }
 
     // Обробка 403 Forbidden

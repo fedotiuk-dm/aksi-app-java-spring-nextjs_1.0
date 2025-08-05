@@ -1,5 +1,6 @@
 package com.aksi.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class UserController implements UsersApi {
   @Override
   public ResponseEntity<UserDetail> activateUser(UUID userId) {
     log.info("Activating user with ID: {}", userId);
-    UserDetail userDetail = userService.activateUserAndReturnDetail(userId);
+    UserDetail userDetail = userService.activateUser(userId);
     log.info("User activated successfully: {}", userId);
     return ResponseEntity.ok(userDetail);
   }
@@ -51,7 +52,7 @@ public class UserController implements UsersApi {
   @Override
   public ResponseEntity<UserDetail> createUser(CreateUserRequest createUserRequest) {
     log.info("Creating new user with username: {}", createUserRequest.getUsername());
-    UserDetail userDetail = userService.createUserAndReturnDetail(createUserRequest);
+    UserDetail userDetail = userService.createUser(createUserRequest);
     log.info("User created successfully with username: {}", createUserRequest.getUsername());
     return ResponseEntity.status(201).body(userDetail);
   }
@@ -59,7 +60,7 @@ public class UserController implements UsersApi {
   @Override
   public ResponseEntity<UserDetail> deactivateUser(UUID userId) {
     log.info("Deactivating user with ID: {}", userId);
-    UserDetail userDetail = userService.deactivateUserAndReturnDetail(userId);
+    UserDetail userDetail = userService.deactivateUser(userId);
     log.info("User deactivated successfully: {}", userId);
     return ResponseEntity.ok(userDetail);
   }
@@ -75,7 +76,7 @@ public class UserController implements UsersApi {
   @Override
   public ResponseEntity<UserDetail> getUserById(UUID userId) {
     log.info("Getting user details for ID: {}", userId);
-    UserDetail userDetail = userService.getUserDetailById(userId);
+    UserDetail userDetail = userService.getUserById(userId);
     log.info("Retrieved user details for ID: {}", userId);
     return ResponseEntity.ok(userDetail);
   }
@@ -119,7 +120,7 @@ public class UserController implements UsersApi {
   @Override
   public ResponseEntity<UserDetail> updateUser(UUID userId, UpdateUserRequest updateUserRequest) {
     log.info("Updating user with ID: {}", userId);
-    UserDetail userDetail = userService.updateUserAndReturnDetail(userId, updateUserRequest);
+    UserDetail userDetail = userService.updateUser(userId, updateUserRequest);
     log.info("User updated successfully: {}", userId);
     return ResponseEntity.ok(userDetail);
   }
@@ -128,8 +129,24 @@ public class UserController implements UsersApi {
   public ResponseEntity<UserDetail> updateUserRoles(
       UUID userId, UpdateRolesRequest updateRolesRequest) {
     log.info("Updating roles for user ID: {}", userId);
-    UserDetail userDetail = userService.updateUserRolesAndReturnDetail(userId, updateRolesRequest);
+    UserDetail userDetail = userService.updateUserRoles(userId, updateRolesRequest);
     log.info("Roles updated successfully for user ID: {}", userId);
     return ResponseEntity.ok(userDetail);
+  }
+
+  @Override
+  public ResponseEntity<List<String>> getUserPermissions(UUID userId) {
+    log.info("Getting permissions for user ID: {}", userId);
+    List<String> permissions = userService.getUserPermissions(userId);
+    log.info("Retrieved {} permissions for user ID: {}", permissions.size(), userId);
+    return ResponseEntity.ok(permissions);
+  }
+
+  @Override
+  public ResponseEntity<List<String>> getRolePermissions(UserRole role) {
+    log.info("Getting permissions for role: {}", role);
+    List<String> permissions = userService.getRolePermissions(role);
+    log.info("Retrieved {} permissions for role: {}", permissions.size(), role);
+    return ResponseEntity.ok(permissions);
   }
 }

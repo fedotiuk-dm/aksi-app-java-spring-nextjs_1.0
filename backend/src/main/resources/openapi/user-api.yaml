@@ -372,6 +372,73 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/roles/{role}/permissions:
+    parameters:
+      - name: role
+        in: path
+        required: true
+        description: User role
+        schema:
+          $ref: '#/components/schemas/UserRole'
+    
+    get:
+      operationId: getRolePermissions
+      summary: Get role permissions
+      description: Get all permissions associated with a specific role
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Role permissions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/users/{userId}/permissions:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get user permissions
+      description: Get all permissions for a user based on their roles
+      operationId: getUserPermissions
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User permissions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  description: Permission string (e.g. "orders.create", "users.*")
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   parameters:
     PageNumber:

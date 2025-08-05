@@ -7,12 +7,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -36,9 +40,24 @@ public class SecurityConfig {
   @Value("${app.cors.allowed-origins:http://localhost:3000}")
   private String allowedOrigins;
 
+  private final UserDetailsService userDetailsService;
+
+  public SecurityConfig(UserDetailsService userDetailsService) {
+    this.userDetailsService = userDetailsService;
+    log.info(
+        "🔐 Configuring SecurityConfig with UserDetailsService: {}",
+        userDetailsService.getClass().getSimpleName());
+  }
+
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(
+      AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
   }
 
   @Bean
@@ -57,6 +76,12 @@ public class SecurityConfig {
   @Profile("!dev")
   public SecurityFilterChain prodFilterChain(HttpSecurity http) throws Exception {
     log.info("🔒 PROD Security: Authentication required for protected endpoints");
+    log.info("🔐 Using UserDetailsService: {}", userDetailsService.getClass().getSimpleName());
+
+    // Configure authentication with our UserDetailsService
+    AuthenticationManagerBuilder authBuilder =
+        http.getSharedObject(AuthenticationManagerBuilder.class);
+    authBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
     http
         // CORS configuration

@@ -47,4 +47,7 @@ public interface BranchRepository
 
   /** Count active branches */
   long countByActiveTrue();
+
+  /** Count branches by list of IDs - used for validation */
+  long countByIdIn(List<UUID> ids);
 }

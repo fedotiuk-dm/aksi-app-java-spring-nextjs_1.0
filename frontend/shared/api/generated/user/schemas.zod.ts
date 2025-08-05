@@ -36,12 +36,9 @@ export const updateUserRolesResponse = zod.object({
   "email": zod.string().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(updateUserRolesResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
-  "primaryBranchId": zod.uuid().optional().describe('Primary branch ID'),
-  "primaryBranchName": zod.string().optional().describe('Primary branch name'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
   "phone": zod.string().regex(updateUserRolesResponsePhoneRegExp).optional().describe('Phone number'),
-  "permissions": zod.array(zod.string()).describe('Calculated permissions based on roles'),
   "branches": zod.array(zod.object({
   "branchId": zod.uuid().describe('Branch ID'),
   "branchName": zod.string().describe('Branch name'),
@@ -144,8 +141,6 @@ export const listUsersResponse = zod.object({
   "email": zod.string().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(listUsersResponseDataItemRolesMax),
   "active": zod.boolean().describe('Is user active'),
-  "primaryBranchId": zod.uuid().optional().describe('Primary branch ID'),
-  "primaryBranchName": zod.string().optional().describe('Primary branch name'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp')
 })),
@@ -172,22 +167,36 @@ export const createUserBodyUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
 export const createUserBodyPasswordMin = 8;
 
 export const createUserBodyPasswordMax = 100;
+
+export const createUserBodyPasswordRegExp = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$');
 export const createUserBodyFirstNameMax = 100;
+
+export const createUserBodyFirstNameRegExp = new RegExp('^[a-zA-Z\\u0400-\\u04FF\\s\\-]+$');
 export const createUserBodyLastNameMax = 100;
+
+export const createUserBodyLastNameRegExp = new RegExp('^[a-zA-Z\\u0400-\\u04FF\\s\\-]+$');
+export const createUserBodyEmailMin = 0;
+
+export const createUserBodyEmailMax = 255;
 export const createUserBodyPhoneRegExp = new RegExp('^\\+?[0-9]{10,15}$');
-export const createUserBodyRolesMax = 2147483647;
+export const createUserBodyRolesMax = 10;
+export const createUserBodyBranchIdsMin = 0;
+
+export const createUserBodyBranchIdsMax = 50;
 
 
 export const createUserBody = zod.object({
-  "username": zod.string().min(createUserBodyUsernameMin).max(createUserBodyUsernameMax).regex(createUserBodyUsernameRegExp).describe('Username'),
-  "password": zod.string().min(createUserBodyPasswordMin).max(createUserBodyPasswordMax).describe('Password'),
-  "firstName": zod.string().min(1).max(createUserBodyFirstNameMax).describe('First name'),
-  "lastName": zod.string().min(1).max(createUserBodyLastNameMax).describe('Last name'),
-  "email": zod.string().describe('Email address'),
-  "phone": zod.string().regex(createUserBodyPhoneRegExp).optional().describe('Phone number'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(createUserBodyRolesMax).describe('User roles'),
-  "branchIds": zod.array(zod.uuid()).optional().describe('Branch IDs to assign'),
-  "primaryBranchId": zod.uuid().optional().describe('Primary branch ID (must be in branchIds if provided)')
+  "username": zod.string().min(createUserBodyUsernameMin).max(createUserBodyUsernameMax).regex(createUserBodyUsernameRegExp).describe('Username (must be unique)'),
+  "password": zod.string().min(createUserBodyPasswordMin).max(createUserBodyPasswordMax).regex(createUserBodyPasswordRegExp).describe('Password (min 8 chars, must contain uppercase, lowercase, number and special char)'),
+  "firstName": zod.string().min(1).max(createUserBodyFirstNameMax).regex(createUserBodyFirstNameRegExp).describe('First name (letters only)'),
+  "lastName": zod.string().min(1).max(createUserBodyLastNameMax).regex(createUserBodyLastNameRegExp).describe('Last name (letters only)'),
+  "email": zod.string().min(createUserBodyEmailMin).max(createUserBodyEmailMax).describe('Email address (must be unique)'),
+  "phone": zod.string().regex(createUserBodyPhoneRegExp).optional().describe('Phone number (optional, international format)'),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(createUserBodyRolesMax).optional().describe('User roles (defaults to OPERATOR if not specified)'),
+  "branchIds": zod.array(zod.uuid()).min(createUserBodyBranchIdsMin).max(createUserBodyBranchIdsMax).optional().describe('Branch IDs to assign (optional)'),
+  "primaryBranchId": zod.uuid().optional().describe('Primary branch ID (must be in branchIds if provided)'),
+  "active": zod.boolean().optional().describe('Account active status'),
+  "emailVerified": zod.boolean().optional().describe('Email verification status')
 })
 
 
@@ -211,12 +220,9 @@ export const deactivateUserResponse = zod.object({
   "email": zod.string().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(deactivateUserResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
-  "primaryBranchId": zod.uuid().optional().describe('Primary branch ID'),
-  "primaryBranchName": zod.string().optional().describe('Primary branch name'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
   "phone": zod.string().regex(deactivateUserResponsePhoneRegExp).optional().describe('Phone number'),
-  "permissions": zod.array(zod.string()).describe('Calculated permissions based on roles'),
   "branches": zod.array(zod.object({
   "branchId": zod.uuid().describe('Branch ID'),
   "branchName": zod.string().describe('Branch name'),
@@ -248,12 +254,9 @@ export const activateUserResponse = zod.object({
   "email": zod.string().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(activateUserResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
-  "primaryBranchId": zod.uuid().optional().describe('Primary branch ID'),
-  "primaryBranchName": zod.string().optional().describe('Primary branch name'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
   "phone": zod.string().regex(activateUserResponsePhoneRegExp).optional().describe('Phone number'),
-  "permissions": zod.array(zod.string()).describe('Calculated permissions based on roles'),
   "branches": zod.array(zod.object({
   "branchId": zod.uuid().describe('Branch ID'),
   "branchName": zod.string().describe('Branch name'),
@@ -285,12 +288,9 @@ export const getUserByIdResponse = zod.object({
   "email": zod.string().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(getUserByIdResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
-  "primaryBranchId": zod.uuid().optional().describe('Primary branch ID'),
-  "primaryBranchName": zod.string().optional().describe('Primary branch name'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
   "phone": zod.string().regex(getUserByIdResponsePhoneRegExp).optional().describe('Phone number'),
-  "permissions": zod.array(zod.string()).describe('Calculated permissions based on roles'),
   "branches": zod.array(zod.object({
   "branchId": zod.uuid().describe('Branch ID'),
   "branchName": zod.string().describe('Branch name'),
@@ -334,12 +334,9 @@ export const updateUserResponse = zod.object({
   "email": zod.string().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(updateUserResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
-  "primaryBranchId": zod.uuid().optional().describe('Primary branch ID'),
-  "primaryBranchName": zod.string().optional().describe('Primary branch name'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
   "phone": zod.string().regex(updateUserResponsePhoneRegExp).optional().describe('Phone number'),
-  "permissions": zod.array(zod.string()).describe('Calculated permissions based on roles'),
   "branches": zod.array(zod.object({
   "branchId": zod.uuid().describe('Branch ID'),
   "branchName": zod.string().describe('Branch name'),
@@ -349,3 +346,27 @@ export const updateUserResponse = zod.object({
   "createdBy": zod.uuid().optional().describe('ID of user who created this user'),
   "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user')
 })
+
+
+/**
+ * Get all permissions for a user based on their roles
+ * @summary Get user permissions
+ */
+export const getUserPermissionsParams = zod.object({
+  "userId": zod.uuid().describe('User ID')
+})
+
+export const getUserPermissionsResponseItem = zod.string()
+export const getUserPermissionsResponse = zod.array(getUserPermissionsResponseItem)
+
+
+/**
+ * Get all permissions associated with a specific role
+ * @summary Get role permissions
+ */
+export const getRolePermissionsParams = zod.object({
+  "role": zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT']).describe('User role')
+})
+
+export const getRolePermissionsResponseItem = zod.string()
+export const getRolePermissionsResponse = zod.array(getRolePermissionsResponseItem)

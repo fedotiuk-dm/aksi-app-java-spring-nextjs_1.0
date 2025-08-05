@@ -1,6 +1,6 @@
 package com.aksi.service.user;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,10 +15,12 @@ import com.aksi.api.user.dto.UpdateUserRequest;
 import com.aksi.api.user.dto.UserBranchesResponse;
 import com.aksi.api.user.dto.UserDetail;
 import com.aksi.domain.user.User;
+import com.aksi.domain.user.UserBranchAssignment;
 import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.exception.UnauthorizedException;
 import com.aksi.mapper.UserMapper;
+import com.aksi.repository.BranchRepository;
 import com.aksi.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -34,12 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserCommandService {
 
+  private static final int MAX_FAILED_LOGIN_ATTEMPTS = 5;
+
   private final UserRepository userRepository;
+  private final BranchRepository branchRepository;
   private final UserQueryService userQueryService;
-  private final UserFactory userFactory;
-  private final UserAccountManager accountManager;
-  private final UserAuthenticationManager authenticationManager;
-  private final UserRoleManager roleManager;
   private final PasswordEncoder passwordEncoder;
   private final UserMapper userMapper;
 
@@ -63,8 +64,8 @@ public class UserCommandService {
       throw new ConflictException("Email already exists: " + request.getEmail());
     }
 
-    // Create user using factory
-    User user = userFactory.createFromRequest(request);
+    // Create user from request
+    User user = createUserFromRequest(request);
 
     // Save and return
     user = userRepository.save(user);
@@ -114,7 +115,14 @@ public class UserCommandService {
     log.info("Activating user: {}", userId);
 
     User user = getUserOrThrow(userId);
-    accountManager.activateAccount(user);
+
+    if (user.isActive()) {
+      throw new ConflictException("User account is already active");
+    }
+
+    user.setActive(true);
+    user.setFailedLoginAttempts(0); // Reset failed attempts on activation
+    log.info("Activated user account: {}", user.getUsername());
 
     user = userRepository.save(user);
     return userMapper.toUserDetail(user);
@@ -132,7 +140,13 @@ public class UserCommandService {
     log.info("Deactivating user: {}", userId);
 
     User user = getUserOrThrow(userId);
-    accountManager.deactivateAccount(user);
+
+    if (!user.isActive()) {
+      throw new ConflictException("User account is already inactive");
+    }
+
+    user.setActive(false);
+    log.info("Deactivated user account: {}", user.getUsername());
 
     user = userRepository.save(user);
     return userMapper.toUserDetail(user);
@@ -180,7 +194,10 @@ public class UserCommandService {
             .findByIdWithRoles(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
-    roleManager.setRoles(user, Set.copyOf(request.getRoles()));
+    // Clear existing roles and add new ones
+    user.getRoles().clear();
+    user.getRoles().addAll(request.getRoles());
+    log.debug("Updated roles for user '{}': {}", user.getUsername(), request.getRoles());
 
     user = userRepository.save(user);
     return userMapper.toUserDetail(user);
@@ -195,23 +212,69 @@ public class UserCommandService {
    * @throws NotFoundException if user not found
    */
   public UserBranchesResponse updateUserBranches(UUID userId, UpdateBranchesRequest request) {
-    // TODO: Implement branch assignment update
-    // This requires Branch entity and proper relationship management
+    log.info("Updating branch assignments for user: {}", userId);
 
-    log.warn("Branch assignment update not yet implemented for user ID: {}", userId);
-    throw new UnsupportedOperationException("Branch assignment update not yet implemented");
+    User user = getUserOrThrow(userId);
+
+    // Validate all branch IDs exist
+    List<UUID> branchIds = request.getBranchIds();
+    if (!branchIds.isEmpty()) {
+      long existingBranchesCount = branchRepository.countByIdIn(branchIds);
+      if (existingBranchesCount != branchIds.size()) {
+        throw new NotFoundException("One or more branch IDs are invalid");
+      }
+    }
+
+    // Validate primary branch is in the list if specified
+    UUID primaryBranchId = request.getPrimaryBranchId();
+    if (primaryBranchId != null && !branchIds.contains(primaryBranchId)) {
+      throw new ConflictException("Primary branch must be in the assigned branches list");
+    }
+
+    // Clear existing assignments
+    user.getBranchAssignments().clear();
+
+    // Add new assignments
+    for (UUID branchId : branchIds) {
+      UserBranchAssignment assignment = new UserBranchAssignment();
+      assignment.setUser(user);
+      assignment.setBranchId(branchId);
+      assignment.setPrimary(branchId.equals(primaryBranchId));
+      assignment.setActive(true);
+      user.getBranchAssignments().add(assignment);
+    }
+
+    // If no primary branch specified but branches exist, make the first one primary
+    if (primaryBranchId == null && !branchIds.isEmpty()) {
+      user.getBranchAssignments().iterator().next().setPrimary(true);
+    }
+
+    user = userRepository.save(user);
+    log.info("Updated branch assignments for user '{}'", user.getUsername());
+
+    return userQueryService.getUserBranches(userId);
   }
 
   /**
    * Record failed login attempt.
    *
    * @param user the user who failed to login
-   * @return true if account was locked due to max attempts
    */
-  public boolean recordFailedLogin(User user) {
-    boolean wasLocked = authenticationManager.recordFailedLoginAttempt(user);
+  public void recordFailedLogin(User user) {
+    int attempts = user.getFailedLoginAttempts() + 1;
+    user.setFailedLoginAttempts(attempts);
+
+    if (attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
+      user.setActive(false);
+      log.warn(
+          "User '{}' has been deactivated after {} failed login attempts",
+          user.getUsername(),
+          attempts);
+    } else {
+      log.debug("Failed login attempt {} for user '{}'", attempts, user.getUsername());
+    }
+
     userRepository.save(user);
-    return wasLocked;
   }
 
   /**
@@ -220,8 +283,11 @@ public class UserCommandService {
    * @param user the user who logged in successfully
    */
   public void resetFailedLogins(User user) {
-    authenticationManager.resetFailedLoginAttempts(user);
-    userRepository.save(user);
+    if (user.getFailedLoginAttempts() > 0) {
+      user.setFailedLoginAttempts(0);
+      log.debug("Reset failed login attempts for user '{}'", user.getUsername());
+      userRepository.save(user);
+    }
   }
 
   /**
@@ -235,5 +301,24 @@ public class UserCommandService {
     return userQueryService
         .findById(userId)
         .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+  }
+
+  /**
+   * Create user entity from request.
+   *
+   * @param request create user request
+   * @return new user entity
+   */
+  private User createUserFromRequest(CreateUserRequest request) {
+    // MapStruct does all the mapping including defaults from OpenAPI
+    User user = userMapper.toUser(request);
+
+    // Only handle password encoding - the one thing that can't be in DTO
+    user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+
+    // These are always the same for new users - no need for config
+    user.setFailedLoginAttempts(0);
+
+    return user;
   }
 }

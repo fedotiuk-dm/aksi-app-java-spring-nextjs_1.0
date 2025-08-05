@@ -23,7 +23,7 @@ public class DataInitializer {
   private final UserService userService;
 
   @Bean
-  @Profile("!prod")
+  @Profile("!dev")
   public CommandLineRunner initData() {
     return args -> {
       log.info("Initializing test data...");
@@ -39,7 +39,7 @@ public class DataInitializer {
         adminRequest.setPhone("+380501234567");
         adminRequest.setRoles(List.of(UserRole.ADMIN));
 
-        userService.createUserAndReturnDetail(adminRequest);
+        userService.createUser(adminRequest);
         log.info("Created admin user");
       }
 
@@ -54,7 +54,7 @@ public class DataInitializer {
         managerRequest.setPhone("+380501234568");
         managerRequest.setRoles(List.of(UserRole.MANAGER));
 
-        userService.createUserAndReturnDetail(managerRequest);
+        userService.createUser(managerRequest);
         log.info("Created manager user");
       }
 
@@ -69,7 +69,7 @@ public class DataInitializer {
         operatorRequest.setPhone("+380501234569");
         operatorRequest.setRoles(List.of(UserRole.OPERATOR));
 
-        userService.createUserAndReturnDetail(operatorRequest);
+        userService.createUser(operatorRequest);
         log.info("Created operator user");
       }
 

@@ -45,10 +45,6 @@ export interface UserDetail {
   roles: UserDetailRolesItem[];
   /** Is user active */
   active: boolean;
-  /** Primary branch ID */
-  primaryBranchId?: string;
-  /** Primary branch name */
-  primaryBranchName?: string;
   /** Creation timestamp */
   createdAt: string;
   /** Last login timestamp */
@@ -58,8 +54,6 @@ export interface UserDetail {
    * @pattern ^\+?[0-9]{10,15}$
    */
   phone?: string;
-  /** Calculated permissions based on roles */
-  permissions: string[];
   /** Assigned branches */
   branches: BranchAssignment[];
   /** Last update timestamp */
@@ -258,6 +252,599 @@ export interface UpdatePriceListItemRequest {
   nameUa?: string;
 }
 
+/**
+ * Filler condition
+ */
+export type ItemCharacteristicsFillerCondition = typeof ItemCharacteristicsFillerCondition[keyof typeof ItemCharacteristicsFillerCondition];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemCharacteristicsFillerCondition = {
+  NORMAL: 'NORMAL',
+  COMPRESSED: 'COMPRESSED',
+} as const;
+
+/**
+ * Wear level percentage
+ */
+export type ItemCharacteristicsWearLevel = typeof ItemCharacteristicsWearLevel[keyof typeof ItemCharacteristicsWearLevel];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemCharacteristicsWearLevel = {
+  NUMBER_10: '10',
+  NUMBER_30: '30',
+  NUMBER_50: '50',
+  NUMBER_75: '75',
+} as const;
+
+export interface ItemCharacteristics {
+  /** Material type */
+  material?: string;
+  /** Item color */
+  color?: string;
+  /** Filler type (for padded items) */
+  filler?: string;
+  /** Filler condition */
+  fillerCondition?: ItemCharacteristicsFillerCondition;
+  /** Wear level percentage */
+  wearLevel?: ItemCharacteristicsWearLevel;
+}
+
+/**
+ * Defect type
+ */
+export type ItemDefectType = typeof ItemDefectType[keyof typeof ItemDefectType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemDefectType = {
+  WORN: 'WORN',
+  TORN: 'TORN',
+  MISSING_ACCESSORIES: 'MISSING_ACCESSORIES',
+  DAMAGED_ACCESSORIES: 'DAMAGED_ACCESSORIES',
+  OTHER: 'OTHER',
+} as const;
+
+export interface ItemDefect {
+  /** Defect type */
+  type: ItemDefectType;
+  /** Additional description */
+  description?: string;
+}
+
+/**
+ * Modifier type
+ */
+export type ItemModifierType = typeof ItemModifierType[keyof typeof ItemModifierType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemModifierType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED',
+} as const;
+
+export interface ItemModifier {
+  /** Modifier code */
+  code: string;
+  /** Modifier name */
+  name: string;
+  /** Modifier type */
+  type: ItemModifierType;
+  /** Modifier value (percentage or fixed amount) */
+  value: number;
+}
+
+export type ItemPhotoInfoType = typeof ItemPhotoInfoType[keyof typeof ItemPhotoInfoType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemPhotoInfoType = {
+  GENERAL: 'GENERAL',
+  DEFECT: 'DEFECT',
+  STAIN: 'STAIN',
+  LABEL: 'LABEL',
+} as const;
+
+export interface ItemPhotoInfo {
+  /** Photo ID */
+  id: string;
+  /** Photo URL */
+  url: string;
+  type: ItemPhotoInfoType;
+  /** Photo description */
+  description?: string;
+  /** Upload time */
+  uploadedAt: string;
+  /** Uploaded by user ID */
+  uploadedBy?: string;
+}
+
+/**
+ * Risk type
+ */
+export type ItemRiskType = typeof ItemRiskType[keyof typeof ItemRiskType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemRiskType = {
+  COLOR_CHANGE: 'COLOR_CHANGE',
+  DEFORMATION: 'DEFORMATION',
+  NO_WARRANTY: 'NO_WARRANTY',
+} as const;
+
+export interface ItemRisk {
+  /** Risk type */
+  type: ItemRiskType;
+  /** Risk description */
+  description?: string;
+}
+
+/**
+ * Stain type
+ */
+export type ItemStainType = typeof ItemStainType[keyof typeof ItemStainType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ItemStainType = {
+  GREASE: 'GREASE',
+  BLOOD: 'BLOOD',
+  PROTEIN: 'PROTEIN',
+  WINE: 'WINE',
+  COFFEE: 'COFFEE',
+  GRASS: 'GRASS',
+  INK: 'INK',
+  COSMETICS: 'COSMETICS',
+  OTHER: 'OTHER',
+} as const;
+
+export interface ItemStain {
+  /** Stain type */
+  type: ItemStainType;
+  /** Additional description */
+  description?: string;
+}
+
+export interface ModifierDetail {
+  code: string;
+  name: string;
+  /** Modifier amount in kopiykas */
+  amount: number;
+}
+
+export interface OrderItemInfo {
+  /** Order item ID */
+  id: string;
+  /** Price list item ID */
+  priceListItemId: string;
+  /** Price list item details */
+  priceListItem: PriceListItemSummary;
+  /** Quantity (in units) */
+  quantity: number;
+  /** Item characteristics */
+  characteristics: ItemCharacteristics;
+  /** Item stains */
+  stains?: ItemStain[];
+  /** Item defects */
+  defects?: ItemDefect[];
+  /** Item risks */
+  risks?: ItemRisk[];
+  /** Item photos */
+  photos?: ItemPhotoInfo[];
+  /** Applied modifiers */
+  modifiers?: ItemModifier[];
+  /** Item pricing details */
+  pricing: OrderItemPricingInfo;
+}
+
+export interface OrderItemPricingInfo {
+  /** Base price in kopiykas */
+  basePrice: number;
+  /** Applied modifier details */
+  modifierDetails?: ModifierDetail[];
+  /** Total modifiers amount */
+  modifiersTotalAmount: number;
+  /** Subtotal (base + modifiers) */
+  subtotal: number;
+  /** Urgency surcharge */
+  urgencyAmount: number;
+  /** Discount amount */
+  discountAmount: number;
+  /** Total price */
+  total: number;
+}
+
+export type PriceListItemSummaryUnitOfMeasure = typeof PriceListItemSummaryUnitOfMeasure[keyof typeof PriceListItemSummaryUnitOfMeasure];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceListItemSummaryUnitOfMeasure = {
+  PIECE: 'PIECE',
+  KILOGRAM: 'KILOGRAM',
+  PAIR: 'PAIR',
+  SQUARE_METER: 'SQUARE_METER',
+} as const;
+
+export interface PriceListItemSummary {
+  id: string;
+  name: string;
+  categoryCode: string;
+  unitOfMeasure: PriceListItemSummaryUnitOfMeasure;
+  /** Base price in kopiykas */
+  basePrice: number;
+}
+
+export interface UpdateItemCharacteristicsRequest {
+  characteristics?: ItemCharacteristics;
+  stains?: ItemStain[];
+  defects?: ItemDefect[];
+  risks?: ItemRisk[];
+}
+
+export type CustomerInfoContactPreferencesItem = typeof CustomerInfoContactPreferencesItem[keyof typeof CustomerInfoContactPreferencesItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CustomerInfoContactPreferencesItem = {
+  PHONE: 'PHONE',
+  SMS: 'SMS',
+  VIBER: 'VIBER',
+} as const;
+
+/**
+ * How customer learned about the service
+ */
+export type CustomerInfoInfoSource = typeof CustomerInfoInfoSource[keyof typeof CustomerInfoInfoSource];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CustomerInfoInfoSource = {
+  INSTAGRAM: 'INSTAGRAM',
+  GOOGLE: 'GOOGLE',
+  RECOMMENDATION: 'RECOMMENDATION',
+  OTHER: 'OTHER',
+} as const;
+
+export interface CustomerInfo {
+  /** Customer ID */
+  id: string;
+  /** First name */
+  firstName: string;
+  /** Last name */
+  lastName: string;
+  /** Primary phone number */
+  phonePrimary: string;
+  /** Email address */
+  email?: string;
+  /** Address */
+  address?: string;
+  /** Preferred contact methods */
+  contactPreferences?: CustomerInfoContactPreferencesItem[];
+  /** How customer learned about the service */
+  infoSource?: CustomerInfoInfoSource;
+  /** Other info source details */
+  infoSourceOther?: string;
+  /** Internal notes about customer */
+  notes?: string;
+  /** Discount card number */
+  discountCardNumber?: string;
+  /** Whether customer is active */
+  active: boolean;
+  /** Registration date */
+  createdAt: string;
+}
+
+export type UpdateCustomerRequestContactPreferencesItem = typeof UpdateCustomerRequestContactPreferencesItem[keyof typeof UpdateCustomerRequestContactPreferencesItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateCustomerRequestContactPreferencesItem = {
+  PHONE: 'PHONE',
+  SMS: 'SMS',
+  VIBER: 'VIBER',
+} as const;
+
+/**
+ * How customer learned about the service
+ */
+export type UpdateCustomerRequestInfoSource = typeof UpdateCustomerRequestInfoSource[keyof typeof UpdateCustomerRequestInfoSource];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateCustomerRequestInfoSource = {
+  INSTAGRAM: 'INSTAGRAM',
+  GOOGLE: 'GOOGLE',
+  RECOMMENDATION: 'RECOMMENDATION',
+  OTHER: 'OTHER',
+} as const;
+
+export interface UpdateCustomerRequest {
+  /**
+   * First name
+   * @minLength 1
+   * @maxLength 100
+   */
+  firstName?: string;
+  /**
+   * Last name
+   * @minLength 1
+   * @maxLength 100
+   */
+  lastName?: string;
+  /**
+   * Primary phone number
+   * @minLength 10
+   * @maxLength 20
+   * @pattern ^\+?[0-9\s\-\(\)]+$
+   */
+  phonePrimary?: string;
+  /** Email address */
+  email?: string;
+  /**
+   * Address
+   * @minLength 0
+   * @maxLength 500
+   */
+  address?: string;
+  /** Preferred contact methods */
+  contactPreferences?: UpdateCustomerRequestContactPreferencesItem[];
+  /** How customer learned about the service */
+  infoSource?: UpdateCustomerRequestInfoSource;
+  /**
+   * Other info source details
+   * @minLength 0
+   * @maxLength 200
+   */
+  infoSourceOther?: string;
+  /**
+   * Internal notes about customer
+   * @minLength 0
+   * @maxLength 1000
+   */
+  notes?: string;
+  /**
+   * Discount card number
+   * @minLength 0
+   * @maxLength 20
+   */
+  discountCardNumber?: string;
+  /** Whether customer is active */
+  active?: boolean;
+}
+
+/**
+ * Urgency type
+ */
+export type CartGlobalModifiersUrgencyType = typeof CartGlobalModifiersUrgencyType[keyof typeof CartGlobalModifiersUrgencyType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CartGlobalModifiersUrgencyType = {
+  NORMAL: 'NORMAL',
+  EXPRESS_48H: 'EXPRESS_48H',
+  EXPRESS_24H: 'EXPRESS_24H',
+} as const;
+
+/**
+ * Discount type
+ */
+export type CartGlobalModifiersDiscountType = typeof CartGlobalModifiersDiscountType[keyof typeof CartGlobalModifiersDiscountType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CartGlobalModifiersDiscountType = {
+  NONE: 'NONE',
+  EVERCARD: 'EVERCARD',
+  SOCIAL_MEDIA: 'SOCIAL_MEDIA',
+  MILITARY: 'MILITARY',
+  OTHER: 'OTHER',
+} as const;
+
+export interface CartGlobalModifiers {
+  /** Urgency type */
+  urgencyType?: CartGlobalModifiersUrgencyType;
+  /** Discount type */
+  discountType?: CartGlobalModifiersDiscountType;
+  /**
+   * Discount percentage (for OTHER type)
+   * @minimum 0
+   * @maximum 100
+   */
+  discountPercentage?: number;
+  /** Expected completion date */
+  expectedCompletionDate?: string;
+}
+
+export interface CartInfo {
+  /** Cart ID */
+  id: string;
+  /** Customer ID */
+  customerId: string;
+  /** Cart items */
+  items: CartItemInfo[];
+  /** Global cart modifiers */
+  globalModifiers?: CartGlobalModifiers;
+  /** Cart pricing details */
+  pricing: CartPricingInfo;
+  /** Cart creation time */
+  createdAt: string;
+  /** Last update time */
+  updatedAt?: string;
+  /** Cart expiration time (TTL) */
+  expiresAt: string;
+}
+
+export interface CartItemInfo {
+  /** Cart item ID */
+  id: string;
+  /** Price list item ID */
+  priceListItemId: string;
+  /** Price list item details */
+  priceListItem: PriceListItemSummary;
+  /**
+   * Quantity (in units)
+   * @minimum 1
+   */
+  quantity: number;
+  /** Item characteristics */
+  characteristics: ItemCharacteristics;
+  /** Applied modifiers */
+  modifiers?: ItemModifier[];
+  /** Item pricing details */
+  pricing: CartItemPricingInfo;
+}
+
+export interface CartItemPricingInfo {
+  /** Base price in kopiykas */
+  basePrice: number;
+  /** Applied modifier details */
+  modifierDetails?: ModifierDetail[];
+  /** Total modifiers amount in kopiykas */
+  modifiersTotalAmount: number;
+  /** Subtotal (base + modifiers) in kopiykas */
+  subtotal: number;
+  /** Urgency surcharge amount in kopiykas */
+  urgencyAmount: number;
+  /** Discount amount in kopiykas */
+  discountAmount: number;
+  /** Total price in kopiykas */
+  total: number;
+}
+
+export interface CartPricingInfo {
+  /** Sum of all items subtotals in kopiykas */
+  itemsSubtotal: number;
+  /** Total urgency amount in kopiykas */
+  urgencyAmount: number;
+  /** Total discount amount in kopiykas */
+  discountAmount: number;
+  /** Amount eligible for discount in kopiykas */
+  discountApplicableAmount?: number;
+  /** Final total in kopiykas */
+  total: number;
+}
+
+/**
+ * Urgency type
+ */
+export type UpdateCartModifiersRequestUrgencyType = typeof UpdateCartModifiersRequestUrgencyType[keyof typeof UpdateCartModifiersRequestUrgencyType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateCartModifiersRequestUrgencyType = {
+  NORMAL: 'NORMAL',
+  EXPRESS_48H: 'EXPRESS_48H',
+  EXPRESS_24H: 'EXPRESS_24H',
+} as const;
+
+/**
+ * Discount type
+ */
+export type UpdateCartModifiersRequestDiscountType = typeof UpdateCartModifiersRequestDiscountType[keyof typeof UpdateCartModifiersRequestDiscountType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateCartModifiersRequestDiscountType = {
+  NONE: 'NONE',
+  EVERCARD: 'EVERCARD',
+  SOCIAL_MEDIA: 'SOCIAL_MEDIA',
+  MILITARY: 'MILITARY',
+  OTHER: 'OTHER',
+} as const;
+
+export interface UpdateCartModifiersRequest {
+  /** Urgency type */
+  urgencyType?: UpdateCartModifiersRequestUrgencyType;
+  /** Discount type */
+  discountType?: UpdateCartModifiersRequestDiscountType;
+  /**
+   * Discount percentage (required for OTHER type)
+   * @minimum 0
+   * @maximum 100
+   */
+  discountPercentage?: number;
+  /** Expected completion date */
+  expectedCompletionDate?: string;
+}
+
+export interface UpdateCartItemRequest {
+  /**
+   * New quantity
+   * @minimum 0
+   */
+  quantity?: number;
+  /** Updated characteristics */
+  characteristics?: ItemCharacteristics;
+  /** Updated modifier codes */
+  modifierCodes?: string[];
+}
+
+export interface BranchInfo {
+  /** Branch ID */
+  id: string;
+  /** Branch name */
+  name: string;
+  /** Branch address */
+  address: string;
+  /** Branch phone number */
+  phone: string;
+  /** Branch email */
+  email?: string;
+  /** Working hours (e.g., "Пн-Пт 8:00-20:00, Сб 9:00-18:00") */
+  workingHours?: string;
+  /** Is branch active */
+  active: boolean;
+  /** Branch description */
+  description?: string;
+  /** Sort order for display */
+  sortOrder?: number;
+}
+
+export interface UpdateBranchRequest {
+  /**
+   * Branch name
+   * @minLength 1
+   * @maxLength 255
+   */
+  name?: string;
+  /**
+   * Branch address
+   * @minLength 1
+   * @maxLength 500
+   */
+  address?: string;
+  /**
+   * Branch phone number
+   * @minLength 10
+   * @maxLength 20
+   */
+  phone?: string;
+  /**
+   * Branch email
+   * @minLength 0
+   * @maxLength 255
+   */
+  email?: string;
+  /**
+   * Working hours
+   * @minLength 0
+   * @maxLength 255
+   */
+  workingHours?: string;
+  /** Is branch active */
+  active?: boolean;
+  /**
+   * Branch description
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  /** Sort order for display */
+  sortOrder?: number;
+}
+
 export type CreateUserRequestRolesItem = typeof CreateUserRequestRolesItem[keyof typeof CreateUserRequestRolesItem];
 
 
@@ -273,47 +860,213 @@ export const CreateUserRequestRolesItem = {
 
 export interface CreateUserRequest {
   /**
-   * Username
+   * Username (must be unique)
    * @minLength 3
    * @maxLength 50
    * @pattern ^[a-zA-Z0-9_]+$
    */
   username: string;
   /**
-   * Password
+   * Password (min 8 chars, must contain uppercase, lowercase, number and special char)
    * @minLength 8
    * @maxLength 100
+   * @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$
    */
   password: string;
   /**
-   * First name
+   * First name (letters only)
    * @minLength 1
    * @maxLength 100
+   * @pattern ^[a-zA-Z\u0400-\u04FF\s\-]+$
    */
   firstName: string;
   /**
-   * Last name
+   * Last name (letters only)
    * @minLength 1
    * @maxLength 100
+   * @pattern ^[a-zA-Z\u0400-\u04FF\s\-]+$
    */
   lastName: string;
-  /** Email address */
+  /**
+   * Email address (must be unique)
+   * @minLength 0
+   * @maxLength 255
+   */
   email: string;
   /**
-   * Phone number
+   * Phone number (optional, international format)
    * @pattern ^\+?[0-9]{10,15}$
    */
   phone?: string;
   /**
-   * User roles
+   * User roles (defaults to OPERATOR if not specified)
    * @minItems 1
-   * @maxItems 2147483647
+   * @maxItems 10
    */
-  roles: CreateUserRequestRolesItem[];
-  /** Branch IDs to assign */
+  roles?: CreateUserRequestRolesItem[];
+  /**
+   * Branch IDs to assign (optional)
+   * @minItems 0
+   * @maxItems 50
+   */
   branchIds?: string[];
   /** Primary branch ID (must be in branchIds if provided) */
   primaryBranchId?: string;
+  /** Account active status */
+  active?: boolean;
+  /** Email verification status */
+  emailVerified?: boolean;
+}
+
+/**
+ * Modifier type
+ */
+export type AppliedModifierType = typeof AppliedModifierType[keyof typeof AppliedModifierType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AppliedModifierType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED',
+} as const;
+
+export interface AppliedModifier {
+  /** Modifier code */
+  code: string;
+  /** Modifier name */
+  name: string;
+  /** Modifier type */
+  type: AppliedModifierType;
+  /** Modifier value (percentage in basis points *100 or fixed amount in kopiykas) */
+  value: number;
+  /** Calculated amount in kopiykas */
+  amount: number;
+}
+
+export interface CalculatedItemPrice {
+  priceListItemId: string;
+  /** Item name from price list */
+  itemName: string;
+  /** Category code */
+  categoryCode?: string;
+  quantity: number;
+  /** Base price per unit in kopiykas */
+  basePrice: number;
+  /** Detailed price calculation */
+  calculations: ItemPriceCalculation;
+  /** Total price for this item in kopiykas */
+  total: number;
+}
+
+export interface CalculationTotals {
+  /** Sum of all items subtotals in kopiykas */
+  itemsSubtotal: number;
+  /** Total urgency surcharge in kopiykas */
+  urgencyAmount: number;
+  /** Applied urgency percentage */
+  urgencyPercentage?: number;
+  /** Total discount amount in kopiykas */
+  discountAmount: number;
+  /** Applied discount percentage */
+  discountPercentage?: number;
+  /** Amount eligible for discount in kopiykas */
+  discountApplicableAmount: number;
+  /** Final total amount in kopiykas */
+  total: number;
+}
+
+export interface ItemPriceCalculation {
+  /** Base amount (base price × quantity) in kopiykas */
+  baseAmount: number;
+  /** Applied modifiers with amounts */
+  modifiers: AppliedModifier[];
+  /** Total modifiers amount in kopiykas */
+  modifiersTotal?: number;
+  /** Subtotal (base + modifiers) in kopiykas */
+  subtotal: number;
+  /** Applied urgency modifier */
+  urgencyModifier: AppliedModifier;
+  /** Applied discount modifier */
+  discountModifier: AppliedModifier;
+  /** Whether item is eligible for discount */
+  discountEligible?: boolean;
+  /** Final amount after all calculations in kopiykas */
+  finalAmount: number;
+}
+
+export interface PriceCalculationResponse {
+  /** Calculated prices for each item */
+  items: CalculatedItemPrice[];
+  /** Total calculation summary */
+  totals: CalculationTotals;
+  /** Calculation warnings (e.g., discount not applicable) */
+  warnings?: string[];
+}
+
+/**
+ * Urgency type: * `NORMAL` - Standard processing (0%) * `EXPRESS_48H` - Express 48 hours (+50%) * `EXPRESS_24H` - Express 24 hours (+100%) 
+ */
+export type GlobalPriceModifiersUrgencyType = typeof GlobalPriceModifiersUrgencyType[keyof typeof GlobalPriceModifiersUrgencyType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GlobalPriceModifiersUrgencyType = {
+  NORMAL: 'NORMAL',
+  EXPRESS_48H: 'EXPRESS_48H',
+  EXPRESS_24H: 'EXPRESS_24H',
+} as const;
+
+/**
+ * Discount type: * `NONE` - No discount (0%) * `EVERCARD` - Evercard discount (10%) * `SOCIAL_MEDIA` - Social media discount (5%) * `MILITARY` - Military discount (10%) * `OTHER` - Other discount (requires discountPercentage) 
+ */
+export type GlobalPriceModifiersDiscountType = typeof GlobalPriceModifiersDiscountType[keyof typeof GlobalPriceModifiersDiscountType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GlobalPriceModifiersDiscountType = {
+  NONE: 'NONE',
+  EVERCARD: 'EVERCARD',
+  SOCIAL_MEDIA: 'SOCIAL_MEDIA',
+  MILITARY: 'MILITARY',
+  OTHER: 'OTHER',
+} as const;
+
+export interface GlobalPriceModifiers {
+  /** Urgency type: * `NORMAL` - Standard processing (0%) * `EXPRESS_48H` - Express 48 hours (+50%) * `EXPRESS_24H` - Express 24 hours (+100%)  */
+  urgencyType?: GlobalPriceModifiersUrgencyType;
+  /** Discount type: * `NONE` - No discount (0%) * `EVERCARD` - Evercard discount (10%) * `SOCIAL_MEDIA` - Social media discount (5%) * `MILITARY` - Military discount (10%) * `OTHER` - Other discount (requires discountPercentage)  */
+  discountType?: GlobalPriceModifiersDiscountType;
+  /**
+   * Discount percentage (required for OTHER type)
+   * @minimum 0
+   * @maximum 100
+   */
+  discountPercentage?: number;
+}
+
+export interface PriceCalculationItem {
+  /** Price list item ID */
+  priceListItemId: string;
+  /**
+   * Quantity (in units)
+   * @minimum 1
+   */
+  quantity: number;
+  /** Item characteristics */
+  characteristics?: ItemCharacteristics;
+  /** Modifier codes to apply */
+  modifierCodes?: string[];
+}
+
+export interface PriceCalculationRequest {
+  /**
+   * Items to calculate price for
+   * @minItems 1
+   * @maxItems 2147483647
+   */
+  items: PriceCalculationItem[];
+  /** Global modifiers (urgency, discount) */
+  globalModifiers?: GlobalPriceModifiers;
 }
 
 /**
@@ -397,6 +1150,269 @@ export interface CreatePriceListItemRequest {
   nameUa?: string;
 }
 
+export interface CustomerSummary {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email?: string;
+}
+
+/**
+ * Order status
+ */
+export type OrderInfoStatus = typeof OrderInfoStatus[keyof typeof OrderInfoStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrderInfoStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  READY: 'READY',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export interface OrderInfo {
+  /** Order ID */
+  id: string;
+  /** Order number */
+  orderNumber: string;
+  /** Customer ID */
+  customerId: string;
+  /** Customer information */
+  customer: CustomerSummary;
+  /** Branch ID */
+  branchId: string;
+  /** Unique label (QR code) */
+  uniqueLabel?: string;
+  /** Order status */
+  status: OrderInfoStatus;
+  /** Order items */
+  items: OrderItemInfo[];
+  /** Order pricing details */
+  pricing: OrderPricingInfo;
+  /** Order payments */
+  payments?: PaymentInfo[];
+  /** Order notes */
+  notes?: string;
+  /** Customer signature (base64) */
+  customerSignature?: string;
+  /** Creation time */
+  createdAt: string;
+  /** Created by user ID */
+  createdBy?: string;
+  /** Expected completion date */
+  expectedCompletionDate: string;
+  /** Actual completion date */
+  actualCompletionDate?: string;
+}
+
+export interface OrderPricingInfo {
+  /** Sum of all items subtotals */
+  itemsSubtotal: number;
+  /** Total urgency amount */
+  urgencyAmount: number;
+  /** Total discount amount */
+  discountAmount: number;
+  /** Amount eligible for discount */
+  discountApplicableAmount?: number;
+  /** Final total */
+  total: number;
+  /** Total paid amount */
+  paidAmount: number;
+  /** Balance due */
+  balanceDue: number;
+}
+
+export type PaymentInfoMethod = typeof PaymentInfoMethod[keyof typeof PaymentInfoMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PaymentInfoMethod = {
+  CASH: 'CASH',
+  TERMINAL: 'TERMINAL',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+} as const;
+
+export interface PaymentInfo {
+  id: string;
+  /** Payment amount in kopiykas */
+  amount: number;
+  method: PaymentInfoMethod;
+  paidAt: string;
+  /** User ID who registered payment */
+  paidBy?: string;
+}
+
+export interface CreateOrderRequest {
+  /** Cart ID to create order from */
+  cartId: string;
+  /** Branch ID */
+  branchId: string;
+  /** Unique label (QR code) */
+  uniqueLabel?: string;
+  /** Order notes */
+  notes?: string;
+  /** Customer signature (base64) */
+  customerSignature?: string;
+  /** Terms and conditions accepted */
+  termsAccepted?: boolean;
+}
+
+export type AddPaymentRequestMethod = typeof AddPaymentRequestMethod[keyof typeof AddPaymentRequestMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AddPaymentRequestMethod = {
+  CASH: 'CASH',
+  TERMINAL: 'TERMINAL',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+} as const;
+
+export interface AddPaymentRequest {
+  /**
+   * Payment amount in kopiykas
+   * @minimum 1
+   */
+  amount: number;
+  method: AddPaymentRequestMethod;
+}
+
+export type CreateCustomerRequestContactPreferencesItem = typeof CreateCustomerRequestContactPreferencesItem[keyof typeof CreateCustomerRequestContactPreferencesItem];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateCustomerRequestContactPreferencesItem = {
+  PHONE: 'PHONE',
+  SMS: 'SMS',
+  VIBER: 'VIBER',
+} as const;
+
+/**
+ * How customer learned about the service
+ */
+export type CreateCustomerRequestInfoSource = typeof CreateCustomerRequestInfoSource[keyof typeof CreateCustomerRequestInfoSource];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateCustomerRequestInfoSource = {
+  INSTAGRAM: 'INSTAGRAM',
+  GOOGLE: 'GOOGLE',
+  RECOMMENDATION: 'RECOMMENDATION',
+  OTHER: 'OTHER',
+} as const;
+
+export interface CreateCustomerRequest {
+  /**
+   * First name
+   * @minLength 1
+   * @maxLength 100
+   */
+  firstName: string;
+  /**
+   * Last name
+   * @minLength 1
+   * @maxLength 100
+   */
+  lastName: string;
+  /**
+   * Primary phone number
+   * @minLength 10
+   * @maxLength 20
+   * @pattern ^\+?[0-9\s\-\(\)]+$
+   */
+  phonePrimary: string;
+  /** Email address */
+  email?: string;
+  /**
+   * Address
+   * @minLength 0
+   * @maxLength 500
+   */
+  address?: string;
+  /** Preferred contact methods */
+  contactPreferences?: CreateCustomerRequestContactPreferencesItem[];
+  /** How customer learned about the service */
+  infoSource?: CreateCustomerRequestInfoSource;
+  /**
+   * Other info source details (required if infoSource is OTHER)
+   * @minLength 0
+   * @maxLength 200
+   */
+  infoSourceOther?: string;
+  /**
+   * Internal notes about customer
+   * @minLength 0
+   * @maxLength 1000
+   */
+  notes?: string;
+  /**
+   * Discount card number
+   * @minLength 0
+   * @maxLength 20
+   */
+  discountCardNumber?: string;
+}
+
+export interface AddCartItemRequest {
+  /** Price list item ID */
+  priceListItemId: string;
+  /**
+   * Quantity
+   * @minimum 0
+   */
+  quantity: number;
+  /** Item characteristics */
+  characteristics?: ItemCharacteristics;
+  /** Modifier codes to apply */
+  modifierCodes?: string[];
+}
+
+export interface CreateBranchRequest {
+  /**
+   * Branch name
+   * @minLength 1
+   * @maxLength 255
+   */
+  name: string;
+  /**
+   * Branch address
+   * @minLength 1
+   * @maxLength 500
+   */
+  address: string;
+  /**
+   * Branch phone number
+   * @minLength 10
+   * @maxLength 20
+   */
+  phone: string;
+  /**
+   * Branch email
+   * @minLength 0
+   * @maxLength 255
+   */
+  email?: string;
+  /**
+   * Working hours
+   * @minLength 0
+   * @maxLength 255
+   */
+  workingHours?: string;
+  /** Is branch active */
+  active?: boolean;
+  /**
+   * Branch description
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  /** Sort order for display */
+  sortOrder?: number;
+}
+
 export interface JsonNullableString {
   present?: boolean;
 }
@@ -472,6 +1488,25 @@ export interface UpdateUserRequest {
   phone?: string;
 }
 
+export type UpdateOrderStatusRequestStatus = typeof UpdateOrderStatusRequestStatus[keyof typeof UpdateOrderStatusRequestStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateOrderStatusRequestStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  READY: 'READY',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export interface UpdateOrderStatusRequest {
+  status: UpdateOrderStatusRequestStatus;
+  /** Status change notes */
+  notes?: string;
+}
+
 export interface UserListResponse {
   data: UserSummary[];
   /** Total number of elements */
@@ -523,14 +1558,74 @@ export interface UserSummary {
   roles: UserSummaryRolesItem[];
   /** Is user active */
   active: boolean;
-  /** Primary branch ID */
-  primaryBranchId?: string;
-  /** Primary branch name */
-  primaryBranchName?: string;
   /** Creation timestamp */
   createdAt: string;
   /** Last login timestamp */
   lastLoginAt?: string;
+}
+
+/**
+ * Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas 
+ */
+export type PriceModifierType = typeof PriceModifierType[keyof typeof PriceModifierType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceModifierType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED',
+} as const;
+
+export interface PriceModifier {
+  /** Unique modifier code */
+  code: string;
+  /** Modifier name */
+  name: string;
+  /** Modifier description */
+  description?: string;
+  /** Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas  */
+  type: PriceModifierType;
+  /** Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item  */
+  value: number;
+  /** Category codes where modifier is applicable */
+  categoryRestrictions?: string[];
+  /** Is modifier active */
+  active: boolean;
+}
+
+export interface PriceModifiersResponse {
+  /** List of price modifiers */
+  modifiers: PriceModifier[];
+  /** General modifiers (applicable to all categories) */
+  generalModifiers?: PriceModifier[];
+  /** Textile-specific modifiers */
+  textileModifiers?: PriceModifier[];
+  /** Leather-specific modifiers */
+  leatherModifiers?: PriceModifier[];
+}
+
+export interface Discount {
+  /** Discount code */
+  code: string;
+  /** Discount name */
+  name: string;
+  /** Discount description */
+  description?: string;
+  /**
+   * Discount percentage
+   * @minimum 0
+   * @maximum 100
+   */
+  percentage: number;
+  /** Category codes excluded from discount */
+  excludedCategories?: string[];
+  /** Is discount active */
+  active: boolean;
+}
+
+export interface DiscountsResponse {
+  /** List of available discounts */
+  discounts: Discount[];
 }
 
 export interface PriceListItemsResponse {
@@ -563,6 +1658,33 @@ export interface CategoryInfo {
   totalItems?: number;
   activeItems?: number;
   hasActiveItems?: boolean;
+}
+
+export interface OrdersResponse {
+  orders: OrderInfo[];
+  /** Total number of items */
+  totalItems: number;
+  /** Has more items */
+  hasMore: boolean;
+}
+
+export interface CustomersResponse {
+  customers: CustomerInfo[];
+  /** Total number of customers */
+  total: number;
+  /** Number of items skipped */
+  offset: number;
+  /** Number of items returned */
+  limit: number;
+}
+
+export interface BranchesResponse {
+  /** List of branches */
+  branches: BranchInfo[];
+  /** Total number of items matching the filter */
+  totalItems: number;
+  /** Whether there are more items to load */
+  hasMore: boolean;
 }
 
 export interface SessionInfo {

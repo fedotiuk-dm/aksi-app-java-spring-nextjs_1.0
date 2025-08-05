@@ -1,5 +1,6 @@
 package com.aksi.service.user;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -8,6 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +37,11 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class UserQueryService {
+public class UserQueryService implements UserDetailsService {
 
   private final UserRepository userRepository;
   private final UserMapper userMapper;
+  private final UserPermissionService permissionService;
 
   /**
    * Find user by ID.
@@ -104,14 +110,11 @@ public class UserQueryService {
       UUID branchId,
       Boolean active) {
 
-    // Set defaults
-    int pageNumber = page != null ? page : 0;
-    int pageSize = size != null ? size : 20;
-    String sortField = sortBy != null ? sortBy : "createdAt";
+    // OpenAPI schema defines defaults: page=0, size=20, sortBy=createdAt, sortOrder=asc
     Sort.Direction direction =
         "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
-    Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortField));
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
     log.debug(
         "Searching users - search: {}, role: {}, branchId: {}, active: {}",
@@ -147,7 +150,8 @@ public class UserQueryService {
    */
   public UserBranchesResponse getUserBranches(UUID userId) {
     User user =
-        findById(userId)
+        userRepository
+            .findByIdWithBranches(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
     UserBranchesResponse response = new UserBranchesResponse();
@@ -191,21 +195,45 @@ public class UserQueryService {
   }
 
   /**
-   * Count users by role.
+   * Load user by username for Spring Security authentication.
    *
-   * @param role the role to count
-   * @return number of users with the role
+   * @param username the username
+   * @return UserDetails for Spring Security
+   * @throws UsernameNotFoundException if user not found
    */
-  public long countByRole(UserRole role) {
-    return userRepository.countByRolesContaining(role);
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    User user =
+        findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+    var authorities =
+        user.getRoles().stream()
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+            .collect(Collectors.toList());
+
+    return org.springframework.security.core.userdetails.User.builder()
+        .username(user.getUsername())
+        .password(user.getPasswordHash())
+        .authorities(authorities)
+        .accountExpired(false)
+        .accountLocked(!user.isActive())
+        .credentialsExpired(false)
+        .disabled(!user.isActive())
+        .build();
   }
 
   /**
-   * Count active users.
+   * Get permissions for a user based on their roles.
    *
-   * @return number of active users
+   * @param userId user ID
+   * @return list of permissions
    */
-  public long countActiveUsers() {
-    return userRepository.countByActiveTrue();
+  public List<String> getUserPermissions(UUID userId) {
+    User user =
+        findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+    return permissionService.getPermissionsForRoles(user.getRoles());
   }
 }

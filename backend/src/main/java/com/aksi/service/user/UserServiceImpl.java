@@ -1,10 +1,9 @@
 package com.aksi.service.user;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +18,14 @@ import com.aksi.api.user.dto.UserDetail;
 import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
 import com.aksi.domain.user.User;
-import com.aksi.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** Facade implementation of UserService. Delegates to specialized Query and Command services. */
+/**
+ * Facade implementation of UserService. Provides a unified API while delegating to specialized
+ * Query and Command services for better separation of concerns.
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -33,11 +34,10 @@ public class UserServiceImpl implements UserService {
 
   private final UserQueryService queryService;
   private final UserCommandService commandService;
-  private final UserFactory userFactory;
   private final PasswordEncoder passwordEncoder;
-  private final UserRepository userRepository;
+  private final UserPermissionService permissionService;
 
-  // Domain entity methods - delegate to query service
+  // Query methods - delegate to UserQueryService
   @Override
   @Transactional(readOnly = true)
   public Optional<User> findById(UUID id) {
@@ -57,12 +57,6 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  @Transactional(readOnly = true)
-  public Page<User> findAll(Pageable pageable) {
-    return userRepository.findAll(pageable);
-  }
-
-  @Override
   public boolean verifyPassword(User user, String password) {
     return passwordEncoder.matches(password, user.getPasswordHash());
   }
@@ -77,35 +71,35 @@ public class UserServiceImpl implements UserService {
     commandService.resetFailedLogins(user);
   }
 
-  // API DTO methods - delegate to appropriate services
+  // API DTO methods
   @Override
   @Transactional(readOnly = true)
-  public UserDetail getUserDetailById(UUID userId) {
+  public UserDetail getUserById(UUID userId) {
     return queryService.getUserDetailById(userId);
   }
 
   @Override
-  public UserDetail createUserAndReturnDetail(CreateUserRequest request) {
+  public UserDetail createUser(CreateUserRequest request) {
     return commandService.createUser(request);
   }
 
   @Override
-  public UserDetail updateUserAndReturnDetail(UUID userId, UpdateUserRequest request) {
+  public UserDetail updateUser(UUID userId, UpdateUserRequest request) {
     return commandService.updateUser(userId, request);
   }
 
   @Override
-  public UserDetail activateUserAndReturnDetail(UUID userId) {
+  public UserDetail activateUser(UUID userId) {
     return commandService.activateUser(userId);
   }
 
   @Override
-  public UserDetail deactivateUserAndReturnDetail(UUID userId) {
+  public UserDetail deactivateUser(UUID userId) {
     return commandService.deactivateUser(userId);
   }
 
   @Override
-  public UserDetail updateUserRolesAndReturnDetail(UUID userId, UpdateRolesRequest request) {
+  public UserDetail updateUserRoles(UUID userId, UpdateRolesRequest request) {
     return commandService.updateUserRoles(userId, request);
   }
 
@@ -125,7 +119,6 @@ public class UserServiceImpl implements UserService {
       UserRole role,
       UUID branchId,
       Boolean active) {
-
     return queryService.listUsers(page, size, sortBy, sortOrder, search, role, branchId, active);
   }
 
@@ -138,5 +131,17 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserBranchesResponse updateUserBranches(UUID userId, UpdateBranchesRequest request) {
     return commandService.updateUserBranches(userId, request);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<String> getUserPermissions(UUID userId) {
+    return queryService.getUserPermissions(userId);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<String> getRolePermissions(UserRole role) {
+    return permissionService.getPermissionsForRole(role);
   }
 }
