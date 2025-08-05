@@ -1,7 +1,6 @@
 package com.aksi.service.user;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -21,7 +20,7 @@ import com.aksi.domain.user.User;
 /** Service interface for user management operations. */
 public interface UserService {
 
-  // Domain entity methods (existing)
+  // Query methods for internal use (authentication, etc.)
   Optional<User> findById(UUID id);
 
   Optional<User> findByUsername(String username);
@@ -29,22 +28,6 @@ public interface UserService {
   Optional<User> findByEmail(String email);
 
   Page<User> findAll(Pageable pageable);
-
-  User createUser(
-      String username,
-      String email,
-      String password,
-      String firstName,
-      String lastName,
-      String phone);
-
-  void changePassword(UUID userId, String currentPassword, String newPassword);
-
-  User updateUserRoles(UUID userId, Set<UserRole> roles);
-
-  User activateUser(UUID userId);
-
-  User deactivateUser(UUID userId);
 
   boolean verifyPassword(User user, String password);
 

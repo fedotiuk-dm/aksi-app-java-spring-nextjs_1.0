@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.aksi.api.user.dto.UserRole;
 import com.aksi.domain.user.User;
 
 /** Repository interface for User entity. */
@@ -30,21 +31,8 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
   @Query("SELECT u FROM User u LEFT JOIN FETCH u.branchAssignments WHERE u.id = :id")
   Optional<User> findByIdWithBranches(@Param("id") UUID id);
 
-  default void validateUsernameUnique(String username) {
-    if (existsByUsername(username)) {
-      throw new IllegalArgumentException("Username already exists: " + username);
-    }
-  }
+  @Query("SELECT COUNT(u) FROM User u WHERE :role MEMBER OF u.roles")
+  long countByRolesContaining(@Param("role") UserRole role);
 
-  default void validateEmailUnique(String email) {
-    if (existsByEmail(email)) {
-      throw new IllegalArgumentException("Email already exists: " + email);
-    }
-  }
-
-  default void validateEmailUniqueForUpdate(String currentEmail, String newEmail) {
-    if (!currentEmail.equals(newEmail) && existsByEmail(newEmail)) {
-      throw new IllegalArgumentException("Email already exists: " + newEmail);
-    }
-  }
+  long countByActiveTrue();
 }
