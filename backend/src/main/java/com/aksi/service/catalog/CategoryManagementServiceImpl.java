@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.domain.catalog.PriceListItem;
+import com.aksi.domain.catalog.PriceListItemEntity;
 import com.aksi.repository.PriceListItemRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -69,7 +69,7 @@ public class CategoryManagementServiceImpl implements CategoryManagementService 
 
     var items =
         priceListItemRepository.findByCategoryCode(categoryCode).stream()
-            .filter(PriceListItem::isActive)
+            .filter(PriceListItemEntity::isActive)
             .toList();
 
     items.forEach(item -> item.setActive(false));

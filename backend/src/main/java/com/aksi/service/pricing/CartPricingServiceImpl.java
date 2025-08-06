@@ -13,9 +13,9 @@ import com.aksi.api.pricing.dto.ItemCharacteristics;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
-import com.aksi.domain.cart.Cart;
+import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
-import com.aksi.domain.cart.CartItemModifier;
+import com.aksi.domain.cart.CartItemModifierEntity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +29,9 @@ public class CartPricingServiceImpl implements CartPricingService {
   private final PricingService pricingService;
 
   @Override
-  public CartPricingInfo calculateCartPricing(Cart cart) {
+  public CartPricingInfo calculateCartPricing(CartEntity cartEntityEntity) {
     // Convert cart to PriceCalculationRequest
-    PriceCalculationRequest request = buildPriceCalculationRequest(cart);
+    PriceCalculationRequest request = buildPriceCalculationRequest(cartEntityEntity);
 
     // Use PricingService to calculate
     PriceCalculationResponse response = pricingService.calculatePrice(request);
@@ -104,24 +104,28 @@ public class CartPricingServiceImpl implements CartPricingService {
     return pricingService.isDiscountApplicableToCategory(discountType, categoryCode);
   }
 
-  private PriceCalculationRequest buildPriceCalculationRequest(Cart cart) {
+  private PriceCalculationRequest buildPriceCalculationRequest(CartEntity cartEntityEntity) {
     PriceCalculationRequest request = new PriceCalculationRequest();
 
     // Convert cart items to price calculation items
     List<PriceCalculationItem> items =
-        cart.getItems().stream().map(this::buildPriceCalculationItem).collect(Collectors.toList());
+        cartEntityEntity.getItems().stream()
+            .map(this::buildPriceCalculationItem)
+            .collect(Collectors.toList());
 
     request.setItems(items);
     request.setGlobalModifiers(
         buildGlobalModifiers(
-            cart.getUrgencyType(), cart.getDiscountType(), cart.getDiscountPercentage()));
+            cartEntityEntity.getUrgencyType(),
+            cartEntityEntity.getDiscountType(),
+            cartEntityEntity.getDiscountPercentage()));
 
     return request;
   }
 
   private PriceCalculationItem buildPriceCalculationItem(CartItem cartItem) {
     PriceCalculationItem item = new PriceCalculationItem();
-    item.setPriceListItemId(cartItem.getPriceListItem().getId());
+    item.setPriceListItemId(cartItem.getPriceListItemEntityEntity().getId());
     item.setQuantity(cartItem.getQuantity());
 
     // Convert characteristics
@@ -141,7 +145,7 @@ public class CartPricingServiceImpl implements CartPricingService {
     // Extract modifier codes
     List<String> modifierCodes =
         cartItem.getModifiers().stream()
-            .map(CartItemModifier::getCode)
+            .map(CartItemModifierEntity::getCode)
             .collect(Collectors.toList());
     item.setModifierCodes(modifierCodes);
 

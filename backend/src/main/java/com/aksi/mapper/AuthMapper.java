@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 import com.aksi.api.auth.dto.LoginResponse;
 import com.aksi.api.auth.dto.SessionInfo;
 import com.aksi.api.user.dto.UserRole;
-import com.aksi.domain.user.User;
+import com.aksi.domain.user.UserEntity;
 
 /** MapStruct mapper for Auth DTOs. */
 @Mapper(componentModel = "spring")
@@ -20,16 +20,16 @@ public interface AuthMapper {
   @Mapping(target = "username", source = "username")
   @Mapping(target = "firstName", source = "firstName")
   @Mapping(target = "lastName", source = "lastName")
-  @Mapping(target = "roles", expression = "java(mapRoles(user.getRoles()))")
+  @Mapping(target = "roles", expression = "java(mapRoles(userEntityEntity.getRoles()))")
   @Mapping(target = "permissions", ignore = true)
   @Mapping(target = "branchId", ignore = true)
   @Mapping(target = "branchName", ignore = true)
   @Mapping(target = "requiresBranchSelection", constant = "false")
-  LoginResponse toLoginResponse(User user);
+  LoginResponse toLoginResponse(UserEntity userEntityEntity);
 
-  @Mapping(target = "userId", source = "user.id")
-  @Mapping(target = "username", source = "user.username")
-  @Mapping(target = "roles", expression = "java(mapRoles(user.getRoles()))")
+  @Mapping(target = "userId", source = "userEntityEntity.id")
+  @Mapping(target = "username", source = "userEntityEntity.username")
+  @Mapping(target = "roles", expression = "java(mapRoles(userEntityEntity.getRoles()))")
   @Mapping(target = "sessionId", source = "sessionId")
   @Mapping(target = "createdAt", source = "createdAt")
   @Mapping(target = "lastAccessedAt", source = "lastAccessedAt")
@@ -39,7 +39,7 @@ public interface AuthMapper {
   @Mapping(target = "ipAddress", ignore = true)
   @Mapping(target = "userAgent", ignore = true)
   SessionInfo toSessionInfo(
-      User user,
+      UserEntity userEntityEntity,
       String sessionId,
       java.time.Instant createdAt,
       java.time.Instant lastAccessedAt,

@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.aksi.api.pricing.dto.*;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.service.pricing.rules.PricingRulesService;
 
 @ExtendWith(MockitoExtension.class)
@@ -108,7 +108,7 @@ class ItemPriceCalculatorTest {
 
       PriceListItemInfo priceListItem = createPriceListItem("Блуза", 8000);
 
-      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000); // 50%
+      PriceModifierEntity silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000); // 50%
 
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(8000);
       when(pricingRulesService.getModifier("SILK_FABRIC")).thenReturn(silkModifier);
@@ -137,9 +137,10 @@ class ItemPriceCalculatorTest {
 
       PriceListItemInfo priceListItem = createPriceListItem("Куртка", 20000);
 
-      PriceModifier waterModifier =
+      PriceModifierEntity waterModifier =
           createModifier("WATER_REPELLENT", "Водовідштовхування", 3000); // 30%
-      PriceModifier manualModifier = createModifier("MANUAL_CLEAN", "Ручна чистка", 2000); // 20%
+      PriceModifierEntity manualModifier =
+          createModifier("MANUAL_CLEAN", "Ручна чистка", 2000); // 20%
 
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(20000);
       when(pricingRulesService.getModifier("WATER_REPELLENT")).thenReturn(waterModifier);
@@ -209,7 +210,7 @@ class ItemPriceCalculatorTest {
 
       PriceListItemInfo priceListItem = createPriceListItem("Сукня", 10000);
 
-      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000);
+      PriceModifierEntity silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000);
 
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(10000);
       when(pricingRulesService.getModifier("SILK_FABRIC")).thenReturn(silkModifier);
@@ -236,7 +237,7 @@ class ItemPriceCalculatorTest {
 
   @Nested
   @DisplayName("Discount Calculations")
-  class DiscountCalculations {
+  class DiscountEntityCalculations {
 
     @Test
     @DisplayName("Should apply discount to eligible category")
@@ -356,7 +357,7 @@ class ItemPriceCalculatorTest {
       PriceListItemInfo priceListItem = createPriceListItem("Блуза", 10000);
       priceListItem.setCategoryCode(ServiceCategoryType.CLOTHING);
 
-      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000);
+      PriceModifierEntity silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000);
 
       // Setup mocks
       when(pricingRulesService.determineBasePrice(any(), isNull())).thenReturn(10000);
@@ -407,11 +408,11 @@ class ItemPriceCalculatorTest {
     return item;
   }
 
-  private PriceModifier createModifier(String code, String name, int value) {
-    PriceModifier modifier = new PriceModifier();
+  private PriceModifierEntity createModifier(String code, String name, int value) {
+    PriceModifierEntity modifier = new PriceModifierEntity();
     modifier.setCode(code);
     modifier.setName(name);
-    modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+    modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
     modifier.setValue(value);
     return modifier;
   }

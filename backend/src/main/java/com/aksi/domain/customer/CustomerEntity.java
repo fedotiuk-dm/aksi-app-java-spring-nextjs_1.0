@@ -37,7 +37,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Customer extends BaseEntity {
+public class CustomerEntity extends BaseEntity {
 
   @Column(name = "first_name", nullable = false, length = 100)
   private String firstName;

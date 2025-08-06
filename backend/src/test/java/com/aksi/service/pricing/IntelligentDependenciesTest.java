@@ -20,8 +20,8 @@ import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.UnitOfMeasure;
-import com.aksi.domain.catalog.PriceListItem;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.catalog.PriceListItemEntity;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.repository.PriceListItemRepository;
 import com.aksi.repository.PriceModifierRepository;
 
@@ -39,14 +39,14 @@ public class IntelligentDependenciesTest {
   @Autowired private PriceModifierRepository priceModifierRepository;
 
   // Service items
-  private PriceListItem jacket;
-  private PriceListItem jacketLining;
-  private PriceListItem jacketIroning;
-  private PriceListItem waterRepellent;
-  private PriceListItem leatherJacket;
-  private PriceListItem leatherRestoration;
-  private PriceListItem weddingDress;
-  private PriceListItem weddingAccessories;
+  private PriceListItemEntity jacket;
+  private PriceListItemEntity jacketLining;
+  private PriceListItemEntity jacketIroning;
+  private PriceListItemEntity waterRepellent;
+  private PriceListItemEntity leatherJacket;
+  private PriceListItemEntity leatherRestoration;
+  private PriceListItemEntity weddingDress;
+  private PriceListItemEntity weddingAccessories;
 
   @BeforeEach
   void setUp() {
@@ -108,7 +108,7 @@ public class IntelligentDependenciesTest {
   @DisplayName("Після чистки - додати прасування")
   void testCleaningWithIroningCombination() {
     // Create shirt item
-    PriceListItem shirt = createTextileItem("SHIRT", "Сорочка", 50000);
+    PriceListItemEntity shirt = createTextileItem("SHIRT", "Сорочка", 50000);
 
     // Calculate cleaning only
     PriceCalculationRequest request = new PriceCalculationRequest();
@@ -124,7 +124,7 @@ public class IntelligentDependenciesTest {
     assertEquals(550000, response.getTotals().getTotal());
 
     // Add ironing services
-    PriceListItem shirtIroning =
+    PriceListItemEntity shirtIroning =
         createServiceItem(ServiceCategoryType.IRONING, "SHIRT_IRON", "Прасування сорочки", 20000);
 
     request.setItems(
@@ -223,7 +223,7 @@ public class IntelligentDependenciesTest {
   @DisplayName("Сезонні послуги - зимове пальто з антимільною обробкою")
   void testSeasonalServices() {
     // Winter coat
-    PriceListItem winterCoat =
+    PriceListItemEntity winterCoat =
         createServiceItem(ServiceCategoryType.CLOTHING, "WINTER_COAT", "Зимове пальто", 200000);
 
     // Create anti-moth treatment modifier
@@ -246,7 +246,7 @@ public class IntelligentDependenciesTest {
   @DisplayName("Комбіновані матеріали - подвійна вартість")
   void testCombinedMaterialPricing() {
     // Item with leather and textile
-    PriceListItem combinedItem =
+    PriceListItemEntity combinedItem =
         createServiceItem(ServiceCategoryType.CLOTHING, "COMBINED", "Куртка комбінована", 180000);
 
     ItemCharacteristics characteristics = new ItemCharacteristics();
@@ -275,7 +275,7 @@ public class IntelligentDependenciesTest {
   @DisplayName("Великі замовлення - розрахунок без знижок")
   void testBulkOrderCalculation() {
     // Large order of similar items
-    PriceListItem shirt =
+    PriceListItemEntity shirt =
         createServiceItem(ServiceCategoryType.CLOTHING, "SHIRT", "Сорочка", 50000);
 
     PriceCalculationRequest request = new PriceCalculationRequest();
@@ -308,7 +308,7 @@ public class IntelligentDependenciesTest {
   @DisplayName("Делікатні тканини - автоматичні обмеження")
   void testDelicateFabricDependencies() {
     // Silk item
-    PriceListItem silkDress =
+    PriceListItemEntity silkDress =
         createServiceItem(ServiceCategoryType.CLOTHING, "SILK_DRESS", "Сукня шовкова", 100000);
 
     ItemCharacteristics characteristics = new ItemCharacteristics();
@@ -415,9 +415,9 @@ public class IntelligentDependenciesTest {
     createModifier("BULK_DISCOUNT_10", "Знижка за кількість 10+", -1000, null);
   }
 
-  private PriceListItem createServiceItem(
+  private PriceListItemEntity createServiceItem(
       ServiceCategoryType categoryCode, String itemNumber, String name, Integer basePrice) {
-    PriceListItem item = new PriceListItem();
+    PriceListItemEntity item = new PriceListItemEntity();
     item.setCategoryCode(categoryCode);
     item.setCatalogNumber(Integer.parseInt(itemNumber.replaceAll("[^0-9]", "1")));
     item.setName(name);
@@ -429,16 +429,16 @@ public class IntelligentDependenciesTest {
     return priceListItemRepository.save(item);
   }
 
-  private PriceListItem createTextileItem(String itemNumber, String name, Integer basePrice) {
+  private PriceListItemEntity createTextileItem(String itemNumber, String name, Integer basePrice) {
     return createServiceItem(ServiceCategoryType.CLOTHING, itemNumber, name, basePrice);
   }
 
-  private PriceModifier createModifier(
+  private PriceModifierEntity createModifier(
       String code, String name, Integer value, List<String> categories) {
-    PriceModifier modifier = new PriceModifier();
+    PriceModifierEntity modifier = new PriceModifierEntity();
     modifier.setCode(code);
     modifier.setName(name);
-    modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+    modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
     modifier.setValue(value);
     modifier.setCategoryRestrictions(categories);
     modifier.setActive(true);

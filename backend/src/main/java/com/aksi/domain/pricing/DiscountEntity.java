@@ -31,7 +31,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Discount extends BaseEntity {
+public class DiscountEntity extends BaseEntity {
 
   @Column(name = "code", nullable = false, unique = true, length = 50)
   private String code;

@@ -27,7 +27,7 @@ import com.aksi.api.order.dto.PaymentInfo;
 import com.aksi.api.order.dto.PhotoType;
 import com.aksi.api.order.dto.UpdateItemCharacteristicsRequest;
 import com.aksi.api.order.dto.UpdateOrderStatusRequest;
-import com.aksi.domain.order.Order;
+import com.aksi.domain.order.OrderEntity;
 import com.aksi.service.order.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -65,8 +65,8 @@ public class OrderController implements OrdersApi {
             Sort.by(Sort.Direction.DESC, "createdAt"));
 
     // Convert OrderStatus DTO to domain enum
-    Order.OrderStatus orderStatus =
-        status != null ? Order.OrderStatus.valueOf(status.getValue()) : null;
+    OrderEntity.OrderStatus orderStatus =
+        status != null ? OrderEntity.OrderStatus.valueOf(status.getValue()) : null;
 
     Page<OrderInfo> orders =
         orderService.listOrders(

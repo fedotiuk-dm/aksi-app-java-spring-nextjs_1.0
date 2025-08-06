@@ -26,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ItemStain extends BaseEntity {
+public class ItemStainEntity extends BaseEntity {
 
   public enum StainType {
     GREASE,
@@ -42,7 +42,7 @@ public class ItemStain extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
-  private OrderItem orderItem;
+  private OrderItemEntity orderItemEntity;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "stain_type", nullable = false, length = 20)
@@ -52,8 +52,8 @@ public class ItemStain extends BaseEntity {
   private String description;
 
   // Convenience constructor
-  public ItemStain(OrderItem orderItem, StainType type, String description) {
-    this.orderItem = orderItem;
+  public ItemStainEntity(OrderItemEntity orderItemEntity, StainType type, String description) {
+    this.orderItemEntity = orderItemEntity;
     this.type = type;
     this.description = description;
   }

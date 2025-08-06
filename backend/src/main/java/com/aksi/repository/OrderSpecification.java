@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-import com.aksi.domain.order.Order;
+import com.aksi.domain.order.OrderEntity;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -17,7 +17,7 @@ public class OrderSpecification {
   private OrderSpecification() {}
 
   /** Filter by customer ID */
-  public static Specification<Order> hasCustomerId(UUID customerId) {
+  public static Specification<OrderEntity> hasCustomerId(UUID customerId) {
     return (root, query, cb) -> {
       if (customerId == null) {
         return cb.conjunction();
@@ -27,7 +27,7 @@ public class OrderSpecification {
   }
 
   /** Filter by branch ID */
-  public static Specification<Order> hasBranchId(UUID branchId) {
+  public static Specification<OrderEntity> hasBranchId(UUID branchId) {
     return (root, query, cb) -> {
       if (branchId == null) {
         return cb.conjunction();
@@ -37,7 +37,7 @@ public class OrderSpecification {
   }
 
   /** Filter by order status */
-  public static Specification<Order> hasStatus(Order.OrderStatus status) {
+  public static Specification<OrderEntity> hasStatus(OrderEntity.OrderStatus status) {
     return (root, query, cb) -> {
       if (status == null) {
         return cb.conjunction();
@@ -47,7 +47,7 @@ public class OrderSpecification {
   }
 
   /** Filter by order number (exact match) */
-  public static Specification<Order> hasOrderNumber(String orderNumber) {
+  public static Specification<OrderEntity> hasOrderNumber(String orderNumber) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(orderNumber)) {
         return cb.conjunction();
@@ -57,7 +57,7 @@ public class OrderSpecification {
   }
 
   /** Search by order number pattern */
-  public static Specification<Order> searchByOrderNumber(String orderNumber) {
+  public static Specification<OrderEntity> searchByOrderNumber(String orderNumber) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(orderNumber)) {
         return cb.conjunction();
@@ -68,7 +68,7 @@ public class OrderSpecification {
   }
 
   /** Filter by customer name or phone */
-  public static Specification<Order> searchByCustomer(String customerSearch) {
+  public static Specification<OrderEntity> searchByCustomer(String customerSearch) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(customerSearch)) {
         return cb.conjunction();
@@ -86,7 +86,7 @@ public class OrderSpecification {
   }
 
   /** Filter by unique label (QR code) */
-  public static Specification<Order> hasUniqueLabel(String uniqueLabel) {
+  public static Specification<OrderEntity> hasUniqueLabel(String uniqueLabel) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(uniqueLabel)) {
         return cb.conjunction();
@@ -96,7 +96,7 @@ public class OrderSpecification {
   }
 
   /** Filter by creation date from */
-  public static Specification<Order> createdFrom(Instant dateFrom) {
+  public static Specification<OrderEntity> createdFrom(Instant dateFrom) {
     return (root, query, cb) -> {
       if (dateFrom == null) {
         return cb.conjunction();
@@ -106,7 +106,7 @@ public class OrderSpecification {
   }
 
   /** Filter by creation date to */
-  public static Specification<Order> createdTo(Instant dateTo) {
+  public static Specification<OrderEntity> createdTo(Instant dateTo) {
     return (root, query, cb) -> {
       if (dateTo == null) {
         return cb.conjunction();
@@ -116,7 +116,7 @@ public class OrderSpecification {
   }
 
   /** Filter by expected completion date from */
-  public static Specification<Order> expectedCompletionFrom(Instant dateFrom) {
+  public static Specification<OrderEntity> expectedCompletionFrom(Instant dateFrom) {
     return (root, query, cb) -> {
       if (dateFrom == null) {
         return cb.conjunction();
@@ -126,7 +126,7 @@ public class OrderSpecification {
   }
 
   /** Filter by expected completion date to */
-  public static Specification<Order> expectedCompletionTo(Instant dateTo) {
+  public static Specification<OrderEntity> expectedCompletionTo(Instant dateTo) {
     return (root, query, cb) -> {
       if (dateTo == null) {
         return cb.conjunction();
@@ -136,7 +136,7 @@ public class OrderSpecification {
   }
 
   /** Filter orders with balance due */
-  public static Specification<Order> hasBalanceDue() {
+  public static Specification<OrderEntity> hasBalanceDue() {
     return (root, query, cb) -> {
       // Orders where totalAmount > sum of payments
       assert query != null;
@@ -153,28 +153,31 @@ public class OrderSpecification {
   }
 
   /** Filter overdue orders */
-  public static Specification<Order> isOverdue(Instant now) {
+  public static Specification<OrderEntity> isOverdue(Instant now) {
     return (root, query, cb) -> {
       Instant effectiveNow = now != null ? now : Instant.now();
       return cb.and(
           cb.lessThan(root.get("expectedCompletionDate"), effectiveNow),
-          root.get("status").in(Order.OrderStatus.ACCEPTED, Order.OrderStatus.IN_PROGRESS));
+          root.get("status")
+              .in(OrderEntity.OrderStatus.ACCEPTED, OrderEntity.OrderStatus.IN_PROGRESS));
     };
   }
 
   /** Filter completed orders */
-  public static Specification<Order> isCompleted() {
-    return (root, query, cb) -> cb.equal(root.get("status"), Order.OrderStatus.COMPLETED);
+  public static Specification<OrderEntity> isCompleted() {
+    return (root, query, cb) -> cb.equal(root.get("status"), OrderEntity.OrderStatus.COMPLETED);
   }
 
   /** Filter active orders (not completed or cancelled) */
-  public static Specification<Order> isActive() {
+  public static Specification<OrderEntity> isActive() {
     return (root, query, cb) ->
-        cb.not(root.get("status").in(Order.OrderStatus.COMPLETED, Order.OrderStatus.CANCELLED));
+        cb.not(
+            root.get("status")
+                .in(OrderEntity.OrderStatus.COMPLETED, OrderEntity.OrderStatus.CANCELLED));
   }
 
   /** General text search (order number, customer name, phone, unique label) */
-  public static Specification<Order> searchByText(String search) {
+  public static Specification<OrderEntity> searchByText(String search) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(search)) {
         return cb.conjunction();
@@ -193,10 +196,10 @@ public class OrderSpecification {
   }
 
   /** Combine all search criteria for order listing */
-  public static Specification<Order> searchOrders(
+  public static Specification<OrderEntity> searchOrders(
       UUID customerId,
       UUID branchId,
-      Order.OrderStatus status,
+      OrderEntity.OrderStatus status,
       Instant dateFrom,
       Instant dateTo,
       String search) {

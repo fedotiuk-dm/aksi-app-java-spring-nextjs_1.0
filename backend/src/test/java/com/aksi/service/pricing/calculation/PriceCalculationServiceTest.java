@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.pricing.PriceModifierEntity;
 
 @DisplayName("PriceCalculationService Tests")
 class PriceCalculationServiceTest {
@@ -28,8 +28,8 @@ class PriceCalculationServiceTest {
     @DisplayName("Should calculate percentage modifier correctly")
     void shouldCalculatePercentageModifier() {
       // Given
-      PriceModifier modifier = new PriceModifier();
-      modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+      PriceModifierEntity modifier = new PriceModifierEntity();
+      modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
       modifier.setValue(1550); // 15.5% in basis points
       int baseAmount = 10000; // 100.00 UAH
       int quantity = 1;
@@ -45,8 +45,8 @@ class PriceCalculationServiceTest {
     @DisplayName("Should calculate fixed modifier correctly")
     void shouldCalculateFixedModifier() {
       // Given
-      PriceModifier modifier = new PriceModifier();
-      modifier.setType(PriceModifier.ModifierType.FIXED);
+      PriceModifierEntity modifier = new PriceModifierEntity();
+      modifier.setType(PriceModifierEntity.ModifierType.FIXED);
       modifier.setValue(500); // 5.00 UAH per item
       int baseAmount = 10000;
       int quantity = 3;
@@ -62,7 +62,7 @@ class PriceCalculationServiceTest {
     @DisplayName("Should return 0 for unknown modifier type")
     void shouldReturnZeroForUnknownModifierType() {
       // Given
-      PriceModifier modifier = new PriceModifier();
+      PriceModifierEntity modifier = new PriceModifierEntity();
       modifier.setType(null);
       modifier.setValue(1000);
 
@@ -136,7 +136,7 @@ class PriceCalculationServiceTest {
 
   @Nested
   @DisplayName("Discount Amount Calculations")
-  class DiscountAmountTests {
+  class DiscountEntityAmountTests {
 
     @Test
     @DisplayName("Should calculate Evercard discount (10%)")
@@ -231,7 +231,7 @@ class PriceCalculationServiceTest {
 
   @Nested
   @DisplayName("Discount Applicability")
-  class DiscountApplicabilityTests {
+  class DiscountEntityApplicabilityTests {
 
     @Test
     @DisplayName("Should not apply discount to LAUNDRY category")
@@ -335,8 +335,8 @@ class PriceCalculationServiceTest {
     @DisplayName("Should handle rounding correctly for percentage calculations")
     void shouldHandleRoundingCorrectly() {
       // Given
-      PriceModifier modifier = new PriceModifier();
-      modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+      PriceModifierEntity modifier = new PriceModifierEntity();
+      modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
       modifier.setValue(333); // 3.33% in basis points
       int baseAmount = 1000; // 10.00 UAH
 

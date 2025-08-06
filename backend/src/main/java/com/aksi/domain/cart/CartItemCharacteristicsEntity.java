@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemCharacteristics extends BaseEntity {
+public class CartItemCharacteristicsEntity extends BaseEntity {
 
   @OneToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "cart_item_id", nullable = false)

@@ -8,7 +8,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.pricing.PriceModifierEntity;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +50,7 @@ public class PriceCalculationService {
    * @param quantity Item quantity
    * @return Calculated amount in kopiykas
    */
-  public int calculateModifierAmount(PriceModifier modifier, int baseAmount, int quantity) {
+  public int calculateModifierAmount(PriceModifierEntity modifier, int baseAmount, int quantity) {
     return switch (modifier.getType()) {
       case PERCENTAGE -> calculatePercentageFromBasisPoints(baseAmount, modifier.getValue());
       case FIXED -> modifier.getValue() * quantity;

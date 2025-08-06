@@ -3,7 +3,7 @@ package com.aksi.domain.order;
 import java.time.Instant;
 
 import com.aksi.domain.common.BaseEntity;
-import com.aksi.domain.user.User;
+import com.aksi.domain.user.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,7 +32,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderPayment extends BaseEntity {
+public class OrderPaymentEntity extends BaseEntity {
 
   public enum PaymentMethod {
     CASH,
@@ -42,7 +42,7 @@ public class OrderPayment extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_id", nullable = false)
-  private Order order;
+  private OrderEntity orderEntity;
 
   @Column(name = "amount", nullable = false)
   private Integer amount;
@@ -56,7 +56,7 @@ public class OrderPayment extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "paid_by")
-  private User paidBy;
+  private UserEntity paidBy;
 
   @Column(name = "reference_number", length = 100)
   private String referenceNumber;
@@ -65,8 +65,9 @@ public class OrderPayment extends BaseEntity {
   private String notes;
 
   // Convenience constructor
-  public OrderPayment(Order order, Integer amount, PaymentMethod method, User paidBy) {
-    this.order = order;
+  public OrderPaymentEntity(
+      OrderEntity orderEntity, Integer amount, PaymentMethod method, UserEntity paidBy) {
+    this.orderEntity = orderEntity;
     this.amount = amount;
     this.method = method;
     this.paidBy = paidBy;

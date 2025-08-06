@@ -19,8 +19,8 @@ import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.UnitOfMeasure;
-import com.aksi.domain.catalog.PriceListItem;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.catalog.PriceListItemEntity;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.repository.PriceListItemRepository;
 import com.aksi.repository.PriceModifierRepository;
 
@@ -46,9 +46,9 @@ public class CategoryBusinessRulesTest {
   @Test
   @DisplayName("Категорія: Чистка одягу та текстилю")
   void testTextileCleaning() {
-    PriceListItem dress =
+    PriceListItemEntity dress =
         createItem(ServiceCategoryType.CLOTHING, "DRESS", "Сукня", UnitOfMeasure.PIECE, 80000);
-    PriceListItem coat =
+    PriceListItemEntity coat =
         createItem(ServiceCategoryType.CLOTHING, "COAT", "Пальто", UnitOfMeasure.PIECE, 150000);
 
     // Standard textile cleaning
@@ -57,7 +57,8 @@ public class CategoryBusinessRulesTest {
     assertEquals(80000, response.getTotals().getTotal());
 
     // Textile with special material modifier
-    PriceModifier silkModifier = createModifier("SILK_MATERIAL", "Шовк", 5000, List.of("CLOTHING"));
+    PriceModifierEntity silkModifier =
+        createModifier("SILK_MATERIAL", "Шовк", 5000, List.of("CLOTHING"));
     request = createRequestWithModifier(dress.getId(), "SILK_MATERIAL");
     response = pricingService.calculatePrice(request);
     assertEquals(120000, response.getTotals().getTotal()); // 800 + 50%
@@ -67,7 +68,7 @@ public class CategoryBusinessRulesTest {
   @DisplayName("Категорія: Прання білизни - одиниця виміру кілограми")
   void testLaundryByWeight() {
     // Laundry is measured in kilograms
-    PriceListItem laundry =
+    PriceListItemEntity laundry =
         createItem(
             ServiceCategoryType.LAUNDRY,
             "BEDDING",
@@ -94,7 +95,7 @@ public class CategoryBusinessRulesTest {
   @Test
   @DisplayName("Категорія: Прасування - знижки не застосовуються")
   void testIroningNoDiscounts() {
-    PriceListItem ironing =
+    PriceListItemEntity ironing =
         createItem(
             ServiceCategoryType.IRONING, "SHIRT", "Сорочка", UnitOfMeasure.PIECE, 5000); // 50 UAH
 
@@ -112,7 +113,7 @@ public class CategoryBusinessRulesTest {
   @Test
   @DisplayName("Категорія: Чистка та відновлення шкіряних виробів")
   void testLeatherCleaning() {
-    PriceListItem leatherJacket =
+    PriceListItemEntity leatherJacket =
         createItem(
             ServiceCategoryType.LEATHER, "JACKET", "Куртка шкіряна", UnitOfMeasure.PIECE, 200000);
 
@@ -131,7 +132,7 @@ public class CategoryBusinessRulesTest {
   @Test
   @DisplayName("Категорія: Дублянки - специфічні модифікатори")
   void testSheepskinCleaning() {
-    PriceListItem sheepskin =
+    PriceListItemEntity sheepskin =
         createItem(ServiceCategoryType.LEATHER, "COAT", "Дублянка", UnitOfMeasure.PIECE, 300000);
 
     // Natural sheepskin on artificial fur - discount
@@ -145,7 +146,7 @@ public class CategoryBusinessRulesTest {
   @Test
   @DisplayName("Категорія: Вироби із натурального хутра")
   void testFurCleaning() {
-    PriceListItem furCoat =
+    PriceListItemEntity furCoat =
         createItem(ServiceCategoryType.FUR, "COAT", "Шуба", UnitOfMeasure.PIECE, 500000);
 
     // Fur requires special handling
@@ -163,7 +164,7 @@ public class CategoryBusinessRulesTest {
   @Test
   @DisplayName("Категорія: Фарбування текстильних виробів - знижки не застосовуються")
   void testDyeingNoDiscounts() {
-    PriceListItem dyeing =
+    PriceListItemEntity dyeing =
         createItem(
             ServiceCategoryType.DYEING, "DRESS", "Фарбування сукні", UnitOfMeasure.PIECE, 120000);
 
@@ -195,11 +196,11 @@ public class CategoryBusinessRulesTest {
     // Document states: 48 hours for standard, 14 days for leather
 
     // Standard textile - 48 hours base
-    PriceListItem textile =
+    PriceListItemEntity textile =
         createItem(ServiceCategoryType.CLOTHING, "ITEM", "Виріб", UnitOfMeasure.PIECE, 100000);
 
     // Leather - 14 days base
-    PriceListItem leather =
+    PriceListItemEntity leather =
         createItem(
             ServiceCategoryType.LEATHER, "ITEM", "Шкіряний виріб", UnitOfMeasure.PIECE, 200000);
 
@@ -227,9 +228,9 @@ public class CategoryBusinessRulesTest {
   @Test
   @DisplayName("Модифікатори обмежені категоріями")
   void testCategoryRestrictedModifiers() {
-    PriceListItem textile =
+    PriceListItemEntity textile =
         createItem(ServiceCategoryType.CLOTHING, "ITEM", "Текстиль", UnitOfMeasure.PIECE, 100000);
-    PriceListItem leather =
+    PriceListItemEntity leather =
         createItem(ServiceCategoryType.LEATHER, "ITEM", "Шкіра", UnitOfMeasure.PIECE, 200000);
 
     // Create textile-only modifier
@@ -249,12 +250,12 @@ public class CategoryBusinessRulesTest {
   @Test
   @DisplayName("Змішані замовлення з різними категоріями")
   void testMixedCategoryOrder() {
-    PriceListItem textile =
+    PriceListItemEntity textile =
         createItem(ServiceCategoryType.CLOTHING, "DRESS", "Сукня", UnitOfMeasure.PIECE, 80000);
-    PriceListItem laundry =
+    PriceListItemEntity laundry =
         createItem(
             ServiceCategoryType.LAUNDRY, "SHEETS", "Простирадла", UnitOfMeasure.KILOGRAM, 15000);
-    PriceListItem ironing =
+    PriceListItemEntity ironing =
         createItem(ServiceCategoryType.IRONING, "SHIRT", "Сорочка", UnitOfMeasure.PIECE, 5000);
 
     PriceCalculationRequest request = new PriceCalculationRequest();
@@ -302,13 +303,13 @@ public class CategoryBusinessRulesTest {
     // Created in individual tests as needed
   }
 
-  private PriceListItem createItem(
+  private PriceListItemEntity createItem(
       ServiceCategoryType categoryCode,
       String itemNumber,
       String name,
       UnitOfMeasure unit,
       Integer basePrice) {
-    PriceListItem item = new PriceListItem();
+    PriceListItemEntity item = new PriceListItemEntity();
     item.setCategoryCode(categoryCode);
     item.setCatalogNumber(Integer.parseInt(itemNumber.replaceAll("[^0-9]", "1")));
     item.setName(name);
@@ -320,12 +321,12 @@ public class CategoryBusinessRulesTest {
     return priceListItemRepository.save(item);
   }
 
-  private PriceModifier createModifier(
+  private PriceModifierEntity createModifier(
       String code, String name, Integer value, List<String> categories) {
-    PriceModifier modifier = new PriceModifier();
+    PriceModifierEntity modifier = new PriceModifierEntity();
     modifier.setCode(code);
     modifier.setName(name);
-    modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+    modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
     modifier.setValue(value);
     modifier.setCategoryRestrictions(categories);
     modifier.setActive(true);

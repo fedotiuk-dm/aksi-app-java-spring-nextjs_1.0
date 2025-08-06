@@ -17,7 +17,7 @@ import com.aksi.api.user.dto.UserBranchesResponse;
 import com.aksi.api.user.dto.UserDetail;
 import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
-import com.aksi.domain.user.User;
+import com.aksi.domain.user.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,35 +40,35 @@ public class UserServiceImpl implements UserService {
   // Query methods - delegate to UserQueryService
   @Override
   @Transactional(readOnly = true)
-  public Optional<User> findById(UUID id) {
+  public Optional<UserEntity> findById(UUID id) {
     return queryService.findById(id);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<User> findByUsername(String username) {
+  public Optional<UserEntity> findByUsername(String username) {
     return queryService.findByUsername(username);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<User> findByEmail(String email) {
+  public Optional<UserEntity> findByEmail(String email) {
     return queryService.findByEmail(email);
   }
 
   @Override
-  public boolean verifyPassword(User user, String password) {
-    return passwordEncoder.matches(password, user.getPasswordHash());
+  public boolean verifyPassword(UserEntity userEntityEntity, String password) {
+    return passwordEncoder.matches(password, userEntityEntity.getPasswordHash());
   }
 
   @Override
-  public void recordFailedLogin(User user) {
-    commandService.recordFailedLogin(user);
+  public void recordFailedLogin(UserEntity userEntityEntity) {
+    commandService.recordFailedLogin(userEntityEntity);
   }
 
   @Override
-  public void resetFailedLogins(User user) {
-    commandService.resetFailedLogins(user);
+  public void resetFailedLogins(UserEntity userEntityEntity) {
+    commandService.resetFailedLogins(userEntityEntity);
   }
 
   // API DTO methods

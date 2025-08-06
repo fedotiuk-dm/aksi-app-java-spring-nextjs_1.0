@@ -28,7 +28,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemModifier extends BaseEntity {
+public class ItemModifierEntity extends BaseEntity {
 
   public enum ModifierType {
     PERCENTAGE,
@@ -38,7 +38,7 @@ public class ItemModifier extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
-  private OrderItem orderItem;
+  private OrderItemEntity orderItemEntity;
 
   @Column(name = "modifier_code", nullable = false, length = 50)
   private String code;
@@ -60,14 +60,14 @@ public class ItemModifier extends BaseEntity {
   private String jexlFormula;
 
   // Convenience constructor for percentage/fixed modifiers
-  public ItemModifier(
-      OrderItem orderItem,
+  public ItemModifierEntity(
+      OrderItemEntity orderItemEntity,
       String code,
       String name,
       ModifierType type,
       Integer value,
       Integer appliedAmount) {
-    this.orderItem = orderItem;
+    this.orderItemEntity = orderItemEntity;
     this.code = code;
     this.name = name;
     this.type = type;
@@ -76,9 +76,13 @@ public class ItemModifier extends BaseEntity {
   }
 
   // Convenience constructor for formula modifiers
-  public ItemModifier(
-      OrderItem orderItem, String code, String name, String jexlFormula, Integer appliedAmount) {
-    this.orderItem = orderItem;
+  public ItemModifierEntity(
+      OrderItemEntity orderItemEntity,
+      String code,
+      String name,
+      String jexlFormula,
+      Integer appliedAmount) {
+    this.orderItemEntity = orderItemEntity;
     this.code = code;
     this.name = name;
     this.type = ModifierType.FORMULA;

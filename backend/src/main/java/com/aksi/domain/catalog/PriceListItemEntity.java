@@ -30,7 +30,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PriceListItem extends BaseEntity {
+public class PriceListItemEntity extends BaseEntity {
 
   @Column(name = "category_code", nullable = false, length = 30)
   @Enumerated(EnumType.STRING)

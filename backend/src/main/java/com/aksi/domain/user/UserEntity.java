@@ -36,7 +36,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(exclude = {"passwordHash", "roles", "branchAssignments"})
-public class User extends BaseEntity {
+public class UserEntity extends BaseEntity {
 
   @Column(name = "username", nullable = false, unique = true, length = 50)
   private String username;
@@ -71,6 +71,6 @@ public class User extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Set<UserRole> roles = new HashSet<>();
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<UserBranchAssignment> branchAssignments = new HashSet<>();
+  @OneToMany(mappedBy = "userEntityEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<UserBranchAssignmentEntity> branchAssignments = new HashSet<>();
 }

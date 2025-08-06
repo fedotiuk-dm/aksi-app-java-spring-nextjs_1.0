@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.aksi.api.service.dto.CreatePriceListItemRequest;
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.UpdatePriceListItemRequest;
-import com.aksi.domain.catalog.PriceListItem;
+import com.aksi.domain.catalog.PriceListItemEntity;
 import com.aksi.exception.BusinessValidationException;
 import com.aksi.repository.PriceListItemRepository;
 
@@ -84,7 +84,8 @@ public class PriceListItemValidationService {
    * @param existingItem Existing price list item
    * @throws BusinessValidationException if prices are invalid
    */
-  public void validateUpdatePrices(UpdatePriceListItemRequest request, PriceListItem existingItem) {
+  public void validateUpdatePrices(
+      UpdatePriceListItemRequest request, PriceListItemEntity existingItem) {
     // Only validate if prices are being updated
     if (request.getBasePrice() == null && request.getExpressPrice() == null) {
       return;

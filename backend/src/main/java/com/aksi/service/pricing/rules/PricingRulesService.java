@@ -3,7 +3,7 @@ package com.aksi.service.pricing.rules;
 import org.springframework.stereotype.Service;
 
 import com.aksi.api.service.dto.PriceListItemInfo;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.repository.PriceModifierRepository;
 import com.aksi.service.pricing.calculation.PriceCalculationService;
 
@@ -83,10 +83,10 @@ public class PricingRulesService {
    * @param modifierCode Modifier code
    * @return Modifier entity or null
    */
-  public PriceModifier getModifier(String modifierCode) {
+  public PriceModifierEntity getModifier(String modifierCode) {
     return priceModifierRepository
         .findByCode(modifierCode)
-        .filter(PriceModifier::isActive)
+        .filter(PriceModifierEntity::isActive)
         .orElse(null);
   }
 

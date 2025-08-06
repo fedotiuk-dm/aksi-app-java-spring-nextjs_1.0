@@ -3,7 +3,7 @@ package com.aksi.domain.order;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aksi.domain.catalog.PriceListItem;
+import com.aksi.domain.catalog.PriceListItemEntity;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
@@ -33,60 +33,60 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItem extends BaseEntity {
+public class OrderItemEntity extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_id", nullable = false)
-  private Order order;
+  private OrderEntity orderEntity;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "price_list_item_id", nullable = false)
-  private PriceListItem priceListItem;
+  private PriceListItemEntity priceListItemEntityEntity;
 
   @Column(name = "quantity", nullable = false)
   private Integer quantity;
 
   @OneToOne(
-      mappedBy = "orderItem",
+      mappedBy = "orderItemEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private ItemCharacteristics characteristics;
+  private ItemCharacteristicsEntity characteristics;
 
   @OneToMany(
-      mappedBy = "orderItem",
+      mappedBy = "orderItemEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<ItemStain> stains = new ArrayList<>();
+  private List<ItemStainEntity> stains = new ArrayList<>();
 
   @OneToMany(
-      mappedBy = "orderItem",
+      mappedBy = "orderItemEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<ItemDefect> defects = new ArrayList<>();
+  private List<ItemDefectEntity> defects = new ArrayList<>();
 
   @OneToMany(
-      mappedBy = "orderItem",
+      mappedBy = "orderItemEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<ItemRisk> risks = new ArrayList<>();
+  private List<ItemRiskEntity> risks = new ArrayList<>();
 
   @OneToMany(
-      mappedBy = "orderItem",
+      mappedBy = "orderItemEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<ItemPhoto> photos = new ArrayList<>();
+  private List<ItemPhotoEntity> photos = new ArrayList<>();
 
   @OneToMany(
-      mappedBy = "orderItem",
+      mappedBy = "orderItemEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<ItemModifier> modifiers = new ArrayList<>();
+  private List<ItemModifierEntity> modifiers = new ArrayList<>();
 
   // Pricing snapshot fields
   @Column(name = "base_price", nullable = false)
@@ -111,60 +111,60 @@ public class OrderItem extends BaseEntity {
   private boolean discountEligible = true;
 
   // Business methods
-  public void addStain(ItemStain stain) {
+  public void addStain(ItemStainEntity stain) {
     stains.add(stain);
-    stain.setOrderItem(this);
+    stain.setOrderItemEntity(this);
   }
 
-  public void removeStain(ItemStain stain) {
+  public void removeStain(ItemStainEntity stain) {
     stains.remove(stain);
-    stain.setOrderItem(null);
+    stain.setOrderItemEntity(null);
   }
 
-  public void addDefect(ItemDefect defect) {
+  public void addDefect(ItemDefectEntity defect) {
     defects.add(defect);
-    defect.setOrderItem(this);
+    defect.setOrderItemEntity(this);
   }
 
-  public void removeDefect(ItemDefect defect) {
+  public void removeDefect(ItemDefectEntity defect) {
     defects.remove(defect);
-    defect.setOrderItem(null);
+    defect.setOrderItemEntity(null);
   }
 
-  public void addRisk(ItemRisk risk) {
+  public void addRisk(ItemRiskEntity risk) {
     risks.add(risk);
-    risk.setOrderItem(this);
+    risk.setOrderItemEntity(this);
   }
 
-  public void removeRisk(ItemRisk risk) {
+  public void removeRisk(ItemRiskEntity risk) {
     risks.remove(risk);
-    risk.setOrderItem(null);
+    risk.setOrderItemEntity(null);
   }
 
-  public void addPhoto(ItemPhoto photo) {
+  public void addPhoto(ItemPhotoEntity photo) {
     photos.add(photo);
-    photo.setOrderItem(this);
+    photo.setOrderItemEntity(this);
   }
 
-  public void removePhoto(ItemPhoto photo) {
+  public void removePhoto(ItemPhotoEntity photo) {
     photos.remove(photo);
-    photo.setOrderItem(null);
+    photo.setOrderItemEntity(null);
   }
 
-  public void addModifier(ItemModifier modifier) {
+  public void addModifier(ItemModifierEntity modifier) {
     modifiers.add(modifier);
-    modifier.setOrderItem(this);
+    modifier.setOrderItemEntity(this);
   }
 
-  public void removeModifier(ItemModifier modifier) {
+  public void removeModifier(ItemModifierEntity modifier) {
     modifiers.remove(modifier);
-    modifier.setOrderItem(null);
+    modifier.setOrderItemEntity(null);
   }
 
-  public void setCharacteristics(ItemCharacteristics characteristics) {
+  public void setCharacteristics(ItemCharacteristicsEntity characteristics) {
     this.characteristics = characteristics;
     if (characteristics != null) {
-      characteristics.setOrderItem(this);
+      characteristics.setOrderItemEntity(this);
     }
   }
 }

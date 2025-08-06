@@ -3,7 +3,7 @@ package com.aksi.domain.order;
 import java.time.Instant;
 
 import com.aksi.domain.common.BaseEntity;
-import com.aksi.domain.user.User;
+import com.aksi.domain.user.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,7 +32,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemPhoto extends BaseEntity {
+public class ItemPhotoEntity extends BaseEntity {
 
   public enum PhotoType {
     GENERAL,
@@ -43,7 +43,7 @@ public class ItemPhoto extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
-  private OrderItem orderItem;
+  private OrderItemEntity orderItemEntity;
 
   @Column(name = "url", nullable = false, length = 500)
   private String url;
@@ -60,7 +60,7 @@ public class ItemPhoto extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "uploaded_by")
-  private User uploadedBy;
+  private UserEntity uploadedBy;
 
   @Column(name = "file_size")
   private Long fileSize;
@@ -72,9 +72,13 @@ public class ItemPhoto extends BaseEntity {
   private String originalFilename;
 
   // Convenience constructor
-  public ItemPhoto(
-      OrderItem orderItem, String url, PhotoType type, String description, User uploadedBy) {
-    this.orderItem = orderItem;
+  public ItemPhotoEntity(
+      OrderItemEntity orderItemEntity,
+      String url,
+      PhotoType type,
+      String description,
+      UserEntity uploadedBy) {
+    this.orderItemEntity = orderItemEntity;
     this.url = url;
     this.type = type;
     this.description = description;

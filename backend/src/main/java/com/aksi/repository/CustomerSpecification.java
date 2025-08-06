@@ -3,7 +3,7 @@ package com.aksi.repository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-import com.aksi.domain.customer.Customer;
+import com.aksi.domain.customer.CustomerEntity;
 
 /** Specifications for Customer entity queries */
 public class CustomerSpecification {
@@ -11,7 +11,7 @@ public class CustomerSpecification {
   private CustomerSpecification() {}
 
   /** Search by text in firstName, lastName, phonePrimary or email */
-  public static Specification<Customer> searchByText(String search) {
+  public static Specification<CustomerEntity> searchByText(String search) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(search)) {
         return cb.conjunction();
@@ -28,7 +28,7 @@ public class CustomerSpecification {
   }
 
   /** Filter by exact phone number */
-  public static Specification<Customer> hasPhone(String phone) {
+  public static Specification<CustomerEntity> hasPhone(String phone) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(phone)) {
         return cb.conjunction();
@@ -38,7 +38,7 @@ public class CustomerSpecification {
   }
 
   /** Filter by exact email (case-insensitive) */
-  public static Specification<Customer> hasEmail(String email) {
+  public static Specification<CustomerEntity> hasEmail(String email) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(email)) {
         return cb.conjunction();
@@ -48,7 +48,7 @@ public class CustomerSpecification {
   }
 
   /** Filter by exact discount card number */
-  public static Specification<Customer> hasDiscountCard(String discountCard) {
+  public static Specification<CustomerEntity> hasDiscountCard(String discountCard) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(discountCard)) {
         return cb.conjunction();
@@ -58,12 +58,12 @@ public class CustomerSpecification {
   }
 
   /** Filter only active customers */
-  public static Specification<Customer> isActive() {
+  public static Specification<CustomerEntity> isActive() {
     return (root, query, cb) -> cb.isTrue(root.get("active"));
   }
 
   /** Combine all search criteria */
-  public static Specification<Customer> searchCustomers(
+  public static Specification<CustomerEntity> searchCustomers(
       String search, String phone, String email, String discountCard) {
     return Specification.allOf(
         isActive(),

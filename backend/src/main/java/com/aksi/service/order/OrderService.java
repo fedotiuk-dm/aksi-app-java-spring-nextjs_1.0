@@ -16,7 +16,7 @@ import com.aksi.api.order.dto.PaymentInfo;
 import com.aksi.api.order.dto.PhotoType;
 import com.aksi.api.order.dto.UpdateItemCharacteristicsRequest;
 import com.aksi.api.order.dto.UpdateOrderStatusRequest;
-import com.aksi.domain.order.Order;
+import com.aksi.domain.order.OrderEntity;
 
 /** Service interface for managing orders */
 public interface OrderService {
@@ -59,7 +59,7 @@ public interface OrderService {
    */
   Page<OrderInfo> listOrders(
       UUID customerId,
-      Order.OrderStatus status,
+      OrderEntity.OrderStatus status,
       UUID branchId,
       Instant dateFrom,
       Instant dateTo,

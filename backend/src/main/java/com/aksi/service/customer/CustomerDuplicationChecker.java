@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import com.aksi.domain.customer.Customer;
+import com.aksi.domain.customer.CustomerEntity;
 import com.aksi.exception.ConflictException;
 import com.aksi.repository.CustomerRepository;
 import com.aksi.repository.CustomerSpecification;
@@ -153,28 +153,29 @@ public class CustomerDuplicationChecker {
   /**
    * Check all duplicates for update operation
    *
-   * @param customer Existing customer
+   * @param customerEntity Existing customer
    * @param newPhone New phone number (optional)
    * @param newEmail New email (optional)
    * @param newDiscountCard New discount card number (optional)
    * @throws ConflictException if any duplicate found
    */
   public void checkForUpdate(
-      Customer customer, String newPhone, String newEmail, String newDiscountCard) {
-    UUID customerId = customer.getId();
+      CustomerEntity customerEntity, String newPhone, String newEmail, String newDiscountCard) {
+    UUID customerId = customerEntity.getId();
 
     // Check phone if changed
-    if (newPhone != null && !newPhone.equals(customer.getPhonePrimary())) {
+    if (newPhone != null && !newPhone.equals(customerEntity.getPhonePrimary())) {
       checkPhoneForUpdate(newPhone, customerId);
     }
 
     // Check email if changed
-    if (newEmail != null && !newEmail.equals(customer.getEmail())) {
+    if (newEmail != null && !newEmail.equals(customerEntity.getEmail())) {
       checkEmailForUpdate(newEmail, customerId);
     }
 
     // Check discount card if changed
-    if (newDiscountCard != null && !newDiscountCard.equals(customer.getDiscountCardNumber())) {
+    if (newDiscountCard != null
+        && !newDiscountCard.equals(customerEntity.getDiscountCardNumber())) {
       checkDiscountCardForUpdate(newDiscountCard, customerId);
     }
   }

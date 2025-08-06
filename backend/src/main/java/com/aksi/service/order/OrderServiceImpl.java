@@ -25,19 +25,19 @@ import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
-import com.aksi.domain.branch.Branch;
-import com.aksi.domain.cart.Cart;
+import com.aksi.domain.branch.BranchEntity;
+import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
-import com.aksi.domain.cart.CartItemModifier;
-import com.aksi.domain.order.ItemCharacteristics;
-import com.aksi.domain.order.ItemDefect;
-import com.aksi.domain.order.ItemPhoto;
-import com.aksi.domain.order.ItemRisk;
-import com.aksi.domain.order.ItemStain;
-import com.aksi.domain.order.Order;
-import com.aksi.domain.order.OrderItem;
-import com.aksi.domain.order.OrderPayment;
-import com.aksi.domain.user.User;
+import com.aksi.domain.cart.CartItemModifierEntity;
+import com.aksi.domain.order.ItemCharacteristicsEntity;
+import com.aksi.domain.order.ItemDefectEntity;
+import com.aksi.domain.order.ItemPhotoEntity;
+import com.aksi.domain.order.ItemRiskEntity;
+import com.aksi.domain.order.ItemStainEntity;
+import com.aksi.domain.order.OrderEntity;
+import com.aksi.domain.order.OrderItemEntity;
+import com.aksi.domain.order.OrderPaymentEntity;
+import com.aksi.domain.user.UserEntity;
 import com.aksi.exception.BusinessValidationException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.OrderMapper;
@@ -80,94 +80,97 @@ public class OrderServiceImpl implements OrderService {
     log.debug("Creating order from cart: {}", request.getCartId());
 
     // Validate and get cart
-    Cart cart =
+    CartEntity cartEntityEntity =
         cartRepository
             .findById(request.getCartId())
             .orElseThrow(() -> new NotFoundException("Cart not found: " + request.getCartId()));
 
-    if (cart.isExpired()) {
+    if (cartEntityEntity.isExpired()) {
       throw new BusinessValidationException("Cart has expired");
     }
 
-    if (cart.getItems().isEmpty()) {
+    if (cartEntityEntity.getItems().isEmpty()) {
       throw new BusinessValidationException("Cannot create order from empty cart");
     }
 
     // Validate branch
-    Branch branch =
+    BranchEntity branchEntity =
         branchRepository
             .findById(request.getBranchId())
             .orElseThrow(() -> new NotFoundException("Branch not found: " + request.getBranchId()));
 
-    if (!branch.isActive()) {
+    if (!branchEntity.isActive()) {
       throw new BusinessValidationException("Branch is not active");
     }
 
     // Get current user
-    User currentUser = getCurrentUser();
+    UserEntity currentUserEntityEntity = getCurrentUser();
 
     // Calculate pricing
-    PriceCalculationResponse pricing = calculateCartPricing(cart);
+    PriceCalculationResponse pricing = calculateCartPricing(cartEntityEntity);
 
     // Create order
-    Order order = new Order();
-    order.setOrderNumber(generateOrderNumber());
-    order.setCustomer(cart.getCustomer());
-    order.setBranch(branch);
-    order.setUniqueLabel(request.getUniqueLabel());
-    order.setStatus(Order.OrderStatus.PENDING);
-    order.setNotes(request.getNotes());
-    order.setCustomerSignature(request.getCustomerSignature());
-    order.setCreatedBy(currentUser);
-    order.setTermsAccepted(request.getTermsAccepted() != null ? request.getTermsAccepted() : false);
-    order.setExpectedCompletionDate(calculateExpectedCompletionDate(cart));
+    OrderEntity orderEntity = new OrderEntity();
+    orderEntity.setOrderNumber(generateOrderNumber());
+    orderEntity.setCustomerEntity(cartEntityEntity.getCustomerEntity());
+    orderEntity.setBranchEntity(branchEntity);
+    orderEntity.setUniqueLabel(request.getUniqueLabel());
+    orderEntity.setStatus(OrderEntity.OrderStatus.PENDING);
+    orderEntity.setNotes(request.getNotes());
+    orderEntity.setCustomerSignature(request.getCustomerSignature());
+    orderEntity.setCreatedBy(currentUserEntityEntity);
+    orderEntity.setTermsAccepted(
+        request.getTermsAccepted() != null ? request.getTermsAccepted() : false);
+    orderEntity.setExpectedCompletionDate(calculateExpectedCompletionDate(cartEntityEntity));
 
     // Set pricing snapshot
-    order.setItemsSubtotal(pricing.getTotals().getItemsSubtotal());
-    order.setUrgencyAmount(pricing.getTotals().getUrgencyAmount());
-    order.setDiscountAmount(pricing.getTotals().getDiscountAmount());
-    order.setDiscountApplicableAmount(pricing.getTotals().getDiscountApplicableAmount());
-    order.setTotalAmount(pricing.getTotals().getTotal());
+    orderEntity.setItemsSubtotal(pricing.getTotals().getItemsSubtotal());
+    orderEntity.setUrgencyAmount(pricing.getTotals().getUrgencyAmount());
+    orderEntity.setDiscountAmount(pricing.getTotals().getDiscountAmount());
+    orderEntity.setDiscountApplicableAmount(pricing.getTotals().getDiscountApplicableAmount());
+    orderEntity.setTotalAmount(pricing.getTotals().getTotal());
 
     // Convert cart items to order items
-    for (CartItem cartItem : cart.getItems()) {
-      OrderItem orderItem = convertCartItemToOrderItem(cartItem, order, pricing);
-      order.addItem(orderItem);
+    for (CartItem cartItem : cartEntityEntity.getItems()) {
+      OrderItemEntity orderItemEntity = convertCartItemToOrderItem(cartItem, orderEntity, pricing);
+      orderEntity.addItem(orderItemEntity);
     }
 
     // Save order
-    order = orderRepository.save(order);
+    orderEntity = orderRepository.save(orderEntity);
 
     // Clear cart after successful order creation
-    cartRepository.delete(cart);
+    cartRepository.delete(cartEntityEntity);
 
     log.info(
-        "Created order {} for customer {}", order.getOrderNumber(), order.getCustomer().getId());
-    return orderMapper.toOrderInfo(order);
+        "Created order {} for customer {}",
+        orderEntity.getOrderNumber(),
+        orderEntity.getCustomerEntity().getId());
+    return orderMapper.toOrderInfo(orderEntity);
   }
 
   @Override
   public OrderInfo getOrder(UUID orderId) {
-    Order order =
+    OrderEntity orderEntity =
         orderRepository
             .findById(orderId)
             .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
-    return orderMapper.toOrderInfo(order);
+    return orderMapper.toOrderInfo(orderEntity);
   }
 
   @Override
   public OrderInfo getOrderByNumber(String orderNumber) {
-    Order order =
+    OrderEntity orderEntity =
         orderRepository
             .findByOrderNumber(orderNumber)
             .orElseThrow(() -> new NotFoundException("Order not found: " + orderNumber));
-    return orderMapper.toOrderInfo(order);
+    return orderMapper.toOrderInfo(orderEntity);
   }
 
   @Override
   public Page<OrderInfo> listOrders(
       UUID customerId,
-      Order.OrderStatus status,
+      OrderEntity.OrderStatus status,
       UUID branchId,
       Instant dateFrom,
       Instant dateTo,
@@ -183,26 +186,31 @@ public class OrderServiceImpl implements OrderService {
   @Override
   @Transactional
   public OrderInfo updateOrderStatus(UUID orderId, UpdateOrderStatusRequest request) {
-    Order order =
+    OrderEntity orderEntity =
         orderRepository
             .findById(orderId)
             .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
-    Order.OrderStatus oldStatus = order.getStatus();
-    Order.OrderStatus newStatus = Order.OrderStatus.valueOf(request.getStatus().name());
+    OrderEntity.OrderStatus oldStatus = orderEntity.getStatus();
+    OrderEntity.OrderStatus newStatus = OrderEntity.OrderStatus.valueOf(request.getStatus().name());
 
     validateStatusTransition(oldStatus, newStatus);
 
-    order.setStatus(newStatus);
+    orderEntity.setStatus(newStatus);
 
-    if (newStatus == Order.OrderStatus.COMPLETED && order.getActualCompletionDate() == null) {
-      order.setActualCompletionDate(Instant.now());
+    if (newStatus == OrderEntity.OrderStatus.COMPLETED
+        && orderEntity.getActualCompletionDate() == null) {
+      orderEntity.setActualCompletionDate(Instant.now());
     }
 
-    order = orderRepository.save(order);
+    orderEntity = orderRepository.save(orderEntity);
 
-    log.info("Updated order {} status from {} to {}", order.getOrderNumber(), oldStatus, newStatus);
-    return orderMapper.toOrderInfo(order);
+    log.info(
+        "Updated order {} status from {} to {}",
+        orderEntity.getOrderNumber(),
+        oldStatus,
+        newStatus);
+    return orderMapper.toOrderInfo(orderEntity);
   }
 
   @Override
@@ -210,72 +218,74 @@ public class OrderServiceImpl implements OrderService {
   public OrderItemInfo updateItemCharacteristics(
       UUID orderId, UUID itemId, UpdateItemCharacteristicsRequest request) {
 
-    Order order =
+    OrderEntity orderEntity =
         orderRepository
             .findById(orderId)
             .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
-    if (!order.canBeModified()) {
+    if (!orderEntity.canBeModified()) {
       throw new BusinessValidationException("Order cannot be modified in current status");
     }
 
-    OrderItem orderItem =
-        order.getItems().stream()
+    OrderItemEntity orderItemEntity =
+        orderEntity.getItems().stream()
             .filter(item -> item.getId().equals(itemId))
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Order item not found: " + itemId));
 
     // Update characteristics
     if (request.getCharacteristics() != null) {
-      updateOrderItemCharacteristics(orderItem, request.getCharacteristics());
+      updateOrderItemCharacteristics(orderItemEntity, request.getCharacteristics());
     }
 
     // Update stains
     if (request.getStains() != null) {
-      updateOrderItemStains(orderItem, request.getStains());
+      updateOrderItemStains(orderItemEntity, request.getStains());
     }
 
     // Update defects
     if (request.getDefects() != null) {
-      updateOrderItemDefects(orderItem, request.getDefects());
+      updateOrderItemDefects(orderItemEntity, request.getDefects());
     }
 
     // Update risks
     if (request.getRisks() != null) {
-      updateOrderItemRisks(orderItem, request.getRisks());
+      updateOrderItemRisks(orderItemEntity, request.getRisks());
     }
 
-    orderRepository.save(order);
+    orderRepository.save(orderEntity);
 
     log.info(
-        "Updated characteristics for order item {} in order {}", itemId, order.getOrderNumber());
-    return orderMapper.toOrderItemInfo(orderItem);
+        "Updated characteristics for order item {} in order {}",
+        itemId,
+        orderEntity.getOrderNumber());
+    return orderMapper.toOrderItemInfo(orderItemEntity);
   }
 
   @Override
   @Transactional
   public ItemPhotoInfo uploadItemPhoto(
       UUID orderId, UUID itemId, MultipartFile file, PhotoType photoType, String photoDescription) {
-    Order order =
+    OrderEntity orderEntity =
         orderRepository
             .findById(orderId)
             .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
-    OrderItem orderItem =
-        order.getItems().stream()
+    OrderItemEntity orderItemEntity =
+        orderEntity.getItems().stream()
             .filter(item -> item.getId().equals(itemId))
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Order item not found: " + itemId));
 
     // TODO: Implement file upload logic
     // For now, create a placeholder photo
-    ItemPhoto photo = new ItemPhoto();
-    photo.setOrderItem(orderItem);
+    ItemPhotoEntity photo = new ItemPhotoEntity();
+    photo.setOrderItemEntity(orderItemEntity);
     photo.setUrl("/photos/" + UUID.randomUUID() + ".jpg"); // Placeholder URL
     photo.setType(
         photoType != null
-            ? ItemPhoto.PhotoType.valueOf(photoType.name())
-            : ItemPhoto.PhotoType.GENERAL);
+            ? ItemPhotoEntity.PhotoType.valueOf(photoType.name())
+            : ItemPhotoEntity.PhotoType.GENERAL);
     photo.setDescription(photoDescription != null ? photoDescription : "Uploaded photo");
     photo.setUploadedBy(getCurrentUser());
     photo.setUploadedAt(Instant.now());
@@ -283,65 +293,68 @@ public class OrderServiceImpl implements OrderService {
     photo.setContentType("image/jpeg"); // TODO: Get from request
     photo.setFileSize(1024L); // TODO: Get from request
 
-    orderItem.addPhoto(photo);
-    orderRepository.save(order);
+    orderItemEntity.addPhoto(photo);
+    orderRepository.save(orderEntity);
 
-    log.info("Uploaded photo for order item {} in order {}", itemId, order.getOrderNumber());
+    log.info("Uploaded photo for order item {} in order {}", itemId, orderEntity.getOrderNumber());
     return orderMapper.toItemPhotoInfo(photo);
   }
 
   @Override
   @Transactional
   public void deleteItemPhoto(UUID orderId, UUID itemId, UUID photoId) {
-    Order order =
+    OrderEntity orderEntity =
         orderRepository
             .findById(orderId)
             .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
-    OrderItem orderItem =
-        order.getItems().stream()
+    OrderItemEntity orderItemEntity =
+        orderEntity.getItems().stream()
             .filter(item -> item.getId().equals(itemId))
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Order item not found: " + itemId));
 
-    ItemPhoto photo =
-        orderItem.getPhotos().stream()
+    ItemPhotoEntity photo =
+        orderItemEntity.getPhotos().stream()
             .filter(p -> p.getId().equals(photoId))
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Photo not found: " + photoId));
 
-    orderItem.removePhoto(photo);
-    orderRepository.save(order);
+    orderItemEntity.removePhoto(photo);
+    orderRepository.save(orderEntity);
 
     log.info(
-        "Deleted photo {} from order item {} in order {}", photoId, itemId, order.getOrderNumber());
+        "Deleted photo {} from order item {} in order {}",
+        photoId,
+        itemId,
+        orderEntity.getOrderNumber());
   }
 
   @Override
   public byte[] getOrderReceipt(UUID orderId) {
-    Order order =
+    OrderEntity orderEntity =
         orderRepository
             .findById(orderId)
             .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
     // TODO: Implement PDF generation
-    log.info("Generating receipt for order {}", order.getOrderNumber());
+    log.info("Generating receipt for order {}", orderEntity.getOrderNumber());
     return "PDF content placeholder".getBytes();
   }
 
   @Override
   @Transactional
   public PaymentInfo addOrderPayment(UUID orderId, AddPaymentRequest request) {
-    Order order =
+    OrderEntity orderEntity =
         orderRepository
             .findById(orderId)
             .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
 
-    if (order.isCancelled()) {
+    if (orderEntity.isCancelled()) {
       throw new BusinessValidationException("Cannot add payment to cancelled order");
     }
 
-    Integer remainingBalance = order.getBalanceDue();
+    Integer remainingBalance = orderEntity.getBalanceDue();
     if (request.getAmount() > remainingBalance) {
       throw new BusinessValidationException(
           String.format(
@@ -349,17 +362,17 @@ public class OrderServiceImpl implements OrderService {
               request.getAmount(), remainingBalance));
     }
 
-    OrderPayment payment = new OrderPayment();
-    payment.setOrder(order);
+    OrderPaymentEntity payment = new OrderPaymentEntity();
+    payment.setOrderEntity(orderEntity);
     payment.setAmount(request.getAmount());
-    payment.setMethod(OrderPayment.PaymentMethod.valueOf(request.getMethod().name()));
+    payment.setMethod(OrderPaymentEntity.PaymentMethod.valueOf(request.getMethod().name()));
     payment.setPaidBy(getCurrentUser());
     payment.setPaidAt(Instant.now());
 
-    order.addPayment(payment);
-    orderRepository.save(order);
+    orderEntity.addPayment(payment);
+    orderRepository.save(orderEntity);
 
-    log.info("Added payment of {} to order {}", request.getAmount(), order.getOrderNumber());
+    log.info("Added payment of {} to order {}", request.getAmount(), orderEntity.getOrderNumber());
     return orderMapper.toPaymentInfo(payment);
   }
 
@@ -388,21 +401,21 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public boolean canModifyOrder(UUID orderId) {
-    return orderRepository.findById(orderId).map(Order::canBeModified).orElse(false);
+    return orderRepository.findById(orderId).map(OrderEntity::canBeModified).orElse(false);
   }
 
   @Override
   public Integer calculateOrderTotal(UUID orderId) {
     return orderRepository
         .findById(orderId)
-        .map(Order::getTotalAmount)
+        .map(OrderEntity::getTotalAmount)
         .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
   }
 
   @Override
   public Page<OrderInfo> getCustomerOrderHistory(UUID customerId, Pageable pageable) {
     return orderRepository
-        .findByCustomerIdOrderByCreatedAtDesc(customerId, pageable)
+        .findByCustomerEntityIdOrderByCreatedAtDesc(customerId, pageable)
         .map(orderMapper::toOrderInfo);
   }
 
@@ -421,7 +434,7 @@ public class OrderServiceImpl implements OrderService {
 
   // Private helper methods
 
-  private User getCurrentUser() {
+  private UserEntity getCurrentUser() {
     try {
       UUID userId = SecurityUtils.getCurrentUserId();
       return userRepository.findById(userId).orElse(null); // Allow null for system operations
@@ -431,14 +444,14 @@ public class OrderServiceImpl implements OrderService {
     }
   }
 
-  private PriceCalculationResponse calculateCartPricing(Cart cart) {
+  private PriceCalculationResponse calculateCartPricing(CartEntity cartEntityEntity) {
     PriceCalculationRequest pricingRequest = new PriceCalculationRequest();
 
     // Convert cart items to pricing calculation items
     List<PriceCalculationItem> pricingItems = new ArrayList<>();
-    for (CartItem cartItem : cart.getItems()) {
+    for (CartItem cartItem : cartEntityEntity.getItems()) {
       PriceCalculationItem pricingItem = new PriceCalculationItem();
-      pricingItem.setPriceListItemId(cartItem.getPriceListItem().getId());
+      pricingItem.setPriceListItemId(cartItem.getPriceListItemEntityEntity().getId());
       pricingItem.setQuantity(cartItem.getQuantity());
 
       // Add characteristics if present
@@ -462,7 +475,7 @@ public class OrderServiceImpl implements OrderService {
 
       // Add modifiers
       List<String> modifierCodes = new ArrayList<>();
-      for (CartItemModifier modifier : cartItem.getModifiers()) {
+      for (CartItemModifierEntity modifier : cartItem.getModifiers()) {
         modifierCodes.add(modifier.getCode());
       }
       pricingItem.setModifierCodes(modifierCodes);
@@ -475,24 +488,24 @@ public class OrderServiceImpl implements OrderService {
     GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
 
     // Set urgency type
-    if (cart.getUrgencyType() != null) {
+    if (cartEntityEntity.getUrgencyType() != null) {
       try {
         globalModifiers.setUrgencyType(
-            GlobalPriceModifiers.UrgencyTypeEnum.fromValue(cart.getUrgencyType()));
+            GlobalPriceModifiers.UrgencyTypeEnum.fromValue(cartEntityEntity.getUrgencyType()));
       } catch (IllegalArgumentException e) {
-        log.warn("Invalid urgency type: {}, using NORMAL", cart.getUrgencyType());
+        log.warn("Invalid urgency type: {}, using NORMAL", cartEntityEntity.getUrgencyType());
         globalModifiers.setUrgencyType(GlobalPriceModifiers.UrgencyTypeEnum.NORMAL);
       }
     }
 
     // Set discount type
-    if (cart.getDiscountType() != null) {
+    if (cartEntityEntity.getDiscountType() != null) {
       try {
         globalModifiers.setDiscountType(
-            GlobalPriceModifiers.DiscountTypeEnum.fromValue(cart.getDiscountType()));
-        globalModifiers.setDiscountPercentage(cart.getDiscountPercentage());
+            GlobalPriceModifiers.DiscountTypeEnum.fromValue(cartEntityEntity.getDiscountType()));
+        globalModifiers.setDiscountPercentage(cartEntityEntity.getDiscountPercentage());
       } catch (IllegalArgumentException e) {
-        log.warn("Invalid discount type: {}, using NONE", cart.getDiscountType());
+        log.warn("Invalid discount type: {}, using NONE", cartEntityEntity.getDiscountType());
         globalModifiers.setDiscountType(GlobalPriceModifiers.DiscountTypeEnum.NONE);
       }
     }
@@ -502,79 +515,87 @@ public class OrderServiceImpl implements OrderService {
     return pricingService.calculatePrice(pricingRequest);
   }
 
-  private Instant calculateExpectedCompletionDate(Cart cart) {
+  private Instant calculateExpectedCompletionDate(CartEntity cartEntityEntity) {
     Instant baseDate = Instant.now().plusSeconds((long) defaultCompletionHours * 3600);
 
     // Adjust based on urgency
-    if ("EXPRESS_24H".equals(cart.getUrgencyType())) {
+    if ("EXPRESS_24H".equals(cartEntityEntity.getUrgencyType())) {
       return Instant.now().plusSeconds(24 * 3600);
-    } else if ("EXPRESS_48H".equals(cart.getUrgencyType())) {
+    } else if ("EXPRESS_48H".equals(cartEntityEntity.getUrgencyType())) {
       return Instant.now().plusSeconds(48 * 3600);
     }
 
     return baseDate;
   }
 
-  private OrderItem convertCartItemToOrderItem(
-      CartItem cartItem, Order order, PriceCalculationResponse pricing) {
-    OrderItem orderItem = new OrderItem();
-    orderItem.setOrder(order);
-    orderItem.setPriceListItem(cartItem.getPriceListItem());
-    orderItem.setQuantity(cartItem.getQuantity());
+  private OrderItemEntity convertCartItemToOrderItem(
+      CartItem cartItem, OrderEntity orderEntity, PriceCalculationResponse pricing) {
+    OrderItemEntity orderItemEntity = new OrderItemEntity();
+    orderItemEntity.setOrderEntity(orderEntity);
+    orderItemEntity.setPriceListItemEntityEntity(cartItem.getPriceListItemEntityEntity());
+    orderItemEntity.setQuantity(cartItem.getQuantity());
 
     // Find the corresponding calculated price
     var calculatedPrice =
         pricing.getItems().stream()
-            .filter(item -> item.getPriceListItemId().equals(cartItem.getPriceListItem().getId()))
+            .filter(
+                item ->
+                    item.getPriceListItemId()
+                        .equals(cartItem.getPriceListItemEntityEntity().getId()))
             .findFirst()
             .orElseThrow(
                 () ->
                     new IllegalStateException(
-                        "No pricing found for item: " + cartItem.getPriceListItem().getId()));
+                        "No pricing found for item: "
+                            + cartItem.getPriceListItemEntityEntity().getId()));
 
     // Map pricing details
-    orderItem.setBasePrice(calculatedPrice.getBasePrice());
-    orderItem.setModifiersTotalAmount(
+    orderItemEntity.setBasePrice(calculatedPrice.getBasePrice());
+    orderItemEntity.setModifiersTotalAmount(
         calculatedPrice.getCalculations().getModifiersTotal() != null
             ? calculatedPrice.getCalculations().getModifiersTotal()
             : 0);
-    orderItem.setSubtotal(calculatedPrice.getCalculations().getSubtotal());
-    orderItem.setUrgencyAmount(calculatedPrice.getCalculations().getUrgencyModifier().getAmount());
-    orderItem.setDiscountAmount(
+    orderItemEntity.setSubtotal(calculatedPrice.getCalculations().getSubtotal());
+    orderItemEntity.setUrgencyAmount(
+        calculatedPrice.getCalculations().getUrgencyModifier().getAmount());
+    orderItemEntity.setDiscountAmount(
         calculatedPrice.getCalculations().getDiscountModifier().getAmount());
-    orderItem.setTotalAmount(calculatedPrice.getTotal());
-    orderItem.setDiscountEligible(
+    orderItemEntity.setTotalAmount(calculatedPrice.getTotal());
+    orderItemEntity.setDiscountEligible(
         calculatedPrice.getCalculations().getDiscountEligible() != null
             ? calculatedPrice.getCalculations().getDiscountEligible()
             : true);
 
     // Map characteristics if present
     if (cartItem.getCharacteristics() != null) {
-      ItemCharacteristics characteristics = new ItemCharacteristics();
-      characteristics.setOrderItem(orderItem);
+      ItemCharacteristicsEntity characteristics = new ItemCharacteristicsEntity();
+      characteristics.setOrderItemEntity(orderItemEntity);
       characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());
       characteristics.setColor(cartItem.getCharacteristics().getColor());
       characteristics.setFiller(cartItem.getCharacteristics().getFiller());
       if (cartItem.getCharacteristics().getFillerCondition() != null) {
         characteristics.setFillerCondition(
-            ItemCharacteristics.FillerCondition.valueOf(
+            ItemCharacteristicsEntity.FillerCondition.valueOf(
                 cartItem.getCharacteristics().getFillerCondition()));
       }
       characteristics.setWearLevel(cartItem.getCharacteristics().getWearLevel());
-      orderItem.setCharacteristics(characteristics);
+      orderItemEntity.setCharacteristics(characteristics);
     }
 
-    return orderItem;
+    return orderItemEntity;
   }
 
-  private void validateStatusTransition(Order.OrderStatus from, Order.OrderStatus to) {
+  private void validateStatusTransition(OrderEntity.OrderStatus from, OrderEntity.OrderStatus to) {
     // Define valid transitions
     boolean isValidTransition =
         switch (from) {
-          case PENDING -> to == Order.OrderStatus.ACCEPTED || to == Order.OrderStatus.CANCELLED;
-          case ACCEPTED -> to == Order.OrderStatus.IN_PROGRESS || to == Order.OrderStatus.CANCELLED;
-          case IN_PROGRESS -> to == Order.OrderStatus.READY || to == Order.OrderStatus.CANCELLED;
-          case READY -> to == Order.OrderStatus.COMPLETED;
+          case PENDING ->
+              to == OrderEntity.OrderStatus.ACCEPTED || to == OrderEntity.OrderStatus.CANCELLED;
+          case ACCEPTED ->
+              to == OrderEntity.OrderStatus.IN_PROGRESS || to == OrderEntity.OrderStatus.CANCELLED;
+          case IN_PROGRESS ->
+              to == OrderEntity.OrderStatus.READY || to == OrderEntity.OrderStatus.CANCELLED;
+          case READY -> to == OrderEntity.OrderStatus.COMPLETED;
           case COMPLETED, CANCELLED -> false; // Terminal states
         };
 
@@ -585,20 +606,21 @@ public class OrderServiceImpl implements OrderService {
   }
 
   private void updateOrderItemCharacteristics(
-      OrderItem orderItem, com.aksi.api.order.dto.ItemCharacteristics characteristics) {
-    if (orderItem.getCharacteristics() == null) {
-      orderItem.setCharacteristics(new ItemCharacteristics());
-      orderItem.getCharacteristics().setOrderItem(orderItem);
+      OrderItemEntity orderItemEntity, com.aksi.api.order.dto.ItemCharacteristics characteristics) {
+    if (orderItemEntity.getCharacteristics() == null) {
+      orderItemEntity.setCharacteristics(new ItemCharacteristicsEntity());
+      orderItemEntity.getCharacteristics().setOrderItemEntity(orderItemEntity);
     }
 
-    ItemCharacteristics itemChar = orderItem.getCharacteristics();
+    ItemCharacteristicsEntity itemChar = orderItemEntity.getCharacteristics();
     itemChar.setMaterial(characteristics.getMaterial());
     itemChar.setColor(characteristics.getColor());
     itemChar.setFiller(characteristics.getFiller());
 
     if (characteristics.getFillerCondition() != null) {
       itemChar.setFillerCondition(
-          ItemCharacteristics.FillerCondition.valueOf(characteristics.getFillerCondition().name()));
+          ItemCharacteristicsEntity.FillerCondition.valueOf(
+              characteristics.getFillerCondition().name()));
     }
 
     if (characteristics.getWearLevel() != null) {
@@ -607,47 +629,47 @@ public class OrderServiceImpl implements OrderService {
   }
 
   private void updateOrderItemStains(
-      OrderItem orderItem, List<com.aksi.api.order.dto.ItemStain> stains) {
+      OrderItemEntity orderItemEntity, List<com.aksi.api.order.dto.ItemStain> stains) {
     // Clear existing stains
-    orderItem.getStains().clear();
+    orderItemEntity.getStains().clear();
 
     // Add new stains
     for (var stainDto : stains) {
-      ItemStain stain = new ItemStain();
-      stain.setOrderItem(orderItem);
-      stain.setType(ItemStain.StainType.valueOf(stainDto.getType().name()));
+      ItemStainEntity stain = new ItemStainEntity();
+      stain.setOrderItemEntity(orderItemEntity);
+      stain.setType(ItemStainEntity.StainType.valueOf(stainDto.getType().name()));
       stain.setDescription(stainDto.getDescription());
-      orderItem.addStain(stain);
+      orderItemEntity.addStain(stain);
     }
   }
 
   private void updateOrderItemDefects(
-      OrderItem orderItem, List<com.aksi.api.order.dto.ItemDefect> defects) {
+      OrderItemEntity orderItemEntity, List<com.aksi.api.order.dto.ItemDefect> defects) {
     // Clear existing defects
-    orderItem.getDefects().clear();
+    orderItemEntity.getDefects().clear();
 
     // Add new defects
     for (var defectDto : defects) {
-      ItemDefect defect = new ItemDefect();
-      defect.setOrderItem(orderItem);
-      defect.setType(ItemDefect.DefectType.valueOf(defectDto.getType().name()));
+      ItemDefectEntity defect = new ItemDefectEntity();
+      defect.setOrderItemEntity(orderItemEntity);
+      defect.setType(ItemDefectEntity.DefectType.valueOf(defectDto.getType().name()));
       defect.setDescription(defectDto.getDescription());
-      orderItem.addDefect(defect);
+      orderItemEntity.addDefect(defect);
     }
   }
 
   private void updateOrderItemRisks(
-      OrderItem orderItem, List<com.aksi.api.order.dto.ItemRisk> risks) {
+      OrderItemEntity orderItemEntity, List<com.aksi.api.order.dto.ItemRisk> risks) {
     // Clear existing risks
-    orderItem.getRisks().clear();
+    orderItemEntity.getRisks().clear();
 
     // Add new risks
     for (var riskDto : risks) {
-      ItemRisk risk = new ItemRisk();
-      risk.setOrderItem(orderItem);
-      risk.setType(ItemRisk.RiskType.valueOf(riskDto.getType().name()));
+      ItemRiskEntity risk = new ItemRiskEntity();
+      risk.setOrderItemEntity(orderItemEntity);
+      risk.setType(ItemRiskEntity.RiskType.valueOf(riskDto.getType().name()));
       risk.setDescription(riskDto.getDescription());
-      orderItem.addRisk(risk);
+      orderItemEntity.addRisk(risk);
     }
   }
 }

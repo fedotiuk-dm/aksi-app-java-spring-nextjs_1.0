@@ -24,7 +24,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Branch extends BaseEntity {
+public class BranchEntity extends BaseEntity {
 
   @Column(name = "name", nullable = false)
   private String name;

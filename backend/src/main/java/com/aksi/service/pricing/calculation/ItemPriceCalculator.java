@@ -11,7 +11,7 @@ import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.pricing.dto.ItemPriceCalculation;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.service.dto.PriceListItemInfo;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.service.pricing.rules.PricingRulesService;
 
 import lombok.RequiredArgsConstructor;
@@ -138,7 +138,7 @@ public class ItemPriceCalculator {
   }
 
   private AppliedModifier applyModifier(String modifierCode, int baseAmount, int quantity) {
-    PriceModifier modifier = pricingRulesService.getModifier(modifierCode);
+    PriceModifierEntity modifier = pricingRulesService.getModifier(modifierCode);
     if (modifier == null) {
       log.warn("Modifier not found: {}", modifierCode);
       return null;

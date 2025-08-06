@@ -11,19 +11,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.aksi.domain.cart.Cart;
+import com.aksi.domain.cart.CartEntity;
 
 /** Repository for Cart entity */
 @Repository
-public interface CartRepository extends JpaRepository<Cart, UUID>, JpaSpecificationExecutor<Cart> {
+public interface CartRepository
+    extends JpaRepository<CartEntity, UUID>, JpaSpecificationExecutor<CartEntity> {
 
   /** Find active cart by customer ID */
-  @Query("SELECT c FROM Cart c WHERE c.customer.id = :customerId AND c.expiresAt > :now")
-  Optional<Cart> findActiveByCustomerId(
+  @Query(
+      "SELECT c FROM CartEntity c WHERE c.customerEntity.id = :customerId AND c.expiresAt > :now")
+  Optional<CartEntity> findActiveByCustomerId(
       @Param("customerId") UUID customerId, @Param("now") Instant now);
 
   /** Delete all expired carts */
   @Modifying
-  @Query("DELETE FROM Cart c WHERE c.expiresAt < :now")
+  @Query("DELETE FROM CartEntity c WHERE c.expiresAt < :now")
   int deleteExpiredCarts(@Param("now") Instant now);
 }

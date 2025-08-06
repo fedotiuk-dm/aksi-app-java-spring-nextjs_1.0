@@ -11,11 +11,11 @@ import com.aksi.api.cart.dto.CartItemInfo;
 import com.aksi.api.cart.dto.ItemCharacteristics;
 import com.aksi.api.cart.dto.ItemModifier;
 import com.aksi.api.cart.dto.PriceListItemSummary;
-import com.aksi.domain.cart.Cart;
+import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
-import com.aksi.domain.cart.CartItemCharacteristics;
-import com.aksi.domain.cart.CartItemModifier;
-import com.aksi.domain.catalog.PriceListItem;
+import com.aksi.domain.cart.CartItemCharacteristicsEntity;
+import com.aksi.domain.cart.CartItemModifierEntity;
+import com.aksi.domain.catalog.PriceListItemEntity;
 
 /** MapStruct mapper for Cart entities and DTOs */
 @Mapper(
@@ -24,17 +24,17 @@ import com.aksi.domain.catalog.PriceListItem;
 public interface CartMapper {
 
   // Cart to CartInfo
-  @Mapping(source = "customer.id", target = "customerId")
+  @Mapping(source = "customerEntity.id", target = "customerId")
   @Mapping(source = "urgencyType", target = "globalModifiers.urgencyType")
   @Mapping(source = "discountType", target = "globalModifiers.discountType")
   @Mapping(source = "discountPercentage", target = "globalModifiers.discountPercentage")
   @Mapping(source = "expectedCompletionDate", target = "globalModifiers.expectedCompletionDate")
   @Mapping(target = "pricing", ignore = true) // Will be calculated separately
-  CartInfo toCartInfo(Cart cart);
+  CartInfo toCartInfo(CartEntity cartEntityEntity);
 
   // CartItem to CartItemInfo
-  @Mapping(source = "priceListItem.id", target = "priceListItemId")
-  @Mapping(source = "priceListItem", target = "priceListItem")
+  @Mapping(source = "priceListItemEntityEntity.id", target = "priceListItemId")
+  @Mapping(source = "priceListItemEntityEntity", target = "priceListItem")
   @Mapping(target = "pricing", ignore = true) // Will be calculated separately
   CartItemInfo toCartItemInfo(CartItem cartItem);
 
@@ -43,16 +43,16 @@ public interface CartMapper {
   // PriceListItem to PriceListItemSummary
   @Mapping(source = "categoryCode", target = "categoryCode")
   @Mapping(source = "unitOfMeasure", target = "unitOfMeasure")
-  PriceListItemSummary toPriceListItemSummary(PriceListItem priceListItem);
+  PriceListItemSummary toPriceListItemSummary(PriceListItemEntity priceListItemEntityEntity);
 
   // CartItemCharacteristics to ItemCharacteristics
   @Mapping(source = "fillerCondition", target = "fillerCondition")
-  ItemCharacteristics toItemCharacteristics(CartItemCharacteristics characteristics);
+  ItemCharacteristics toItemCharacteristics(CartItemCharacteristicsEntity characteristics);
 
   // CartItemModifier to ItemModifier
-  ItemModifier toItemModifier(CartItemModifier modifier);
+  ItemModifier toItemModifier(CartItemModifierEntity modifier);
 
-  List<ItemModifier> toItemModifierList(List<CartItemModifier> modifiers);
+  List<ItemModifier> toItemModifierList(List<CartItemModifierEntity> modifiers);
 
   // Custom mapping methods for enums
   default CartGlobalModifiers.UrgencyTypeEnum mapUrgencyType(String urgencyType) {

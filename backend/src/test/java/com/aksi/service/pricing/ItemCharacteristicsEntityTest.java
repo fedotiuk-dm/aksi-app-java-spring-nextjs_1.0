@@ -19,8 +19,8 @@ import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.UnitOfMeasure;
-import com.aksi.domain.catalog.PriceListItem;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.catalog.PriceListItemEntity;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.repository.PriceListItemRepository;
 import com.aksi.repository.PriceModifierRepository;
 
@@ -28,15 +28,15 @@ import com.aksi.repository.PriceModifierRepository;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class ItemCharacteristicsTest {
+public class ItemCharacteristicsEntityTest {
 
   @Autowired private PricingService pricingService;
   @Autowired private PriceListItemRepository priceListItemRepository;
   @Autowired private PriceModifierRepository priceModifierRepository;
 
-  private PriceListItem textileItem;
-  private PriceListItem leatherItem;
-  private PriceListItem coatItem;
+  private PriceListItemEntity textileItem;
+  private PriceListItemEntity leatherItem;
+  private PriceListItemEntity coatItem;
 
   @BeforeEach
   void setUp() {
@@ -62,7 +62,7 @@ public class ItemCharacteristicsTest {
     assertEquals(80000, response.getTotals().getTotal()); // Base price
 
     // Wool - might have surcharge
-    PriceModifier woolModifier =
+    PriceModifierEntity woolModifier =
         createModifier("WOOL_MATERIAL", "Шерстяні вироби", 1500, List.of("CLOTHING"));
     request = createRequestWithCharacteristics(textileItem.getId(), "Шерсть", null, null);
     response = pricingService.calculatePrice(request);
@@ -71,7 +71,7 @@ public class ItemCharacteristicsTest {
     // In real system, this would be handled by material-specific modifiers
 
     // Silk - premium material
-    PriceModifier silkModifier =
+    PriceModifierEntity silkModifier =
         createModifier("SILK_MATERIAL", "Шовкові вироби", 5000, List.of("CLOTHING"));
     request = createRequestWithCharacteristics(textileItem.getId(), "Шовк", null, null);
     response = pricingService.calculatePrice(request);
@@ -92,7 +92,7 @@ public class ItemCharacteristicsTest {
     assertEquals(200000, response.getTotals().getTotal()); // Base price
 
     // Nubuck - special care needed
-    PriceModifier nubuckModifier =
+    PriceModifierEntity nubuckModifier =
         createModifier("NUBUCK_MATERIAL", "Нубук", 3000, List.of("LEATHER"));
     request = createRequestWithCharacteristics(leatherItem.getId(), "Нубук", null, null);
     response = pricingService.calculatePrice(request);
@@ -102,7 +102,7 @@ public class ItemCharacteristicsTest {
     response = pricingService.calculatePrice(request);
 
     // Suede - premium processing
-    PriceModifier suedeModifier =
+    PriceModifierEntity suedeModifier =
         createModifier("SUEDE_MATERIAL", "Замша", 3500, List.of("LEATHER"));
     request = createRequestWithCharacteristics(leatherItem.getId(), "Замша", null, null);
     response = pricingService.calculatePrice(request);
@@ -169,7 +169,7 @@ public class ItemCharacteristicsTest {
   @DisplayName("Збитий наповнювач - додатковий модифікатор")
   void testCompactedFiller() {
     // Create modifier for compacted filler
-    PriceModifier compactedModifier =
+    PriceModifierEntity compactedModifier =
         createModifier("COMPACTED_FILLER", "Збитий наповнювач", 5000, null);
 
     PriceCalculationItem item = new PriceCalculationItem();
@@ -249,9 +249,9 @@ public class ItemCharacteristicsTest {
   }
 
   // Helper methods
-  private PriceListItem createPriceListItem(
+  private PriceListItemEntity createPriceListItem(
       ServiceCategoryType categoryCode, String name, Integer basePrice) {
-    PriceListItem item = new PriceListItem();
+    PriceListItemEntity item = new PriceListItemEntity();
     item.setCategoryCode(categoryCode);
     item.setCatalogNumber((int) (Math.random() * 10000));
     item.setName(name);
@@ -263,12 +263,12 @@ public class ItemCharacteristicsTest {
     return priceListItemRepository.save(item);
   }
 
-  private PriceModifier createModifier(
+  private PriceModifierEntity createModifier(
       String code, String name, Integer value, List<String> categories) {
-    PriceModifier modifier = new PriceModifier();
+    PriceModifierEntity modifier = new PriceModifierEntity();
     modifier.setCode(code);
     modifier.setName(name);
-    modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+    modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
     modifier.setValue(value);
     modifier.setCategoryRestrictions(categories);
     modifier.setActive(true);

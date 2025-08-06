@@ -29,11 +29,11 @@ import lombok.Setter;
     })
 @Getter
 @Setter
-public class UserBranchAssignment extends BaseEntity {
+public class UserBranchAssignmentEntity extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  private UserEntity userEntityEntity;
 
   @Column(name = "branch_id", nullable = false)
   private UUID branchId;

@@ -26,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ItemRisk extends BaseEntity {
+public class ItemRiskEntity extends BaseEntity {
 
   public enum RiskType {
     COLOR_CHANGE,
@@ -36,7 +36,7 @@ public class ItemRisk extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
-  private OrderItem orderItem;
+  private OrderItemEntity orderItemEntity;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "risk_type", nullable = false, length = 20)
@@ -46,8 +46,8 @@ public class ItemRisk extends BaseEntity {
   private String description;
 
   // Convenience constructor
-  public ItemRisk(OrderItem orderItem, RiskType type, String description) {
-    this.orderItem = orderItem;
+  public ItemRiskEntity(OrderItemEntity orderItemEntity, RiskType type, String description) {
+    this.orderItemEntity = orderItemEntity;
     this.type = type;
     this.description = description;
   }

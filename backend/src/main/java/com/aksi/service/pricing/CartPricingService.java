@@ -2,7 +2,7 @@ package com.aksi.service.pricing;
 
 import com.aksi.api.cart.dto.CartItemPricingInfo;
 import com.aksi.api.cart.dto.CartPricingInfo;
-import com.aksi.domain.cart.Cart;
+import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 
 /** Service for calculating cart prices */
@@ -11,10 +11,10 @@ public interface CartPricingService {
   /**
    * Calculate pricing for entire cart
    *
-   * @param cart Cart entity
+   * @param cartEntityEntity Cart entity
    * @return Cart pricing info
    */
-  CartPricingInfo calculateCartPricing(Cart cart);
+  CartPricingInfo calculateCartPricing(CartEntity cartEntityEntity);
 
   /**
    * Calculate pricing for single cart item

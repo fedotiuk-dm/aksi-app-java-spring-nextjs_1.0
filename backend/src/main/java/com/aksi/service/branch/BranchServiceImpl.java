@@ -13,7 +13,7 @@ import com.aksi.api.branch.dto.BranchInfo;
 import com.aksi.api.branch.dto.BranchesResponse;
 import com.aksi.api.branch.dto.CreateBranchRequest;
 import com.aksi.api.branch.dto.UpdateBranchRequest;
-import com.aksi.domain.branch.Branch;
+import com.aksi.domain.branch.BranchEntity;
 import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.BranchMapper;
@@ -37,12 +37,12 @@ public class BranchServiceImpl implements BranchService {
   public BranchInfo getBranchById(UUID branchId) {
     log.debug("Getting branch by id: {}", branchId);
 
-    Branch branch =
+    BranchEntity branchEntity =
         branchRepository
             .findById(branchId)
             .orElseThrow(() -> new NotFoundException("Branch not found with id: " + branchId));
 
-    return branchMapper.toBranchInfo(branch);
+    return branchMapper.toBranchInfo(branchEntity);
   }
 
   @Override
@@ -55,10 +55,10 @@ public class BranchServiceImpl implements BranchService {
     }
 
     // Map to entity
-    Branch branch = branchMapper.toEntity(request);
+    BranchEntity branchEntity = branchMapper.toEntity(request);
 
     // Save and return
-    Branch saved = branchRepository.save(branch);
+    BranchEntity saved = branchRepository.save(branchEntity);
     log.info("Created branch with ID: {}", saved.getId());
 
     return branchMapper.toBranchInfo(saved);
@@ -68,22 +68,22 @@ public class BranchServiceImpl implements BranchService {
   public BranchInfo updateBranch(UUID branchId, UpdateBranchRequest request) {
     log.info("Updating branch: {}", branchId);
 
-    Branch branch =
+    BranchEntity branchEntity =
         branchRepository
             .findById(branchId)
             .orElseThrow(() -> new NotFoundException("Branch not found: " + branchId));
 
     // Validate unique name if changed
     if (request.getName() != null
-        && !request.getName().equalsIgnoreCase(branch.getName())
+        && !request.getName().equalsIgnoreCase(branchEntity.getName())
         && branchRepository.existsByNameIgnoreCaseAndIdNot(request.getName(), branchId)) {
       throw new ConflictException("Branch with name '" + request.getName() + "' already exists");
     }
 
     // Update entity using MapStruct
-    branchMapper.updateEntityFromRequest(request, branch);
+    branchMapper.updateEntityFromRequest(request, branchEntity);
 
-    Branch updated = branchRepository.save(branch);
+    BranchEntity updated = branchRepository.save(branchEntity);
     log.info("Updated branch: {}", branchId);
 
     return branchMapper.toBranchInfo(updated);
@@ -119,7 +119,7 @@ public class BranchServiceImpl implements BranchService {
 
     Pageable pageable = PageRequest.of(pageNumber, safeLimit);
 
-    Page<Branch> page = branchRepository.findBranchesWithSearch(active, search, pageable);
+    Page<BranchEntity> page = branchRepository.findBranchesWithSearch(active, search, pageable);
 
     // Map to DTOs
     List<BranchInfo> branches = page.getContent().stream().map(branchMapper::toBranchInfo).toList();
@@ -137,8 +137,8 @@ public class BranchServiceImpl implements BranchService {
   public List<BranchInfo> getAllActiveBranches() {
     log.debug("Getting all active branches");
 
-    List<Branch> branches = branchRepository.findAllActiveOrderedBySortOrder();
-    return branches.stream().map(branchMapper::toBranchInfo).toList();
+    List<BranchEntity> branchEntities = branchRepository.findAllActiveOrderedBySortOrder();
+    return branchEntities.stream().map(branchMapper::toBranchInfo).toList();
   }
 
   @Override

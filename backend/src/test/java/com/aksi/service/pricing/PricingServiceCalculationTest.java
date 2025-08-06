@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.aksi.api.pricing.dto.*;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.mapper.PricingMapper;
 import com.aksi.repository.DiscountRepository;
 import com.aksi.repository.PriceModifierRepository;
@@ -104,7 +104,8 @@ class PricingServiceCalculationTest {
     request.setItems(List.of(item));
 
     PriceListItemInfo priceListItem = createPriceListItem(itemId, "Test Item", 10000);
-    PriceModifier modifier = createPercentageModifier("TEST_MOD", "Test Modifier", 5000); // 50%
+    PriceModifierEntity modifier =
+        createPercentageModifier("TEST_MOD", "Test Modifier", 5000); // 50%
 
     when(priceListService.getPriceListItemById(itemId)).thenReturn(priceListItem);
     when(priceModifierRepository.findByCode("TEST_MOD")).thenReturn(Optional.of(modifier));
@@ -228,7 +229,7 @@ class PricingServiceCalculationTest {
     priceListItem.setPriceBlack(12000); // Black price
     priceListItem.setCategoryCode(ServiceCategoryType.CLOTHING);
 
-    PriceModifier silkModifier = createPercentageModifier("SILK", "Silk", 5000); // 50%
+    PriceModifierEntity silkModifier = createPercentageModifier("SILK", "Silk", 5000); // 50%
 
     when(priceListService.getPriceListItemById(itemId)).thenReturn(priceListItem);
     when(priceModifierRepository.findByCode("SILK")).thenReturn(Optional.of(silkModifier));
@@ -292,12 +293,12 @@ class PricingServiceCalculationTest {
     return item;
   }
 
-  private PriceModifier createPercentageModifier(String code, String name, int value) {
-    PriceModifier modifier = new PriceModifier();
+  private PriceModifierEntity createPercentageModifier(String code, String name, int value) {
+    PriceModifierEntity modifier = new PriceModifierEntity();
     modifier.setId(UUID.randomUUID());
     modifier.setCode(code);
     modifier.setName(name);
-    modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+    modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
     modifier.setValue(value);
     modifier.setActive(true);
     return modifier;

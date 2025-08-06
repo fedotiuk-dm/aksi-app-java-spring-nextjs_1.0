@@ -9,7 +9,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import com.aksi.api.branch.dto.BranchInfo;
 import com.aksi.api.branch.dto.CreateBranchRequest;
 import com.aksi.api.branch.dto.UpdateBranchRequest;
-import com.aksi.domain.branch.Branch;
+import com.aksi.domain.branch.BranchEntity;
 
 /** MapStruct mapper for Branch domain */
 @Mapper(componentModel = "spring")
@@ -18,10 +18,10 @@ public interface BranchMapper {
   /**
    * Map Branch entity to BranchInfo DTO
    *
-   * @param branch Branch entity
+   * @param branchEntity Branch entity
    * @return BranchInfo DTO
    */
-  BranchInfo toBranchInfo(Branch branch);
+  BranchInfo toBranchInfo(BranchEntity branchEntity);
 
   /**
    * Map CreateBranchRequest to Branch entity
@@ -33,18 +33,19 @@ public interface BranchMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
-  Branch toEntity(CreateBranchRequest request);
+  BranchEntity toEntity(CreateBranchRequest request);
 
   /**
    * Update Branch entity from UpdateBranchRequest (only non-null values)
    *
    * @param request UpdateBranchRequest
-   * @param branch Target Branch entity to update
+   * @param branchEntity Target Branch entity to update
    */
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
-  void updateEntityFromRequest(UpdateBranchRequest request, @MappingTarget Branch branch);
+  void updateEntityFromRequest(
+      UpdateBranchRequest request, @MappingTarget BranchEntity branchEntity);
 }

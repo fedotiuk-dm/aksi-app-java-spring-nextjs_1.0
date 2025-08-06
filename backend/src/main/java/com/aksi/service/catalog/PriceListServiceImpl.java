@@ -17,7 +17,7 @@ import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.api.service.dto.PriceListItemsResponse;
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.UpdatePriceListItemRequest;
-import com.aksi.domain.catalog.PriceListItem;
+import com.aksi.domain.catalog.PriceListItemEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.PriceListItemMapper;
 import com.aksi.repository.PriceListItemRepository;
@@ -44,12 +44,12 @@ public class PriceListServiceImpl implements PriceListService {
     log.debug("Listing price list items with categoryCode: {}, active: {}", categoryCode, active);
 
     // Build specification dynamically based on parameters
-    Specification<PriceListItem> spec =
+    Specification<PriceListItemEntity> spec =
         PriceListItemSpecification.hasCategory(categoryCode)
             .and(PriceListItemSpecification.isActive(active));
 
     // Execute query with specification
-    Page<PriceListItem> page = priceListItemRepository.findAll(spec, pageable);
+    Page<PriceListItemEntity> page = priceListItemRepository.findAll(spec, pageable);
 
     // Map to DTOs
     List<PriceListItemInfo> dtos =
@@ -63,7 +63,7 @@ public class PriceListServiceImpl implements PriceListService {
   public PriceListItemInfo getPriceListItemById(UUID priceListItemId) {
     log.debug("Getting price list item by id: {}", priceListItemId);
 
-    PriceListItem item =
+    PriceListItemEntity item =
         priceListItemRepository
             .findById(priceListItemId)
             .orElseThrow(
@@ -128,7 +128,8 @@ public class PriceListServiceImpl implements PriceListService {
   public List<PriceListItemInfo> exportActivePriceList() {
     log.debug("Exporting all active price list items");
 
-    List<PriceListItem> items = priceListItemRepository.findAllActiveOrderedByCategoryAndNumber();
+    List<PriceListItemEntity> items =
+        priceListItemRepository.findAllActiveOrderedByCategoryAndNumber();
 
     List<PriceListItemInfo> dtos = items.stream().map(this::mapToPriceListItemInfo).toList();
 
@@ -149,7 +150,7 @@ public class PriceListServiceImpl implements PriceListService {
         categoryCode,
         catalogNumber);
 
-    PriceListItem item =
+    PriceListItemEntity item =
         priceListItemRepository
             .findByCategoryCodeAndCatalogNumber(categoryCode, catalogNumber)
             .orElse(null);
@@ -162,7 +163,8 @@ public class PriceListServiceImpl implements PriceListService {
   public PriceListItemInfo getPriceListItemByCatalogNumber(Integer catalogNumber) {
     log.debug("Getting price list item by catalog number: {}", catalogNumber);
 
-    PriceListItem item = priceListItemRepository.findByCatalogNumber(catalogNumber).orElse(null);
+    PriceListItemEntity item =
+        priceListItemRepository.findByCatalogNumber(catalogNumber).orElse(null);
 
     return item != null ? mapToPriceListItemInfo(item) : null;
   }
@@ -180,13 +182,13 @@ public class PriceListServiceImpl implements PriceListService {
     validationService.validatePrices(request.getBasePrice(), request.getExpressPrice());
 
     // Map to entity using MapStruct
-    PriceListItem item = priceListItemMapper.toEntity(request);
+    PriceListItemEntity item = priceListItemMapper.toEntity(request);
 
     // Apply business defaults
     applySortOrderDefault(item);
 
     // Save and return
-    PriceListItem saved = priceListItemRepository.save(item);
+    PriceListItemEntity saved = priceListItemRepository.save(item);
     log.info("Created price list item with ID: {}", saved.getId());
 
     return priceListItemMapper.toPriceListItemInfo(saved);
@@ -198,7 +200,7 @@ public class PriceListServiceImpl implements PriceListService {
       UUID priceListItemId, UpdatePriceListItemRequest request) {
     log.info("Updating price list item: {}", priceListItemId);
 
-    PriceListItem item =
+    PriceListItemEntity item =
         priceListItemRepository
             .findById(priceListItemId)
             .orElseThrow(
@@ -210,7 +212,7 @@ public class PriceListServiceImpl implements PriceListService {
     // Update entity using MapStruct (only non-null values)
     priceListItemMapper.updateEntityFromRequest(request, item);
 
-    PriceListItem updated = priceListItemRepository.save(item);
+    PriceListItemEntity updated = priceListItemRepository.save(item);
     log.info("Updated price list item: {}", priceListItemId);
 
     return priceListItemMapper.toPriceListItemInfo(updated);
@@ -250,7 +252,7 @@ public class PriceListServiceImpl implements PriceListService {
   }
 
   // Helper method for mapping - can be removed if not used elsewhere
-  private PriceListItemInfo mapToPriceListItemInfo(PriceListItem item) {
+  private PriceListItemInfo mapToPriceListItemInfo(PriceListItemEntity item) {
     return priceListItemMapper.toPriceListItemInfo(item);
   }
 
@@ -260,7 +262,7 @@ public class PriceListServiceImpl implements PriceListService {
    *
    * @param item Price list item to apply defaults to
    */
-  private void applySortOrderDefault(PriceListItem item) {
+  private void applySortOrderDefault(PriceListItemEntity item) {
     if (item.getSortOrder() != null && item.getSortOrder() == 0) {
       item.setSortOrder(item.getCatalogNumber());
     }

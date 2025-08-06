@@ -11,21 +11,21 @@ import com.aksi.api.user.dto.CreateUserRequest;
 import com.aksi.api.user.dto.UpdateUserRequest;
 import com.aksi.api.user.dto.UserDetail;
 import com.aksi.api.user.dto.UserSummary;
-import com.aksi.domain.user.User;
-import com.aksi.domain.user.UserBranchAssignment;
+import com.aksi.domain.user.UserBranchAssignmentEntity;
+import com.aksi.domain.user.UserEntity;
 
 /** MapStruct mapper for User DTOs. */
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
   @Mapping(target = "lastLoginAt", ignore = true)
-  UserSummary toUserSummary(User user);
+  UserSummary toUserSummary(UserEntity userEntityEntity);
 
   @Mapping(target = "branches", source = "branchAssignments")
   @Mapping(target = "lastLoginAt", ignore = true)
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
-  UserDetail toUserDetail(User user);
+  UserDetail toUserDetail(UserEntity userEntityEntity);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
@@ -36,7 +36,7 @@ public interface UserMapper {
   @Mapping(target = "failedLoginAttempts", constant = "0")
   @Mapping(target = "branchAssignments", ignore = true)
   @Mapping(target = "version", ignore = true)
-  User toUser(CreateUserRequest request);
+  UserEntity toUser(CreateUserRequest request);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
@@ -49,11 +49,11 @@ public interface UserMapper {
   @Mapping(target = "roles", ignore = true)
   @Mapping(target = "branchAssignments", ignore = true)
   @Mapping(target = "version", ignore = true)
-  void updateUserFromDto(UpdateUserRequest request, @MappingTarget User user);
+  void updateUserFromDto(UpdateUserRequest request, @MappingTarget UserEntity userEntityEntity);
 
-  List<UserSummary> toUserSummaryList(List<User> users);
+  List<UserSummary> toUserSummaryList(List<UserEntity> userEntities);
 
   @Mapping(target = "branchName", ignore = true) // Frontend will resolve by ID
   @Mapping(target = "isPrimary", source = "primary")
-  BranchAssignment toBranchAssignment(UserBranchAssignment assignment);
+  BranchAssignment toBranchAssignment(UserBranchAssignmentEntity assignment);
 }

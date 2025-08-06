@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.aksi.domain.common.BaseEntity;
-import com.aksi.domain.customer.Customer;
+import com.aksi.domain.customer.CustomerEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -37,14 +37,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cart extends BaseEntity {
+public class CartEntity extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "customer_id", nullable = false)
-  private Customer customer;
+  private CustomerEntity customerEntity;
 
   @OneToMany(
-      mappedBy = "cart",
+      mappedBy = "cartEntityEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)

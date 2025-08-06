@@ -25,7 +25,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemCharacteristics extends BaseEntity {
+public class ItemCharacteristicsEntity extends BaseEntity {
 
   public enum FillerCondition {
     NORMAL,
@@ -34,7 +34,7 @@ public class ItemCharacteristics extends BaseEntity {
 
   @OneToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
-  private OrderItem orderItem;
+  private OrderItemEntity orderItemEntity;
 
   @Column(name = "material", length = 100)
   private String material;

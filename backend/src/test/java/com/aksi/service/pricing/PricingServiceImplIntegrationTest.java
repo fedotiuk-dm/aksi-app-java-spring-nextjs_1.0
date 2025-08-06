@@ -24,7 +24,8 @@ import org.springframework.data.domain.Pageable;
 import com.aksi.api.pricing.dto.*;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.pricing.DiscountEntity;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.PricingMapper;
 import com.aksi.repository.DiscountRepository;
@@ -154,7 +155,7 @@ class PricingServiceImplIntegrationTest {
       request.setItems(List.of(item));
 
       PriceListItemInfo priceListItem = createPriceListItem(itemId, "Блуза", 8000);
-      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000); // 50%
+      PriceModifierEntity silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000); // 50%
 
       when(priceListService.getPriceListItemById(itemId)).thenReturn(priceListItem);
       when(priceModifierRepository.findByCode("SILK_FABRIC")).thenReturn(Optional.of(silkModifier));
@@ -302,8 +303,8 @@ class PricingServiceImplIntegrationTest {
       item2Info.setCategoryCode(ServiceCategoryType.CLOTHING);
 
       // Setup modifiers
-      PriceModifier silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000); // 50%
-      PriceModifier waterModifier =
+      PriceModifierEntity silkModifier = createModifier("SILK_FABRIC", "Шовк", 5000); // 50%
+      PriceModifierEntity waterModifier =
           createModifier("WATER_REPELLENT", "Водовідштовхування", 3000); // 30%
 
       when(priceListService.getPriceListItemById(itemId1)).thenReturn(item1Info);
@@ -390,25 +391,26 @@ class PricingServiceImplIntegrationTest {
 
   @Nested
   @DisplayName("Price Modifiers Listing")
-  class PriceModifiersListing {
+  class PriceModifiersListingEntity {
 
     @Test
     @DisplayName("Should list all active modifiers")
     void shouldListAllActiveModifiers() {
       // Given
-      List<PriceModifier> modifiers =
+      List<PriceModifierEntity> modifiers =
           Arrays.asList(
               createModifier("SILK_FABRIC", "Шовк", 5000),
               createModifier("WATER_REPELLENT", "Водовідштовхування", 3000));
 
       Pageable pageable = Pageable.unpaged();
-      Page<PriceModifier> modifierPage = new PageImpl<>(modifiers, pageable, modifiers.size());
+      Page<PriceModifierEntity> modifierPage =
+          new PageImpl<>(modifiers, pageable, modifiers.size());
 
       when(priceModifierRepository.findAll(any(Pageable.class))).thenReturn(modifierPage);
       when(pricingMapper.toPriceModifierDto(any()))
           .thenAnswer(
               invocation -> {
-                com.aksi.domain.pricing.PriceModifier modifier = invocation.getArgument(0);
+                PriceModifierEntity modifier = invocation.getArgument(0);
                 com.aksi.api.pricing.dto.PriceModifier dto =
                     new com.aksi.api.pricing.dto.PriceModifier();
                 dto.setCode(modifier.getCode());
@@ -435,14 +437,14 @@ class PricingServiceImplIntegrationTest {
       // Given
       String categoryCode = "CLOTHING";
 
-      List<PriceModifier> modifiers = List.of(createModifier("SILK_FABRIC", "Шовк", 5000));
+      List<PriceModifierEntity> modifiers = List.of(createModifier("SILK_FABRIC", "Шовк", 5000));
 
       when(priceModifierRepository.findActiveByCategoryCode(eq(categoryCode)))
           .thenReturn(modifiers);
       when(pricingMapper.toPriceModifierDto(any()))
           .thenAnswer(
               invocation -> {
-                com.aksi.domain.pricing.PriceModifier modifier = invocation.getArgument(0);
+                PriceModifierEntity modifier = invocation.getArgument(0);
                 com.aksi.api.pricing.dto.PriceModifier dto =
                     new com.aksi.api.pricing.dto.PriceModifier();
                 dto.setCode(modifier.getCode());
@@ -469,23 +471,23 @@ class PricingServiceImplIntegrationTest {
     @DisplayName("Should list all active discounts")
     void shouldListAllActiveDiscounts() {
       // Given
-      List<com.aksi.domain.pricing.Discount> discounts =
+      List<DiscountEntity> discountEntities =
           Arrays.asList(
               createDiscount("EVERCARD", "Еверкарт", 10),
               createDiscount("MILITARY", "Військовий", 10));
 
       // No need for Page when using findAllActiveOrderedBySortOrder
 
-      when(discountRepository.findAllActiveOrderedBySortOrder()).thenReturn(discounts);
+      when(discountRepository.findAllActiveOrderedBySortOrder()).thenReturn(discountEntities);
       when(pricingMapper.toDiscountDto(any()))
           .thenAnswer(
               invocation -> {
-                com.aksi.domain.pricing.Discount discount = invocation.getArgument(0);
+                DiscountEntity discountEntity = invocation.getArgument(0);
                 com.aksi.api.pricing.dto.Discount dto = new com.aksi.api.pricing.dto.Discount();
-                dto.setCode(discount.getCode());
-                dto.setName(discount.getName());
-                dto.setPercentage(discount.getPercentage());
-                dto.setActive(discount.isActive());
+                dto.setCode(discountEntity.getCode());
+                dto.setName(discountEntity.getName());
+                dto.setPercentage(discountEntity.getPercentage());
+                dto.setActive(discountEntity.isActive());
                 return dto;
               });
 
@@ -509,7 +511,7 @@ class PricingServiceImplIntegrationTest {
       // Given
       String categoryCode = "CLOTHING";
 
-      List<PriceModifier> modifiers =
+      List<PriceModifierEntity> modifiers =
           Arrays.asList(
               createModifier("SILK_FABRIC", "Шовк", 5000),
               createModifier("WATER_REPELLENT", "Водовідштовхування", 3000));
@@ -554,25 +556,24 @@ class PricingServiceImplIntegrationTest {
     return item;
   }
 
-  private PriceModifier createModifier(String code, String name, int value) {
-    PriceModifier modifier = new PriceModifier();
+  private PriceModifierEntity createModifier(String code, String name, int value) {
+    PriceModifierEntity modifier = new PriceModifierEntity();
     modifier.setId(UUID.randomUUID());
     modifier.setCode(code);
     modifier.setName(name);
-    modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+    modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
     modifier.setValue(value);
     modifier.setActive(true);
     return modifier;
   }
 
-  private com.aksi.domain.pricing.Discount createDiscount(
-      String code, String name, int percentage) {
-    com.aksi.domain.pricing.Discount discount = new com.aksi.domain.pricing.Discount();
-    discount.setId(UUID.randomUUID());
-    discount.setCode(code);
-    discount.setName(name);
-    discount.setPercentage(percentage);
-    discount.setActive(true);
-    return discount;
+  private DiscountEntity createDiscount(String code, String name, int percentage) {
+    DiscountEntity discountEntity = new DiscountEntity();
+    discountEntity.setId(UUID.randomUUID());
+    discountEntity.setCode(code);
+    discountEntity.setName(name);
+    discountEntity.setPercentage(percentage);
+    discountEntity.setActive(true);
+    return discountEntity;
   }
 }

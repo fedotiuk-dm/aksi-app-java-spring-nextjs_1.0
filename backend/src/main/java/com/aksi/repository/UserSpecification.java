@@ -4,8 +4,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 import com.aksi.api.user.dto.UserRole;
-import com.aksi.domain.user.User;
-import com.aksi.domain.user.UserBranchAssignment;
+import com.aksi.domain.user.UserBranchAssignmentEntity;
+import com.aksi.domain.user.UserEntity;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -16,7 +16,7 @@ public class UserSpecification {
   private UserSpecification() {}
 
   /** Search by text in username, firstName, lastName, email or phone */
-  public static Specification<User> searchByText(String search) {
+  public static Specification<UserEntity> searchByText(String search) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(search)) {
         return cb.conjunction();
@@ -34,7 +34,7 @@ public class UserSpecification {
   }
 
   /** Filter by exact username */
-  public static Specification<User> hasUsername(String username) {
+  public static Specification<UserEntity> hasUsername(String username) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(username)) {
         return cb.conjunction();
@@ -44,7 +44,7 @@ public class UserSpecification {
   }
 
   /** Filter by exact email (case-insensitive) */
-  public static Specification<User> hasEmail(String email) {
+  public static Specification<UserEntity> hasEmail(String email) {
     return (root, query, cb) -> {
       if (!StringUtils.hasText(email)) {
         return cb.conjunction();
@@ -54,7 +54,7 @@ public class UserSpecification {
   }
 
   /** Filter by role */
-  public static Specification<User> hasRole(UserRole role) {
+  public static Specification<UserEntity> hasRole(UserRole role) {
     return (root, query, cb) -> {
       if (role == null) {
         return cb.conjunction();
@@ -64,28 +64,29 @@ public class UserSpecification {
   }
 
   /** Filter by branch ID */
-  public static Specification<User> hasBranchId(java.util.UUID branchId) {
+  public static Specification<UserEntity> hasBranchId(java.util.UUID branchId) {
     return (root, query, cb) -> {
       if (branchId == null) {
         return cb.conjunction();
       }
-      Join<User, UserBranchAssignment> branchJoin = root.join("branchAssignments", JoinType.LEFT);
+      Join<UserEntity, UserBranchAssignmentEntity> branchJoin =
+          root.join("branchAssignments", JoinType.LEFT);
       return cb.equal(branchJoin.get("branchId"), branchId);
     };
   }
 
   /** Filter only active users */
-  public static Specification<User> isActive() {
+  public static Specification<UserEntity> isActive() {
     return (root, query, cb) -> cb.isTrue(root.get("active"));
   }
 
   /** Filter only email verified users */
-  public static Specification<User> isEmailVerified() {
+  public static Specification<UserEntity> isEmailVerified() {
     return (root, query, cb) -> cb.isTrue(root.get("emailVerified"));
   }
 
   /** Combine all search criteria for listing users */
-  public static Specification<User> searchUsers(
+  public static Specification<UserEntity> searchUsers(
       String search,
       String username,
       String email,
@@ -94,7 +95,7 @@ public class UserSpecification {
       Boolean active,
       Boolean emailVerified) {
 
-    Specification<User> spec =
+    Specification<UserEntity> spec =
         Specification.allOf(
             searchByText(search),
             hasUsername(username),

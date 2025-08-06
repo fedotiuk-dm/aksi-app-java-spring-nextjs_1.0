@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.repository.PriceModifierRepository;
 import com.aksi.service.pricing.calculation.PriceCalculationService;
 
@@ -149,7 +149,7 @@ class PricingRulesServiceTest {
 
   @Nested
   @DisplayName("Discount Applicability")
-  class DiscountApplicability {
+  class DiscountEntityApplicability {
 
     @Test
     @DisplayName("Should not apply discount to excluded categories")
@@ -222,11 +222,11 @@ class PricingRulesServiceTest {
     @DisplayName("Should get active modifier by code")
     void shouldGetActiveModifierByCode() {
       // Given
-      PriceModifier modifier = createModifier("SILK_FABRIC", true);
+      PriceModifierEntity modifier = createModifier("SILK_FABRIC", true);
       when(priceModifierRepository.findByCode("SILK_FABRIC")).thenReturn(Optional.of(modifier));
 
       // When
-      PriceModifier result = pricingRulesService.getModifier("SILK_FABRIC");
+      PriceModifierEntity result = pricingRulesService.getModifier("SILK_FABRIC");
 
       // Then
       assertThat(result).isNotNull();
@@ -240,7 +240,7 @@ class PricingRulesServiceTest {
       when(priceModifierRepository.findByCode("NON_EXISTENT")).thenReturn(Optional.empty());
 
       // When
-      PriceModifier result = pricingRulesService.getModifier("NON_EXISTENT");
+      PriceModifierEntity result = pricingRulesService.getModifier("NON_EXISTENT");
 
       // Then
       assertThat(result).isNull();
@@ -250,11 +250,11 @@ class PricingRulesServiceTest {
     @DisplayName("Should return null for inactive modifier")
     void shouldReturnNullForInactiveModifier() {
       // Given
-      PriceModifier modifier = createModifier("INACTIVE", false);
+      PriceModifierEntity modifier = createModifier("INACTIVE", false);
       when(priceModifierRepository.findByCode("INACTIVE")).thenReturn(Optional.of(modifier));
 
       // When
-      PriceModifier result = pricingRulesService.getModifier("INACTIVE");
+      PriceModifierEntity result = pricingRulesService.getModifier("INACTIVE");
 
       // Then
       assertThat(result).isNull();
@@ -314,12 +314,12 @@ class PricingRulesServiceTest {
     return item;
   }
 
-  private PriceModifier createModifier(String code, boolean active) {
-    PriceModifier modifier = new PriceModifier();
+  private PriceModifierEntity createModifier(String code, boolean active) {
+    PriceModifierEntity modifier = new PriceModifierEntity();
     modifier.setId(UUID.randomUUID());
     modifier.setCode(code);
     modifier.setName("Test Modifier");
-    modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+    modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
     modifier.setValue(5000); // 50%
     modifier.setActive(active);
     return modifier;

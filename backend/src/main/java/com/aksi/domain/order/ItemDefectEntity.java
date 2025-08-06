@@ -26,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ItemDefect extends BaseEntity {
+public class ItemDefectEntity extends BaseEntity {
 
   public enum DefectType {
     WORN,
@@ -38,7 +38,7 @@ public class ItemDefect extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
-  private OrderItem orderItem;
+  private OrderItemEntity orderItemEntity;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "defect_type", nullable = false, length = 30)
@@ -48,8 +48,8 @@ public class ItemDefect extends BaseEntity {
   private String description;
 
   // Convenience constructor
-  public ItemDefect(OrderItem orderItem, DefectType type, String description) {
-    this.orderItem = orderItem;
+  public ItemDefectEntity(OrderItemEntity orderItemEntity, DefectType type, String description) {
+    this.orderItemEntity = orderItemEntity;
     this.type = type;
     this.description = description;
   }

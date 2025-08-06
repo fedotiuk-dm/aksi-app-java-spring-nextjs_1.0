@@ -34,7 +34,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PriceModifier extends BaseEntity {
+public class PriceModifierEntity extends BaseEntity {
 
   @Column(name = "code", nullable = false, unique = true, length = 50)
   private String code;

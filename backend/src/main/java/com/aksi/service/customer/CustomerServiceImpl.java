@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.api.customer.dto.CreateCustomerRequest;
 import com.aksi.api.customer.dto.CustomerInfo;
 import com.aksi.api.customer.dto.UpdateCustomerRequest;
-import com.aksi.domain.customer.Customer;
+import com.aksi.domain.customer.CustomerEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.CustomerMapper;
 import com.aksi.repository.CustomerRepository;
@@ -44,19 +44,19 @@ public class CustomerServiceImpl implements CustomerService {
     duplicationChecker.checkForCreate(
         request.getPhonePrimary(), request.getEmail(), request.getDiscountCardNumber());
 
-    Customer customer = customerMapper.toEntity(request);
-    customer = customerRepository.save(customer);
+    CustomerEntity customerEntity = customerMapper.toEntity(request);
+    customerEntity = customerRepository.save(customerEntity);
 
-    log.info("Created customer with ID: {}", customer.getId());
-    return customerMapper.toCustomerInfo(customer);
+    log.info("Created customer with ID: {}", customerEntity.getId());
+    return customerMapper.toCustomerInfo(customerEntity);
   }
 
   @Override
   public CustomerInfo getCustomer(UUID customerId) {
     log.debug("Getting customer by ID: {}", customerId);
 
-    Customer customer = findCustomerById(customerId);
-    return customerMapper.toCustomerInfo(customer);
+    CustomerEntity customerEntity = findCustomerById(customerId);
+    return customerMapper.toCustomerInfo(customerEntity);
   }
 
   @Override
@@ -64,20 +64,23 @@ public class CustomerServiceImpl implements CustomerService {
   public CustomerInfo updateCustomer(UUID customerId, UpdateCustomerRequest request) {
     log.debug("Updating customer: {}", customerId);
 
-    Customer customer = findCustomerById(customerId);
+    CustomerEntity customerEntity = findCustomerById(customerId);
 
     // Validate request
     customerValidator.validateUpdateRequest(request);
 
     // Check for duplicates
     duplicationChecker.checkForUpdate(
-        customer, request.getPhonePrimary(), request.getEmail(), request.getDiscountCardNumber());
+        customerEntity,
+        request.getPhonePrimary(),
+        request.getEmail(),
+        request.getDiscountCardNumber());
 
-    customerMapper.updateEntityFromRequest(request, customer);
-    customer = customerRepository.save(customer);
+    customerMapper.updateEntityFromRequest(request, customerEntity);
+    customerEntity = customerRepository.save(customerEntity);
 
     log.info("Updated customer: {}", customerId);
-    return customerMapper.toCustomerInfo(customer);
+    return customerMapper.toCustomerInfo(customerEntity);
   }
 
   @Override
@@ -101,7 +104,7 @@ public class CustomerServiceImpl implements CustomerService {
     return customerRepository.existsById(customerId);
   }
 
-  private Customer findCustomerById(UUID customerId) {
+  private CustomerEntity findCustomerById(UUID customerId) {
     return customerRepository
         .findById(customerId)
         .orElseThrow(() -> new NotFoundException("Customer not found: " + customerId));

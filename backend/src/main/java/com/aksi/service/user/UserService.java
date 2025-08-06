@@ -13,7 +13,7 @@ import com.aksi.api.user.dto.UserBranchesResponse;
 import com.aksi.api.user.dto.UserDetail;
 import com.aksi.api.user.dto.UserListResponse;
 import com.aksi.api.user.dto.UserRole;
-import com.aksi.domain.user.User;
+import com.aksi.domain.user.UserEntity;
 
 /**
  * Service interface for user management operations. Provides a unified API for all user-related
@@ -22,21 +22,21 @@ import com.aksi.domain.user.User;
 public interface UserService {
 
   // Query methods for internal use (authentication, etc.)
-  Optional<User> findById(UUID id);
+  Optional<UserEntity> findById(UUID id);
 
-  Optional<User> findByUsername(String username);
+  Optional<UserEntity> findByUsername(String username);
 
   /**
    * Find user by email. TODO: Reserved for future functionality (password recovery, duplicate check
    * during registration)
    */
-  Optional<User> findByEmail(String email);
+  Optional<UserEntity> findByEmail(String email);
 
-  boolean verifyPassword(User user, String password);
+  boolean verifyPassword(UserEntity userEntityEntity, String password);
 
-  void recordFailedLogin(User user);
+  void recordFailedLogin(UserEntity userEntityEntity);
 
-  void resetFailedLogins(User user);
+  void resetFailedLogins(UserEntity userEntityEntity);
 
   // API DTO methods (for Controller layer)
   UserDetail getUserById(UUID userId);

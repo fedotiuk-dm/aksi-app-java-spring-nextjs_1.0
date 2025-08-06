@@ -10,35 +10,36 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.domain.catalog.PriceListItem;
+import com.aksi.domain.catalog.PriceListItemEntity;
 
 /** Repository for PriceListItem entity */
 @Repository
 public interface PriceListItemRepository
-    extends JpaRepository<PriceListItem, UUID>, JpaSpecificationExecutor<PriceListItem> {
+    extends JpaRepository<PriceListItemEntity, UUID>,
+        JpaSpecificationExecutor<PriceListItemEntity> {
 
-  Optional<PriceListItem> findByCategoryCodeAndCatalogNumber(
+  Optional<PriceListItemEntity> findByCategoryCodeAndCatalogNumber(
       ServiceCategoryType categoryCode, Integer catalogNumber);
 
-  @Query("SELECT DISTINCT p.categoryCode FROM PriceListItem p WHERE p.active = true")
+  @Query("SELECT DISTINCT p.categoryCode FROM PriceListItemEntity p WHERE p.active = true")
   List<ServiceCategoryType> findDistinctActiveCategories();
 
   @Query(
-      "SELECT p FROM PriceListItem p WHERE p.active = true ORDER BY p.categoryCode, p.catalogNumber")
-  List<PriceListItem> findAllActiveOrderedByCategoryAndNumber();
+      "SELECT p FROM PriceListItemEntity p WHERE p.active = true ORDER BY p.categoryCode, p.catalogNumber")
+  List<PriceListItemEntity> findAllActiveOrderedByCategoryAndNumber();
 
-  Optional<PriceListItem> findByCatalogNumber(Integer catalogNumber);
+  Optional<PriceListItemEntity> findByCatalogNumber(Integer catalogNumber);
 
   // Category management methods
-  List<PriceListItem> findByCategoryCode(ServiceCategoryType categoryCode);
+  List<PriceListItemEntity> findByCategoryCode(ServiceCategoryType categoryCode);
 
-  @Query("SELECT COUNT(p) FROM PriceListItem p WHERE p.categoryCode = :categoryCode")
+  @Query("SELECT COUNT(p) FROM PriceListItemEntity p WHERE p.categoryCode = :categoryCode")
   long countByCategoryCode(ServiceCategoryType categoryCode);
 
   @Query(
-      "SELECT COUNT(p) FROM PriceListItem p WHERE p.categoryCode = :categoryCode AND p.active = true")
+      "SELECT COUNT(p) FROM PriceListItemEntity p WHERE p.categoryCode = :categoryCode AND p.active = true")
   long countByCategoryCodeAndActiveTrue(ServiceCategoryType categoryCode);
 
-  @Query("SELECT DISTINCT p.categoryCode FROM PriceListItem p")
+  @Query("SELECT DISTINCT p.categoryCode FROM PriceListItemEntity p")
   List<ServiceCategoryType> findAllDistinctCategories();
 }

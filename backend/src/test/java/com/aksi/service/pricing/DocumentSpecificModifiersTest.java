@@ -19,8 +19,8 @@ import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.UnitOfMeasure;
-import com.aksi.domain.catalog.PriceListItem;
-import com.aksi.domain.pricing.PriceModifier;
+import com.aksi.domain.catalog.PriceListItemEntity;
+import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.repository.PriceListItemRepository;
 import com.aksi.repository.PriceModifierRepository;
 
@@ -37,9 +37,9 @@ public class DocumentSpecificModifiersTest {
   @Autowired private PriceListItemRepository priceListItemRepository;
   @Autowired private PriceModifierRepository priceModifierRepository;
 
-  private PriceListItem regularItem;
-  private PriceListItem leatherItem;
-  private PriceListItem silkItem;
+  private PriceListItemEntity regularItem;
+  private PriceListItemEntity leatherItem;
+  private PriceListItemEntity silkItem;
 
   @BeforeEach
   void setUp() {
@@ -60,7 +60,7 @@ public class DocumentSpecificModifiersTest {
   @DisplayName("Дитячі речі (до 30 розміру) - знижка 30%")
   void testChildrenClothesDiscount() {
     // Create children's clothes modifier (-30%)
-    PriceModifier childModifier =
+    PriceModifierEntity childModifier =
         createModifier("CHILD_SIZE", "Дитячі речі (до 30 розміру)", -3000, null);
 
     PriceCalculationRequest request = createRequestWithModifier(regularItem.getId(), "CHILD_SIZE");
@@ -76,7 +76,7 @@ public class DocumentSpecificModifiersTest {
   @Test
   @DisplayName("Ручна чистка +20% до вартості")
   void testManualCleaningSurcharge() {
-    PriceModifier manualModifier = createModifier("MANUAL_CLEAN", "Ручна чистка", 2000, null);
+    PriceModifierEntity manualModifier = createModifier("MANUAL_CLEAN", "Ручна чистка", 2000, null);
 
     PriceCalculationRequest request =
         createRequestWithModifier(regularItem.getId(), "MANUAL_CLEAN");
@@ -92,7 +92,7 @@ public class DocumentSpecificModifiersTest {
   @DisplayName("Дуже забруднені речі +від 20 до 100%")
   void testHeavilySoiledItems() {
     // Test minimum (+20%)
-    PriceModifier soiledMin =
+    PriceModifierEntity soiledMin =
         createModifier("HEAVILY_SOILED_MIN", "Дуже забруднені речі", 2000, null);
     PriceCalculationRequest request =
         createRequestWithModifier(regularItem.getId(), "HEAVILY_SOILED_MIN");
@@ -100,7 +100,7 @@ public class DocumentSpecificModifiersTest {
     assertEquals(96000, response.getTotals().getTotal()); // 800 + 20%
 
     // Test maximum (+100%)
-    PriceModifier soiledMax =
+    PriceModifierEntity soiledMax =
         createModifier("HEAVILY_SOILED_MAX", "Дуже забруднені речі (максимум)", 10000, null);
     request = createRequestWithModifier(regularItem.getId(), "HEAVILY_SOILED_MAX");
     response = pricingService.calculatePrice(request);
@@ -110,7 +110,7 @@ public class DocumentSpecificModifiersTest {
   @Test
   @DisplayName("Чистка виробів з хутряними комірами та манжетами +30%")
   void testFurCollarsCuffs() {
-    PriceModifier furModifier =
+    PriceModifierEntity furModifier =
         createModifier(
             "FUR_COLLARS",
             "Чистка виробів з хутряними комірами та манжетами",
@@ -128,7 +128,7 @@ public class DocumentSpecificModifiersTest {
   @Test
   @DisplayName("Нанесення водовідштовхуючого покриття +30%")
   void testWaterRepellentCoating() {
-    PriceModifier waterModifier =
+    PriceModifierEntity waterModifier =
         createModifier("WATER_REPELLENT", "Нанесення водовідштовхуючого покриття", 3000, null);
 
     // Test on textile
@@ -146,7 +146,7 @@ public class DocumentSpecificModifiersTest {
   @Test
   @DisplayName("Чистка виробів із натурального шовку, атласу, шифону +50%")
   void testSilkSatinChiffon() {
-    PriceModifier silkModifier =
+    PriceModifierEntity silkModifier =
         createModifier(
             "SILK_SATIN",
             "Чистка виробів із натурального шовку, атласу, шифону",
@@ -164,7 +164,7 @@ public class DocumentSpecificModifiersTest {
   @Test
   @DisplayName("Чистка комбінованих виробів (шкіра+текстиль) +100%")
   void testCombinedLeatherTextile() {
-    PriceModifier combinedModifier =
+    PriceModifierEntity combinedModifier =
         createModifier(
             "COMBINED_LEATHER_TEXTILE",
             "Чистка комбінованих виробів (шкіра+текстиль)",
@@ -183,7 +183,7 @@ public class DocumentSpecificModifiersTest {
   @Test
   @DisplayName("Прасування шкіряних виробів 70% від вартості чистки")
   void testLeatherIroning() {
-    PriceModifier ironingModifier =
+    PriceModifierEntity ironingModifier =
         createModifier("LEATHER_IRONING", "Прасування шкіряних виробів", 7000, List.of("LEATHER"));
 
     PriceCalculationRequest request =
@@ -198,7 +198,7 @@ public class DocumentSpecificModifiersTest {
   @Test
   @DisplayName("Чистка натуральних дублянок на штучному хутрі -20%")
   void testSheepskinArtificialFur() {
-    PriceModifier sheepskinModifier =
+    PriceModifierEntity sheepskinModifier =
         createModifier(
             "SHEEPSKIN_ARTIFICIAL",
             "Чистка натуральних дублянок на штучному хутрі",
@@ -217,7 +217,7 @@ public class DocumentSpecificModifiersTest {
   @Test
   @DisplayName("Чистка виробів чорного та світлих тонів +20%")
   void testBlackAndLightColors() {
-    PriceModifier colorModifier =
+    PriceModifierEntity colorModifier =
         createModifier(
             "BLACK_LIGHT_COLORS",
             "Чистка виробів чорного та світлих тонів",
@@ -236,7 +236,7 @@ public class DocumentSpecificModifiersTest {
   @Test
   @DisplayName("Чистка весільної сукні зі шлейфом +30%")
   void testWeddingDressWithTrain() {
-    PriceModifier weddingModifier =
+    PriceModifierEntity weddingModifier =
         createModifier(
             "WEDDING_TRAIN", "Чистка весільної сукні зі шлейфом", 3000, List.of("CLOTHING"));
 
@@ -278,9 +278,9 @@ public class DocumentSpecificModifiersTest {
   }
 
   // Helper methods
-  private PriceListItem createPriceListItem(
+  private PriceListItemEntity createPriceListItem(
       ServiceCategoryType categoryCode, String name, Integer basePrice) {
-    PriceListItem item = new PriceListItem();
+    PriceListItemEntity item = new PriceListItemEntity();
     item.setCategoryCode(categoryCode);
     item.setCatalogNumber((int) (Math.random() * 10000));
     item.setName(name);
@@ -292,12 +292,12 @@ public class DocumentSpecificModifiersTest {
     return priceListItemRepository.save(item);
   }
 
-  private PriceModifier createModifier(
+  private PriceModifierEntity createModifier(
       String code, String name, Integer value, List<String> categories) {
-    PriceModifier modifier = new PriceModifier();
+    PriceModifierEntity modifier = new PriceModifierEntity();
     modifier.setCode(code);
     modifier.setName(name);
-    modifier.setType(PriceModifier.ModifierType.PERCENTAGE);
+    modifier.setType(PriceModifierEntity.ModifierType.PERCENTAGE);
     modifier.setValue(value);
     modifier.setCategoryRestrictions(categories);
     modifier.setActive(true);

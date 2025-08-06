@@ -127,6 +127,54 @@ export interface UpdateBranchesRequest {
 }
 
 /**
+ * Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas 
+ */
+export type PriceModifierDtoType = typeof PriceModifierDtoType[keyof typeof PriceModifierDtoType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceModifierDtoType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED',
+} as const;
+
+export interface PriceModifierDto {
+  /** Unique modifier code */
+  code: string;
+  /** Modifier name */
+  name: string;
+  /** Modifier description */
+  description?: string;
+  /** Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas  */
+  type: PriceModifierDtoType;
+  /** Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item  */
+  value: number;
+  /** Category codes where modifier is applicable */
+  categoryRestrictions?: string[];
+  /** Is modifier active */
+  active: boolean;
+}
+
+export interface DiscountDto {
+  /** Discount code */
+  code: string;
+  /** Discount name */
+  name: string;
+  /** Discount description */
+  description?: string;
+  /**
+   * Discount percentage
+   * @minimum 0
+   * @maximum 100
+   */
+  percentage: number;
+  /** Category codes excluded from discount */
+  excludedCategories?: string[];
+  /** Is discount active */
+  active: boolean;
+}
+
+/**
  * Service category code
  */
 export type PriceListItemInfoCategoryCode = typeof PriceListItemInfoCategoryCode[keyof typeof PriceListItemInfoCategoryCode];
@@ -1564,68 +1612,20 @@ export interface UserSummary {
   lastLoginAt?: string;
 }
 
-/**
- * Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas 
- */
-export type PriceModifierType = typeof PriceModifierType[keyof typeof PriceModifierType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PriceModifierType = {
-  PERCENTAGE: 'PERCENTAGE',
-  FIXED: 'FIXED',
-} as const;
-
-export interface PriceModifier {
-  /** Unique modifier code */
-  code: string;
-  /** Modifier name */
-  name: string;
-  /** Modifier description */
-  description?: string;
-  /** Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas  */
-  type: PriceModifierType;
-  /** Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item  */
-  value: number;
-  /** Category codes where modifier is applicable */
-  categoryRestrictions?: string[];
-  /** Is modifier active */
-  active: boolean;
-}
-
 export interface PriceModifiersResponse {
   /** List of price modifiers */
-  modifiers: PriceModifier[];
+  modifiers: PriceModifierDto[];
   /** General modifiers (applicable to all categories) */
-  generalModifiers?: PriceModifier[];
+  generalModifiers?: PriceModifierDto[];
   /** Textile-specific modifiers */
-  textileModifiers?: PriceModifier[];
+  textileModifiers?: PriceModifierDto[];
   /** Leather-specific modifiers */
-  leatherModifiers?: PriceModifier[];
-}
-
-export interface Discount {
-  /** Discount code */
-  code: string;
-  /** Discount name */
-  name: string;
-  /** Discount description */
-  description?: string;
-  /**
-   * Discount percentage
-   * @minimum 0
-   * @maximum 100
-   */
-  percentage: number;
-  /** Category codes excluded from discount */
-  excludedCategories?: string[];
-  /** Is discount active */
-  active: boolean;
+  leatherModifiers?: PriceModifierDto[];
 }
 
 export interface DiscountsResponse {
   /** List of available discounts */
-  discounts: Discount[];
+  discounts: DiscountDto[];
 }
 
 export interface PriceListItemsResponse {

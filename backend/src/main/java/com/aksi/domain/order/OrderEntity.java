@@ -4,10 +4,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aksi.domain.branch.Branch;
+import com.aksi.domain.branch.BranchEntity;
 import com.aksi.domain.common.BaseEntity;
-import com.aksi.domain.customer.Customer;
-import com.aksi.domain.user.User;
+import com.aksi.domain.customer.CustomerEntity;
+import com.aksi.domain.user.UserEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -42,7 +42,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order extends BaseEntity {
+public class OrderEntity extends BaseEntity {
 
   public enum OrderStatus {
     PENDING,
@@ -58,11 +58,11 @@ public class Order extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "customer_id", nullable = false)
-  private Customer customer;
+  private CustomerEntity customerEntity;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "branch_id", nullable = false)
-  private Branch branch;
+  private BranchEntity branchEntity;
 
   @Column(name = "unique_label", length = 100)
   private String uniqueLabel;
@@ -72,18 +72,18 @@ public class Order extends BaseEntity {
   private OrderStatus status = OrderStatus.PENDING;
 
   @OneToMany(
-      mappedBy = "order",
+      mappedBy = "orderEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<OrderItem> items = new ArrayList<>();
+  private List<OrderItemEntity> items = new ArrayList<>();
 
   @OneToMany(
-      mappedBy = "order",
+      mappedBy = "orderEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<OrderPayment> payments = new ArrayList<>();
+  private List<OrderPaymentEntity> payments = new ArrayList<>();
 
   @Column(name = "notes", columnDefinition = "TEXT")
   private String notes;
@@ -93,7 +93,7 @@ public class Order extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "created_by")
-  private User createdBy;
+  private UserEntity createdBy;
 
   @Column(name = "expected_completion_date", nullable = false)
   private Instant expectedCompletionDate;
@@ -122,26 +122,26 @@ public class Order extends BaseEntity {
 
   // Business methods
   public Integer getPaidAmount() {
-    return payments.stream().mapToInt(OrderPayment::getAmount).sum();
+    return payments.stream().mapToInt(OrderPaymentEntity::getAmount).sum();
   }
 
   public Integer getBalanceDue() {
     return totalAmount - getPaidAmount();
   }
 
-  public void addItem(OrderItem item) {
+  public void addItem(OrderItemEntity item) {
     items.add(item);
-    item.setOrder(this);
+    item.setOrderEntity(this);
   }
 
-  public void removeItem(OrderItem item) {
+  public void removeItem(OrderItemEntity item) {
     items.remove(item);
-    item.setOrder(null);
+    item.setOrderEntity(null);
   }
 
-  public void addPayment(OrderPayment payment) {
+  public void addPayment(OrderPaymentEntity payment) {
     payments.add(payment);
-    payment.setOrder(this);
+    payment.setOrderEntity(this);
   }
 
   public boolean isFullyPaid() {
