@@ -1,8 +1,10 @@
 package com.aksi.mapper;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.aksi.api.cart.dto.ItemCharacteristics;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
@@ -23,6 +25,7 @@ public interface CartItemMapper {
   CartItemCharacteristicsEntity toEntity(ItemCharacteristics dto);
 
   // Update CartItem from request
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
@@ -34,6 +37,7 @@ public interface CartItemMapper {
   void updateEntityFromRequest(UpdateCartItemRequest request, @MappingTarget CartItem entity);
 
   // Update characteristics separately
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)

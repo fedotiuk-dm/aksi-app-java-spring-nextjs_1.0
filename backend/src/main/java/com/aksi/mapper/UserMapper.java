@@ -2,9 +2,11 @@ package com.aksi.mapper;
 
 import java.util.List;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.aksi.api.user.dto.BranchAssignment;
 import com.aksi.api.user.dto.CreateUserRequest;
@@ -38,6 +40,7 @@ public interface UserMapper {
   @Mapping(target = "version", ignore = true)
   UserEntity toUser(CreateUserRequest request);
 
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)

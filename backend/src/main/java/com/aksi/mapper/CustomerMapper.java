@@ -1,8 +1,10 @@
 package com.aksi.mapper;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.aksi.api.customer.dto.CreateCustomerRequest;
 import com.aksi.api.customer.dto.CustomerInfo;
@@ -25,6 +27,7 @@ public interface CustomerMapper {
   CustomerEntity toEntity(CreateCustomerRequest request);
 
   // Update Customer entity from UpdateCustomerRequest
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)

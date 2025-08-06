@@ -2,9 +2,11 @@ package com.aksi.mapper;
 
 import java.util.List;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.aksi.api.pricing.dto.DiscountDto;
 import com.aksi.api.pricing.dto.PriceModifierDto;
@@ -27,6 +29,7 @@ public interface PricingMapper {
   @Mapping(target = "sortOrder", constant = "0")
   PriceModifierEntity toPriceModifierEntity(PriceModifierDto dto);
 
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
@@ -48,6 +51,7 @@ public interface PricingMapper {
   @Mapping(target = "sortOrder", constant = "0")
   DiscountEntity toDiscountEntity(DiscountDto dto);
 
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
