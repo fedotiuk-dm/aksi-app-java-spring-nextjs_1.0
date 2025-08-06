@@ -44,9 +44,7 @@ public class AuthController implements AuthApi {
     HttpSession session = request.getSession(false);
     log.info("Logout request from session: {}", session != null ? session.getId() : "no session");
 
-    if (session != null) {
-      authService.logout(session);
-    }
+    authService.logout(session);
 
     log.info("Logout completed");
     return ResponseEntity.noContent().build();
@@ -59,17 +57,17 @@ public class AuthController implements AuthApi {
     HttpSession session = request.getSession(false);
     SessionInfo sessionInfo = authService.getSessionInfo(session);
 
-    log.debug("Returning session info for user: {}", sessionInfo.getUsername());
+    log.debug("Retrieved session info for user: {}", sessionInfo.getUsername());
     return ResponseEntity.ok(sessionInfo);
   }
 
   @Override
   public ResponseEntity<Void> invalidateAllSessions(UUID userId) {
-    log.info("Invalidating all sessions for userId: {}", userId);
+    log.warn("ADMIN ACTION: Invalidating all sessions for userId: {} - initiated by admin", userId);
 
     authService.invalidateAllUserSessions(userId);
 
-    log.info("All sessions invalidated for userId: {}", userId);
+    log.warn("ADMIN ACTION: All sessions invalidated for userId: {}", userId);
     return ResponseEntity.noContent().build();
   }
 }

@@ -47,7 +47,7 @@ import com.aksi.repository.CustomerRepository;
 import com.aksi.repository.OrderRepository;
 import com.aksi.repository.OrderSpecification;
 import com.aksi.repository.UserRepository;
-import com.aksi.security.SecurityUtils;
+import com.aksi.service.auth.SessionManagementService;
 import com.aksi.service.pricing.PricingService;
 
 import lombok.RequiredArgsConstructor;
@@ -67,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
   private final UserRepository userRepository;
   private final PricingService pricingService;
   private final OrderMapper orderMapper;
+  private final SessionManagementService sessionManagementService;
 
   @Value("${app.order.number-prefix:ORD}")
   private String orderNumberPrefix;
@@ -436,7 +437,7 @@ public class OrderServiceImpl implements OrderService {
 
   private UserEntity getCurrentUser() {
     try {
-      UUID userId = SecurityUtils.getCurrentUserId();
+      UUID userId = sessionManagementService.getCurrentUserIdFromContext();
       return userRepository.findById(userId).orElse(null); // Allow null for system operations
     } catch (Exception e) {
       log.warn("Could not get current user: {}", e.getMessage());
