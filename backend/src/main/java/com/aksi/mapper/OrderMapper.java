@@ -44,10 +44,7 @@ public interface OrderMapper {
   @Mapping(target = "pricing", source = ".", qualifiedByName = "toOrderPricingInfo")
   @Mapping(target = "payments", source = "payments")
   @Mapping(target = "createdBy", source = "createdBy.id")
-  @Mapping(
-      target = "status",
-      expression =
-          "java(com.aksi.api.order.dto.OrderStatus.fromValue(orderEntity.getStatus().name()))")
+  @Mapping(target = "status", source = "status", defaultValue = "PENDING")
   OrderInfo toOrderInfo(OrderEntity orderEntity);
 
   /** Map OrderItem entity to OrderItemInfo DTO */
@@ -72,90 +69,54 @@ public interface OrderMapper {
 
   /** Map Order entity to OrderPricingInfo DTO */
   @Named("toOrderPricingInfo")
-  @Mapping(target = "paidAmount", expression = "java(orderEntity.getPaidAmount())")
-  @Mapping(target = "balanceDue", expression = "java(orderEntity.getBalanceDue())")
+  @Mapping(target = "paidAmount", source = "paidAmount")
+  @Mapping(target = "balanceDue", source = "balanceDue")
   @Mapping(target = "total", source = "totalAmount")
   OrderPricingInfo toOrderPricingInfo(OrderEntity orderEntity);
 
   /** Map OrderItem entity to OrderItemPricingInfo DTO */
   @Named("toOrderItemPricingInfo")
-  @Mapping(target = "modifierDetails", source = "modifiers", qualifiedByName = "toModifierDetails")
+  @Mapping(target = "modifierDetails", source = "modifiers")
   @Mapping(target = "total", source = "totalAmount")
   OrderItemPricingInfo toOrderItemPricingInfo(OrderItemEntity orderItemEntity);
 
   /** Map PriceListItem entity to PriceListItemSummary DTO */
   @Named("toPriceListItemSummary")
   @Mapping(target = "categoryCode", source = "categoryCode.value")
-  @Mapping(
-      target = "unitOfMeasure",
-      expression =
-          "java(com.aksi.api.order.dto.PriceListItemSummary.UnitOfMeasureEnum.fromValue(priceListItemEntity.getUnitOfMeasure().name()))")
+  @Mapping(target = "unitOfMeasure", source = "unitOfMeasure", defaultValue = "PIECE")
   PriceListItemSummary toPriceListItemSummary(PriceListItemEntity priceListItemEntity);
 
   /** Map ItemCharacteristics entity to DTO */
-  @Mapping(
-      target = "fillerCondition",
-      expression =
-          "java(characteristics.getFillerCondition() != null ? com.aksi.api.order.dto.ItemCharacteristics.FillerConditionEnum.fromValue(characteristics.getFillerCondition().name()) : null)")
+  @Mapping(target = "fillerCondition", source = "fillerCondition")
   ItemCharacteristics toItemCharacteristics(ItemCharacteristicsEntity characteristics);
 
   /** Map ItemStain entity to DTO */
-  @Mapping(
-      target = "type",
-      expression =
-          "java(com.aksi.api.order.dto.ItemStain.TypeEnum.fromValue(stain.getType().name()))")
+  @Mapping(target = "type", source = "type")
   ItemStain toItemStain(ItemStainEntity stain);
 
   /** Map ItemDefect entity to DTO */
-  @Mapping(
-      target = "type",
-      expression =
-          "java(com.aksi.api.order.dto.ItemDefect.TypeEnum.fromValue(defect.getType().name()))")
+  @Mapping(target = "type", source = "type")
   ItemDefect toItemDefect(ItemDefectEntity defect);
 
   /** Map ItemRisk entity to DTO */
-  @Mapping(
-      target = "type",
-      expression =
-          "java(com.aksi.api.order.dto.ItemRisk.TypeEnum.fromValue(risk.getType().name()))")
+  @Mapping(target = "type", source = "type")
   ItemRisk toItemRisk(ItemRiskEntity risk);
 
   /** Map ItemPhoto entity to ItemPhotoInfo DTO */
-  @Mapping(
-      target = "type",
-      expression = "java(com.aksi.api.order.dto.PhotoType.fromValue(photo.getType().name()))")
+  @Mapping(target = "type", source = "type", defaultValue = "GENERAL")
   @Mapping(target = "uploadedBy", source = "uploadedBy.id")
   ItemPhotoInfo toItemPhotoInfo(ItemPhotoEntity photo);
 
   /** Map ItemModifier entity to ItemModifier DTO */
-  @Mapping(
-      target = "type",
-      expression =
-          "java(com.aksi.api.order.dto.ItemModifier.TypeEnum.fromValue(modifier.getType().name()))")
+  @Mapping(target = "type", source = "type")
   ItemModifier toItemModifier(ItemModifierEntity modifier);
 
-  /** Map ItemModifier entities to ModifierDetail DTOs */
-  @Named("toModifierDetails")
-  default List<ModifierDetail> toModifierDetails(List<ItemModifierEntity> modifiers) {
-    if (modifiers == null) return null;
-
-    return modifiers.stream()
-        .map(
-            modifier -> {
-              ModifierDetail detail = new ModifierDetail();
-              detail.setCode(modifier.getCode());
-              detail.setName(modifier.getName());
-              detail.setAmount(modifier.getAppliedAmount());
-              return detail;
-            })
-        .toList();
-  }
+  /** Map ItemModifier entity to ModifierDetail DTO */
+  @Mapping(target = "amount", source = "appliedAmount")
+  ModifierDetail toModifierDetail(ItemModifierEntity modifier);
 
   /** Map OrderPayment entity to PaymentInfo DTO */
-  @Mapping(
-      target = "method",
-      expression =
-          "java(com.aksi.api.order.dto.PaymentMethod.fromValue(payment.getMethod().name()))")
+  @Mapping(target = "method", source = "method", defaultValue = "CASH")
   @Mapping(target = "paidBy", source = "paidBy.id")
   PaymentInfo toPaymentInfo(OrderPaymentEntity payment);
 

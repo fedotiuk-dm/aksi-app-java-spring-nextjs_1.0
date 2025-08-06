@@ -722,7 +722,7 @@ components:
           description: Modifier name
         type:
           type: string
-          enum: [PERCENTAGE, FIXED]
+          enum: [PERCENTAGE, FIXED, FORMULA]
           description: Modifier type
         value:
           type: number
