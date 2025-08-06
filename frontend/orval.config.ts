@@ -177,7 +177,7 @@ const config: Config = {
   ...createDomainConfig('pricing', DOMAIN_TAGS.pricing),
 
   // 🏷️ SERVICE ITEM DOMAIN
-  ...createDomainConfig('serviceItem', DOMAIN_TAGS.serviceItem),
+  ...createDomainConfig('priceList', DOMAIN_TAGS.serviceItem),
 };
 
 export default config;

@@ -1,10 +1,10 @@
-// 🔥 AUTO-GENERATED BARREL EXPORT for SERVICEITEM DOMAIN
-// Домен serviceItem
-// Згенеровано: 2025-08-06T21:04:47.687Z
+// 🔥 AUTO-GENERATED BARREL EXPORT for PRICELIST DOMAIN
+// Домен priceList
+// Згенеровано: 2025-08-06T22:30:53.415Z
 // Не редагуйте вручну - файл буде перезаписаний при наступній генерації
 //
 // 💡 Це дозволяє використовувати чисті імпорти:
-// import { useClients, ClientResponse, clientSchema } from '@/shared/api/generated/serviceItem';
+// import { useClients, ClientResponse, clientSchema } from '@/shared/api/generated/priceList';
 //
 // 🎯 Доступні експорти:
 // - з aKSIDryCleaningOrderSystemAPI.ts: React Query хуки (useQuery, useMutation)

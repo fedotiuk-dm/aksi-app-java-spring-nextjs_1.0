@@ -24,6 +24,8 @@ export default function PageLayout({ children }: PageLayoutProps) {
           flexGrow: 1,
           py: 3,
           px: { xs: 2, md: 4 },
+          overflow: 'visible',
+          minHeight: 0, // Allow content to determine height
         }}
       >
         {children}
