@@ -7,7 +7,9 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -424,13 +426,66 @@ public class OrderServiceImpl implements OrderService {
   public Page<OrderInfo> getOrdersDueForCompletion(int days, Pageable pageable) {
     Instant targetDate = Instant.now().plusSeconds((long) days * 24 * 60 * 60);
     return orderRepository
-        .findOrdersDueForCompletion(targetDate, pageable)
+        .findAll(OrderSpecification.isDueForCompletion(targetDate), pageable)
         .map(orderMapper::toOrderInfo);
   }
 
   @Override
   public Page<OrderInfo> getOverdueOrders(Pageable pageable) {
-    return orderRepository.findOverdueOrders(Instant.now(), pageable).map(orderMapper::toOrderInfo);
+    return orderRepository
+        .findAll(OrderSpecification.isOverdue(Instant.now()), pageable)
+        .map(orderMapper::toOrderInfo);
+  }
+
+  @Override
+  public List<OrderInfo> getCustomerRecentOrders(UUID customerId, int limit) {
+    log.debug("Getting {} recent orders for customer {}", limit, customerId);
+
+    Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+    List<OrderEntity> orderEntities =
+        orderRepository
+            .findByCustomerEntityIdOrderByCreatedAtDesc(customerId, pageable)
+            .getContent();
+
+    return orderMapper.toOrderInfoList(orderEntities);
+  }
+
+  @Override
+  public List<OrderItemInfo> getOrderItems(UUID orderId) {
+    log.debug("Getting order items for order {}", orderId);
+
+    OrderEntity orderEntity =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+
+    return orderMapper.toOrderItemInfoList(orderEntity.getItems());
+  }
+
+  @Override
+  public List<PaymentInfo> getOrderPayments(UUID orderId) {
+    log.debug("Getting payments for order {}", orderId);
+
+    OrderEntity orderEntity =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
+
+    return orderMapper.toPaymentInfoList(orderEntity.getPayments());
+  }
+
+  @Override
+  public List<OrderInfo> getOrdersByStatus(OrderEntity.OrderStatus status, UUID branchId) {
+    log.debug("Getting orders with status {} for branch {}", status, branchId);
+
+    // Use existing specification-based search with no pagination limit
+    var specification = OrderSpecification.searchOrders(null, branchId, status, null, null, null);
+    Pageable pageable =
+        PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    List<OrderEntity> orderEntities = orderRepository.findAll(specification, pageable).getContent();
+
+    return orderMapper.toOrderInfoList(orderEntities);
   }
 
   // Private helper methods

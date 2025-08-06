@@ -1,6 +1,7 @@
 package com.aksi.service.order;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -180,4 +181,38 @@ public interface OrderService {
    * @return Page of overdue orders
    */
   Page<OrderInfo> getOverdueOrders(Pageable pageable);
+
+  /**
+   * Get customer's recent orders without pagination (for quick access)
+   *
+   * @param customerId Customer ID
+   * @param limit Maximum number of orders to return
+   * @return List of recent orders
+   */
+  List<OrderInfo> getCustomerRecentOrders(UUID customerId, int limit);
+
+  /**
+   * Get order items for a specific order
+   *
+   * @param orderId Order ID
+   * @return List of order items with full details
+   */
+  List<OrderItemInfo> getOrderItems(UUID orderId);
+
+  /**
+   * Get payment history for a specific order
+   *
+   * @param orderId Order ID
+   * @return List of payments for the order
+   */
+  List<PaymentInfo> getOrderPayments(UUID orderId);
+
+  /**
+   * Get orders by status without pagination (for reports)
+   *
+   * @param status Order status
+   * @param branchId Branch ID (optional)
+   * @return List of orders with specified status
+   */
+  List<OrderInfo> getOrdersByStatus(OrderEntity.OrderStatus status, UUID branchId);
 }
