@@ -39,6 +39,10 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/010-7-ensure-items-columns.yaml
   - include:
+      file: db/changelog/changes/010-8-ensure-catalog-number-column.yaml
+  - include:
+      file: db/changelog/changes/010-9-ensure-unit-of-measure-column.yaml
+  - include:
       file: db/changelog/changes/011-create-items-from-price-list.yaml
   - include:
       file: db/changelog/changes/011-5-add-price-columns-to-service-items.yaml

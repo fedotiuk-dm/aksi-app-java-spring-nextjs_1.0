@@ -3,6 +3,15 @@ databaseChangeLog:
       id: 011-1
       author: aksi
       comment: Create items from price_list_items
+      preConditions:
+        - onFail: HALT
+          and:
+          - columnExists:
+              tableName: items
+              columnName: catalog_number
+          - columnExists:
+              tableName: items
+              columnName: unit_of_measure
       changes:
         - sql:
             sql: |

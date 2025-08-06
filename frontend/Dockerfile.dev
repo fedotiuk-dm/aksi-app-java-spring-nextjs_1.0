@@ -1,5 +1,5 @@
 # Development Dockerfile for Next.js
-FROM node:lts-alpine3.21
+FROM node:lts-alpine
 
 # Встановлюємо метадані
 LABEL version="2.0"

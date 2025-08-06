@@ -6,9 +6,9 @@ databaseChangeLog:
       preConditions:
         - onFail: MARK_RAN
           not:
-          columnExists:
-            tableName: items
-            columnName: catalog_number
+            columnExists:
+              tableName: items
+              columnName: catalog_number
       changes:
         - addColumn:
             tableName: items
@@ -24,9 +24,9 @@ databaseChangeLog:
       preConditions:
         - onFail: MARK_RAN
           not:
-          columnExists:
-            tableName: items
-            columnName: unit_of_measure
+            columnExists:
+              tableName: items
+              columnName: unit_of_measure
       changes:
         - addColumn:
             tableName: items

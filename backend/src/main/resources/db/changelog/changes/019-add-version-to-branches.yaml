@@ -2,6 +2,12 @@ databaseChangeLog:
   - changeSet:
       id: add-version-column-to-branches
       author: claude
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+          columnExists:
+            tableName: branches
+            columnName: version
       changes:
         - addColumn:
             tableName: branches

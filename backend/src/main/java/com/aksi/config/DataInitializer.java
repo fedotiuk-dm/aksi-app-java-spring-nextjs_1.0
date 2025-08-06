@@ -23,7 +23,7 @@ public class DataInitializer {
   private final UserService userService;
 
   @Bean
-  @Profile("!dev")
+  @Profile("dev")
   public CommandLineRunner initData() {
     return args -> {
       log.info("Initializing test data...");

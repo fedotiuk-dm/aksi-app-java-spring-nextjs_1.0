@@ -297,50 +297,15 @@ databaseChangeLog:
       author: system
       preConditions:
         - onFail: MARK_RAN
-        - not:
-            - sqlCheck:
-                expectedResult: 0
-                sql: SELECT COUNT(*) FROM discounts WHERE code IN ('EVERCARD', 'SOCIAL_MEDIA', 'MILITARY')
       changes:
-        # Add default discounts
-        - insert:
-            tableName: discounts
-            columns:
-              - column: {name: id, valueComputed: "gen_random_uuid()"}
-              - column: {name: code, value: "EVERCARD"}
-              - column: {name: name, value: "Еверкард"}
-              - column: {name: description, value: "Знижка для власників картки Еверкард"}
-              - column: {name: percentage, valueNumeric: "10"}
-              - column: {name: active, valueBoolean: "true"}
-              - column: {name: sort_order, valueNumeric: "10"}
-              - column: {name: created_at, valueComputed: "NOW()"}
-              - column: {name: updated_at, valueComputed: "NOW()"}
-        
-        - insert:
-            tableName: discounts
-            columns:
-              - column: {name: id, valueComputed: "gen_random_uuid()"}
-              - column: {name: code, value: "SOCIAL_MEDIA"}
-              - column: {name: name, value: "Соцмережі"}
-              - column: {name: description, value: "Знижка для підписників в соцмережах"}
-              - column: {name: percentage, valueNumeric: "5"}
-              - column: {name: active, valueBoolean: "true"}
-              - column: {name: sort_order, valueNumeric: "20"}
-              - column: {name: created_at, valueComputed: "NOW()"}
-              - column: {name: updated_at, valueComputed: "NOW()"}
-        
-        - insert:
-            tableName: discounts
-            columns:
-              - column: {name: id, valueComputed: "gen_random_uuid()"}
-              - column: {name: code, value: "MILITARY"}
-              - column: {name: name, value: "ЗСУ"}
-              - column: {name: description, value: "Знижка для військовослужбовців"}
-              - column: {name: percentage, valueNumeric: "10"}
-              - column: {name: active, valueBoolean: "true"}
-              - column: {name: sort_order, valueNumeric: "30"}
-              - column: {name: created_at, valueComputed: "NOW()"}
-              - column: {name: updated_at, valueComputed: "NOW()"}
+        # Add default discounts using ON CONFLICT to handle duplicates
+        - sql:
+            sql: |
+              INSERT INTO discounts (id, code, name, description, percentage, active, sort_order, created_at, updated_at) VALUES 
+              (gen_random_uuid(), 'EVERCARD', 'Еверкард', 'Знижка для власників картки Еверкард', 10, TRUE, 10, NOW(), NOW()),
+              (gen_random_uuid(), 'SOCIAL_MEDIA', 'Соцмережі', 'Знижка для підписників в соцмережах', 5, TRUE, 20, NOW(), NOW()),
+              (gen_random_uuid(), 'MILITARY', 'ЗСУ', 'Знижка для військовослужбовців', 10, TRUE, 30, NOW(), NOW())
+              ON CONFLICT (code) DO NOTHING;
 
   - changeSet:
       id: 022-add-category-restrictions

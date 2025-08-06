@@ -1,6 +1,6 @@
 # Production Dockerfile for Next.js with multi-stage build
 # Stage 1: Dependencies
-FROM node:lts-alpine3.21 AS deps
+FROM node:lts-alpine AS deps
 
 # Встановлюємо базові залежності
 RUN apk add --no-cache libc6-compat
@@ -15,7 +15,7 @@ RUN npm ci --omit=dev && \
     npm cache clean --force
 
 # Stage 2: Builder
-FROM node:lts-alpine3.21 AS builder
+FROM node:lts-alpine AS builder
 
 WORKDIR /app
 
@@ -36,7 +36,7 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # Stage 3: Runtime
-FROM node:lts-alpine3.21 AS runner
+FROM node:lts-alpine AS runner
 
 # Встановлюємо метадані
 LABEL version="1.0"

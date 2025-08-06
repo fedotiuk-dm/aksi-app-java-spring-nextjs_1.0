@@ -5,9 +5,12 @@ databaseChangeLog:
       comment: Increase unit_of_measure field size in items table
       preConditions:
         - onFail: MARK_RAN
-          columnExists:
-          tableName: items
-          columnName: unit_of_measure
+          and:
+          - tableExists:
+              tableName: items
+          - columnExists:
+              tableName: items
+              columnName: unit_of_measure
       changes:
         - modifyDataType:
             tableName: items
