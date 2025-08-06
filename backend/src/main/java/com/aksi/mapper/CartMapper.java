@@ -5,7 +5,6 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.aksi.api.cart.dto.CartGlobalModifiers;
 import com.aksi.api.cart.dto.CartInfo;
 import com.aksi.api.cart.dto.CartItemInfo;
 import com.aksi.api.cart.dto.ItemCharacteristics;
@@ -25,8 +24,8 @@ public interface CartMapper {
 
   // Cart to CartInfo
   @Mapping(source = "customerEntity.id", target = "customerId")
-  @Mapping(source = "urgencyType", target = "globalModifiers.urgencyType")
-  @Mapping(source = "discountType", target = "globalModifiers.discountType")
+  @Mapping(source = "urgencyType", target = "globalModifiers.urgencyType", defaultValue = "NORMAL")
+  @Mapping(source = "discountType", target = "globalModifiers.discountType", defaultValue = "NONE")
   @Mapping(source = "discountPercentage", target = "globalModifiers.discountPercentage")
   @Mapping(source = "expectedCompletionDate", target = "globalModifiers.expectedCompletionDate")
   @Mapping(target = "pricing", ignore = true) // Will be calculated separately
@@ -46,40 +45,11 @@ public interface CartMapper {
   PriceListItemSummary toPriceListItemSummary(PriceListItemEntity priceListItemEntity);
 
   // CartItemCharacteristics to ItemCharacteristics
-  @Mapping(source = "fillerCondition", target = "fillerCondition")
+  @Mapping(source = "fillerCondition", target = "fillerCondition", defaultValue = "NORMAL")
   ItemCharacteristics toItemCharacteristics(CartItemCharacteristicsEntity characteristics);
 
   // CartItemModifier to ItemModifier
   ItemModifier toItemModifier(CartItemModifierEntity modifier);
 
   List<ItemModifier> toItemModifierList(List<CartItemModifierEntity> modifiers);
-
-  // Custom mapping methods for enums
-  default CartGlobalModifiers.UrgencyTypeEnum mapUrgencyType(String urgencyType) {
-    if (urgencyType == null) {
-      return CartGlobalModifiers.UrgencyTypeEnum.NORMAL;
-    }
-    return CartGlobalModifiers.UrgencyTypeEnum.fromValue(urgencyType);
-  }
-
-  default CartGlobalModifiers.DiscountTypeEnum mapDiscountType(String discountType) {
-    if (discountType == null) {
-      return CartGlobalModifiers.DiscountTypeEnum.NONE;
-    }
-    return CartGlobalModifiers.DiscountTypeEnum.fromValue(discountType);
-  }
-
-  default ItemCharacteristics.FillerConditionEnum mapFillerCondition(String fillerCondition) {
-    if (fillerCondition == null) {
-      return null;
-    }
-    return ItemCharacteristics.FillerConditionEnum.fromValue(fillerCondition);
-  }
-
-  default ItemModifier.TypeEnum mapModifierType(String type) {
-    if (type == null) {
-      return null;
-    }
-    return ItemModifier.TypeEnum.fromValue(type);
-  }
 }
