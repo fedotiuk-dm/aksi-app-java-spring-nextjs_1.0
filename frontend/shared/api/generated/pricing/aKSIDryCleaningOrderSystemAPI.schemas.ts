@@ -1723,44 +1723,21 @@ export interface SessionInfo {
   userAgent?: string;
 }
 
-export type DeactivateCategory200 = {[key: string]: unknown};
-
-export type ActivateCategory200 = {[key: string]: unknown};
-
-export type ListPriceListItemsParams = {
+export type ListPriceModifiersParams = {
 /**
  * Filter by category code
  */
-categoryCode?: ListPriceListItemsCategoryCode;
+categoryCode?: string;
 /**
  * Filter by active status
  */
 active?: boolean;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
-/**
- * Number of items to return
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
 };
 
-export type ListPriceListItemsCategoryCode = typeof ListPriceListItemsCategoryCode[keyof typeof ListPriceListItemsCategoryCode];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListPriceListItemsCategoryCode = {
-  CLOTHING: 'CLOTHING',
-  LAUNDRY: 'LAUNDRY',
-  IRONING: 'IRONING',
-  LEATHER: 'LEATHER',
-  PADDING: 'PADDING',
-  FUR: 'FUR',
-  DYEING: 'DYEING',
-  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
-} as const;
+export type ListDiscountsParams = {
+/**
+ * Filter by active status
+ */
+active?: boolean;
+};
 

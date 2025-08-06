@@ -1660,12 +1660,24 @@ export interface CategoryInfo {
   hasActiveItems?: boolean;
 }
 
-export interface OrdersResponse {
-  orders: OrderInfo[];
-  /** Total number of items */
-  totalItems: number;
-  /** Has more items */
-  hasMore: boolean;
+export interface OrderListResponse {
+  data: OrderInfo[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
 }
 
 export interface CustomersResponse {

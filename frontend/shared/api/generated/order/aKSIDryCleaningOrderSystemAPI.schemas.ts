@@ -1723,44 +1723,187 @@ export interface SessionInfo {
   userAgent?: string;
 }
 
-export type DeactivateCategory200 = {[key: string]: unknown};
-
-export type ActivateCategory200 = {[key: string]: unknown};
-
-export type ListPriceListItemsParams = {
+export type ListOrdersParams = {
 /**
- * Filter by category code
- */
-categoryCode?: ListPriceListItemsCategoryCode;
-/**
- * Filter by active status
- */
-active?: boolean;
-/**
- * Number of items to skip
+ * Page number (0-based)
  * @minimum 0
  */
-offset?: number;
+page?: number;
 /**
- * Number of items to return
+ * Page size
  * @minimum 1
  * @maximum 100
+ */
+size?: number;
+/**
+ * Field to sort by
+ */
+sortBy?: string;
+/**
+ * Sort order
+ */
+sortOrder?: string;
+/**
+ * Filter by customer ID
+ */
+customerId?: string;
+/**
+ * Filter by order status
+ */
+status?: ListOrdersStatus;
+/**
+ * Filter by branch ID
+ */
+branchId?: string;
+/**
+ * Filter by creation date from
+ */
+dateFrom?: string;
+/**
+ * Filter by creation date to
+ */
+dateTo?: string;
+};
+
+export type ListOrdersStatus = typeof ListOrdersStatus[keyof typeof ListOrdersStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ListOrdersStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  READY: 'READY',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type UploadItemPhotoParams = {
+photoType?: UploadItemPhotoPhotoType;
+/**
+ * Photo description
+ */
+photoDescription?: string;
+};
+
+export type UploadItemPhotoPhotoType = typeof UploadItemPhotoPhotoType[keyof typeof UploadItemPhotoPhotoType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UploadItemPhotoPhotoType = {
+  GENERAL: 'GENERAL',
+  DEFECT: 'DEFECT',
+  STAIN: 'STAIN',
+  LABEL: 'LABEL',
+} as const;
+
+export type UploadItemPhotoBody = {
+  /** Photo file (max 5MB) */
+  file: Blob;
+};
+
+export type GetOverdueOrdersParams = {
+/**
+ * Page number (0-based)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * Page size
+ * @minimum 1
+ * @maximum 100
+ */
+size?: number;
+/**
+ * Field to sort by
+ */
+sortBy?: string;
+/**
+ * Sort order
+ */
+sortOrder?: string;
+};
+
+export type GetOrdersDueForCompletionParams = {
+/**
+ * Number of days to look ahead
+ * @minimum 1
+ * @maximum 30
+ */
+days?: number;
+/**
+ * Page number (0-based)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * Page size
+ * @minimum 1
+ * @maximum 100
+ */
+size?: number;
+/**
+ * Field to sort by
+ */
+sortBy?: string;
+/**
+ * Sort order
+ */
+sortOrder?: string;
+};
+
+export type GetCustomerRecentOrdersParams = {
+/**
+ * Maximum number of orders to return
+ * @minimum 1
+ * @maximum 50
  */
 limit?: number;
 };
 
-export type ListPriceListItemsCategoryCode = typeof ListPriceListItemsCategoryCode[keyof typeof ListPriceListItemsCategoryCode];
+export type GetCustomerOrderHistoryParams = {
+/**
+ * Page number (0-based)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * Page size
+ * @minimum 1
+ * @maximum 100
+ */
+size?: number;
+/**
+ * Field to sort by
+ */
+sortBy?: string;
+/**
+ * Sort order
+ */
+sortOrder?: string;
+};
+
+export type GetOrdersByStatusParams = {
+/**
+ * Order status
+ */
+status: GetOrdersByStatusStatus;
+/**
+ * Filter by branch ID
+ */
+branchId?: string;
+};
+
+export type GetOrdersByStatusStatus = typeof GetOrdersByStatusStatus[keyof typeof GetOrdersByStatusStatus];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListPriceListItemsCategoryCode = {
-  CLOTHING: 'CLOTHING',
-  LAUNDRY: 'LAUNDRY',
-  IRONING: 'IRONING',
-  LEATHER: 'LEATHER',
-  PADDING: 'PADDING',
-  FUR: 'FUR',
-  DYEING: 'DYEING',
-  ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+export const GetOrdersByStatusStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  READY: 'READY',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
 } as const;
 

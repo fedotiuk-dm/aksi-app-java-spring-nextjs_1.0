@@ -22,6 +22,22 @@
  *   │   ├── customerApi.ts            - хуки (useListCustomers, useCreateCustomer тощо)
  *   │   ├── index.ts                  - типи + BARREL: export * from './customerApi'
  *   │   └── schemas.zod.ts            - Zod схеми
+ *   ├── branch/           # Branch Domain
+ *   │   ├── branchApi.ts              - хуки (useListBranches, useGetBranch тощо)
+ *   │   ├── index.ts                  - типи + BARREL: export * from './branchApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
+ *   ├── cart/             # Cart Domain
+ *   │   ├── cartApi.ts                - хуки (useGetCart, useAddCartItem, useClearCart тощо)
+ *   │   ├── index.ts                  - типи + BARREL: export * from './cartApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
+ *   ├── order/            # Order Domain
+ *   │   ├── orderApi.ts               - хуки (useListOrders, useCreateOrder, useUpdateOrder тощо)
+ *   │   ├── index.ts                  - типи + BARREL: export * from './orderApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
+ *   ├── pricing/          # Pricing Domain
+ *   │   ├── pricingApi.ts             - хуки (useCalculatePrice, useListModifiers тощо)
+ *   │   ├── index.ts                  - типи + BARREL: export * from './pricingApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
  *   └── serviceItem/      # Service Item Domain
  *       ├── serviceItemApi.ts         - хуки (useListServices, useListItems, useGetServiceItemPrice тощо)
  *       ├── index.ts                  - типи + BARREL: export * from './serviceItemApi'
@@ -31,6 +47,10 @@
  * ✅ import { useLogin } from '@/shared/api/generated/auth'
  * ✅ import { useListUsers } from '@/shared/api/generated/user'
  * ✅ import { useCreateCustomer } from '@/shared/api/generated/customer'
+ * ✅ import { useListBranches } from '@/shared/api/generated/branch'
+ * ✅ import { useGetCart, useAddCartItem } from '@/shared/api/generated/cart'
+ * ✅ import { useListOrders, useCreateOrder } from '@/shared/api/generated/order'
+ * ✅ import { useCalculatePrice } from '@/shared/api/generated/pricing'
  * ✅ import { useListServices } from '@/shared/api/generated/serviceItem'
  *
  * 🎯 ORDER WIZARD: UI компоненти використовують композицію доменних API
@@ -53,6 +73,18 @@ const DOMAIN_TAGS = {
 
   // 👤 Customer Domain
   customer: ['customers'],
+
+  // 🏢 Branch Domain
+  branch: ['branches'],
+
+  // 🛒 Cart Domain
+  cart: ['cart'],
+
+  // 📋 Order Domain
+  order: ['orders'],
+
+  // 💰 Pricing Domain
+  pricing: ['pricing'],
 
   // 🏷️ Service Item Domain
   serviceItem: ['price-list'],
@@ -131,6 +163,18 @@ const config: Config = {
 
   // 👤 CUSTOMER DOMAIN
   ...createDomainConfig('customer', DOMAIN_TAGS.customer),
+
+  // 🏢 BRANCH DOMAIN
+  ...createDomainConfig('branch', DOMAIN_TAGS.branch),
+
+  // 🛒 CART DOMAIN
+  ...createDomainConfig('cart', DOMAIN_TAGS.cart),
+
+  // 📋 ORDER DOMAIN
+  ...createDomainConfig('order', DOMAIN_TAGS.order),
+
+  // 💰 PRICING DOMAIN
+  ...createDomainConfig('pricing', DOMAIN_TAGS.pricing),
 
   // 🏷️ SERVICE ITEM DOMAIN
   ...createDomainConfig('serviceItem', DOMAIN_TAGS.serviceItem),

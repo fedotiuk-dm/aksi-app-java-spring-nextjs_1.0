@@ -1,10 +1,10 @@
-// 🔥 AUTO-GENERATED BARREL EXPORT for CUSTOMER DOMAIN
-// Домен customer
+// 🔥 AUTO-GENERATED BARREL EXPORT for BRANCH DOMAIN
+// 🏢 Branch Domain - філії, графік роботи, статистика
 // Згенеровано: 2025-08-06T21:04:47.686Z
 // Не редагуйте вручну - файл буде перезаписаний при наступній генерації
 //
 // 💡 Це дозволяє використовувати чисті імпорти:
-// import { useClients, ClientResponse, clientSchema } from '@/shared/api/generated/customer';
+// import { useClients, ClientResponse, clientSchema } from '@/shared/api/generated/branch';
 //
 // 🎯 Доступні експорти:
 // - з aKSIDryCleaningOrderSystemAPI.ts: React Query хуки (useQuery, useMutation)
