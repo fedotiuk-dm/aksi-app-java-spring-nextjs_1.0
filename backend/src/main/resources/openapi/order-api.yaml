@@ -28,23 +28,10 @@ paths:
       security:
         - cookieAuth: []
       parameters:
-        - name: offset
-          in: query
-          description: Number of items to skip
-          required: false
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-        - name: limit
-          in: query
-          description: Number of items to return
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
         - name: customerId
           in: query
           description: Filter by customer ID
@@ -85,7 +72,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrdersResponse'
+                $ref: '#/components/schemas/OrderListResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -339,6 +326,257 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/orders/by-number/{orderNumber}:
+    get:
+      operationId: getOrderByNumber
+      summary: Get order by order number
+      description: Get order details by order number
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: orderNumber
+          in: path
+          required: true
+          description: Order number
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/orders/customer/{customerId}/history:
+    get:
+      operationId: getCustomerOrderHistory
+      summary: Get customer order history
+      description: Get paginated order history for a specific customer
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Customer ID
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      responses:
+        '200':
+          description: Customer order history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/orders/customer/{customerId}/recent:
+    get:
+      operationId: getCustomerRecentOrders
+      summary: Get customer recent orders
+      description: Get customer's most recent orders (limited list)
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Customer ID
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          description: Maximum number of orders to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: Recent orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/orders/due-for-completion:
+    get:
+      operationId: getOrdersDueForCompletion
+      summary: Get orders due for completion
+      description: Get orders that are due for completion within specified days
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: days
+          in: query
+          description: Number of days to look ahead
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 30
+            default: 7
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      responses:
+        '200':
+          description: Orders due for completion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/orders/overdue:
+    get:
+      operationId: getOverdueOrders
+      summary: Get overdue orders
+      description: Get orders that are past their expected completion date
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      responses:
+        '200':
+          description: Overdue orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/orders/by-status:
+    get:
+      operationId: getOrdersByStatus
+      summary: Get orders by status
+      description: Get all orders with specific status (non-paginated)
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Order status
+          required: true
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+        - name: branchId
+          in: query
+          description: Filter by branch ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Orders with specified status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/orders/{orderId}/items:
+    get:
+      operationId: getOrderItems
+      summary: Get order items
+      description: Get all items for a specific order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Order ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order items list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderItemInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/orders/{orderId}/payments:
+    get:
+      operationId: getOrderPayments
+      summary: Get order payments
+      description: Get payment history for a specific order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Order ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order payments list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/orders/{orderId}/payment:
     parameters:
       - name: orderId
@@ -399,6 +637,44 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+
+  parameters:
+    PageNumber:
+      name: page
+      in: query
+      description: Page number (0-based)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    
+    PageSize:
+      name: size
+      in: query
+      description: Page size
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    
+    SortBy:
+      name: sortBy
+      in: query
+      description: Field to sort by
+      schema:
+        type: string
+        default: createdAt
+        enum: [createdAt, orderNumber, status, totalAmount]
+    
+    SortOrder:
+      name: sortOrder
+      in: query
+      description: Sort order
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
 
   schemas:
     OrderStatus:
@@ -901,23 +1177,67 @@ components:
         method:
           $ref: '#/components/schemas/PaymentMethod'
 
-    OrdersResponse:
+    # Pagination schema
+    PaginatedResponse:
       type: object
       required:
-        - orders
-        - totalItems
-        - hasMore
+        - data
+        - totalElements
+        - totalPages
+        - size
+        - number
+        - numberOfElements
+        - first
+        - last
+        - empty
       properties:
-        orders:
+        data:
           type: array
-          items:
-            $ref: '#/components/schemas/OrderInfo'
-        totalItems:
+          items: {}
+          description: Page content
+        totalElements:
           type: integer
-          description: Total number of items
-        hasMore:
+          format: int64
+          description: Total number of elements
+          example: 100
+        totalPages:
+          type: integer
+          description: Total number of pages
+          example: 5
+        size:
+          type: integer
+          description: Page size
+          example: 20
+        number:
+          type: integer
+          description: Page number (0-based)
+          example: 0
+        numberOfElements:
+          type: integer
+          description: Number of elements in current page
+          example: 20
+        first:
           type: boolean
-          description: Has more items
+          description: Is first page
+          example: true
+        last:
+          type: boolean
+          description: Is last page
+          example: false
+        empty:
+          type: boolean
+          description: Is empty
+          example: false
+    
+    OrderListResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderInfo'
 
     ErrorResponse:
       type: object

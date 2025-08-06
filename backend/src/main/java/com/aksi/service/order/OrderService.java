@@ -13,6 +13,8 @@ import com.aksi.api.order.dto.CreateOrderRequest;
 import com.aksi.api.order.dto.ItemPhotoInfo;
 import com.aksi.api.order.dto.OrderInfo;
 import com.aksi.api.order.dto.OrderItemInfo;
+import com.aksi.api.order.dto.OrderListResponse;
+import com.aksi.api.order.dto.OrderStatus;
 import com.aksi.api.order.dto.PaymentInfo;
 import com.aksi.api.order.dto.PhotoType;
 import com.aksi.api.order.dto.UpdateItemCharacteristicsRequest;
@@ -167,6 +169,19 @@ public interface OrderService {
   Page<OrderInfo> getCustomerOrderHistory(UUID customerId, Pageable pageable);
 
   /**
+   * Get customer's order history with page/size parameters
+   *
+   * @param customerId Customer ID
+   * @param page Page number
+   * @param size Page size
+   * @param sortBy Sort field
+   * @param sortOrder Sort order
+   * @return OrderListResponse with customer orders
+   */
+  OrderListResponse getCustomerOrderHistory(
+      UUID customerId, Integer page, Integer size, String sortBy, String sortOrder);
+
+  /**
    * Get orders due for completion
    *
    * @param days Number of days ahead to check
@@ -175,12 +190,36 @@ public interface OrderService {
   Page<OrderInfo> getOrdersDueForCompletion(int days, Pageable pageable);
 
   /**
+   * Get orders due for completion with page/size parameters
+   *
+   * @param days Number of days ahead to check
+   * @param page Page number
+   * @param size Page size
+   * @param sortBy Sort field
+   * @param sortOrder Sort order
+   * @return OrderListResponse with orders due for completion
+   */
+  OrderListResponse getOrdersDueForCompletion(
+      Integer days, Integer page, Integer size, String sortBy, String sortOrder);
+
+  /**
    * Get overdue orders
    *
    * @param pageable Pagination parameters
    * @return Page of overdue orders
    */
   Page<OrderInfo> getOverdueOrders(Pageable pageable);
+
+  /**
+   * Get overdue orders with page/size parameters
+   *
+   * @param page Page number
+   * @param size Page size
+   * @param sortBy Sort field
+   * @param sortOrder Sort order
+   * @return OrderListResponse with overdue orders
+   */
+  OrderListResponse getOverdueOrders(Integer page, Integer size, String sortBy, String sortOrder);
 
   /**
    * Get customer's recent orders without pagination (for quick access)
@@ -215,4 +254,38 @@ public interface OrderService {
    * @return List of orders with specified status
    */
   List<OrderInfo> getOrdersByStatus(OrderEntity.OrderStatus status, UUID branchId);
+
+  /**
+   * Get orders by status without pagination (for reports) - API version
+   *
+   * @param status Order status from API
+   * @param branchId Branch ID (optional)
+   * @return List of orders with specified status
+   */
+  List<OrderInfo> getOrdersByStatus(OrderStatus status, UUID branchId);
+
+  /**
+   * List orders with filtering and pagination using page/size
+   *
+   * @param page Page number (0-based)
+   * @param size Page size
+   * @param sortBy Field to sort by
+   * @param sortOrder Sort order (asc/desc)
+   * @param customerId Customer ID filter (optional)
+   * @param status Order status filter (optional)
+   * @param branchId Branch ID filter (optional)
+   * @param dateFrom Creation date from filter (optional)
+   * @param dateTo Creation date to filter (optional)
+   * @return OrderListResponse with pagination info
+   */
+  OrderListResponse listOrders(
+      Integer page,
+      Integer size,
+      String sortBy,
+      String sortOrder,
+      UUID customerId,
+      OrderStatus status,
+      UUID branchId,
+      Instant dateFrom,
+      Instant dateTo);
 }
