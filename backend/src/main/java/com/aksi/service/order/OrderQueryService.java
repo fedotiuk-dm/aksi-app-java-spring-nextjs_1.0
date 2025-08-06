@@ -102,11 +102,10 @@ public class OrderQueryService {
         sortBy,
         sortOrder);
 
-    // Create pageable from page/size/sort parameters
+    // OpenAPI schema defines defaults: page=0, size=20, sortBy=createdAt, sortOrder=desc
     Sort.Direction direction =
         "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    Sort sort = Sort.by(direction, sortBy != null ? sortBy : "createdAt");
-    Pageable pageable = PageRequest.of(page != null ? page : 0, size != null ? size : 20, sort);
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
     // Convert OrderStatus DTO to entity enum
     OrderEntity.OrderStatus entityStatus = null;
@@ -119,18 +118,7 @@ public class OrderQueryService {
         listOrders(customerId, entityStatus, branchId, dateFrom, dateTo, null, pageable);
 
     // Convert to OrderListResponse
-    OrderListResponse response = new OrderListResponse();
-    response.setData(ordersPage.getContent());
-    response.setTotalElements(ordersPage.getTotalElements());
-    response.setTotalPages(ordersPage.getTotalPages());
-    response.setSize(ordersPage.getSize());
-    response.setNumber(ordersPage.getNumber());
-    response.setNumberOfElements(ordersPage.getNumberOfElements());
-    response.setFirst(ordersPage.isFirst());
-    response.setLast(ordersPage.isLast());
-    response.setEmpty(ordersPage.isEmpty());
-
-    return response;
+    return createOrderListResponse(ordersPage);
   }
 
   /** Check if order exists by ID */
@@ -229,28 +217,16 @@ public class OrderQueryService {
       UUID customerId, Integer page, Integer size, String sortBy, String sortOrder) {
     log.debug("Getting order history for customer {} - page: {}, size: {}", customerId, page, size);
 
-    // Create pageable from parameters
+    // OpenAPI schema defines defaults: page=0, size=20, sortBy=createdAt, sortOrder=desc
     Sort.Direction direction =
         "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    Sort sort = Sort.by(direction, sortBy != null ? sortBy : "createdAt");
-    Pageable pageable = PageRequest.of(page != null ? page : 0, size != null ? size : 20, sort);
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
     // Get orders
     Page<OrderInfo> ordersPage = getCustomerOrderHistory(customerId, pageable);
 
     // Convert to OrderListResponse
-    OrderListResponse response = new OrderListResponse();
-    response.setData(ordersPage.getContent());
-    response.setTotalElements(ordersPage.getTotalElements());
-    response.setTotalPages(ordersPage.getTotalPages());
-    response.setSize(ordersPage.getSize());
-    response.setNumber(ordersPage.getNumber());
-    response.setNumberOfElements(ordersPage.getNumberOfElements());
-    response.setFirst(ordersPage.isFirst());
-    response.setLast(ordersPage.isLast());
-    response.setEmpty(ordersPage.isEmpty());
-
-    return response;
+    return createOrderListResponse(ordersPage);
   }
 
   /** Get orders due for completion with page/size parameters */
@@ -259,28 +235,17 @@ public class OrderQueryService {
     log.debug(
         "Getting orders due for completion in {} days - page: {}, size: {}", days, page, size);
 
-    // Create pageable from parameters
+    // OpenAPI schema defines defaults: page=0, size=20, sortOrder=desc
     Sort.Direction direction =
         "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    Sort sort = Sort.by(direction, sortBy != null ? sortBy : "expectedCompletionDate");
-    Pageable pageable = PageRequest.of(page != null ? page : 0, size != null ? size : 20, sort);
+    String sortField = sortBy != null ? sortBy : "expectedCompletionDate";
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
     // Get orders
     Page<OrderInfo> ordersPage = getOrdersDueForCompletion(days != null ? days : 7, pageable);
 
     // Convert to OrderListResponse
-    OrderListResponse response = new OrderListResponse();
-    response.setData(ordersPage.getContent());
-    response.setTotalElements(ordersPage.getTotalElements());
-    response.setTotalPages(ordersPage.getTotalPages());
-    response.setSize(ordersPage.getSize());
-    response.setNumber(ordersPage.getNumber());
-    response.setNumberOfElements(ordersPage.getNumberOfElements());
-    response.setFirst(ordersPage.isFirst());
-    response.setLast(ordersPage.isLast());
-    response.setEmpty(ordersPage.isEmpty());
-
-    return response;
+    return createOrderListResponse(ordersPage);
   }
 
   /** Get overdue orders with page/size parameters */
@@ -288,28 +253,17 @@ public class OrderQueryService {
       Integer page, Integer size, String sortBy, String sortOrder) {
     log.debug("Getting overdue orders - page: {}, size: {}", page, size);
 
-    // Create pageable from parameters
+    // OpenAPI schema defines defaults: page=0, size=20, sortOrder=desc
     Sort.Direction direction =
         "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    Sort sort = Sort.by(direction, sortBy != null ? sortBy : "expectedCompletionDate");
-    Pageable pageable = PageRequest.of(page != null ? page : 0, size != null ? size : 20, sort);
+    String sortField = sortBy != null ? sortBy : "expectedCompletionDate";
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
     // Get orders
     Page<OrderInfo> ordersPage = getOverdueOrders(pageable);
 
     // Convert to OrderListResponse
-    OrderListResponse response = new OrderListResponse();
-    response.setData(ordersPage.getContent());
-    response.setTotalElements(ordersPage.getTotalElements());
-    response.setTotalPages(ordersPage.getTotalPages());
-    response.setSize(ordersPage.getSize());
-    response.setNumber(ordersPage.getNumber());
-    response.setNumberOfElements(ordersPage.getNumberOfElements());
-    response.setFirst(ordersPage.isFirst());
-    response.setLast(ordersPage.isLast());
-    response.setEmpty(ordersPage.isEmpty());
-
-    return response;
+    return createOrderListResponse(ordersPage);
   }
 
   // Private helper methods from OrderFinder
@@ -326,5 +280,20 @@ public class OrderQueryService {
     return orderRepository
         .findByOrderNumber(orderNumber)
         .orElseThrow(() -> new NotFoundException("Order not found: " + orderNumber));
+  }
+
+  /** Convert Page<OrderInfo> to OrderListResponse */
+  private OrderListResponse createOrderListResponse(Page<OrderInfo> ordersPage) {
+    OrderListResponse response = new OrderListResponse();
+    response.setData(ordersPage.getContent());
+    response.setTotalElements(ordersPage.getTotalElements());
+    response.setTotalPages(ordersPage.getTotalPages());
+    response.setSize(ordersPage.getSize());
+    response.setNumber(ordersPage.getNumber());
+    response.setNumberOfElements(ordersPage.getNumberOfElements());
+    response.setFirst(ordersPage.isFirst());
+    response.setLast(ordersPage.isLast());
+    response.setEmpty(ordersPage.isEmpty());
+    return response;
   }
 }
