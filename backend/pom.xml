@@ -510,6 +510,10 @@
                             <generatorName>spring</generatorName>
                             <apiPackage>com.aksi.api.pricing</apiPackage>
                             <modelPackage>com.aksi.api.pricing.dto</modelPackage>
+                            <modelNameMappings>
+                                <modelNameMapping>PriceModifier=PriceModifierDto</modelNameMapping>
+                                <modelNameMapping>Discount=DiscountDto</modelNameMapping>
+                            </modelNameMappings>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>

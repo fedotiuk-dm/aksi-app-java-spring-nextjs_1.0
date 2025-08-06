@@ -2,9 +2,11 @@ package com.aksi.service.pricing;
 
 import java.util.List;
 
+import com.aksi.api.pricing.dto.DiscountDto;
 import com.aksi.api.pricing.dto.DiscountsResponse;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
+import com.aksi.api.pricing.dto.PriceModifierDto;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
 
 /** Service for price calculations and pricing rules management */
@@ -51,4 +53,56 @@ public interface PricingService {
    * @return true if discount is applicable
    */
   boolean isDiscountApplicableToCategory(String discountCode, String categoryCode);
+
+  // CRUD operations for Price Modifiers
+
+  /**
+   * Create a new price modifier
+   *
+   * @param priceModifierDto Price modifier data
+   * @return Created price modifier
+   */
+  PriceModifierDto createPriceModifier(PriceModifierDto priceModifierDto);
+
+  /**
+   * Update an existing price modifier
+   *
+   * @param code Price modifier code
+   * @param priceModifierDto Updated price modifier data
+   * @return Updated price modifier
+   */
+  PriceModifierDto updatePriceModifier(String code, PriceModifierDto priceModifierDto);
+
+  /**
+   * Delete a price modifier
+   *
+   * @param code Price modifier code
+   */
+  void deletePriceModifier(String code);
+
+  // CRUD operations for Discounts
+
+  /**
+   * Create a new discount
+   *
+   * @param discountDto Discount data
+   * @return Created discount
+   */
+  DiscountDto createDiscount(DiscountDto discountDto);
+
+  /**
+   * Update an existing discount
+   *
+   * @param code Discount code
+   * @param discountDto Updated discount data
+   * @return Updated discount
+   */
+  DiscountDto updateDiscount(String code, DiscountDto discountDto);
+
+  /**
+   * Delete a discount
+   *
+   * @param code Discount code
+   */
+  void deleteDiscount(String code);
 }

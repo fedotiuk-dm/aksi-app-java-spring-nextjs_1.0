@@ -1,32 +1,59 @@
 package com.aksi.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-import com.aksi.api.pricing.dto.Discount;
-import com.aksi.api.pricing.dto.PriceModifier;
+import com.aksi.api.pricing.dto.DiscountDto;
+import com.aksi.api.pricing.dto.PriceModifierDto;
+import com.aksi.domain.pricing.Discount;
+import com.aksi.domain.pricing.PriceModifier;
 
 /** MapStruct mapper for Pricing domain */
 @Mapper(componentModel = "spring")
 public interface PricingMapper {
 
-  /**
-   * Map PriceModifier entity to DTO
-   *
-   * @param modifier PriceModifier entity
-   * @return PriceModifier DTO
-   */
-  @Mapping(
-      target = "type",
-      expression =
-          "java(com.aksi.api.pricing.dto.PriceModifier.TypeEnum.fromValue(modifier.getType().name()))")
-  PriceModifier toPriceModifierDto(com.aksi.domain.pricing.PriceModifier modifier);
+  // PriceModifier mappings
 
-  /**
-   * Map Discount entity to DTO
-   *
-   * @param discount Discount entity
-   * @return Discount DTO
-   */
-  Discount toDiscountDto(com.aksi.domain.pricing.Discount discount);
+  PriceModifierDto toPriceModifierDto(PriceModifier entity);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "jexlFormula", ignore = true)
+  @Mapping(target = "sortOrder", constant = "0")
+  PriceModifier toPriceModifierEntity(PriceModifierDto dto);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "jexlFormula", ignore = true)
+  @Mapping(target = "sortOrder", ignore = true)
+  void updatePriceModifierFromDto(PriceModifierDto dto, @MappingTarget PriceModifier entity);
+
+  List<PriceModifierDto> toPriceModifierDtoList(List<PriceModifier> entities);
+
+  // Discount mappings
+
+  DiscountDto toDiscountDto(Discount entity);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "sortOrder", constant = "0")
+  Discount toDiscountEntity(DiscountDto dto);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "sortOrder", ignore = true)
+  void updateDiscountFromDto(DiscountDto dto, @MappingTarget Discount entity);
+
+  List<DiscountDto> toDiscountDtoList(List<Discount> entities);
 }

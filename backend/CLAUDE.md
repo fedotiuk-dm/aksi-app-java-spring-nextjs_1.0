@@ -100,3 +100,24 @@ Follow best practices for:
 - Asynchronous processing using Spring's @Async or reactive programming with Spring WebFlux.
 
 Adhere to DDD SOLID principles and maintain high cohesion and low coupling in your Spring Boot application design.
+
+## Naming Conflicts Resolution
+
+When DTOs generated from OpenAPI schemas have the same name as JPA entities:
+
+### Option 1: Use modelNameMappings in OpenAPI Generator (Preferred)
+- Configure `modelNameMappings` in pom.xml to map OpenAPI models to different class names
+- Example:
+  ```xml
+  <modelNameMappings>
+      <modelNameMapping>PriceModifier=PriceModifierDto</modelNameMapping>
+      <modelNameMapping>Discount=DiscountDto</modelNameMapping>
+  </modelNameMappings>
+  ```
+- This keeps entity names unchanged and adds Dto suffix to generated classes
+- Update mappers to use the new DTO class names
+
+### Option 2: Rename entities (Alternative)
+- Add "Entity" suffix to the JPA entity class (e.g., PriceModifier → PriceModifierEntity)
+- Keep DTO names clean and matching the OpenAPI schema
+- This approach maintains API contract stability while avoiding naming conflicts

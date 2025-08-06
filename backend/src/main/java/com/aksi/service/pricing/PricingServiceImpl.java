@@ -8,11 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.pricing.dto.CalculatedItemPrice;
 import com.aksi.api.pricing.dto.CalculationTotals;
+import com.aksi.api.pricing.dto.DiscountDto;
 import com.aksi.api.pricing.dto.DiscountsResponse;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
+import com.aksi.api.pricing.dto.PriceModifierDto;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
 import com.aksi.api.service.dto.PriceListItemInfo;
+import com.aksi.domain.pricing.Discount;
+import com.aksi.domain.pricing.PriceModifier;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.PricingMapper;
 import com.aksi.repository.DiscountRepository;
@@ -85,7 +89,7 @@ public class PricingServiceImpl implements PricingService {
   public PriceModifiersResponse listPriceModifiers(String categoryCode, Boolean active) {
     log.debug("Listing price modifiers for category: {}, active: {}", categoryCode, active);
 
-    List<com.aksi.domain.pricing.PriceModifier> modifiers;
+    List<PriceModifier> modifiers;
 
     if (categoryCode != null) {
       modifiers = priceModifierRepository.findActiveByCategoryCode(categoryCode);
@@ -96,15 +100,15 @@ public class PricingServiceImpl implements PricingService {
     }
 
     PriceModifiersResponse response = new PriceModifiersResponse();
-    response.setModifiers(modifiers.stream().map(pricingMapper::toPriceModifierDto).toList());
+    response.setModifiers(pricingMapper.toPriceModifierDtoList(modifiers));
 
     // Group by categories for convenience
-    response.setGeneralModifiers(
+    var generalModifiers =
         modifiers.stream()
             .filter(
                 m -> m.getCategoryRestrictions() == null || m.getCategoryRestrictions().isEmpty())
-            .map(pricingMapper::toPriceModifierDto)
-            .toList());
+            .toList();
+    response.setGeneralModifiers(pricingMapper.toPriceModifierDtoList(generalModifiers));
 
     return response;
   }
@@ -114,7 +118,7 @@ public class PricingServiceImpl implements PricingService {
   public DiscountsResponse listDiscounts(Boolean active) {
     log.debug("Listing discounts, active: {}", active);
 
-    List<com.aksi.domain.pricing.Discount> discounts;
+    List<Discount> discounts;
 
     if (active == null || active) {
       discounts = discountRepository.findAllActiveOrderedBySortOrder();
@@ -123,7 +127,7 @@ public class PricingServiceImpl implements PricingService {
     }
 
     DiscountsResponse response = new DiscountsResponse();
-    response.setDiscounts(discounts.stream().map(pricingMapper::toDiscountDto).toList());
+    response.setDiscounts(pricingMapper.toDiscountDtoList(discounts));
 
     return response;
   }
@@ -132,7 +136,7 @@ public class PricingServiceImpl implements PricingService {
   @Transactional(readOnly = true)
   public List<String> getApplicableModifierCodes(String categoryCode) {
     return priceModifierRepository.findActiveByCategoryCode(categoryCode).stream()
-        .map(com.aksi.domain.pricing.PriceModifier::getCode)
+        .map(PriceModifier::getCode)
         .toList();
   }
 
@@ -140,5 +144,101 @@ public class PricingServiceImpl implements PricingService {
   @Transactional(readOnly = true)
   public boolean isDiscountApplicableToCategory(String discountCode, String categoryCode) {
     return pricingRulesService.isDiscountApplicableToCategory(discountCode, categoryCode);
+  }
+
+  // CRUD operations for Price Modifiers
+
+  @Override
+  @Transactional
+  public PriceModifierDto createPriceModifier(PriceModifierDto priceModifierDto) {
+    log.info("Creating new price modifier with code: {}", priceModifierDto.getCode());
+
+    // Check if modifier with same code already exists
+    if (priceModifierRepository.existsByCode(priceModifierDto.getCode())) {
+      throw new IllegalArgumentException(
+          "Price modifier with code '" + priceModifierDto.getCode() + "' already exists");
+    }
+
+    PriceModifier entity = pricingMapper.toPriceModifierEntity(priceModifierDto);
+    PriceModifier saved = priceModifierRepository.save(entity);
+
+    return pricingMapper.toPriceModifierDto(saved);
+  }
+
+  @Override
+  @Transactional
+  public PriceModifierDto updatePriceModifier(String code, PriceModifierDto priceModifierDto) {
+    log.info("Updating price modifier with code: {}", code);
+
+    PriceModifier existing =
+        priceModifierRepository
+            .findByCode(code)
+            .orElseThrow(() -> new NotFoundException("Price modifier not found: " + code));
+
+    pricingMapper.updatePriceModifierFromDto(priceModifierDto, existing);
+    PriceModifier saved = priceModifierRepository.save(existing);
+
+    return pricingMapper.toPriceModifierDto(saved);
+  }
+
+  @Override
+  @Transactional
+  public void deletePriceModifier(String code) {
+    log.info("Deleting price modifier with code: {}", code);
+
+    PriceModifier existing =
+        priceModifierRepository
+            .findByCode(code)
+            .orElseThrow(() -> new NotFoundException("Price modifier not found: " + code));
+
+    priceModifierRepository.delete(existing);
+  }
+
+  // CRUD operations for Discounts
+
+  @Override
+  @Transactional
+  public DiscountDto createDiscount(DiscountDto discountDto) {
+    log.info("Creating new discount with code: {}", discountDto.getCode());
+
+    // Check if discount with same code already exists
+    if (discountRepository.existsByCode(discountDto.getCode())) {
+      throw new IllegalArgumentException(
+          "Discount with code '" + discountDto.getCode() + "' already exists");
+    }
+
+    Discount entity = pricingMapper.toDiscountEntity(discountDto);
+    Discount saved = discountRepository.save(entity);
+
+    return pricingMapper.toDiscountDto(saved);
+  }
+
+  @Override
+  @Transactional
+  public DiscountDto updateDiscount(String code, DiscountDto discountDto) {
+    log.info("Updating discount with code: {}", code);
+
+    Discount existing =
+        discountRepository
+            .findByCode(code)
+            .orElseThrow(() -> new NotFoundException("Discount not found: " + code));
+
+    pricingMapper.updateDiscountFromDto(discountDto, existing);
+    Discount saved = discountRepository.save(existing);
+
+    return pricingMapper.toDiscountDto(saved);
+  }
+
+  @Override
+  @Transactional
+  public void deleteDiscount(String code) {
+    log.info("Deleting discount with code: {}", code);
+
+    Discount existing =
+        discountRepository
+            .findByCode(code)
+            .orElseThrow(() -> new NotFoundException("Discount not found: " + code));
+
+    discountRepository.delete(existing);
   }
 }
