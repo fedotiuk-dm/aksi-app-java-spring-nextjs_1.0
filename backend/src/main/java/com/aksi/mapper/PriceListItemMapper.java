@@ -18,7 +18,7 @@ import com.aksi.domain.catalog.PriceListItemEntity;
 public interface PriceListItemMapper {
 
   // MapStruct handles enum and simple type mapping automatically
-  PriceListItemInfo toPriceListItemInfo(PriceListItemEntity priceListItemEntityEntity);
+  PriceListItemInfo toPriceListItemInfo(PriceListItemEntity priceListItemEntity);
 
   List<PriceListItemInfo> toPriceListItemInfoList(List<PriceListItemEntity> priceListItemEntities);
 

@@ -33,7 +33,7 @@ public class UserBranchAssignmentEntity extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity userEntityEntity;
+  private UserEntity userEntity;
 
   @Column(name = "branch_id", nullable = false)
   private UUID branchId;

@@ -27,8 +27,8 @@ public interface CartItemMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
-  @Mapping(target = "cartEntityEntity", ignore = true)
-  @Mapping(target = "priceListItemEntityEntity", ignore = true)
+  @Mapping(target = "cartEntity", ignore = true)
+  @Mapping(target = "priceListItemEntity", ignore = true)
   @Mapping(target = "characteristics", ignore = true)
   @Mapping(target = "modifiers", ignore = true)
   void updateEntityFromRequest(UpdateCartItemRequest request, @MappingTarget CartItem entity);

@@ -80,16 +80,16 @@ public class OrderServiceImpl implements OrderService {
     log.debug("Creating order from cart: {}", request.getCartId());
 
     // Validate and get cart
-    CartEntity cartEntityEntity =
+    CartEntity cartEntity =
         cartRepository
             .findById(request.getCartId())
             .orElseThrow(() -> new NotFoundException("Cart not found: " + request.getCartId()));
 
-    if (cartEntityEntity.isExpired()) {
+    if (cartEntity.isExpired()) {
       throw new BusinessValidationException("Cart has expired");
     }
 
-    if (cartEntityEntity.getItems().isEmpty()) {
+    if (cartEntity.getItems().isEmpty()) {
       throw new BusinessValidationException("Cannot create order from empty cart");
     }
 
@@ -104,24 +104,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     // Get current user
-    UserEntity currentUserEntityEntity = getCurrentUser();
+    UserEntity currentUserEntity = getCurrentUser();
 
     // Calculate pricing
-    PriceCalculationResponse pricing = calculateCartPricing(cartEntityEntity);
+    PriceCalculationResponse pricing = calculateCartPricing(cartEntity);
 
     // Create order
     OrderEntity orderEntity = new OrderEntity();
     orderEntity.setOrderNumber(generateOrderNumber());
-    orderEntity.setCustomerEntity(cartEntityEntity.getCustomerEntity());
+    orderEntity.setCustomerEntity(cartEntity.getCustomerEntity());
     orderEntity.setBranchEntity(branchEntity);
     orderEntity.setUniqueLabel(request.getUniqueLabel());
     orderEntity.setStatus(OrderEntity.OrderStatus.PENDING);
     orderEntity.setNotes(request.getNotes());
     orderEntity.setCustomerSignature(request.getCustomerSignature());
-    orderEntity.setCreatedBy(currentUserEntityEntity);
+    orderEntity.setCreatedBy(currentUserEntity);
     orderEntity.setTermsAccepted(
         request.getTermsAccepted() != null ? request.getTermsAccepted() : false);
-    orderEntity.setExpectedCompletionDate(calculateExpectedCompletionDate(cartEntityEntity));
+    orderEntity.setExpectedCompletionDate(calculateExpectedCompletionDate(cartEntity));
 
     // Set pricing snapshot
     orderEntity.setItemsSubtotal(pricing.getTotals().getItemsSubtotal());
@@ -131,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
     orderEntity.setTotalAmount(pricing.getTotals().getTotal());
 
     // Convert cart items to order items
-    for (CartItem cartItem : cartEntityEntity.getItems()) {
+    for (CartItem cartItem : cartEntity.getItems()) {
       OrderItemEntity orderItemEntity = convertCartItemToOrderItem(cartItem, orderEntity, pricing);
       orderEntity.addItem(orderItemEntity);
     }
@@ -140,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
     orderEntity = orderRepository.save(orderEntity);
 
     // Clear cart after successful order creation
-    cartRepository.delete(cartEntityEntity);
+    cartRepository.delete(cartEntity);
 
     log.info(
         "Created order {} for customer {}",
@@ -444,14 +444,14 @@ public class OrderServiceImpl implements OrderService {
     }
   }
 
-  private PriceCalculationResponse calculateCartPricing(CartEntity cartEntityEntity) {
+  private PriceCalculationResponse calculateCartPricing(CartEntity cartEntity) {
     PriceCalculationRequest pricingRequest = new PriceCalculationRequest();
 
     // Convert cart items to pricing calculation items
     List<PriceCalculationItem> pricingItems = new ArrayList<>();
-    for (CartItem cartItem : cartEntityEntity.getItems()) {
+    for (CartItem cartItem : cartEntity.getItems()) {
       PriceCalculationItem pricingItem = new PriceCalculationItem();
-      pricingItem.setPriceListItemId(cartItem.getPriceListItemEntityEntity().getId());
+      pricingItem.setPriceListItemId(cartItem.getPriceListItemEntity().getId());
       pricingItem.setQuantity(cartItem.getQuantity());
 
       // Add characteristics if present
@@ -488,24 +488,24 @@ public class OrderServiceImpl implements OrderService {
     GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
 
     // Set urgency type
-    if (cartEntityEntity.getUrgencyType() != null) {
+    if (cartEntity.getUrgencyType() != null) {
       try {
         globalModifiers.setUrgencyType(
-            GlobalPriceModifiers.UrgencyTypeEnum.fromValue(cartEntityEntity.getUrgencyType()));
+            GlobalPriceModifiers.UrgencyTypeEnum.fromValue(cartEntity.getUrgencyType()));
       } catch (IllegalArgumentException e) {
-        log.warn("Invalid urgency type: {}, using NORMAL", cartEntityEntity.getUrgencyType());
+        log.warn("Invalid urgency type: {}, using NORMAL", cartEntity.getUrgencyType());
         globalModifiers.setUrgencyType(GlobalPriceModifiers.UrgencyTypeEnum.NORMAL);
       }
     }
 
     // Set discount type
-    if (cartEntityEntity.getDiscountType() != null) {
+    if (cartEntity.getDiscountType() != null) {
       try {
         globalModifiers.setDiscountType(
-            GlobalPriceModifiers.DiscountTypeEnum.fromValue(cartEntityEntity.getDiscountType()));
-        globalModifiers.setDiscountPercentage(cartEntityEntity.getDiscountPercentage());
+            GlobalPriceModifiers.DiscountTypeEnum.fromValue(cartEntity.getDiscountType()));
+        globalModifiers.setDiscountPercentage(cartEntity.getDiscountPercentage());
       } catch (IllegalArgumentException e) {
-        log.warn("Invalid discount type: {}, using NONE", cartEntityEntity.getDiscountType());
+        log.warn("Invalid discount type: {}, using NONE", cartEntity.getDiscountType());
         globalModifiers.setDiscountType(GlobalPriceModifiers.DiscountTypeEnum.NONE);
       }
     }
@@ -515,13 +515,13 @@ public class OrderServiceImpl implements OrderService {
     return pricingService.calculatePrice(pricingRequest);
   }
 
-  private Instant calculateExpectedCompletionDate(CartEntity cartEntityEntity) {
+  private Instant calculateExpectedCompletionDate(CartEntity cartEntity) {
     Instant baseDate = Instant.now().plusSeconds((long) defaultCompletionHours * 3600);
 
     // Adjust based on urgency
-    if ("EXPRESS_24H".equals(cartEntityEntity.getUrgencyType())) {
+    if ("EXPRESS_24H".equals(cartEntity.getUrgencyType())) {
       return Instant.now().plusSeconds(24 * 3600);
-    } else if ("EXPRESS_48H".equals(cartEntityEntity.getUrgencyType())) {
+    } else if ("EXPRESS_48H".equals(cartEntity.getUrgencyType())) {
       return Instant.now().plusSeconds(48 * 3600);
     }
 
@@ -532,22 +532,19 @@ public class OrderServiceImpl implements OrderService {
       CartItem cartItem, OrderEntity orderEntity, PriceCalculationResponse pricing) {
     OrderItemEntity orderItemEntity = new OrderItemEntity();
     orderItemEntity.setOrderEntity(orderEntity);
-    orderItemEntity.setPriceListItemEntityEntity(cartItem.getPriceListItemEntityEntity());
+    orderItemEntity.setPriceListItemEntity(cartItem.getPriceListItemEntity());
     orderItemEntity.setQuantity(cartItem.getQuantity());
 
     // Find the corresponding calculated price
     var calculatedPrice =
         pricing.getItems().stream()
             .filter(
-                item ->
-                    item.getPriceListItemId()
-                        .equals(cartItem.getPriceListItemEntityEntity().getId()))
+                item -> item.getPriceListItemId().equals(cartItem.getPriceListItemEntity().getId()))
             .findFirst()
             .orElseThrow(
                 () ->
                     new IllegalStateException(
-                        "No pricing found for item: "
-                            + cartItem.getPriceListItemEntityEntity().getId()));
+                        "No pricing found for item: " + cartItem.getPriceListItemEntity().getId()));
 
     // Map pricing details
     orderItemEntity.setBasePrice(calculatedPrice.getBasePrice());

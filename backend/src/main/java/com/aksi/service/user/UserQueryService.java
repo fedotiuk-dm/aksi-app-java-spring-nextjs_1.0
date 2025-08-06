@@ -81,10 +81,10 @@ public class UserQueryService implements UserDetailsService {
    * @throws NotFoundException if user not found
    */
   public UserDetail getUserDetailById(UUID userId) {
-    UserEntity userEntityEntity =
+    UserEntity userEntity =
         findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
-    return userMapper.toUserDetail(userEntityEntity);
+    return userMapper.toUserDetail(userEntity);
   }
 
   /**
@@ -149,14 +149,14 @@ public class UserQueryService implements UserDetailsService {
    * @throws NotFoundException if user not found
    */
   public UserBranchesResponse getUserBranches(UUID userId) {
-    UserEntity userEntityEntity =
+    UserEntity userEntity =
         userRepository
             .findByIdWithBranches(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
     UserBranchesResponse response = new UserBranchesResponse();
     response.setBranches(
-        userEntityEntity.getBranchAssignments().stream()
+        userEntity.getBranchAssignments().stream()
             .map(userMapper::toBranchAssignment)
             .collect(Collectors.toList()));
 
@@ -203,23 +203,23 @@ public class UserQueryService implements UserDetailsService {
    */
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    UserEntity userEntityEntity =
+    UserEntity userEntity =
         findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
     var authorities =
-        userEntityEntity.getRoles().stream()
+        userEntity.getRoles().stream()
             .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
             .collect(Collectors.toList());
 
     return org.springframework.security.core.userdetails.User.builder()
-        .username(userEntityEntity.getUsername())
-        .password(userEntityEntity.getPasswordHash())
+        .username(userEntity.getUsername())
+        .password(userEntity.getPasswordHash())
         .authorities(authorities)
         .accountExpired(false)
-        .accountLocked(!userEntityEntity.isActive())
+        .accountLocked(!userEntity.isActive())
         .credentialsExpired(false)
-        .disabled(!userEntityEntity.isActive())
+        .disabled(!userEntity.isActive())
         .build();
   }
 
@@ -230,10 +230,10 @@ public class UserQueryService implements UserDetailsService {
    * @return list of permissions
    */
   public List<String> getUserPermissions(UUID userId) {
-    UserEntity userEntityEntity =
+    UserEntity userEntity =
         findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
-    return permissionService.getPermissionsForRoles(userEntityEntity.getRoles());
+    return permissionService.getPermissionsForRoles(userEntity.getRoles());
   }
 }

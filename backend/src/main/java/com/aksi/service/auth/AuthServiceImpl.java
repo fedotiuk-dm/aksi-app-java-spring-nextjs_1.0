@@ -47,30 +47,30 @@ public class AuthServiceImpl implements AuthService {
 
     try {
       // Find user by username
-      UserEntity userEntityEntity =
+      UserEntity userEntity =
           userService
               .findByUsername(loginRequest.getUsername())
               .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 
       // Check if user is active
-      if (!userEntityEntity.isActive()) {
+      if (!userEntity.isActive()) {
         throw new DisabledException("User account is disabled");
       }
 
       // Verify password
-      if (!userService.verifyPassword(userEntityEntity, loginRequest.getPassword())) {
-        userService.recordFailedLogin(userEntityEntity);
+      if (!userService.verifyPassword(userEntity, loginRequest.getPassword())) {
+        userService.recordFailedLogin(userEntity);
         throw new BadCredentialsException("Invalid username or password");
       }
 
       // Reset failed login attempts on successful login
-      userService.resetFailedLogins(userEntityEntity);
+      userService.resetFailedLogins(userEntity);
 
       // Create session
-      createUserSession(userEntityEntity, session);
+      createUserSession(userEntity, session);
 
       // Create response
-      return authMapper.toLoginResponse(userEntityEntity);
+      return authMapper.toLoginResponse(userEntity);
 
     } catch (BadCredentialsException | DisabledException e) {
       log.warn("Login failed for user {}: {}", loginRequest.getUsername(), e.getMessage());
@@ -84,13 +84,13 @@ public class AuthServiceImpl implements AuthService {
       throw new UnauthorizedException("No valid session");
     }
 
-    UserEntity userEntityEntity = getCurrentUser(session);
-    if (userEntityEntity == null) {
+    UserEntity userEntity = getCurrentUser(session);
+    if (userEntity == null) {
       throw new UnauthorizedException("User not found in session");
     }
 
     return authMapper.toSessionInfo(
-        userEntityEntity,
+        userEntity,
         session.getId(),
         Instant.ofEpochMilli(session.getCreationTime()),
         Instant.ofEpochMilli(session.getLastAccessedTime()),
@@ -116,25 +116,23 @@ public class AuthServiceImpl implements AuthService {
   public void invalidateAllUserSessions(UUID userId) {
     log.debug("Invalidating all sessions for user: {}", userId);
 
-    UserEntity userEntityEntity =
+    UserEntity userEntity =
         userService
             .findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
     // Find all sessions for this user
-    var userSessionsMap = sessionRepository.findByPrincipalName(userEntityEntity.getUsername());
+    var userSessionsMap = sessionRepository.findByPrincipalName(userEntity.getUsername());
 
     // Delete all sessions
     userSessionsMap.forEach(
         (sessionId, session) -> {
           sessionRepository.deleteById(sessionId);
-          log.debug("Deleted session: {} for user: {}", sessionId, userEntityEntity.getUsername());
+          log.debug("Deleted session: {} for user: {}", sessionId, userEntity.getUsername());
         });
 
     log.info(
-        "Invalidated {} sessions for user: {}",
-        userSessionsMap.size(),
-        userEntityEntity.getUsername());
+        "Invalidated {} sessions for user: {}", userSessionsMap.size(), userEntity.getUsername());
   }
 
   private UserEntity getCurrentUser(HttpSession session) {
@@ -153,22 +151,22 @@ public class AuthServiceImpl implements AuthService {
         && SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
   }
 
-  private void createUserSession(UserEntity userEntityEntity, HttpSession session) {
+  private void createUserSession(UserEntity userEntity, HttpSession session) {
     // Store user information in session
-    session.setAttribute(SESSION_USER_ID, userEntityEntity.getId());
-    session.setAttribute(SESSION_USERNAME, userEntityEntity.getUsername());
-    session.setAttribute(SESSION_ROLES, userEntityEntity.getRoles());
+    session.setAttribute(SESSION_USER_ID, userEntity.getId());
+    session.setAttribute(SESSION_USERNAME, userEntity.getUsername());
+    session.setAttribute(SESSION_ROLES, userEntity.getRoles());
     session.setAttribute(
-        FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, userEntityEntity.getUsername());
+        FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, userEntity.getUsername());
 
     // Create Spring Security authentication
     var authorities =
-        userEntityEntity.getRoles().stream()
+        userEntity.getRoles().stream()
             .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
             .toList();
 
     var authentication =
-        new UsernamePasswordAuthenticationToken(userEntityEntity.getUsername(), null, authorities);
+        new UsernamePasswordAuthenticationToken(userEntity.getUsername(), null, authorities);
 
     // Set authentication in security context
     SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
@@ -180,7 +178,7 @@ public class AuthServiceImpl implements AuthService {
 
     log.debug(
         "Created session for user: {} with roles: {}",
-        userEntityEntity.getUsername(),
-        userEntityEntity.getRoles());
+        userEntity.getUsername(),
+        userEntity.getRoles());
   }
 }

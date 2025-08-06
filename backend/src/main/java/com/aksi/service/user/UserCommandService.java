@@ -65,13 +65,13 @@ public class UserCommandService {
     }
 
     // Create user from request
-    UserEntity userEntityEntity = createUserFromRequest(request);
+    UserEntity userEntity = createUserFromRequest(request);
 
     // Save and return
-    userEntityEntity = userRepository.save(userEntityEntity);
-    log.info("Created user with ID: {}", userEntityEntity.getId());
+    userEntity = userRepository.save(userEntity);
+    log.info("Created user with ID: {}", userEntity.getId());
 
-    return userMapper.toUserDetail(userEntityEntity);
+    return userMapper.toUserDetail(userEntity);
   }
 
   /**
@@ -86,22 +86,22 @@ public class UserCommandService {
   public UserDetail updateUser(UUID userId, UpdateUserRequest request) {
     log.info("Updating user with id: {}", userId);
 
-    UserEntity userEntityEntity = getUserOrThrow(userId);
+    UserEntity userEntity = getUserOrThrow(userId);
 
     // Validate email uniqueness if changing
     if (request.getEmail() != null
         && userQueryService.existsByEmailExcludingCurrent(
-            userEntityEntity.getEmail(), request.getEmail())) {
+            userEntity.getEmail(), request.getEmail())) {
       throw new ConflictException("Email already exists: " + request.getEmail());
     }
 
     // Update fields using mapper
-    userMapper.updateUserFromDto(request, userEntityEntity);
+    userMapper.updateUserFromDto(request, userEntity);
 
-    userEntityEntity = userRepository.save(userEntityEntity);
+    userEntity = userRepository.save(userEntity);
     log.info("Updated user: {}", userId);
 
-    return userMapper.toUserDetail(userEntityEntity);
+    return userMapper.toUserDetail(userEntity);
   }
 
   /**
@@ -115,18 +115,18 @@ public class UserCommandService {
   public UserDetail activateUser(UUID userId) {
     log.info("Activating user: {}", userId);
 
-    UserEntity userEntityEntity = getUserOrThrow(userId);
+    UserEntity userEntity = getUserOrThrow(userId);
 
-    if (userEntityEntity.isActive()) {
+    if (userEntity.isActive()) {
       throw new ConflictException("User account is already active");
     }
 
-    userEntityEntity.setActive(true);
-    userEntityEntity.setFailedLoginAttempts(0); // Reset failed attempts on activation
-    log.info("Activated user account: {}", userEntityEntity.getUsername());
+    userEntity.setActive(true);
+    userEntity.setFailedLoginAttempts(0); // Reset failed attempts on activation
+    log.info("Activated user account: {}", userEntity.getUsername());
 
-    userEntityEntity = userRepository.save(userEntityEntity);
-    return userMapper.toUserDetail(userEntityEntity);
+    userEntity = userRepository.save(userEntity);
+    return userMapper.toUserDetail(userEntity);
   }
 
   /**
@@ -140,17 +140,17 @@ public class UserCommandService {
   public UserDetail deactivateUser(UUID userId) {
     log.info("Deactivating user: {}", userId);
 
-    UserEntity userEntityEntity = getUserOrThrow(userId);
+    UserEntity userEntity = getUserOrThrow(userId);
 
-    if (!userEntityEntity.isActive()) {
+    if (!userEntity.isActive()) {
       throw new ConflictException("User account is already inactive");
     }
 
-    userEntityEntity.setActive(false);
-    log.info("Deactivated user account: {}", userEntityEntity.getUsername());
+    userEntity.setActive(false);
+    log.info("Deactivated user account: {}", userEntity.getUsername());
 
-    userEntityEntity = userRepository.save(userEntityEntity);
-    return userMapper.toUserDetail(userEntityEntity);
+    userEntity = userRepository.save(userEntity);
+    return userMapper.toUserDetail(userEntity);
   }
 
   /**
@@ -164,18 +164,17 @@ public class UserCommandService {
   public void changePassword(UUID userId, ChangePasswordRequest request) {
     log.info("Changing password for user: {}", userId);
 
-    UserEntity userEntityEntity = getUserOrThrow(userId);
+    UserEntity userEntity = getUserOrThrow(userId);
 
     // Verify current password if provided (self password change)
     if (request.getCurrentPassword() != null
-        && !passwordEncoder.matches(
-            request.getCurrentPassword(), userEntityEntity.getPasswordHash())) {
+        && !passwordEncoder.matches(request.getCurrentPassword(), userEntity.getPasswordHash())) {
       throw new UnauthorizedException("Current password is incorrect");
     }
 
     // Update password
-    userEntityEntity.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
-    userRepository.save(userEntityEntity);
+    userEntity.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+    userRepository.save(userEntity);
 
     log.info("Password changed for user: {}", userId);
   }
@@ -191,19 +190,18 @@ public class UserCommandService {
   public UserDetail updateUserRoles(UUID userId, UpdateRolesRequest request) {
     log.info("Updating roles for user: {}", userId);
 
-    UserEntity userEntityEntity =
+    UserEntity userEntity =
         userRepository
             .findByIdWithRoles(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
     // Clear existing roles and add new ones
-    userEntityEntity.getRoles().clear();
-    userEntityEntity.getRoles().addAll(request.getRoles());
-    log.debug(
-        "Updated roles for user '{}': {}", userEntityEntity.getUsername(), request.getRoles());
+    userEntity.getRoles().clear();
+    userEntity.getRoles().addAll(request.getRoles());
+    log.debug("Updated roles for user '{}': {}", userEntity.getUsername(), request.getRoles());
 
-    userEntityEntity = userRepository.save(userEntityEntity);
-    return userMapper.toUserDetail(userEntityEntity);
+    userEntity = userRepository.save(userEntity);
+    return userMapper.toUserDetail(userEntity);
   }
 
   /**
@@ -217,7 +215,7 @@ public class UserCommandService {
   public UserBranchesResponse updateUserBranches(UUID userId, UpdateBranchesRequest request) {
     log.info("Updating branch assignments for user: {}", userId);
 
-    UserEntity userEntityEntity = getUserOrThrow(userId);
+    UserEntity userEntity = getUserOrThrow(userId);
 
     // Validate all branch IDs exist
     List<UUID> branchIds = request.getBranchIds();
@@ -235,25 +233,25 @@ public class UserCommandService {
     }
 
     // Clear existing assignments
-    userEntityEntity.getBranchAssignments().clear();
+    userEntity.getBranchAssignments().clear();
 
     // Add new assignments
     for (UUID branchId : branchIds) {
       UserBranchAssignmentEntity assignment = new UserBranchAssignmentEntity();
-      assignment.setUserEntityEntity(userEntityEntity);
+      assignment.setUserEntity(userEntity);
       assignment.setBranchId(branchId);
       assignment.setPrimary(branchId.equals(primaryBranchId));
       assignment.setActive(true);
-      userEntityEntity.getBranchAssignments().add(assignment);
+      userEntity.getBranchAssignments().add(assignment);
     }
 
     // If no primary branch specified but branches exist, make the first one primary
     if (primaryBranchId == null && !branchIds.isEmpty()) {
-      userEntityEntity.getBranchAssignments().iterator().next().setPrimary(true);
+      userEntity.getBranchAssignments().iterator().next().setPrimary(true);
     }
 
-    userEntityEntity = userRepository.save(userEntityEntity);
-    log.info("Updated branch assignments for user '{}'", userEntityEntity.getUsername());
+    userEntity = userRepository.save(userEntity);
+    log.info("Updated branch assignments for user '{}'", userEntity.getUsername());
 
     return userQueryService.getUserBranches(userId);
   }
@@ -261,35 +259,35 @@ public class UserCommandService {
   /**
    * Record failed login attempt.
    *
-   * @param userEntityEntity the user who failed to login
+   * @param userEntity the user who failed to login
    */
-  public void recordFailedLogin(UserEntity userEntityEntity) {
-    int attempts = userEntityEntity.getFailedLoginAttempts() + 1;
-    userEntityEntity.setFailedLoginAttempts(attempts);
+  public void recordFailedLogin(UserEntity userEntity) {
+    int attempts = userEntity.getFailedLoginAttempts() + 1;
+    userEntity.setFailedLoginAttempts(attempts);
 
     if (attempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
-      userEntityEntity.setActive(false);
+      userEntity.setActive(false);
       log.warn(
           "User '{}' has been deactivated after {} failed login attempts",
-          userEntityEntity.getUsername(),
+          userEntity.getUsername(),
           attempts);
     } else {
-      log.debug("Failed login attempt {} for user '{}'", attempts, userEntityEntity.getUsername());
+      log.debug("Failed login attempt {} for user '{}'", attempts, userEntity.getUsername());
     }
 
-    userRepository.save(userEntityEntity);
+    userRepository.save(userEntity);
   }
 
   /**
    * Reset failed login attempts after successful login.
    *
-   * @param userEntityEntity the user who logged in successfully
+   * @param userEntity the user who logged in successfully
    */
-  public void resetFailedLogins(UserEntity userEntityEntity) {
-    if (userEntityEntity.getFailedLoginAttempts() > 0) {
-      userEntityEntity.setFailedLoginAttempts(0);
-      log.debug("Reset failed login attempts for user '{}'", userEntityEntity.getUsername());
-      userRepository.save(userEntityEntity);
+  public void resetFailedLogins(UserEntity userEntity) {
+    if (userEntity.getFailedLoginAttempts() > 0) {
+      userEntity.setFailedLoginAttempts(0);
+      log.debug("Reset failed login attempts for user '{}'", userEntity.getUsername());
+      userRepository.save(userEntity);
     }
   }
 
@@ -314,14 +312,14 @@ public class UserCommandService {
    */
   private UserEntity createUserFromRequest(CreateUserRequest request) {
     // MapStruct does all the mapping including defaults from OpenAPI
-    UserEntity userEntityEntity = userMapper.toUser(request);
+    UserEntity userEntity = userMapper.toUser(request);
 
     // Only handle password encoding - the one thing that can't be in DTO
-    userEntityEntity.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+    userEntity.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
     // These are always the same for new users - no need for config
-    userEntityEntity.setFailedLoginAttempts(0);
+    userEntity.setFailedLoginAttempts(0);
 
-    return userEntityEntity;
+    return userEntity;
   }
 }

@@ -19,13 +19,13 @@ import com.aksi.domain.user.UserEntity;
 public interface UserMapper {
 
   @Mapping(target = "lastLoginAt", ignore = true)
-  UserSummary toUserSummary(UserEntity userEntityEntity);
+  UserSummary toUserSummary(UserEntity userEntity);
 
   @Mapping(target = "branches", source = "branchAssignments")
   @Mapping(target = "lastLoginAt", ignore = true)
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
-  UserDetail toUserDetail(UserEntity userEntityEntity);
+  UserDetail toUserDetail(UserEntity userEntity);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
@@ -49,7 +49,7 @@ public interface UserMapper {
   @Mapping(target = "roles", ignore = true)
   @Mapping(target = "branchAssignments", ignore = true)
   @Mapping(target = "version", ignore = true)
-  void updateUserFromDto(UpdateUserRequest request, @MappingTarget UserEntity userEntityEntity);
+  void updateUserFromDto(UpdateUserRequest request, @MappingTarget UserEntity userEntity);
 
   List<UserSummary> toUserSummaryList(List<UserEntity> userEntities);
 

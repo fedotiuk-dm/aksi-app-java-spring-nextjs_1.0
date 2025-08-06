@@ -31,11 +31,11 @@ public class CartItem extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "cart_id", nullable = false)
-  private CartEntity cartEntityEntity;
+  private CartEntity cartEntity;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "price_list_item_id", nullable = false)
-  private PriceListItemEntity priceListItemEntityEntity;
+  private PriceListItemEntity priceListItemEntity;
 
   @Column(name = "quantity", nullable = false)
   private Integer quantity;

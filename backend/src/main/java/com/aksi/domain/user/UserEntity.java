@@ -71,6 +71,6 @@ public class UserEntity extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Set<UserRole> roles = new HashSet<>();
 
-  @OneToMany(mappedBy = "userEntityEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<UserBranchAssignmentEntity> branchAssignments = new HashSet<>();
 }

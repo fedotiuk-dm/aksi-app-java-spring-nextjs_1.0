@@ -29,9 +29,9 @@ public class CartPricingServiceImpl implements CartPricingService {
   private final PricingService pricingService;
 
   @Override
-  public CartPricingInfo calculateCartPricing(CartEntity cartEntityEntity) {
+  public CartPricingInfo calculateCartPricing(CartEntity cartEntity) {
     // Convert cart to PriceCalculationRequest
-    PriceCalculationRequest request = buildPriceCalculationRequest(cartEntityEntity);
+    PriceCalculationRequest request = buildPriceCalculationRequest(cartEntity);
 
     // Use PricingService to calculate
     PriceCalculationResponse response = pricingService.calculatePrice(request);
@@ -104,28 +104,28 @@ public class CartPricingServiceImpl implements CartPricingService {
     return pricingService.isDiscountApplicableToCategory(discountType, categoryCode);
   }
 
-  private PriceCalculationRequest buildPriceCalculationRequest(CartEntity cartEntityEntity) {
+  private PriceCalculationRequest buildPriceCalculationRequest(CartEntity cartEntity) {
     PriceCalculationRequest request = new PriceCalculationRequest();
 
     // Convert cart items to price calculation items
     List<PriceCalculationItem> items =
-        cartEntityEntity.getItems().stream()
+        cartEntity.getItems().stream()
             .map(this::buildPriceCalculationItem)
             .collect(Collectors.toList());
 
     request.setItems(items);
     request.setGlobalModifiers(
         buildGlobalModifiers(
-            cartEntityEntity.getUrgencyType(),
-            cartEntityEntity.getDiscountType(),
-            cartEntityEntity.getDiscountPercentage()));
+            cartEntity.getUrgencyType(),
+            cartEntity.getDiscountType(),
+            cartEntity.getDiscountPercentage()));
 
     return request;
   }
 
   private PriceCalculationItem buildPriceCalculationItem(CartItem cartItem) {
     PriceCalculationItem item = new PriceCalculationItem();
-    item.setPriceListItemId(cartItem.getPriceListItemEntityEntity().getId());
+    item.setPriceListItemId(cartItem.getPriceListItemEntity().getId());
     item.setQuantity(cartItem.getQuantity());
 
     // Convert characteristics

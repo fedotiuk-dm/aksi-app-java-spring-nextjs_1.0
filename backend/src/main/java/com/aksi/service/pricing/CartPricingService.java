@@ -11,10 +11,10 @@ public interface CartPricingService {
   /**
    * Calculate pricing for entire cart
    *
-   * @param cartEntityEntity Cart entity
+   * @param cartEntity Cart entity
    * @return Cart pricing info
    */
-  CartPricingInfo calculateCartPricing(CartEntity cartEntityEntity);
+  CartPricingInfo calculateCartPricing(CartEntity cartEntity);
 
   /**
    * Calculate pricing for single cart item

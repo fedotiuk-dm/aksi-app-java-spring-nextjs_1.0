@@ -53,9 +53,9 @@ public interface OrderMapper {
   /** Map OrderItem entity to OrderItemInfo DTO */
   @Mapping(
       target = "priceListItem",
-      source = "priceListItemEntityEntity",
+      source = "priceListItemEntity",
       qualifiedByName = "toPriceListItemSummary")
-  @Mapping(target = "priceListItemId", source = "priceListItemEntityEntity.id")
+  @Mapping(target = "priceListItemId", source = "priceListItemEntity.id")
   @Mapping(target = "characteristics", source = "characteristics")
   @Mapping(target = "stains", source = "stains")
   @Mapping(target = "defects", source = "defects")
@@ -89,8 +89,8 @@ public interface OrderMapper {
   @Mapping(
       target = "unitOfMeasure",
       expression =
-          "java(com.aksi.api.order.dto.PriceListItemSummary.UnitOfMeasureEnum.fromValue(priceListItemEntityEntity.getUnitOfMeasure().name()))")
-  PriceListItemSummary toPriceListItemSummary(PriceListItemEntity priceListItemEntityEntity);
+          "java(com.aksi.api.order.dto.PriceListItemSummary.UnitOfMeasureEnum.fromValue(priceListItemEntity.getUnitOfMeasure().name()))")
+  PriceListItemSummary toPriceListItemSummary(PriceListItemEntity priceListItemEntity);
 
   /** Map ItemCharacteristics entity to DTO */
   @Mapping(

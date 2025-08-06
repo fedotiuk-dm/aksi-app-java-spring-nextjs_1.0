@@ -17,29 +17,22 @@ import com.aksi.domain.user.UserEntity;
 public interface AuthMapper {
 
   @Mapping(target = "userId", source = "id")
-  @Mapping(target = "username", source = "username")
-  @Mapping(target = "firstName", source = "firstName")
-  @Mapping(target = "lastName", source = "lastName")
-  @Mapping(target = "roles", expression = "java(mapRoles(userEntityEntity.getRoles()))")
+  @Mapping(target = "roles", expression = "java(mapRoles(userEntity.getRoles()))")
   @Mapping(target = "permissions", ignore = true)
   @Mapping(target = "branchId", ignore = true)
   @Mapping(target = "branchName", ignore = true)
   @Mapping(target = "requiresBranchSelection", constant = "false")
-  LoginResponse toLoginResponse(UserEntity userEntityEntity);
+  LoginResponse toLoginResponse(UserEntity userEntity);
 
-  @Mapping(target = "userId", source = "userEntityEntity.id")
-  @Mapping(target = "username", source = "userEntityEntity.username")
-  @Mapping(target = "roles", expression = "java(mapRoles(userEntityEntity.getRoles()))")
-  @Mapping(target = "sessionId", source = "sessionId")
-  @Mapping(target = "createdAt", source = "createdAt")
-  @Mapping(target = "lastAccessedAt", source = "lastAccessedAt")
-  @Mapping(target = "expiresAt", source = "expiresAt")
+  @Mapping(target = "userId", source = "userEntity.id")
+  @Mapping(target = "username", source = "userEntity.username")
+  @Mapping(target = "roles", expression = "java(mapRoles(userEntity.getRoles()))")
   @Mapping(target = "branchId", ignore = true)
   @Mapping(target = "branchName", ignore = true)
   @Mapping(target = "ipAddress", ignore = true)
   @Mapping(target = "userAgent", ignore = true)
   SessionInfo toSessionInfo(
-      UserEntity userEntityEntity,
+      UserEntity userEntity,
       String sessionId,
       java.time.Instant createdAt,
       java.time.Instant lastAccessedAt,

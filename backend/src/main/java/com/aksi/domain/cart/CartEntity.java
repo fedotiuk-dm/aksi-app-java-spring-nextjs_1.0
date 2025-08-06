@@ -44,7 +44,7 @@ public class CartEntity extends BaseEntity {
   private CustomerEntity customerEntity;
 
   @OneToMany(
-      mappedBy = "cartEntityEntity",
+      mappedBy = "cartEntity",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)

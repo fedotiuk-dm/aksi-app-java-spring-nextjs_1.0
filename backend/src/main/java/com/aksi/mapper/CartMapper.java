@@ -30,11 +30,11 @@ public interface CartMapper {
   @Mapping(source = "discountPercentage", target = "globalModifiers.discountPercentage")
   @Mapping(source = "expectedCompletionDate", target = "globalModifiers.expectedCompletionDate")
   @Mapping(target = "pricing", ignore = true) // Will be calculated separately
-  CartInfo toCartInfo(CartEntity cartEntityEntity);
+  CartInfo toCartInfo(CartEntity cartEntity);
 
   // CartItem to CartItemInfo
-  @Mapping(source = "priceListItemEntityEntity.id", target = "priceListItemId")
-  @Mapping(source = "priceListItemEntityEntity", target = "priceListItem")
+  @Mapping(source = "priceListItemEntity.id", target = "priceListItemId")
+  @Mapping(source = "priceListItemEntity", target = "priceListItem")
   @Mapping(target = "pricing", ignore = true) // Will be calculated separately
   CartItemInfo toCartItemInfo(CartItem cartItem);
 
@@ -43,7 +43,7 @@ public interface CartMapper {
   // PriceListItem to PriceListItemSummary
   @Mapping(source = "categoryCode", target = "categoryCode")
   @Mapping(source = "unitOfMeasure", target = "unitOfMeasure")
-  PriceListItemSummary toPriceListItemSummary(PriceListItemEntity priceListItemEntityEntity);
+  PriceListItemSummary toPriceListItemSummary(PriceListItemEntity priceListItemEntity);
 
   // CartItemCharacteristics to ItemCharacteristics
   @Mapping(source = "fillerCondition", target = "fillerCondition")

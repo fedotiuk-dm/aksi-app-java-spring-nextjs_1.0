@@ -57,18 +57,18 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public boolean verifyPassword(UserEntity userEntityEntity, String password) {
-    return passwordEncoder.matches(password, userEntityEntity.getPasswordHash());
+  public boolean verifyPassword(UserEntity userEntity, String password) {
+    return passwordEncoder.matches(password, userEntity.getPasswordHash());
   }
 
   @Override
-  public void recordFailedLogin(UserEntity userEntityEntity) {
-    commandService.recordFailedLogin(userEntityEntity);
+  public void recordFailedLogin(UserEntity userEntity) {
+    commandService.recordFailedLogin(userEntity);
   }
 
   @Override
-  public void resetFailedLogins(UserEntity userEntityEntity) {
-    commandService.resetFailedLogins(userEntityEntity);
+  public void resetFailedLogins(UserEntity userEntity) {
+    commandService.resetFailedLogins(userEntity);
   }
 
   // API DTO methods

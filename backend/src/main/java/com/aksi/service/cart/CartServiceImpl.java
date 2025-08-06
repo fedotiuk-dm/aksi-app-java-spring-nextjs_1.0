@@ -59,7 +59,7 @@ public class CartServiceImpl implements CartService {
       throw new NotFoundException("Customer not found: " + customerId);
     }
 
-    CartEntity cartEntityEntity =
+    CartEntity cartEntity =
         cartRepository
             .findActiveByCustomerId(customerId, Instant.now())
             .filter(c -> !c.isExpired()) // Additional check using isExpired()
@@ -74,13 +74,13 @@ public class CartServiceImpl implements CartService {
                 });
 
     // Extend TTL on access to keep cart alive
-    if (!cartEntityEntity.isExpired()) {
-      cartEntityEntity.extendTtl(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
-      cartRepository.save(cartEntityEntity);
+    if (!cartEntity.isExpired()) {
+      cartEntity.extendTtl(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
+      cartRepository.save(cartEntity);
     }
 
-    CartInfo cartInfo = cartMapper.toCartInfo(cartEntityEntity);
-    cartInfo.setPricing(cartPricingService.calculateCartPricing(cartEntityEntity));
+    CartInfo cartInfo = cartMapper.toCartInfo(cartEntity);
+    cartInfo.setPricing(cartPricingService.calculateCartPricing(cartEntity));
 
     return cartInfo;
   }
@@ -88,20 +88,20 @@ public class CartServiceImpl implements CartService {
   @Override
   @Transactional
   public void clearCart(UUID customerId) {
-    CartEntity cartEntityEntity = getActiveCart(customerId);
-    cartEntityEntity.getItems().clear();
-    cartRepository.save(cartEntityEntity);
+    CartEntity cartEntity = getActiveCart(customerId);
+    cartEntity.getItems().clear();
+    cartRepository.save(cartEntity);
   }
 
   @Override
   @Transactional
   public CartItemInfo addItemToCart(UUID customerId, AddCartItemRequest request) {
-    CartEntity cartEntityEntity = getActiveCart(customerId);
+    CartEntity cartEntity = getActiveCart(customerId);
 
     // Extend cart TTL when adding items
-    cartEntityEntity.extendTtl(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
+    cartEntity.extendTtl(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
 
-    PriceListItemEntity priceListItemEntityEntity =
+    PriceListItemEntity priceListItemEntity =
         priceListItemRepository
             .findById(request.getPriceListItemId())
             .orElseThrow(
@@ -111,12 +111,9 @@ public class CartServiceImpl implements CartService {
 
     // Check if item already exists in cart
     CartItem existingItem =
-        cartEntityEntity.getItems().stream()
+        cartEntity.getItems().stream()
             .filter(
-                item ->
-                    item.getPriceListItemEntityEntity()
-                        .getId()
-                        .equals(request.getPriceListItemId()))
+                item -> item.getPriceListItemEntity().getId().equals(request.getPriceListItemId()))
             .findFirst()
             .orElse(null);
 
@@ -126,7 +123,7 @@ public class CartServiceImpl implements CartService {
     } else {
       // Create new cart item
       CartItem cartItem = new CartItem();
-      cartItem.setPriceListItemEntityEntity(priceListItemEntityEntity);
+      cartItem.setPriceListItemEntity(priceListItemEntity);
       cartItem.setQuantity(request.getQuantity());
 
       // Add characteristics if provided
@@ -157,22 +154,21 @@ public class CartServiceImpl implements CartService {
         }
       }
 
-      cartEntityEntity.getItems().add(cartItem);
-      cartItem.setCartEntityEntity(cartEntityEntity);
+      cartEntity.getItems().add(cartItem);
+      cartItem.setCartEntity(cartEntity);
     }
 
-    cartRepository.save(cartEntityEntity);
+    cartRepository.save(cartEntity);
 
-    CartItem savedItem =
-        existingItem != null ? existingItem : cartEntityEntity.getItems().getLast();
+    CartItem savedItem = existingItem != null ? existingItem : cartEntity.getItems().getLast();
 
     CartItemInfo itemInfo = cartMapper.toCartItemInfo(savedItem);
     itemInfo.setPricing(
         cartPricingService.calculateItemPricing(
             savedItem,
-            cartEntityEntity.getUrgencyType(),
-            cartEntityEntity.getDiscountType(),
-            cartEntityEntity.getDiscountPercentage()));
+            cartEntity.getUrgencyType(),
+            cartEntity.getDiscountType(),
+            cartEntity.getDiscountPercentage()));
 
     return itemInfo;
   }
@@ -180,10 +176,10 @@ public class CartServiceImpl implements CartService {
   @Override
   @Transactional
   public CartItemInfo updateCartItem(UUID customerId, UUID itemId, UpdateCartItemRequest request) {
-    CartEntity cartEntityEntity = getActiveCart(customerId);
+    CartEntity cartEntity = getActiveCart(customerId);
 
     CartItem cartItem =
-        cartEntityEntity.getItems().stream()
+        cartEntity.getItems().stream()
             .filter(item -> item.getId().equals(itemId))
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Cart item not found: " + itemId));
@@ -228,15 +224,15 @@ public class CartServiceImpl implements CartService {
       }
     }
 
-    cartRepository.save(cartEntityEntity);
+    cartRepository.save(cartEntity);
 
     CartItemInfo itemInfo = cartMapper.toCartItemInfo(cartItem);
     itemInfo.setPricing(
         cartPricingService.calculateItemPricing(
             cartItem,
-            cartEntityEntity.getUrgencyType(),
-            cartEntityEntity.getDiscountType(),
-            cartEntityEntity.getDiscountPercentage()));
+            cartEntity.getUrgencyType(),
+            cartEntity.getDiscountType(),
+            cartEntity.getDiscountPercentage()));
 
     return itemInfo;
   }
@@ -244,44 +240,44 @@ public class CartServiceImpl implements CartService {
   @Override
   @Transactional
   public void removeItemFromCart(UUID customerId, UUID itemId) {
-    CartEntity cartEntityEntity = getActiveCart(customerId);
+    CartEntity cartEntity = getActiveCart(customerId);
 
     CartItem cartItem =
-        cartEntityEntity.getItems().stream()
+        cartEntity.getItems().stream()
             .filter(item -> item.getId().equals(itemId))
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Cart item not found: " + itemId));
 
-    cartEntityEntity.getItems().remove(cartItem);
-    cartItem.setCartEntityEntity(null);
-    cartRepository.save(cartEntityEntity);
+    cartEntity.getItems().remove(cartItem);
+    cartItem.setCartEntity(null);
+    cartRepository.save(cartEntity);
   }
 
   @Override
   @Transactional
   public CartInfo updateCartModifiers(UUID customerId, UpdateCartModifiersRequest request) {
-    CartEntity cartEntityEntity = getActiveCart(customerId);
+    CartEntity cartEntity = getActiveCart(customerId);
 
     if (request.getUrgencyType() != null) {
-      cartEntityEntity.setUrgencyType(request.getUrgencyType().getValue());
+      cartEntity.setUrgencyType(request.getUrgencyType().getValue());
     }
 
     if (request.getDiscountType() != null) {
-      cartEntityEntity.setDiscountType(request.getDiscountType().getValue());
+      cartEntity.setDiscountType(request.getDiscountType().getValue());
     }
 
     if (request.getDiscountPercentage() != null) {
-      cartEntityEntity.setDiscountPercentage(request.getDiscountPercentage());
+      cartEntity.setDiscountPercentage(request.getDiscountPercentage());
     }
 
     if (request.getExpectedCompletionDate() != null) {
-      cartEntityEntity.setExpectedCompletionDate(request.getExpectedCompletionDate());
+      cartEntity.setExpectedCompletionDate(request.getExpectedCompletionDate());
     }
 
-    cartRepository.save(cartEntityEntity);
+    cartRepository.save(cartEntity);
 
-    CartInfo cartInfo = cartMapper.toCartInfo(cartEntityEntity);
-    cartInfo.setPricing(cartPricingService.calculateCartPricing(cartEntityEntity));
+    CartInfo cartInfo = cartMapper.toCartInfo(cartEntity);
+    cartInfo.setPricing(cartPricingService.calculateCartPricing(cartEntity));
 
     return cartInfo;
   }
@@ -289,8 +285,8 @@ public class CartServiceImpl implements CartService {
   @Override
   @Transactional(readOnly = true)
   public CartPricingInfo calculateCart(UUID customerId) {
-    CartEntity cartEntityEntity = getActiveCart(customerId);
-    return cartPricingService.calculateCartPricing(cartEntityEntity);
+    CartEntity cartEntity = getActiveCart(customerId);
+    return cartPricingService.calculateCartPricing(cartEntity);
   }
 
   @Override
@@ -310,9 +306,9 @@ public class CartServiceImpl implements CartService {
   }
 
   private CartEntity createNewCart(CustomerEntity customerEntity) {
-    CartEntity cartEntityEntity = new CartEntity();
-    cartEntityEntity.setCustomerEntity(customerEntity);
-    cartEntityEntity.setExpiresAt(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
-    return cartRepository.save(cartEntityEntity);
+    CartEntity cartEntity = new CartEntity();
+    cartEntity.setCustomerEntity(customerEntity);
+    cartEntity.setExpiresAt(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
+    return cartRepository.save(cartEntity);
   }
 }

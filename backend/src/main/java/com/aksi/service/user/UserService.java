@@ -32,11 +32,11 @@ public interface UserService {
    */
   Optional<UserEntity> findByEmail(String email);
 
-  boolean verifyPassword(UserEntity userEntityEntity, String password);
+  boolean verifyPassword(UserEntity userEntity, String password);
 
-  void recordFailedLogin(UserEntity userEntityEntity);
+  void recordFailedLogin(UserEntity userEntity);
 
-  void resetFailedLogins(UserEntity userEntityEntity);
+  void resetFailedLogins(UserEntity userEntity);
 
   // API DTO methods (for Controller layer)
   UserDetail getUserById(UUID userId);
