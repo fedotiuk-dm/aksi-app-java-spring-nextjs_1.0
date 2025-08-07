@@ -14,6 +14,7 @@ import {
   Inventory as CatalogIcon,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
+  Store as StoreIcon,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -52,6 +53,7 @@ const navigationItems = [
   { name: 'Головна', path: '/', icon: <HomeIcon /> },
   { name: 'Клієнти', path: '/clients', icon: <PeopleIcon /> },
   { name: 'Замовлення', path: '/orders', icon: <ReceiptIcon /> },
+  { name: 'Філії', path: '/branches', icon: <StoreIcon /> },
   { name: 'Каталог', path: '/catalog', icon: <CatalogIcon /> },
   { name: 'Створити замовлення', path: '/order-wizard', icon: <LaundryIcon /> },
   { name: 'Прайс-лист', path: '/price-list', icon: <PriceIcon /> },
