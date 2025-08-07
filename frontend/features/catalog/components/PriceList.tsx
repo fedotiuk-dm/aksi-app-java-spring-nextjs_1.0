@@ -123,12 +123,14 @@ export const PriceList: React.FC = () => {
                 placeholder="Пошук за назвою або номером..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search />
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search />
+                      </InputAdornment>
+                    ),
+                  }
                 }}
               />
             </Grid>
@@ -172,13 +174,13 @@ export const PriceList: React.FC = () => {
             <PriceListItem 
               key={item.id} 
               item={item} 
-              onRefetch={refetch}
+              onRefetchAction={refetch}
             />
           ))}
         </Box>
       )}
 
-      <PriceListForm onSuccess={refetch} />
+      <PriceListForm onSuccessAction={refetch} />
     </Container>
   );
 };

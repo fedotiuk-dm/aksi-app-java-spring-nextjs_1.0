@@ -4,7 +4,7 @@ import type {
   PriceListItemInfo, 
   ListPriceListItemsParams,
   PriceListItemInfoCategoryCode 
-} from '@/shared/api/generated/serviceItem';
+} from '@/shared/api/generated/priceList';
 
 interface PriceListState {
   // State

@@ -39,10 +39,10 @@ const UNIT_LABELS: Record<PriceListItemInfoUnitOfMeasure, string> = {
 
 interface PriceListItemProps {
   item: PriceListItemInfo;
-  onRefetch: () => void;
+  onRefetchAction: () => void;
 }
 
-export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetch }) => {
+export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAction }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { setSelectedItem, setFormOpen } = usePriceListStore();
   
@@ -66,7 +66,7 @@ export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetch })
     if (window.confirm(`Видалити послугу "${item.nameUa || item.name}"?`)) {
       try {
         await deleteMutation.mutateAsync({ priceListItemId: item.id });
-        onRefetch();
+        void onRefetchAction();
       } catch (error) {
         console.error('Помилка видалення послуги:', error);
       }

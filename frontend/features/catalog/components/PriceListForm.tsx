@@ -51,11 +51,11 @@ const UNIT_LABELS: Record<PriceListItemInfoUnitOfMeasure, string> = {
 };
 
 const formSchema = z.object({
-  categoryCode: z.nativeEnum(PriceListItemInfoCategoryCode),
+  categoryCode: z.enum(Object.values(PriceListItemInfoCategoryCode) as [PriceListItemInfoCategoryCode, ...PriceListItemInfoCategoryCode[]]),
   catalogNumber: z.number().min(1),
   name: z.string().min(1, 'Назва обов\'язкова'),
   nameUa: z.string().optional(),
-  unitOfMeasure: z.nativeEnum(PriceListItemInfoUnitOfMeasure),
+  unitOfMeasure: z.enum(Object.values(PriceListItemInfoUnitOfMeasure) as [PriceListItemInfoUnitOfMeasure, ...PriceListItemInfoUnitOfMeasure[]]),
   basePrice: z.number().min(0),
   priceBlack: z.number().min(0).optional().nullable(),
   priceColor: z.number().min(0).optional().nullable(),
@@ -71,10 +71,10 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 interface PriceListFormProps {
-  onSuccess: () => void;
+  onSuccessAction: () => void;
 }
 
-export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
+export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction }) => {
   const { isFormOpen, selectedItem, setFormOpen, setSelectedItem } = usePriceListStore();
   
   const createMutation = useCreatePriceListItem();
@@ -110,18 +110,18 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
         categoryCode: selectedItem.categoryCode,
         catalogNumber: selectedItem.catalogNumber,
         name: selectedItem.name,
-        nameUa: selectedItem.nameUa,
+        nameUa: selectedItem.nameUa || '',
         unitOfMeasure: selectedItem.unitOfMeasure,
         basePrice: selectedItem.basePrice / 100,
-        priceBlack: selectedItem.priceBlack ? selectedItem.priceBlack / 100 : null,
-        priceColor: selectedItem.priceColor ? selectedItem.priceColor / 100 : null,
+        priceBlack: selectedItem.priceBlack ? selectedItem.priceBlack / 100 : undefined,
+        priceColor: selectedItem.priceColor ? selectedItem.priceColor / 100 : undefined,
         active: selectedItem.active,
-        processingTimeDays: selectedItem.processingTimeDays,
+        processingTimeDays: selectedItem.processingTimeDays || undefined,
         expressAvailable: selectedItem.expressAvailable || false,
-        expressTimeHours: selectedItem.expressTimeHours,
-        expressPrice: selectedItem.expressPrice ? selectedItem.expressPrice / 100 : null,
-        sortOrder: selectedItem.sortOrder,
-        description: selectedItem.description,
+        expressTimeHours: selectedItem.expressTimeHours || undefined,
+        expressPrice: selectedItem.expressPrice ? selectedItem.expressPrice / 100 : undefined,
+        sortOrder: selectedItem.sortOrder || undefined,
+        description: selectedItem.description || '',
       });
     } else {
       reset({
@@ -179,7 +179,7 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
         });
       }
 
-      onSuccess();
+      void onSuccessAction();
       handleClose();
     } catch (error: any) {
       console.error('Помилка збереження:', error.response?.data?.message || error);
@@ -327,8 +327,10 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
                     type="number"
                     error={!!errors.basePrice}
                     helperText={errors.basePrice?.message}
-                    InputProps={{
-                      endAdornment: <InputAdornment position="end">₴</InputAdornment>,
+                    slotProps={{
+                      input: {
+                        endAdornment: <InputAdornment position="end">₴</InputAdornment>,
+                      }
                     }}
                     onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
                   />
@@ -347,8 +349,10 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
                     fullWidth
                     label="Ціна фарбування (чорне)"
                     type="number"
-                    InputProps={{
-                      endAdornment: <InputAdornment position="end">₴</InputAdornment>,
+                    slotProps={{
+                      input: {
+                        endAdornment: <InputAdornment position="end">₴</InputAdornment>,
+                      }
                     }}
                     onChange={(e) => onChange(e.target.value ? parseFloat(e.target.value) : null)}
                   />
@@ -367,8 +371,10 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
                     fullWidth
                     label="Ціна фарбування (кольорове)"
                     type="number"
-                    InputProps={{
-                      endAdornment: <InputAdornment position="end">₴</InputAdornment>,
+                    slotProps={{
+                      input: {
+                        endAdornment: <InputAdornment position="end">₴</InputAdornment>,
+                      }
                     }}
                     onChange={(e) => onChange(e.target.value ? parseFloat(e.target.value) : null)}
                   />
@@ -394,8 +400,10 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
                     fullWidth
                     label="Термін виконання"
                     type="number"
-                    InputProps={{
-                      endAdornment: <InputAdornment position="end">днів</InputAdornment>,
+                    slotProps={{
+                      input: {
+                        endAdornment: <InputAdornment position="end">днів</InputAdornment>,
+                      }
                     }}
                     onChange={(e) => onChange(e.target.value ? parseInt(e.target.value, 10) : null)}
                   />
@@ -429,8 +437,10 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
                         fullWidth
                         label="Термін експрес-послуги"
                         type="number"
-                        InputProps={{
-                          endAdornment: <InputAdornment position="end">годин</InputAdornment>,
+                        slotProps={{
+                          input: {
+                            endAdornment: <InputAdornment position="end">годин</InputAdornment>,
+                          }
                         }}
                         onChange={(e) => onChange(e.target.value ? parseInt(e.target.value, 10) : null)}
                       />
@@ -449,8 +459,10 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
                         fullWidth
                         label="Ціна експрес-послуги"
                         type="number"
-                        InputProps={{
-                          endAdornment: <InputAdornment position="end">₴</InputAdornment>,
+                        slotProps={{
+                          input: {
+                            endAdornment: <InputAdornment position="end">₴</InputAdornment>,
+                          }
                         }}
                         onChange={(e) => onChange(e.target.value ? parseFloat(e.target.value) : null)}
                       />
