@@ -1,7 +1,9 @@
 package com.aksi.service.customer;
 
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import com.aksi.domain.customer.CustomerEntity;
@@ -19,121 +21,80 @@ public class CustomerDuplicationChecker {
   private final CustomerRepository customerRepository;
 
   /**
-   * Check for duplicate phone during creation
+   * Generic method to check for duplicate values.
+   *
+   * @param specification Specification to find duplicates
+   * @param excludeCustomerId Customer ID to exclude (optional)
+   * @param errorMessage Error message if duplicate found
+   * @throws ConflictException if duplicate found
+   */
+  private void checkDuplicate(
+      Specification<CustomerEntity> specification,
+      UUID excludeCustomerId,
+      String errorMessage) {
+    Optional<CustomerEntity> existing = customerRepository.findOne(specification);
+    
+    if (excludeCustomerId != null) {
+      existing = existing.filter(e -> !e.getId().equals(excludeCustomerId));
+    }
+    
+    existing.ifPresent(e -> {
+      throw new ConflictException(errorMessage);
+    });
+  }
+
+  /**
+   * Check for duplicate phone.
    *
    * @param phone Phone number to check
+   * @param excludeCustomerId Customer ID to exclude (null for create)
    * @throws ConflictException if phone already exists
    */
-  public void checkPhoneForCreate(String phone) {
-    customerRepository
-        .findOne(CustomerSpecification.hasPhone(phone).and(CustomerSpecification.isActive()))
-        .ifPresent(
-            existing -> {
-              throw new ConflictException("Customer with phone " + phone + " already exists");
-            });
+  public void checkPhone(String phone, UUID excludeCustomerId) {
+    checkDuplicate(
+        CustomerSpecification.hasPhone(phone).and(CustomerSpecification.isActive()),
+        excludeCustomerId,
+        "Customer with phone " + phone + " already exists"
+    );
   }
 
   /**
-   * Check for duplicate phone during update
-   *
-   * @param phone Phone number to check
-   * @param excludeCustomerId Customer ID to exclude from check
-   * @throws ConflictException if phone already exists for another customer
-   */
-  public void checkPhoneForUpdate(String phone, UUID excludeCustomerId) {
-    customerRepository
-        .findOne(CustomerSpecification.hasPhone(phone).and(CustomerSpecification.isActive()))
-        .filter(existing -> !existing.getId().equals(excludeCustomerId))
-        .ifPresent(
-            existing -> {
-              throw new ConflictException("Customer with phone " + phone + " already exists");
-            });
-  }
-
-  /**
-   * Check for duplicate email during creation
+   * Check for duplicate email.
    *
    * @param email Email to check
+   * @param excludeCustomerId Customer ID to exclude (null for create)
    * @throws ConflictException if email already exists
    */
-  public void checkEmailForCreate(String email) {
+  public void checkEmail(String email, UUID excludeCustomerId) {
     if (email == null || email.trim().isEmpty()) {
       return;
     }
-
-    customerRepository
-        .findOne(CustomerSpecification.hasEmail(email).and(CustomerSpecification.isActive()))
-        .ifPresent(
-            existing -> {
-              throw new ConflictException("Customer with email " + email + " already exists");
-            });
+    
+    checkDuplicate(
+        CustomerSpecification.hasEmail(email).and(CustomerSpecification.isActive()),
+        excludeCustomerId,
+        "Customer with email " + email + " already exists"
+    );
   }
 
   /**
-   * Check for duplicate email during update
-   *
-   * @param email Email to check
-   * @param excludeCustomerId Customer ID to exclude from check
-   * @throws ConflictException if email already exists for another customer
-   */
-  public void checkEmailForUpdate(String email, UUID excludeCustomerId) {
-    if (email == null || email.trim().isEmpty()) {
-      return;
-    }
-
-    customerRepository
-        .findOne(CustomerSpecification.hasEmail(email).and(CustomerSpecification.isActive()))
-        .filter(existing -> !existing.getId().equals(excludeCustomerId))
-        .ifPresent(
-            existing -> {
-              throw new ConflictException("Customer with email " + email + " already exists");
-            });
-  }
-
-  /**
-   * Check for duplicate discount card during creation
+   * Check for duplicate discount card.
    *
    * @param discountCardNumber Discount card number to check
+   * @param excludeCustomerId Customer ID to exclude (null for create)
    * @throws ConflictException if discount card already assigned
    */
-  public void checkDiscountCardForCreate(String discountCardNumber) {
+  public void checkDiscountCard(String discountCardNumber, UUID excludeCustomerId) {
     if (discountCardNumber == null || discountCardNumber.trim().isEmpty()) {
       return;
     }
-
-    customerRepository
-        .findOne(
-            CustomerSpecification.hasDiscountCard(discountCardNumber)
-                .and(CustomerSpecification.isActive()))
-        .ifPresent(
-            existing -> {
-              throw new ConflictException(
-                  "Discount card " + discountCardNumber + " already assigned to another customer");
-            });
-  }
-
-  /**
-   * Check for duplicate discount card during update
-   *
-   * @param discountCardNumber Discount card number to check
-   * @param excludeCustomerId Customer ID to exclude from check
-   * @throws ConflictException if discount card already assigned to another customer
-   */
-  public void checkDiscountCardForUpdate(String discountCardNumber, UUID excludeCustomerId) {
-    if (discountCardNumber == null || discountCardNumber.trim().isEmpty()) {
-      return;
-    }
-
-    customerRepository
-        .findOne(
-            CustomerSpecification.hasDiscountCard(discountCardNumber)
-                .and(CustomerSpecification.isActive()))
-        .filter(existing -> !existing.getId().equals(excludeCustomerId))
-        .ifPresent(
-            existing -> {
-              throw new ConflictException(
-                  "Discount card " + discountCardNumber + " already assigned to another customer");
-            });
+    
+    checkDuplicate(
+        CustomerSpecification.hasDiscountCard(discountCardNumber)
+            .and(CustomerSpecification.isActive()),
+        excludeCustomerId,
+        "Discount card " + discountCardNumber + " already assigned to another customer"
+    );
   }
 
   /**
@@ -145,9 +106,9 @@ public class CustomerDuplicationChecker {
    * @throws ConflictException if any duplicate found
    */
   public void checkForCreate(String phone, String email, String discountCardNumber) {
-    checkPhoneForCreate(phone);
-    checkEmailForCreate(email);
-    checkDiscountCardForCreate(discountCardNumber);
+    checkPhone(phone, null);
+    checkEmail(email, null);
+    checkDiscountCard(discountCardNumber, null);
   }
 
   /**
@@ -165,18 +126,18 @@ public class CustomerDuplicationChecker {
 
     // Check phone if changed
     if (newPhone != null && !newPhone.equals(customerEntity.getPhonePrimary())) {
-      checkPhoneForUpdate(newPhone, customerId);
+      checkPhone(newPhone, customerId);
     }
 
     // Check email if changed
     if (newEmail != null && !newEmail.equals(customerEntity.getEmail())) {
-      checkEmailForUpdate(newEmail, customerId);
+      checkEmail(newEmail, customerId);
     }
 
     // Check discount card if changed
     if (newDiscountCard != null
         && !newDiscountCard.equals(customerEntity.getDiscountCardNumber())) {
-      checkDiscountCardForUpdate(newDiscountCard, customerId);
+      checkDiscountCard(newDiscountCard, customerId);
     }
   }
 }
