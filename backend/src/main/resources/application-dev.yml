@@ -1,0 +1,139 @@
+spring:
+  # Application name
+  application:
+    name: AKSI-Dry-Cleaning-Backend
+  
+  # Database configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aksi_cleaners_db_v5
+    username: ${DB_USERNAME:aksi_user}
+    password: ${DB_PASSWORD:1911}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # JPA configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate # Use Liquibase for schema management
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: false
+        default_schema: public
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    open-in-view: false
+
+  # Liquibase configuration
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: public
+    enabled: true
+    
+  # DevTools settings for hot reload
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/resources
+      poll-interval: 1s
+      quiet-period: 400ms
+    livereload:
+      enabled: true
+      port: 35729
+  
+  # Redis configuration for development
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      connect-timeout: 5000ms
+
+# Server configuration
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+    session:
+      cookie:
+        name: AKSISESSIONID
+        http-only: true
+        secure: ${SECURE_COOKIES:false} # Set to true in production
+        same-site: strict
+        max-age: 3600 # 1 hour
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+
+# Logging configuration
+logging:
+  level:
+    root: WARN
+    com.aksi: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/aksi-dry-cleaning.log
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # Only expose health and info endpoints for security
+      base-path: /management
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  info:
+    env:
+      enabled: true
+    
+# Application info
+info:
+  app:
+    name: "@project.name@"
+    description: "@project.description@"
+    version: "@project.version@"
+    encoding: "@project.build.sourceEncoding@"
+    java:
+      version: "@java.version@"
+
+# Springdoc OpenAPI configuration
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+    operations-sorter: method
+    tags-sorter: alpha
+  packages-to-scan: com.aksi.api,com.aksi.controller
+  paths-to-match: /api/**
+
+# CORS configuration for development
+app:
+  cors:
+    allowed-origins: http://localhost:3000,http://127.0.0.1:3000
+    
+  # File storage configuration for development
+  file-storage:
+    upload-dir: ${FILE_UPLOAD_DIR:./uploads}
+    base-url: ${FILE_BASE_URL:http://localhost:8080}

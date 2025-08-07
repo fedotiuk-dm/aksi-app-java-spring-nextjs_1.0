@@ -1,0 +1,95 @@
+# Production profile configuration
+spring:
+  # Redis configuration for production
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 5
+
+# Logging configuration for production
+logging:
+  level:
+    root: WARN
+    com.aksi: INFO
+    org.springframework.security: INFO
+    SECURITY_AUDIT: INFO
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: /var/log/aksi/aksi-backend.log
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+
+# Security configuration for production
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS:https://aksi-cleaners.com}
+    
+  # File storage configuration for production
+  file-storage:
+    upload-dir: ${FILE_UPLOAD_DIR:/app/uploads}
+    base-url: ${FILE_BASE_URL:https://api.aksi-cleaners.com}
+    
+  security:
+    # Rate limiting settings - STRICT for production
+    rate-limiting:
+      enabled: true
+    max-attempts-per-user: 5
+    max-attempts-per-ip: 10
+    lockout-duration-minutes: 30  # 30 minutes lockout
+    attempt-window-minutes: 60
+    
+    # Password policy settings - STRICT for production
+    password:
+      min-length: 12
+      require-uppercase: true
+      require-lowercase: true
+      require-numbers: true
+      require-special-chars: true
+      allowed-special-chars: "@$!%*?&"
+    
+    # Session management settings - SECURE for production
+    session:
+      default-timeout-minutes: 30  # 30 minutes timeout
+      max-concurrent-sessions: 3   # Max 3 concurrent sessions
+      remember-me-timeout-days: 7  # 7 days for remember me
+      session-fixation-protection: true
+
+# Server configuration for production
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    session:
+      cookie:
+        secure: true  # HTTPS only
+        same-site: strict
+        http-only: true
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+# Disable unnecessary endpoints in production
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
