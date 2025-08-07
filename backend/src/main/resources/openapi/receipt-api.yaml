@@ -1,0 +1,403 @@
+openapi: 3.1.1
+info:
+  title: Receipt API
+  description: API for generating and managing receipts for dry cleaning orders
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: receipts
+    description: Receipt generation and management operations
+
+paths:
+  /api/receipts/order/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID to generate receipt for
+        schema:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+    
+    get:
+      operationId: generateOrderReceipt
+      summary: Generate receipt for order
+      description: Generate PDF receipt for existing order
+      tags:
+        - receipts
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          description: Locale for receipt generation (e.g. uk, en)
+          schema:
+            type: string
+            default: "uk"
+            example: "uk"
+      responses:
+        '200':
+          description: Receipt generated successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              description: Content disposition header for file download
+              schema:
+                type: string
+            Content-Type:
+              description: Content type
+              schema:
+                type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/receipts/preview:
+    post:
+      operationId: generateReceiptPreview
+      summary: Generate receipt preview
+      description: Generate PDF receipt preview from provided data (without creating order)
+      tags:
+        - receipts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceiptPreviewRequest'
+      responses:
+        '200':
+          description: Receipt preview generated successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              description: Content disposition header
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/receipts/order/{orderId}/email:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: integer
+          format: int64
+    
+    post:
+      operationId: emailOrderReceipt
+      summary: Email receipt to customer
+      description: Generate and email receipt to customer
+      tags:
+        - receipts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailReceiptRequest'
+      responses:
+        '200':
+          description: Receipt emailed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailReceiptResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/receipts/templates:
+    get:
+      operationId: getReceiptTemplates
+      summary: Get available receipt templates
+      description: Get list of available receipt templates
+      tags:
+        - receipts
+      responses:
+        '200':
+          description: Templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceiptTemplate'
+
+components:
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Forbidden:
+      description: Access forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    BadRequest:
+      description: Bad request - validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+
+    ReceiptPreviewRequest:
+      type: object
+      required:
+        - orderData
+      properties:
+        orderData:
+          $ref: '#/components/schemas/ReceiptOrderData'
+        templateId:
+          type: string
+          description: Template ID to use
+          default: "default"
+          example: "default"
+        locale:
+          type: string
+          description: Locale for receipt generation
+          default: "uk"
+          example: "uk"
+
+    ReceiptOrderData:
+      type: object
+      required:
+        - orderNumber
+        - branchName
+        - customerName
+        - items
+        - totalAmount
+        - createdAt
+      properties:
+        orderNumber:
+          type: string
+          description: Order number
+          example: "ORD-2024-0001"
+        branchName:
+          type: string
+          description: Branch name
+          example: "AKSI Main Branch"
+        branchAddress:
+          type: string
+          description: Branch address
+          example: "вул. Хрещатик, 1, Київ"
+        branchPhone:
+          type: string
+          description: Branch phone
+          example: "+380 44 123 45 67"
+        customerName:
+          type: string
+          description: Customer name
+          example: "Іван Петренко"
+        customerPhone:
+          type: string
+          description: Customer phone
+          example: "+380 67 123 45 67"
+        items:
+          type: array
+          description: Order items
+          items:
+            $ref: '#/components/schemas/ReceiptItem'
+        subtotal:
+          type: integer
+          description: Subtotal in kopiykas
+          example: 150000
+        discount:
+          type: integer
+          description: Discount amount in kopiykas
+          example: 15000
+        totalAmount:
+          type: integer
+          description: Total amount in kopiykas
+          example: 135000
+        prepaidAmount:
+          type: integer
+          description: Prepaid amount in kopiykas
+          example: 50000
+        dueAmount:
+          type: integer
+          description: Due amount in kopiykas
+          example: 85000
+        paymentMethod:
+          type: string
+          description: Payment method
+          example: "CASH"
+        createdAt:
+          type: string
+          format: date-time
+          description: Order creation timestamp
+        completionDate:
+          type: string
+          format: date-time
+          description: Expected completion date
+          example: "2024-12-25T10:00:00Z"
+        notes:
+          type: string
+          description: Additional notes
+          example: "Обережно з пуговицями"
+
+    ReceiptItem:
+      type: object
+      required:
+        - name
+        - quantity
+        - unitPrice
+        - totalPrice
+      properties:
+        position:
+          type: integer
+          description: Item position in order
+          example: 1
+        name:
+          type: string
+          description: Item name
+          example: "Піджак чоловічий"
+        catalogNumber:
+          type: string
+          description: Catalog number
+          example: "CAT-001"
+        quantity:
+          type: integer
+          description: Quantity
+          example: 1
+        unitPrice:
+          type: integer
+          description: Unit price in kopiykas
+          example: 50000
+        totalPrice:
+          type: integer
+          description: Total price in kopiykas
+          example: 50000
+        modifiers:
+          type: array
+          description: Applied modifiers
+          items:
+            type: string
+            example: "Терміново"
+
+    EmailReceiptRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address (if not specified, use customer's email)
+          example: "customer@example.com"
+        subject:
+          type: string
+          description: Email subject
+          example: "Ваша квитанція від AKSI"
+        message:
+          type: string
+          description: Additional message
+          example: "Дякуємо за ваше замовлення!"
+
+    EmailReceiptResponse:
+      type: object
+      required:
+        - success
+        - sentAt
+      properties:
+        success:
+          type: boolean
+          description: Email sent successfully
+          example: true
+        sentAt:
+          type: string
+          format: date-time
+          description: Email sent timestamp
+        email:
+          type: string
+          description: Email address where receipt was sent
+          example: "customer@example.com"
+        messageId:
+          type: string
+          description: Email message ID
+          example: "msg-123456"
+
+    ReceiptTemplate:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - isDefault
+      properties:
+        id:
+          type: string
+          description: Template ID
+          example: "default"
+        name:
+          type: string
+          description: Template name
+          example: "Стандартний шаблон"
+        description:
+          type: string
+          description: Template description
+          example: "Базовий шаблон квитанції"
+        isDefault:
+          type: boolean
+          description: Is default template
+          example: true
+        supportedLocales:
+          type: array
+          items:
+            type: string
+          description: Supported locales
+          example: ["uk", "en"]
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session-based authentication using httpOnly cookies
+
+security:
+  - cookieAuth: []

@@ -39,6 +39,7 @@ import type {
   OrderItemInfo,
   OrderListResponse,
   PaymentInfo,
+  SaveSignatureRequest,
   UpdateItemCharacteristicsRequest,
   UpdateOrderStatusRequest,
   UploadItemPhotoBody,
@@ -271,6 +272,73 @@ export const useCreateOrder = <TError = ErrorResponse | ErrorResponse | ErrorRes
       > => {
 
       const mutationOptions = getCreateOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Save customer signature for order in base64 format
+ * @summary Save customer signature
+ */
+export const saveCustomerSignature = (
+    orderId: string,
+    saveSignatureRequest: SaveSignatureRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<OrderInfo>(
+      {url: `/api/orders/${orderId}/signature`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: saveSignatureRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getSaveCustomerSignatureMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveCustomerSignature>>, TError,{orderId: string;data: SaveSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveCustomerSignature>>, TError,{orderId: string;data: SaveSignatureRequest}, TContext> => {
+
+const mutationKey = ['saveCustomerSignature'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveCustomerSignature>>, {orderId: string;data: SaveSignatureRequest}> = (props) => {
+          const {orderId,data} = props ?? {};
+
+          return  saveCustomerSignature(orderId,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveCustomerSignatureMutationResult = NonNullable<Awaited<ReturnType<typeof saveCustomerSignature>>>
+    export type SaveCustomerSignatureMutationBody = SaveSignatureRequest
+    export type SaveCustomerSignatureMutationError = ErrorResponse | ErrorResponse | ErrorResponse
+
+    /**
+ * @summary Save customer signature
+ */
+export const useSaveCustomerSignature = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveCustomerSignature>>, TError,{orderId: string;data: SaveSignatureRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof saveCustomerSignature>>,
+        TError,
+        {orderId: string;data: SaveSignatureRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getSaveCustomerSignatureMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

@@ -1317,6 +1317,11 @@ export interface CreateOrderRequest {
   termsAccepted?: boolean;
 }
 
+export interface SaveSignatureRequest {
+  /** Customer signature in base64 format */
+  signature: string;
+}
+
 export type AddPaymentRequestMethod = typeof AddPaymentRequestMethod[keyof typeof AddPaymentRequestMethod];
 
 
@@ -1334,6 +1339,40 @@ export interface AddPaymentRequest {
    */
   amount: number;
   method: AddPaymentRequestMethod;
+}
+
+export interface FileUploadResponse {
+  /** Upload success status */
+  success: boolean;
+  /** Relative file path where file was stored */
+  filePath: string;
+  /** Full URL to access the file */
+  fileUrl: string;
+  /** Original filename from upload */
+  originalFilename?: string;
+  /** File size in bytes */
+  fileSize?: number;
+  /** Detected content type */
+  contentType?: string;
+  /** Upload timestamp */
+  uploadedAt: string;
+  /** User ID who uploaded the file */
+  uploadedBy?: string;
+}
+
+export interface Base64FileUploadRequest {
+  /** Base64 encoded file data (with or without data URL prefix) */
+  base64Data: string;
+  /**
+   * Directory to store file in
+   * @pattern ^[a-zA-Z0-9/_\-]+$
+   */
+  directory: string;
+  /**
+   * Filename without extension
+   * @pattern ^[a-zA-Z0-9_\-]+$
+   */
+  filename: string;
 }
 
 export type CreateCustomerRequestContactPreferencesItem = typeof CreateCustomerRequestContactPreferencesItem[keyof typeof CreateCustomerRequestContactPreferencesItem];
@@ -1695,6 +1734,34 @@ export interface OrderListResponse {
   last: boolean;
   /** Is empty */
   empty: boolean;
+}
+
+export interface FileInfo {
+  /** Relative file path */
+  filePath: string;
+  /** Full URL to access the file */
+  fileUrl: string;
+  /** Whether file exists */
+  exists: boolean;
+  /** File size in bytes */
+  fileSize: number;
+  /** Detected content type */
+  contentType?: string;
+  /** Whether file is readable */
+  readable?: boolean;
+  /** Last modification timestamp */
+  lastModified: string;
+}
+
+export interface Base64FileResponse {
+  /** File path that was read */
+  filePath: string;
+  /** Base64 encoded file content */
+  base64Data: string;
+  /** MIME type of the file */
+  contentType: string;
+  /** Original file size in bytes */
+  fileSize: number;
 }
 
 export interface CustomersResponse {

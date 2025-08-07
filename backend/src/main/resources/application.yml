@@ -59,3 +59,36 @@ app:
       max-concurrent-sessions: 10   # Many sessions for testing
       remember-me-timeout-days: 30
       session-fixation-protection: true
+
+# Receipt configuration
+receipt:
+  default-branch-name: "AKSI"
+  default-payment-method: "CASH"
+  currency: "грн"
+  phone-prefix: "Тел: "
+  date-time-format: "dd.MM.yyyy HH:mm"
+  date-format: "dd.MM.yyyy"
+  
+  font:
+    directory: "fonts/"
+    regular: "DejaVuSans.ttf"
+    bold: "DejaVuSans-Bold.ttf"
+    title-size: 18
+    heading-size: 12
+    normal-size: 10
+    small-size: 8
+  
+  layout:
+    page-width: 595.0
+    page-height: 842.0
+    margin-top: 50.0
+    margin-bottom: 50.0
+    margin-left: 50.0
+    margin-right: 50.0
+    table-width: 495.0
+    item-table-column-widths: [280.0, 45.0, 85.0, 85.0]
+    line-spacing: 15.0
+    section-spacing: 20.0
+    cell-padding: 5.0
+    content-start-y: 792.0
+    content-end-y: 50.0

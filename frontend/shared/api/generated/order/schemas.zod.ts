@@ -244,6 +244,115 @@ export const createOrderBody = zod.object({
 
 
 /**
+ * Save customer signature for order in base64 format
+ * @summary Save customer signature
+ */
+export const saveCustomerSignatureParams = zod.object({
+  "orderId": zod.uuid().describe('Order ID')
+})
+
+export const saveCustomerSignatureBody = zod.object({
+  "signature": zod.string().describe('Customer signature in base64 format')
+})
+
+export const saveCustomerSignatureResponse = zod.object({
+  "id": zod.uuid().describe('Order ID'),
+  "orderNumber": zod.string().describe('Order number'),
+  "customerId": zod.uuid().describe('Customer ID'),
+  "customer": zod.object({
+  "id": zod.uuid(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string().optional()
+}),
+  "branchId": zod.uuid().describe('Branch ID'),
+  "uniqueLabel": zod.string().optional().describe('Unique label (QR code)'),
+  "status": zod.enum(['PENDING', 'ACCEPTED', 'IN_PROGRESS', 'READY', 'COMPLETED', 'CANCELLED']).describe('Order status'),
+  "items": zod.array(zod.object({
+  "id": zod.uuid().describe('Order item ID'),
+  "priceListItemId": zod.uuid().describe('Price list item ID'),
+  "priceListItem": zod.object({
+  "id": zod.uuid(),
+  "name": zod.string(),
+  "categoryCode": zod.string(),
+  "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
+  "basePrice": zod.number().describe('Base price in kopiykas')
+}),
+  "quantity": zod.number().describe('Quantity (in units)'),
+  "characteristics": zod.object({
+  "material": zod.string().optional().describe('Material type'),
+  "color": zod.string().optional().describe('Item color'),
+  "filler": zod.string().optional().describe('Filler type (for padded items)'),
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition'),
+  "wearLevel": zod.enum(['10', '30', '50', '75']).optional().describe('Wear level percentage')
+}),
+  "stains": zod.array(zod.object({
+  "type": zod.enum(['GREASE', 'BLOOD', 'PROTEIN', 'WINE', 'COFFEE', 'GRASS', 'INK', 'COSMETICS', 'OTHER']).describe('Stain type'),
+  "description": zod.string().optional().describe('Additional description')
+})).optional().describe('Item stains'),
+  "defects": zod.array(zod.object({
+  "type": zod.enum(['WORN', 'TORN', 'MISSING_ACCESSORIES', 'DAMAGED_ACCESSORIES', 'OTHER']).describe('Defect type'),
+  "description": zod.string().optional().describe('Additional description')
+})).optional().describe('Item defects'),
+  "risks": zod.array(zod.object({
+  "type": zod.enum(['COLOR_CHANGE', 'DEFORMATION', 'NO_WARRANTY']).describe('Risk type'),
+  "description": zod.string().optional().describe('Risk description')
+})).optional().describe('Item risks'),
+  "photos": zod.array(zod.object({
+  "id": zod.uuid().describe('Photo ID'),
+  "url": zod.string().describe('Photo URL'),
+  "type": zod.enum(['GENERAL', 'DEFECT', 'STAIN', 'LABEL']),
+  "description": zod.string().optional().describe('Photo description'),
+  "uploadedAt": zod.iso.datetime({}).describe('Upload time'),
+  "uploadedBy": zod.string().optional().describe('Uploaded by user ID')
+})).optional().describe('Item photos'),
+  "modifiers": zod.array(zod.object({
+  "code": zod.string().describe('Modifier code'),
+  "name": zod.string().describe('Modifier name'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type'),
+  "value": zod.number().describe('Modifier value (percentage or fixed amount)')
+})).optional().describe('Applied modifiers'),
+  "pricing": zod.object({
+  "basePrice": zod.number().describe('Base price in kopiykas'),
+  "modifierDetails": zod.array(zod.object({
+  "code": zod.string(),
+  "name": zod.string(),
+  "amount": zod.number().describe('Modifier amount in kopiykas')
+})).optional().describe('Applied modifier details'),
+  "modifiersTotalAmount": zod.number().describe('Total modifiers amount'),
+  "subtotal": zod.number().describe('Subtotal (base + modifiers)'),
+  "urgencyAmount": zod.number().describe('Urgency surcharge'),
+  "discountAmount": zod.number().describe('Discount amount'),
+  "total": zod.number().describe('Total price')
+})
+})).describe('Order items'),
+  "pricing": zod.object({
+  "itemsSubtotal": zod.number().describe('Sum of all items subtotals'),
+  "urgencyAmount": zod.number().describe('Total urgency amount'),
+  "discountAmount": zod.number().describe('Total discount amount'),
+  "discountApplicableAmount": zod.number().optional().describe('Amount eligible for discount'),
+  "total": zod.number().describe('Final total'),
+  "paidAmount": zod.number().describe('Total paid amount'),
+  "balanceDue": zod.number().describe('Balance due')
+}),
+  "payments": zod.array(zod.object({
+  "id": zod.uuid(),
+  "amount": zod.number().describe('Payment amount in kopiykas'),
+  "method": zod.enum(['CASH', 'TERMINAL', 'BANK_TRANSFER']),
+  "paidAt": zod.iso.datetime({}),
+  "paidBy": zod.string().optional().describe('User ID who registered payment')
+})).optional().describe('Order payments'),
+  "notes": zod.string().optional().describe('Order notes'),
+  "customerSignature": zod.string().optional().describe('Customer signature (base64)'),
+  "createdAt": zod.iso.datetime({}).describe('Creation time'),
+  "createdBy": zod.string().optional().describe('Created by user ID'),
+  "expectedCompletionDate": zod.iso.datetime({}).describe('Expected completion date'),
+  "actualCompletionDate": zod.iso.datetime({}).optional().describe('Actual completion date')
+})
+
+
+/**
  * Register a payment for an order
  * @summary Add payment to order
  */
