@@ -31,11 +31,3 @@ const defaultQueryClientConfig: QueryClientConfig = {
  * Глобальний екземпляр QueryClient для використання в провайдері
  */
 export const queryClient = new QueryClient(defaultQueryClientConfig);
-
-/**
- * Функція для створення нового екземпляру QueryClient з тими ж налаштуваннями
- * Використовується при необхідності створення окремого екземпляру для кожного запиту
- */
-export const createQueryClient = (): QueryClient => {
-  return new QueryClient(defaultQueryClientConfig);
-};

@@ -18,13 +18,13 @@ import {
   Grid
 } from '@mui/material';
 import { Search, Add } from '@mui/icons-material';
-import { useListPriceListItems } from '@/shared/api/generated/serviceItem';
+import { useListPriceListItems } from '@/shared/api/generated/priceList';
 import { usePriceListStore } from '@/features/catalog';
 import { PriceListItem } from './PriceListItem';
 import { PriceListForm } from './PriceListForm';
 import { 
   PriceListItemInfoCategoryCode,
-} from '@/shared/api/generated/serviceItem';
+} from '@/shared/api/generated/priceList';
 
 const CATEGORY_LABELS: Record<PriceListItemInfoCategoryCode, string> = {
   [PriceListItemInfoCategoryCode.CLOTHING]: 'Одяг',

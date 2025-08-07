@@ -12,6 +12,8 @@ import {
   Person as PersonIcon,
   Logout as LogoutIcon,
   Inventory as CatalogIcon,
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -31,7 +33,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 // MUI компоненти
 
@@ -40,6 +42,7 @@ import { useState } from 'react';
 // Внутрішні залежності
 import { useLogout, useAuth, ROLE_DISPLAY_NAMES } from '@/features/auth';
 import { useSafeMUIHydration } from '@/shared/lib/hooks';
+import { useThemeMode } from '@/lib/theme-provider';
 
 // Константи
 const APP_NAME = 'AKSI Хімчистка';
@@ -63,6 +66,7 @@ export default function Header() {
   const { logout, isLoading } = useLogout();
   const { user } = useAuth();
   const { muiProps } = useSafeMUIHydration();
+  const { mode, toggleTheme } = useThemeMode();
 
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -110,15 +114,18 @@ export default function Header() {
               keepMounted
               open={Boolean(anchorEl)}
               onClose={handleUserMenuClose}
-              PaperProps={{
-                elevation: 0,
-                sx: {
-                  mt: 1.5,
-                  overflow: 'visible',
-                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
-                  width: 200,
+              disableScrollLock={true}
+              slotProps={{
+                paper: {
+                  elevation: 0,
+                  sx: {
+                    mt: 1.5,
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
+                    width: 200,
+                  },
+                  ...muiProps,
                 },
-                ...muiProps,
               }}
             >
               {user && (
@@ -150,11 +157,20 @@ export default function Header() {
                 </ListItemIcon>
                 <ListItemText>Налаштування</ListItemText>
               </MenuItem>
+              <MenuItem onClick={() => {
+                handleUserMenuClose();
+                toggleTheme();
+              }}>
+                <ListItemIcon>
+                  {mode === 'light' ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
+                </ListItemIcon>
+                <ListItemText>{mode === 'light' ? 'Темна тема' : 'Світла тема'}</ListItemText>
+              </MenuItem>
               <Divider />
               <MenuItem
                 onClick={() => {
                   handleUserMenuClose();
-                  logout();
+                  void logout();
                 }}
                 disabled={isLoading}
               >
@@ -168,7 +184,12 @@ export default function Header() {
         </Toolbar>
       </AppBar>
 
-      <Drawer anchor="left" open={drawerOpen} onClose={() => toggleDrawer(false)}>
+      <Drawer 
+        anchor="left" 
+        open={drawerOpen} 
+        onClose={() => toggleDrawer(false)}
+        disableScrollLock={true}
+      >
         <Box
           sx={{ width: 250 }}
           role="presentation"
@@ -191,17 +212,20 @@ export default function Header() {
                   selected={pathname === item.path}
                   sx={{
                     '&.Mui-selected': {
-                      bgcolor: APP_BAR_BG_COLOR,
-                      color: APP_BAR_BG_COLOR,
+                      bgcolor: 'primary.light',
+                      color: 'primary.contrastText',
                       '&:hover': {
-                        bgcolor: APP_BAR_BG_COLOR,
+                        bgcolor: 'primary.main',
                       },
+                    },
+                    '&:hover': {
+                      bgcolor: 'action.hover',
                     },
                   }}
                 >
                   <ListItemIcon
                     sx={{
-                      color: pathname === item.path ? APP_BAR_BG_COLOR : 'inherit',
+                      color: pathname === item.path ? 'primary.contrastText' : 'inherit',
                     }}
                   >
                     {item.icon}

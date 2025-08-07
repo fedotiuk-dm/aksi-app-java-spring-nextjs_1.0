@@ -100,7 +100,6 @@ export const UsersTable = ({
               <TableCell>Користувач</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Ролі</TableCell>
-              <TableCell>Основна філія</TableCell>
               <TableCell>Статус</TableCell>
               <TableCell>Остання активність</TableCell>
               <TableCell align="center">Дії</TableCell>
@@ -110,14 +109,14 @@ export const UsersTable = ({
             {isLoading ? (
               [...Array(5)].map((_, index) => (
                 <TableRow key={index}>
-                  <TableCell colSpan={7}>
+                  <TableCell colSpan={6}>
                     <Skeleton variant="text" />
                   </TableCell>
                 </TableRow>
               ))
             ) : users.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={6} align="center">
                   <Typography variant="body2" color="text.secondary">
                     Користувачів не знайдено
                   </Typography>
@@ -148,9 +147,6 @@ export const UsersTable = ({
                         />
                       ))}
                     </Box>
-                  </TableCell>
-                  <TableCell>
-                    {user.primaryBranchName || '-'}
                   </TableCell>
                   <TableCell>
                     <Chip

@@ -30,7 +30,7 @@ import {
   PriceListItemInfoUnitOfMeasure,
   type CreatePriceListItemRequest,
   type UpdatePriceListItemRequest,
-} from '@/shared/api/generated/serviceItem';
+} from '@/shared/api/generated/priceList';
 
 const CATEGORY_LABELS: Record<PriceListItemInfoCategoryCode, string> = {
   [PriceListItemInfoCategoryCode.CLOTHING]: 'Одяг',

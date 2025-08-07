@@ -27,7 +27,7 @@ import {
   type PriceListItemInfo,
   PriceListItemInfoUnitOfMeasure,
   useDeletePriceListItem,
-} from '@/shared/api/generated/serviceItem';
+} from '@/shared/api/generated/priceList';
 import { usePriceListStore } from '@/features/catalog';
 
 const UNIT_LABELS: Record<PriceListItemInfoUnitOfMeasure, string> = {

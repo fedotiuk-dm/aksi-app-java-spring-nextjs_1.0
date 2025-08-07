@@ -7,25 +7,25 @@ import { ClientOnlyToaster } from '@/components/ui/ClientOnlyToaster';
 import { AuthProvider } from '@/features/auth';
 
 import { queryClient } from './reactQuery';
-import { ThemeRegistry } from './theme-registry';
+import { AppThemeProvider } from './theme-provider';
 
 /**
  * Основний провайдер додатку, який об'єднує всі провайдери:
  * - React Query для керування станом даних та кешуванням
- * - ThemeRegistry для MUI та стилів
+ * - AppThemeProvider для MUI, темної теми та стилів
  * - Toaster для сповіщень
  */
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeRegistry>
+      <AppThemeProvider>
         <AuthProvider>
           {/* Клієнтський компонент для сповіщень */}
           <ClientOnlyToaster position="top-right" toastOptions={{ duration: 4000 }} />
 
           {children}
         </AuthProvider>
-      </ThemeRegistry>
+      </AppThemeProvider>
     </QueryClientProvider>
   );
 }
