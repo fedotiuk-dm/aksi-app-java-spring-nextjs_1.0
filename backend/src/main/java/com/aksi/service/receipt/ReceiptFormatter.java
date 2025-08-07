@@ -2,7 +2,8 @@ package com.aksi.service.receipt;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
 
@@ -17,6 +18,7 @@ public class ReceiptFormatter {
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  private static final ZoneId DEFAULT_ZONE = ZoneId.systemDefault();
 
   /** Format money amount from kopiykas to hryvnias */
   public String formatMoney(Integer kopiykas) {
@@ -41,15 +43,20 @@ public class ReceiptFormatter {
     if (temporal == null) {
       return "";
     }
+    // For Instant, we need zone-aware formatter
+    if (temporal instanceof Instant) {
+      return DATE_TIME_FORMATTER.withZone(DEFAULT_ZONE).format(temporal);
+    }
     return DATE_TIME_FORMATTER.format(temporal);
   }
 
-  /** Format date only */
-  public String formatDate(LocalDate date) {
-    if (date == null) {
+  /** Format date only from Instant */
+  public String formatDate(Instant instant) {
+    if (instant == null) {
       return "";
     }
-    return DATE_FORMATTER.format(date);
+    // Format instant as date only (without time) using zone-aware formatter
+    return DATE_FORMATTER.withZone(DEFAULT_ZONE).format(instant);
   }
 
   /** Format phone number */

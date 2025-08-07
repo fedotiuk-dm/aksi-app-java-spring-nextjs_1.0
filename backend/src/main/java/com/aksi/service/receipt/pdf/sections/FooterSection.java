@@ -29,7 +29,7 @@ public class FooterSection implements ReceiptSection {
       String completionText =
           formatter.formatLabelValue(
               messages.getCompletionDateLabel(locale),
-              formatter.formatDateTime(orderData.getCompletionDate()));
+              formatter.formatDate(orderData.getCompletionDate()));
       builder.drawTextAt(completionText, PdfConstants.MARGIN_LEFT, y);
       y = builder.nextLine().getCurrentY();
     }
