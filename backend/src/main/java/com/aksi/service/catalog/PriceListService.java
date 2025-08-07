@@ -73,26 +73,6 @@ public interface PriceListService {
   List<PriceListItemInfo> exportActivePriceList();
 
   /**
-   * Get price list item by category and catalog number Used in OrderPriceCalculator for
-   * category-specific pricing
-   *
-   * @param categoryCode Category code
-   * @param catalogNumber Catalog number
-   * @return Price list item or null if not found
-   */
-  PriceListItemInfo getPriceListItemByCategoryAndCatalogNumber(
-      ServiceCategoryType categoryCode, Integer catalogNumber);
-
-  /**
-   * Get price list item by catalog number Used in OrderPriceCalculator for quick price lookups
-   * during order creation
-   *
-   * @param catalogNumber Catalog number
-   * @return Price list item or null if not found
-   */
-  PriceListItemInfo getPriceListItemByCatalogNumber(Integer catalogNumber);
-
-  /**
    * List price list items with response DTO
    *
    * @param categoryCode Filter by category code

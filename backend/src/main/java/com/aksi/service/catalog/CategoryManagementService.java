@@ -15,29 +15,6 @@ public interface CategoryManagementService {
   List<CategoryInfo> getAllCategories();
 
   /**
-   * Get only active categories
-   *
-   * @return List of active category types
-   */
-  List<ServiceCategoryType> getActiveCategories();
-
-  /**
-   * Check if category exists (has at least one item)
-   *
-   * @param categoryCode Category to check
-   * @return true if category exists
-   */
-  boolean categoryExists(ServiceCategoryType categoryCode);
-
-  /**
-   * Get count of items in category
-   *
-   * @param categoryCode Category to count
-   * @return Number of items
-   */
-  long getItemCount(ServiceCategoryType categoryCode);
-
-  /**
    * "Delete" category by deactivating all its items
    *
    * @param categoryCode Category to deactivate
