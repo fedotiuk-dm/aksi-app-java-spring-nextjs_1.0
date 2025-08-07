@@ -51,7 +51,7 @@ const APP_BAR_BG_COLOR = 'primary.main';
 
 const navigationItems = [
   { name: 'Головна', path: '/', icon: <HomeIcon /> },
-  { name: 'Клієнти', path: '/clients', icon: <PeopleIcon /> },
+  { name: 'Клієнти', path: '/customers', icon: <PeopleIcon /> },
   { name: 'Замовлення', path: '/orders', icon: <ReceiptIcon /> },
   { name: 'Філії', path: '/branches', icon: <StoreIcon /> },
   { name: 'Каталог', path: '/catalog', icon: <CatalogIcon /> },
