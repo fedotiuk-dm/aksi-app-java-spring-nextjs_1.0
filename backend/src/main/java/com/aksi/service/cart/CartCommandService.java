@@ -2,6 +2,7 @@ package com.aksi.service.cart;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.cart.dto.AddCartItemRequest;
+import com.aksi.api.cart.dto.ItemCharacteristics;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.api.cart.dto.UpdateCartModifiersRequest;
 import com.aksi.domain.cart.CartEntity;
@@ -53,7 +55,7 @@ public class CartCommandService {
    * @param customerId customer ID
    * @return new cart entity
    */
-  public CartEntity createCart(UUID customerId) {
+  private CartEntity createCart(UUID customerId) {
     CustomerEntity customerEntity =
         customerRepository
             .findById(customerId)
@@ -65,6 +67,28 @@ public class CartCommandService {
 
     log.debug("Creating new cart for customer: {}", customerId);
     return cartRepository.save(cartEntity);
+  }
+
+  /**
+   * Get or create cart for customer, extending TTL if cart exists.
+   *
+   * @param customerId customer ID
+   * @return cart entity (existing or newly created)
+   */
+  public CartEntity getOrCreateCart(UUID customerId) {
+    // Find or create cart
+    CartEntity cartEntity =
+        cartRepository
+            .findActiveByCustomerId(customerId, Instant.now())
+            .filter(cart -> !cart.isExpired())
+            .orElseGet(() -> createCart(customerId));
+
+    // Extend TTL on access to keep cart alive
+    if (!cartEntity.isExpired()) {
+      extendCartTtl(cartEntity);
+    }
+
+    return cartEntity;
   }
 
   /**
@@ -109,17 +133,10 @@ public class CartCommandService {
     cartItem.setQuantity(request.getQuantity());
 
     // Add characteristics if provided
-    if (request.getCharacteristics() != null) {
-      CartItemCharacteristicsEntity characteristics =
-          cartItemMapper.toEntity(request.getCharacteristics());
-      characteristics.setCartItem(cartItem);
-      cartItem.setCharacteristics(characteristics);
-    }
+    updateItemCharacteristics(cartItem, request.getCharacteristics());
 
     // Add modifiers if provided
-    if (request.getModifierCodes() != null) {
-      addModifiersToItem(cartItem, request.getModifierCodes());
-    }
+    updateItemModifiers(cartItem, request.getModifierCodes());
 
     cartEntity.getItems().add(cartItem);
     cartItem.setCartEntity(cartEntity);
@@ -147,27 +164,46 @@ public class CartCommandService {
    * @param request update request
    */
   public void updateItem(CartItem cartItem, UpdateCartItemRequest request) {
-    // Use mapper for basic field updates (quantity)
+    // Basic field updates
     cartItemMapper.updateEntityFromRequest(request, cartItem);
 
-    // Handle characteristics
-    if (request.getCharacteristics() != null) {
-      if (cartItem.getCharacteristics() == null) {
-        CartItemCharacteristicsEntity characteristics =
-            cartItemMapper.toEntity(request.getCharacteristics());
-        characteristics.setCartItem(cartItem);
-        cartItem.setCharacteristics(characteristics);
-      } else {
-        cartItemMapper.updateCharacteristicsFromRequest(
-            request.getCharacteristics(), cartItem.getCharacteristics());
-      }
-    }
+    // Update characteristics if provided
+    updateItemCharacteristics(cartItem, request.getCharacteristics());
 
-    // Handle modifiers
-    if (request.getModifierCodes() != null) {
-      cartItem.getModifiers().clear();
-      addModifiersToItem(cartItem, request.getModifierCodes());
+    // Update modifiers if provided
+    updateItemModifiers(cartItem, request.getModifierCodes());
+  }
+
+  /**
+   * Update cart item characteristics.
+   *
+   * @param cartItem cart item to update
+   * @param characteristics new characteristics data
+   */
+  private void updateItemCharacteristics(CartItem cartItem, ItemCharacteristics characteristics) {
+    if (characteristics == null) return;
+
+    if (cartItem.getCharacteristics() == null) {
+      CartItemCharacteristicsEntity entity = cartItemMapper.toEntity(characteristics);
+      entity.setCartItem(cartItem);
+      cartItem.setCharacteristics(entity);
+    } else {
+      cartItemMapper.updateCharacteristicsFromRequest(
+          characteristics, cartItem.getCharacteristics());
     }
+  }
+
+  /**
+   * Update cart item modifiers.
+   *
+   * @param cartItem cart item to update
+   * @param modifierCodes new modifier codes
+   */
+  private void updateItemModifiers(CartItem cartItem, Iterable<String> modifierCodes) {
+    if (modifierCodes == null) return;
+
+    cartItem.getModifiers().clear();
+    addModifiersToItem(cartItem, modifierCodes);
   }
 
   /**
@@ -188,20 +224,41 @@ public class CartCommandService {
    * @param request update request
    */
   public void updateCartModifiers(CartEntity cartEntity, UpdateCartModifiersRequest request) {
-    if (request.getUrgencyType() != null) {
-      cartEntity.setUrgencyType(request.getUrgencyType().getValue());
-    }
+    Optional.ofNullable(request.getUrgencyType())
+        .map(UpdateCartModifiersRequest.UrgencyTypeEnum::getValue)
+        .ifPresent(cartEntity::setUrgencyType);
 
-    if (request.getDiscountType() != null) {
-      cartEntity.setDiscountType(request.getDiscountType().getValue());
-    }
+    Optional.ofNullable(request.getDiscountType())
+        .map(UpdateCartModifiersRequest.DiscountTypeEnum::getValue)
+        .ifPresent(cartEntity::setDiscountType);
 
-    if (request.getDiscountPercentage() != null) {
-      cartEntity.setDiscountPercentage(request.getDiscountPercentage());
-    }
+    Optional.ofNullable(request.getDiscountPercentage())
+        .ifPresent(cartEntity::setDiscountPercentage);
 
-    if (request.getExpectedCompletionDate() != null) {
-      cartEntity.setExpectedCompletionDate(request.getExpectedCompletionDate());
+    Optional.ofNullable(request.getExpectedCompletionDate())
+        .ifPresent(cartEntity::setExpectedCompletionDate);
+  }
+
+  /**
+   * Add item to cart or update quantity if item already exists.
+   *
+   * @param cartEntity cart entity
+   * @param request add item request
+   * @return cart item (new or updated)
+   */
+  public CartItem addOrUpdateItem(CartEntity cartEntity, AddCartItemRequest request) {
+    // Check if item already exists in cart
+    Optional<CartItem> existingItem =
+        cartEntity.getItems().stream()
+            .filter(
+                item -> item.getPriceListItemEntity().getId().equals(request.getPriceListItemId()))
+            .findFirst();
+
+    if (existingItem.isPresent()) {
+      updateItemQuantity(existingItem.get(), request.getQuantity());
+      return existingItem.get();
+    } else {
+      return addNewItem(cartEntity, request);
     }
   }
 
@@ -233,21 +290,32 @@ public class CartCommandService {
    * @param modifierCodes modifier codes to add
    */
   private void addModifiersToItem(CartItem cartItem, Iterable<String> modifierCodes) {
-    for (String modifierCode : modifierCodes) {
-      priceModifierRepository
-          .findByCode(modifierCode)
-          .filter(PriceModifierEntity::isActive)
-          .ifPresentOrElse(
-              priceModifier -> {
-                CartItemModifierEntity modifier = new CartItemModifierEntity();
-                modifier.setCode(priceModifier.getCode());
-                modifier.setName(priceModifier.getName());
-                modifier.setType(priceModifier.getType().name());
-                modifier.setValue(priceModifier.getValue());
-                modifier.setCartItem(cartItem);
-                cartItem.addModifier(modifier);
-              },
-              () -> log.warn("Unknown or inactive modifier code: {}", modifierCode));
-    }
+    modifierCodes.forEach(
+        code ->
+            priceModifierRepository
+                .findByCode(code)
+                .filter(PriceModifierEntity::isActive)
+                .map(this::createCartItemModifier)
+                .ifPresentOrElse(
+                    modifier -> {
+                      modifier.setCartItem(cartItem);
+                      cartItem.addModifier(modifier);
+                    },
+                    () -> log.warn("Unknown or inactive modifier code: {}", code)));
+  }
+
+  /**
+   * Create cart item modifier from price modifier entity.
+   *
+   * @param priceModifier price modifier entity
+   * @return cart item modifier entity
+   */
+  private CartItemModifierEntity createCartItemModifier(PriceModifierEntity priceModifier) {
+    CartItemModifierEntity modifier = new CartItemModifierEntity();
+    modifier.setCode(priceModifier.getCode());
+    modifier.setName(priceModifier.getName());
+    modifier.setType(priceModifier.getType().name());
+    modifier.setValue(priceModifier.getValue());
+    return modifier;
   }
 }

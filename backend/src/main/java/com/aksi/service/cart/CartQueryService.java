@@ -104,20 +104,6 @@ public class CartQueryService {
   }
 
   /**
-   * Find cart item by price list item ID.
-   *
-   * @param cartEntity cart entity
-   * @param priceListItemId price list item ID
-   * @return cart item if exists
-   */
-  public Optional<CartItem> findCartItemByPriceListItemId(
-      CartEntity cartEntity, UUID priceListItemId) {
-    return cartEntity.getItems().stream()
-        .filter(item -> item.getPriceListItemEntity().getId().equals(priceListItemId))
-        .findFirst();
-  }
-
-  /**
    * Get active cart or throw exception.
    *
    * @param customerId customer ID

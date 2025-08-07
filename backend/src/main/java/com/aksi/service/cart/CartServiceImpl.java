@@ -13,8 +13,6 @@ import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.api.cart.dto.UpdateCartModifiersRequest;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
-import com.aksi.exception.NotFoundException;
-import com.aksi.service.customer.CustomerService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,25 +29,10 @@ public class CartServiceImpl implements CartService {
 
   private final CartQueryService queryService;
   private final CartCommandService commandService;
-  private final CustomerService customerService;
 
   @Override
   public CartInfo getOrCreateCart(UUID customerId) {
-    // Check if customer exists
-    if (!customerService.existsById(customerId)) {
-      throw new NotFoundException("Customer not found: " + customerId);
-    }
-
-    CartEntity cartEntity =
-        queryService
-            .findActiveCart(customerId)
-            .orElseGet(() -> commandService.createCart(customerId));
-
-    // Extend TTL on access to keep cart alive
-    if (!cartEntity.isExpired()) {
-      commandService.extendCartTtl(cartEntity);
-    }
-
+    CartEntity cartEntity = commandService.getOrCreateCart(customerId);
     return queryService.getCartInfo(cartEntity);
   }
 
@@ -62,18 +45,7 @@ public class CartServiceImpl implements CartService {
   @Override
   public CartItemInfo addItemToCart(UUID customerId, AddCartItemRequest request) {
     CartEntity cartEntity = queryService.getActiveCartOrThrow(customerId);
-
-    // Check if item already exists in cart
-    CartItem cartItem =
-        queryService
-            .findCartItemByPriceListItemId(cartEntity, request.getPriceListItemId())
-            .map(
-                existingItem -> {
-                  commandService.updateItemQuantity(existingItem, request.getQuantity());
-                  return existingItem;
-                })
-            .orElseGet(() -> commandService.addNewItem(cartEntity, request));
-
+    CartItem cartItem = commandService.addOrUpdateItem(cartEntity, request);
     commandService.save(cartEntity);
     return queryService.getCartItemInfo(cartItem, cartEntity);
   }
