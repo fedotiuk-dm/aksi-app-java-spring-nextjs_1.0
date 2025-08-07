@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aksi.api.order.dto.AddPaymentRequest;
@@ -19,7 +17,6 @@ import com.aksi.api.order.dto.PaymentInfo;
 import com.aksi.api.order.dto.PhotoType;
 import com.aksi.api.order.dto.UpdateItemCharacteristicsRequest;
 import com.aksi.api.order.dto.UpdateOrderStatusRequest;
-import com.aksi.domain.order.OrderEntity;
 
 /** Service interface for managing orders */
 public interface OrderService {
@@ -47,27 +44,6 @@ public interface OrderService {
    * @return Order info
    */
   OrderInfo getOrderByNumber(String orderNumber);
-
-  /**
-   * List orders with filtering and pagination
-   *
-   * @param customerId Customer ID filter (optional)
-   * @param status Order status filter (optional)
-   * @param branchId Branch ID filter (optional)
-   * @param dateFrom Creation date from filter (optional)
-   * @param dateTo Creation date to filter (optional)
-   * @param search General search query (optional)
-   * @param pageable Pagination parameters
-   * @return Page of orders
-   */
-  Page<OrderInfo> listOrders(
-      UUID customerId,
-      OrderEntity.OrderStatus status,
-      UUID branchId,
-      Instant dateFrom,
-      Instant dateTo,
-      String search,
-      Pageable pageable);
 
   /**
    * Update order status
@@ -137,38 +113,6 @@ public interface OrderService {
   boolean existsById(UUID orderId);
 
   /**
-   * Generate unique order number
-   *
-   * @return Unique order number
-   */
-  String generateOrderNumber();
-
-  /**
-   * Check if order can be modified
-   *
-   * @param orderId Order ID
-   * @return true if order can be modified
-   */
-  boolean canModifyOrder(UUID orderId);
-
-  /**
-   * Calculate order total amount
-   *
-   * @param orderId Order ID
-   * @return Total amount in kopiykas
-   */
-  Integer calculateOrderTotal(UUID orderId);
-
-  /**
-   * Get customer's order history
-   *
-   * @param customerId Customer ID
-   * @param pageable Pagination parameters
-   * @return Page of customer orders
-   */
-  Page<OrderInfo> getCustomerOrderHistory(UUID customerId, Pageable pageable);
-
-  /**
    * Get customer's order history with page/size parameters
    *
    * @param customerId Customer ID
@@ -182,14 +126,6 @@ public interface OrderService {
       UUID customerId, Integer page, Integer size, String sortBy, String sortOrder);
 
   /**
-   * Get orders due for completion
-   *
-   * @param days Number of days ahead to check
-   * @return List of orders due for completion
-   */
-  Page<OrderInfo> getOrdersDueForCompletion(int days, Pageable pageable);
-
-  /**
    * Get orders due for completion with page/size parameters
    *
    * @param days Number of days ahead to check
@@ -201,14 +137,6 @@ public interface OrderService {
    */
   OrderListResponse getOrdersDueForCompletion(
       Integer days, Integer page, Integer size, String sortBy, String sortOrder);
-
-  /**
-   * Get overdue orders
-   *
-   * @param pageable Pagination parameters
-   * @return Page of overdue orders
-   */
-  Page<OrderInfo> getOverdueOrders(Pageable pageable);
 
   /**
    * Get overdue orders with page/size parameters
@@ -247,13 +175,13 @@ public interface OrderService {
   List<PaymentInfo> getOrderPayments(UUID orderId);
 
   /**
-   * Get orders by status without pagination (for reports)
+   * Save customer signature for order
    *
-   * @param status Order status
-   * @param branchId Branch ID (optional)
-   * @return List of orders with specified status
+   * @param orderId Order ID
+   * @param signatureBase64 Signature in base64 format
+   * @return Updated order info
    */
-  List<OrderInfo> getOrdersByStatus(OrderEntity.OrderStatus status, UUID branchId);
+  OrderInfo saveCustomerSignature(UUID orderId, String signatureBase64);
 
   /**
    * Get orders by status without pagination (for reports) - API version

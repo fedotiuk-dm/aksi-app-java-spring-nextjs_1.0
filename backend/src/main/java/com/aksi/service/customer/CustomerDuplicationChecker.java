@@ -29,18 +29,17 @@ public class CustomerDuplicationChecker {
    * @throws ConflictException if duplicate found
    */
   private void checkDuplicate(
-      Specification<CustomerEntity> specification,
-      UUID excludeCustomerId,
-      String errorMessage) {
+      Specification<CustomerEntity> specification, UUID excludeCustomerId, String errorMessage) {
     Optional<CustomerEntity> existing = customerRepository.findOne(specification);
-    
+
     if (excludeCustomerId != null) {
       existing = existing.filter(e -> !e.getId().equals(excludeCustomerId));
     }
-    
-    existing.ifPresent(e -> {
-      throw new ConflictException(errorMessage);
-    });
+
+    existing.ifPresent(
+        e -> {
+          throw new ConflictException(errorMessage);
+        });
   }
 
   /**
@@ -54,8 +53,7 @@ public class CustomerDuplicationChecker {
     checkDuplicate(
         CustomerSpecification.hasPhone(phone).and(CustomerSpecification.isActive()),
         excludeCustomerId,
-        "Customer with phone " + phone + " already exists"
-    );
+        "Customer with phone " + phone + " already exists");
   }
 
   /**
@@ -69,12 +67,11 @@ public class CustomerDuplicationChecker {
     if (email == null || email.trim().isEmpty()) {
       return;
     }
-    
+
     checkDuplicate(
         CustomerSpecification.hasEmail(email).and(CustomerSpecification.isActive()),
         excludeCustomerId,
-        "Customer with email " + email + " already exists"
-    );
+        "Customer with email " + email + " already exists");
   }
 
   /**
@@ -88,13 +85,12 @@ public class CustomerDuplicationChecker {
     if (discountCardNumber == null || discountCardNumber.trim().isEmpty()) {
       return;
     }
-    
+
     checkDuplicate(
         CustomerSpecification.hasDiscountCard(discountCardNumber)
             .and(CustomerSpecification.isActive()),
         excludeCustomerId,
-        "Discount card " + discountCardNumber + " already assigned to another customer"
-    );
+        "Discount card " + discountCardNumber + " already assigned to another customer");
   }
 
   /**

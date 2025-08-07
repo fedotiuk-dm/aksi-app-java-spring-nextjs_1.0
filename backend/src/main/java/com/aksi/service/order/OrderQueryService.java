@@ -126,18 +126,6 @@ public class OrderQueryService {
     return orderRepository.existsById(orderId);
   }
 
-  /** Check if order can be modified */
-  public boolean canModifyOrder(UUID orderId) {
-    return orderRepository.findById(orderId).map(OrderEntity::canBeModified).orElse(false);
-  }
-
-  /** Calculate order total amount */
-  public Integer calculateOrderTotal(UUID orderId) {
-    log.debug("Calculating total for order: {}", orderId);
-    OrderEntity orderEntity = findOrderById(orderId);
-    return orderEntity.getTotalAmount();
-  }
-
   /** Get customer order history with pagination */
   public Page<OrderInfo> getCustomerOrderHistory(UUID customerId, Pageable pageable) {
     log.debug("Getting order history for customer: {}", customerId);

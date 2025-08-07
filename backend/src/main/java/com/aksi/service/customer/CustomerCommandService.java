@@ -17,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Command service for customer write operations.
- * All methods are transactional and handle state changes.
+ * Command service for customer write operations. All methods are transactional and handle state
+ * changes.
  */
 @Service
 @Transactional

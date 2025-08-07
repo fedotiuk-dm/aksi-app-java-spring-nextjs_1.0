@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.aksi.api.file.dto.FileUploadResponse;
 import com.aksi.api.order.dto.AddPaymentRequest;
 import com.aksi.api.order.dto.CreateOrderRequest;
 import com.aksi.api.order.dto.ItemPhotoInfo;
@@ -38,6 +39,7 @@ import com.aksi.repository.CartRepository;
 import com.aksi.repository.OrderRepository;
 import com.aksi.repository.UserRepository;
 import com.aksi.service.auth.AuthQueryService;
+import com.aksi.service.storage.FileStorageService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +59,7 @@ public class OrderCommandService {
   private final BranchRepository branchRepository;
   private final UserRepository userRepository;
   private final AuthQueryService authQueryService;
+  private final FileStorageService fileStorageService;
 
   // Business logic components
   private final OrderNumberGenerator numberGenerator;
@@ -183,6 +186,14 @@ public class OrderCommandService {
     OrderItemEntity orderItemEntity = findOrderItemInOrder(orderEntity, itemId);
     ItemPhotoEntity photo = findPhotoInOrderItem(orderItemEntity, photoId);
 
+    // Delete physical file if URL contains local path
+    // Extract file path from URL if it's a local file
+    String url = photo.getUrl();
+    if (url != null && url.contains("/api/files/")) {
+      String filePath = url.substring(url.indexOf("/api/files/") + 11);
+      fileStorageService.deleteFile(filePath);
+    }
+
     orderItemEntity.removePhoto(photo);
     orderRepository.save(orderEntity);
 
@@ -212,12 +223,46 @@ public class OrderCommandService {
     return orderMapper.toPaymentInfo(payment);
   }
 
-  /** Generate unique order number */
-  public String generateOrderNumber() {
-    return numberGenerator.generateOrderNumber();
+  /** Save customer signature */
+  public OrderInfo saveCustomerSignature(UUID orderId, String signatureBase64) {
+    log.info("Saving customer signature for order: {}", orderId);
+
+    OrderEntity orderEntity = findOrderById(orderId);
+
+    // Validate order status - can only add signature in certain states
+    if (orderEntity.getStatus() != OrderEntity.OrderStatus.PENDING
+        && orderEntity.getStatus() != OrderEntity.OrderStatus.READY
+        && orderEntity.getStatus() != OrderEntity.OrderStatus.COMPLETED) {
+      throw new BusinessValidationException(
+          "Cannot add signature to order in status: " + orderEntity.getStatus());
+    }
+
+    // Save signature as base64 directly in the database
+    orderEntity.setCustomerSignature(signatureBase64);
+    orderEntity = orderRepository.save(orderEntity);
+
+    log.info("Saved customer signature for order {}", orderEntity.getOrderNumber());
+    return orderMapper.toOrderInfo(orderEntity);
   }
 
   // Private helper methods
+
+  private void validatePhotoFile(MultipartFile file) {
+    if (file == null || file.isEmpty()) {
+      throw new BusinessValidationException("Photo file is required");
+    }
+
+    // Validate file size (max 10MB)
+    if (file.getSize() > 10 * 1024 * 1024) {
+      throw new BusinessValidationException("Photo file size must be less than 10MB");
+    }
+
+    // Validate content type
+    String contentType = file.getContentType();
+    if (contentType == null || !contentType.startsWith("image/")) {
+      throw new BusinessValidationException("Only image files are allowed");
+    }
+  }
 
   private CartEntity findAndValidateCart(UUID cartId) {
     CartEntity cartEntity =
@@ -304,10 +349,22 @@ public class OrderCommandService {
       MultipartFile file,
       PhotoType photoType,
       String photoDescription) {
-    // TODO: Implement actual file upload logic
+    // Validate file
+    validatePhotoFile(file);
+
+    // Generate directory path: orders/{orderId}/items/{itemId}/photos
+    String directory =
+        String.format(
+            "orders/%s/items/%s/photos",
+            orderItemEntity.getOrderEntity().getId(), orderItemEntity.getId());
+
+    // Store file using new DTO approach
+    FileUploadResponse uploadResponse = fileStorageService.storeFile(file, directory);
+    String fileUrl = uploadResponse.getFileUrl();
+
     ItemPhotoEntity photo = new ItemPhotoEntity();
     photo.setOrderItemEntity(orderItemEntity);
-    photo.setUrl("/photos/" + UUID.randomUUID() + ".jpg"); // Placeholder URL
+    photo.setUrl(fileUrl);
     photo.setType(
         photoType != null
             ? ItemPhotoEntity.PhotoType.valueOf(photoType.name())
@@ -315,9 +372,9 @@ public class OrderCommandService {
     photo.setDescription(photoDescription != null ? photoDescription : "Uploaded photo");
     photo.setUploadedBy(getCurrentUser());
     photo.setUploadedAt(Instant.now());
-    photo.setOriginalFilename("uploaded-photo.jpg"); // TODO: Get from request
-    photo.setContentType("image/jpeg"); // TODO: Get from request
-    photo.setFileSize(1024L); // TODO: Get from request
+    photo.setOriginalFilename(file.getOriginalFilename());
+    photo.setContentType(file.getContentType());
+    photo.setFileSize(file.getSize());
     return photo;
   }
 

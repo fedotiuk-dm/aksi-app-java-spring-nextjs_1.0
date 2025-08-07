@@ -127,10 +127,14 @@ services:
       # Рівень логування (ERROR для максимально чистих логів, DEBUG для детальної діагностики)
       AKSI_LOG_LEVEL: "DEBUG"
       LOGGING_LEVEL_COM_AKSI: "DEBUG"
+      # File storage configuration
+      FILE_UPLOAD_DIR: /app/uploads
+      FILE_BASE_URL: http://localhost:8080
     volumes:
       - ../backend/src:/app/src # Монтуємо тільки src для hot reload
       - ../backend/target:/app/target # Монтуємо target для збереження compiled класів
       - backend_m2_cache:/home/appuser/.m2 # Кеш Maven для non-root користувача
+      - backend_uploads:/app/uploads # Зберігаємо завантажені файли
     depends_on:
       postgres:
         condition: service_healthy
@@ -231,4 +235,5 @@ volumes:
   frontend_next_cache:
   frontend_npm_cache:
   backend_m2_cache:
+  backend_uploads: # Volume для завантажених файлів
   portainer_data:

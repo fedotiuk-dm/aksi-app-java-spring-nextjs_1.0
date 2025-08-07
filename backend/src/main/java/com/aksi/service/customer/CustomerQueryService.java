@@ -18,8 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Query service for customer read operations.
- * All methods are read-only and optimized for queries.
+ * Query service for customer read operations. All methods are read-only and optimized for queries.
  */
 @Service
 @Transactional(readOnly = true)

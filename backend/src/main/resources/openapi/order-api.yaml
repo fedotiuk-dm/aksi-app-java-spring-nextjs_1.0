@@ -326,6 +326,44 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/orders/{orderId}/signature:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+    
+    post:
+      operationId: saveCustomerSignature
+      summary: Save customer signature
+      description: Save customer signature for order in base64 format
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveSignatureRequest'
+      responses:
+        '200':
+          description: Signature saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/orders/by-number/{orderNumber}:
     get:
       operationId: getOrderByNumber
@@ -1176,6 +1214,16 @@ components:
           description: Payment amount in kopiykas
         method:
           $ref: '#/components/schemas/PaymentMethod'
+
+    SaveSignatureRequest:
+      type: object
+      required:
+        - signature
+      properties:
+        signature:
+          type: string
+          description: Customer signature in base64 format
+          example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
 
     # Pagination schema
     PaginatedResponse:

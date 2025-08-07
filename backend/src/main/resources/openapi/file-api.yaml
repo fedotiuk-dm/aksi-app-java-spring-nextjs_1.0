@@ -1,0 +1,382 @@
+openapi: 3.1.1
+info:
+  title: File API
+  description: File serving API for uploaded files
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: files
+    description: File serving operations
+
+paths:
+  /api/files/{filePath}:
+    parameters:
+      - name: filePath
+        in: path
+        required: true
+        description: File path relative to upload directory (supports nested paths)
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9\/_\-\.]+$'
+          example: "orders/123e4567-e89b-12d3-a456-426614174000/items/456e7890-e89b-12d3-a456-426614174001/photos/photo.jpg"
+    
+    get:
+      operationId: serveFile
+      summary: Serve uploaded file
+      description: Serve uploaded files with proper content type and security checks
+      tags:
+        - files
+      responses:
+        '200':
+          description: File served successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Type:
+              description: Actual content type of the file
+              schema:
+                type: string
+            Content-Disposition:
+              description: Content disposition header
+              schema:
+                type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/files/upload:
+    post:
+      operationId: uploadFile
+      summary: Upload file
+      description: Upload file to specified directory with optional filename
+      tags:
+        - files
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileUploadRequest'
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/files/upload/base64:
+    post:
+      operationId: uploadBase64File
+      summary: Upload base64 file
+      description: Upload base64 encoded file data
+      tags:
+        - files
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Base64FileUploadRequest'
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/files/{filePath}/info:
+    parameters:
+      - name: filePath
+        in: path
+        required: true
+        description: File path relative to upload directory
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9\/_\-\.]+$'
+    
+    get:
+      operationId: getFileInfo
+      summary: Get file information
+      description: Get detailed information about uploaded file
+      tags:
+        - files
+      responses:
+        '200':
+          description: File information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileInfo'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  
+  /api/files/{filePath}/base64:
+    parameters:
+      - name: filePath
+        in: path
+        required: true
+        description: File path relative to upload directory
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9\/_\-\.]+$'
+    
+    get:
+      operationId: getFileAsBase64
+      summary: Get file content as base64
+      description: Read file content and return as base64 encoded string
+      tags:
+        - files
+      responses:
+        '200':
+          description: File content retrieved as base64
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Base64FileResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  responses:
+    NotFound:
+      description: File not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Forbidden:
+      description: Access to file is forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    BadRequest:
+      description: Bad request - validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+        details:
+          type: object
+          additionalProperties: true
+          description: Additional error details
+    
+    FileUploadRequest:
+      type: object
+      required:
+        - file
+        - directory
+      properties:
+        file:
+          type: string
+          format: binary
+          description: File to upload
+        directory:
+          type: string
+          description: Directory to upload file to
+          pattern: '^[a-zA-Z0-9/_\-]+$'
+          example: "orders/photos"
+        filename:
+          type: string
+          description: Optional custom filename (without extension)
+          pattern: '^[a-zA-Z0-9_\-]+$'
+          example: "custom-name"
+    
+    Base64FileUploadRequest:
+      type: object
+      required:
+        - base64Data
+        - directory
+        - filename
+      properties:
+        base64Data:
+          type: string
+          description: Base64 encoded file data (with or without data URL prefix)
+          example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        directory:
+          type: string
+          description: Directory to store file in
+          pattern: '^[a-zA-Z0-9/_\-]+$'
+          example: "orders/signatures"
+        filename:
+          type: string
+          description: Filename without extension
+          pattern: '^[a-zA-Z0-9_\-]+$'
+          example: "signature"
+    
+    FileUploadResponse:
+      type: object
+      required:
+        - success
+        - filePath
+        - fileUrl
+        - uploadedAt
+      properties:
+        success:
+          type: boolean
+          description: Upload success status
+          example: true
+        filePath:
+          type: string
+          description: Relative file path where file was stored
+          example: "orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        fileUrl:
+          type: string
+          description: Full URL to access the file
+          example: "http://localhost:8080/api/files/orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        originalFilename:
+          type: string
+          description: Original filename from upload
+          example: "photo.jpg"
+        fileSize:
+          type: integer
+          format: int64
+          description: File size in bytes
+          example: 2048
+        contentType:
+          type: string
+          description: Detected content type
+          example: "image/jpeg"
+        uploadedAt:
+          type: string
+          format: date-time
+          description: Upload timestamp
+        uploadedBy:
+          type: string
+          description: User ID who uploaded the file
+          example: "user123"
+    
+    FileInfo:
+      type: object
+      required:
+        - filePath
+        - fileUrl
+        - exists
+        - fileSize
+        - lastModified
+      properties:
+        filePath:
+          type: string
+          description: Relative file path
+          example: "orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        fileUrl:
+          type: string
+          description: Full URL to access the file
+          example: "http://localhost:8080/api/files/orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        exists:
+          type: boolean
+          description: Whether file exists
+          example: true
+        fileSize:
+          type: integer
+          format: int64
+          description: File size in bytes
+          example: 2048
+        contentType:
+          type: string
+          description: Detected content type
+          example: "image/jpeg"
+        readable:
+          type: boolean
+          description: Whether file is readable
+          example: true
+        lastModified:
+          type: string
+          format: date-time
+          description: Last modification timestamp
+    
+    Base64FileResponse:
+      type: object
+      required:
+        - filePath
+        - base64Data
+        - contentType
+        - fileSize
+      properties:
+        filePath:
+          type: string
+          description: File path that was read
+          example: "orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        base64Data:
+          type: string
+          description: Base64 encoded file content
+          example: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        contentType:
+          type: string
+          description: MIME type of the file
+          example: "image/jpeg"
+        fileSize:
+          type: integer
+          format: int64
+          description: Original file size in bytes
+          example: 2048
+  
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session-based authentication using httpOnly cookies
+

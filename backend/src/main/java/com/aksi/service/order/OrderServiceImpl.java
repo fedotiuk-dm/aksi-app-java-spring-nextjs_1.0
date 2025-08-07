@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,46 +50,8 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public Page<OrderInfo> listOrders(
-      UUID customerId,
-      OrderEntity.OrderStatus status,
-      UUID branchId,
-      Instant dateFrom,
-      Instant dateTo,
-      String search,
-      Pageable pageable) {
-    return queryService.listOrders(
-        customerId, status, branchId, dateFrom, dateTo, search, pageable);
-  }
-
-  @Override
   public boolean existsById(UUID orderId) {
     return queryService.existsById(orderId);
-  }
-
-  @Override
-  public boolean canModifyOrder(UUID orderId) {
-    return queryService.canModifyOrder(orderId);
-  }
-
-  @Override
-  public Integer calculateOrderTotal(UUID orderId) {
-    return queryService.calculateOrderTotal(orderId);
-  }
-
-  @Override
-  public Page<OrderInfo> getCustomerOrderHistory(UUID customerId, Pageable pageable) {
-    return queryService.getCustomerOrderHistory(customerId, pageable);
-  }
-
-  @Override
-  public Page<OrderInfo> getOrdersDueForCompletion(int days, Pageable pageable) {
-    return queryService.getOrdersDueForCompletion(days, pageable);
-  }
-
-  @Override
-  public Page<OrderInfo> getOverdueOrders(Pageable pageable) {
-    return queryService.getOverdueOrders(pageable);
   }
 
   @Override
@@ -107,11 +67,6 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public List<PaymentInfo> getOrderPayments(UUID orderId) {
     return queryService.getOrderPayments(orderId);
-  }
-
-  @Override
-  public List<OrderInfo> getOrdersByStatus(OrderEntity.OrderStatus status, UUID branchId) {
-    return queryService.getOrdersByStatus(status, branchId);
   }
 
   @Override
@@ -166,6 +121,13 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  @Transactional
+  public OrderInfo saveCustomerSignature(UUID orderId, String signatureBase64) {
+    log.info("Saving customer signature for order: {}", orderId);
+    return commandService.saveCustomerSignature(orderId, signatureBase64);
+  }
+
+  @Override
   public OrderListResponse listOrders(
       Integer page,
       Integer size,
@@ -203,10 +165,5 @@ public class OrderServiceImpl implements OrderService {
     // Convert API OrderStatus to entity OrderStatus
     OrderEntity.OrderStatus entityStatus = OrderEntity.OrderStatus.valueOf(status.name());
     return queryService.getOrdersByStatus(entityStatus, branchId);
-  }
-
-  @Override
-  public String generateOrderNumber() {
-    return commandService.generateOrderNumber();
   }
 }

@@ -16,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Facade implementation of CustomerService.
- * Provides a unified API while delegating to specialized Query and Command services.
+ * Facade implementation of CustomerService. Provides a unified API while delegating to specialized
+ * Query and Command services.
  */
 @Service
 @RequiredArgsConstructor

@@ -22,6 +22,7 @@ import com.aksi.api.order.dto.OrderListResponse;
 import com.aksi.api.order.dto.OrderStatus;
 import com.aksi.api.order.dto.PaymentInfo;
 import com.aksi.api.order.dto.PhotoType;
+import com.aksi.api.order.dto.SaveSignatureRequest;
 import com.aksi.api.order.dto.UpdateItemCharacteristicsRequest;
 import com.aksi.api.order.dto.UpdateOrderStatusRequest;
 import com.aksi.service.order.OrderService;
@@ -220,5 +221,16 @@ public class OrderController implements OrdersApi {
 
     List<PaymentInfo> payments = orderService.getOrderPayments(orderId);
     return ResponseEntity.ok(payments);
+  }
+
+  @Override
+  public ResponseEntity<OrderInfo> saveCustomerSignature(
+      UUID orderId, SaveSignatureRequest saveSignatureRequest) {
+    log.debug("Saving customer signature for order: {}", orderId);
+
+    OrderInfo updatedOrder =
+        orderService.saveCustomerSignature(orderId, saveSignatureRequest.getSignature());
+    log.debug("Customer signature saved for order {}", orderId);
+    return ResponseEntity.ok(updatedOrder);
   }
 }
