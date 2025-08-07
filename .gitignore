@@ -46,7 +46,6 @@ docker-compose.override.yml
 
 # Завантажені файли
 uploads/
-storage/
 temp/
 
 # Бази даних
