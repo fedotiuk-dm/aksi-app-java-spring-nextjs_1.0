@@ -1,5 +1,6 @@
 package com.aksi.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -34,14 +35,28 @@ public class BranchController implements BranchesApi {
 
   @Override
   public ResponseEntity<BranchesResponse> listBranches(
-      @Nullable Boolean active, @Nullable String search, Integer offset, Integer limit) {
+      Integer page,
+      Integer size,
+      String sortBy,
+      String sortOrder,
+      Boolean active,
+      @Nullable String search) {
     log.debug(
-        "Listing branches with active: {}, search: '{}', offset: {}, limit: {}",
+        "Listing branches with page: {}, size: {}, sortBy: {}, sortOrder: {}, active: {}, search: '{}'",
+        page,
+        size,
+        sortBy,
+        sortOrder,
         active,
-        search,
-        offset,
-        limit);
-    return ResponseEntity.ok(branchService.listBranches(active, search, offset, limit));
+        search);
+    return ResponseEntity.ok(
+        branchService.listBranches(page, size, sortBy, sortOrder, active, search));
+  }
+
+  @Override
+  public ResponseEntity<List<BranchInfo>> getAllActiveBranches() {
+    log.debug("Getting all active branches for dropdowns");
+    return ResponseEntity.ok(branchService.getAllActiveBranches());
   }
 
   @Override
@@ -66,5 +81,19 @@ public class BranchController implements BranchesApi {
     log.debug("Deleting branch: {}", branchId);
     branchService.deleteBranch(branchId);
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<BranchInfo> activateBranch(UUID branchId) {
+    log.debug("Activating branch: {}", branchId);
+    return ResponseEntity.ok(branchService.activateBranch(branchId));
+  }
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<BranchInfo> deactivateBranch(UUID branchId) {
+    log.debug("Deactivating branch: {}", branchId);
+    return ResponseEntity.ok(branchService.deactivateBranch(branchId));
   }
 }

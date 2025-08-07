@@ -3,9 +3,6 @@ package com.aksi.service.branch;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,137 +10,72 @@ import com.aksi.api.branch.dto.BranchInfo;
 import com.aksi.api.branch.dto.BranchesResponse;
 import com.aksi.api.branch.dto.CreateBranchRequest;
 import com.aksi.api.branch.dto.UpdateBranchRequest;
-import com.aksi.domain.branch.BranchEntity;
-import com.aksi.exception.ConflictException;
-import com.aksi.exception.NotFoundException;
-import com.aksi.mapper.BranchMapper;
-import com.aksi.repository.BranchRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** Implementation of BranchService */
+/**
+ * Facade implementation of BranchService. Provides a unified API while delegating to specialized
+ * Query and Command services for better separation of concerns.
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class BranchServiceImpl implements BranchService {
 
-  private final BranchRepository branchRepository;
-  private final BranchMapper branchMapper;
+  private final BranchQueryService queryService;
+  private final BranchCommandService commandService;
 
+  // Query methods - delegate to BranchQueryService
   @Override
   @Transactional(readOnly = true)
   public BranchInfo getBranchById(UUID branchId) {
-    log.debug("Getting branch by id: {}", branchId);
-
-    BranchEntity branchEntity =
-        branchRepository
-            .findById(branchId)
-            .orElseThrow(() -> new NotFoundException("Branch not found with id: " + branchId));
-
-    return branchMapper.toBranchInfo(branchEntity);
+    return queryService.getBranchById(branchId);
   }
 
+  // Command methods - delegate to BranchCommandService
   @Override
   public BranchInfo createBranch(CreateBranchRequest request) {
-    log.info("Creating new branch: {}", request.getName());
-
-    // Validate unique name
-    if (branchRepository.existsByNameIgnoreCase(request.getName())) {
-      throw new ConflictException("Branch with name '" + request.getName() + "' already exists");
-    }
-
-    // Map to entity
-    BranchEntity branchEntity = branchMapper.toEntity(request);
-
-    // Save and return
-    BranchEntity saved = branchRepository.save(branchEntity);
-    log.info("Created branch with ID: {}", saved.getId());
-
-    return branchMapper.toBranchInfo(saved);
+    return commandService.createBranch(request);
   }
 
   @Override
   public BranchInfo updateBranch(UUID branchId, UpdateBranchRequest request) {
-    log.info("Updating branch: {}", branchId);
-
-    BranchEntity branchEntity =
-        branchRepository
-            .findById(branchId)
-            .orElseThrow(() -> new NotFoundException("Branch not found: " + branchId));
-
-    // Validate unique name if changed
-    if (request.getName() != null
-        && !request.getName().equalsIgnoreCase(branchEntity.getName())
-        && branchRepository.existsByNameIgnoreCaseAndIdNot(request.getName(), branchId)) {
-      throw new ConflictException("Branch with name '" + request.getName() + "' already exists");
-    }
-
-    // Update entity using MapStruct
-    branchMapper.updateEntityFromRequest(request, branchEntity);
-
-    BranchEntity updated = branchRepository.save(branchEntity);
-    log.info("Updated branch: {}", branchId);
-
-    return branchMapper.toBranchInfo(updated);
+    return commandService.updateBranch(branchId, request);
   }
 
   @Override
   public void deleteBranch(UUID branchId) {
-    log.info("Deleting branch: {}", branchId);
-
-    if (!branchRepository.existsById(branchId)) {
-      throw new NotFoundException("Branch not found: " + branchId);
-    }
-
-    branchRepository.deleteById(branchId);
-    log.info("Deleted branch: {}", branchId);
+    commandService.deleteBranch(branchId);
   }
 
   @Override
   @Transactional(readOnly = true)
   public BranchesResponse listBranches(
-      Boolean active, String search, Integer offset, Integer limit) {
-    log.debug(
-        "Listing branches with active: {}, search: '{}', offset: {}, limit: {}",
-        active,
-        search,
-        offset,
-        limit);
-
-    // Handle pagination parameters
-    int safeOffset = offset != null && offset >= 0 ? offset : 0;
-    int safeLimit = limit != null && limit > 0 ? Math.min(limit, 100) : 20;
-    int pageNumber = safeOffset / safeLimit;
-
-    Pageable pageable = PageRequest.of(pageNumber, safeLimit);
-
-    Page<BranchEntity> page = branchRepository.findBranchesWithSearch(active, search, pageable);
-
-    // Map to DTOs
-    List<BranchInfo> branches = page.getContent().stream().map(branchMapper::toBranchInfo).toList();
-
-    BranchesResponse response = new BranchesResponse();
-    response.setBranches(branches);
-    response.setTotalItems((int) page.getTotalElements());
-    response.setHasMore(page.hasNext());
-
-    return response;
+      Integer page, Integer size, String sortBy, String sortOrder, Boolean active, String search) {
+    return queryService.listBranches(page, size, sortBy, sortOrder, active, search);
   }
 
   @Override
   @Transactional(readOnly = true)
   public List<BranchInfo> getAllActiveBranches() {
-    log.debug("Getting all active branches");
-
-    List<BranchEntity> branchEntities = branchRepository.findAllActiveOrderedBySortOrder();
-    return branchEntities.stream().map(branchMapper::toBranchInfo).toList();
+    return queryService.getAllActiveBranches();
   }
 
   @Override
   @Transactional(readOnly = true)
   public boolean existsById(UUID branchId) {
-    return branchRepository.existsById(branchId);
+    return queryService.existsById(branchId);
+  }
+
+  @Override
+  public BranchInfo activateBranch(UUID branchId) {
+    return commandService.activateBranch(branchId);
+  }
+
+  @Override
+  public BranchInfo deactivateBranch(UUID branchId) {
+    return commandService.deactivateBranch(branchId);
   }
 }

@@ -28,6 +28,10 @@ paths:
       security:
         - cookieAuth: []
       parameters:
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
         - name: active
           in: query
           description: Filter by active status
@@ -41,23 +45,6 @@ paths:
           required: false
           schema:
             type: string
-        - name: offset
-          in: query
-          description: Number of items to skip
-          required: false
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-        - name: limit
-          in: query
-          description: Number of items to return
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
       responses:
         '200':
           description: List of branches
@@ -95,6 +82,27 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+
+  /api/branches/active:
+    get:
+      operationId: getAllActiveBranches
+      summary: Get all active branches
+      description: Get all active branches for dropdowns (no pagination)
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: List of active branches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BranchInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /api/branches/{branchId}:
     parameters:
@@ -174,7 +182,126 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/branches/{branchId}/activate:
+    parameters:
+      - name: branchId
+        in: path
+        required: true
+        description: Branch ID
+        schema:
+          type: string
+          format: uuid
+    
+    post:
+      operationId: activateBranch
+      summary: Activate branch
+      description: Activate a deactivated branch (admin only)
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Branch activated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BranchInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Conflict - branch is already active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/branches/{branchId}/deactivate:
+    parameters:
+      - name: branchId
+        in: path
+        required: true
+        description: Branch ID
+        schema:
+          type: string
+          format: uuid
+    
+    post:
+      operationId: deactivateBranch
+      summary: Deactivate branch
+      description: Deactivate an active branch (admin only)
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Branch deactivated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BranchInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Conflict - branch is already inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
+  parameters:
+    PageNumber:
+      name: page
+      in: query
+      description: Page number (0-based)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    
+    PageSize:
+      name: size
+      in: query
+      description: Page size (number of items per page)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    
+    SortBy:
+      name: sortBy
+      in: query
+      description: Sort field
+      schema:
+        type: string
+        default: name
+        enum:
+          - name
+          - createdAt
+          - sortOrder
+    
+    SortOrder:
+      name: sortOrder
+      in: query
+      description: Sort direction
+      schema:
+        type: string
+        default: asc
+        enum:
+          - asc
+          - desc
+
   responses:
     BadRequest:
       description: Bad request

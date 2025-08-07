@@ -46,13 +46,16 @@ public interface BranchService {
   /**
    * List branches with pagination and filtering
    *
+   * @param page Page number (0-based)
+   * @param size Number of items per page
+   * @param sortBy Sort field
+   * @param sortOrder Sort direction
    * @param active Filter by active status
    * @param search Search by name or address
-   * @param offset Number of items to skip
-   * @param limit Number of items to return
    * @return Branches response with pagination
    */
-  BranchesResponse listBranches(Boolean active, String search, Integer offset, Integer limit);
+  BranchesResponse listBranches(
+      Integer page, Integer size, String sortBy, String sortOrder, Boolean active, String search);
 
   /**
    * Get all active branches for dropdowns
@@ -68,4 +71,20 @@ public interface BranchService {
    * @return true if branch exists
    */
   boolean existsById(UUID branchId);
+
+  /**
+   * Activate a branch
+   *
+   * @param branchId Branch ID
+   * @return Updated branch information
+   */
+  BranchInfo activateBranch(UUID branchId);
+
+  /**
+   * Deactivate a branch
+   *
+   * @param branchId Branch ID
+   * @return Updated branch information
+   */
+  BranchInfo deactivateBranch(UUID branchId);
 }
