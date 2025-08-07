@@ -154,46 +154,29 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccess }) => {
       const priceInKopiykas = (price: number | null | undefined) => 
         price !== null && price !== undefined ? Math.round(price * 100) : undefined;
 
-      if (selectedItem) {
-        const updateData: UpdatePriceListItemRequest = {
-          name: data.name,
-          nameUa: data.nameUa,
-          basePrice: priceInKopiykas(data.basePrice),
-          priceBlack: priceInKopiykas(data.priceBlack),
-          priceColor: priceInKopiykas(data.priceColor),
-          active: data.active,
-          processingTimeDays: data.processingTimeDays || undefined,
-          expressAvailable: data.expressAvailable,
-          expressTimeHours: data.expressTimeHours || undefined,
-          expressPrice: priceInKopiykas(data.expressPrice),
-          sortOrder: data.sortOrder || undefined,
-          description: data.description,
-        };
+      // Підготовка даних з конвертацією цін в копійки
+      const preparedData = {
+        ...data,
+        basePrice: priceInKopiykas(data.basePrice)!,
+        priceBlack: priceInKopiykas(data.priceBlack),
+        priceColor: priceInKopiykas(data.priceColor),
+        expressPrice: priceInKopiykas(data.expressPrice),
+        processingTimeDays: data.processingTimeDays || undefined,
+        expressTimeHours: data.expressTimeHours || undefined,
+        sortOrder: data.sortOrder || undefined,
+      };
 
+      if (selectedItem) {
+        // При оновленні передаємо всі поля крім незмінних (categoryCode, catalogNumber, unitOfMeasure)
+        const { categoryCode, catalogNumber, unitOfMeasure, ...updateData } = preparedData;
         await updateMutation.mutateAsync({
           priceListItemId: selectedItem.id,
-          data: updateData,
+          data: updateData as UpdatePriceListItemRequest,
         });
       } else {
-        const createData: CreatePriceListItemRequest = {
-          categoryCode: data.categoryCode,
-          catalogNumber: data.catalogNumber,
-          name: data.name,
-          nameUa: data.nameUa,
-          unitOfMeasure: data.unitOfMeasure,
-          basePrice: priceInKopiykas(data.basePrice)!,
-          priceBlack: priceInKopiykas(data.priceBlack),
-          priceColor: priceInKopiykas(data.priceColor),
-          active: data.active,
-          processingTimeDays: data.processingTimeDays || undefined,
-          expressAvailable: data.expressAvailable,
-          expressTimeHours: data.expressTimeHours || undefined,
-          expressPrice: priceInKopiykas(data.expressPrice),
-          sortOrder: data.sortOrder || undefined,
-          description: data.description,
-        };
-
-        await createMutation.mutateAsync({ data: createData });
+        await createMutation.mutateAsync({ 
+          data: preparedData as CreatePriceListItemRequest 
+        });
       }
 
       onSuccess();

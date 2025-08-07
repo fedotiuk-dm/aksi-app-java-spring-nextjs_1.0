@@ -60,7 +60,7 @@ export const BranchList: React.FC = () => {
     mutation: {
       onSuccess: () => {
         toast.success('Філію деактивовано');
-        refetch();
+        void refetch();
       },
       onError: (error) => {
         toast.error(`Помилка: ${error.message}`);
@@ -73,7 +73,7 @@ export const BranchList: React.FC = () => {
     mutation: {
       onSuccess: () => {
         toast.success('Філію активовано');
-        refetch();
+        void refetch();
       },
       onError: (error) => {
         toast.error(`Помилка: ${error.message}`);

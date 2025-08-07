@@ -13,7 +13,7 @@ import { useGetAllActiveBranches } from '@/shared/api/generated/branch';
 
 interface BranchSelectorProps {
   value: string | null;
-  onChange: (value: string | null) => void;
+  onChangeAction: (value: string | null) => void;
   label?: string;
   required?: boolean;
   fullWidth?: boolean;
@@ -23,7 +23,7 @@ interface BranchSelectorProps {
 
 export const BranchSelector: React.FC<BranchSelectorProps> = ({
   value,
-  onChange,
+  onChangeAction,
   label = 'Філія',
   required = false,
   fullWidth = true,
@@ -33,7 +33,7 @@ export const BranchSelector: React.FC<BranchSelectorProps> = ({
   const { data, isLoading, error } = useGetAllActiveBranches();
 
   const handleChange = (event: SelectChangeEvent) => {
-    onChange(event.target.value || null);
+    onChangeAction(event.target.value || null);
   };
 
   if (error) {

@@ -19,7 +19,6 @@ import {
   useCreateBranch,
   useUpdateBranch,
   CreateBranchRequest,
-  UpdateBranchRequest,
   createBranchBody,
 } from '@/shared/api/generated/branch';
 import { useBranchStore } from '@/features/branch';
@@ -96,20 +95,11 @@ export const BranchForm: React.FC = () => {
 
   const onSubmit = async (data: CreateBranchRequest) => {
     if (editingBranch) {
-      // For update, we need to convert CreateBranchRequest to UpdateBranchRequest
-      const updateData: UpdateBranchRequest = {
-        name: data.name,
-        address: data.address,
-        phone: data.phone,
-        email: data.email,
-        workingHours: data.workingHours,
-        active: data.active,
-        description: data.description,
-        sortOrder: data.sortOrder,
-      };
+      // При оновленні просто передаємо data без конвертації
+      // TypeScript дозволяє передати CreateRequest там де очікується UpdateRequest
       await updateMutation.mutateAsync({
         branchId: editingBranch.id,
-        data: updateData,
+        data: data,
       });
     } else {
       await createMutation.mutateAsync({

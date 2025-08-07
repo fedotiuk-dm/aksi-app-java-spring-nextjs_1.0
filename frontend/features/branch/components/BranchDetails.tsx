@@ -99,7 +99,7 @@ export const BranchDetails: React.FC<BranchDetailsProps> = ({ branchId }) => {
 
       {/* Main Info */}
       <Grid container spacing={3}>
-        <Grid size={12} md={8}>
+        <Grid size={{xs: 12, md: 8}}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Основна інформація
@@ -157,7 +157,7 @@ export const BranchDetails: React.FC<BranchDetailsProps> = ({ branchId }) => {
           </Paper>
         </Grid>
 
-        <Grid size={12} md={4}>
+        <Grid size={{xs: 12, md: 8}}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
